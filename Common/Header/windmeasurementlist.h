@@ -21,8 +21,9 @@
 /**The WindMeasurementList is a list that can contain and process windmeasurements.
   *@author André Somers
   */
+#include "Math/Point2D.hpp"
+using Vector = Point2D<double>;
 
-#include "vector.h"
 
 struct WindMeasurement {
   Vector vector;

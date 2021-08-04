@@ -80,12 +80,6 @@ WindAnalyser::~WindAnalyser(){
 }
 
 
-double Magnitude(Vector v) {
-  double d = sqrt(v.x*v.x+v.y*v.y);
-  return d;
-}
-
-
 /** Called if a new sample is available in the samplelist. */
 void WindAnalyser::slot_newSample(NMEA_INFO *nmeaInfo,
                                   DERIVED_INFO *derivedInfo){
@@ -125,13 +119,13 @@ void WindAnalyser::slot_newSample(NMEA_INFO *nmeaInfo,
   curVector.x= nmeaInfo->Speed*cos(nmeaInfo->TrackBearing*3.14159/180.0);
   curVector.y= nmeaInfo->Speed*sin(nmeaInfo->TrackBearing*3.14159/180.0);
 
-  windsamples.push_back({curVector, nmeaInfo->Time, Magnitude(curVector)});
+  windsamples.push_back({curVector, nmeaInfo->Time, Length(curVector)});
 
-  if ((nmeaInfo->Speed< Magnitude(minVector))||first)
+  if ((nmeaInfo->Speed< Length(minVector))||first)
     {
       minVector.x = curVector.x; minVector.y = curVector.y;
     }
-  if ((nmeaInfo->Speed> Magnitude(maxVector))||first)
+  if ((nmeaInfo->Speed> Length(maxVector))||first)
     {
       maxVector.x = curVector.x; maxVector.y = curVector.y;
     }

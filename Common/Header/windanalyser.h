@@ -18,8 +18,6 @@
 #ifndef WINDANALYSER_H
 #define WINDANALYSER_H
 
-#include "vector.h"
-
 #include "windstore.h"
 
 /**The windanalyser analyses the list of flightsamples looking for windspeed and direction.
