@@ -137,33 +137,32 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 
 
 static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
+
   if (CommentDrawListIndex < (int)aCommentTextLine.size()){
     LKASSERT(CommentDrawListIndex>=0);
     const TCHAR* szText = aCommentTextLine[CommentDrawListIndex];
-    size_t pos, len;
-    double Freq = ExtractFrequencyPos(szText, &pos, &len); 
     Surface.SetTextColor(RGB_BLACK);
     Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
 
-    if((Freq > 0) && ((pos+len) < 255))
-    {
-      TCHAR sTmp[255];	
+    size_t pos, len;
+    double Freq = ExtractFrequencyPos(szText, &pos, &len); 
 
-      LK_tcsncpy(sTmp, aCommentTextLine[CommentDrawListIndex], pos+len);
-      sTmp[pos+len] = 0;
-      const int subend = Surface.GetTextWidth(sTmp);
-
-      // size of the text is start of underline
+    if((Freq > 0) && ((pos + len) < 255)) {
+      TCHAR sTmp[255];
+      // copy text until end of substring
+      TCHAR* end = std::copy_n(aCommentTextLine[CommentDrawListIndex], pos + len, sTmp);
+      *end = _T('\0');
+      // size of the text is end of underline
+      const int subend = Surface.GetTextWidth(sTmp) + DLGSCALE(2);
+      // truncate string to start of substring
       sTmp[pos] = 0;
-      const int substart =  Surface.GetTextWidth(sTmp);
+      // size of the text is start of underline
+      const int substart = Surface.GetTextWidth(sTmp) + DLGSCALE(2);
 
-      if(substart < subend) 
-      {
-        int h =  Surface.GetTextHeight(sTmp) - IBLSCALE(1);
+      if(substart < subend) {
+        int h =  Sender->GetHeight() - IBLSCALE(1);
         const auto hOldPen = Surface.SelectObject(LKPen_Black_N1);
         Surface.DrawLine(substart, h, subend, h);
-
         Surface.SelectObject(hOldPen);
       }
     }
