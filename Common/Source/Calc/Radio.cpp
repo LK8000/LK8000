@@ -11,14 +11,14 @@
 #include "Util/TruncateString.hpp"
 
 
-BOOL ValidFrequency(double Freq)
-{
-	BOOL Valid =FALSE;
-	int Frac = 	(int)(Freq*1000.0+0.05) - 100*((int) (Freq *10.0+0.05));
+BOOL ValidFrequency(double Freq) {
+	BOOL Valid = FALSE;
 
 	if(Freq >= 118.0 && Freq <= 137.0) {
-		switch(Frac)
-		{
+		Freq *= 10;
+		int Frac = (Freq - static_cast<int>(Freq)) * 100;
+
+		switch(Frac) {
 			case 0:
 			case 25:
 			case 50:
@@ -50,50 +50,46 @@ BOOL ValidFrequency(double Freq)
 	return Valid;
 }
 
-double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
-{
-	if(start) *start =0;
-	if(len)*len =0;
-	if(text == nullptr)
-		return 0.0;
+double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len) {
+	if(start) *start = 0;
+	if(len) *len = 0;
+	if(text == nullptr) return 0.0;
 
-	double fFreq = 0.0;
-	size_t iTxtlen = _tcslen(text);
-	
-	if(iTxtlen < 3)
-		return 0.0;
-	
-	for (size_t i = 0; (i + 4) < iTxtlen; i++)
-	{
-		if (text[i] == '1')
-		{
-			int Mhz  = _tcstol(&text[i], nullptr, 10);
-			if(Mhz >= 118 && Mhz <= 138) 
-			{
-				if((text[i+3] == '.') || (text[i+3] == ','))
-				{
-					int kHz = _tcstol(&text[i+4], nullptr, 10);
+	for (const TCHAR* c = text; *c; ++c) {
+		if (*c == '1') {
+			TCHAR* dot = nullptr;
+			double Mhz = _tcstol(c, &dot, 10);
+			if(Mhz >= 118 && Mhz <= 138) {
+				if((*dot == _T('.')) || (*dot == _T(','))) {
 
-
-					fFreq = (double)Mhz + (double)kHz / 1000.0;
-					if(start) *start = i;
-					if(len) 
-					{
-						*len = iTxtlen-i;
-						if(*len >7) *len = 7;
+					TCHAR * sz = nullptr;
+					double kHz = _tcstol(++dot, &sz, 10);
+					for (ptrdiff_t d = 0; d < std::distance(dot, sz); ++d) {
+						kHz /= 10.;
 					}
-					if(ValidFrequency(fFreq)) return fFreq;
+					
+					double fFreq = Mhz + kHz;
+
+					if(ValidFrequency(fFreq)) {
+						if(start) {
+							*start = std::distance<const TCHAR*>(text, c);
+						}
+						if(len) {
+							*len = std::distance<const TCHAR*>(c, sz);
+						}
+						return fFreq;
+					}
 				}
 			}
+			c = dot;
 		}
 	}
 
-	return fFreq;
+	return 0.;
 }
 
-double  ExtractFrequency(const TCHAR *text)
-{ size_t pos, len;
-	return  ExtractFrequencyPos(text, &pos,&len);
+double  ExtractFrequency(const TCHAR *text) {
+	return  ExtractFrequencyPos(text, nullptr, nullptr);
 }
 
 /**
