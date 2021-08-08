@@ -63,7 +63,7 @@ double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len)
 	if(iTxtlen < 3)
 		return 0.0;
 	
-	for (size_t i = 0; i < (iTxtlen - 4); i++)
+	for (size_t i = 0; (i + 4) < iTxtlen; i++)
 	{
 		if (text[i] == '1')
 		{
