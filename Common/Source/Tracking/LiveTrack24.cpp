@@ -50,6 +50,7 @@
 #include "FlarmCalculations.h"
 #include "md5.h"
 #include "NavFunctions.h"
+#include "utils/base64.h"
 
 #ifdef KOBO
 #include "Kobo/System.hpp"
@@ -81,9 +82,6 @@ static int v2_userid = -1;
 
 static const std::string mapGBase64Index =
 		"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ()";
-static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		"abcdefghijklmnopqrstuvwxyz"
-		"0123456789+/";
 
 
 // Data point definition to send to the server
@@ -1335,70 +1333,6 @@ static std::vector<unsigned char> hex_to_bytes(std::string const& hex) {
 	return bytes;
 }
 
-static void replaceAll(std::string& str, const std::string& from,
-		const std::string& to) {
-	if (from.empty())
-		return;
-	size_t start_pos = 0;
-	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-		str.replace(start_pos, from.length(), to);
-		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
-	}
-}
-
-static std::string rtrim_commas(std::string& str) {
-	size_t first = 0;
-	size_t last = str.find_last_not_of(',');
-	return str.substr(first, (last - first + 1));
-}
-
-static std::string base64_encode(unsigned char const* bytes_to_encode,
-		unsigned int in_len) {
-	std::string ret;
-	int i = 0;
-	int j = 0;
-	unsigned char char_array_3[3];
-	unsigned char char_array_4[4];
-
-	while (in_len--) {
-		char_array_3[i++] = *(bytes_to_encode++);
-		if (i == 3) {
-			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-			char_array_4[1] = ((char_array_3[0] & 0x03) << 4)
-					+ ((char_array_3[1] & 0xf0) >> 4);
-			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2)
-					+ ((char_array_3[2] & 0xc0) >> 6);
-			char_array_4[3] = char_array_3[2] & 0x3f;
-
-			for (i = 0; (i < 4); i++)
-				ret += base64_chars[char_array_4[i]];
-			i = 0;
-		}
-	}
-
-	if (i) {
-		for (j = i; j < 3; j++)
-			char_array_3[j] = '\0';
-
-		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-		char_array_4[1] = ((char_array_3[0] & 0x03) << 4)
-				+ ((char_array_3[1] & 0xf0) >> 4);
-		char_array_4[2] = ((char_array_3[1] & 0x0f) << 2)
-				+ ((char_array_3[2] & 0xc0) >> 6);
-		char_array_4[3] = char_array_3[2] & 0x3f;
-
-		for (j = 0; (j < i + 1); j++)
-			ret += base64_chars[char_array_4[j]];
-
-		while ((i++ < 3))
-			ret += '=';
-
-	}
-
-	return ret;
-
-}
-
 static std::string md5(const std::string& text, bool tolower) {
 	std::string lowText = text;
 	if (tolower)
@@ -1419,15 +1353,10 @@ static std::string passwordToken(const std::string& plainTextPassword,
 	std::string tokenString = md5(lowerPassMD5_and_sessionID, false);
 	tokenString += lowerPassMD5 + std::string(appSecret);
 	std::string tokenStringMd5 = md5(tokenString, false);
-	std::string base64Token =
-			base64_encode(
-					reinterpret_cast<const unsigned char*>(&hex_to_bytes(
-							tokenStringMd5)[0]), 16);
-	replaceAll(base64Token, "+", "-");
-	replaceAll(base64Token, "/", "_");
-	replaceAll(base64Token, "=", ",");
-	std::string passwordToken = rtrim_commas(base64Token);
-	return passwordToken;
+
+	auto bytes = hex_to_bytes(tokenStringMd5);
+
+	return base64url_encode(bytes.data(), bytes.size(), false);
 }
 
 static int GetUserIDFromServer2() {

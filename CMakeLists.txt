@@ -584,6 +584,7 @@ add_library( LK8000 SHARED
     Common/Source/utils/zzip_stream.cpp
     Common/Source/utils/TextWrapArray.cpp
     Common/Source/utils/hmac_sha2.cpp
+    Common/Source/utils/base64.cpp
 
     Common/Source/Comm/LKFlarm.cpp
     Common/Source/Comm/LKFanet.cpp
