@@ -20,29 +20,30 @@ class LKSurface;
 
 class ShapeSpecialRenderer final {
 public:
-  ShapeSpecialRenderer();
-  ~ShapeSpecialRenderer();
-  
+  ShapeSpecialRenderer() = default;
+
   void Add(RasterPoint&& pt, const TCHAR* szLabel) {
-    lstLabel.push_back({std::forward<RasterPoint>(pt), szLabel});
+    lstLabel.emplace_back(std::forward<RasterPoint>(pt), szLabel);
   }
-  
+
   void Render(LKSurface& Surface) const;
   
-  inline void Clear() { 
-      lstLabel.clear();
+  void Clear() { 
+    lstLabel.clear();
   }
-  
+
 private:
-  typedef struct _Label_t {
-    RasterPoint pt;
+  struct Label_t {
+    Label_t(RasterPoint&& p, const TCHAR* sz) 
+        : point(std::forward<RasterPoint>(p)), szLabel(sz) { }
+
+    const RasterPoint point;
     const TCHAR* szLabel;
-  } Label_t;
-  
-  typedef std::list<Label_t> lstLabel_t;
+  };
+
+  using lstLabel_t = std::list<Label_t>;
 
   lstLabel_t lstLabel;
 };
 
 #endif	/* SHAPESPECIALRENDERER_H */
-

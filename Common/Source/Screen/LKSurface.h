@@ -206,7 +206,13 @@ public:
     void AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface, const RECT& srcRect, uint8_t globalOpacity);
 #endif
     bool GetTextSize(const TCHAR* lpString, SIZE* lpSize);
+
     void DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect = nullptr);
+
+    void DrawText(const RasterPoint& p, const TCHAR* lpString, RECT* ClipRect = nullptr) {
+        DrawText(p.x, p.y, lpString, ClipRect);
+    }
+
     int DrawText(const TCHAR* lpchText, RECT *lpRect, UINT uFormat);
 
     int GetTextWidth(const TCHAR *text);

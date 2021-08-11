@@ -13,19 +13,12 @@
 #include "ShapeSpecialRenderer.h"
 #include "Asset.hpp"
 
-ShapeSpecialRenderer::ShapeSpecialRenderer() {
-}
-
-ShapeSpecialRenderer::~ShapeSpecialRenderer() {
-}
-
 void ShapeSpecialRenderer::Render(LKSurface& Surface) const {
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
   Surface.SetBackgroundTransparent();
   Surface.SetTextColor(IsDithered() ? LKColor(0, 0, 0) : LKColor(0, 50, 50));
   for (const auto& label : lstLabel) {
-    Surface.DrawText(label.pt.x, label.pt.y, label.szLabel);
+    Surface.DrawText(label.point, label.szLabel);
   }
   Surface.SelectObject(hfOld);
 }
-
