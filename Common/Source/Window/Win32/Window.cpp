@@ -212,6 +212,12 @@ LRESULT CALLBACK Window::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         default:
             break;
     }
+
+
+    if (uMsg >= WM_USER && uMsg <= 0x7FFF && OnUser(uMsg - WM_USER)) {
+        return 0;
+    }
+
     Window * pOwner = GetParent();
     if(pOwner && pOwner->Notify(this, uMsg, wParam, lParam)) {
         return 0;
