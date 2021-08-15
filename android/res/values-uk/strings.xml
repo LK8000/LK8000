@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">uk</string>
+    <string name="warning">Увага !</string>
+    <string name="close">Закрити</string>
+    <string name="upgrade_storage">LK8000 переміщує ваші дані (%1$d МБ) з каталогу LK8000/в Android/data/%2$s/files/.
+\nGoogle цього вимагає як частину зусиль для покращення вашої конфіденційності.
+\nЗачекайте, перенесення може зайняти кілька хвилин.</string>
+    <string name="error_native_library">Не вдалося завантажити рідну бібліотеку LK8000.
+\nПовідомте нам про цю проблему та додайте такі відомості:
+\n</string>
+    <string name="error_external_storage">Зовнішня пам’ять недоступна. Вимкніть USB-накопичувач.</string>
+    <string name="quit">Вимикання LK8000…</string>
+    <string name="loading">Завантаження LK8000…</string>
 </resources>
