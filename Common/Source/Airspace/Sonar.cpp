@@ -222,26 +222,27 @@ class SonarThread : public Poco::Runnable
 {
 public:
     void Start() {
-				bStop = false;
+		bStop = false;
         Thread.start(*this);
     }
 		
     void Stop() {
-			bStop = true;
-			Thread.join();
-		}
+		bStop = true;
+		Thread.join();
+	}
+
 protected:
     void run() {
-			PeriodClock Timer;
-			while(!bStop) {
-				DoSonar();
-				unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
-				Sleep(n);
-				Timer.Update();
-			}
+		PeriodClock Timer;
+		while (!bStop) {
+			DoSonar();
+			unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
+			Sleep(n);
+			Timer.Update();
 		}
+	}
 
-		bool bStop;
+	bool bStop = false;
     Poco::Thread Thread;
 };
 
