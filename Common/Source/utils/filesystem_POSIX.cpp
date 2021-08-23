@@ -20,7 +20,7 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #include <string>
-
+#include <memory>
 #ifdef UNICODE
 #error "POSIX & UNICODE is unsupported"
 #endif
@@ -261,12 +261,15 @@ bool lk::filesystem::getUserPath(TCHAR* szPath, size_t MaxSize) {
         if (bufsize == -1) /* Value was indeterminate */
             bufsize = 16384; /* Should be more than enough */
 
-        char* buf = (char*)malloc(bufsize);
-        int s = getpwuid_r(getuid(), &pwd, buf, bufsize, &result);
+        auto buf = std::make_unique<char[]>(bufsize);
+        int s = getpwuid_r(getuid(), &pwd, buf.get(), bufsize, &result);
         if (s != 0 || result == NULL) {
-            free(buf);
             return false;
         }
+        if (! pwd.pw_dir || strlen(pwd.pw_dir) > MaxSize) {
+            return false;
+        }
+        strcpy(szPath, pwd.pw_dir);
     }
 
     if (szPath[0] != '\0') {
