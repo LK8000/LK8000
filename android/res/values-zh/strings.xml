@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">zh</string>
-    <string name="upgrade_storage">"LK8000正在将您的数据（%1$d MB）从目录 LK8000/ to Android/data/%2$s/files/ Google会要求您这样做，以改善您的隐私。"</string>
+    <string name="upgrade_storage">LK8000 正在将您的数据 (%1$d MB) 从 LK8000/ 目录移动到 Android/data/%2$s/files/。
+\n根据Google 要求这样做是可以保护您的隐私。
+\n请稍候，迁移可能需要几分钟时间。</string>
+    <string name="warning">警告！</string>
+    <string name="close">关闭</string>
+    <string name="error_native_library">本机无法加载 LK8000 库。
+\n报告此问题给我们，并提供以下信息：
+\n</string>
+    <string name="error_external_storage">外部存储不可用，请关闭 USB 存储。</string>
+    <string name="quit">LK8000关闭中…</string>
+    <string name="loading">LK8000加载中…</string>
 </resources>
