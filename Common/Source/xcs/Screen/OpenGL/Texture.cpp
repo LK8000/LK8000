@@ -46,7 +46,6 @@ Copyright_License {
 #include <assert.h>
 
 #ifndef NDEBUG
-unsigned num_textures;
 #endif
 
 gcc_const gcc_unused
@@ -146,10 +145,6 @@ GLTexture::ResizeDiscard(PixelSize new_size)
 void
 GLTexture::Initialise()
 {
-#ifndef NDEBUG
-  ++num_textures;
-#endif
-
   glGenTextures(1, &id);
   Bind();
   Configure();

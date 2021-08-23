@@ -71,7 +71,6 @@ BufferCanvas::Create(PixelSize new_size)
   }
 
   Canvas::Create(new_size);
-  AddSurfaceListener(*this);
 }
 
 void
@@ -80,8 +79,6 @@ BufferCanvas::Destroy()
   assert(!active);
 
   if (IsDefined()) {
-    RemoveSurfaceListener(*this);
-
     delete stencil_buffer;
     stencil_buffer = nullptr;
 
@@ -272,18 +269,4 @@ BufferCanvas::CopyTo(Canvas &other)
 
   texture->Bind();
   texture->DrawFlipped(other.GetRect(), GetRect());
-}
-
-void
-BufferCanvas::SurfaceCreated()
-{
-}
-
-void
-BufferCanvas::SurfaceDestroyed()
-{
-  /* discard the buffer when the Android app is suspended; it needs a
-     full redraw to restore it after resuming */
-
-  Destroy();
 }

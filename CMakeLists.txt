@@ -178,7 +178,6 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Screen/OpenGL/UncompressedImage.cpp
     Common/Source/xcs/Screen/OpenGL/Buffer.cpp
     Common/Source/xcs/Screen/OpenGL/Shapes.cpp
-    Common/Source/xcs/Screen/OpenGL/Surface.cpp
     Common/Source/xcs/Screen/OpenGL/Triangulate.cpp
     Common/Source/xcs/Screen/OpenGL/Shaders.cpp
 

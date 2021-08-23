@@ -32,7 +32,6 @@ Copyright_License {
 #endif
 
 #ifdef ANDROID
-#include "Screen/OpenGL/Surface.hpp"
 #include "Java/Object.hxx"
 #endif
 
@@ -60,11 +59,7 @@ using BitmapPixelTraits = BGRAPixelTraits;
 /**
  * An image loaded from storage.
  */
-    class Bitmap
-#ifdef ANDROID
-             : private GLSurfaceListener
-#endif
-{
+class Bitmap {
 public:
   enum class Type {
     /**
@@ -80,11 +75,6 @@ public:
   };
 
 protected:
-#ifdef ANDROID
-  jobject bmp = nullptr;
-
-  Type type;
-#endif
 
 #ifdef ENABLE_OPENGL
   GLTexture *texture = nullptr;
@@ -128,9 +118,7 @@ public:
   Bitmap &operator=(const Bitmap &other) = delete;
 public:
   bool IsDefined() const {
-#ifdef ANDROID
-    return bmp != nullptr;
-#elif defined(ENABLE_OPENGL)
+#ifdef ENABLE_OPENGL
     return texture != nullptr;
 #elif defined(USE_MEMORY_CANVAS)
     return buffer.data != nullptr;
@@ -216,12 +204,8 @@ public:
 
 #ifdef ANDROID
 private:
-  bool Set(const Java::LocalObject& _bmp, Type _type);
-  bool MakeTexture();
-
-  /* from GLSurfaceListener */
-  virtual void SurfaceCreated() override;
-  virtual void SurfaceDestroyed() override;
+  bool Set(const Java::LocalObject& bmp, Type type);
+  bool MakeTexture(const Java::LocalObject& bmp, Type type);
 #endif
 };
 

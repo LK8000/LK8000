@@ -30,15 +30,12 @@ Copyright_License {
 #include "Texture.hpp"
 #include "Debug.hpp"
 
-#ifndef ANDROID
-
-Bitmap::Bitmap(Bitmap &&src)
-  :texture(src.texture),
+Bitmap::Bitmap(Bitmap &&src) :
+   texture(std::exchange(src.texture, nullptr)),
    size(src.size),
    interpolation(src.interpolation),
    flipped(src.flipped)
 {
-  src.texture = nullptr;
 }
 
 Bitmap& Bitmap::operator=(Bitmap &&src)
@@ -50,8 +47,6 @@ Bitmap& Bitmap::operator=(Bitmap &&src)
   
   return *this;
 }
-
-#endif /* !ANDROID */
 
 void
 Bitmap::EnableInterpolation()
@@ -81,6 +76,7 @@ Bitmap::Load(const UncompressedImage &uncompressed, gcc_unused Type type)
   size = { uncompressed.GetWidth(), uncompressed.GetHeight() };
   return true;
 }
+#endif /* !ANDROID */
 
 void
 Bitmap::Reset()
@@ -91,8 +87,6 @@ Bitmap::Reset()
   delete texture;
   texture = nullptr;
 }
-
-#endif /* !ANDROID */
 
 const PixelSize
 Bitmap::GetSize() const

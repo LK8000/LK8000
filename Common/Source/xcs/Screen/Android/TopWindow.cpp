@@ -23,7 +23,6 @@ Copyright_License {
 
 #include "Screen/TopWindow.hpp"
 #include "Screen/Custom/Cache.hpp"
-#include "Screen/OpenGL/Surface.hpp"
 #include "Screen/OpenGL/Shapes.hpp"
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Event/Queue.hpp"
@@ -65,8 +64,6 @@ TopWindow::ResumeSurface()
 
   screen->Resume();
 
-  ::SurfaceCreated();
-
   RefreshSize();
 
   return true;
@@ -75,7 +72,7 @@ TopWindow::ResumeSurface()
 bool
 TopWindow::CheckResumeSurface()
 {
-  return (!resumed || ResumeSurface()) && !paused && surface_valid;
+  return (!resumed || ResumeSurface()) && !paused;
 }
 
 void
@@ -113,8 +110,6 @@ TopWindow::OnPause()
 
   TextCache::Flush();
   OpenGL::DeinitShapes();
-
-  SurfaceDestroyed();
 
   native_view->deinitSurface();
 
@@ -211,12 +206,6 @@ TopWindow::OnEvent(const Event &event)
     return OnMultiTouchUp();
 
   case Event::RESIZE:
-    if (!surface_valid)
-      /* postpone the resize if we're paused; the real resize will be
-         handled by TopWindow::refresh() as soon as XCSoar is
-         resumed */
-      return true;
-
     if (screen->CheckResize(PixelSize(event.point.x, event.point.y)))
       Resize(screen->GetSize());
 

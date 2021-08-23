@@ -56,35 +56,13 @@ RawBitmap::RawBitmap(unsigned nWidth, unsigned nHeight)
 
   texture->EnableInterpolation();
 
-  AddSurfaceListener(*this);
-
   buffer = new BGRColor[corrected_width * height];
 }
 
 RawBitmap::~RawBitmap()
 {
-  RemoveSurfaceListener(*this);
-
   delete texture;
   delete[] buffer;
-}
-
-void
-RawBitmap::SurfaceCreated()
-{
-  if (texture == nullptr) {
-    texture = new GLTexture(corrected_width, height);
-    texture->EnableInterpolation();
-  }
-}
-
-void
-RawBitmap::SurfaceDestroyed()
-{
-  delete texture;
-  texture = nullptr;
-
-  dirty = true;
 }
 
 GLTexture &

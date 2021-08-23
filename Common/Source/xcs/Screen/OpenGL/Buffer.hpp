@@ -35,10 +35,6 @@ Copyright_License {
 #include <assert.h>
 #include <stdlib.h>
 
-#ifndef NDEBUG
-extern unsigned num_buffers;
-#endif
-
 /**
  * This class represents an OpenGL buffer object.
  */
@@ -56,7 +52,6 @@ public:
 
 #ifndef NDEBUG
     p = nullptr;
-    ++num_buffers;
 #endif
   }
 
@@ -65,8 +60,6 @@ public:
   ~GLBuffer() {
 #ifndef NDEBUG
     assert(p == nullptr);
-    assert(num_buffers > 0);
-    --num_buffers;
 #endif
 
     glDeleteBuffers(1, &id);

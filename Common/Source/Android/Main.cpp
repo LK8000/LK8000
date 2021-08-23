@@ -211,8 +211,6 @@ Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
 
   main_window->Pause();
 
-  assert(num_textures == 0);
-  assert(num_buffers == 0);
   return true;
 }
 

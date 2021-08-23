@@ -27,7 +27,6 @@ Copyright_License {
 #include "Canvas.hpp"
 #include "Math/Point2D.hpp"
 #include "Util/DebugFlag.hpp"
-#include "Screen/OpenGL/Surface.hpp"
 #include "Screen/OpenGL/Scope.hpp"
 #include <memory>
 
@@ -46,7 +45,7 @@ class GLRenderBuffer;
 /**
  * An off-screen #Canvas implementation.
  */
-class BufferCanvas : public Canvas, private GLSurfaceListener {
+class BufferCanvas : public Canvas {
   GLTexture *texture;
 
   GLFrameBuffer *frame_buffer;
@@ -124,13 +123,6 @@ public:
   void Commit(Canvas &other);
 
   void CopyTo(Canvas &other);
-
-#ifdef ENABLE_OPENGL
-private:
-  /* from GLSurfaceListener */
-  virtual void SurfaceCreated() override;
-  virtual void SurfaceDestroyed() override;
-#endif
 };
 
 #endif

@@ -62,7 +62,6 @@ XCS_SCREEN_OPENGL := \
 	$(SRC)/xcs/Screen/OpenGL/RawBitmap.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Shapes.cpp \
 	$(SRC)/xcs/Screen/OpenGL/SubCanvas.cpp \
-	$(SRC)/xcs/Screen/OpenGL/Surface.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Texture.cpp \
 	$(SRC)/xcs/Screen/OpenGL/UncompressedImage.cpp \
 	$(SRC)/xcs/Screen/OpenGL/Triangulate.cpp \

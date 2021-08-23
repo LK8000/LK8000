@@ -22,7 +22,3 @@ Copyright_License {
 */
 
 #include "Screen/OpenGL/Buffer.hpp"
-
-#ifndef NDEBUG
-unsigned num_buffers;
-#endif

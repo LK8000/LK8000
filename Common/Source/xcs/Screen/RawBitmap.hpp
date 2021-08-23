@@ -15,7 +15,6 @@
 #include "OS/ByteOrder.hpp"
 
 #ifdef ENABLE_OPENGL
-#include "Screen/OpenGL/Surface.hpp"
 #include "Screen/OpenGL/Features.hpp"
 #endif
 
@@ -105,11 +104,7 @@ struct BGRColor
 /**
  * This class provides fast drawing methods and offscreen buffer.
  */
-class RawBitmap
-#ifdef ENABLE_OPENGL
-  :private GLSurfaceListener
-#endif
-{
+class RawBitmap {
 protected:
   const unsigned width;
   const unsigned height;
@@ -230,12 +225,6 @@ public:
   void StretchTo(unsigned width, unsigned height, Canvas &dest_canvas,
                  unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const;
 
-#ifdef ENABLE_OPENGL
-private:
-  /* from GLSurfaceListener */
-  virtual void SurfaceCreated() override;
-  virtual void SurfaceDestroyed() override;
-#endif
 };
 
 #endif // !defined(AFX_STSCREENBUFFER_H__22D62F5D_32E2_4785_B3D9_2341C11F84A3__INCLUDED_)

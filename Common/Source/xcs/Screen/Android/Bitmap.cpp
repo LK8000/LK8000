@@ -23,7 +23,6 @@ Copyright_License {
 
 #include "Screen/Bitmap.hpp"
 #include "Screen/OpenGL/Texture.hpp"
-#include "Screen/OpenGL/Surface.hpp"
 #include "Android/Bitmap.hpp"
 #include "Android/NativeView.hpp"
 #include "Android/Main.hpp"
@@ -33,41 +32,6 @@ Copyright_License {
 Bitmap::Bitmap(ResourceId id)
 {
   Load(id);
-}
-
-Bitmap::Bitmap(Bitmap &&src)
-  :bmp(std::exchange(src.bmp, nullptr)),
-   type(src.type),
-   texture(std::exchange(src.texture, nullptr)),
-   size(src.size),
-   interpolation(src.interpolation),
-   flipped(src.flipped)
-{
-  if (IsDefined()) {
-    RemoveSurfaceListener(src);
-    AddSurfaceListener(*this);
-  }
-}
-
-Bitmap& Bitmap::operator=(Bitmap &&src)
-{
-  std::swap(bmp, src.bmp);
-  std::swap(type , src.type);
-  std::swap(texture, src.texture);
-  std::swap(size, src.size);
-  std::swap(interpolation, src.interpolation);
-
-  if(!src.IsDefined() && IsDefined()) {
-    RemoveSurfaceListener(src);
-    AddSurfaceListener(*this);
-  }
-
-  if(src.IsDefined() && !IsDefined()) {
-    RemoveSurfaceListener(*this);
-    AddSurfaceListener(src);
-  }
-
-  return (*this);
 }
 
 static const char *
@@ -91,22 +55,16 @@ LoadResourceBitmap(ResourceId id)
 }
 
 bool
-Bitmap::Set(const Java::LocalObject &_bmp, Type _type)
+Bitmap::Set(const Java::LocalObject &bmp, Type type)
 {
-  assert(bmp == nullptr);
-  assert(_bmp);
+  assert(bmp);
 
-  JNIEnv *env = _bmp.GetEnv();
-
-  bmp = env->NewGlobalRef(_bmp);
-  type = _type;
+  JNIEnv *env = bmp.GetEnv();
 
   size.cx = AndroidBitmap::GetWidth(env, bmp);
   size.cy = AndroidBitmap::GetHeight(env, bmp);
 
-  AddSurfaceListener(*this);
-
-  if (surface_valid && !MakeTexture()) {
+  if (!MakeTexture(bmp, type)) {
     Reset();
     return false;
   }
@@ -115,7 +73,7 @@ Bitmap::Set(const Java::LocalObject &_bmp, Type _type)
 }
 
 bool
-Bitmap::MakeTexture()
+Bitmap::MakeTexture(const Java::LocalObject &bmp, Type type)
 {
   assert(bmp != nullptr);
 
@@ -180,37 +138,4 @@ Bitmap::LoadFile(const TCHAR *path)
     return false;
 
   return Set(new_bmp, Type::STANDARD);
-}
-
-void
-Bitmap::Reset()
-{
-  if (bmp != nullptr) {
-    auto *env = Java::GetEnv();
-    AndroidBitmap::Recycle(env, bmp);
-    env->DeleteGlobalRef(bmp);
-    bmp = nullptr;
-
-    RemoveSurfaceListener(*this);
-  }
-
-  delete texture;
-  texture = nullptr;
-}
-
-void
-Bitmap::SurfaceCreated()
-{
-  assert(bmp != nullptr);
-
-  MakeTexture();
-}
-
-void
-Bitmap::SurfaceDestroyed()
-{
-  assert(bmp != nullptr);
-
-  delete texture;
-  texture = nullptr;
 }
