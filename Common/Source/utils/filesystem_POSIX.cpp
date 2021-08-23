@@ -192,14 +192,7 @@ lk::filesystem::directory_iterator::directory_iterator(const TCHAR* szPath) : _i
 }
 
 bool lk::filesystem::getExeName(TCHAR* szName, size_t MaxSize) {
-
-    char linkname[256]; /* /proc/<pid>/exe */
-    /* Get our PID and build the name of the link in /proc */
-    pid_t pid = getpid();
-    snprintf(linkname, sizeof (linkname), "/proc/%i/exe", pid);
-
-    /* Now read the symbolic link */
-    ssize_t ret = readlink(linkname, szName, MaxSize);
+    ssize_t ret = readlink("/proc/self/exe", szName, MaxSize);
     if (-1 == ret) {
         return false;
     }
@@ -214,14 +207,7 @@ bool lk::filesystem::getExeName(TCHAR* szName, size_t MaxSize) {
 }
 
 bool lk::filesystem::getExePath(TCHAR* szPath, size_t MaxSize) {
-
-    char linkname[256]; /* /proc/<pid>/exe */
-    /* Get our PID and build the name of the link in /proc */
-    pid_t pid = getpid();
-    snprintf(linkname, sizeof (linkname), "/proc/%i/exe", pid);
-
-    /* Now read the symbolic link */
-    ssize_t ret = readlink(linkname, szPath, MaxSize);
+    ssize_t ret = readlink("/proc/self/exe", szPath, MaxSize);
     if (-1 == ret) {
         return false;
     }
@@ -239,14 +225,7 @@ bool lk::filesystem::getExePath(TCHAR* szPath, size_t MaxSize) {
 }
 
 bool lk::filesystem::getBasePath(TCHAR* szPath, size_t MaxSize) {
-
-    char linkname[256]; /* /proc/<pid>/exe */
-    /* Get our PID and build the name of the link in /proc */
-    pid_t pid = getpid();
-    snprintf(linkname, sizeof (linkname), "/proc/%i/exe", pid);
-
-    /* Now read the symbolic link */
-    ssize_t ret = readlink(linkname, szPath, MaxSize);
+    ssize_t ret = readlink("/proc/self/exe", szPath, MaxSize);
     if (-1 == ret) {
         return false;
     }
