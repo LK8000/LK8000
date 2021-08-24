@@ -902,7 +902,7 @@ goto_bearing:
             
 		// B39
 		case LK_TIME_LOCAL:
-			Units::TimeToText(BufferValue, LocalTime());
+			Units::TimeToText(BufferValue, LocalTime(DrawInfo.Time));
 			valid=true;
 			if (lktitle)
 				// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
@@ -980,7 +980,7 @@ goto_bearing:
 			    if ( ValidTaskPoint(ActiveTaskPoint) && DerivedDrawInfo.ValidStart ) {
 				if (DerivedDrawInfo.LKTaskETE > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, DerivedDrawInfo.LKTaskETE + LocalTime());
+					Units::TimeToText(BufferValue, DerivedDrawInfo.LKTaskETE + LocalTime(DrawInfo.Time));
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			    }
@@ -988,7 +988,7 @@ goto_bearing:
 			    if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime());
+					Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime(DrawInfo.Time));
 				} else
 					_stprintf(BufferValue, TEXT(NULLTIME));
 			    }
@@ -1005,7 +1005,7 @@ goto_bearing:
 			value = GetNextETE(DerivedDrawInfo);
 			if(value > 0) {
 				valid = true;
-				Units::TimeToText(BufferValue, value + LocalTime());
+				Units::TimeToText(BufferValue, value + LocalTime(DrawInfo.Time));
 			} else {
 				_tcscpy(BufferValue, TEXT(NULLTIME));
 			}
@@ -2895,7 +2895,7 @@ lkfin_ete:
 
 		// B145
 		case LK_TIME_LOCALSEC:
-			Units::TimeToTextS(BufferValue, LocalTime());
+			Units::TimeToTextS(BufferValue, LocalTime(DrawInfo.Time));
 			valid=true;
 			// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
 			_tcscpy(BufferTitle, MsgToken(1080));
@@ -3251,7 +3251,7 @@ lkfin_ete:
             // Req. Speed For reach Gate
             if (UseGates() && HaveGates()) {
                 // Time To Gate
-                const int gatechrono = GateTime(ActiveGate) - LocalTime(); // not always already set, update it ... 
+                const int gatechrono = GateTime(ActiveGate) - LocalTime(DrawInfo.Time); // not always already set, update it ... 
                 if (gatechrono > 0) {
                     const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
                     const double SpeedToGate = DistToGate / gatechrono;

@@ -222,7 +222,7 @@ protected:
 
     // THIS IS BUGGY IN NORTHERN EMISPHERE, TODO DISCOVER WHY
     const unsigned sunset_time = DoSunEphemeris( wpt.Longitude, wpt.Latitude);
-    const unsigned local_time = LocalTime();
+    const unsigned local_time = LocalTime(Basic->Time);
     const unsigned task_eta =  local_time + Calculated->TaskTimeToGo;
 
     return (task_eta > sunset_time) && (local_time < sunset_time);

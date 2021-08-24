@@ -248,7 +248,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             gateinuse = -1;
         } else {
             // this is set here for the first time, when havegates
-            gatechrono = GateTime(ActiveGate) - LocalTime();
+            gatechrono = GateTime(ActiveGate) - LocalTime(DrawInfo.Time);
         }
         if (gateinuse < 0) {
             // LKTOKEN  _@M157_ = "CLOSED"
@@ -348,7 +348,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         if (HaveGates()) {
             // Time To Gate
-            gatechrono = GateTime(ActiveGate) - LocalTime(); // not always already set, update it ...
+            gatechrono = GateTime(ActiveGate) - LocalTime(DrawInfo.Time); // not always already set, update it ...
 
             Units::TimeToTextDown(BufferValue, gatechrono);
             rcx= rc.right-RIGHTMARGIN;
