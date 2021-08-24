@@ -13,7 +13,7 @@
 #include "Dialogs.h"
 #include "TraceThread.h"
 
-long GetUTCOffset(void) {
+int GetUTCOffset() {
     return UTCOffset;
 }
 

@@ -97,7 +97,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 int propGetScaleList(double *List, size_t Size);
 #endif
 
-long GetUTCOffset(void);
+int GetUTCOffset();
 
 #if !defined(UNDER_CE) || defined(__linux__)
 bool LK8000GetOpts(const TCHAR *MyCommandLine);
