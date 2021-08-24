@@ -11,23 +11,14 @@
 
 
 
-double GetAzimuth() {
+double GetAzimuth(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
   double sunazimuth=0;
   if (!Shading) return 0;
-  if (CALCULATED_INFO.WindSpeed<1.7) { // below 6kmh the sun will prevail, for a guess.
+  if (Calculated.WindSpeed<1.7) { // below 6kmh the sun will prevail, for a guess.
 
-	#if 0
-	if (GPS_INFO.Latitude>=0)
-		// NORTHERN EMISPHERE
-		sunazimuth = MapWindow::GetDisplayAngle() + 135; //@  -45+180=135
-	else
-		// SOUTHERN EMISPHERE
-		sunazimuth = MapWindow::GetDisplayAngle() + 45.0;
-	#else
-	int sunoffset=0; // 0 for southern emisphere, 180 for northern. 
-	if (GPS_INFO.Latitude>=0) sunoffset=180; 
+	int sunoffset = (Basic.Latitude>=0) ? 180 : 0; // 0 for southern emisphere, 180 for northern. 
 
-	int dd = LocalTime();
+	int dd = LocalTime(Basic.Time);
 	int hours = (dd/3600);
 	int mins = (dd/60-hours*60);
 	hours = hours % 24;
@@ -46,14 +37,9 @@ double GetAzimuth() {
 		if (h>6) h=6;
 		sunazimuth = MapWindow::GetDisplayAngle() +sunoffset - (h*10);
 	}
-	#endif
-
   } else {
 	// else we use wind direction for shading. 
-	sunazimuth = MapWindow::GetDisplayAngle()-CALCULATED_INFO.WindBearing;
+	sunazimuth = MapWindow::GetDisplayAngle()-Calculated.WindBearing;
   }
   return sunazimuth;
 }
-
-
-

@@ -50,7 +50,7 @@ int  GetThermalMultitarget(void);
 void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-double GetAzimuth(void);
+double GetAzimuth(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
 void ResetTask(bool showConfirmMsg);
 

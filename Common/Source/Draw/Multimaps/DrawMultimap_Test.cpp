@@ -67,7 +67,7 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   CalculateScreenPositionsAirspace(rct, _Proj);
 
   double sunelevation = 40.0;
-  double sunazimuth=GetAzimuth();
+  double sunazimuth=GetAzimuth(DrawInfo, DerivedDrawInfo);
   if (IsMultimapTerrain() && DerivedDrawInfo.TerrainValid) {
 	LockTerrainDataGraphics();
 	DrawTerrain(Surface, rct, _Proj, sunazimuth, sunelevation);

@@ -117,7 +117,7 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia , double 
         LKTextBlack=false;
         BlackScreen=false;
 	LockTerrainDataGraphics();
-	DrawTerrain(Surface, rct, _Proj, GetAzimuth(), 40.0);
+	DrawTerrain(Surface, rct, _Proj, GetAzimuth(DrawInfo, DerivedDrawInfo), 40.0);
 	UnlockTerrainDataGraphics();
 	terrainpainted=true;
   } else {

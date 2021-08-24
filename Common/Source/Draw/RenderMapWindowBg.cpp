@@ -142,7 +142,7 @@ QuickRedraw:
             ) {
         // sunelevation is never used, it is still a todo in Terrain
         double sunelevation = 40.0;
-        double sunazimuth = GetAzimuth();
+        double sunazimuth = GetAzimuth(DrawInfo, DerivedDrawInfo);
 
         LockTerrainDataGraphics();
         if (DONTDRAWTHEMAP) { // 100318
