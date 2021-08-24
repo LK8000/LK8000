@@ -14,8 +14,6 @@ void	WindDirectionProcessing(int UpDown);
 void	MacCreadyProcessing(int UpDown);
 void	NextUpDown(int UpDown);
 
-int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-
 int LocalTime();
 int LocalTime(int utc_time);
 
