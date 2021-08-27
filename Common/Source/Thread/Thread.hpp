@@ -16,7 +16,7 @@ class Thread : protected Poco::Runnable {
 public:
     explicit Thread(const char* name) : _thread(name) {}
 
-    bool Start() {
+    virtual bool Start() {
         _thread.start(*this);
         return _thread.isRunning();
     }
