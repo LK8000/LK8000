@@ -28,6 +28,7 @@ Copyright_License {
 #include "Android/Main.hpp"
 #include "Android/android_drawable.h"
 #include "ResourceId.hpp"
+#include "Util/ScopeExit.hxx"
 
 Bitmap::Bitmap(ResourceId id)
 {
@@ -60,6 +61,11 @@ Bitmap::Set(const Java::LocalObject &bmp, Type type)
   assert(bmp);
 
   JNIEnv *env = bmp.GetEnv();
+
+  AtScopeExit(&) {
+    // Bitmap will be recycled at the end of scope...
+    AndroidBitmap::Recycle(env, bmp);
+  };
 
   size.cx = AndroidBitmap::GetWidth(env, bmp);
   size.cy = AndroidBitmap::GetHeight(env, bmp);
