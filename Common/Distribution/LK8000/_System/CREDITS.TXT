@@ -10,6 +10,10 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.9]
+. allowed task start radius greater than 100km
+. fixed segfault in dlgwaypoint detail dialog
+
 [version 7.3.8]
 . Updated task optimizer
 . Show black circle for static Flarm-Objects
