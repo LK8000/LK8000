@@ -28,14 +28,14 @@ bool
 IOThread::Start()
 {
   assert(!IsDefined());
-  assert(loop.IsEmpty());
+  assert(io_loop.IsEmpty());
 
   quit = false;
 
   if (!pipe.Create())
     return false;
 
-  loop.Add(pipe.GetReadFD(), READ, *this);
+  io_loop.Add(pipe.GetReadFD(), READ, *this);
 
   return Thread::Start();
 }
@@ -44,25 +44,25 @@ void
 IOThread::Stop()
 {
   /* set the "quit" flag and wake up the thread */
-  loop.Lock();
+  io_loop.Lock();
   quit = true;
-  loop.Unlock();
+  io_loop.Unlock();
   pipe.Signal();
 
   /* wait for the thread to finish */
   Join();
 
-  loop.Remove(pipe.GetReadFD());
+  io_loop.Remove(pipe.GetReadFD());
 }
 
 void
 IOThread::LockAdd(FileDescriptor fd, unsigned mask, FileEventHandler &handler)
 {
-  loop.Lock();
-  const bool old_modified = loop.IsModified();
+  io_loop.Lock();
+  const bool old_modified = io_loop.IsModified();
   Add(fd, mask, handler);
-  const bool new_modified = loop.IsModified();
-  loop.Unlock();
+  const bool new_modified = io_loop.IsModified();
+  io_loop.Unlock();
 
   if (!old_modified && new_modified)
     pipe.Signal();
@@ -71,19 +71,19 @@ IOThread::LockAdd(FileDescriptor fd, unsigned mask, FileEventHandler &handler)
 void
 IOThread::LockRemove(FileDescriptor fd)
 {
-  loop.Lock();
-  const bool old_modified = loop.IsModified();
+  io_loop.Lock();
+  const bool old_modified = io_loop.IsModified();
   Remove(fd);
-  const bool new_modified = loop.IsModified();
+  const bool new_modified = io_loop.IsModified();
 
   if (new_modified && !IsInside()) {
     /* this method is synchronous: after returning, all handlers must
        be finished */
 
-    loop.WaitUntilNotRunning();
+    io_loop.WaitUntilNotRunning();
   }
 
-  loop.Unlock();
+  io_loop.Unlock();
 
   if (!old_modified && new_modified)
     pipe.Signal();
@@ -92,18 +92,18 @@ IOThread::LockRemove(FileDescriptor fd)
 void
 IOThread::Run()
 {
-  loop.Lock();
+  io_loop.Lock();
 
   while (!quit) {
-    loop.Wait();
+    io_loop.Wait();
 
     if (quit)
       break;
 
-    loop.Dispatch();
+    io_loop.Dispatch();
   }
 
-  loop.Unlock();
+  io_loop.Unlock();
 }
 
 bool

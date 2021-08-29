@@ -36,7 +36,7 @@ class FileEventHandler;
  * A thread that is used for asynchronous (non-blocking) I/O.
  */
 class IOThread final : protected Thread, private FileEventHandler {
-  IOLoop loop;
+  IOLoop io_loop;
 
   EventPipe pipe;
 
@@ -68,7 +68,7 @@ public:
    * the thread.
    */
   void Add(FileDescriptor fd, unsigned mask, FileEventHandler &handler) {
-    loop.Add(fd, mask, handler);
+    io_loop.Add(fd, mask, handler);
   }
 
   /**
@@ -78,11 +78,11 @@ public:
    * the thread.
    */
   void Remove(FileDescriptor fd) {
-    loop.Remove(fd);
+    io_loop.Remove(fd);
   }
 
   void Set(FileDescriptor fd, unsigned mask, FileEventHandler &handler) {
-    loop.Set(fd, mask, handler);
+    io_loop.Set(fd, mask, handler);
   }
 
   /**
