@@ -1,10 +1,24 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File: devEWMicroRecorder.h
+ */
 
 #ifndef	DEVEWMICRORECORDER_H
 #define	DEVEWMICRORECORDER_H
 
+#include "Devices/DeviceRegister.h"
 
-BOOL ewMicroRecorderInstall(PDeviceDescriptor_t d);
-BOOL ewMicroRecorderRegister(void);
+void ewMicroRecorderInstall(PDeviceDescriptor_t d);
 
+inline constexpr
+DeviceRegister_t ewMicroRecorderRegister() {
+  return devRegister(_T("EW MicroRecorder"),
+    1l << dfGPS | 1l << dfLogger | 1l << dfBaroAlt,
+    ewMicroRecorderInstall
+  );
+}
 
 #endif

@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: DevLX_EOS_ERA.h,v 1.1 2015/12/15 10:35:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: DevLX_EOS_ERA.h,v 1.1 2015/12/15 10:35:29 root Exp root $
+ */
 
 //__Version_1.0____________________________________________Vladimir Fux 12/2015_
 
@@ -78,7 +78,14 @@ class DevLX_EOS_ERA : public DevLX
   public:
 
     /// Registers device into device subsystem.
-    static bool Register();
+    static constexpr 
+    DeviceRegister_t Register() {
+      return devRegister(
+            GetName(),
+            cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, 
+            Install);
+
+    }
 
     static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
 
@@ -103,10 +110,13 @@ class DevLX_EOS_ERA : public DevLX
     DevLX_EOS_ERA() {}
 
     /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+    static void Install(PDeviceDescriptor_t d);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+    static constexpr
+    const TCHAR* GetName() {
+      return _T("LX EOS/ERA");  
+    }
 
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);

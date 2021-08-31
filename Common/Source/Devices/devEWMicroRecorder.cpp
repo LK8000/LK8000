@@ -249,25 +249,11 @@ BOOL EWMicroRecorderIsTrue(PDeviceDescriptor_t d){
 }
 
 
-BOOL ewMicroRecorderInstall(PDeviceDescriptor_t d){
+void ewMicroRecorderInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("EW MicroRecorder"));
   d->ParseNMEA = EWMicroRecorderParseNMEA;
   d->Declare = EWMicroRecorderDeclare;
   d->IsLogger = EWMicroRecorderIsTrue;
   d->IsGPSSource = EWMicroRecorderIsTrue;
   d->IsBaroSource = EWMicroRecorderIsTrue;
-
-  return(TRUE);
-
-}
-
-
-BOOL ewMicroRecorderRegister(void){
-  return(devRegister(
-    TEXT("EW MicroRecorder"),
-    1l << dfGPS
-      | 1l << dfLogger
-      | 1l << dfBaroAlt,
-    ewMicroRecorderInstall
-  ));
 }

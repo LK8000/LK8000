@@ -57,7 +57,7 @@ BOOL B50LinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-BOOL b50Install(PDeviceDescriptor_t d){
+void b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
@@ -65,17 +65,6 @@ BOOL b50Install(PDeviceDescriptor_t d){
   d->IsGPSSource = B50IsGPSSource;
   d->IsGPSSource  = B50IsGPSSource;
   d->IsBaroSource = B50IsBaroSource;
-  return(TRUE);
-
-}
-
-
-BOOL b50Register(void){
-  return(devRegister(
-    TEXT("Borgelt B50"),
-    (1l << dfGPS),
-    b50Install
-  ));
 }
 
 

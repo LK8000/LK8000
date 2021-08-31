@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: devVaulter.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: devVaulter.h,v 1.1 2011/12/21 10:35:29 root Exp root $
+ */
 //__________________________________________________________compilation_control_
 
 #ifndef __DEVVAULTER_H_
@@ -13,6 +13,7 @@
 //_____________________________________________________________________includes_
 
 #include "devBase.h"
+#include "Devices/DeviceRegister.h"
 
 //___________________________________________________________class_declarations_
 
@@ -25,7 +26,12 @@ class DevVaulter : public DevBase
   public:
 
     /// Registers device into device subsystem.
-    static bool Register();
+    static constexpr
+    DeviceRegister_t Register() {
+      return devRegister(GetName(),
+          cap_gps | cap_baro_alt | cap_speed | cap_vario,
+          Install);
+    }
 
     static bool SendInfos(PDeviceDescriptor_t d);
   //----------------------------------------------------------------------------
@@ -35,7 +41,7 @@ class DevVaulter : public DevBase
     DevVaulter() {}
 
     /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+    static void Install(PDeviceDescriptor_t d);
 
     static BOOL VaulterDirectLink(PDeviceDescriptor_t d, BOOL LinkStatus);
 
@@ -43,7 +49,10 @@ class DevVaulter : public DevBase
     static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+    static constexpr
+    const TCHAR* GetName() {
+      return _T("Vaulter");
+    }
 
     /// Parses PITV5 sentence.
     static bool PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);

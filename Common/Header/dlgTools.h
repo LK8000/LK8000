@@ -20,7 +20,7 @@ using callback_variant = std::variant<
          WndButton::ClickNotifyCallback_t,
          WndProperty::DataChangeCallback_t,
          DataField::DataAccessCallback_t,
-         nullptr_t>;
+         std::nullptr_t>;
 
 struct CallBackTableEntry_t {
   const char *Name;

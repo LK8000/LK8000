@@ -12,8 +12,6 @@
 #define DEVNAMESIZE  32
 #define	NUMDEV		 6
 
-#define	NUMREGDEV	 45 // Max number of registered devices
-
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])
 #define devC()      (&DeviceList[2])
@@ -189,20 +187,13 @@ typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 void VarioWriteSettings(void);
 
-struct DeviceRegister_t {
-  const TCHAR* Name;
-  unsigned int Flags;
-  BOOL (*Installer)(PDeviceDescriptor_t d);
-};
-
 #ifdef ANDROID
 extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 #endif
 extern COMMPort_t COMMPort;
 
 extern DeviceDescriptor_t	DeviceList[NUMDEV];
-extern DeviceRegister_t   DeviceRegister[NUMREGDEV];
-extern int DeviceRegisterCount;
+
 extern DeviceDescriptor_t *pDevPrimaryBaroSource;
 extern DeviceDescriptor_t *pDevSecondaryBaroSource;
 
@@ -217,10 +208,6 @@ PDeviceDescriptor_t devX(unsigned idx) {
 extern Mutex CritSec_Comm;
 
 void RefreshComPortList();
-
-BOOL devRegister(const TCHAR *Name,	int	Flags, BOOL (*Installer)(PDeviceDescriptor_t d));
-LPCTSTR devRegisterGetName(int Index);
-bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName);
 
 void RestartCommPorts();
 

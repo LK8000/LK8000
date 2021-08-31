@@ -309,24 +309,11 @@ BOOL EWLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-BOOL ewInstall(PDeviceDescriptor_t d){
+void ewInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("EW Logger"));
   d->ParseNMEA = EWParseNMEA;
   d->LinkTimeout = EWLinkTimeout;
   d->Declare = EWDeclare;
   d->IsLogger = EWIsLogger;
   d->IsGPSSource = EWIsGPSSource;
-
-  return(TRUE);
-
-}
-
-
-BOOL ewRegister(void){
-  return(devRegister(
-    TEXT("EW Logger"),
-    1l << dfGPS
-      | 1l << dfLogger,
-    ewInstall
-  ));
 }

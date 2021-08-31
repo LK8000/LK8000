@@ -1,10 +1,25 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File: devVolkslogger.h
+ */
 
 #ifndef	DEVVL_H
 #define	DEVVL_H
 
+#include "Devices/DeviceRegister.h"
 
-BOOL vlInstall(PDeviceDescriptor_t d);
-BOOL vlRegister(void);
+void vlInstall(PDeviceDescriptor_t d);
+
+inline constexpr
+DeviceRegister_t vlRegister(void){
+  return devRegister(
+      _T("Volkslogger"),
+      (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfLogger),
+      vlInstall);
+}
 
 
 

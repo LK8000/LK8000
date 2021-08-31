@@ -1,20 +1,24 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File: devAR620x.h
+ */
+
 #ifndef DEV_AR620x_H
 #define DEV_AR620x_H
 
+#include "Devices/DeviceRegister.h"
 
-BOOL AR620xRegister(void);
+void AR620xInstall(DeviceDescriptor_t* d);
 
-int AR620xNMEAddCheckSumStrg( TCHAR szStrg[] );
- BOOL AR620xIsRadio(PDeviceDescriptor_t d);
- BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) ;
- BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
- BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
- BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
- BOOL AR620xStationSwap(PDeviceDescriptor_t d);
- BOOL AR620xParseString(PDeviceDescriptor_t d, char  *String, int len, NMEA_INFO *info);
- BOOL AR620xInstall(PDeviceDescriptor_t d);
- BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode);
-
-
+inline constexpr
+DeviceRegister_t AR620xRegister() {
+  return devRegister(
+    TEXT("Becker AR620x"),
+    (1l << dfRadio),
+    AR620xInstall);
+}
 
 #endif

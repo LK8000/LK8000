@@ -65,7 +65,7 @@ BOOL PGLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-BOOL pgInstall(PDeviceDescriptor_t d){
+void pgInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
@@ -73,20 +73,6 @@ BOOL pgInstall(PDeviceDescriptor_t d){
   d->IsLogger = PGIsLogger;
   d->IsGPSSource = PGIsGPSSource;
   d->IsBaroSource = PGIsBaroSource;
-
-  return(TRUE);
-
-}
-
-
-BOOL pgRegister(void){
-  return(devRegister(
-    TEXT("PosiGraph Logger"),
-      1l << dfGPS
-      | (1l << dfBaroAlt)
-      | 1l << dfLogger,
-    pgInstall
-  ));
 }
 
 

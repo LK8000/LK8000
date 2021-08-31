@@ -541,7 +541,9 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
     return FALSE;
 }
 
-BOOL BlueFlyInstall(PDeviceDescriptor_t d) {
+} // unamed namespaces
+
+void BlueFlyInstall(PDeviceDescriptor_t d) {
 
     _tcscpy(d->Name, TEXT("BlueFlyVario"));
     d->ParseNMEA = BlueFlyVarioParseNMEA;
@@ -550,19 +552,6 @@ BOOL BlueFlyInstall(PDeviceDescriptor_t d) {
     d->LinkTimeout = LK8EX1LinkTimeout;
     d->IsBaroSource = LK8EX1IsBaroSource;
     d->Config = BlueFlyConfig;
-
-    return (TRUE);
-}
-
-} // unamed namespaces
-
-BOOL BlueFlyRegister(void) {
-    return (devRegister(
-            TEXT("BlueFlyVario"),
-            (1l << dfBaroAlt)
-            | (1l << dfVario),
-            BlueFlyInstall
-            ));
 }
 
 /**************************************************************************************************************************************************************/

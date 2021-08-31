@@ -18,8 +18,6 @@
 #include "Calc/Vario.h"
 #include "nmeaistream.h"
 
-static const TCHAR DeviceName[] = TEXT("XCTracer");
-
 static BOOL XCTracerTrue(PDeviceDescriptor_t) {
     return (true);
 } // GetTrue()
@@ -247,16 +245,10 @@ static BOOL XCTracerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_
     return FALSE;
 }
 
-static BOOL XCTracerInstall(PDeviceDescriptor_t d) {
+void XCTracerInstall(PDeviceDescriptor_t d) {
 
-    _tcscpy(d->Name, DeviceName);
+    _tcscpy(d->Name, _T("XCTracer"));
     d->ParseNMEA = XCTracerParseNMEA;
     d->IsGPSSource = XCTracerTrue;
     d->IsBaroSource = XCTracerTrue;
-
-    return (TRUE);
-}
-
-BOOL XCTracerRegister(void) {
-    return devRegister(DeviceName, (1l << dfBaroAlt) | (1l << dfGPS) | (1l << dfVario), XCTracerInstall);
 }

@@ -1,21 +1,24 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File: devATR833.h
+ */
+
 #ifndef DEV_ATR833_H
 #define DEV_ATR833_H
 
+#include "Devices/DeviceRegister.h"
 
-BOOL ATR833Register(void);
+void ATR833Install(PDeviceDescriptor_t d);
 
-int ATR833NMEAddCheckSumStrg( TCHAR szStrg[] );
- BOOL ATR833IsRadio(PDeviceDescriptor_t d);
- BOOL ATR833PutVolume(PDeviceDescriptor_t d, int Volume) ;
- BOOL ATR833PutSquelch(PDeviceDescriptor_t d, int Squelch) ;
- BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
- BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
- BOOL ATR833StationSwap(PDeviceDescriptor_t d);
- BOOL ATR833RequestAllData(PDeviceDescriptor_t d) ;
-BOOL ATR833ParseString(PDeviceDescriptor_t d, char  *String, int len, NMEA_INFO *info);
- BOOL ATR833Install(PDeviceDescriptor_t d);
- BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode);
-
-
+inline constexpr
+DeviceRegister_t ATR833Register(void){
+  return devRegister(
+        TEXT("f.u.n.k.e. ATR833"),
+        (1l << dfRadio),
+        ATR833Install);
+}
 
 #endif

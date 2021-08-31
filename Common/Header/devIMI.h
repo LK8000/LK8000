@@ -1,16 +1,16 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: devIMI.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: devIMI.h,v 1.1 2011/12/21 10:35:29 root Exp root $
+ */
 
 #ifndef	DEVIMI_H
 #define	DEVIMI_H
 
 #include "devBase.h"
-
+#include "Devices/DeviceRegister.h"
 
 /**
  * @brief IMI-Gliding ERIXX device class
@@ -99,12 +99,20 @@ class CDevIMI : public DevBase
   static bool Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
   // LK interface
-  static const TCHAR *GetName();
   static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
-  static BOOL Install(PDeviceDescriptor_t d);
+  static void Install(PDeviceDescriptor_t d);
+
+  static constexpr 
+  const TCHAR *GetName() {
+    return _T("IMI ERIXX");
+  }
 
 public:
-  static bool Register();
+  
+  static constexpr
+  DeviceRegister_t Register() {
+    return devRegister(GetName(), cap_gps | cap_baro_alt | cap_logger, Install);
+  }
 };
 
 #endif /* DEVIMI_H */

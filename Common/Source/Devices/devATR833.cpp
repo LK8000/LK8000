@@ -13,6 +13,8 @@
 #include "device.h"
 #include "Radio.h"
 
+namespace {
+
 #define FRAME_LEN      0x04
 #define HEADER_LEN     0x03
 #define COMMAND_IDX    0x02
@@ -40,37 +42,6 @@ int  iATR833DebugLevel = 2;
 #else
 int  iATR833DebugLevel = 1;
 #endif
-
-
-
-BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) ;
-
-BOOL ATR833Install(PDeviceDescriptor_t d){
-
-  _tcscpy(d->Name, TEXT("f.u.n.k.e. ATR833"));
-  d->IsRadio        = ATR833IsRadio;
-  d->PutVolume      = ATR833PutVolume;
-  d->PutSquelch     = ATR833PutSquelch;
-  d->PutFreqActive  = ATR833PutFreqActive;
-  d->PutFreqStandby = ATR833PutFreqStandby;
-  d->StationSwap    = ATR833StationSwap;
-  d->ParseStream    = ATR833ParseString;
-  d->PutRadioMode   = ATR833RadioMode;
-  d->HeartBeat      = ATR833_KeepAlive;  // called every 5s from UpdateMonitor to keep in contact with the ATR833
-  RadioPara.Enabled8_33  = true;  
-
-  return(TRUE);
-}
-
-BOOL ATR833Register(void){
-  return(devRegister(
-    TEXT("f.u.n.k.e. ATR833"),
-    (1l << dfRadio),
-    ATR833Install
-  ));
-}
-
-
 
 
 BOOL ATR833IsRadio(PDeviceDescriptor_t d){
@@ -120,6 +91,15 @@ uint8_t uiCheckSum=0;
   return true;
 }
 
+BOOL ATR833RequestAllData(PDeviceDescriptor_t d) {
+
+  if(d != NULL)
+    if(!d->Disabled)
+      if (d->Com)
+         Send_Command( d, 0x82 , 0, NULL);  // Request all infos
+
+  return(TRUE);
+}
 
 bool Send_ACK(PDeviceDescriptor_t d, uint8_t Command)
 {
@@ -274,20 +254,6 @@ BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) {
   return(TRUE);
 }
 
-
-BOOL ATR833RequestAllData(PDeviceDescriptor_t d) {
-
-  if(d != NULL)
-    if(!d->Disabled)
-      if (d->Com)
-         Send_Command( d, 0x82 , 0, NULL);  // Request all infos
-
-  return(TRUE);
-}
-
-
-
-
 BOOL ATR833ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
 {
 uint16_t cnt=0;
@@ -405,8 +371,6 @@ static uint8_t  converted[REC_BUFSIZE];
   }
 return RadioPara.Changed;
 }
-
-
 
 /*****************************************************************************
  * this function converts a KRT answer sting to a NMEA answer
@@ -581,4 +545,20 @@ LKASSERT(d !=NULL);
     break;
   }  // case
   return processed;  /* return the number of converted characters */
+}
+
+} // namespace
+
+void ATR833Install(PDeviceDescriptor_t d){
+  _tcscpy(d->Name, TEXT("f.u.n.k.e. ATR833"));
+  d->IsRadio        = ATR833IsRadio;
+  d->PutVolume      = ATR833PutVolume;
+  d->PutSquelch     = ATR833PutSquelch;
+  d->PutFreqActive  = ATR833PutFreqActive;
+  d->PutFreqStandby = ATR833PutFreqStandby;
+  d->StationSwap    = ATR833StationSwap;
+  d->ParseStream    = ATR833ParseString;
+  d->PutRadioMode   = ATR833RadioMode;
+  d->HeartBeat      = ATR833_KeepAlive;  // called every 5s from UpdateMonitor to keep in contact with the ATR833
+  RadioPara.Enabled8_33  = true;  
 }

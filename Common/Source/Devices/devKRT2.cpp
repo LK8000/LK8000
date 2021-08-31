@@ -556,9 +556,9 @@ BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GP
   return  RadioPara.Changed;
 }
 
+} // namespace
 
-
-BOOL KRT2Install(PDeviceDescriptor_t d){
+void KRT2Install(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("Dittel KRT2"));
 
   d->Open = OpenClose;
@@ -572,16 +572,4 @@ BOOL KRT2Install(PDeviceDescriptor_t d){
   d->StationSwap    = KRT2StationSwap;
   d->ParseStream    = KRT2ParseString;
   d->PutRadioMode   = KRT2RadioMode;
-  return TRUE;
-}
-
-} // namespace
-
-
-BOOL KRT2Register(void){
-  return(devRegister(
-    TEXT("Dittel KRT2"),
-    (1l << dfRadio),
-    KRT2Install
-  ));
 }

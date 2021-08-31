@@ -45,19 +45,10 @@ static BOOL FlyNetLinkTimeout(PDeviceDescriptor_t d){
   return(TRUE);
 }
 
-static BOOL FlyNetInstall(PDeviceDescriptor_t d){
+void FlyNetInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("FlyNet"));
   d->ParseNMEA = FlyNetParseNMEA;
   d->LinkTimeout = FlyNetLinkTimeout;
   d->IsBaroSource = FlyNetIsBaroSource;
-
-  return(TRUE);
 }
-
-BOOL FlyNetRegister(void){
-	return devRegister(TEXT("FlyNet"), (1l << dfBaroAlt), FlyNetInstall);
-}
-
-
-

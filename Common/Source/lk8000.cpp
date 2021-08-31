@@ -17,43 +17,6 @@
 #include "Poco/NamedMutex.h"
 #include "Terrain.h"
 
-#include "devCAI302.h"
-#include "devCaiGpsNav.h"
-#include "devEW.h"
-#include "devGeneric.h"
-#include "devDisabled.h"
-#include "devNmeaOut.h"
-#include "devPosiGraph.h"
-#include "devBorgeltB50.h"
-#include "devVolkslogger.h"
-#include "devEWMicroRecorder.h"
-#include "devLX.h"
-#include "devLXMiniMap.h"
-#include "devLX16xx.h"
-#include "devVaulter.h"
-#include "devLXV7.h"
-#include "devLXV7_EXP.h"
-#include "devLXNano.h"
-#include "devZander.h"
-#include "devFlymasterF1.h"
-#include "devCompeo.h"
-#include "devFlytec.h"
-#include "devLK8EX1.h"
-#include "devDigifly.h"
-#include "devXCOM760.h"
-#include "devPVCOM.h"
-#include "devCondor.h"
-#include "devIlec.h"
-#include "devIMI.h"
-#include "devWesterboer.h"
-#include "devFlyNet.h"
-#include "devKRT2.h"
-#include "devAR620x.h"
-#include "devATR833.h"
-#include "devLXNano3.h"
-#include "devXCTracer.h"
-#include "devGPSBip.h"
-#include "devFanet.h"
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
@@ -61,13 +24,7 @@
 
 #include "LKObjects.h"
 #include "Bitmaps.h"
-#include "devCProbe.h"
-#include "devFlarm.h"
-#include "devBlueFlyVario.h"
-#include "devLXV7easy.h"
 #include "ComCheck.h"
-#include "devOpenVario.h"
-#include "devLX_EOS_ERA.h"
 
 #include "TraceThread.h"
 #include "Poco/NamedEvent.h"
@@ -469,61 +426,8 @@ bool Startup(const TCHAR* szCmdLine) {
   CreateProgressDialog(MsgToken(1808));	// Loading FLARMNET database
   OpenFLARMDetails();
 
-  // ... register all supported devices
-  // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // LKTOKEN _@M1217_ "Starting devices"
-  // Please check that the number of devices is not exceeding NUMREGDEV in device.h
   CreateProgressDialog(MsgToken(1217));
-
-  disRegister(); // must be first
-  InternalRegister(); // must be second
-  genRegister(); // must be three, since we Sort(3) in dlgConfiguration
-  cai302Register();
-  ewRegister();
-  CDevCAIGpsNav::Register();
-  nmoRegister();
-  pgRegister();
-  b50Register();
-  vlRegister();
-  ewMicroRecorderRegister();
-  DevLX::Register();
-  DevLXMiniMap::Register();
-  DevLX16xx::Register();
-  DevLXV7::Register();
-  DevLXV7_EXP::Register();
-  DevLXNano::Register();
-  zanderRegister();
-  flymasterf1Register();
-  flymasterGPSRegister();
-  CompeoRegister();
-  xcom760Register();
-  condorRegister();
-  DigiflyRegister(); // 100209
-  IlecRegister();
-  CDevIMI::Register();
-  FlytecRegister();
-  LK8EX1Register();
-  WesterboerRegister();
-  FlyNetRegister();
-  CDevCProbe::Register();
-  CDevFlarm::Register();
-  BlueFlyRegister();
-  LXV7easyRegister();
-  DevLXNanoIII::Register();
-  XCTracerRegister();
-  GPSBipRegister ();
-  PVCOMRegister();
-  KRT2Register();
-  AR620xRegister();
-  ATR833Register();
-  DevVaulter::Register();
-  DevOpenVario::Register();
-  DevLX_EOS_ERA::Register();
-  FanetRegister();
-  // REPETITION REMINDER ..
-  // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
-  // >>> Please check that the number of devices is not exceeding NUMREGDEV in device.h <<<
-  // or you get an assertion error in device.cpp
 
   ComCheck_Init();
   // we need devInit for all devices. Missing initialization otherwise.

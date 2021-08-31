@@ -20,6 +20,7 @@
 #include <functional>
 #include "Calc/Vario.h"
 #include "Radio.h"
+#include "Devices/DeviceRegister.h"
 
 #ifdef __linux__
   #include <dirent.h>
@@ -72,13 +73,10 @@ COMMPort_t COMMPort;
 static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200,
                                       230400,460800,500000,1000000};
 
-DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
 
 DeviceDescriptor_t *pDevPrimaryBaroSource=NULL;
 DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
-
-int DeviceRegisterCount = 0;
 
 /**
  * Call DeviceDescriptor_t::*func on all connected device.
@@ -189,27 +187,6 @@ BOOL ExpectFlarmString(PDeviceDescriptor_t d, const TCHAR *token){
     }
   }
   return(FALSE);
-}
-
-
-BOOL devRegister(const TCHAR *Name, int Flags, 
-                 BOOL (*Installer)(PDeviceDescriptor_t d)) {
-  if (DeviceRegisterCount >= NUMREGDEV) {
-    LKASSERT(FALSE);
-    return(FALSE);
-  }
-  DeviceRegister[DeviceRegisterCount].Name = Name;
-  DeviceRegister[DeviceRegisterCount].Flags = Flags;
-  DeviceRegister[DeviceRegisterCount].Installer = Installer;
-  DeviceRegisterCount++;
-  return(TRUE);
-}
-
-LPCTSTR devRegisterGetName(int Index){
-  if (Index < 0 || Index >= DeviceRegisterCount) {
-    return _T("");
-  }
-  return DeviceRegister[Index].Name;
 }
 
 // This device is not available if Disabled
@@ -456,10 +433,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
 #endif
 }
 
-bool devNameCompare(const DeviceRegister_t& dev, const TCHAR *DeviceName) {
-    return (_tcscmp(dev.Name, DeviceName) == 0);
-}
-
 
 bool GetPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
     if (idx >= 0)
@@ -570,8 +543,8 @@ BOOL devInit() {
             continue;
         }
 
-        DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::bind(&devNameCompare, _1, DeviceName));
-        if (pDev == &DeviceRegister[DeviceRegisterCount]) {
+        const DeviceRegister_t* pDev = GetRegisteredDevice(DeviceName);
+        if (!pDev) {
             DeviceList[i].Disabled = true;
             StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), DeviceName, NEWLINE);
             continue;

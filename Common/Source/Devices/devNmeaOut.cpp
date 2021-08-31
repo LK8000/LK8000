@@ -8,16 +8,6 @@
 
 #include "externs.h"
 
-BOOL nmoInstall(PDeviceDescriptor_t d){
+void nmoInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("NmeaOut"));
-  return(TRUE);
-}
-
-
-BOOL nmoRegister(void){
-  return(devRegister(
-    TEXT("NmeaOut"),
-    (1l << dfNmeaOut),
-    nmoInstall
-  ));
 }

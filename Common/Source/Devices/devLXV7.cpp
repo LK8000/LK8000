@@ -35,23 +35,6 @@ BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs);
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-
-
-bool DevLXV7::Register() {
-
-    return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
-} // Register()
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
 /// @param d  device descriptor to be installed
@@ -60,7 +43,7 @@ bool DevLXV7::Register() {
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLXV7::Install(PDeviceDescriptor_t d)
+void DevLXV7::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -71,10 +54,6 @@ BOOL DevLXV7::Install(PDeviceDescriptor_t d)
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->DirectLink   = LXV7DirectLink;
-
-
-
-  return(true);
 } // Install()
 
 
@@ -135,14 +114,6 @@ BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable) {
     return true;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLXV7::GetName()
-{
-  return(_T("LXV7"));
-} // GetName()
 //                                 Polar
 //        MC     BAL    BUG%     a      b      c     Volume
 //$PFLX2,1.80,  1.00,   30,    1.71,  -2.43,  1.46, 0*15

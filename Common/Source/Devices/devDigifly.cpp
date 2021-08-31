@@ -65,7 +65,7 @@ static BOOL DigiflyLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL DigiflyInstall(PDeviceDescriptor_t d){
+void DigiflyInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". DIGIFLY device installed%s"),NEWLINE);
 
@@ -74,23 +74,7 @@ static BOOL DigiflyInstall(PDeviceDescriptor_t d){
   d->LinkTimeout = DigiflyLinkTimeout;
   d->IsGPSSource = DigiflyIsGPSSource;
   d->IsBaroSource = DigiflyIsBaroSource;
-
-  return(TRUE);
-
 }
-
-
-BOOL DigiflyRegister(void){
-  return(devRegister(
-    TEXT("Digifly"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    DigiflyInstall
-  ));
-}
-
 
 static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {

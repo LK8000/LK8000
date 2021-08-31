@@ -131,24 +131,6 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 //  status: Stop=0,CanStop=1,Start=2
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevLX_EOS_ERA::Register(){
-  #ifdef UNIT_TESTS
-    Wide2LxAsciiTest();
-  #endif
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install));
-} // Register()
-
-
-
-
 BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
 {
   bool res = false;
@@ -174,7 +156,7 @@ BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
+void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = EOSPutMacCready;
@@ -187,7 +169,6 @@ BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
-  d->DirectLink   = NULL;
 
   d->IsRadio        = EOSRadioEnabled;
   d->PutVolume      = EOSPutVolume;
@@ -202,7 +183,6 @@ BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
     GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
-  return(true);
 } // Install()
 
 
@@ -708,16 +688,6 @@ BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
   }
   return TRUE;
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLX_EOS_ERA::GetName() {
-  return(_T("LX EOS/ERA"));
-} // GetName()
-
 
 
 BOOL DevLX_EOS_ERA::CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])

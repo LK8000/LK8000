@@ -60,7 +60,7 @@ static BOOL CondorLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL condorInstall(PDeviceDescriptor_t d){
+void condorInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". Condor device installed%s"),NEWLINE);
   _tcscpy(d->Name, TEXT("Condor"));
@@ -69,23 +69,7 @@ static BOOL condorInstall(PDeviceDescriptor_t d){
   d->IsGPSSource = CondorIsGPSSource;
   d->IsBaroSource = CondorIsBaroSource;
   DevIsCondor = true;
-
-  return(TRUE);
-
 }
-
-
-BOOL condorRegister(void){
-  return(devRegister(
-    TEXT("Condor"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    condorInstall
-  ));
-}
-
 
 // *****************************************************************************
 // local stuff

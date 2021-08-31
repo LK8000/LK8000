@@ -1,10 +1,28 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File: devGeneric.h
+ */
 
 #ifndef	DEVGENERIC_H
 #define	DEVGENERIC_H
 
+#include "Devices/DeviceRegister.h"
 
-BOOL genInstall(PDeviceDescriptor_t d);
-BOOL genRegister(void);
-BOOL InternalRegister(void);
+void genInstall(PDeviceDescriptor_t d);
+
+inline constexpr
+DeviceRegister_t genRegister() {
+  return devRegister( _T("Generic"), (1l << dfGPS), genInstall );
+}
+
+void internalInstall(PDeviceDescriptor_t d);
+
+inline constexpr
+DeviceRegister_t InternalRegister() {
+  return devRegister( _T("Internal"), (1l << dfGPS), internalInstall );
+}
 
 #endif

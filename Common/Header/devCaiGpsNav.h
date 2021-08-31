@@ -10,7 +10,7 @@
 #define	DEVCAIGPSNAV_H
 
 #include "devBase.h"
-
+#include "Devices/DeviceRegister.h"
 
 /**
  * @brief CAI GPS-Nav device class
@@ -20,13 +20,22 @@
 class CDevCAIGpsNav : public DevBase
 {
   // LK interface
-  static const TCHAR *GetName();
+  static constexpr 
+  const TCHAR *GetName() {
+    return _T("CAI GPS-NAV");
+  }
+
   static BOOL Init(DeviceDescriptor_t *d);
   static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
-  static BOOL Install(PDeviceDescriptor_t d);
+  static void Install(PDeviceDescriptor_t d);
 
 public:
-  static bool Register();
+
+  static constexpr
+  DeviceRegister_t Register() {
+    return devRegister(GetName(), cap_gps | cap_baro_alt | cap_logger, Install);
+  }
+
 };
 
 #endif /* DEVCAIGPSNAV_H */

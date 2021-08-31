@@ -1,6 +1,15 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * File: devPVCOM.h
+ */
+
 #ifndef DEV_PVCOM_H
 #define DEV_PVCOM_H
 
+#include "Devices/DeviceRegister.h"
 
 struct TAtmosphericInfo {
   double pStatic;
@@ -33,20 +42,11 @@ struct TSpaceInfo {
   double localDeclination;
 };
 
-BOOL PVCOMRegister(void);
+void PVCOMInstall(PDeviceDescriptor_t d);
 
-int PVCOMNMEAddCheckSumStrg( TCHAR szStrg[] );
- BOOL PVCOMIsRadio(PDeviceDescriptor_t d);
- BOOL PVCOMPutVolume(PDeviceDescriptor_t d, int Volume) ;
- BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
- BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
- BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
- BOOL PVCOMStationSwap(PDeviceDescriptor_t d);
- BOOL PVCOMRequestAllData(PDeviceDescriptor_t d) ;
-BOOL PVCOMParseString(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info);
- BOOL PVCOMInstall(PDeviceDescriptor_t d);
- BOOL PVCOMRadioMode(PDeviceDescriptor_t d, int mode);
-
-
+inline constexpr
+DeviceRegister_t PVCOMRegister(void){
+  return devRegister( _T("PVCOM"), (1l << dfRadio), PVCOMInstall);
+}
 
 #endif

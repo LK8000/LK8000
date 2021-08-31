@@ -158,8 +158,7 @@ static BOOL WesterboerLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL WesterboerInstall(PDeviceDescriptor_t d){
-
+void WesterboerInstall(PDeviceDescriptor_t d) {
   StartupStore(_T(". WESTERBOER device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Westerboer"));
@@ -169,21 +168,7 @@ static BOOL WesterboerInstall(PDeviceDescriptor_t d){
   d->PutBallast = devWesterboerPutBallast;
   d->LinkTimeout = WesterboerLinkTimeout;
   d->IsBaroSource =  WesterboerIsBaroSource;
-
-  return(TRUE);
-
 }
-
-BOOL WesterboerRegister(void){
-  return(devRegister(
-    TEXT("Westerboer VW1150"),
-    (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    WesterboerInstall
-  ));
-}
-
 
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {

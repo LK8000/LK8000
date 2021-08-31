@@ -72,30 +72,14 @@ static BOOL ZanderLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL zanderInstall(PDeviceDescriptor_t d){
+void zanderInstall(PDeviceDescriptor_t d) {
 
   _tcscpy(d->Name, TEXT("Zander"));
   d->ParseNMEA = ZanderParseNMEA;
   d->LinkTimeout = ZanderLinkTimeout;
   d->IsGPSSource = ZanderIsGPSSource;
   d->IsBaroSource = ZanderIsBaroSource;
-
-  return(TRUE);
-
 }
-
-
-BOOL zanderRegister(void){
-  return(devRegister(
-    TEXT("Zander"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    zanderInstall
-  ));
-}
-
 
 // *****************************************************************************
 // local stuff

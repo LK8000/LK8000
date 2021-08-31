@@ -27,17 +27,7 @@
 PDeviceDescriptor_t CDevFlarm::m_pDevice=NULL;
 
 
-
-
-
-
-
-
-bool CDevFlarm::Register(){
-	return devRegister(GetName(), cap_baro_alt|cap_vario, &Install);
-}
-
-BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
+void CDevFlarm::Install( PDeviceDescriptor_t d ) {
   StartupStore(_T("Flarm Drvier Install %s"), NEWLINE);
 	_tcscpy(d->Name, GetName());
 	d->ParseNMEA = FlarmParse ; // ParseNMEA;
@@ -47,8 +37,6 @@ BOOL CDevFlarm::Install( PDeviceDescriptor_t d ) {
 	d->IsBaroSource = GetTrue;
 	d->Config = Config;
 	d->ParseStream  = FlarmParseString;
-
-	return(TRUE);
 }
 
 namespace {

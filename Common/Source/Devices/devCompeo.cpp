@@ -50,7 +50,7 @@ static BOOL CompeoLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL CompeoInstall(PDeviceDescriptor_t d){
+void CompeoInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
 
@@ -59,23 +59,7 @@ static BOOL CompeoInstall(PDeviceDescriptor_t d){
   d->LinkTimeout = CompeoLinkTimeout;
   d->IsGPSSource = CompeoIsGPSSource;
   d->IsBaroSource = CompeoIsBaroSource;
-
-  return(TRUE);
-
 }
-
-
-BOOL CompeoRegister(void){
-  return(devRegister(
-    TEXT("Brauniger/Compeo 5030"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    CompeoInstall
-  ));
-}
-
 
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {

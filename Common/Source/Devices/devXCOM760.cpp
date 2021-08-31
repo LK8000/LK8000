@@ -43,24 +43,12 @@ static BOOL XCOM760PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCH
 }
 
 
-static BOOL XCOM760Install(PDeviceDescriptor_t d){
-
+void XCOM760Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("XCOM760"));
   d->IsRadio = XCOM760IsRadio;
   d->PutVolume = XCOM760PutVolume;
   d->PutFreqActive = XCOM760PutFreqActive;
   d->PutFreqStandby = XCOM760PutFreqStandby;
-  return(TRUE);
-
-}
-
-
-BOOL xcom760Register(void){
-  return(devRegister(
-    TEXT("XCOM760"),
-    (1l << dfRadio),
-    XCOM760Install
-  ));
 }
 
 

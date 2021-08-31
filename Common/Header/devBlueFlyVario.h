@@ -12,6 +12,16 @@
 #ifndef DEVBLUEFLYVARIO_H
 #define	DEVBLUEFLYVARIO_H
 
-BOOL BlueFlyRegister(void);
+#include "Devices/DeviceRegister.h"
+
+void BlueFlyInstall(PDeviceDescriptor_t d);
+
+inline constexpr
+DeviceRegister_t BlueFlyRegister(void) {
+    return devRegister(
+            TEXT("BlueFlyVario"),
+            (1l << dfBaroAlt) | (1l << dfVario),
+            BlueFlyInstall);
+}
 
 #endif	/* DEVBLUEFLYVARIO_H */

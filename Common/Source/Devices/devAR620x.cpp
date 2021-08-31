@@ -13,6 +13,8 @@
 #include "device.h"
 #include "Radio.h"
 
+namespace {
+
 #define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
 #define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)
 #define BIT(n) (1 << (n))
@@ -52,32 +54,6 @@ IntConvertStruct sStatus;
 
 volatile BOOL bSending = false;
 //volatile BOOL bReceiving = false;
-int AR620x_Convert_Answer(DeviceDescriptor_t *d, uint8_t  *szCommand, int len, uint16_t CRC);
-
-BOOL AR620xInstall(PDeviceDescriptor_t d){
-
-  _tcscpy(d->Name, TEXT("Dittel AR620x"));
-  d->IsRadio        = AR620xIsRadio;
-  d->PutVolume      = AR620xPutVolume;
-  d->PutSquelch     = AR620xPutSquelch;
-  d->PutFreqActive  = AR620xPutFreqActive;
-  d->PutFreqStandby = AR620xPutFreqStandby;
-  d->StationSwap    = AR620xStationSwap;
-  d->ParseStream    = AR620xParseString;
-  d->PutRadioMode      = AR620xRadioMode;
-  RadioPara.Enabled8_33 = TRUE;
-  sStatus.intVal16 = SQUELCH; // BIT7 for Squelch enabled
-  return(TRUE);
-
-}
-
-BOOL AR620xRegister(void){
-  return(devRegister(
-    TEXT("Becker AR620x"),
-    (1l << dfRadio),
-    AR620xInstall
-  ));
-}
 
 
 BOOL AR620xIsRadio(PDeviceDescriptor_t d){
@@ -393,78 +369,6 @@ uint8_t  szTmp[MAX_CMD_LEN];
   return(TRUE);
 }
 
-
-
-
-BOOL AR620xParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
-//(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
-{
-int cnt=0;
-uint16_t CalCRC=0;
-static  uint16_t Recbuflen=0;
-
- int CommandLength =0;
-#define REC_BUFSIZE 127
-static uint8_t  Command[REC_BUFSIZE];
-
-if(d == NULL) return 0;
-if(String == NULL) return 0;
-if(len == 0) return 0;
-
-
-while (cnt < len)
-{   
-  if((uint8_t)String[cnt] == HEADER_ID)
-    Recbuflen =0;
-
-  if(Recbuflen >= REC_BUFSIZE)
-    Recbuflen =0;
-
-  LKASSERT(Recbuflen < REC_BUFSIZE);
-  Command[Recbuflen++] =(uint8_t) String[cnt++];
-
-  if(Recbuflen == 2)
-    if(Command[Recbuflen-1] != PROTOKOL_ID)
-      Recbuflen =0;
-
-  if(Recbuflen >= 3)
-  {
-     CommandLength = Command[2];
-     if(Recbuflen >= (CommandLength+5) ) // all received
-     {
-       if(iAR620DebugLevel ==2) for(int i=0; i < (CommandLength+4);i++)   StartupStore(_T("AR620x  Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
-       CRC.intVal8[1] =  Command[CommandLength+3];
-       CRC.intVal8[0] =  Command[CommandLength+4];
-       if(iAR620DebugLevel ==2) StartupStore(_T("AR620x  CRC 0x%04X %s") ,CRC.intVal16,NEWLINE);
-       CalCRC =CRCBitwise(Command, CommandLength+3);
-       if(CalCRC  == CRC.intVal16)
-       {
-           if(!bSending)
-           {
-             if(iAR620DebugLevel ==2 )  StartupStore(_T("AR620x  Process Command %u  %s") ,Command[3]  ,NEWLINE);
-             AR620x_Convert_Answer(d, Command, CommandLength+5,CalCRC);
-           }
-           else
-             if(iAR620DebugLevel)  StartupStore(_T("AR620x  skip Command %u  %s") ,Command[3]  ,NEWLINE);
-
-       }
-       else
-       {
-    	   if(iAR620DebugLevel)StartupStore(_T("AR620x  CRC check fail! Command 0x%04X  0x%04X %s") ,CRC.intVal16,CalCRC ,NEWLINE);
-       }
-       Recbuflen = 0;
-
-     }
-  }
-
-
-}
-
-return  RadioPara.Changed;
-}
-
-
-
 /*****************************************************************************
  * this function converts a AR620x answer 
  *
@@ -575,4 +479,89 @@ LKASSERT(d !=NULL);
   }
 
   return processed;  /* return the number of converted characters */
+}
+
+BOOL AR620xParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
+//(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
+{
+int cnt=0;
+uint16_t CalCRC=0;
+static  uint16_t Recbuflen=0;
+
+ int CommandLength =0;
+#define REC_BUFSIZE 127
+static uint8_t  Command[REC_BUFSIZE];
+
+if(d == NULL) return 0;
+if(String == NULL) return 0;
+if(len == 0) return 0;
+
+
+while (cnt < len)
+{   
+  if((uint8_t)String[cnt] == HEADER_ID)
+    Recbuflen =0;
+
+  if(Recbuflen >= REC_BUFSIZE)
+    Recbuflen =0;
+
+  LKASSERT(Recbuflen < REC_BUFSIZE);
+  Command[Recbuflen++] =(uint8_t) String[cnt++];
+
+  if(Recbuflen == 2)
+    if(Command[Recbuflen-1] != PROTOKOL_ID)
+      Recbuflen =0;
+
+  if(Recbuflen >= 3)
+  {
+     CommandLength = Command[2];
+     if(Recbuflen >= (CommandLength+5) ) // all received
+     {
+       if(iAR620DebugLevel ==2) for(int i=0; i < (CommandLength+4);i++)   StartupStore(_T("AR620x  Cmd: 0x%02X  %s") ,Command[i] ,NEWLINE);
+       CRC.intVal8[1] =  Command[CommandLength+3];
+       CRC.intVal8[0] =  Command[CommandLength+4];
+       if(iAR620DebugLevel ==2) StartupStore(_T("AR620x  CRC 0x%04X %s") ,CRC.intVal16,NEWLINE);
+       CalCRC =CRCBitwise(Command, CommandLength+3);
+       if(CalCRC  == CRC.intVal16)
+       {
+           if(!bSending)
+           {
+             if(iAR620DebugLevel ==2 )  StartupStore(_T("AR620x  Process Command %u  %s") ,Command[3]  ,NEWLINE);
+             AR620x_Convert_Answer(d, Command, CommandLength+5,CalCRC);
+           }
+           else
+             if(iAR620DebugLevel)  StartupStore(_T("AR620x  skip Command %u  %s") ,Command[3]  ,NEWLINE);
+
+       }
+       else
+       {
+    	   if(iAR620DebugLevel)StartupStore(_T("AR620x  CRC check fail! Command 0x%04X  0x%04X %s") ,CRC.intVal16,CalCRC ,NEWLINE);
+       }
+       Recbuflen = 0;
+
+     }
+  }
+
+
+}
+
+return  RadioPara.Changed;
+}
+
+
+
+} // namespace
+
+void AR620xInstall(PDeviceDescriptor_t d){
+  _tcscpy(d->Name, TEXT("Dittel AR620x"));
+  d->IsRadio        = AR620xIsRadio;
+  d->PutVolume      = AR620xPutVolume;
+  d->PutSquelch     = AR620xPutSquelch;
+  d->PutFreqActive  = AR620xPutFreqActive;
+  d->PutFreqStandby = AR620xPutFreqStandby;
+  d->StationSwap    = AR620xStationSwap;
+  d->ParseStream    = AR620xParseString;
+  d->PutRadioMode      = AR620xRadioMode;
+  RadioPara.Enabled8_33 = TRUE;
+  sStatus.intVal16 = SQUELCH; // BIT7 for Squelch enabled
 }

@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id$
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id$
+ */
 
 #ifndef devFlarm_h__
 #define devFlarm_h__
@@ -12,6 +12,7 @@
 #include "Util/tstring.hpp"
 #include "nmeaistream.h"
 #include "dlgTools.h"
+#include "Devices/DeviceRegister.h"
 
 class WindowControl;
 class WndButton;
@@ -71,14 +72,23 @@ private:
 
 //Init
 public:
-  static bool Register();
-  static const TCHAR* GetName() { return TEXT("Flarm"); }
+  static constexpr
+  DeviceRegister_t Register() {
+    return devRegister(GetName(), cap_baro_alt|cap_vario, &Install);
+  }
+
+
+  static constexpr
+  const TCHAR* GetName() { 
+    return TEXT("Flarm"); 
+  }
+
   static BOOL Open(PDeviceDescriptor_t d);
   static BOOL Close (PDeviceDescriptor_t d);
   static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
   static void OnFlarmIdClicked(WndButton* pWnd);
 private:
-  static BOOL Install(PDeviceDescriptor_t d);
+  static void Install(PDeviceDescriptor_t d);
 
 // Receive data
 private:

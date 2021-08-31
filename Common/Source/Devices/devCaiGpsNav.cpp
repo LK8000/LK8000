@@ -311,15 +311,6 @@ namespace {
 
 }
 
-
-
-
-const TCHAR *CDevCAIGpsNav::GetName()
-{
-  return(_T("CAI GPS-NAV"));
-}
-
-
 BOOL CDevCAIGpsNav::Init(DeviceDescriptor_t *d)
 {
   if(!SIMMODE) {
@@ -420,7 +411,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsi
 }
 
 
-BOOL CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
+void CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->Init         = Init;
@@ -428,11 +419,4 @@ BOOL CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
-  return true;
-}
-
-
-bool CDevCAIGpsNav::Register()
-{
-  return devRegister(GetName(), cap_gps | cap_baro_alt | cap_logger, Install);
 }

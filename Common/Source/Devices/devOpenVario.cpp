@@ -22,21 +22,6 @@ constexpr int OV_DebugLevel = 0;
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevOpenVario::Register() {
-
-  return (devRegister(GetName(),
-          cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
-} // Register()
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
 /// @param d  device descriptor to be installed
@@ -45,7 +30,7 @@ bool DevOpenVario::Register() {
 /// @retval FALSE device cannot be installed
 ///
 //static
-BOOL DevOpenVario::Install(PDeviceDescriptor_t d) {
+void DevOpenVario::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = OpenVarioPutMacCready;
@@ -53,20 +38,10 @@ BOOL DevOpenVario::Install(PDeviceDescriptor_t d) {
   d->PutBallast = OpenVarioPutBallast;
   d->IsGPSSource = GetTrue;
   d->IsBaroSource = GetTrue;
-
-  return TRUE;
 } // Install()
 
 
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevOpenVario::GetName() {
-  return (_T("OpenVario"));
-} // GetName()
 
 BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   char szTmp[80];

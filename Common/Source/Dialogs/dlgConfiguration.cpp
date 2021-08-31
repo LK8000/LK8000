@@ -34,6 +34,7 @@
 #include "LKStyle.h"
 #include "ContestMgr.h"
 #include "Tracking/Tracking.h"
+#include "Devices/DeviceRegister.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -63,6 +64,7 @@ static bool snailchanged= false;
 
 
 static  int dwDeviceIndex[NUMDEV] = {0,0,0,0,0,0};
+static_assert(std::size(dwDeviceIndex) ==  std::size(dwDeviceName), "Invalid array size");
 
 #define CONFIGMODE_SYSTEM   0
 #define CONFIGMODE_PILOT    1
@@ -1721,13 +1723,11 @@ static void setVariables( WndForm *pOwner) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<DeviceRegisterCount; i++) {
+    for (size_t i = 0; i < devRegisterCount(); i++) {
       LPCTSTR DeviceName = devRegisterGetName(i);
       dfe->addEnumText(DeviceName);
 
-      static_assert(std::size(dwDeviceIndex) ==  std::size(dwDeviceName), "Invalid array size");
       for (unsigned j=0; j< std::size(dwDeviceName); j++) {
-        LPCTSTR DeviceName = devRegisterGetName(i);
         if (_tcscmp(DeviceName, dwDeviceName[j]) == 0) {
           dwDeviceIndex[j] = i;
           break;
@@ -1744,7 +1744,7 @@ static void setVariables( WndForm *pOwner) {
   {
       ReadDeviceSettings(devIdx, deviceName1);
       {
-        for (int i=0; i<DeviceRegisterCount; i++)
+        for (size_t i = 0; i < devRegisterCount(); i++)
         {
           if (_tcscmp(devRegisterGetName(i), deviceName1) == 0)
           {

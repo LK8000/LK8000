@@ -53,13 +53,6 @@ double		 LXFinalGlide= 0;
 double LXLegSpeed= 0;
 bool FirstCheckBaroAlt = true;
 
-bool DevLXMiniMap::Register()
-{
-
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
-} // Register()
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
@@ -70,7 +63,7 @@ bool DevLXMiniMap::Register()
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLXMiniMap::Install(PDeviceDescriptor_t d)
+void DevLXMiniMap::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -85,8 +78,6 @@ BOOL DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->PutQNH = LXMiniMapPutQNH;
-
-  return(true);
 } // Install()
 
 BOOL DevLXMiniMap::LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast)
@@ -221,15 +212,6 @@ BOOL DevLXMiniMap::Init(PDeviceDescriptor_t d)
 
 	  return(TRUE);
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLXMiniMap::GetName()
-{
-  return(_T("LX MiniMap"));
-} // GetName()
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.

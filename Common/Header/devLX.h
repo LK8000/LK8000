@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: devLX.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: devLX.h,v 1.1 2011/12/21 10:35:29 root Exp root $
+ */
 //__________________________________________________________compilation_control_
 
 #ifndef __DEVLX_H_
@@ -13,6 +13,7 @@
 //_____________________________________________________________________includes_
 
 #include "devBase.h"
+#include "Devices/DeviceRegister.h"
 
 //___________________________________________________________class_declarations_
 
@@ -47,7 +48,12 @@ class DevLX : public DevBase
   public:
 
     /// Registers device into device subsystem.
-    static bool Register();
+    static constexpr
+    DeviceRegister_t Register() {
+      return devRegister(GetName(),
+            cap_gps | cap_baro_alt | cap_speed | cap_vario,
+            Install);
+    }
 
 
   //----------------------------------------------------------------------------
@@ -57,13 +63,16 @@ class DevLX : public DevBase
     DevLX() {}
 
     /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+    static void Install(PDeviceDescriptor_t d);
 
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+    static constexpr
+    const TCHAR* GetName() {
+      return _T("LX");
+    }
 
     /// Parses LXWP0 sentence.
     static bool LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);

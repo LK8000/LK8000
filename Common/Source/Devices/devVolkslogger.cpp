@@ -279,7 +279,7 @@ BOOL VLLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-BOOL vlInstall(PDeviceDescriptor_t d){
+void vlInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Volkslogger"));
   d->ParseNMEA = VLParseNMEA;
   d->LinkTimeout = VLLinkTimeout;
@@ -287,18 +287,4 @@ BOOL vlInstall(PDeviceDescriptor_t d){
   d->IsLogger = VLIsLogger;
   d->IsGPSSource = VLIsGPSSource;
   d->IsBaroSource = VLIsBaroSource; // 100315 XCSOAR BUG missing
-
-  return(TRUE);
-
-}
-
-
-BOOL vlRegister(void){
-  return(devRegister(
-    TEXT("Volkslogger"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfLogger),
-    vlInstall
-  ));
 }

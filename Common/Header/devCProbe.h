@@ -9,9 +9,13 @@
 #ifndef devCProbe_h__
 #define devCProbe_h__
 #include "devBase.h"
+
 #include "Util/tstring.hpp"
 #include "nmeaistream.h"
 #include "dlgTools.h"
+#include "Devices/DeviceRegister.h"
+
+struct DeviceDescriptor_t;
 
 class WindowControl;
 class WndButton;
@@ -28,18 +32,27 @@ private:
 
 //Init
 public:
-	static bool Register();
-	static const TCHAR* GetName() { return TEXT("C-Probe"); }
+	static constexpr
+	DeviceRegister_t Register() {
+		return devRegister(GetName(), cap_baro_alt|cap_vario, &Install);
+	}
+
+
+	static constexpr
+	const TCHAR* GetName() { 
+		return TEXT("C-Probe"); 
+	}
+	
 	static BOOL Open(PDeviceDescriptor_t d);
 	static BOOL Close (PDeviceDescriptor_t d);
 
 
 private:
-	static BOOL Install(PDeviceDescriptor_t d);
+	static void Install(PDeviceDescriptor_t d);
 
 // Receive data
 private:
-	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
+	static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pINFO);
 
 	static BOOL ParseData(tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseGyro(tnmeastring& wiss, NMEA_INFO *pINFO );

@@ -30,21 +30,6 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs);
 
 //____________________________________________________________class_definitions_
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevLX16xx::Register()
-{
-
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
-} // Register()
-
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
@@ -55,7 +40,7 @@ bool DevLX16xx::Register()
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLX16xx::Install(PDeviceDescriptor_t d)
+void DevLX16xx::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -66,20 +51,11 @@ BOOL DevLX16xx::Install(PDeviceDescriptor_t d)
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->DirectLink   = LX16xxDirectLink;
-  return(true);
 } // Install()
 
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLX16xx::GetName()
-{
-  return(_T("LX16xx"));
-} // GetName()
 //                                 Polar
 //        MC     BAL    BUG%     a      b      c     Volume
 //$PFLX2,1.80,  1.00,   30,    1.71,  -2.43,  1.46, 0*15

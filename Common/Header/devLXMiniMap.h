@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id$
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id$
+ */
 //__________________________________________________________compilation_control_
 
 #ifndef __DEVLXMINIMAP_H_
@@ -29,8 +29,12 @@ class DevLXMiniMap : public DevLXNano
   public:
 
     /// Registers device into device subsystem.
-    static bool Register();
-
+    static constexpr
+    DeviceRegister_t Register() {
+      return devRegister(GetName(),
+              cap_gps | cap_baro_alt | cap_speed | cap_vario,
+              Install);
+    }
 
   //----------------------------------------------------------------------------
   protected:
@@ -42,7 +46,7 @@ class DevLXMiniMap : public DevLXNano
 
 
     /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+    static void Install(PDeviceDescriptor_t d);
 
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
@@ -63,7 +67,10 @@ class DevLXMiniMap : public DevLXNano
 
 
     /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+    static constexpr
+    const TCHAR* GetName() {
+      return _T("LX MiniMap");
+    }
 
     /// Parses LXWP0 sentence.
     static bool LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);

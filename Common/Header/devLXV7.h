@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: devLX16xx.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: devLX16xx.h,v 1.1 2011/12/21 10:35:29 root Exp root $
+ */
 //__________________________________________________________compilation_control_
 
 #ifndef __DEVLXV7_H_
@@ -13,6 +13,7 @@
 //_____________________________________________________________________includes_
 
 #include "devBase.h"
+#include "Devices/DeviceRegister.h"
 
 //___________________________________________________________class_declarations_
 
@@ -27,7 +28,12 @@ class DevLXV7 : public DevBase
   public:
 
     /// Registers device into device subsystem.
-    static bool Register();
+    static constexpr
+    DeviceRegister_t Register() {
+        return devRegister(GetName(),
+              cap_gps | cap_baro_alt | cap_speed | cap_vario,
+              Install);
+    }
 
     // Send GPRMB sentence (next waypoint information).
     static bool PutGPRMB(PDeviceDescriptor_t);
@@ -43,14 +49,17 @@ class DevLXV7 : public DevBase
     DevLXV7() {}
 
     /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+    static void Install(PDeviceDescriptor_t d);
 
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
     static BOOL LXV7DirectLink(PDeviceDescriptor_t d, BOOL LinkStatus);
     /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+    static constexpr 
+    const TCHAR* GetName() {
+      return _T("LXV7");
+    }
 
     /// Parses PLXVF sentence.
     static bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);

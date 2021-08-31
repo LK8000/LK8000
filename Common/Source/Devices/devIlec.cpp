@@ -52,30 +52,13 @@ static BOOL IlecLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL IlecInstall(PDeviceDescriptor_t d){
-
+void IlecInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Ilec SN10"));
   d->ParseNMEA = IlecParseNMEA;
   d->LinkTimeout = IlecLinkTimeout;
   d->IsGPSSource = IlecIsGPSSource;
   d->IsBaroSource = IlecIsBaroSource;
-
-  return(TRUE);
-
 }
-
-
-BOOL IlecRegister(void){
-  return(devRegister(
-    TEXT("Ilec SN10"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    IlecInstall
-  ));
-}
-
 
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {

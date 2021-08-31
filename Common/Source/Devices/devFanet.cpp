@@ -293,12 +293,7 @@ static BOOL FanetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
   return FALSE;
 }
 
-static BOOL FanetInstall(PDeviceDescriptor_t d){
+void FanetInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("FANET"));
   d->ParseNMEA = FanetParseNMEA;
-  return(TRUE);
-}
-
-BOOL FanetRegister(void){
-  return(devRegister(TEXT("FANET"), 0, FanetInstall));
 }

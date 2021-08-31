@@ -35,25 +35,12 @@ BOOL LK8EX1LinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL LK8EX1Install(PDeviceDescriptor_t d){
+void LK8EX1Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("LK8EX1"));
   d->ParseNMEA = LK8EX1ParseNMEA;
   d->LinkTimeout = LK8EX1LinkTimeout;
   d->IsBaroSource = LK8EX1IsBaroSource;
-
-  return(TRUE);
-
-}
-
-
-BOOL LK8EX1Register(void){
-  return(devRegister(
-    TEXT("LK8EX1"),
-    (1l << dfBaroAlt)
-    | (1l << dfVario),
-    LK8EX1Install
-  ));
 }
 
 /*

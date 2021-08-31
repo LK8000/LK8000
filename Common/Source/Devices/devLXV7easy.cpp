@@ -17,7 +17,6 @@ static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 static bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 static bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-extern BOOL LXV7easyInstall(PDeviceDescriptor_t d);
 extern BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
 static BOOL isTrue(PDeviceDescriptor_t) {
@@ -40,27 +39,14 @@ static bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* valu
   return(true);
 } 
 
-bool LXV7easyRegister(void){
-    return(devRegister(
-        TEXT("LXV7 easy"),
-        (1l << dfGPS)
-        | (1l << dfBaroAlt)
-        | (1l << dfSpeed)
-        | (1l << dfVario),
-        LXV7easyInstall
-    ));
-}
-
-BOOL LXV7easyInstall(PDeviceDescriptor_t d)
+void LXV7easyInstall(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, TEXT("LXV7 easy"));
   d->ParseNMEA    = LXV7easyParseNMEA;
   d->LinkTimeout  = isTrue;
   d->IsGPSSource  = isTrue;
   d->IsBaroSource = isTrue;
-
-  return(TRUE);
-} 
+}
 
 
 

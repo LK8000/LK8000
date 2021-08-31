@@ -54,30 +54,13 @@ static BOOL FlytecLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-static BOOL FlytecInstall(PDeviceDescriptor_t d){
-
+void FlytecInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Flytec/FLYSEN"));
   d->ParseNMEA = FlytecParseNMEA;
   d->LinkTimeout = FlytecLinkTimeout;
   d->IsGPSSource = FlytecIsGPSSource;
   d->IsBaroSource = FlytecIsBaroSource;
-
-  return(TRUE);
 }
-
-
-BOOL FlytecRegister(void){
-  return(devRegister(
-    TEXT("Flytec/FLYSEN"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfSpeed)
-    | (1l << dfVario),
-    FlytecInstall
-  ));
-}
-
-
 
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 {

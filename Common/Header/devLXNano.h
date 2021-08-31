@@ -1,10 +1,10 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: devLXNano.h,v 1.1 2011/12/21 10:35:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: devLXNano.h,v 1.1 2011/12/21 10:35:29 root Exp root $
+ */
 //__________________________________________________________compilation_control_
 
 #ifndef __DEVLXNANO_H_
@@ -13,6 +13,9 @@
 //_____________________________________________________________________includes_
 
 #include "devLX.h"
+#include "Devices/DeviceRegister.h"
+#include "cstdint"
+using byte = uint8_t;
 
 
 //______________________________________________________________________defines_
@@ -38,7 +41,11 @@ class DevLXNano : public DevLX
   public:
 
     /// Registers device into device subsystem.
-    static bool Register();
+    static constexpr 
+    DeviceRegister_t Register() {
+      return devRegister(GetName(),
+          cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install);
+    }
 
 
   //----------------------------------------------------------------------------
@@ -56,10 +63,13 @@ class DevLXNano : public DevLX
     DevLXNano() {}
 
     /// Installs device specific handlers.
-    static BOOL Install(PDeviceDescriptor_t d);
+    static void Install(PDeviceDescriptor_t d);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
-    static const TCHAR* GetName();
+    static constexpr
+    const TCHAR* GetName() {
+        return _T("LX Colibri/Nano");
+    }
 
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
@@ -97,7 +107,7 @@ class DevLXNano : public DevLX
     static void LogTestResult(const TCHAR* suite, const TCHAR* test, bool result);
 
     /// Test suite for Wide2LxAscii().
-    static void Wide2LxAsciiTest();
+    static bool Wide2LxAsciiTest();
 
     #endif
 

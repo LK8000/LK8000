@@ -24,11 +24,7 @@ double CDevCProbe::m_delta_press=0.0;
 TCHAR CDevCProbe::m_szVersion[15]={0};
 
 
-bool CDevCProbe::Register(){
-	return devRegister(GetName(), cap_baro_alt|cap_vario, &Install);
-}
-
-BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
+void CDevCProbe::Install( PDeviceDescriptor_t d ) {
 	_tcscpy(d->Name, GetName());
 	d->ParseNMEA = ParseNMEA;
 	d->Open = Open;
@@ -36,8 +32,6 @@ BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
 	d->IsGPSSource = GetFalse;
 	d->IsBaroSource = GetTrue;
 	d->Config = Config;
-
-	return(TRUE);
 }
 
 BOOL CDevCProbe::Open( PDeviceDescriptor_t d) {

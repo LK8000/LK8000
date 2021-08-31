@@ -12,6 +12,13 @@
 #ifndef DEVFANET_H
 #define	DEVFANET_H
 
-BOOL FanetRegister(void);
+#include "Devices/DeviceRegister.h"
+
+void FanetInstall(PDeviceDescriptor_t d);
+
+inline constexpr
+DeviceRegister_t FanetRegister() {
+  return(devRegister(TEXT("FANET"), 0, FanetInstall));
+}
 
 #endif	/* DEVFANETH */

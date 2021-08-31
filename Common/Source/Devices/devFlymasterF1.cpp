@@ -73,7 +73,7 @@ static BOOL Close(PDeviceDescriptor_t d) {
   return FALSE;
 }
 
-static BOOL flymasterf1Install(PDeviceDescriptor_t d){
+void flymasterf1Install(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". FlymasterF1 device installed%s"),NEWLINE);
 
@@ -81,23 +81,9 @@ static BOOL flymasterf1Install(PDeviceDescriptor_t d){
   d->ParseNMEA = FlymasterF1ParseNMEA;
   d->IsGPSSource = FlymasterF1IsGPSSource;
   d->IsBaroSource = FlymasterF1IsBaroSource;
-
-  return(TRUE);
-
 }
 
-
-BOOL flymasterf1Register(void){
-  return(devRegister(
-    TEXT("FlymasterF1"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfVario),
-    flymasterf1Install
-  ));
-}
-
-static BOOL flymasterInstall(PDeviceDescriptor_t d){
+void flymasterInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". Flymaster GPS device installed%s"),NEWLINE);
 
@@ -107,20 +93,8 @@ static BOOL flymasterInstall(PDeviceDescriptor_t d){
   d->Close = Close;
   d->IsGPSSource = FlymasterF1IsGPSSource;
   d->IsBaroSource = FlymasterF1IsBaroSource;
-
-  return(TRUE);
-
 }
 
-BOOL flymasterGPSRegister(void){
-  return(devRegister(
-    TEXT("Flymaster GPS"),
-    (1l << dfGPS)
-    | (1l << dfBaroAlt)
-    | (1l << dfVario),
-    flymasterInstall
-  ));
-}
 
 // *****************************************************************************
 // local stuff

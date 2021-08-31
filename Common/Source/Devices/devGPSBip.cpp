@@ -13,6 +13,7 @@
 #include "devGPSBip.h"
 #include <functional>
 #include <array>
+#include "DeviceRegister.h"
 
 using std::placeholders::_1;
 
@@ -43,18 +44,14 @@ BOOL GetTrue(DeviceDescriptor_t *d) {
   return TRUE;
 }
 
-static
-BOOL Install(PDeviceDescriptor_t d){
+void GPSBipInstall(PDeviceDescriptor_t d) {
 
   LKASSERT(DeviceDesciptorList.size() == std::size(DeviceNameList));
   auto ItOut = std::begin(DeviceDesciptorList);
   for(auto DevName : DeviceNameList) {
-    DeviceRegister_t* pDev = std::find_if(&DeviceRegister[0], &DeviceRegister[DeviceRegisterCount], std::bind(&devNameCompare, _1, DevName));
-    if (pDev != &DeviceRegister[DeviceRegisterCount]) {
+    const DeviceRegister_t* pDev = GetRegisteredDevice(DevName);
+    if (pDev) {
       pDev->Installer(ItOut++);
-    } else {
-      LKASSERT(false);
-      DeviceRegister[0].Installer(ItOut++); // Disabled
     }
   }
 
@@ -62,17 +59,4 @@ BOOL Install(PDeviceDescriptor_t d){
   d->ParseNMEA = ParseNMEA;
   d->IsGPSSource = GetTrue;
   d->IsBaroSource = GetTrue;
-  return(TRUE);
-
-}
-
-BOOL GPSBipRegister(void) {
-  return(devRegister(
-    szDeviceName,
-      (1l << dfGPS) |
-      (1l << dfVario) |
-      (1l << dfBaroAlt)
-    ,
-    Install
-  ));
 }

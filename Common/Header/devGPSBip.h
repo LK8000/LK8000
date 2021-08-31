@@ -12,6 +12,16 @@
 #ifndef DEVGPSBIP_H
 #define	DEVGPSBIP_H
 
-BOOL GPSBipRegister(void);
+#include "Devices/DeviceRegister.h"
+
+void GPSBipInstall(PDeviceDescriptor_t d);
+
+inline constexpr
+DeviceRegister_t GPSBipRegister() {
+  return devRegister(
+      _T("GPSBip"),
+      (1l << dfGPS) | (1l << dfVario) | (1l << dfBaroAlt),
+      GPSBipInstall);
+}
 
 #endif	/* DEVGPSBIP_H */

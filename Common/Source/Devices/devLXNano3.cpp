@@ -160,24 +160,6 @@ BOOL IsDirOutput( DataBiIoDir IODir)
 //  status: Stop=0,CanStop=1,Start=2
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevLXNanoIII::Register(){
-  #ifdef UNIT_TESTS
-    Wide2LxAsciiTest();
-  #endif
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install));
-} // Register()
-
-
-
-
 BOOL  DevLXNanoIII::Values( PDeviceDescriptor_t d)
 {
   bool res = false;
@@ -201,7 +183,7 @@ BOOL  DevLXNanoIII::Values( PDeviceDescriptor_t d)
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
+void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = Nano3_PutMacCready;
@@ -220,7 +202,6 @@ BOOL DevLXNanoIII::Install(PDeviceDescriptor_t d) {
     GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
-  return(true);
 } // Install()
 
 
@@ -768,18 +749,6 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
   }
   return TRUE;
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLXNanoIII::GetName() {
-  return(_T("LX Nano 3"));
-} // GetName()
-
-
-
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -13,6 +13,7 @@
 #define	COMPORT_H
 
 #include "Sizes.h"
+#include "Enums.h"
 #include "Util/tstring.hpp"
 #include "Poco/Event.h"
 #include "Poco/Thread.h"

@@ -18,6 +18,7 @@
 #include <tchar.h>
 #include <string.h>
 #include <functional>
+#include <list>
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 

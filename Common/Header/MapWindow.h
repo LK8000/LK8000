@@ -23,6 +23,7 @@
 #include "Time/PeriodClock.hpp"
 #include <array>
 #include "RGB.h"
+#include "Thread/Mutex.hpp"
 
 #ifndef ENABLE_OPENGL
 #include "Poco/ThreadTarget.h"

@@ -793,14 +793,6 @@ bool CDevIMI::Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBu
   return false;
 }
 
-
-
-const TCHAR *CDevIMI::GetName()
-{
-  return(_T("IMI ERIXX"));
-}
-
-
 BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
 {
   // verify WP number
@@ -840,23 +832,15 @@ BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned e
 
 
 
-BOOL CDevIMI::Install(PDeviceDescriptor_t d)
-{
-  _tcscpy(d->Name, GetName());
-  d->Declare      = DeclareTask;
-  d->IsLogger     = GetTrue;
-  d->IsGPSSource  = GetTrue;
-  d->IsBaroSource = GetTrue;
-
-  return TRUE;
-}
-
-
-bool CDevIMI::Register()
+void CDevIMI::Install(PDeviceDescriptor_t d)
 {
   _connected = false;
   memset(&_info, 0, sizeof(_info));
   _serialNumber = 0;
 
-  return devRegister(GetName(), cap_gps | cap_baro_alt | cap_logger, Install);
+  _tcscpy(d->Name, GetName());
+  d->Declare      = DeclareTask;
+  d->IsLogger     = GetTrue;
+  d->IsGPSSource  = GetTrue;
+  d->IsBaroSource = GetTrue;
 }

@@ -9,6 +9,8 @@
 #ifndef _FLARM_H
 #define _FLARM_H
 
+#include <cstdint>
+
 // Max number of local ids in file
 #define MAXFLARMLOCALS	50
 

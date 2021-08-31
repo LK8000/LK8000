@@ -62,24 +62,9 @@ static const char PKT_CCWRITE   = '\xD0';
 /// read Lx class (char LxClass[9] + CRC)
 //static const char PKT_CCREAD    = '\xCF';
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevLXNano::Register()
-{
-  #ifdef UNIT_TESTS
-    Wide2LxAsciiTest();
-  #endif
-
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install));
-} // Register()
-
+#ifdef UNIT_TESTS
+static bool test = Wide2LxAsciiTest();
+#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
@@ -90,7 +75,7 @@ bool DevLXNano::Register()
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLXNano::Install(PDeviceDescriptor_t d)
+void DevLXNano::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -104,19 +89,7 @@ BOOL DevLXNano::Install(PDeviceDescriptor_t d)
     GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
-
-  return(true);
 } // Install()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLXNano::GetName()
-{
-  return(_T("LX Colibri/Nano"));
-} // GetName()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -484,7 +457,7 @@ void DevLXNano::LogTestResult(const TCHAR* suite, const TCHAR* test, bool result
 /// Test suite for Wide2LxAscii().
 ///
 //static
-void DevLXNano::Wide2LxAsciiTest()
+bool DevLXNano::Wide2LxAsciiTest()
 {
   static const TCHAR* suite = _T("Wide2LxAscii");
 

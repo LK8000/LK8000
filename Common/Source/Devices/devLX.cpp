@@ -15,20 +15,6 @@
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevLX::Register()
-{
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
-} // Register()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
 /// @param d  device descriptor to be installed
@@ -37,26 +23,14 @@ bool DevLX::Register()
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLX::Install(PDeviceDescriptor_t d)
+void DevLX::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->LinkTimeout  = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
-
-  return(true);
 } // Install()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLX::GetName()
-{
-  return(_T("LX"));
-} // GetName()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

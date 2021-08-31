@@ -106,7 +106,6 @@ static cai302_OdataPilot_t cai302_OdataPilot;
 static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cai302Install(PDeviceDescriptor_t d);
 
 static int  MacCreadyUpdateTimeout = 0;
 static int  BugsUpdateTimeout = 0;
@@ -135,7 +134,7 @@ BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-
+static
 BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready){
 
   TCHAR  szTmp[32];
@@ -150,7 +149,7 @@ BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready){
 
 }
 
-
+static
 BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs){
 
   TCHAR  szTmp[32];
@@ -165,7 +164,7 @@ BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs){
 
 }
 
-
+static
 BOOL cai302PutBallast(PDeviceDescriptor_t d, double Ballast){
 
   TCHAR  szTmp[32];
@@ -480,7 +479,7 @@ BOOL cai302IsBaroSource(PDeviceDescriptor_t d){
   return(TRUE);
 }
 
-BOOL cai302Install(PDeviceDescriptor_t d){
+void cai302Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("CAI 302"));
   d->ParseNMEA = cai302ParseNMEA;
@@ -493,23 +492,6 @@ BOOL cai302Install(PDeviceDescriptor_t d){
   d->IsLogger = cai302IsLogger;
   d->IsGPSSource = cai302IsGPSSource;
   d->IsBaroSource = cai302IsBaroSource;
-
-  return(TRUE);
-
-}
-
-
-BOOL cai302Register(void){
-  return(devRegister(
-    TEXT("CAI 302"),
-    (1l << dfGPS)
-      | (1l << dfLogger)
-      | (1l << dfSpeed)
-      | (1l << dfVario)
-      | (1l << dfBaroAlt)
-      | (1l << dfWind),
-    cai302Install
-  ));
 }
 
 // local stuff

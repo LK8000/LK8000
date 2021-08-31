@@ -29,22 +29,6 @@ BOOL VaulterPutBallast(PDeviceDescriptor_t d, double Ballast);
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevVaulter::Register()
-{
-
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario, Install));
-} // Register()
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
 /// @param d  device descriptor to be installed
@@ -53,7 +37,7 @@ bool DevVaulter::Register()
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevVaulter::Install(PDeviceDescriptor_t d)
+void DevVaulter::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -62,20 +46,7 @@ BOOL DevVaulter::Install(PDeviceDescriptor_t d)
   d->LinkTimeout  = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
-  return(true);
 } // Install()
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevVaulter::GetName()
-{
-  return(_T("Vaulter"));
-} // GetName()
 
 
 int VaulterNMEAddCheckSumStrg( TCHAR szStrg[] )
