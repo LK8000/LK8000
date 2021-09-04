@@ -8,6 +8,15 @@
 
 #include "externs.h"
 
+static 
+BOOL NMEAOut(DeviceDescriptor_t *d, const TCHAR* String) {
+  if(d) {
+    d->Com->WriteString(String);
+  }
+  return TRUE;
+}
+
 void nmoInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("NmeaOut"));
+  d->NMEAOut = NMEAOut;
 }

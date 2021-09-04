@@ -151,12 +151,12 @@ struct DeviceDescriptor_t {
   BOOL (*PutVoice)(DeviceDescriptor_t *d, const TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
   BOOL (*HeartBeat)(DeviceDescriptor_t *d);
+  BOOL (*NMEAOut)(DeviceDescriptor_t *d, const TCHAR* String);
  
   bool m_bAdvancedMode;
   int iSharedPort;
   int PortNumber;
   bool Disabled;
-  bool bNMEAOut;
   // Com port diagnostic
   int Status;
   unsigned Rx;

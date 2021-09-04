@@ -416,6 +416,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PutVoice = nullptr;
     Config = nullptr;
     HeartBeat = nullptr;
+    NMEAOut = nullptr;
 
     Disabled = true;
 
@@ -424,7 +425,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     iSharedPort = -1;
     m_bAdvancedMode = false;
-    bNMEAOut = false;
 
 #ifdef DEVICE_SERIAL
     HardwareId = 0;
@@ -568,9 +568,7 @@ BOOL devInit() {
                 DeviceList[i].Com = DeviceList[j].Com ;
                 DeviceList[i].Status = CPS_OPENOK;
                 pDev->Installer(&DeviceList[i]);
-                if (pDev->Flags & (1l << dfNmeaOut)) {
-                    DeviceList[i].bNMEAOut = true;
-                }
+
                 if(devIsRadio(&DeviceList[i])) {
                     RadioPara.Enabled = true;
                     StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
@@ -653,10 +651,6 @@ BOOL devInit() {
             DeviceList[i].Com = Com;
             DeviceList[i].Status = CPS_OPENOK;
             pDev->Installer(&DeviceList[i]);
-
-            if (pDev->Flags & (1l << dfNmeaOut)) {
-                DeviceList[i].bNMEAOut = true;
-            }
 
             devInit(&DeviceList[i]);
             devOpen(&DeviceList[i]);
@@ -782,9 +776,9 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 
       for(DeviceDescriptor_t& d2 : DeviceList) {
 
-          if(d2.Com && !d2.Disabled && d2.bNMEAOut) { // NMEA out ! even on multiple ports
+          if(d2.Com && !d2.Disabled && d2.NMEAOut) { // NMEA out ! even on multiple ports
             // stream pipe, pass nmea to other device (NmeaOut)
-            d2.Com->WriteString(String); // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
+            d2.NMEAOut(&d2, String); // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
           }
       }
     }
