@@ -15,10 +15,7 @@ void KRT2Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t KRT2Register() {
-  return devRegister(
-    _T("Dittel KRT2"),
-    (1l << dfRadio),
-    KRT2Install);
+  return devRegister(_T("Dittel KRT2"), KRT2Install);
 }
 
 #endif

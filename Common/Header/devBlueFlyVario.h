@@ -18,10 +18,7 @@ void BlueFlyInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t BlueFlyRegister(void) {
-    return devRegister(
-            TEXT("BlueFlyVario"),
-            (1l << dfBaroAlt) | (1l << dfVario),
-            BlueFlyInstall);
+    return devRegister(_T("BlueFlyVario"), BlueFlyInstall);
 }
 
 #endif	/* DEVBLUEFLYVARIO_H */

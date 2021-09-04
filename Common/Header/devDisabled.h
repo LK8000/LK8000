@@ -15,7 +15,7 @@ void disInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t disRegister() {
-  return devRegister(_T(DEV_DISABLED_NAME), (1l << dfGPS), disInstall);
+  return devRegister(_T(DEV_DISABLED_NAME), disInstall);
 }
 
 #endif

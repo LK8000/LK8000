@@ -15,7 +15,7 @@ void b50Install(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t b50Register() {
-  return devRegister(_T("Borgelt B50"), (1l << dfGPS), b50Install );
+  return devRegister(_T("Borgelt B50"), b50Install);
 }
 
 #endif

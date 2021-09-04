@@ -20,13 +20,12 @@ typedef void (*Installer_t)(DeviceDescriptor_t* d);
 
 struct DeviceRegister_t {
   const TCHAR* Name;
-  unsigned Flags;
   Installer_t Installer;
 };
 
 constexpr inline
-DeviceRegister_t devRegister(const TCHAR *Name, unsigned Flags, Installer_t Installer) {
-  return { Name, Flags, Installer };
+DeviceRegister_t devRegister(const TCHAR *Name, Installer_t Installer) {
+  return { Name, Installer };
 }
 
 size_t devRegisterCount();

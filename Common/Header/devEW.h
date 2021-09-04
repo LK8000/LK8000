@@ -15,7 +15,7 @@ void ewInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t ewRegister() {
-  return devRegister(_T("EW Logger"), 1l << dfGPS | 1l << dfLogger, ewInstall);
+  return devRegister(_T("EW Logger"), ewInstall);
 }
 
 #endif

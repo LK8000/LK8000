@@ -15,10 +15,7 @@ void IlecInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t IlecRegister() {
-  return devRegister( _T("Ilec SN10"),
-    (1l << dfGPS) | (1l << dfBaroAlt) 
-    | (1l << dfSpeed) | (1l << dfVario),
-    IlecInstall);
+  return devRegister(_T("Ilec SN10"), IlecInstall);
 }
 
 

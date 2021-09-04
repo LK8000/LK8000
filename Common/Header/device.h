@@ -55,8 +55,6 @@ protected:
 
 typedef std::vector<COMMPortItem_t> COMMPort_t;
 
-typedef	enum {dfGPS, dfLogger, dfSpeed,	dfVario, dfBaroAlt,	dfWind, dfVoice, dfNmeaOut, dfRadio} DeviceFlags_t;
-
 typedef struct Declaration {
   TCHAR PilotName[64];
   TCHAR AircraftType[32];

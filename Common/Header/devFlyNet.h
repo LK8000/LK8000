@@ -17,7 +17,7 @@ void FlyNetInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t FlyNetRegister() {
-	return devRegister(TEXT("FlyNet"), (1l << dfBaroAlt), FlyNetInstall);
+	return devRegister(_T("FlyNet"), FlyNetInstall);
 }
 
 #endif // _DEVFLYNET_H_

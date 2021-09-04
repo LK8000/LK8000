@@ -47,8 +47,7 @@ class DevLXNanoIII : public DevLX
     /// Registers device into device subsystem.
     static constexpr
     DeviceRegister_t Register() {
-      return devRegister(GetName(),
-        cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install);
+      return devRegister(GetName(), Install);
     } // Register()
 
 

@@ -18,10 +18,7 @@ void GPSBipInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t GPSBipRegister() {
-  return devRegister(
-      _T("GPSBip"),
-      (1l << dfGPS) | (1l << dfVario) | (1l << dfBaroAlt),
-      GPSBipInstall);
+  return devRegister(_T("GPSBip"), GPSBipInstall);
 }
 
 #endif	/* DEVGPSBIP_H */

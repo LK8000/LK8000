@@ -15,10 +15,7 @@ void ewMicroRecorderInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t ewMicroRecorderRegister() {
-  return devRegister(_T("EW MicroRecorder"),
-    1l << dfGPS | 1l << dfLogger | 1l << dfBaroAlt,
-    ewMicroRecorderInstall
-  );
+  return devRegister(_T("EW MicroRecorder"), ewMicroRecorderInstall);
 }
 
 #endif

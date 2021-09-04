@@ -15,11 +15,7 @@ void zanderInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t zanderRegister() {
-  return devRegister(
-    _T("Zander"),
-    (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfSpeed) | (1l << dfVario),
-    zanderInstall
-  );
+  return devRegister(_T("Zander"), zanderInstall);
 }
 
 #endif

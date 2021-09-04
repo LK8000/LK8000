@@ -15,7 +15,7 @@ void nmoInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t nmoRegister(void){
-  return devRegister( _T("NmeaOut"), (1l << dfNmeaOut), nmoInstall );
+  return devRegister(_T("NmeaOut"), nmoInstall);
 }
 
 #endif

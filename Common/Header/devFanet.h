@@ -18,7 +18,7 @@ void FanetInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t FanetRegister() {
-  return(devRegister(TEXT("FANET"), 0, FanetInstall));
+  return(devRegister(TEXT("FANET"), FanetInstall));
 }
 
 #endif	/* DEVFANETH */

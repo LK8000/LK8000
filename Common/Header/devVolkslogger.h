@@ -15,10 +15,7 @@ void vlInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t vlRegister(void){
-  return devRegister(
-      _T("Volkslogger"),
-      (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfLogger),
-      vlInstall);
+  return devRegister(_T("Volkslogger"), vlInstall);
 }
 
 

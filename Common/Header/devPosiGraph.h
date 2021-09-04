@@ -15,10 +15,7 @@ void pgInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t pgRegister() {
-  return devRegister(
-    _T("PosiGraph Logger"),
-    1l << dfGPS | (1l << dfBaroAlt) | 1l << dfLogger,
-    pgInstall);
+  return devRegister(_T("PosiGraph Logger"), pgInstall);
 }
 
 #endif

@@ -15,14 +15,14 @@ void genInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t genRegister() {
-  return devRegister( _T("Generic"), (1l << dfGPS), genInstall );
+  return devRegister( _T("Generic"), genInstall);
 }
 
 void internalInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t InternalRegister() {
-  return devRegister( _T("Internal"), (1l << dfGPS), internalInstall );
+  return devRegister( _T("Internal"), internalInstall);
 }
 
 #endif

@@ -15,10 +15,7 @@ void ATR833Install(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t ATR833Register(void){
-  return devRegister(
-        TEXT("f.u.n.k.e. ATR833"),
-        (1l << dfRadio),
-        ATR833Install);
+  return devRegister(_T("f.u.n.k.e. ATR833"), ATR833Install);
 }
 
 #endif

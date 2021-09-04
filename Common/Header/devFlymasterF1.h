@@ -15,21 +15,14 @@ void flymasterf1Install(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t flymasterf1Register() {
-  return devRegister(_T("FlymasterF1"),
-    (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfVario),
-    flymasterf1Install
-  );
+  return devRegister(_T("FlymasterF1"), flymasterf1Install);
 }
 
 void flymasterInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t flymasterGPSRegister() {
-  return(devRegister(
-    TEXT("Flymaster GPS"),
-    (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfVario),
-    flymasterInstall
-  ));
+  return devRegister(_T("Flymaster GPS"), flymasterInstall);
 }
 
 #endif

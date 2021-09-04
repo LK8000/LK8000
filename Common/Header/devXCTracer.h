@@ -18,7 +18,7 @@ void XCTracerInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t XCTracerRegister() {
-    return devRegister(_T("XCTracer"), (1l << dfBaroAlt) | (1l << dfGPS) | (1l << dfVario), XCTracerInstall);
+    return devRegister(_T("XCTracer"), XCTracerInstall);
 }
 
 #endif /* DEVXCTRACER_H */

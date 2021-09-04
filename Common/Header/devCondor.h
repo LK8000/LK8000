@@ -15,10 +15,7 @@ void condorInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t condorRegister() {
-  return devRegister(
-    _T("Condor"), 
-    (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfSpeed) | (1l << dfVario),
-    condorInstall );
+  return devRegister(_T("Condor"), condorInstall);
 }
 
 #endif

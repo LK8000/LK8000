@@ -15,10 +15,7 @@ void XCOM760Install(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t xcom760Register() {
-  return devRegister(
-    TEXT("XCOM760"),
-    (1l << dfRadio),
-    XCOM760Install);
+  return devRegister(_T("XCOM760"), XCOM760Install);
 }
 
 #endif

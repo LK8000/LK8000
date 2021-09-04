@@ -45,8 +45,8 @@ struct TSpaceInfo {
 void PVCOMInstall(PDeviceDescriptor_t d);
 
 inline constexpr
-DeviceRegister_t PVCOMRegister(void){
-  return devRegister( _T("PVCOM"), (1l << dfRadio), PVCOMInstall);
+DeviceRegister_t PVCOMRegister() {
+  return devRegister( _T("PVCOM"), PVCOMInstall);
 }
 
 #endif

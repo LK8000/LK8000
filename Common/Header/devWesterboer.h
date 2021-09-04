@@ -15,10 +15,7 @@ void WesterboerInstall(PDeviceDescriptor_t d);
 
 inline constexpr 
 DeviceRegister_t WesterboerRegister() {
-  return devRegister(
-    TEXT("Westerboer VW1150"),
-    (1l << dfBaroAlt) | (1l << dfSpeed) | (1l << dfVario),
-    WesterboerInstall);
+  return devRegister(_T("Westerboer VW1150"), WesterboerInstall);
 }
 
 #endif

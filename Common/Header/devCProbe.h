@@ -34,7 +34,7 @@ private:
 public:
 	static constexpr
 	DeviceRegister_t Register() {
-		return devRegister(GetName(), cap_baro_alt|cap_vario, &Install);
+		return devRegister(GetName(), &Install);
 	}
 
 

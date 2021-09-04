@@ -15,9 +15,7 @@ void FlytecInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t FlytecRegister() {
-  return devRegister( _T("Flytec/FLYSEN"),
-        (1l << dfGPS) | (1l << dfBaroAlt) | (1l << dfSpeed) | (1l << dfVario),
-        FlytecInstall );
+  return devRegister(_T("Flytec/FLYSEN"), FlytecInstall);
 }
 
 

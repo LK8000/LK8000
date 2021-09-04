@@ -15,10 +15,7 @@ void AR620xInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t AR620xRegister() {
-  return devRegister(
-    TEXT("Becker AR620x"),
-    (1l << dfRadio),
-    AR620xInstall);
+  return devRegister( _T("Becker AR620x"), AR620xInstall);
 }
 
 #endif
