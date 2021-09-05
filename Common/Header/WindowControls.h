@@ -295,6 +295,10 @@ class DataFieldEnum: public DataField {
   void Set(int Value) override { Set((unsigned)Value); }
   void Set(bool Value) override { Set(Value?1:0); }
 
+  void Set(const TCHAR *Value) override {
+    Set(Find(Value));
+  }
+
   int SetAsInteger(int Value) override;
   void Sort(int startindex=0) override;
 };
