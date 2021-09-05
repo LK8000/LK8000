@@ -110,33 +110,24 @@ DeviceRegister_t device_list[] = {
     FanetRegister()
 };
 
-const DeviceRegister_t* device_begin() {
-  return std::begin(device_list);
-}
-
-const DeviceRegister_t* device_end() {
-  return std::end(device_list);
-}
 
 } // namespace
 
-size_t devRegisterCount() {
-  return std::size(device_list);
+const DeviceRegister_t* devRegisterIterator::begin() {
+  return std::begin(device_list);
 }
 
-const TCHAR* devRegisterGetName(size_t idx) {
-  if (idx < std::size(device_list)) {
-    return device_list[idx].Name;
-  }
-  return _T("");
+const DeviceRegister_t* devRegisterIterator::end() {
+  return std::end(device_list);
 }
 
 const DeviceRegister_t* GetRegisteredDevice(const TCHAR* Name) {
-  auto pDev = std::find_if(device_begin(), device_end(), [&](auto& d) {
+  devRegisterIterator it;
+  auto pDev = std::find_if(it.begin(), it.end(), [&](auto& d) {
       return (_tcscmp(d.Name, Name) == 0);
     });
 
-  if (pDev != device_end()) {
+  if (pDev != it.end()) {
     return pDev;
   }
   return nullptr;

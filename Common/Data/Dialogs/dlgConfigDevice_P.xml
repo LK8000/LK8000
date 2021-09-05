@@ -12,7 +12,7 @@
 
     <WndFrame Name="frmCommName" Caption="_@M232_" X="1" Y="42" Width="-1" Height="120" Font="2" Border="30">
       <WndProperty Name="prpComDevice1" Caption="_@M450_" X="60" Y="-1" Width="179" Height="22" CaptionWidth="80" Font="2" Help="_@H153_">
-        <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData"/>
+        <DataField Name="" DataType="enum" OnDataAccess="OnDeviceAData"/>
       </WndProperty>
 
       <WndProperty Name="prpComPort1" Caption="_@M530_" X="60" Y="-998" Width="179" Height="22" CaptionWidth="80" Font="2" Help="_@H154_">

@@ -62,10 +62,6 @@ static bool fontschanged= false;
 static bool snailchanged= false;
 
 
-
-static  int dwDeviceIndex[NUMDEV] = {0,0,0,0,0,0};
-static_assert(std::size(dwDeviceIndex) ==  std::size(dwDeviceName), "Invalid array size");
-
 #define CONFIGMODE_SYSTEM   0
 #define CONFIGMODE_PILOT    1
 #define CONFIGMODE_AIRCRAFT 2
@@ -411,10 +407,11 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComDevice1"));
   if (wp) {
 
-    if (dwDeviceIndex[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
-      dwDeviceIndex[SelectedDevice]= wp->GetDataField()->GetAsInteger();
+    DataField* df = wp->GetDataField();
+    const TCHAR* Name = df->GetAsString();
+    if (tstring_view(Name) != dwDeviceName[SelectedDevice]) {
       COMPORTCHANGED = true;
-      WriteDeviceSettings(SelectedDevice, devRegisterGetName(dwDeviceIndex[SelectedDevice]));
+      WriteDeviceSettings(SelectedDevice, Name);
     }
   }
 
@@ -1609,7 +1606,7 @@ ReadDeviceSettings(DeviceIdx, deviceName1);
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->Set(dwDeviceIndex[DeviceIdx]);
+    dfe->Set(deviceName1);
     wp->RefreshDisplay();
     UpdateButtons(wf);
   }
@@ -1723,19 +1720,13 @@ static void setVariables( WndForm *pOwner) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    for (size_t i = 0; i < devRegisterCount(); i++) {
-      LPCTSTR DeviceName = devRegisterGetName(i);
-      dfe->addEnumText(DeviceName);
-
-      for (unsigned j=0; j< std::size(dwDeviceName); j++) {
-        if (_tcscmp(DeviceName, dwDeviceName[j]) == 0) {
-          dwDeviceIndex[j] = i;
-          break;
-        }
-      }  
+    
+    for (auto dev : devRegisterIterator()) {
+      dfe->addEnumText(dev.Name);
     }
+
     dfe->Sort(3);
-    dfe->Set(dwDeviceIndex[SelectedDevice]);
+    dfe->Set(dwDeviceName[SelectedDevice]);
     wp->RefreshDisplay();
   }
 
@@ -1744,26 +1735,17 @@ static void setVariables( WndForm *pOwner) {
   {
       ReadDeviceSettings(devIdx, deviceName1);
       {
-        for (size_t i = 0; i < devRegisterCount(); i++)
-        {
-          if (_tcscmp(devRegisterGetName(i), deviceName1) == 0)
-          {
-
-            dwDeviceIndex[devIdx] = i;
-
 #ifdef TESTBENCH
-            ReadPortSettings(devIdx,szPort,NULL, NULL);
-            StartupStore(_T("==================================================== %s"),NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable Device #%i id:%i %s %s"),devIdx,  dwDeviceIndex[devIdx], deviceName1,NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable Port   #%i %s %s"),devIdx,  szPort,NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable SppedIdx   #%i %i %s"),devIdx,  dwSpeedIndex[devIdx],NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable Bit        #%i %i %s"),devIdx,  dwBitIndex[devIdx],NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable IP-Adr     #%i %s %s"),devIdx,  szIpAddress[devIdx],NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable Port       #%i %i %s"),devIdx,  dwIpPort[devIdx],NEWLINE); // 091105
-            StartupStore(_T("........... SetVariable Sound      #%i %i %s"),devIdx,  UseExtSound[devIdx],NEWLINE); // 091105
+        ReadPortSettings(devIdx,szPort,NULL, NULL);
+        StartupStore(_T("====================================================")); // 091105
+        StartupStore(_T("........... SetVariable Device #%i %s"),devIdx, deviceName1); // 091105
+        StartupStore(_T("........... SetVariable Port   #%i %s"),devIdx, szPort); // 091105
+        StartupStore(_T("........... SetVariable SppedIdx   #%i %i"),devIdx,  dwSpeedIndex[devIdx]); // 091105
+        StartupStore(_T("........... SetVariable Bit        #%i %i"),devIdx,  dwBitIndex[devIdx]); // 091105
+        StartupStore(_T("........... SetVariable IP-Adr     #%i %s"),devIdx,  szIpAddress[devIdx]); // 091105
+        StartupStore(_T("........... SetVariable Port       #%i %i"),devIdx,  dwIpPort[devIdx]); // 091105
+        StartupStore(_T("........... SetVariable Sound      #%i %i"),devIdx,  UseExtSound[devIdx]); // 091105
 #endif
-          }
-        }
       }
   }
 

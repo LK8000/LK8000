@@ -18,7 +18,7 @@
       <WndButton Name="cmdConfigDev" Caption="_@M2414_" X="3" Y="20" Width="50" Height="28" Font="2" Tag="3" OnClickNotify="OnConfigDevClicked" />
 
       <WndProperty Name="prpComDevice1" Caption="_@M450_" X="60" Y="1" Width="-1" Height="22" CaptionWidth="70" Font="2" Help="_@H153_">
-        <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnDeviceAData" />
+        <DataField Name="" DataType="enum" OnDataAccess="OnDeviceAData" />
       </WndProperty>
       <WndProperty Name="prpComPort1" Caption="_@M530_" X="60" Y="-1" Width="195" Height="22" CaptionWidth="70" Font="2" Help="_@H154_">
         <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnComPort1Data"/>

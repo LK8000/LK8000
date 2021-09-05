@@ -28,9 +28,10 @@ DeviceRegister_t devRegister(const TCHAR *Name, Installer_t Installer) {
   return { Name, Installer };
 }
 
-size_t devRegisterCount();
-
-const TCHAR* devRegisterGetName(size_t idx);
+struct devRegisterIterator {
+  const DeviceRegister_t* begin();
+  const DeviceRegister_t* end();
+};
 
 const DeviceRegister_t* GetRegisteredDevice(const TCHAR* Name);
 
