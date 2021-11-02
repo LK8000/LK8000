@@ -17,7 +17,7 @@
 
 // Low-Level Funktionen für DBB Behandlung (Schreiben)
 
-#include "Volkslogger/dbbconv.h"
+#include "dbbconv.h"
 #include <memory.h>
 #include <string.h>
 

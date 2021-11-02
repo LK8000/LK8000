@@ -39,7 +39,7 @@ struct tm
 #endif
 
 #include <memory.h>
-#include "Volkslogger/vlapityp.h"
+#include "vlapityp.h"
 
 /* Untertypen des Haupttyps Variabel */
 #define FLDPLT	     0x01

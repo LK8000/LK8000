@@ -15,8 +15,8 @@
 #include "GpsWeekNumberFix.h"
 
 #if defined(PNA) && defined(UNDER_CE)
-#include "LKHolux.h"
-#include "LKRoyaltek3200.h"
+#include "Devices/LKHolux.h"
+#include "Devices/LKRoyaltek3200.h"
 #endif
 
 

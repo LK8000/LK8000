@@ -12,7 +12,7 @@
 #include "resource.h"
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
-#include "devLXNano3.h"
+#include "Devices/devLXNano3.h"
 #include "dlgLXIGCDownload.h"
 #include "utils/tokenizer.h"
 

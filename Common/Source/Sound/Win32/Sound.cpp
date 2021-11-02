@@ -10,7 +10,7 @@
 #include "externs.h"
 #if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
-#include "LKHolux.h"
+#include "Devices/LKHolux.h"
 #endif
 
 #include "mmsystem.h"

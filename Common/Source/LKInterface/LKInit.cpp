@@ -11,8 +11,8 @@
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
-#include "LKHolux.h"
-#include "LKRoyaltek3200.h"
+#include "Devices/LKHolux.h"
+#include "Devices/LKRoyaltek3200.h"
 #include "Comm/Bluetooth/BtHandlerWince.h"
 #endif
 

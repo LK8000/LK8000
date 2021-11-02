@@ -22,8 +22,8 @@
 #include <math.h>
 
 
-#include "Volkslogger/vlapihlp.h"
-#include "Volkslogger/utils.h"
+#include "vlapihlp.h"
+#include "utils.h"
 
 #include "utils/heapcheck.h"
 

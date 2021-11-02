@@ -21,13 +21,13 @@
 
 #include "externs.h"
 
-#include "Volkslogger/vlapi2.h"
-#include "Volkslogger/vlapierr.h"
-#include "Volkslogger/dbbconv.h"
-#include "Volkslogger/vlconv.h"
-#include "Volkslogger/grecord.h"
+#include "vlapi2.h"
+#include "vlapierr.h"
+#include "dbbconv.h"
+#include "vlconv.h"
+#include "grecord.h"
 
-#include "Volkslogger/utils.h"
+#include "utils.h"
 
 using std::min;
 using std::max;

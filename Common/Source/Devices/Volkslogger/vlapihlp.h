@@ -19,7 +19,7 @@
 #define VLAPIHLP_H
 
 
-#include "Volkslogger/vlapityp.h"
+#include "vlapityp.h"
 
 // some generally needed helper-functions
 

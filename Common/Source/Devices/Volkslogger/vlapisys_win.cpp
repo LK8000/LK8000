@@ -16,7 +16,7 @@
  ***********************************************************************/
 
 #include "externs.h"
-#include "Volkslogger/vla_support.h"
+#include "vla_support.h"
 
 #include <stdio.h>
 #if defined(HAVE_POSIX) || !defined(_WIN32_WCE)

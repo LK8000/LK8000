@@ -7,7 +7,7 @@
 */
 #include "externs.h"
 #include "Dialogs.h"
-#include "devFlarm.h"
+#include "Devices/devFlarm.h"
 #include "dlgIGCProgress.h"
 #include "OS/Sleep.h"
 #include "Util/Clamp.hpp"

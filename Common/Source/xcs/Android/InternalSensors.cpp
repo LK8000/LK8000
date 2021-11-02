@@ -24,7 +24,7 @@ Copyright_License {
 #include "device.h"
 #include "Globals.h"
 #include "Geoid.h"
-#include "devBase.h"
+#include "Devices/devBase.h"
 #include "InternalSensors.hpp"
 #include "Context.hpp"
 #include "Math/SelfTimingKalmanFilter1d.hpp"

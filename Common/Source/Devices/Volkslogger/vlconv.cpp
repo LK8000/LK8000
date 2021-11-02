@@ -37,11 +37,11 @@
 #include <memory.h>
 
 // VLAPI-Includes
-#include "Volkslogger/vlconv.h"
-#include "Volkslogger/vlapihlp.h"
+#include "vlconv.h"
+#include "vlapihlp.h"
 
 // redeclaration of itoa()
-#include "Volkslogger/utils.h"
+#include "utils.h"
 
 #include "utils/heapcheck.h"
 

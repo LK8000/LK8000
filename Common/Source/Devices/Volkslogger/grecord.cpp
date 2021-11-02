@@ -18,9 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "Volkslogger/grecord.h"
-#include "Volkslogger/vlapihlp.h"
-#include "Volkslogger/vlapityp.h"
+#include "grecord.h"
+#include "vlapihlp.h"
+#include "vlapityp.h"
 
 #include "utils/heapcheck.h"
 

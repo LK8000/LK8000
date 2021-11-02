@@ -19,10 +19,10 @@
 #define VLAPI2_H
 
 
-#include "Volkslogger/vlapierr.h"
-#include "Volkslogger/vla_support.h"
-#include "Volkslogger/dbbconv.h"
-#include "Volkslogger/vlconv.h"
+#include "vlapierr.h"
+#include "vla_support.h"
+#include "dbbconv.h"
+#include "vlconv.h"
 
 class VLAPI_DATA {
  public:

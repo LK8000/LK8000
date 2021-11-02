@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKProcess.h"
 #if defined(PNA) && defined(UNDER_CE)
-#include "LKHolux.h"
+#include "Devices/LKHolux.h"
 #endif
 #include "utils/stringext.h"
 #include "Dialogs.h"

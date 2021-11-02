@@ -16,7 +16,6 @@
 #include "Bluetooth/BthPort.h"
 #include "GpsIdPort.h"
 #include "TCPPort.h"
-#include "devPVCOM.h"
 #include <functional>
 #include "Calc/Vario.h"
 #include "Radio.h"
