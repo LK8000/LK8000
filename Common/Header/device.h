@@ -213,7 +213,7 @@ BOOL devInit();
 void devCloseAll();
 PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
-BOOL devHasBaroSource(void);
+
 bool devIsDisabled(int devindex);
 
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
@@ -239,8 +239,6 @@ BOOL devIsRadio(PDeviceDescriptor_t d);
 BOOL devHeartBeat(PDeviceDescriptor_t d);
 BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);
-
-BOOL devGetBaroAltitude(double *Value);
 
 BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence);
 

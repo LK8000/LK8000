@@ -102,28 +102,6 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, A
 static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text);
 
-// This function is used to determine whether a generic
-// baro source needs to be used if available
-BOOL devHasBaroSource(void) {
-  if (pDevPrimaryBaroSource || pDevSecondaryBaroSource) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
-}
-
-#if 0
-BOOL devGetBaroAltitude(double *Value){
-  // hack, just return GPS_INFO->BaroAltitude
-  if (Value == NULL)
-    return(FALSE);
-  if (GPS_INFO.BaroAltitudeAvailable)
-    *Value = GPS_INFO.BaroAltitude;
-  return(TRUE);
-
-}
-#endif
-
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
   int i=0, ch;
