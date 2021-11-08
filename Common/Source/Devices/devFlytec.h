@@ -18,6 +18,4 @@ DeviceRegister_t FlytecRegister() {
   return devRegister(_T("Flytec/FLYSEN"), FlytecInstall);
 }
 
-
-
 #endif

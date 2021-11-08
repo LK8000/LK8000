@@ -33,13 +33,9 @@ class DevLXV7 : public DevBase
         return devRegister(GetName(), Install);
     }
 
-    // Send GPRMB sentence (next waypoint information).
-    static bool PutGPRMB(PDeviceDescriptor_t);
-
     // Send $PFLX2 to request Info from LX.
     static bool SetupLX_Sentence(PDeviceDescriptor_t d);
 
-    static bool SendInfos(PDeviceDescriptor_t d);
   //----------------------------------------------------------------------------
   protected:
 

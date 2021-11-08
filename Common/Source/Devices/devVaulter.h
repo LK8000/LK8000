@@ -31,7 +31,6 @@ class DevVaulter : public DevBase
       return devRegister(GetName(), Install);
     }
 
-    static bool SendInfos(PDeviceDescriptor_t d);
   //----------------------------------------------------------------------------
   protected:
 
@@ -40,8 +39,6 @@ class DevVaulter : public DevBase
 
     /// Installs device specific handlers.
     static void Install(PDeviceDescriptor_t d);
-
-    static BOOL VaulterDirectLink(PDeviceDescriptor_t d, BOOL LinkStatus);
 
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);

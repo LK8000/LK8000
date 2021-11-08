@@ -18,5 +18,4 @@ DeviceRegister_t IlecRegister() {
   return devRegister(_T("Ilec SN10"), IlecInstall);
 }
 
-
 #endif

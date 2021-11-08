@@ -39,7 +39,6 @@ class DevLXV7_EXP : public DevBase
     // Send $PFLX2 to request Info from LX.
     static bool SetupLX_Sentence(PDeviceDescriptor_t d);
 
-    static bool SendInfos(PDeviceDescriptor_t d);
   //----------------------------------------------------------------------------
   protected:
 

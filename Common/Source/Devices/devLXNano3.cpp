@@ -658,20 +658,6 @@ int PortNum = d->PortNumber;
 }
 
 
-
- bool  DevLXNanoIII::OnIGCTimeout(WndForm* pWnd){
-
-  if(Device() == NULL) return false;
-
-  TCHAR Command[MAX_NMEA_LEN];
-  StartupStore(_T(" ******* NANO3  OnIGCTimeout resend last Block request ***** %s") , NEWLINE);
-  _sntprintf(Command, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
-  SendNmea(Device(), Command);
-
-  return true;
-}
-
-
 void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx)
 {
   if(wp)

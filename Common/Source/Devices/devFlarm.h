@@ -85,14 +85,16 @@ public:
 
   static BOOL Open(PDeviceDescriptor_t d);
   static BOOL Close (PDeviceDescriptor_t d);
-  static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
-  static void OnFlarmIdClicked(WndButton* pWnd);
+  static DeviceDescriptor_t* GetDevice(void) {
+    return m_pDevice;
+  }
+
 private:
   static void Install(PDeviceDescriptor_t d);
 
 // Receive data
 private:
-  //	static BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO);
+
   static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
   static BOOL FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
   // Send Command
@@ -108,7 +110,6 @@ private:
 
   static void OnIGCDownloadClicked(WndButton* pWnd);
   static void OnRebootClicked(WndButton* pWnd);
-  static bool OnTimer(WndForm* pWnd);
 
   static CallBackTableEntry_t CallBackTable[];
   static PDeviceDescriptor_t m_pDevice;

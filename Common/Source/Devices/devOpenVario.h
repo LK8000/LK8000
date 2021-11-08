@@ -27,7 +27,6 @@ public:
   static constexpr
   DeviceRegister_t Register() {
     return (devRegister(GetName(), Install));
-
   }
 
 

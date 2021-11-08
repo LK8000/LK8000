@@ -536,64 +536,6 @@ bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 } // LXWP3()
 
 
-bool DevLX16xx::PutGPRMB(PDeviceDescriptor_t d)
-{
-
-//RMB - The recommended minimum navigation sentence is sent whenever a route or a goto is active.
-//      On some systems it is sent all of the time with null data.
-//      The Arrival alarm flag is similar to the arrival alarm inside the unit and can be decoded to
-//      drive an external alarm.
-//      Note: the use of leading zeros in this message to preserve the character spacing.
-//      This is done, I believe, because some autopilots may depend on exact character spacing.
-//
-//     $GPRMB,A,0.66,L,003,004,4917.24,N,12309.57,W,001.3,052.5,000.5,V*20
-//where:
-//           RMB          Recommended minimum navigation information
-//           A            Data status A = OK, V = Void (warning)
-//           0.66,L       Cross-track error (nautical miles, 9.99 max),
-//                                steer Left to correct (or R = right)
-//           003          Origin waypoint ID
-//           004          Destination waypoint ID
-//           4917.24,N    Destination waypoint latitude 49 deg. 17.24 min. N
-//           12309.57,W   Destination waypoint longitude 123 deg. 09.57 min. W
-//           001.3        Range to destination, nautical miles (999.9 max)
-//           052.5        True bearing to destination
-//           000.5        Velocity towards destination, knots
-//           V            Arrival alarm  A = arrived, V = not arrived
-//           *20          checksum
-
-TCHAR  szTmp[256];
-/*
-extern START_POINT StartPoints[];
-extern TASK_POINT Task[];
-extern TASKSTATS_POINT TaskStats[];
-extern WAYPOINT *WayPointList;
-extern WPCALC   *WayPointCalc;
-*/
-//WayPointCalc->
-  int overindex = GetOvertargetIndex();
-  if (!ValidWayPoint(overindex)) return TRUE;
-
-  _stprintf(
-      szTmp,
-      TEXT("$GPRMB,A,0.66,L,EDLG,%6s,%010.5f,N,%010.5f,E,%05.1f,%05.1f,%05.1f,V"),
-
-      WayPointList[overindex].Name,
-      WayPointList[overindex].Latitude * 100,
-      WayPointList[overindex].Longitude * 100,
-      WayPointCalc[0].Distance * 1000 * TONAUTICALMILES, WayPointCalc[0].Bearing,
-      WayPointCalc[0].VGR * TOKNOTS);
-
-  //  _stprintf(szTmp, TEXT("$GPRMB,A,0.00,L,KLE,UWOE,4917.24,N,12309.57,E,011.3,052.5,000.5,V"));
-  LX16xxNMEAddCheckSumStrg(szTmp);
-
-  d->Com->WriteString(szTmp);
-
-
-return(true);
-}
-
-
 bool DevLX16xx::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 

@@ -53,7 +53,6 @@ BOOL DevLX_EOS_ERA::bIGC_Download = false;
 BOOL DevLX_EOS_ERA::m_bDeclare = false;
 BOOL DevLX_EOS_ERA::m_bRadioEnabled = true;
 BOOL DevLX_EOS_ERA::m_bTriggered = false;
-uint uEOS_ERA_Timeout =0;
 #define TIMEOUTCHECK
 
 
@@ -611,21 +610,6 @@ int PortNum = d->PortNumber;
 }
 
 
-
- bool  DevLX_EOS_ERA::OnIGCTimeout(WndForm* pWnd){
-
-  if(Device() == NULL) return false;
-
-
-  StartupStore(_T(" ******* LX_EOS_ERA  OnIGCTimeout resend last Block request ***** %s") , NEWLINE);
-
-  return true;
-}
-
-
-
-
-
 static bool OnTimer(WndForm* pWnd)
 {
   WndForm * wf = pWnd->GetParentWndForm();
@@ -688,13 +672,6 @@ BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
   }
   return TRUE;
 }
-
-
-BOOL DevLX_EOS_ERA::CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
-{
-  return ComExpect(d, "$LXDT,ANS,OK*5c", 256, NULL, errBufSize, errBuf);
-}
-
 
 
 int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
@@ -911,52 +888,6 @@ bool DevLX_EOS_ERA::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
 DevLX_EOS_ERA::Decl::Decl(){
   memset(this, 0, sizeof(*this));
 } // Decl()
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Format waypoint data
-///
-/// @param buf  [out] buffer
-/// @param wp    waypoint data (if @c NULL, LAT/LON will be set to 0)
-/// @param type  waypoint type
-/// @param idx   waypoint index
-///
-void DevLX_EOS_ERA::Decl::WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type, int totalNum ){
-  int DegLat, DegLon;
-
-  double MinLat, MinLon;
-  char NS, EW;
-  int iAlt =0.0;
-  const TCHAR* wpName = _T("");
-  if (wp != NULL) {
-   iAlt =(int) wp->Altitude ;
-    DegLat = (int)wp->Latitude;
-    MinLat = wp->Latitude - DegLat;
-    if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0))) {
-        NS = 'S'; DegLat *= -1; MinLat *= -1;
-    } else NS = 'N';
-    DegLon = (int)wp->Longitude ;
-    MinLon = wp->Longitude - DegLon;
-    if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0))) {
-        EW = 'W'; DegLon *= -1; MinLon *= -1;
-    } else EW = 'E';
-    wpName = wp->Name;
-  } else {
-    DegLat = MinLat = DegLon = MinLon = 0;
-    NS = 'N'; EW = 'E';
-    // set TP name
-    switch (type) {
-      case tp_takeoff: wpName = _T("TAKEOFF"); break;
-      case tp_landing: wpName = _T("LANDING"); break;
-      case tp_regular: wpName = _T("WP");      break;
-      default:         wpName = _T("");        break;
-    }
-  }
-  _stprintf(buf, TEXT("C%02d%05.0f%c%03d%05.0f%c%s::%i.0"),
-             DegLat, MinLat*60000,NS,DegLon, MinLon*60000, EW,wpName,iAlt );
-} // WpFormat()
-
 
 // #############################################################################
 // *****************************************************************************
@@ -1251,45 +1182,6 @@ m_bTriggered = true;
     SendNmea(Device(), _T("LXDT,GET,FLIGHTS_NO"));
       Poco::Thread::sleep(50);
     dlgEOSIGCSelectListShowModal();
-}
-
-
-
-
- bool  DevLX_EOS_ERA::OnStartIGC_FileRead(TCHAR Filename[], uint16_t uiNo) {
-
-
-  
-  // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
-  StartupStore(_T(" ******* LX_EOS_ERA  IGC Download START ***** %s") , NEWLINE);
-  /*
-   * TCHAR szTmp[MAX_NMEA_LEN];
-  _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
-  _sntprintf(m_Filename, std::size(m_Filename), _T("%s"),Filename);
-  SendNmea(Device(), szTmp);
-  StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
-  IGCDownload(true);
-   */
-#define  EOS_PROGRESS_DLG
-#ifdef  EOS_PROGRESS_DLG
- // CreateIGCProgressDialog();
-#endif
-return true;
-
-}
-
-
-
-BOOL DevLX_EOS_ERA::AbortLX_IGC_FileRead(void)
-{
-
-  bool bWasInProgress = IGCDownload() ;
-  IGCDownload ( false );
-
-#ifdef  EOS_PROGRESS_DLG
-  CloseIGCProgressDialog();
-#endif
-  return bWasInProgress;
 }
 
 

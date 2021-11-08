@@ -88,8 +88,6 @@ class DevLX_EOS_ERA : public DevLX
     /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
     static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
     static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
-    static bool OnStartIGC_FileRead(TCHAR Filename[], uint16_t) ;
-    static BOOL AbortLX_IGC_FileRead(void);
 
   //----------------------------------------------------------------------------
   protected:
@@ -128,7 +126,6 @@ class DevLX_EOS_ERA : public DevLX
    
    static BOOL Config(PDeviceDescriptor_t d);
    static void OnCloseClicked(WndButton* pWnd);
-   static void OnCancelClicked(WndButton* pWnd);
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
@@ -165,7 +162,6 @@ class DevLX_EOS_ERA : public DevLX
    static PDeviceDescriptor_t Device(void) {return m_pDevice;};
    static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
 
-   static bool  OnIGCTimeout(WndForm* pWnd);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
    static BOOL bIGC_Download ;
@@ -190,13 +186,6 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
    static BOOL EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
    static BOOL EOSSetSTF(PDeviceDescriptor_t d,int iTmp, const TCHAR *info);
-   
-
-   static BOOL  CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
-
-  //----------------------------------------------------------------------------
-  //private:
-
 
 }; // DevLX_EOS_ERA
 
@@ -265,10 +254,6 @@ class DevLX_EOS_ERA::Decl
 
     /// Constructor - sets all data to 0.
     Decl();
-
-    // Format waypoint
-    void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type, int totalNum);
-
 
 }; // DevLX_EOS_ERA::Decl
 

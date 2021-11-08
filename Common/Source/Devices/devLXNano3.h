@@ -98,7 +98,7 @@ class DevLXNanoIII : public DevLX
 
    static BOOL Config(PDeviceDescriptor_t d);
    static void OnCloseClicked(WndButton* pWnd);
-   static void OnCancelClicked(WndButton* pWnd);
+
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
@@ -135,7 +135,6 @@ class DevLXNanoIII : public DevLX
    static PDeviceDescriptor_t Device(void) {return m_pDevice;};
    static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
 
-   static bool  OnIGCTimeout(WndForm* pWnd);
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
    static BOOL bIGC_Download ;
