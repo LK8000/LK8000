@@ -12,6 +12,27 @@
 typedef std::wstring tstring;
 typedef std::wstring_view tstring_view;
 
+#ifdef _GLIBCXX_HAVE_BROKEN_VSWPRINTF
+// workarround for mingw32ce
+template<typename T, size_t size> 
+std::wstring format_string(const wchar_t* fmt, int v) {
+  TCHAR out[size] = {};
+  swprintf(out, fmt, v);
+  return out;
+}
+
+inline tstring to_wstring(int v) {
+  return format_string<int, 16>(L"%d", v);
+}
+
+#endif
+
+template<typename T>
+inline tstring to_tstring(T v) {
+  using namespace std;
+  return to_wstring(v);
+}
+
 tstring to_tstring( const char* sz);
 
 inline
@@ -32,6 +53,11 @@ std::string to_utf8(const wchar_t* sz);
 #else
 typedef std::string tstring;
 typedef std::string_view tstring_view;
+
+template<typename T>
+inline tstring to_tstring(T v) {
+  return std::to_string(v);
+}
 
 inline
 tstring to_tstring( const char* sz) {
