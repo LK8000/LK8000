@@ -155,33 +155,12 @@ void reset_wConfig(void) {
 }
 
 void FontSetEnums( DataField* dfe) {
-
-    dfe->addEnumText(TEXT("-10"));
-    dfe->addEnumText(TEXT("-9"));
-    dfe->addEnumText(TEXT("-8"));
-    dfe->addEnumText(TEXT("-7"));
-    dfe->addEnumText(TEXT("-6"));
-    dfe->addEnumText(TEXT("-5"));
-    dfe->addEnumText(TEXT("-4"));
-    dfe->addEnumText(TEXT("-3"));
-    dfe->addEnumText(TEXT("-2"));
-    dfe->addEnumText(TEXT("-1"));
-    dfe->addEnumText(TEXT("0"));
-    dfe->addEnumText(TEXT("+1"));
-    dfe->addEnumText(TEXT("+2"));
-    dfe->addEnumText(TEXT("+3"));
-    dfe->addEnumText(TEXT("+4"));
-    dfe->addEnumText(TEXT("+5"));
-    dfe->addEnumText(TEXT("+6"));
-    dfe->addEnumText(TEXT("+7"));
-    dfe->addEnumText(TEXT("+8"));
-    dfe->addEnumText(TEXT("+9"));
-    dfe->addEnumText(TEXT("+10"));
+  if (dfe) {
+    for (int i = -MAXFONTRESIZE; i <= MAXFONTRESIZE; ++i) {
+      dfe->addEnumText(to_tstring(i).c_str());
+    }
+  }
 }
-/*
-    dfe = wp->GetDataField();
-    dfe->addEnumText(TEXT("-5"));
-*/
 
 int GlobalToBoxType(int i) {
 	int iTmp;
@@ -234,7 +213,6 @@ int GlobalToBoxType(int i) {
 		case MODELTYPE_PNA_GENERIC_BTK3:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK3;
 				break;
-
 		default:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
 	}
@@ -1859,7 +1837,6 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontSymbols"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-  //  FontSetEnums(dfe);
     dfe->addEnumText(MsgToken(2327)); // LKTOKEN  _@M2327_ "Bitmap"
     dfe->addEnumText(MsgToken(2386)); // LKTOKEN  _@M2386_ "UTF8"
 

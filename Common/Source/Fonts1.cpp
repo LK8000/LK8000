@@ -56,33 +56,21 @@ int GetFontRenderer() {
 //
 void ApplyFontSize(LOGFONT *logfont) {
 
-  if (ScreenSize==0) {
-      logfont->lfHeight = (int)((double)logfont->lfHeight * Screen0Ratio);
+  if (ScreenSize == 0) {
+      logfont->lfHeight *= Screen0Ratio;
   }
 
-
-
-  #ifdef USE_FREETYPE
-  if (logfont->lfWeight == 600) logfont->lfHeight+=1000;
-  #endif
-  return;
+#ifdef USE_FREETYPE
+  if (logfont->lfWeight == 600) {
+    logfont->lfHeight += 1000;
+  }
+#endif
 }
 
-
 void ApplyCustomResize(LOGFONT *logfont, short change) {
-
-  if (change!=MAXFONTRESIZE) {
-      int psign=1; short i;
-      // when MAXFONTRESIZE is 5, change goes from 0 to 4, 5 is neutral value, 6 to 10
-      if (change>MAXFONTRESIZE) {
-          psign=1;
-          i=change-MAXFONTRESIZE; // 6>>1 , 10>>5
-      } else {
-          psign=-1;
-          i=MAXFONTRESIZE-change; // 0>>5 , 4>>1
-      }
-      unsigned int u=  (double)(logfont->lfHeight*i) / 16.0;
-      logfont->lfHeight = logfont->lfHeight + (u*psign);
+  if (change != MAXFONTRESIZE) {
+    int f = change - MAXFONTRESIZE;
+    logfont->lfHeight += logfont->lfHeight * f / 16;
   }
 }
 
