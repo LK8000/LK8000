@@ -25,8 +25,6 @@ public:
 	// initialize the buffer.
 	CSTScreenBuffer(int nWidth, int nHeight);
 
-	~CSTScreenBuffer();
-
 #ifdef USE_TERRAIN_BLUR
     void Blur(unsigned int boxw);
 #endif
@@ -39,7 +37,7 @@ protected:
 	void HorizontalBlur(unsigned int boxw, BGRColor* src, BGRColor* dst);
 	void VerticalBlur(unsigned int boxh, BGRColor* src, BGRColor* dst);
 
-	BGRColor *m_pBufferTmp;
+	std::unique_ptr<BGRColor[]> m_pBufferTmp;
 #endif
 };
 

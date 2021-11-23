@@ -13,21 +13,9 @@
 // CSTScreenBuffer
 CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight) : RawBitmap(nWidth, nHeight) {
 #ifdef USE_TERRAIN_BLUR
-    m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*GetHeight()*GetCorrectedWidth());
-    if(!m_pBufferTmp) {
-        throw std::bad_alloc();
-    }
+    m_pBufferTmp = std::make_unique<BGRColor[]>(GetHeight() * GetCorrectedWidth());
 #endif
     std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(255, 255, 255));
-}
-
-CSTScreenBuffer::~CSTScreenBuffer() {
-#ifdef USE_TERRAIN_BLUR
-    if (m_pBufferTmp) {
-        free(m_pBufferTmp);
-        m_pBufferTmp = nullptr;
-    }
-#endif
 }
 
 void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int scale) {
@@ -45,8 +33,8 @@ void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int sc
 
 #ifdef USE_TERRAIN_BLUR
 void CSTScreenBuffer::Blur(unsigned int boxw) {
-    HorizontalBlur(boxw, GetBuffer(), m_pBufferTmp);
-    VerticalBlur(boxw, m_pBufferTmp, GetBuffer());
+    HorizontalBlur(boxw, GetBuffer(), m_pBufferTmp.get());
+    VerticalBlur(boxw, m_pBufferTmp.get(), GetBuffer());
 }
 
 void CSTScreenBuffer::HorizontalBlur(unsigned int boxw, BGRColor* src, BGRColor* dst) {
