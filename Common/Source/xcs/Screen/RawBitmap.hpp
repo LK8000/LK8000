@@ -22,7 +22,7 @@
 #include <windef.h>
 #include <wingdi.h>
 class LKSurface;
-#define Canvas LKSurface
+using Canvas = LKSurface;
 #else
 class Canvas;
 #endif
@@ -143,14 +143,14 @@ public:
    * Returns the Buffer
    * @return The Buffer as BGRColor array
    */
-  BGRColor *GetBuffer() {
+  BGRColor *GetBuffer() const {
     return buffer;
   }
 
   /**
    * Returns a pointer to the top-most row.
    */
-  BGRColor *GetTopRow() {
+  BGRColor *GetTopRow() const {
 #ifndef USE_GDI
     return buffer;
 #else
@@ -162,7 +162,7 @@ public:
   /**
    * Returns a pointer to the row below the current one.
    */
-  BGRColor *GetNextRow(BGRColor *row) {
+  BGRColor *GetNextRow(BGRColor *row) const {
 #ifndef USE_GDI
     return row + corrected_width;
 #else
@@ -179,7 +179,7 @@ public:
   /**
    * Returns a pointer to the row 
    */
-  BGRColor *GetRow(unsigned row) {
+  BGRColor *GetRow(unsigned row) const {
 #ifndef USE_GDI
     return GetTopRow() + corrected_width * row;
 #else
@@ -227,4 +227,4 @@ public:
 
 };
 
-#endif // !defined(AFX_STSCREENBUFFER_H__22D62F5D_32E2_4785_B3D9_2341C11F84A3__INCLUDED_)
+#endif // !defined(XCSOAR_SCREEN_RAW_BITMAP_HPP)
