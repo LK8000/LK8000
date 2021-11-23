@@ -51,16 +51,18 @@
 
 extern bool FastZoom;
 
-static COLORRAMP tshadow;
-static COLORRAMP thighlight;
-
-static const COLORRAMP (*lastColorRamp)[NUM_COLOR_RAMP_LEVELS] = nullptr;
-
 extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float light);
+
+namespace {
+
+COLORRAMP tshadow;
+COLORRAMP thighlight;
+
+const COLORRAMP (*lastColorRamp)[NUM_COLOR_RAMP_LEVELS] = nullptr;
 
 #ifdef GREYSCALE
 
-static Luminosity8 terrain_lightness( const Luminosity8& color, double lightness) {
+Luminosity8 terrain_lightness( const Luminosity8& color, double lightness) {
   if(lightness == 1.0) {
     return color;
   }
@@ -69,7 +71,7 @@ static Luminosity8 terrain_lightness( const Luminosity8& color, double lightness
 
 #else
 
-static RGB8Color terrain_lightness( const RGB8Color& color, float lightness) {
+RGB8Color terrain_lightness( const RGB8Color& color, float lightness) {
   if(lightness == 1.0F) {
     return color;
   }
@@ -175,6 +177,7 @@ inline T TerrainShading(const int16_t illum, const T& color) {
   return color;
 }
 
+} // namespace
 
 // map scale is approximately 2 points on the grid
 // therefore, want one to one mapping if mapscale is 0.5
@@ -198,7 +201,7 @@ class TerrainRenderer {
     TerrainRenderer &operator=(TerrainRenderer &&) = delete; // disallowed
 public:
 
-    explicit TerrainRenderer(const RECT& rc) : _dirty(true), _ready(), screen_buffer(), height_buffer(), color_table()  {
+    explicit TerrainRenderer(const RECT& rc) {
 
 #if !defined(NDEBUG) || TESTBENCH
       // check if all colors_ramps are valid.
@@ -265,19 +268,17 @@ public:
             last_height_scale = 0;
             last_realscale = 0;
 
-            // this is validating terrain construction
-            _ready = true;
-
         } catch (std::bad_alloc& e) {
 
             screen_buffer = nullptr;
             height_buffer = nullptr;
-            _ready = false;
 
             const tstring error = to_tstring(e.what());
             StartupStore(_T("TerrainRenderer : %s"), error.c_str());
             OutOfMemory(_T(__FILE__), __LINE__);
             ToggleMultimapTerrain();
+
+            throw e; // forward exception to caller...
         }
     }
 
@@ -294,18 +295,13 @@ public:
     bool IsDirty() const {
         return _dirty;
     }
-    
-    bool IsReady() const {
-        return _ready;
-    }
 
     short get_brightness() const {
         return auto_brightness;
     }
 
 private:
-    bool _dirty; // indicate screen_buffer is up-to-date
-    bool _ready; // indicate renderer is fully initialised
+    bool _dirty = true; // indicate screen_buffer is up-to-date
 
     unsigned int dtquant;
     unsigned int epx; // step size used for slope calculations
@@ -324,9 +320,9 @@ private:
     std::unique_ptr<int16_t[]> prev_iso_band;
     std::unique_ptr<int16_t[]> current_iso_band;
 
-    BGRColor color_table[128][256];
+    BGRColor color_table[128][256] = {};
 
-    const COLORRAMP (*color_ramp)[NUM_COLOR_RAMP_LEVELS];
+    const COLORRAMP (*color_ramp)[NUM_COLOR_RAMP_LEVELS] = {};
 
     unsigned last_height_scale;
     double last_terrain_whiteness;
@@ -1106,21 +1102,14 @@ public:
     }
 };
 
+namespace {
 
-static TerrainRenderer *trenderer = NULL;
-
-/**
- * Require LockTerrainDataGraphics() everytime !
- */
-void CloseTerrainRenderer() {
-    delete trenderer;
-    trenderer = nullptr;
-}
+std::unique_ptr<TerrainRenderer> trenderer;
 
 /**
  * @return true if all terrain parameters are same, false if one or more change
  */
-static bool UpToDate(short TerrainContrast, short TerrainBrightness, short TerrainRamp, short Shading, const ScreenProjection& _Proj) {
+bool UpToDate(short TerrainContrast, short TerrainBrightness, short TerrainRamp, short Shading, const ScreenProjection& _Proj) {
 
     static short old_TerrainContrast(TerrainContrast);
     static short old_TerrainBrightness(TerrainBrightness);
@@ -1149,6 +1138,12 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
     return true;
 }
 
+bool operator!=(const RECT& a, const RECT& b) {
+    return (a.bottom != b.bottom) || (a.right != b.right)
+            || (a.left != b.left)  || (a.top != b.top);
+}
+
+} // namespace
 
 /**
  * Require LockTerrainDataGraphics() everytime !
@@ -1156,49 +1151,26 @@ static bool UpToDate(short TerrainContrast, short TerrainBrightness, short Terra
 bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
         const double sunazimuth, const double sunelevation) {
     (void) sunelevation; // TODO feature: sun-based rendering option
-    (void) rc;
 
     if (!RasterTerrain::isTerrainLoaded()) {
         return false;
     }
 
-    if (trenderer && !trenderer->IsReady()) {
-        StartupStore(_T("... DRAWTERRAIN trenderer not null, but terrain not ready! Recovering.\n"));
-        BUGSTOP_LKASSERT(0);
-        CloseTerrainRenderer();
+    static RECT oldrc = {};
+
+    if (rc != oldrc) {
+        // Resolution has changed, probably PAN mode on with bottombar full opaque
+        // We paint full screen, so we resize it.
+        trenderer = nullptr;
     }
 
-
-    static RECT oldrc;
-_redo:
-
-    if (!trenderer) {
-        oldrc = rc;
-        trenderer = new(std::nothrow) TerrainRenderer(rc);
-        LKASSERT(trenderer);
-        if (trenderer && !trenderer->IsReady()) {
-#if TESTBENCH
-            StartupStore(_T("... DrawTerrain: ERROR terrain not ready\n"));
-#endif
-            CloseTerrainRenderer();
-        }
-        
+    try {
         if (!trenderer) {
-            return false;
+            oldrc = rc;
+            trenderer = std::make_unique<TerrainRenderer>(rc);
         }
-    }
-
-    // Resolution has changed, probably PAN mode on with bottombar full opaque
-    // We paint full screen, so we resize it.
-    if ((rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
-            || (rc.left != oldrc.left) || (rc.top != oldrc.top)) {
-#if TESTBENCH
-        StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d"),
-                    oldrc.left, oldrc.top, oldrc.right, oldrc.bottom, rc.left, rc.top, rc.right, rc.bottom);
-#endif
-        LKASSERT(rc.right > 0 && rc.bottom > 0);
-        CloseTerrainRenderer();
-        goto _redo;
+    } catch(std::exception& e) {
+        return false;
     }
 
     if(trenderer->IsDirty() || (!UpToDate(TerrainContrast, TerrainBrightness, TerrainRamp, Shading, _Proj))) {
@@ -1243,4 +1215,11 @@ _redo:
     trenderer->Draw(Surface, rc);
 
     return true;
+}
+
+/**
+ * Require LockTerrainDataGraphics() everytime !
+ */
+void CloseTerrainRenderer() {
+    trenderer = nullptr;
 }
