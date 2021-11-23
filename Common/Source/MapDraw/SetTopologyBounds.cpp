@@ -84,16 +84,6 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
     StartupStore(_T("..... Run Recompute, Force=%d,  unchanged=%d\n"),force,unchanged);
     #endif
 
-    #if 0 // 121208
-    // make bounds bigger than screen
-    if (range_real<MINRANGE) {
-      scale = BORDERFACTOR*MINRANGE/range_real;
-    } else {
-      // 121208 this is creating problems after a low zoom
-      // scale = BORDERFACTOR;
-    }
-    #endif
-
     bounds_active = MapWindow::CalculateScreenBounds(scale, rcin, _Proj);
 
     range_active = max((bounds_active.maxx-bounds_active.minx),
