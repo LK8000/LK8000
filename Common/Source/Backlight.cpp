@@ -31,7 +31,7 @@ bool SetBacklight() // VENTA4
 
   switch (GlobalModelType)
   {
-	case MODELTYPE_PNA_HP31X:
+	case ModelType::HP31X:
 
 		hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Backlight"), 0,  0, &hKey);
 		if (hRes != ERROR_SUCCESS) return false;
@@ -53,7 +53,7 @@ bool SetBacklight() // VENTA4
 
 		break;
 
-	case MODELTYPE_PNA_ROYALTEK3200:
+	case ModelType::ROYALTEK3200:
 
 		hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Backlight"), 0,  0, &hKey);
 		if (hRes != ERROR_SUCCESS) return false;
@@ -78,7 +78,7 @@ bool SetBacklight() // VENTA4
 
 		break;
 
-	case MODELTYPE_PNA_FUNTREK:
+	case ModelType::FUNTREK:
 
 		GM130MaxBacklight();
 

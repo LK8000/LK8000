@@ -101,7 +101,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
                       break;
                    }
                 }
-		if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
+		if(GlobalModelType==ModelType::LX_MINI_MAP)
 		{
 			SetModeType(LKMODE_MAP,MP_MOVING);
 			LKevent=LKEVENT_NONE;

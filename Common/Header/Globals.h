@@ -81,7 +81,7 @@ GEXTERN StartupState_t ProgramStarted;
 
 GEXTERN int UTCOffset;
 
-GEXTERN int	GlobalModelType;
+GEXTERN ModelType::Type_t GlobalModelType;
 GEXTERN TCHAR	GlobalModelName[MAX_PATH];
 
 

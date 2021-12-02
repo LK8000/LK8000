@@ -162,63 +162,6 @@ void FontSetEnums( DataField* dfe) {
   }
 }
 
-int GlobalToBoxType(int i) {
-	int iTmp;
-	switch (i) {
-		case MODELTYPE_PNA_PNA:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
-				break;
-		case MODELTYPE_PNA_HP31X:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaHp31x;
-				break;
-		case MODELTYPE_PNA_PN6000:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaPn6000;
-				break;
-		case MODELTYPE_PNA_MIO:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaMio;
-				break;
-		case MODELTYPE_PNA_NOKIA_500:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaNokia500;
-				break;
-		case MODELTYPE_PNA_MEDION_P5:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaMedionP5;
-				break;
-		case MODELTYPE_PNA_NAVIGON:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaNavigon;
-				break;
-		case MODELTYPE_PNA_FUNTREK:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaFuntrek;
-				break;
-		case MODELTYPE_PNA_ROYALTEK3200:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaRoyaltek3200;
-				break;
-		case MODELTYPE_PNA_MINIMAP:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaMinimap;
-				break;
-		case MODELTYPE_PNA_GENERIC_BTKA:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTKA;
-				break;
-		case MODELTYPE_PNA_GENERIC_BTKB:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTKB;
-				break;
-		case MODELTYPE_PNA_GENERIC_BTKC:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTKC;
-				break;
-		case MODELTYPE_PNA_GENERIC_BTK1:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK1;
-				break;
-		case MODELTYPE_PNA_GENERIC_BTK2:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK2;
-				break;
-		case MODELTYPE_PNA_GENERIC_BTK3:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGenericBTK3;
-				break;
-		default:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
-	}
-	return iTmp;
-}
-
 static void UpdateButtons(WndForm *pOwner) {
   TCHAR text[120];
   TCHAR val[100];
@@ -1699,7 +1642,7 @@ static void setVariables( WndForm *pOwner) {
   if (wp) {
     DataField* dfe = wp->GetDataField();
     
-    for (auto dev : devRegisterIterator()) {
+    for (auto& dev : devRegisterIterator()) {
       dfe->addEnumText(dev.Name);
     }
 
@@ -2600,24 +2543,10 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->addEnumText(TEXT("Generic"));
-    dfe->addEnumText(TEXT("HP31x"));
-    dfe->addEnumText(TEXT("MedionP5"));
-    dfe->addEnumText(TEXT("MIO"));
-    dfe->addEnumText(TEXT("Nokia500")); // VENTA3
-    dfe->addEnumText(TEXT("PN6000"));
-    dfe->addEnumText(TEXT("Navigon"));
-    dfe->addEnumText(TEXT("Holux FunTrek GM-130 / GM-132"));
-    dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
-    dfe->addEnumText(TEXT("LX MiniMap"));
-    dfe->addEnumText(TEXT("Keyboard A"));
-    dfe->addEnumText(TEXT("KeyBoard B"));
-    dfe->addEnumText(TEXT("KeyBoard C"));
-    dfe->addEnumText(TEXT("KeyBoard 1"));
-    dfe->addEnumText(TEXT("KeyBoard 2"));
-    dfe->addEnumText(TEXT("KeyBoard 3"));
-
-    dfe->Set(GlobalToBoxType(GlobalModelType));
+    for (auto& item : ModelType::list()) {
+      dfe->addEnumText(std::get<1>(item));
+    }
+    dfe->Set(ModelType::get_index(GlobalModelType));
     wp->RefreshDisplay();
   }
 
@@ -4454,74 +4383,13 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
-    if (GlobalToBoxType(Appearance.InfoBoxModel) != (InfoBoxModelAppearance_t)
-        (wp->GetDataField()->GetAsInteger())) {
-
-      // We temporarily set it to the index 
-      Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)
-        (wp->GetDataField()->GetAsInteger());
-
-      switch (Appearance.InfoBoxModel) {
-      case apImPnaGeneric: 
-	GlobalModelType = MODELTYPE_PNA_PNA;
-	break;
-      case apImPnaHp31x:
-	GlobalModelType = MODELTYPE_PNA_HP31X;
-	break;
-      case apImPnaPn6000:
-	GlobalModelType = MODELTYPE_PNA_PN6000;
-	break;
-      case apImPnaMio:
-	GlobalModelType = MODELTYPE_PNA_MIO;
-	break;
-      case apImPnaNokia500:
-	GlobalModelType = MODELTYPE_PNA_NOKIA_500;
-	break;
-      case apImPnaMedionP5:
-	GlobalModelType = MODELTYPE_PNA_MEDION_P5;
-	break;
-      case apImPnaNavigon:
-	GlobalModelType = MODELTYPE_PNA_NAVIGON;
-	break;
-      case apImPnaFuntrek:
-	GlobalModelType = MODELTYPE_PNA_FUNTREK;
-	break;
-      case apImPnaRoyaltek3200:
-	GlobalModelType = MODELTYPE_PNA_ROYALTEK3200;
-	break;
-      case apImPnaMinimap:
-	GlobalModelType = MODELTYPE_PNA_MINIMAP;
-	break;
-      case apImPnaGenericBTKA:
-	GlobalModelType = MODELTYPE_PNA_GENERIC_BTKA;
-	break;
-      case apImPnaGenericBTKB:
-	GlobalModelType = MODELTYPE_PNA_GENERIC_BTKB;
-	break;
-      case apImPnaGenericBTKC:
-	GlobalModelType = MODELTYPE_PNA_GENERIC_BTKC;
-	break;
-      case apImPnaGenericBTK1:
-	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK1;
-	break;
-      case apImPnaGenericBTK2:
-	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK2;
-	break;
-      case apImPnaGenericBTK3:
-	GlobalModelType = MODELTYPE_PNA_GENERIC_BTK3;
-	break;
-      default:
-	GlobalModelType = MODELTYPE_UNKNOWN; // Can't happen, troubles ..
-	break;
-	
-      }
-      // we set it correctly yo global value , ex. 10001
-      Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)GlobalModelType;
+    DataField* dfe = wp->GetDataField();
+    ModelType::Type_t selected = ModelType::get_id(dfe->GetAsInteger());
+    if (GlobalModelType != selected) {
+      GlobalModelType = selected;
       requirerestart = true;
     }
   }
-//
-
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {

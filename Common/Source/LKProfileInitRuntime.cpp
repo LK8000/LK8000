@@ -73,8 +73,6 @@ void LKProfileInitRuntime() {
 
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 
-  GlobalModelType=Appearance.InfoBoxModel;
-
   //
   // Units
   //
@@ -103,99 +101,51 @@ void LKProfileInitRuntime() {
   //
   // ModelType specials for PNAs
   //
-  #if (WINDOWSPC<1)
-  if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
-	DeviceNeedClipping=true;
-	// key transcoding for this one
-	#if TESTBENCH
-	StartupStore(TEXT(". Loading HP31X settings%s"),NEWLINE);
-	#endif
+
+#if TESTBENCH
+    StartupStore(TEXT(". Loading %s settings"), ModelType::get_name(GlobalModelType));
+#endif
+
+  if (GlobalModelType == ModelType::GENERIC ) {
+
+  } 
+  else if (GlobalModelType == ModelType::HP31X ) {
+	  DeviceNeedClipping = true;
+    // key transcoding for this one
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_PN6000 ) {
-	// key transcoding for this one
+  else if (GlobalModelType == ModelType::PN6000 ) {
+	  // key transcoding for this one
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_MIO ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". Loading MIO settings%s"),NEWLINE);
-	#endif
-	// currently no special settings from MIO but need to handle hw keys
+  else if (GlobalModelType == ModelType::PNA_MIO ) {
+  	// currently no special settings from MIO but need to handle hw keys
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_NOKIA_500 ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". Loading Nokia500 settings%s"),NEWLINE);
-	#endif
-	// key transcoding is made
+  else if (GlobalModelType == ModelType::NOKIA_500 ) {
+  	// key transcoding is made
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_MEDION_P5 ) {
-	#if TESTBENCH
-	StartupStore(TEXT(".Loading Medion settings%s"),NEWLINE);
-	#endif
-	DeviceNeedClipping=true;
+  else if (GlobalModelType == ModelType::MEDION_P5 ) {
+  	DeviceNeedClipping=true;
+  } 
+  else if (GlobalModelType == ModelType::PNA_NAVIGON ) {
+  	DeviceNeedClipping=true;
   }
-  if (GlobalModelType == MODELTYPE_PNA_NAVIGON ) {
-	#if TESTBENCH
-	StartupStore(TEXT(".Loading Navigon settings%s"),NEWLINE);
-	#endif
-	DeviceNeedClipping=true;
-  }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_PNA ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". Loading default PNA settings%s"),NEWLINE);
-	#endif
+  else if (GlobalModelType == ModelType::BTKA ) {
 
   }
-  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD MODE A%s"),NEWLINE);
-	#endif
+  else if (GlobalModelType == ModelType::BTKB ) {
 
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD MODE B%s"),NEWLINE);
-	#endif
+  else if (GlobalModelType == ModelType::BTKC ) {
 
   }
-  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKC ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD MODE C%s"),NEWLINE);
-	#endif
+  else if (GlobalModelType == ModelType::BTK1 ) {
 
   }
-  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1 ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD TYPE 1%s"),NEWLINE);
-	#endif
+  else if (GlobalModelType == ModelType::BTK2 ) {
 
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2 ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD TYPE 2%s"),NEWLINE);
-	#endif
+  else if (GlobalModelType == ModelType::BTK3 ) {
 
   }
-  else
-  if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3 ) {
-	#if TESTBENCH
-	StartupStore(TEXT(". USING KEYBOARD TYPE 3%s"),NEWLINE);
-	#endif
-
-  }
-  #if TESTBENCH
-  else
-	StartupStore(TEXT(". No special regsets for this device%s"),NEWLINE);
-  #endif
-
-  #endif // ModelType specials
-
-
 
   LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
   LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;

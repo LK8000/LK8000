@@ -1065,7 +1065,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     //    D		button Zoom sel
     //    E		rotary knob Esc
     //
-    if (GlobalModelType == MODELTYPE_PNA_MINIMAP) {
+    if (GlobalModelType == ModelType::LX_MINI_MAP) {
 
       switch (KeyCode) {
 
@@ -1177,7 +1177,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTK1 is representing the screen in portrait mode. Space is on the right.
     // Keyboard type 1.
     //
-    if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK1) {
+    if (GlobalModelType == ModelType::BTK1) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1294,7 +1294,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTK2 is representing the screen in portrait mode. Space is on the right.
     // Keyboard type 2.
     //
-    if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK2) {
+    if (GlobalModelType == ModelType::BTK2) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1409,7 +1409,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTK3 is representing the screen in portrait mode. Space is on the right.
     // Keyboard type 3.
     //
-    if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTK3) {
+    if (GlobalModelType == ModelType::BTK3) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1526,7 +1526,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTKA is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.
     // universal Keyboard type
     //
-    if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKA) {
+    if (GlobalModelType == ModelType::BTKA) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1572,7 +1572,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTKB is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.
     // universal Keyboard type
     //
-    if (GlobalModelType == MODELTYPE_PNA_GENERIC_BTKB) {
+    if (GlobalModelType == ModelType::BTKB) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;

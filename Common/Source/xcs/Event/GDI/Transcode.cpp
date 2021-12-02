@@ -122,23 +122,18 @@ TranscodeKey(unsigned key_code)
 #endif
 
 
-    extern int GlobalModelType;
+    extern ModelType::Type_t GlobalModelType;
 //  switch (global_model_type) {
     switch (GlobalModelType) {
-        //case ModelType::HP31X:
-        case MODELTYPE_PNA_HP31X:
+        case ModelType::HP31X:
             return KeyMapLookup(hp31x_key_map, key_code);
-        //case ModelType::MEDION_P5:
-        case MODELTYPE_PNA_MEDION_P5:
+        case ModelType::MEDION_P5:
             return KeyMapLookup(medion_p5_key_map, key_code);
-        //case ModelType::NOKIA_500:
-        case MODELTYPE_PNA_NOKIA_500:
+        case ModelType::NOKIA_500:
             return KeyMapLookup(nokia_500_key_map, key_code);
-        //case ModelType::PN6000:
-        case MODELTYPE_PNA_PN6000:
+        case ModelType::PN6000:
             return KeyMapLookup(pn_6000_key_map, key_code);
-        //case ModelType::LX_MINI_MAP:
-        case MODELTYPE_PNA_MINIMAP:
+        case ModelType::LX_MINI_MAP:
             return KeyMapLookup(lx_mm_key_map, key_code);
         default:
             return key_code;

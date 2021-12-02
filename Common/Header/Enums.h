@@ -62,26 +62,6 @@ typedef enum{
   bit7E1,
 }BitIndex_t;
 
-
-typedef enum{
-	apImPnaGeneric=0,
-	apImPnaHp31x,
-	apImPnaMedionP5,
-	apImPnaMio,
-	apImPnaNokia500,
-	apImPnaPn6000,
-	apImPnaNavigon,
-	apImPnaFuntrek,
-	apImPnaRoyaltek3200,
-        apImPnaMinimap,
-	apImPnaGenericBTKA,
-	apImPnaGenericBTKB,
-	apImPnaGenericBTKC,
-	apImPnaGenericBTK1,
-	apImPnaGenericBTK2,
-	apImPnaGenericBTK3
-}InfoBoxModelAppearance_t;
-
 typedef enum{
 	umGlider=0,
 	umParaglider,

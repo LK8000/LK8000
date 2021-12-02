@@ -179,7 +179,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryAltitudeUnitsValue, AltitudeUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryAppIndLandable, Appearance.IndLandable)) return;
   if (settings::read(sname, svalue, szRegistryUTF8Symbolsl, Appearance.UTF8Pictorials)) return;
-  if (settings::read(sname, svalue, szRegistryAppInfoBoxModel, Appearance.InfoBoxModel)) return;
+  if (settings::read(sname, svalue, szRegistryAppInfoBoxModel, GlobalModelType)) return;
 
   if (settings::read(sname, svalue, szRegistryAppInverseInfoBox, InverseInfoBox_Config)) return;
   if (settings::read(sname, svalue, szRegistryArrivalValue, ArrivalValue)) return;

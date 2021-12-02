@@ -75,9 +75,7 @@ BOOL	InitInstance    ();
 extern void CreateCalculationThread();
 extern void PreloadInitialisation(bool ask);
 extern bool LKProfileLoad(const TCHAR *szFile);
-#ifdef PNA
-extern bool LoadModelFromProfile(void);
-#endif
+
 
 static bool realexitforced=false;
 
@@ -223,17 +221,17 @@ bool Startup(const TCHAR* szCmdLine) {
   LKRunStartEnd(true);
   // END OF PRELOAD, PROGRAM GO!
 
-  #ifdef PNA
-    // At this point we still havent loaded profile. Loading profile will also reload registry.
-    // If registry was deleted in PNA, model type is not configured. It is configured in profile, but
-    // it is too early here. So no ModelType .
-    //
-    // if we found no embedded name, try from registry
-    if (  !SetModelType() ) {
-        // last chance: try from default profile
-        LoadModelFromProfile();
-    }
-  #endif
+#ifdef PNA
+  // At this point we still havent loaded profile. Loading profile will also reload registry.
+  // If registry was deleted in PNA, model type is not configured. It is configured in profile, but
+  // it is too early here. So no ModelType .
+  //
+  // if we found no embedded name, try from registry
+  if (  !SetModelType() ) {
+      // last chance: try from default profile
+      LoadModelFromProfile();
+  }
+#endif
 
 #ifndef ANDROID
   bool datadir = CheckDataDir();

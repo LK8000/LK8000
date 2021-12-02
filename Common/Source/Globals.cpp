@@ -145,7 +145,7 @@ void Globals_Init(void) {
   GlobalRunning = false;
 
 
-  GlobalModelType=MODELTYPE_PNA_PNA;
+  GlobalModelType = ModelType::GENERIC;
 
 
   SPEEDMODIFY = TOKNOTS;
@@ -560,7 +560,6 @@ void Globals_Init(void) {
   // Black/White inversion
   Appearance.InverseInfoBox=false;
   InverseInfoBox_Config=false;
-  Appearance.InfoBoxModel=apImPnaGeneric;
 
   TerrainContrast   = 140;
   TerrainBrightness = 115;

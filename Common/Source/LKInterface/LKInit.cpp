@@ -26,20 +26,18 @@ extern void InitCustomKeys();
 //
 void InitCustomHardware(void) {
 
-  #ifdef PNA
-  if (GlobalModelType == MODELTYPE_PNA_FUNTREK) {
-	Init_GM130();
-	// if (!DeviceIsGM130) return;
-	// todo set to General devicetype if Init failed
+#ifdef PNA
+  if (GlobalModelType == ModelType::FUNTREK) {
+    Init_GM130();
+    // if (!DeviceIsGM130) return;
+    // todo set to General devicetype if Init failed
   }
-  if (GlobalModelType == MODELTYPE_PNA_ROYALTEK3200) {
-	Init_Royaltek3200();
+  if (GlobalModelType == ModelType::ROYALTEK3200) {
+    Init_Royaltek3200();
   }
 
   CBthDevice::Instance();
-  #endif
-
-  return;
+#endif
 }
 
 //

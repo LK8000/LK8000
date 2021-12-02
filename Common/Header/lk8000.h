@@ -12,6 +12,7 @@
 #include "Sizes.h"
 #include <stdint.h>
 #include "Thread/Mutex.hpp"
+#include "Modeltype.h"
 
 typedef struct _DATAOPTIONS
 {
@@ -178,7 +179,6 @@ typedef struct{
   IndLandable_t IndLandable;	// landable icon style
   int UTF8Pictorials;
   bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles
-  InfoBoxModelAppearance_t InfoBoxModel;
 } Appearance_t;
 
 
