@@ -18,17 +18,11 @@ CSTScreenBuffer::CSTScreenBuffer(int nWidth, int nHeight) : RawBitmap(nWidth, nH
     std::fill_n(GetBuffer(), GetHeight()*GetCorrectedWidth(), BGRColor(255, 255, 255));
 }
 
-void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest, int scale) {
+void CSTScreenBuffer::DrawStretch(LKSurface& Surface, const RECT& rcDest) {
     const unsigned cx = rcDest.right - rcDest.left;
     const unsigned cy = rcDest.bottom - rcDest.top;
-    int cropsize;
-    if ((cy < GetWidth()) || ScreenLandscape) {
-        cropsize = GetHeight() * cx / cy;
-    } else {
-        // NOT TESTED!
-        cropsize = GetWidth();
-    }
-    StretchTo(cropsize/scale, GetHeight()/scale, Surface , rcDest.left, rcDest.top, cx, cy);
+
+    StretchTo(GetWidth(), GetHeight(), Surface , rcDest.left, rcDest.top, cx, cy);
 }
 
 #ifdef USE_TERRAIN_BLUR

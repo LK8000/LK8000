@@ -233,31 +233,24 @@ public:
         LKASSERT(dtquant>=1);
 
 #ifdef USE_TERRAIN_BLUR
-        blursize = max((unsigned int) 0, (dtquant - 1) / 2); // always 0
-        oversampling = max(1, (blursize + 1) / 2 + 1); // always 1
-        if (blursize == 0) {
-            oversampling = 1; // no point in oversampling, just let stretchblt do the scaling
-        }
+        blursize = std::max(0U, (dtquant - 1U) / 2U); // always 0
 #endif
 
         /*
-          dtq  ovs  blur  res_x  res_y   sx  sy  terrain_loads  pixels
-           1    1    0    320    240    320 240    76800        76800
-           2    1    0    160    120    160 120    19200        19200
-           3    2    1    213    160    107  80     8560        34080
-           4    2    1    160    120     80  60     4800        19200
-           5    3    2    192    144     64  48     3072        27648
-         */
-
+        screen_size  dtq  blur  res_x  res_y terrain_pixels
+          320x240     1    0    320    240      76800      
+          640x480     2    0    320    240      76800      
+          960x720     3    1    320    240      76800      
+        */
         try {
 
-            const int res_x = iround((rc.right - rc.left) * oversampling / dtquant);
-            const int res_y = iround((rc.bottom - rc.top) * oversampling / dtquant);
+            const int res_x = iround((rc.right - rc.left) / dtquant);
+            const int res_y = iround((rc.bottom - rc.top) / dtquant);
 
             screen_buffer = std::make_unique<CSTScreenBuffer>(res_x, res_y);
 
-            const size_t ixs = screen_buffer->GetCorrectedWidth() / oversampling;
-            const size_t iys = screen_buffer->GetHeight() / oversampling;
+            const size_t ixs = screen_buffer->GetCorrectedWidth();
+            const size_t iys = screen_buffer->GetHeight();
 
             height_buffer = std::make_unique<CSTHeightBuffer>(ixs, iys);
 
@@ -311,9 +304,6 @@ private:
 #ifdef USE_TERRAIN_BLUR
 // only used if blur...
     int blursize;
-    int oversampling;
-#else
-    static constexpr int oversampling = 1; //no oversampling if no "Blur"
 #endif
     std::unique_ptr<CSTScreenBuffer> screen_buffer;
     std::unique_ptr<CSTHeightBuffer> height_buffer;
@@ -1098,7 +1088,7 @@ public:
         }
 
         _dirty = false;
-        screen_buffer->DrawStretch(Surface, rc, oversampling);
+        screen_buffer->DrawStretch(Surface, rc);
     }
 };
 

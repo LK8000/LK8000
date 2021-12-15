@@ -21,8 +21,7 @@
 class CSTScreenBuffer final : public RawBitmap
 {
 public:
-	// Creates uninitialized buffer. Call Create or CreateRGB to
-	// initialize the buffer.
+	// Creates uninitialized buffer.
 	CSTScreenBuffer(int nWidth, int nHeight);
 
 #ifdef USE_TERRAIN_BLUR
@@ -30,7 +29,7 @@ public:
 #endif
 
 	// Draws buffer into given device context within rectangle
-	void DrawStretch(LKSurface& Surface, const RECT& rcDest, int scale);
+	void DrawStretch(LKSurface& Surface, const RECT& rcDest);
 
 protected:
 #ifdef USE_TERRAIN_BLUR
