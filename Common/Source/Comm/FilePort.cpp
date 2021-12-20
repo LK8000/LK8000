@@ -11,6 +11,8 @@
 #include "externs.h"
 #include "FilePort.h"
 #include <functional>
+#include "utils/stringext.h"
+
 using namespace std::placeholders;
 
 
@@ -47,18 +49,16 @@ int FilePort::SetRxTimeout(int TimeOut) {
 return 0;
 }
 
-int FilePort::ReadLine(void *pString, size_t size) {
-char* szString = (char*)pString;
-
+int FilePort::ReadLine(char* pString, size_t size) {
 	if(!FileStream) {
-			return -1;
-	}
-
-	if (fgets((char*) szString, size, FileStream)==NULL) {
-		szString[0] = '\0';
 		return -1;
 	}
-	return strlen(szString);;
+
+	if (fgets(pString, size, FileStream)==NULL) {
+		pString[0] = '\0';
+		return -1;
+	}
+	return strlen(pString);;
 }
 
 
@@ -76,8 +76,8 @@ bool FilePort::Write(const void *data, size_t length) {
 
 
 
- int32_t GGA_RMC_seconds(const char *StrTime)
-{int32_t Hour=0,Minute=0,Second=0, sec;
+int32_t GGA_RMC_seconds(const char *StrTime) {
+  int32_t Hour=0, Minute=0, Second=0;
 
   if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
       Hour = (StrTime[0] - '0')*10 + (StrTime[1] - '0');
@@ -88,10 +88,7 @@ bool FilePort::Write(const void *data, size_t length) {
   if (_istdigit(StrTime[4]) && _istdigit(StrTime[5])) {
       Second = (StrTime[4] - '0')*10 + (StrTime[5] - '0');
   }
-//  StartupStore(_T("...... RMC_seconds %s =====> %02ih%02im%02is%s"),StrTime, Hour, Minute, Second,NEWLINE);
-  sec = Hour*3600L+ Minute * 60L + Second;
-//  StartupStore(TEXT("RMC_seconds =====> %d %s"), sec, NEWLINE);
-return sec; 
+  return Hour*3600+ Minute * 60 + Second;
 }
 
 
@@ -185,12 +182,15 @@ int32_t i_skip = 1;
     {
       if( RawByteData[GetPortIndex()])
       {
-        std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&FilePort::ProcessChar, this, _1));
+        std::for_each(std::begin(szString), std::next(szString, nRecv), std::bind(&FilePort::ProcessChar, this, _1));
       }
       else
       {
+        TCHAR nmea[MAX_NMEA_LEN];
+        from_utf8(szString, nmea);
+
         LockFlightData();
-        devParseNMEA(GetPortIndex(), (TCHAR*)szString, &GPS_INFO);
+        devParseNMEA(GetPortIndex(), nmea, &GPS_INFO);
         UnlockFlightData();
       }
       AddStatTx(nRecv);
