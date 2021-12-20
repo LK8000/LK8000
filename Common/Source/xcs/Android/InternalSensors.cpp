@@ -351,6 +351,9 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnmea) {
   const char* c_nmea = env->GetStringUTFChars(jnmea, 0);
+  AtScopeExit(&) {
+    env->ReleaseStringUTFChars(jnmea, c_nmea);
+  };
 
   int index = getDeviceIndex(env, instance);
   ScopeLock Lock(CritSec_Comm);
@@ -367,12 +370,11 @@ Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnm
   }
 
   char* nmea = strdup(c_nmea);
+  AtScopeExit(&) {
+    free(nmea);
+  };
 
   LockFlightData();
   devParseNMEA(index, nmea, &GPS_INFO);
   UnlockFlightData();
-
-  free(nmea);
-
-  env->ReleaseStringUTFChars(jnmea, c_nmea);
 }
