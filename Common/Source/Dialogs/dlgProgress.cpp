@@ -44,8 +44,8 @@ dlgProgress::dlgProgress() {
     using std::placeholders::_2;
 
     CallBackTableEntry_t CallBackTable[] = {
-        make_OnPaintCallback("OnSplashPaint", std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
-        make_OnPaintCallback("OnProgressPaint", dlgProgress::OnProgressPaint),
+        callback_entry("OnSplashPaint", std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
+        callback_entry("OnProgressPaint", dlgProgress::OnProgressPaint),
         EndCallBackEntry()
     };
 

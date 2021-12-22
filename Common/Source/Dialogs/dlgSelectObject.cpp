@@ -622,17 +622,17 @@ int dlgSelectObject::DoModal() {
   using std::placeholders::_2;
 
   CallBackTableEntry_t CallBackTable[] = {
-    make_DataAccessCallback("OnFilterDistance", std::bind(&dlgSelectObject::OnFilterDistance, this, _1, _2)),
-    make_DataAccessCallback("OnFilterDirection", std::bind(&dlgSelectObject::OnFilterDirection, this, _1, _2)),
-    make_DataAccessCallback("OnFilterType", std::bind(&dlgSelectObject::OnFilterType, this, _1, _2)),
+    callback_entry("OnFilterDistance", std::bind(&dlgSelectObject::OnFilterDistance, this, _1, _2)),
+    callback_entry("OnFilterDirection", std::bind(&dlgSelectObject::OnFilterDirection, this, _1, _2)),
+    callback_entry("OnFilterType", std::bind(&dlgSelectObject::OnFilterType, this, _1, _2)),
 
-    make_OnPaintCallback("OnPaintListItem", std::bind(&dlgSelectObject::OnPaintListItem, this, _1, _2)),
+    callback_entry("OnPaintListItem", std::bind(&dlgSelectObject::OnPaintListItem, this, _1, _2)),
 
-    make_OnListCallback("OnWpListInfo", std::bind(&dlgSelectObject::OnWpListInfo, this, _1, _2)),
+    callback_entry("OnWpListInfo", std::bind(&dlgSelectObject::OnWpListInfo, this, _1, _2)),
 
-    make_ClickNotifyCallback("OnFilterName", std::bind(&dlgSelectObject::OnFilterName, this, _1)),
-    make_ClickNotifyCallback("OnSelectClicked", std::bind(&dlgSelectObject::OnSelectClicked, this, _1)),
-    make_ClickNotifyCallback("OnCloseClicked", OnCloseClicked),
+    callback_entry("OnFilterName", std::bind(&dlgSelectObject::OnFilterName, this, _1)),
+    callback_entry("OnSelectClicked", std::bind(&dlgSelectObject::OnSelectClicked, this, _1)),
+    callback_entry("OnCloseClicked", OnCloseClicked),
 
     EndCallBackEntry()
   };

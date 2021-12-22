@@ -10,6 +10,7 @@
 #define __DLGTOOLS_H
 
 #include <variant>
+#include <utility>
 #include "WindowControls.h"
 
 
@@ -27,54 +28,24 @@ struct CallBackTableEntry_t {
   const callback_variant callback;
 };
 
-inline CallBackTableEntry_t
-make_OnHelpCallback(const char* Name, WindowControl::OnHelpCallback_t callback) {
-  return { Name, callback };
+template<typename Callback_t>
+CallBackTableEntry_t callback_entry(const char* Name, Callback_t&& callback) {
+  return { Name, std::forward<Callback_t>(callback) };
 }
 
-#define OnHelpCallbackEntry(x) make_OnHelpCallback(#x, x)
+#define OnHelpCallbackEntry(x) callback_entry<WindowControl::OnHelpCallback_t>(#x, x)
 
+#define OnListCallbackEntry(x) callback_entry<WndListFrame::OnListCallback_t>(#x, x)
 
-inline CallBackTableEntry_t
-make_OnListCallback(const char* Name, WndListFrame::OnListCallback_t callback) {
-  return { Name, callback };
-}
+#define OnPaintCallbackEntry(x) callback_entry<WndOwnerDrawFrame::OnPaintCallback_t>(#x, x)
 
-#define OnListCallbackEntry(x) make_OnListCallback(#x, x)
+#define ClickNotifyCallbackEntry(x) callback_entry<WndButton::ClickNotifyCallback_t>(#x, x)
 
+#define DataChangeCallbackEntry(x) callback_entry<WndProperty::DataChangeCallback_t>(#x, x)
 
-inline CallBackTableEntry_t
-make_OnPaintCallback(const char* Name, WndOwnerDrawFrame::OnPaintCallback_t callback) {
-  return { Name, callback };
-}
+#define DataAccessCallbackEntry(x) callback_entry<DataField::DataAccessCallback_t>(#x, x)
 
-#define OnPaintCallbackEntry(x) make_OnPaintCallback(#x, x)
-
-
-inline CallBackTableEntry_t
-make_ClickNotifyCallback(const char* Name, WndButton::ClickNotifyCallback_t callback) {
-  return { Name, callback };
-}
-
-#define ClickNotifyCallbackEntry(x) make_ClickNotifyCallback(#x, x)
-
-
-inline CallBackTableEntry_t 
-make_DataChangeCallback(const char* Name, WndProperty::DataChangeCallback_t callback) {
-  return { Name, callback };
-}
-
-#define DataChangeCallbackEntry(x) make_DataChangeCallback(#x, x)
-
-
-inline CallBackTableEntry_t
-make_DataAccessCallback(const char* Name, DataField::DataAccessCallback_t callback) {
-  return { Name, callback };
-}
-
-#define DataAccessCallbackEntry(x) make_DataAccessCallback(#x, x)
-
-#define EndCallBackEntry()          { nullptr, nullptr }
+#define EndCallBackEntry() { nullptr, nullptr }
 
 WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID);
 
