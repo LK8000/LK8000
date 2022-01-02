@@ -461,14 +461,8 @@ static void OnDetailsClicked(WndButton* pWnd){
   	  _sntprintf(Name,NAME_SIZE, _T("%s %s:"), airspace->TypeName(), MsgToken(231) );
 
     }
-//#if TESTBENCH
-      StartupStore(_T(". Airspace Name <%s>%s"),Details,NEWLINE);
+    DebugLog(_T(". Airspace Detail <%s>"),Details);
 
-//#endif    
-       dlgHelpShowModal(Name, Details, false);
-
+    dlgHelpShowModal(Name, Details, false);
   }
-
-
-    
 }
