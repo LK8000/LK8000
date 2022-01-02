@@ -11,7 +11,23 @@
 static 
 BOOL NMEAOut(DeviceDescriptor_t *d, const TCHAR* String) {
   if(d) {
-    d->Com->WriteString(String);
+    while (*String) {
+      // nmea is ASCII characters, a simple cast to char is enought TCHAR string.
+      char c = *String++;
+      if (c == '\n') {
+        // insert missing <lf> before <cr>
+        d->Com->Write('\r');
+      } 
+      else if (c == '\r') {
+        d->Com->Write(c);
+        c = *String++;
+        if (c != '\n') {
+          // insert missing <cr> after <lf>
+          d->Com->Write('\n');
+        }
+      }
+      d->Com->Write(c);
+    }
   }
   return TRUE;
 }
