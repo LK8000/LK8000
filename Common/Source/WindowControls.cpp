@@ -1338,7 +1338,7 @@ void WindowControl::SetWidth(unsigned int Value){
 }
 
 WindowControl *WindowControl::GetCanFocus(void) {
-    if (!IsVisible()) {
+    if (!IsVisible() || !IsEnabled()) {
         return NULL;
     }
     if (mCanFocus && !mReadOnly) {
