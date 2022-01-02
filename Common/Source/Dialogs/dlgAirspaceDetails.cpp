@@ -266,21 +266,22 @@ static void SetValues(WndForm* wf) {
 
 
   WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
-  {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-    if(airspace->Comment() != NULL)
-    {
-      if(_tcslen(airspace->Comment()) < 10 )
-      {
-        WindowControl* wSelect = wf->FindByName(TEXT("cmdSelect"));
-        if(wSelect) {
-          wSelect->SetLeft(IBLSCALE(80));
-          wSelect->SetWidth(IBLSCALE(155));
-        }
-        wDetails->Enable(false);
+  if (wDetails) {
+    bool HideDetail = WithLock(CAirspaceManager::Instance().MutexRef(), [](){
+      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      return airspace && airspace->Comment() && (_tcslen(airspace->Comment()) < 10);
+    });
+
+    if (HideDetail) {
+      WindowControl* wSelect = wf->FindByName(TEXT("cmdSelect"));
+      if(wSelect) {
+        unsigned left = wDetails->GetLeft();
+        unsigned width = wSelect->GetRight() - wDetails->GetLeft();
+
+        wSelect->SetLeft(left);
+        wSelect->SetWidth(width);
       }
-      else wDetails->Enable(true);
+      wDetails->SetVisible(false);
     }
   }
 
