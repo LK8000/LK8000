@@ -136,10 +136,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
   } // doinit
 
-#include "./LKMW3include2.cpp"
-
 	Surface.SelectObject(LK8PanelBigFont);
-#include "./LKMW3include1.cpp"
 
 	int curtype; // 100404
 	bool ontarget=false;
