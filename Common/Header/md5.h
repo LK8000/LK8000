@@ -25,8 +25,18 @@ public:
   // MD5 block update operation. Continues an MD5 message-digest
   // operation, processing another message block, and updating the
   // context.
-  void Update( const unsigned char *input, unsigned int inputLen);
+  void Update(const void* input, size_t size);
 
+  template<typename T>
+  void Update(const T& data) {
+    static_assert(std::is_trivially_copyable_v<T>, "incompatible type");
+    static_assert(!std::is_pointer_v<T>, "incompatible type");
+    Update(&data, sizeof(data));
+  }
+
+  void Update(const std::string& data) {
+    Update(data.data(), data.size());
+  }
 };
 
 class MD5 : public MD5_Base
