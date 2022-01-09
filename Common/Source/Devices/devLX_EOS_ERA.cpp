@@ -1898,7 +1898,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
 
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,"), MacCready);
+  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
   StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
@@ -1914,7 +1914,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(LX_EOS_ERA_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
   
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,"),GlidePolar::BallastLitres);
+  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
   StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
@@ -1932,7 +1932,7 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
   if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) return false;
   double fLXBugs = CalculateLXBugs( Bugs);
 
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,"),fLXBugs);
+  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
   StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
