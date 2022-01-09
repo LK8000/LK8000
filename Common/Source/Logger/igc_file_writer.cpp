@@ -58,10 +58,10 @@ bool igc_file_writer::append(const char *data, size_t size) {
         char c = clean_igc_char(*data);
 
         if (add_grecord) {
-          md5_a.Update(reinterpret_cast<unsigned char *>(&c), 1);
-          md5_b.Update(reinterpret_cast<unsigned char *>(&c), 1);
-          md5_c.Update(reinterpret_cast<unsigned char *>(&c), 1);
-          md5_d.Update(reinterpret_cast<unsigned char *>(&c), 1);
+          md5_a.Update(c);
+          md5_b.Update(c);
+          md5_c.Update(c);
+          md5_d.Update(c);
         }
         fwrite(&c, 1, 1, stream);
       } else {

@@ -16,6 +16,7 @@
 #include "Geographic/GeoPoint.h"
 
 class ScreenProjection;
+class MD5;
 
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
@@ -292,6 +293,9 @@ public:
     double Range(const GeoPoint& position, double &bearing) const {
       return Range(position.longitude, position.latitude, bearing);
     }
+
+    // update hash with airspace common properties
+    void Hash(MD5& md5) const;
 
     // Calculate unique hash code for this airspace
     virtual void Hash(char *hashout, int maxbufsize) const = 0;

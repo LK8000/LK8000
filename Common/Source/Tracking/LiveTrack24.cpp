@@ -1273,8 +1273,7 @@ static std::string md5(const std::string& text, bool tolower) {
 	if (tolower)
 		transform(lowText.begin(), lowText.end(), lowText.begin(), ::tolower);
 	MD5 md5;
-	md5.Update((const unsigned char*) lowText.c_str(),
-			(unsigned) strlen(lowText.c_str()));
+	md5.Update(lowText);
 	md5.Final();
 	return std::string(md5.digestChars);
 }

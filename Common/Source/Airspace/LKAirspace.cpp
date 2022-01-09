@@ -812,17 +812,12 @@ void CAirspace_Circle::Dump() const {
 // Calculate unique hash code for this airspace
 void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
     MD5 md5;
-    md5.Update((const unsigned char*) &_type, sizeof (_type));
-    md5.Update((const unsigned char*) _name, _tcslen(_name) * sizeof (TCHAR));
-    if (_base.Base == abFL) md5.Update((const unsigned char*) &_base.FL, sizeof (_base.FL));
-    if (_base.Base == abAGL) md5.Update((const unsigned char*) &_base.AGL, sizeof (_base.AGL));
-    if (_base.Base == abMSL) md5.Update((const unsigned char*) &_base.Altitude, sizeof (_base.Altitude));
-    if (_top.Base == abFL) md5.Update((const unsigned char*) &_top.FL, sizeof (_top.FL));
-    if (_top.Base == abAGL) md5.Update((const unsigned char*) &_top.AGL, sizeof (_top.AGL));
-    if (_top.Base == abMSL) md5.Update((const unsigned char*) &_top.Altitude, sizeof (_top.Altitude));
-    md5.Update((const unsigned char*) &_center.latitude, sizeof (_center.latitude));
-    md5.Update((const unsigned char*) &_center.longitude, sizeof (_center.longitude));
-    md5.Update((const unsigned char*) &_radius, sizeof (_radius));
+
+    CAirspace::Hash(md5);
+
+    md5.Update(_center);
+    md5.Update(_radius);
+
     md5.Final();
     memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, std::size(md5.digestChars)));
 }
@@ -968,6 +963,28 @@ void CAirspace::Draw(LKSurface& Surface, bool fill) const {
     }
 }
 
+void CAirspace::Hash(MD5& md5) const {
+    md5.Update(_type);
+    md5.Update(to_utf8(_name));
+    if (_base.Base == abFL) {
+        md5.Update(_base.FL);
+    }
+    if (_base.Base == abAGL) {
+        md5.Update(_base.AGL);
+    }
+    if (_base.Base == abMSL) {
+        md5.Update(_base.Altitude);
+    }
+    if (_top.Base == abFL) {
+        md5.Update(_top.FL);
+    }
+    if (_top.Base == abAGL) {
+        md5.Update(_top.AGL);
+    }
+    if (_top.Base == abMSL) {
+        md5.Update(_top.Altitude);
+    }
+}
 
 //
 // CAIRSPACE AREA CLASS
@@ -992,22 +1009,13 @@ void CAirspace_Area::Dump() const {
 // Calculate unique hash code for this airspace
 void CAirspace_Area::Hash(char *hashout, int maxbufsize) const {
     MD5 md5;
-    double dtemp;
 
-    md5.Update((const unsigned char*) &_type, sizeof (_type));
-    md5.Update((const unsigned char*) _name, _tcslen(_name) * sizeof (TCHAR));
-    if (_base.Base == abFL) md5.Update((const unsigned char*) &_base.FL, sizeof (_base.FL));
-    if (_base.Base == abAGL) md5.Update((const unsigned char*) &_base.AGL, sizeof (_base.AGL));
-    if (_base.Base == abMSL) md5.Update((const unsigned char*) &_base.Altitude, sizeof (_base.Altitude));
-    if (_top.Base == abFL) md5.Update((const unsigned char*) &_top.FL, sizeof (_top.FL));
-    if (_top.Base == abAGL) md5.Update((const unsigned char*) &_top.AGL, sizeof (_top.AGL));
-    if (_top.Base == abMSL) md5.Update((const unsigned char*) &_top.Altitude, sizeof (_top.Altitude));
-    for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-        dtemp = it->Latitude();
-        md5.Update((unsigned char*) &dtemp, sizeof (dtemp));
-        dtemp = it->Longitude();
-        md5.Update((unsigned char*) &dtemp, sizeof (dtemp));
+    CAirspace::Hash(md5);
+
+    for (const auto& point : _geopoints) {
+        md5.Update(point);
     }
+
     md5.Final();
     memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, std::size(md5.digestChars)));
 }
