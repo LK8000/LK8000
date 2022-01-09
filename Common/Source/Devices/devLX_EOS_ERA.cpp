@@ -1,12 +1,12 @@
 /*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2
+   Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
    $Id$
 */
 
-//__Version_1.0____________________________________________Vladimir Fux 12/2015_
+//__Version_1.0_ Ulrich Heynen 29.06.2020
 
 
 //_____________________________________________________________________includes_
@@ -25,66 +25,56 @@
 #include "dlgIGCProgress.h"
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
-#include "dlgLXIGCDownload.h"
+#include "devLX_EOS_ERA.h"
+#include "dlgEOSIGCDownload.h"
 #include "externs.h"
 #include "Baro.h"
 #include "Utils.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
+#include "McReady.h"
 #include "Time/PeriodClock.hpp"
-
-static FILE *f= NULL;
+#include "Calc/Vario.h"
+#include <queue>
+#include "Thread/Mutex.hpp"
+#include "Thread/Cond.hpp"
+#include "Radio.h"
 
 unsigned int uiEOSDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
 
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32
-
+#define _deb (0)
 
 PDeviceDescriptor_t DevLX_EOS_ERA::m_pDevice=NULL;
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;
 BOOL DevLX_EOS_ERA::m_bDeclare = false;
-
-uint uEOS_ERA_Timeout =0;
-//______________________________________________________________________defines_
-
-/// polynom for LX data CRC
-#define LX_CRC_POLY 0x69
-#define QNH_OR_ELEVATION
+BOOL DevLX_EOS_ERA::m_bRadioEnabled = true;
+BOOL DevLX_EOS_ERA::m_bTriggered = false;
+#define TIMEOUTCHECK
 
 
 
 #define MAX_NMEA_PAR_LEN    30
 #define MAX_VAL_STR_LEN    60
 
-int iEOS_ERARxUpdateTime=0;
-int iLX_EOS_ERA_RxUpdateTime=0;
-double LX_EOS_ERA_oldMC = MACCREADY;
-int LX_EOS_ERA_MacCreadyUpdateTimeout = 0;
-int LX_EOS_ERA_BugsUpdateTimeout = 0;
-int LX_EOS_ERA_BallastUpdateTimeout =0;
-int iEOS_ERA_SeriesTimeout =0;
-int iLX_EOS_ERA_GPSBaudrate = 0;
-int iLX_EOS_ERA_PDABaudrate = 0;
-//double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
+
 BOOL LX_EOS_ERA_bValid = false;
-int LX_EOS_ERA_NMEAddCheckSumStrg( TCHAR szStrg[] );
-BOOL LX_EOS_ERA_PutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL LX_EOS_ERA_PutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL LX_EOS_ERA_PutBugs(PDeviceDescriptor_t d, double Bugs);
+
+
 
 
 
 extern Mutex  CritSec_LXDebugStr;
 extern TCHAR LxValueStr[_LAST][ MAX_VAL_STR_LEN];
-extern TCHAR m_Filename[64];
+
 extern BOOL IsDirInput( DataBiIoDir IODir);
 extern BOOL IsDirOutput( DataBiIoDir IODir);
 extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 
- uint m_EOS_ERA_CurLine =0;
+
 
 
 //____________________________________________________________class_definitions_
@@ -140,24 +130,6 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 //  status: Stop=0,CanStop=1,Start=2
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Registers device into device subsystem.
-///
-/// @retval true  when device has been registered successfully
-/// @retval false device cannot be registered
-///
-//static
-bool DevLX_EOS_ERA::Register(){
-  #ifdef UNIT_TESTS
-    Wide2LxAsciiTest();
-  #endif
-  return(devRegister(GetName(),
-    cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install));
-} // Register()
-
-
-
-
 BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
 {
   bool res = false;
@@ -172,6 +144,8 @@ BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
 
 }
 
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
@@ -181,12 +155,12 @@ BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
+void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
-  d->PutMacCready = LX_EOS_ERA_PutMacCready;
-  d->PutBugs      = LX_EOS_ERA_PutBugs;
-  d->PutBallast   = LX_EOS_ERA_PutBallast;
+  d->PutMacCready = EOSPutMacCready;
+  d->PutBugs      = EOSPutBugs;
+  d->PutBallast   = EOSPutBallast;
   d->Open         = Open;
   d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTask;
@@ -194,118 +168,125 @@ BOOL DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
-  d->DirectLink   = LX_EOS_ERA_DirectLink;
 
-  d->IsRadio        = GetTrue;
+  d->IsRadio        = EOSRadioEnabled;
   d->PutVolume      = EOSPutVolume;
   d->PutSquelch     = EOSPutSquelch;
   d->PutFreqActive  = EOSPutFreqActive;
   d->PutFreqStandby = EOSPutFreqStandby;
   d->StationSwap    = EOSStationSwap;
   d->PutRadioMode   = EOSRadioMode;
+  d->ParseStream    = EOSParseStream;
 
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
-  return(true);
 } // Install()
 
 
+namespace {
+  std::queue<uint8_t> EOSbuffered_data;
+  Mutex EOSmutex;
+  Cond EOScond;
+  bool bEOSBinMode= false;
+}
 
-extern long  StrTol(const  TCHAR *buff) ;
+bool EOSBlockReceived() {
+  ScopeLock lock(EOSmutex);
+  return (!EOSbuffered_data.empty());
+}
+  
+bool IsEOSInBinaryMode() {
+  ScopeLock lock(EOSmutex);
+  return bEOSBinMode;
+}
 
-
-long LX_EOS_ERABaudrate(int iIdx)
-{
-//  indexes are following:
-//  enum { br4800=0, br9600, br19200, br38400, br57600,
-//  br115200,br230400,br256000,br460800, br500k, br1M};
-long lBaudrate = -1;
-  switch (iIdx)
-  {
-    case 0:  lBaudrate = 4800   ; break;
-    case 1:  lBaudrate = 9600   ; break;
-    case 2:  lBaudrate = 19200  ; break;
-    case 3:  lBaudrate = 38400  ; break;
-    case 4:  lBaudrate = 56800  ; break;
-    case 5:  lBaudrate = 115200 ; break;
-    case 6:  lBaudrate = 230400 ; break;
-    case 7:  lBaudrate = 256000 ; break;
-    case 8:  lBaudrate = 460800 ; break;
-    case 9:  lBaudrate = 500000 ; break;
-    case 10: lBaudrate = 1000000; break;
-    default: lBaudrate = -1     ; break;
+bool SetEOSBinaryModeFlag(bool bBinMode) {
+  ScopeLock lock(EOSmutex);
+  bool OldVal = bEOSBinMode;
+  bEOSBinMode = bBinMode;
+  if(!bEOSBinMode) {
+    // same as clear() but free allocated memory.
+    EOSbuffered_data = std::queue<uint8_t>();
   }
-return lBaudrate;
+  return OldVal;
+}
+
+
+
+BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+  if ((!d) || (!String) || (!len)) {
+    return FALSE;
+  }
+  
+  static BOOL slowdown = false;
+    if (!IsEOSInBinaryMode()) {    
+      if(slowdown)
+      {
+         SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
+
+         SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));
+      //   SendNmea( d, _T("LXDT,GET,BC_INT"));
+        StartupStore(TEXT("NMEA SLOWDOWN OFF!!"));      
+        slowdown = false;
+      }       
+      return FALSE;      
+   }
+  
+  if(!slowdown)
+  {
+     SendNmea(d, TEXT("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
+     SendNmea( d, _T("LXDT,SET,BC_INT,ALL,0.0"));
+
+     StartupStore(TEXT("NMEA SLOWDOWN"));
+     slowdown = true;
+  }    
+   
+   
+  ScopeLock lock(EOSmutex);
+
+  for (int i = 0; i < len; i++) {
+    EOSbuffered_data.push((uint8_t)String[i]);
+  }
+  EOScond.Broadcast();
+
+  return  true;
 }
 
 
 
 
-BOOL DevLX_EOS_ERA::LX_EOS_ERA_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
-{
-TCHAR  szTmp[MAX_NMEA_LEN];
-#define CHANGE_DELAY 10
-if(!IsDirInput(PortIO[d->PortNumber].DirLink))
-    return false;
+uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
+  ScopeLock lock(EOSmutex);
 
-  if(iLX_EOS_ERA_GPSBaudrate ==0)
-  {
-    _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
-    SendNmea(d,szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
-    SendNmea(d, szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
-  }
+  while(EOSbuffered_data.empty()) {
+    Poco::Thread::sleep(1);
+    Poco::Thread::yield();
 
-
-  if(bLinkEnable)
-  {
-    #if TESTBENCH
-    StartupStore(TEXT("LX_EOS: enable LX LX_EOS direct Link %s"), NEWLINE);
-    #endif
-    iLX_EOS_ERA_PDABaudrate = d->Com->GetBaudrate();
-
-    _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,DIRECT"));
-    SendNmea(d, szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
-    if((iLX_EOS_ERA_PDABaudrate > 0) && (iLX_EOS_ERA_GPSBaudrate >0) && (iLX_EOS_ERA_PDABaudrate != iLX_EOS_ERA_GPSBaudrate))
+    if(!EOScond.Wait(EOSmutex, Timeout)) 
     {
-      d->Com->SetBaudrate(iLX_EOS_ERA_GPSBaudrate);
-    #if TESTBENCH
-      StartupStore(TEXT("LX_EOS: Set Baudrate %i %s"),iLX_EOS_ERA_GPSBaudrate, NEWLINE);
-    #endif
-      Poco::Thread::sleep(CHANGE_DELAY);
+      return REC_TIMEOUT_ERROR;
     }
-    Poco::Thread::sleep(CHANGE_DELAY);
   }
-  else
-  {
-    Poco::Thread::sleep(CHANGE_DELAY);
-
-    if((iLX_EOS_ERA_PDABaudrate > 0) && (iLX_EOS_ERA_GPSBaudrate > 0) &&(iLX_EOS_ERA_PDABaudrate != iLX_EOS_ERA_GPSBaudrate))
-    {
-#if TESTBENCH
-      StartupStore(TEXT("LX_EOS: Set Baudrate %i %s"),iLX_EOS_ERA_PDABaudrate, NEWLINE);
-#endif
-      d->Com->SetBaudrate(iLX_EOS_ERA_PDABaudrate);
-      Poco::Thread::sleep(CHANGE_DELAY);
-    }
-
-    #if TESTBENCH
-    StartupStore(TEXT("LX_EOS: Return from LX_EOS link %s"), NEWLINE);
-    #endif
-    _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
-    SendNmea(d,szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
-
+  if(inchar) {
+    *inchar = EOSbuffered_data.front();
+   
   }
+  EOSbuffered_data.pop();
 
-  return true;
+  return REC_NO_ERROR;
 }
 
-
+uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
+  ConvUnion tmp;
+  int error = EOSRecChar(d, &(tmp.byte[0]), Timeout);
+  if (error == REC_NO_ERROR) {
+    error = EOSRecChar(d, &(tmp.byte[1]), Timeout);
+  }
+  *inchar = tmp.val;
+  return error;
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
@@ -320,12 +301,12 @@ if(!IsDirInput(PortIO[d->PortNumber].DirLink))
 
 BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
-  TCHAR  szTmp[MAX_NMEA_LEN];
-
-
-
+ if (Declare()) return false ;  // do not configure during declaration
+ 
+ 
+ if( IsEOSInBinaryMode()) return false;
 static char lastSec =0;
-  if( !Declare() && (info->Second != lastSec))  // execute every second only if no task is declaring
+  if( /*!Declare() &&*/ (info->Second != lastSec))  // execute every second only if no task is declaring
   {
     lastSec = info->Second;
     if((info->Second % 10) ==0) // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
@@ -341,43 +322,43 @@ static char lastSec =0;
       old_overindex = GetOvertargetIndex();;
       old_overmode  = OvertargetMode;
     }
-  }
+    if( ((info->Second+2) %4) ==0)
+      SendNmea(d, TEXT("LXDT,GET,SENS"));
+    if( ((info->Second+4) %4) ==0) 
+      SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));
 
+    static double oldQNH= -1.0;
 
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
-  {
-    if(iEOS_ERA_SeriesTimeout-- < 0)
-      devSetAdvancedMode(d,false);
-
-
-#ifdef QNH_OR_ELEVATION
-    static int iOldQNH   =0;
-    int iQNH = (int)(QNH*100.0);
-    if(iQNH != iOldQNH)
-    {
-      iOldQNH = iQNH;
-      _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,QNH,W,%i"),(int)iQNH);
-      SendNmea(d,szTmp);
+    if(IsDirOutput(PortIO[d->PortNumber].QNHDir))
+    {      
+      if(fabs( oldQNH - QNH) > 0.9)   
+      { TCHAR szTmp[MAX_NMEA_LEN];
+        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) (QNH) );
+        SendNmea(d, szTmp);
+        oldQNH = QNH;
+      }
     }
-#else
-    static int oldQFEOff =0;
-    int QFE = (int)QFEAltitudeOffset;
-    if(QFE != oldQFEOff)
-    {
-       oldQFEOff = QFE;
-      _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
-       SendNmea(d,szTmp);
-    }
-#endif
   }
-#ifdef EEE
-  if(iLX_EOS_ERA_GPSBaudrate ==0)
-  {
-    _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
-    SendNmea(d,szTmp);
-  }
-#endif
 
+  if(IsDirOutput(PortIO[d->PortNumber].STFDir))
+  {
+
+    bool circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
+    static  int   Thermalmode = -1; 
+    if((circling != (bool)Thermalmode) || (Thermalmode <0))
+    {
+      if(circling)
+      {
+        SendNmea(d, TEXT("LXDT,SET,SC_VAR,0")); 
+        Thermalmode = 1;
+      }
+      else
+      {
+        SendNmea(d, TEXT("LXDT,SET,SC_VAR,1"));
+        Thermalmode = 0;
+      }
+    }
+  }
 
     if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
       return FALSE;
@@ -385,6 +366,9 @@ static char lastSec =0;
     if (_tcsncmp(_T("$LXDT"), sentence, 5) == 0)
       return LXDT(d, sentence + 6, info);
     else
+      if (_tcsncmp(_T("$LXBC"), sentence, 5) == 0)
+        return LXBC(d, sentence + 6, info);
+      else
         if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
           return LXWP2(d, sentence + 7, info);
         else
@@ -396,7 +380,6 @@ static char lastSec =0;
               else
                 if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
                 {
-                  LX_EOS_ERA_bValid = true;
                   return LXWP1(d, sentence + 7, info);
                 }
 return false;
@@ -421,16 +404,33 @@ CallBackTableEntry_t DevLX_EOS_ERA::CallBackTable[]={
 
 BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
-  SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1"));
+#ifdef TIMEOUTCHECK
+  static int i=0;
+ if (Declare()) return false ;  // do not configure during declaration
+  if(IsEOSInBinaryMode()) return false;
+  if((i++%2)==0)
+  {
+    SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
+
+    SendNmea( d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));      
+  }
+  else
+    if(!LX_EOS_ERA_bValid)
+    {
+     SendNmea(d,_T("LXDT,GET,MC_BAL"));
+     StartupStore(TEXT("Config: LXDT"));      
+    }
+#endif
+
   return true;
 }
 
 
 BOOL DevLX_EOS_ERA::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
 {
-  CritSec_LXDebugStr.Lock();
+  CritSec_LXDebugStr.lock();
   _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
-  CritSec_LXDebugStr.Unlock();
+  CritSec_LXDebugStr.unlock();
   return true;
 }
 
@@ -439,8 +439,20 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
 WndProperty *wp;
 if(!wf) return false;
-wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
 int PortNum = d->PortNumber;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField(); dfe->Clear();
+    dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
+    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
+    dfe->Set((uint) PortIO[PortNum].QNHDir);
+    wp->RefreshDisplay();
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491));  // LKTOKEN  _@M491_ "OFF"
@@ -479,6 +491,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
+    dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
     dfe->Set((uint) PortIO[PortNum].STFDir);
     wp->RefreshDisplay();
   }
@@ -523,7 +536,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(_T("$PLXVTARG")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$LXDT,GET,NAVIGATE")); // "IN" = $PLXVTARG
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO[PortNum].R_TRGTDir);
     wp->RefreshDisplay();
@@ -533,7 +546,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(_T("$PLXVTARG")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$LXDT,SET,NAVIGATE")); // "IN" = $PLXVTARG
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO[PortNum].T_TRGTDir);
     wp->RefreshDisplay();
@@ -578,7 +591,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-//    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
+    dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->Set((uint) PortIO[PortNum].POLARDir);
     wp->RefreshDisplay();
   }
@@ -591,26 +604,10 @@ int PortNum = d->PortNumber;
     dfe->Set((uint) PortIO[PortNum].DirLink);
     wp->RefreshDisplay();
   }
+  
 
   return true;
 }
-
-
-
- bool  DevLX_EOS_ERA::OnIGCTimeout(WndForm* pWnd){
-
-  if(Device() == NULL) return false;
-
-  TCHAR Command[MAX_NMEA_LEN];
-  StartupStore(_T(" ******* LX_EOS_ERA  OnIGCTimeout resend last Block request ***** %s") , NEWLINE);
-  _sntprintf(Command, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_EOS_ERA_CurLine+1,m_EOS_ERA_CurLine+BLOCK_SIZE+1);
-  SendNmea(Device(), Command);
-
-  return true;
-}
-
-
-
 
 
 static bool OnTimer(WndForm* pWnd)
@@ -620,6 +617,7 @@ static bool OnTimer(WndForm* pWnd)
 
   if(wf)
   {
+    wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );
     wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
@@ -635,7 +633,7 @@ static bool OnTimer(WndForm* pWnd)
     wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir")   ); UpdateValueTxt( wp,  _BAT1  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir")   ); UpdateValueTxt( wp,  _BAT2  );
     wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir")  ); UpdateValueTxt( wp,  _POLAR );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);    
   }
   return true;
 }
@@ -663,6 +661,7 @@ BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
     }
     ShowValues(false);
 
+    wf->SetCaption(_T("LX ERA/EOS Config"));
     ShowData(wf, d);
     wf->ShowModal();
     wf->SetTimerNotify(0, NULL);
@@ -675,34 +674,45 @@ BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Returns device name (max length is @c DEVNAMESIZE).
-///
-//static
-const TCHAR* DevLX_EOS_ERA::GetName() {
-  return(_T("LX EOS/ERA"));
-} // GetName()
-
-
-
-BOOL DevLX_EOS_ERA::CeckAck(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
 {
-  return ComExpect(d, "$LXDT,ANS,OK*5c", 256, NULL, errBufSize, errBuf);
+  if (pSrc && pDest)
+  {
+    char szTmp[size+10];
+    to_usascii(pSrc , szTmp, size);
+    from_utf8(szTmp, pDest, size);
+    return _tcslen(pDest);
+  }
+  return 0;
 }
+
 
 BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
 {
-
-
-  if(wp && DeclStrings)
+  if(DeclStrings)
   {
-    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,total,
-                                                             ( int)(wp->Latitude*60000.0),
-                                                             ( int)(wp->Longitude*60000.0),
-                                                              wp->Name );
+    int  lat =0; 
+    int  lon =0; 
+    TCHAR Name[60] =_T("");
+    if(wp)
+    {
+      lat = ( int)(wp->Latitude*60000.0);
+      lon = (int) (wp->Longitude*60000.0);  
+      DeviceASCIIConvert(Name, (TCHAR*)wp->Name,20) ;  
+    }
+
+      _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,
+                                                               total+2,
+                                                               lat,
+                                                               lon,
+                                                               Name );
+    return true;
   }
-return true;
+return false;
 }
+
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the logger.
 ///
@@ -720,93 +730,111 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   Decl  decl;
   Class lxClass;
 
+  bool Good  = true;
 
 
-  // we will use text-defined class
-  lxClass.SetName(lkDecl->CompetitionClass);
-  // stop RX thread
-  if (!StopRxThread(d, errBufSize, errBuf))
+  if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
     return(false);
-
-  // set new Rx timeout
-  int  orgRxTimeout;
-  bool Good = SetRxTimeout(d, 4000, orgRxTimeout, errBufSize, errBuf);
-  if (Good) {
-      Declare(true);
-    ShowProgress(decl_enable);
-
-    Poco::Thread::sleep(300);
-    if (Good) {
-
-      // Create and send task declaration...
-      ShowProgress(decl_send);
-      // to declared Start, TPs, and Finish we will add Takeoff and Landing,
-      // so maximum NB of declared TPs is Decl::max_wp_count - 2
-      if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
-           SetRxTimeout(d, orgRxTimeout,orgRxTimeout, Good ? errBufSize : 0, errBuf);
-           StartRxThread(d, Good ? errBufSize : 0, errBuf);
-         Declare(false);
-        return(false);
-      }
-      int wpCount = lkDecl->num_waypoints;
-      int totalLines = 10 + 1 + wpCount*2 + 1;
-      TCHAR DeclStrings[totalLines][256];
-      INT i = 0;
-
-      int dir=0,autonxt=1,isline=0,a1=45,a2=45,a21=5000,r1=5000,r2=500, elev = WayPointList[HomeWaypoint].Altitude;
-
-      double SecRadius;
-      int Type;
-      elev = WayPointList[HomeWaypoint].Altitude;
-
-      _stprintf(DeclStrings[i++], TEXT("LXDT,SET,PILOT,%s,%s"), (TCHAR*)lkDecl->PilotName,(TCHAR*)lkDecl->PilotName);
-      _stprintf(DeclStrings[i++], TEXT("LXDT,SET,GLIDER,%s,%s,%s,%s"), (TCHAR*)lkDecl->AircraftType,(TCHAR*) lkDecl->AircraftRego,(TCHAR*) lkDecl->CompetitionID,(TCHAR*) lkDecl->CompetitionClass);
-
-      int num=0;
-
-      FormatTP( (TCHAR*) &DeclStrings[i++], num , wpCount, &WayPointList[HomeWaypoint]);  // Takeoff
-      _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
-
-      num++;
-      for (int ii = 0; ii < wpCount; ii++)
-      {
-        FormatTP( (TCHAR*) &DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
-        GetTaskSectorParameter(ii, &Type, &SecRadius);
-        if(Type == LINE) isline=1;
-        elev = WayPointList[HomeWaypoint].Altitude;
-        r1=(int)SecRadius;
-        _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
-        num++;
-      }
-      FormatTP( (TCHAR*) &DeclStrings[i++], num , wpCount,  &WayPointList[HomeWaypoint]);   // Landing
-      _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
-      num++;
-
-
-      // Send complete declaration to logger
-      int attemps =0;
-      do
-      {
-        for (int ii = 0; ii < i ; ii++){
-          if (Good) Good = SendNmea(d, DeclStrings[ii]);
-          if (Good) Good = ComExpect(d, "$LXDT,ANS,OK*5c", 256, NULL, errBufSize, errBuf);
-          StartupStore(_T(". EOS/ERA Decl: %s %s "),   DeclStrings[ii], NEWLINE);
-          Poco::Thread::sleep(50);
-        }
-        attemps++;
-      } while ((!Good) && (attemps < 3));
-    }
-    ShowProgress(decl_disable);
   }
-  Poco::Thread::sleep(300);
+  ShowProgress(decl_enable);
+  ShowProgress(decl_send);
+  Declare(true);
 
-  // restore Rx timeout (we must try that always; don't overwrite error descr)
-  Good = Good && SetRxTimeout(d, orgRxTimeout,
-           orgRxTimeout, Good ? errBufSize : 0, errBuf);
+    
 
-  // restart RX thread (we must try that always; don't overwrite error descr)
-  Good = Good && StartRxThread(d, Good ? errBufSize : 0, errBuf);
+  TCHAR PilotName[12];
+  TCHAR PilotSurName[12];
+  TCHAR* NamePtr= NULL;
+  NamePtr = _tcstok (lkDecl->PilotName, _T(" ,.-:_"));
+  DeviceASCIIConvert(PilotName,  NamePtr ,11  );
+
+  TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));
+  DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
+
+  TCHAR AircraftType[12];   DeviceASCIIConvert(AircraftType,  lkDecl->AircraftType    ,11);
+  TCHAR AircraftReg[12];    DeviceASCIIConvert(AircraftReg,   lkDecl->AircraftRego    ,11);
+  TCHAR AircraftCompID[12]; DeviceASCIIConvert(AircraftCompID,lkDecl->CompetitionID   ,11);
+  TCHAR AircraftClass[12];  DeviceASCIIConvert(AircraftClass, lkDecl->CompetitionClass,11);
+
+  int wpCount = lkDecl->num_waypoints;
+  int totalLines =  wpCount*2 + 2 + 4; // N * w(p + zone) + takeoff + landing + header
+  TCHAR DeclStrings[totalLines][256];
+  INT i = 0;
+
+  double SecRadius;
+  int Type;
+
+  _stprintf(DeclStrings[i++], TEXT("LXDT,SET,PILOT,%s,%s"),(PilotName), (PilotSurName));
+  _stprintf(DeclStrings[i++], TEXT("LXDT,SET,GLIDER,%s,%s,%s,%s"), AircraftType, AircraftReg, AircraftCompID, AircraftClass);
+
+  if(UseAATTarget())
+    _stprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,%02i:%02i"), (int)AATTaskLength/60,  (int)(AATTaskLength-((int)(AATTaskLength/60)*60)));
+  else
+    _stprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,00:00"));
+  int num=0;
+
+  int dir=0,autonxt=1,isline=0,a1=45,a2=45,a21=5000,r1=5000,r2=500, elev = WayPointList[HomeWaypoint].Altitude;
+
+  WAYPOINT* pTakeOff = NULL;
+  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding)
+  {
+    pTakeOff = &WayPointList[HomeWaypoint];
+  }
+  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Takeoff
+
+  
+
+  for (int ii = 0; ii < wpCount; ii++)
+  {
+    FormatTP( (TCHAR*) &DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
+
+    GetTaskSectorParameter(ii, &Type, &SecRadius);
+    switch(Type)
+    {
+      case LINE  : isline=1; r1= SecRadius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
+      case SECTOR: isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
+      case CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
+      case DAe   : isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
+      case CONE  : isline=0; r1= SecRadius; a1 =180 ; a2=0  ; r2=0  ; a21 =0; break;
+    }
+
+    elev = WayPointList[HomeWaypoint].Altitude;
+    r1=(int)SecRadius;
+    _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
+    num++;
+  }
+
+  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
+
+
+  // Send complete declaration to logger
+  int  orgRxTimeout;
+  SetRxTimeout(d, 4000,orgRxTimeout,  errBufSize , errBuf);
+  int attemps =0;
+  char RecBuf [4096] = "";  
+  do    
+  {
+    for (int ii = 0; ii < i ; ii++){
+
+      if (Good)
+        Good = SendNmea(d, DeclStrings[ii]);
+     
+      StartupStore(_T(". EOS/ERA Decl: %s %s "),   DeclStrings[ii], NEWLINE);
+      if (Good)
+        Good = ComExpect(d, "$LXDT,ANS,OK*5c", 4095, RecBuf, errBufSize, errBuf);
+
+    }
+    attemps++;
+    if(!Good)
+      Poco::Thread::sleep(500);
+  } while ((!Good) && (attemps < 3));
+
+ 
+  int tmp ;
+  SetRxTimeout(d, orgRxTimeout, tmp, errBufSize , errBuf);
+
   Declare(false);
+  ShowProgress(decl_disable);
   return(Good);
 } // DeclareTask()
 
@@ -831,7 +859,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 bool DevLX_EOS_ERA::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
   if (outSize == 0)
     return(false);
-  int res = TCHAR2usascii(input, output, outSize);
+  int res = to_usascii(input, output, outSize);
   // replace all non-ascii characters with '?' - LX devices is very sensitive
   // on non-ascii chars - the electronic seal can be broken
   // (unicode2usascii() should be enough, but to be sure that someone has not
@@ -860,52 +888,6 @@ bool DevLX_EOS_ERA::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
 DevLX_EOS_ERA::Decl::Decl(){
   memset(this, 0, sizeof(*this));
 } // Decl()
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Format waypoint data
-///
-/// @param buf  [out] buffer
-/// @param wp    waypoint data (if @c NULL, LAT/LON will be set to 0)
-/// @param type  waypoint type
-/// @param idx   waypoint index
-///
-void DevLX_EOS_ERA::Decl::WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type, int totalNum ){
-  int DegLat, DegLon;
-
-  double MinLat, MinLon;
-  char NS, EW;
-  int iAlt =0.0;
-  const TCHAR* wpName = _T("");
-  if (wp != NULL) {
-   iAlt =(int) wp->Altitude ;
-    DegLat = (int)wp->Latitude;
-    MinLat = wp->Latitude - DegLat;
-    if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0))) {
-        NS = 'S'; DegLat *= -1; MinLat *= -1;
-    } else NS = 'N';
-    DegLon = (int)wp->Longitude ;
-    MinLon = wp->Longitude - DegLon;
-    if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0))) {
-        EW = 'W'; DegLon *= -1; MinLon *= -1;
-    } else EW = 'E';
-    wpName = wp->Name;
-  } else {
-    DegLat = MinLat = DegLon = MinLon = 0;
-    NS = 'N'; EW = 'E';
-    // set TP name
-    switch (type) {
-      case tp_takeoff: wpName = _T("TAKEOFF"); break;
-      case tp_landing: wpName = _T("LANDING"); break;
-      case tp_regular: wpName = _T("WP");      break;
-      default:         wpName = _T("");        break;
-    }
-  }
-  _stprintf(buf, TEXT("C%02d%05.0f%c%03d%05.0f%c%s::%i.0"),
-             DegLat, MinLat*60000,NS,DegLon, MinLon*60000, EW,wpName,iAlt );
-} // WpFormat()
-
 
 // #############################################################################
 // *****************************************************************************
@@ -1037,6 +1019,12 @@ void DevLX_EOS_ERA::GetDirections(WndButton* pWnd){
     int PortNum = Port();
 
       WndProperty *wp;
+      
+      wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+      if (wp) {
+        DataField* dfe = wp->GetDataField();
+        PortIO[PortNum].QNHDir = (DataBiIoDir) dfe->GetAsInteger();
+      }     
       wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
@@ -1154,7 +1142,7 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
         if (wf) ShowData(wf, Device());
       }
     }
-    StartupStore(_T(" LX_EOS_ERA CLEAR VALUES %s"), NEWLINE);
+    SetDataText( _QNH,   _T(""));
     SetDataText( _MC,    _T(""));
     SetDataText( _BUGS,  _T(""));
     SetDataText( _BAL,   _T(""));
@@ -1170,9 +1158,13 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
     SetDataText( _BAT2,  _T(""));
     SetDataText( _POLAR, _T(""));
     SetDataText( _DIRECT,_T(""));
-    SetDataText( _T_TRGT,_T(""));
+    SetDataText( _T_TRGT,_T(""));    
+    SendNmea(Device(),_T("LXDT,GET,MC_BAL"));  // request new data
   }
+
 }
+
+
 
 void DevLX_EOS_ERA::OnIGCDownloadClicked(WndButton* pWnd) {
 (void)pWnd;
@@ -1184,55 +1176,12 @@ UnlockFlightData();
     MessageBoxX(MsgToken(2418), MsgToken(2397), mbOk);
     return;
   }
-  TCHAR szTmp[MAX_NMEA_LEN];
-
-  _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,LOGBOOKSIZE,R"));
-
-  SendNmea(Device(), szTmp);
-
-  dlgLX_IGCSelectListShowModal();
-}
-
-
-
-
-bool  DevLX_EOS_ERA::OnStartIGC_FileRead(TCHAR Filename[]) {
-TCHAR szTmp[MAX_NMEA_LEN];
-TCHAR IGCFilename[MAX_PATH];
-LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
-
-  f = _tfopen( IGCFilename, TEXT("w"));
-  if(f == NULL)   return false;
-  // SendNmea(Device(), _T("PLXVC,KEEP_ALIVE,W"), errBufSize, errBuf);
-  StartupStore(_T(" ******* LX_EOS_ERA  IGC Download START ***** %s") , NEWLINE);
-  _sntprintf(szTmp,MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,1,%u"),Filename,BLOCK_SIZE+1);
-  _sntprintf(m_Filename, array_size(m_Filename), _T("%s"),Filename);
-  SendNmea(Device(), szTmp);
-  StartupStore(_T("> %s %s") ,szTmp, NEWLINE);
-  IGCDownload(true);
-#ifdef  NANO_PROGRESS_DLG
-  CreateIGCProgressDialog();
-#endif
-return true;
-
-}
-
-
-
-BOOL DevLX_EOS_ERA::AbortLX_IGC_FileRead(void)
-{
-
-  if(f != NULL)
-  {
-    fclose(f); f= NULL;
-  }
-  bool bWasInProgress = IGCDownload() ;
-  IGCDownload ( false );
-
-#ifdef  NANO_PROGRESS_DLG
-  CloseIGCProgressDialog();
-#endif
-  return bWasInProgress;
+m_bTriggered = true;
+    SendNmea(Device(), _T("LXDT,SET,BC_INT,AHRS,0.0,SENS,0.0"));    
+      Poco::Thread::sleep(50);
+    SendNmea(Device(), _T("LXDT,GET,FLIGHTS_NO"));
+      Poco::Thread::sleep(50);
+    dlgEOSIGCSelectListShowModal();
 }
 
 
@@ -1263,8 +1212,8 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
   //
   // 0 loger_stored : [Y|N] (not used in LX1600)
-  // 1 IAS [km/h] ----> Condor uses TAS!
-  // 2 baroaltitude [m]
+  // 1 TAS [km/h]  TAS!
+  // 2 true Altitude [m] (already QNH corrected!!!)
   // 3-8 vario values [m/s] (last 6 measurements in last second)
   // 9 heading of plane (not used in LX1600)
   // 10 windcourse [deg] (not used in LX1600)
@@ -1275,9 +1224,9 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 
 double fDir,fTmp,airspeed=0;
 
-  if( !devGetAdvancedMode(d))
+ // if( !devGetAdvancedMode(d))
   {
-    if (ParToDouble(sentence, 1, &fTmp))
+    if( ParToDouble(sentence, 1, &fTmp))
     {
 
       if(Values(d))
@@ -1288,7 +1237,7 @@ double fDir,fTmp,airspeed=0;
       if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
       {
         airspeed = fTmp/TOKPH;
-        info->IndicatedAirspeed = airspeed;
+        info->TrueAirspeed = airspeed;
         info->AirspeedAvailable = TRUE;
       }
     }
@@ -1302,7 +1251,9 @@ double fDir,fTmp,airspeed=0;
       }
       if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
       {
-        if (airspeed>0) info->IndicatedAirspeed = airspeed / AirDensityRatio(fTmp);
+        if (airspeed > 0) {
+          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
+        }
         UpdateBaroSource( info, 0, d,fTmp);
       }
     }
@@ -1316,9 +1267,7 @@ double fDir,fTmp,airspeed=0;
       }
       if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
       {
-        info->Vario = fTmp;
-        info->VarioAvailable = TRUE;
-        TriggerVarioUpdate();
+        UpdateVarioSource(*info, *d, fTmp);
       }
     }
   }
@@ -1329,7 +1278,7 @@ double fDir,fTmp,airspeed=0;
 
     if(Values(d))
     { TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
+      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
       SetDataText( _WIND,   szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
@@ -1372,7 +1321,7 @@ TCHAR ctemp[MAX_NMEA_LEN];
 static int NoMsg=0;
 static int oldSerial=0;
 if(_tcslen(String) < 180)
-  if((( pGPS->SerialNumber == 0)  || ( pGPS->SerialNumber != oldSerial)) && (NoMsg < 5))
+  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
     NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
@@ -1381,23 +1330,23 @@ if(_tcslen(String) < 180)
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,1);
-    pGPS->SerialNumber= (int)StrToDouble(ctemp,NULL);
-    oldSerial = pGPS->SerialNumber;
-    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, pGPS->SerialNumber);
+    d->SerialNumber= (int)StrToDouble(ctemp,NULL);
+    oldSerial = d->SerialNumber;
+    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,2);
-    pGPS->SoftwareVer= StrToDouble(ctemp,NULL);
-    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, pGPS->SoftwareVer);
+    d->SoftwareVer= StrToDouble(ctemp,NULL);
+    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
     StartupStore(_T(". %s\n"),ctemp);
 
     NMEAParser::ExtractParameter(String,ctemp,3);
-    pGPS->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(pGPS->HardwareId)/10.0);
+    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
+    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
     StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, pGPS->SerialNumber);
+    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
     DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  pGPS->SoftwareVer, (double)(pGPS->HardwareId)/10.0);
+    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
     DoStatusMessage(ctemp);
   }
   // nothing to do
@@ -1409,93 +1358,120 @@ if(_tcslen(String) < 180)
 BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info )
 {
 bool ret = false;
-  if(LX_EOS_ERA_MacCreadyUpdateTimeout > 0)
+
+
+  int iTmp =(int) (fTmp*100.0+0.5f);
+  fTmp = (double)(iTmp)/100.0;
+  if(Values(d))
   {
-    LX_EOS_ERA_MacCreadyUpdateTimeout--;
+    TCHAR szTmp[MAX_NMEA_LEN];
+    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s %s"),fTmp,info);
+    SetDataText( _MC,   szTmp);
   }
-  else
+  if(IsDirInput(PortIO[d->PortNumber].MCDir))
   {
-    int iTmp =(int) (fTmp*100.0+0.5f);
-    fTmp = (double)(iTmp)/100.0;
-    if(Values(d))
+    if(fabs(MACCREADY - fTmp)> 0.001)
     {
-      TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s %s"),fTmp,info);
-      SetDataText( _MC,   szTmp);
+      CheckSetMACCREADY(fTmp);
+      ret = true;
     }
-    LX_EOS_ERA_bValid = true;
-    if(IsDirInput(PortIO[d->PortNumber].MCDir))
+  }
+
+  return ret;
+}
+
+
+
+BOOL DevLX_EOS_ERA::EOSSetSTF(PDeviceDescriptor_t d,int  iTmp, const TCHAR *info)
+{
+bool ret = false;
+
+
+  if(Values(d))
+  {
+    TCHAR szTmp[MAX_NMEA_LEN];
+    if(iTmp > 0)
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("STF %s"), info);
+    else
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("VARIO %s"), info);      
+    SetDataText(_STF,  szTmp);
+  }
+  if(IsDirInput(PortIO[d->PortNumber].STFDir  ))
+  {
+    static int  iOldVarioSwitch=-1;
+    if(iTmp != iOldVarioSwitch)
     {
-      if(fabs(MACCREADY - fTmp)> 0.001)
+      iOldVarioSwitch = iTmp;
+      if(iTmp==1)
       {
-        CheckSetMACCREADY(fTmp);
-        LX_EOS_ERA_MacCreadyUpdateTimeout =5;
-        ret = true;
+        ExternalTriggerCruise = true;
+        ExternalTriggerCircling = false;
+         MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
+      }
+      else
+      {
+        ExternalTriggerCruise = false;
+        ExternalTriggerCircling = true;
+        MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);        
       }
     }
   }
+
   return ret;
 }
 
 BOOL DevLX_EOS_ERA::EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
 {
 bool ret = false;
-  if(LX_EOS_ERA_BallastUpdateTimeout > 0)
-  {
-    LX_EOS_ERA_BallastUpdateTimeout--;
-  }
-  else
-  {
 
-    double fBALPerc = CalculateBalastFromLX(fTmp);
-    if(Values(d))
+
+  if(Values(d))
+  {
+    TCHAR szTmp[MAX_NMEA_LEN];
+    if(WEIGHTS[2] > 0)
     {
-      TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%5.2f = %3.0f%% %s"),fTmp,(fBALPerc*100.0), info);
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
       SetDataText(_BAL,  szTmp);
     }
-    if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
+  }
+  if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
+  {
+    if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[2] > 0))
     {
-      if(fabs(fBALPerc- BALLAST) > 0.01 )
-      {
-        CheckSetBallast(fBALPerc);
-        ret = true;
-      }
+      GlidePolar::BallastLitres = fTmp;
+      BALLAST =  GlidePolar::BallastLitres / WEIGHTS[2];
+      ret = true;
     }
   }
+
   return ret;
 }
 
 BOOL DevLX_EOS_ERA::EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
 {
 bool ret = false;
-  if(LX_EOS_ERA_BugsUpdateTimeout > 0)
+
+
+  if(Values(d))
   {
-      LX_EOS_ERA_BugsUpdateTimeout--;
+    TCHAR szTmp[MAX_NMEA_LEN];
+    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% %s"),fTmp, info);
+    SetDataText(_BUGS,  szTmp);
   }
-  else
+  if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
   {
-    if(Values(d))
+    if(  fabs(fTmp -BUGS) >= 0.01)
     {
-      TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% %s"),fTmp, info);
-      SetDataText(_BUGS,  szTmp);
-    }
-    if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
-    {
-      if(  fabs(fTmp -BUGS) >= 0.01)
+      fTmp = CalculateBugsFromLX(fTmp);
+      CheckSetBugs(fTmp);
+      if(  fabs(fTmp -BUGS) >= 0.01) // >= 1% difference
       {
-        fTmp = CalculateBugsFromLX(fTmp);
-        CheckSetBugs(fTmp);
-        if(  fabs(fTmp -BUGS) >= 0.01) // >= 1% difference
-        {
-          BUGS = fTmp;
-          LX_EOS_ERA_BugsUpdateTimeout = 5;
-          ret = true;
-        }
+        BUGS = fTmp;
+        ret = true;
       }
     }
   }
+
   return ret;
 }
 
@@ -1525,6 +1501,8 @@ BOOL DevLX_EOS_ERA::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 
 
 double fTmp;
+if(!LX_EOS_ERA_bValid)
+{
    if (ParToDouble(sentence, 0, &fTmp))
      EOSSetMC  (d, fTmp,_T("($LXWP2)") );
 
@@ -1533,29 +1511,36 @@ double fTmp;
 
    if(ParToDouble(sentence, 2, &fTmp))
      EOSSetBUGS(d, fTmp,_T("($LXWP2)") );
-
+}
  double fa,fb,fc;
      if(ParToDouble(sentence, 3, &fa))
        if(ParToDouble(sentence, 4, &fb))
          if(ParToDouble(sentence, 5, &fc))
          {
+            TCHAR szTmp[MAX_NMEA_LEN];
             if(Values(d))
             {
-                TCHAR szTmp[MAX_NMEA_LEN];
-                _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
-                SetDataText(  _POLAR,  szTmp);
-                //     _stprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),   POLAR[POLAR_A],   POLAR[POLAR_B],   POLAR[POLAR_C]);
-                //      SetDataText( wf ,_BAT2,  szTmp);
-              }
-              /*
-              if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
-              {
-                POLAR[POLAR_A] = fa;
-                POLAR[POLAR_B] = fb;
-                POLAR[POLAR_C] = fc;
-              }
-              */
+               _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
+               SetDataText(  _POLAR,  szTmp);
             }
+
+            if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
+            {
+              double v;
+              for (int i=0; i < 3; i++)
+              {
+                v=POLARV[i]/100;
+                POLARLD[i] = -(fa*v*v + fb*v + fc);
+#ifdef POLAR_DEBUG
+                _sntprintf(szTmp,MAX_NMEA_LEN, _T("V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
+                StartupStore(TEXT("EOS/ERA Polar: %s"), szTmp);
+#endif
+              }
+              _stprintf (szPolarName, _T("%s"), d->Name );
+              PolarWinPilot2XCSoar(POLARV, POLARLD, WW);
+              GlidePolar::SetBallast();
+            }
+          }
 
 
 
@@ -1667,15 +1652,15 @@ BOOL DevLX_EOS_ERA::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 } // LXWP4()
 
 
-extern BOOL ValidFrequency(double Freq);
 
 BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 TCHAR szTmp[MAX_NMEA_LEN];
 
 double fTmp=0.0;
-devSetAdvancedMode(d,true);
 
+devSetAdvancedMode(d,true);
+static int iNoFlights=0;
   NMEAParser::ExtractParameter(sentence, szTmp, 0);
   if(_tcsncmp(szTmp, _T("ANS"), 3) != 0)  // really an Answer?
     return 0;
@@ -1683,134 +1668,276 @@ devSetAdvancedMode(d,true);
   NMEAParser::ExtractParameter(sentence, szTmp, 1);  // Command?
   if(_tcsncmp(szTmp, _T("RADIO"), 5) == 0)
   {
+    m_bRadioEnabled = true;
     if(ParToDouble(sentence, 2, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.ActiveFrequency  = fTmp;
     if(ParToDouble(sentence, 3, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.PassiveFrequency = fTmp;
     if(ParToDouble(sentence, 4, &fTmp)) RadioPara.Volume  = (int) fTmp;
     if(ParToDouble(sentence, 5, &fTmp)) RadioPara.Squelch = (int) fTmp;
     if(ParToDouble(sentence, 6, &fTmp)) RadioPara.Vox     = (int) fTmp;
   }
-
+  else
   if(_tcsncmp(szTmp, _T("MC_BAL"), 6) == 0)
   {
-    if(ParToDouble(sentence, 2, &fTmp)) EOSSetMC(d, fTmp,_T("($LXDT)") );
-    if(ParToDouble(sentence, 3, &fTmp)) EOSSetBAL(d, fTmp,_T("($LXDT)") );
-    if(ParToDouble(sentence, 4, &fTmp)) EOSSetBUGS(d, fTmp,_T("($LXDT)") );;
-  }
-
-  if(_tcsncmp(szTmp, _T("AHRS"), 4) == 0)
-  {
-    if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-    { bool bAHRS = false;
-      double fX,fY,fZ, fPitch, fRoll, fYaw, fSlip;
-      if(ParToDouble(sentence, 2, &fPitch))  // pitch
-        if(ParToDouble(sentence, 3, &fRoll)) // Roll
-          if(ParToDouble(sentence, 4, &fYaw)) // Yaw
-            if(ParToDouble(sentence, 5, &fSlip)) // slip
-              bAHRS = true;
-
-      if(ParToDouble(sentence, 6, &fX) &&
-         ParToDouble(sentence, 7, &fY) &&
-         ParToDouble(sentence, 8, &fZ))
-      {
-        if(Values(d))
+    if(_deb)  StartupStore(TEXT("MC_BAL %s"), sentence);
+    if(ParToDouble(sentence, 2, &fTmp)) {EOSSetMC(d, fTmp,_T("($LXDT)") );}
+    if(ParToDouble(sentence, 3, &fTmp)) {EOSSetBAL(d, fTmp,_T("($LXDT)") );}
+    if(ParToDouble(sentence, 4, &fTmp)) {EOSSetBUGS(d, fTmp,_T("($LXDT)") );}
+    if(ParToDouble(sentence, 5, &fTmp)) {}  // Screen brightness in percent
+    if(ParToDouble(sentence, 6, &fTmp)) {}  // Variometer volume in percent
+    if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
+    if(ParToDouble(sentence, 8, &fTmp))   // QNH in hPa (NEW)
+    {
+      if(IsDirInput(PortIO[d->PortNumber].QNHDir))
+      { 
+        _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
+        if(Values(d)) SetDataText( _QNH,   szTmp);
+        static double oldQNH = -1;
+        if ( fabs( oldQNH - fTmp) > 0.1)
         {
-          if(bAHRS)
-            _sntprintf(szTmp, MAX_NMEA_LEN, _T("gZ:%5.2f gY:%5.2f gX:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($LXDT)"),fZ,fY,fX, fPitch, fRoll, fYaw, fSlip);
-          else
-            _sntprintf(szTmp, MAX_NMEA_LEN, _T("gZ:%5.2f gY:%5.2f gX:%5.2f($LXDT)"),fZ,fY,fX);
-          SetDataText( _GFORCE,  szTmp);
+          UpdateQNH( fTmp);
+          oldQNH = fTmp;
         }
-        if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-        {
-          info->AccelX  = fX;
-          info->AccelY  = fY;
-          info->AccelZ  = fZ;
-          info->AccelerationAvailable = true;
-          if(bAHRS)
-          {
-            info->Pitch = fPitch;
-            info->Roll  = fRoll;
-            info->GyroscopeAvailable = true;
-          }
-        }
-      }
+      }  
     }
+    LX_EOS_ERA_bValid = true;    
+  }
+  else
+  if(_tcsncmp(szTmp, _T("FLIGHTS_NO"), 10) == 0)
+  {
+    if(ParToDouble(sentence, 2, &fTmp)) iNoFlights =(int) (fTmp+0.05);
+    if((iNoFlights > 0)
+      && m_bTriggered)  // call next if triggerd from here only
+    {
+      EOSListFilled(false);
+      _sntprintf(szTmp, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),1);
+      SendNmea(d,szTmp);
+    }
+  }
+  else
+  if(_tcsncmp(szTmp, _T("FLIGHT_INFO"), 11) == 0)
+  { TCHAR FileName[50]= _T("FileName"), Pilot[50]= _T(""),Surname[50]= _T(""), Takeoff[50]= _T(""),Date[50]= _T(""),Landing[50]= _T(""),Type[50]= _T(""), Reg[50]= _T("");
+    StartupStore(TEXT("FLIGHT_INFO %s"), sentence);
+
+    NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = (int) StrToDouble(Date,nullptr);
+    NMEAParser::ExtractParameter(sentence, FileName ,3 );
+    NMEAParser::ExtractParameter(sentence, Date     ,4);
+    NMEAParser::ExtractParameter(sentence, Takeoff  ,5);
+    NMEAParser::ExtractParameter(sentence, Landing  ,6);
+    NMEAParser::ExtractParameter(sentence, Pilot    ,7);
+    NMEAParser::ExtractParameter(sentence, Surname  ,8);
+    NMEAParser::ExtractParameter(sentence, Type     ,9);
+    NMEAParser::ExtractParameter(sentence, Reg      ,10);
+     uint32_t filesize  = 0;
+    if (ParToDouble(sentence, 15, &fTmp))
+       filesize = (uint32_t)fTmp;
+    
+    TCHAR Line[2][MAX_NMEA_LEN];
+    _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
+    _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Date ,Takeoff ,Landing,filesize/1024);
+    AddEOSElement(Line[0], Line[1], filesize );
+    if((iNo < iNoFlights) && m_bTriggered)
+    {
+      _sntprintf(szTmp, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),iNo+1);
+      SendNmea(d,szTmp);
+    }
+    else
+    {
+      EOSListFilled(true);
+      m_bTriggered = false;
+    }
+  }
+  else
+  if(_tcsncmp(szTmp, _T("SENS"), 4) == 0)  // Sensor Data?
+  {
+    SENS(d, sentence,  info, 2);
+  }
+  else
+  if(_tcsncmp(szTmp, _T("SC_VAR"), 6) == 0)  // Vario / STF
+  {
+    if(ParToDouble(sentence, 2, &fTmp)) {
+      EOSSetSTF(d, (int)fTmp,_T(" ($LXDT,SC_VAR)") );
+    }
+  }
+  else
+  if(_tcsncmp(szTmp, _T("NAVIGATE"), 7) == 0)  // Navigation Target
+  {
+    GetTarget( d, sentence,  info);    
   }
 
   if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)  // ERROR?
   {
     NMEAParser::ExtractParameter(sentence, szTmp, 2);
-    DoStatusMessage(szTmp);
-    StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
+    if(_tcsncmp(szTmp, _T("Radio not enabled"), 17) == 0)  
+    {
+      m_bRadioEnabled = false;
+    }
+    else
+    {
+      DoStatusMessage(TEXT("LX EOS/ERA Error:"), szTmp, false);
+      StartupStore(TEXT("LX EOS/ERA Error: %s"), szTmp);
+    }
   }
-
+  else
   if(_tcsncmp(szTmp, _T("OK"), 2) == 0)
   {
-
+    if(!Declare())
+      SendNmea(d,_T("LXDT,GET,MC_BAL"));
+    else
+    {
+    }
   }
-
   return(true);
 } // LXDT()
 
 
 
 
+BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INFO* info, int ParNo)
+{ 
+TCHAR szTmp[MAX_NMEA_LEN];
+double fTmp;
+
+  if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
+     if(Values(d)) SetDataText(_OAT,  szTmp);
+    if(IsDirInput(PortIO[d->PortNumber].OATDir))
+    {
+      info->OutsideAirTemperature = fTmp;
+      info->TemperatureAvailable  = TRUE;
+    }
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
+    if(Values(d)) SetDataText(_BAT1,  szTmp);
+    if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
+    {
+      info->ExtBatt1_Voltage = fTmp;	
+    }
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
+     if(Values(d)) SetDataText(_BAT2,  szTmp);
+    if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
+    {
+      info->ExtBatt2_Voltage = fTmp;	
+    }
+  }
+  NMEAParser::ExtractParameter(sentence, szTmp, ParNo++); 
+  {  // Current flap setting
+  }
+  NMEAParser::ExtractParameter(sentence, szTmp, ParNo++);
+  { // Recommended flap setting
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) {  // Current landing gear position (0 = out, 1 = inside, left empty if gear input not configured)
+  }
+  if(ParToDouble(sentence, ParNo++, &fTmp)) {  // SC/Vario mode (0 = Vario, 1 = SC)
+    EOSSetSTF(d, (int)fTmp,_T(" ($LXDT,SENS)"));
+  }
+  return true;
+}
+
+BOOL DevLX_EOS_ERA::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+TCHAR szTmp[MAX_NMEA_LEN];
+
+devSetAdvancedMode(d,true);
+if(_tcsncmp(sentence, _T("SENS"), 4) == 0)
+{  
+  SENS(d,  sentence,  info,1);
+}
+
+if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
+{
+  if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+  { bool bAHRS = false;
+    double fX,fY,fZ, fPitch, fRoll, fYaw, fSlip;
+    if(ParToDouble(sentence, 1, &fPitch))  // pitch
+      if(ParToDouble(sentence, 2, &fRoll)) // Roll
+        if(ParToDouble(sentence, 3, &fYaw)) // Yaw
+          if(ParToDouble(sentence, 4, &fSlip)) // slip
+            bAHRS = true;
+
+    if(ParToDouble(sentence, 5, &fX) &&
+       ParToDouble(sentence, 6, &fY) &&
+       ParToDouble(sentence, 7, &fZ))
+    {
+      if(Values(d))
+      {
+        if(bAHRS)
+          _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($LXDT)"),fX,fY,fZ, fPitch, fRoll, fYaw, fSlip);
+        else
+          _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($LXDT)"),fX,fY,fZ);
+        SetDataText( _GFORCE,  szTmp);
+      }
+      if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+      {
+        info->AccelX  = fX;
+        info->AccelY  = fY;
+        info->AccelZ  = fZ;
+        info->AccelerationAvailable = true;
+        if(bAHRS)
+        {
+          info->Pitch = fPitch;
+          info->Roll  = fRoll;
+          info->GyroscopeAvailable = true;
+        }
+      }
+    }
+  }
+}
+return true;
+}
+
+#define  REQ_DEADTIME 500
 
 
-
-BOOL LX_EOS_ERA_PutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL DevLX_EOS_ERA::EOSPutMacCready(PDeviceDescriptor_t d, double MacCready){
 TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
-  if(LX_EOS_ERA_bValid == false) return false;
+
   if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
-  if(devGetAdvancedMode(d))
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,MC,W,%3.1f"), MacCready );
-  else
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PFLX2,%.2f,,,,,"), MacCready);
-    DevLX_EOS_ERA::SendNmea(d,szTmp);
-  LX_EOS_ERA_MacCreadyUpdateTimeout = 5;
+
+  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
+  StartupStore(TEXT("Send: %s"), szTmp);
+  SendNmea(d,szTmp);
+
 return true;
 
 }
 
 
-BOOL LX_EOS_ERA_PutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL DevLX_EOS_ERA::EOSPutBallast(PDeviceDescriptor_t d, double Ballast){
 TCHAR  szTmp[MAX_NMEA_LEN];
+
   if(!d)  return false;
   if(LX_EOS_ERA_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
+  
+  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
+  StartupStore(TEXT("Send: %s"), szTmp);
+  SendNmea(d,szTmp);
 
 
-
-  double BallastFact =  CalculateLXBalastFactor(Ballast);
-  if(devGetAdvancedMode(d))
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BAL,W,%4.2f"),BallastFact);
-  else
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PFLX2,,%.2f,,,,"), BallastFact);
-  DevLX_EOS_ERA::SendNmea(d,szTmp);
-
-  LX_EOS_ERA_BallastUpdateTimeout =10;
 
 return(TRUE);
 }
 
 
-BOOL LX_EOS_ERA_PutBugs(PDeviceDescriptor_t d, double Bugs){
+BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
   TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
-  if(LX_EOS_ERA_bValid == false) return false;
+
   if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) return false;
-  double LXBugs = CalculateLXBugs( Bugs);
+  double fLXBugs = CalculateLXBugs( Bugs);
 
-  if(devGetAdvancedMode(d))
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,BUGS,W,%3.1f"),LXBugs);
-  else
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PFLX2,,,%d,,,"), (int)LXBugs);
+  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
+  StartupStore(TEXT("Send: %s"), szTmp);
+  SendNmea(d,szTmp);
 
-  DevLX_EOS_ERA::SendNmea(d,szTmp);
-  LX_EOS_ERA_BugsUpdateTimeout = 5;
+
+
 return(TRUE);
 }
 
@@ -1871,12 +1998,29 @@ TCHAR szName[MAX_VAL_STR_LEN];
   }
 
   if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
-  {                                    // PLXVTARG,KOLN,4628.80   ,N ,01541.167 ,E ,268.0
-    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("PLXVTARG,%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
-      szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-      (int) (WayPointList[overindex].Altitude +0.5));
+  {                                  
+    int rwdir = 0; 
+    int landable =0;
 
-      _tcsncat (szName, _T(" ($PLXVTARG)"),MAX_VAL_STR_LEN);
+    if((WayPointList[overindex].Flags & LANDPOINT)> 0) 
+    {
+      landable = 1;
+      rwdir    = WayPointList[overindex].RunwayDir;
+    }
+
+    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
+      1,
+      szName, 
+      (int) (WayPointList[overindex].Latitude * 60000.0), 
+      (int) (WayPointList[overindex].Longitude* 60000.0),
+      (int) (WayPointList[overindex].Altitude +0.5),
+      landable,
+      WayPointList[overindex].Freq ,
+      rwdir
+    );
+    
+ //   $LXDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
+      _tcsncat (szName, _T(" ($LXDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
 #ifdef TESTBENCH
      StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
@@ -1888,18 +2032,64 @@ TCHAR szName[MAX_VAL_STR_LEN];
       _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
-      _tcsncat (szName, _T(" ($GPRMB)"),MAX_VAL_STR_LEN);
+      _tcsncat (szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
     }
+   
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target LXNav: %s"), szName);
 #endif
   }
 
-  SetDataText( _T_TRGT,  szName);
+  if(Values(d)) SetDataText( _T_TRGT,  szName);
   DevLX_EOS_ERA::SendNmea(d,szTmp);
 
 return(true);
 }
+
+
+BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+  if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG) {
+    return false;
+  }
+
+TCHAR  szTmp[MAX_NMEA_LEN];
+
+double fTmp;
+  NMEAParser::ExtractParameter(sentence,szTmp,3);
+
+
+    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+      Alternate2 = -1;                 // clear external =re-enable!
+
+  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
+  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
+
+
+  ParToDouble(sentence, 4, &fTmp);
+  WayPointList[RESWP_EXT_TARGET].Latitude= fTmp/60000;
+  ParToDouble(sentence, 5, &fTmp);
+  WayPointList[RESWP_EXT_TARGET].Longitude= fTmp/60000;
+  ParToDouble(sentence, 6, &fTmp);
+  WayPointList[RESWP_EXT_TARGET].Altitude= fTmp; 
+  Alternate2 = RESWP_EXT_TARGET;
+//  ParToDouble(sentence, 7, &fTmp);  // distance
+//  ParToDouble(sentence, 8, &fTmp);  // bearing
+  
+  ParToDouble(sentence, 9, &fTmp);
+  if( fTmp > 0 )
+    WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;
+  else
+    WayPointList[RESWP_EXT_TARGET].Flags =0;
+  
+  if(Values(d))
+  {
+    _tcsncat(szTmp, _T(" ($LXDT)"), std::size(szTmp) - _tcslen(szTmp));
+    SetDataText( _R_TRGT,  szTmp);
+  }
+  return false;
+}
+
 
 
 
@@ -1948,7 +2138,7 @@ double fTmp;
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($GPRMB)"),MAX_NMEA_LEN );
+    _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
     SetDataText( _R_TRGT,  szTmp);
   }
   return false;
@@ -1958,14 +2148,14 @@ double fTmp;
 
 BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(PDeviceDescriptor_t d)
 {
-
+  if(!EOSRadioEnabled(d)) return false;
   Poco::Thread::sleep(50);
   SendNmea(d,(TCHAR*)_T("LXDT,GET,RADIO"));
   return true;
 }
 
 BOOL DevLX_EOS_ERA::EOSPutVolume(PDeviceDescriptor_t d, int Volume) {
-
+  if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
   SendNmea(d,szTmp);
@@ -1979,7 +2169,7 @@ BOOL DevLX_EOS_ERA::EOSPutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,,,%i,,"),Squelch)  ;
   SendNmea(d,szTmp);
@@ -1992,7 +2182,7 @@ BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"),Freq)  ;
   SendNmea(d,szTmp);
@@ -2007,7 +2197,7 @@ BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const T
 
 
 BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"),Freq)  ;
   SendNmea(d,szTmp);
@@ -2023,7 +2213,7 @@ BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const
 
 BOOL DevLX_EOS_ERA::EOSStationSwap(PDeviceDescriptor_t d) {
 
-
+ if(!EOSRadioEnabled(d)) return false;
   SendNmea(d,_T("LXDT,SET,R_SWITCH"));
 
   EOSRequestRadioInfo(d);
@@ -2035,7 +2225,7 @@ BOOL DevLX_EOS_ERA::EOSStationSwap(PDeviceDescriptor_t d) {
 
 
 BOOL DevLX_EOS_ERA::EOSRadioMode(PDeviceDescriptor_t d, int mode) {
-
+ if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,R_DUAL,%i"),mode);
   SendNmea(d,(TCHAR*)szTmp);
