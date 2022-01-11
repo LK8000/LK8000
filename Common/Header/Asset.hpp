@@ -130,11 +130,17 @@ IsEmbedded()
  * @return True if a keyboard is assumed for the hardware
  * that XCSoar is running on, False if the hardware has no keyboard
  */
+#ifdef ANDROID
+static inline bool
+HasKeyboard() {
+  return has_keyboard;
+}
+#else
 constexpr
 static inline bool
-HasKeyboard()
-{
-  return !(IsAndroid() || IsWindowsCE() || IsKobo());
+HasKeyboard() {
+  return !(IsWindowsCE() || IsKobo());
 }
+#endif
 
 #endif	/* ASSET_HPP */

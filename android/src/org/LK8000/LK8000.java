@@ -30,6 +30,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -102,6 +103,8 @@ public class LK8000 extends Activity {
     }
 
     initialiseNative();
+
+    setHasKeyboard(hasKeyboard());
 
     NetUtil.initialise(this);
     InternalGPS.Initialize();
@@ -344,6 +347,22 @@ public class LK8000 extends Activity {
     } else
       return super.dispatchTouchEvent(ev);
   }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    boolean hasKeyboard = hasKeyboard();
+    if (nativeView != null) {
+      nativeView.setHasKeyboard(hasKeyboard);
+    }
+    setHasKeyboard(hasKeyboard);
+  }
+
+  private boolean hasKeyboard() {
+    return getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
+  }
+
+  private native void setHasKeyboard(boolean b);
 
   /**
    * permissions request code

@@ -28,7 +28,8 @@ Copyright_License {
 
 #include <assert.h>
 
-bool has_cursor_keys;
+bool has_cursor_keys = false;
+bool has_keyboard = false;
 
 #if defined __arm__ || defined __aarch64__
 

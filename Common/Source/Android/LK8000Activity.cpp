@@ -153,3 +153,9 @@ Java_org_LK8000_LK8000_loadQRCodeData(JNIEnv *env, jclass clazz, jstring data_st
     }
   }
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_LK8000_LK8000_setHasKeyboard(JNIEnv *env, jobject thiz, jboolean b) {
+    has_keyboard = b;
+}

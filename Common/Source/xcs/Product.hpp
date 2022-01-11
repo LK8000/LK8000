@@ -27,6 +27,7 @@ Copyright_License {
 #include "Compiler.h"
 
 extern bool has_cursor_keys;
+extern bool has_keyboard;
 
 #if defined __arm__ || defined __aarch64__
 extern bool is_nook, is_dithered, is_eink_colored;

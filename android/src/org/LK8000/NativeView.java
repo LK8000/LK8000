@@ -73,7 +73,7 @@ class NativeView extends SurfaceView
 
   final Resources resources;
 
-  final boolean hasKeyboard;
+  boolean hasKeyboard;
 
   EGL10 egl;
   EGLDisplay display = EGL10.EGL_NO_DISPLAY;
@@ -576,4 +576,8 @@ class NativeView extends SurfaceView
   }
 
   DifferentTouchInput touchInput = null;
+
+  public void setHasKeyboard(boolean hasKeyboard) {
+    this.hasKeyboard = hasKeyboard;
+  }
 }
