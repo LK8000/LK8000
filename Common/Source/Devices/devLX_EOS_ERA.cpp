@@ -740,16 +740,19 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   ShowProgress(decl_send);
   Declare(true);
 
-    
 
-  TCHAR PilotName[12];
-  TCHAR PilotSurName[12];
-  TCHAR* NamePtr= NULL;
-  NamePtr = _tcstok (lkDecl->PilotName, _T(" ,.-:_"));
-  DeviceASCIIConvert(PilotName,  NamePtr ,11  );
+  TCHAR Pilot[255];
+  _tcsncpy(Pilot , lkDecl->PilotName, 255); //copy to local instance (Multi driver support)
+
+  TCHAR PilotName[12]=_T("");
+  TCHAR PilotSurName[12]=_T("");;
+  TCHAR* NamePtr= _tcstok (Pilot, _T(" ,.-:_"));
+  if(NamePtr !=NULL)
+    DeviceASCIIConvert(PilotName,  NamePtr ,11  );
 
   TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));
-  DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
+  if(SurNamePtr !=NULL)
+    DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
 
   TCHAR AircraftType[12];   DeviceASCIIConvert(AircraftType,  lkDecl->AircraftType    ,11);
   TCHAR AircraftReg[12];    DeviceASCIIConvert(AircraftReg,   lkDecl->AircraftRego    ,11);
@@ -806,20 +809,25 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 
   FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
 
+  if (!StopRxThread(d, errBufSize, errBuf))
+    return(false);
 
   // Send complete declaration to logger
   int  orgRxTimeout;
-  SetRxTimeout(d, 4000,orgRxTimeout,  errBufSize , errBuf);
+  StartupStore(_T(". EOS/ERA SetRxTimeout%s "),    NEWLINE);
+  bool status = SetRxTimeout(d, 4000,orgRxTimeout,  errBufSize , errBuf);
   int attemps =0;
-  char RecBuf [4096] = "";  
+  char RecBuf [4096] = "";
+
   do    
   {
+    Good  = true;
     for (int ii = 0; ii < i ; ii++){
-
+      StartupStore(_T(". EOS/ERA Decl: %s %s "),   DeclStrings[ii], NEWLINE);
       if (Good)
         Good = SendNmea(d, DeclStrings[ii]);
-     
-      StartupStore(_T(". EOS/ERA Decl: %s %s "),   DeclStrings[ii], NEWLINE);
+
+
       if (Good)
         Good = ComExpect(d, "$LXDT,ANS,OK*5c", 4095, RecBuf, errBufSize, errBuf);
 
@@ -830,8 +838,13 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   } while ((!Good) && (attemps < 3));
 
  
-  int tmp ;
-  SetRxTimeout(d, orgRxTimeout, tmp, errBufSize , errBuf);
+
+  // restore Rx timeout
+  status = status && SetRxTimeout(d, orgRxTimeout,
+                                  orgRxTimeout, status ? errBufSize : 0, errBuf);
+
+  // restart RX thread
+  status = status && StartRxThread(d, status ? errBufSize : 0, errBuf);
 
   Declare(false);
   ShowProgress(decl_disable);
