@@ -726,7 +726,7 @@ return false;
 ///
 //static
 BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
-  Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
+   Declaration_t* const lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
   Decl  decl;
   Class lxClass;
 
