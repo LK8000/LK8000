@@ -811,7 +811,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
     // Send complete declaration to logger
     int orgRxTimeout;
     StartupStore(_T(". EOS/ERA SetRxTimeout%s "), NEWLINE);
-    bool status = SetRxTimeout(d, 4000, orgRxTimeout, errBufSize, errBuf);
+    bool status = SetRxTimeout(d, 500, orgRxTimeout, errBufSize, errBuf);
     int attemps = 0;
     char RecBuf[4096] = "";
 
