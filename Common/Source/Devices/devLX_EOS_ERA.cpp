@@ -814,7 +814,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
     // Send complete declaration to logger
     int orgRxTimeout;
     StartupStore(_T(". EOS/ERA SetRxTimeout%s "), NEWLINE);
-    bool status = SetRxTimeout(d, 500, orgRxTimeout, errBufSize, errBuf);
+    status = SetRxTimeout(d, 500, orgRxTimeout, errBufSize, errBuf);
     int attemps = 0;
     char RecBuf[4096] = "";
 
@@ -838,11 +838,10 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 
 
     // restore Rx timeout
-    status = status && SetRxTimeout(d, orgRxTimeout,
-                                    orgRxTimeout, status ? errBufSize : 0, errBuf);
+    status = status && SetRxTimeout(d, orgRxTimeout, orgRxTimeout, status ? errBufSize : 0, errBuf);
   }
   // restart RX thread
-  status = status && StartRxThread(d, status ? errBufSize : 0, errBuf);
+  StartRxThread(d, status ? errBufSize : 0, errBuf);
 
   Declare(false);
   ShowProgress(decl_disable);
