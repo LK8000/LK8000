@@ -69,7 +69,7 @@ BOOL EWTryConnect(PDeviceDescriptor_t d) {
 BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
 
 
-BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL EWDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   TCHAR sTmp[72];
   TCHAR sPilot[13];

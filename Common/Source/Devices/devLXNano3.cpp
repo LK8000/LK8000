@@ -750,7 +750,7 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
 ///
 //static
 BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
-  Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
+  const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
   Decl  decl;
   Class lxClass;
   byte t_DD, t_MM, t_YY, t_hh, t_mm, t_ss;

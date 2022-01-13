@@ -99,7 +99,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, A
     return (nbDeviceFailed > 0);
 }
 
-static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
+static BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text);
 
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
@@ -888,7 +888,7 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 }
 
 
-BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL devDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   BOOL result = FALSE;
 
@@ -1175,7 +1175,7 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
 };
 
 
-BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   BOOL result = TRUE;
 #define BUFF_LEN 512

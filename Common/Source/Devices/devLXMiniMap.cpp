@@ -511,7 +511,7 @@ double CalculateQNH(double alt_qne, double alt_qnh)
 
 ////////////////////////////////   TASK    /////////////////////////////////////
 BOOL DevLXMiniMap::DeclareTaskMinimap(PDeviceDescriptor_t d,
-  Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
+  const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
 {
   Decl  decl;
   Class lxClass;

@@ -113,7 +113,7 @@ class DevLX_EOS_ERA : public DevLX
     }
 
     /// Writes declaration into the logger.
-    static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Converts TCHAR[] string into US-ASCII string.
     static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);

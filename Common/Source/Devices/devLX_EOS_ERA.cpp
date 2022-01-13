@@ -674,7 +674,7 @@ BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
 }
 
 
-int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
+int DeviceASCIIConvert(TCHAR *pDest, const TCHAR *pSrc, int size=11)
 {
   if (pSrc && pDest)
   {
@@ -698,7 +698,7 @@ BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
     {
       lat = ( int)(wp->Latitude*60000.0);
       lon = (int) (wp->Longitude*60000.0);  
-      DeviceASCIIConvert(Name, (TCHAR*)wp->Name,20) ;  
+      DeviceASCIIConvert(Name, wp->Name,20) ;  
     }
 
       _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),num,
@@ -726,7 +726,7 @@ return false;
 ///
 //static
 BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
-  Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
+  const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
   Decl  decl;
   Class lxClass;
 
@@ -740,12 +740,12 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   ShowProgress(decl_send);
   Declare(true);
 
-    
+  TCHAR Pilot[64];
+  _tcscpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
 
   TCHAR PilotName[12];
   TCHAR PilotSurName[12];
-  TCHAR* NamePtr= NULL;
-  NamePtr = _tcstok (lkDecl->PilotName, _T(" ,.-:_"));
+  TCHAR* NamePtr = _tcstok (Pilot, _T(" ,.-:_"));
   DeviceASCIIConvert(PilotName,  NamePtr ,11  );
 
   TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));

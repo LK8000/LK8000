@@ -328,7 +328,7 @@ BOOL CDevCAIGpsNav::Init(DeviceDescriptor_t *d)
 }
 
 
-BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
+BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
 {
   // check requirements
   if(!CheckWPCount(*decl, 1, 9, errBufSize, errBuf))  /// @todo: check min number

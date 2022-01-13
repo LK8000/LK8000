@@ -82,7 +82,7 @@ class DevLXMiniMap : public DevLXNano
     /// Parses LXWP3 sentence.
     static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-    static BOOL DeclareTaskMinimap(PDeviceDescriptor_t d, Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTaskMinimap(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
 
 }; // DevLX

@@ -105,7 +105,7 @@ void DevLXNano::Install(PDeviceDescriptor_t d)
 ///
 //static
 BOOL DevLXNano::DeclareTask(PDeviceDescriptor_t d,
-  Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
+  const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
 {
   Decl  decl;
   Class lxClass;

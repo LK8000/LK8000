@@ -571,7 +571,7 @@ void LogPoint(const NMEA_INFO& info) {
 bool DeclaredToDevice = false;
 
 
-static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
+static bool LoggerDeclare(PDeviceDescriptor_t dev, const Declaration_t *decl)
 {
   if (!devIsLogger(dev))
 	return FALSE;

@@ -793,7 +793,7 @@ bool CDevIMI::Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBu
   return false;
 }
 
-BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
+BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
 {
   // verify WP number
   if(!CheckWPCount(*decl, 2, 13, errBufSize, errBuf))

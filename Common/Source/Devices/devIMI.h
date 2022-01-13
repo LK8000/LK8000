@@ -99,7 +99,7 @@ class CDevIMI : public DevBase
   static bool Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
   // LK interface
-  static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
+  static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
   static void Install(PDeviceDescriptor_t d);
 
   static constexpr 

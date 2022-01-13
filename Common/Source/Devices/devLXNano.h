@@ -71,7 +71,7 @@ class DevLXNano : public DevLX
     }
 
     /// Writes declaration into the logger.
-    static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Starts LX NMEA mode.
     static bool StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
