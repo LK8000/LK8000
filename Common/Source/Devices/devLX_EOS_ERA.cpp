@@ -740,16 +740,19 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
   ShowProgress(decl_send);
   Declare(true);
 
-    
 
-  TCHAR PilotName[12];
-  TCHAR PilotSurName[12];
-  TCHAR* NamePtr= NULL;
-  NamePtr = _tcstok (lkDecl->PilotName, _T(" ,.-:_"));
-  DeviceASCIIConvert(PilotName,  NamePtr ,11  );
+    TCHAR Pilot[255];
+    _tcsncpy(Pilot , lkDecl->PilotName, 255); //copy to local instance (Multi driver support)
 
-  TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));
-  DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
+    TCHAR PilotName[12]=_T("");
+    TCHAR PilotSurName[12]=_T("");;
+    TCHAR* NamePtr= _tcstok (Pilot, _T(" ,.-:_"));
+    if(NamePtr !=NULL)
+        DeviceASCIIConvert(PilotName,  NamePtr ,11  );
+
+    TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));
+    if(SurNamePtr !=NULL)
+        DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
 
   TCHAR AircraftType[12];   DeviceASCIIConvert(AircraftType,  lkDecl->AircraftType    ,11);
   TCHAR AircraftReg[12];    DeviceASCIIConvert(AircraftReg,   lkDecl->AircraftRego    ,11);
