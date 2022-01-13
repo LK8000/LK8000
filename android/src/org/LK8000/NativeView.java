@@ -527,13 +527,7 @@ class NativeView extends SurfaceView
   public void exitApp() {
   }
 
-  /**
-   * Translate the Android Key Code to a Unicode character.
-   * @param keyCode The Android Key Code
-   * @param event The KeyEvent
-   * @return an int representing the Unicode character
-   */
-  private final int translateKeyCode(int keyCode, final KeyEvent event) {
+  private final int translateKeyCode(int keyCode) {
     if (!hasKeyboard) {
       /* map the volume keys to cursor up/down if the device has no
          hardware keys */
@@ -547,31 +541,16 @@ class NativeView extends SurfaceView
       }
     }
 
-    /* the "back" key acts as escape */
-    if(keyCode == KeyEvent.KEYCODE_BACK)
-      return KeyEvent.KEYCODE_ESCAPE;
-
-    /* return upper-case character, because InputEvents::findKey()
-       calls ToUpperASCII() */
-    int character = Character.toUpperCase(event.getUnicodeChar(event.getMetaState()));
-
-    /* If either shift or control is pressed and nothing else */
-    if(character == 0 && (event.isShiftPressed() || event.isCtrlPressed()))
-        return 0x11;
-
-    if(character == 0)
-      return keyCode;
-    else
-      return character;
+    return keyCode;
   }
 
   @Override public boolean onKeyDown(int keyCode, final KeyEvent event) {
-    EventBridge.onKeyDown(translateKeyCode(keyCode, event));
+    EventBridge.onKeyDown(translateKeyCode(keyCode));
     return true;
   }
 
   @Override public boolean onKeyUp(int keyCode, final KeyEvent event) {
-    EventBridge.onKeyUp(translateKeyCode(keyCode, event));
+    EventBridge.onKeyUp(translateKeyCode(keyCode));
     return true;
   }
 
