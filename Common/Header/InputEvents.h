@@ -71,13 +71,13 @@ public:
   static void setMode(const TCHAR *mode);
   static TCHAR* getMode();
   static int getModeID();
-  static int findKey(const TCHAR *data);
+  static unsigned findKey(const TCHAR *data);
 
   static gc_event findGCE(const TCHAR *data);
   static nmea_event findNE(const TCHAR *data);
   static pt2Event findEvent(const TCHAR *data);
 
-  static bool processKey(int key);
+  static bool processKey(unsigned key_code);
   static bool processNmea(nmea_event ne_id);
   static bool processButton(unsigned MenuId);
   static bool processGlideComputer(gc_event gce_id);

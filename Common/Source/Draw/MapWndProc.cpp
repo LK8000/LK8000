@@ -1083,7 +1083,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
       case KEY_F8: // I : SET/SYS (long press)
         break;
 
-      case 'D':
+      case KEY_D:
       case KEY_ESCAPE:
         // Button B is generating alternate codes 68 and 27
         // we use both as a single one
@@ -1187,47 +1187,41 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 //
                 // THE BOTTOM BAR
                 //
-            case '1':
-            case '2':
+            case KEY_1:
+            case KEY_2:
                 key_bottombar_previous();
                 return;
 
-            case 'a':
-            case 'A':
-            case 's':
-            case 'S':
-            case 'q':
-            case 'Q':
-            case 'W':
-            case 'w':
+            case KEY_A:
+            case KEY_S:
+            case KEY_Q:
+            case KEY_W:
                 key_next_mode();
                 return;
 
-            case 'z':
-            case 'Z':
-            case 'x':
-            case 'X':
+            case KEY_Z:
+            case KEY_X:
                 key_bottombar_next();
                 return;
 
                 //
                 // THE LEFT SCREEN
                 //
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
+            case KEY_3:
+            case KEY_4:
+            case KEY_5:
+            case KEY_6:
+            case KEY_7:
+            case KEY_8:
                 key_previous_page();
                 return;
 
                 //
                 // THE RIGHT SCREEN
                 //
-            case 0x20: // space
-            case 172:
-            case 191:
+            case KEY_SPACE: // space
+            case 172: // VK_BROWSER_HOME
+            case 191: // VK_OEM_2
                 key_next_page();
                 return;
 
@@ -1235,79 +1229,59 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 //
                 // THE CENTER-UP
                 //
-            case 'I':
-            case 'i':
-            case 'K':
-            case 'k':
-            case 188:
+            case KEY_I:
+            case KEY_K:
+            case 188: // VK_OEM_COMMA
 
-            case 'M':
-            case 'm':
-            case 'J':
-            case 'j':
-            case 'U':
-            case 'u':
-            case 'N':
-            case 'n':
-            case 'H':
-            case 'h':
-            case 'Y':
-            case 'y':
+            case KEY_M:
+            case KEY_J:
+            case KEY_U:
+            case KEY_N:
+            case KEY_H:
+            case KEY_Y:
                 key_up();
                 return;
 
                 //
                 // THE CENTER-DOWN
                 //
-            case 'T':
-            case 't':
-            case 'G':
-            case 'g':
-            case 'B':
-            case 'b':
-            case 'R':
-            case 'r':
-            case 'F':
-            case 'f':
-            case 'V':
-            case 'v':
-            case 'E':
-            case 'e':
-            case 'D':
-            case 'd':
-            case 'C':
-            case 'c':
+            case KEY_T:
+            case KEY_G:
+            case KEY_B:
+            case KEY_R:
+            case KEY_F:
+            case KEY_V:
+            case KEY_E:
+            case KEY_D:
+            case KEY_C:
                 key_down();
                 return;
 
                 //
                 // THE TOP-LEFT
                 //
-            case '0':
-            case '9':
-            case 'P':
-            case 'p':
-            case 'O':
-            case 'o':
+            case KEY_0:
+            case KEY_9:
+            case KEY_P:
+            case KEY_O:
                 key_topleft();
                 return;
 
                 //
                 // THE TOP-RIGHT
                 //
-            case 13: // enter
-            case 8: // BS! not the number
-            case 'L':
-            case 'l':
-            case 190:
-            case 186:
+            case KEY_RETURN: // enter
+            case KEY_BACK: // BS! not the number
+            case KEY_L:
+            case 190: // VK_OEM_PERIOD
+            case 186: // VK_OEM_1
                 key_topright();
                 return;
 
                 //
                 // the special Shift corner keys
                 //
-            case 16:
+            case KEY_SHIFT: // VK_SHIFT
                 key_enter();
                 return;
 
@@ -1330,45 +1304,39 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 //
                 // THE BOTTOM BAR
                 //
-            case '1':
-            case '2':
+            case KEY_1:
+            case KEY_2:
                 key_bottombar_previous();
                 return;
 
-            case 'a':
-            case 'A':
-            case 's':
-            case 'S':
-            case 'q':
-            case 'Q':
-            case 'W':
-            case 'w':
+            case KEY_A:
+            case KEY_S:
+            case KEY_Q:
+            case KEY_W:
                 key_next_mode();
                 return;
 
-            case 'z':
-            case 'Z':
-            case 'x':
-            case 'X':
+            case KEY_Z:
+            case KEY_X:
                 key_bottombar_next();
                 return;
 
                 //
                 // THE LEFT SCREEN
                 //
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
+            case KEY_3:
+            case KEY_4:
+            case KEY_5:
+            case KEY_6:
+            case KEY_7:
+            case KEY_8:
                 key_previous_page();
                 return;
 
                 //
                 // THE RIGHT SCREEN
                 //
-            case 0x20: // space
+            case KEY_SPACE: // space
                 key_next_page();
                 return;
 
@@ -1376,80 +1344,60 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 //
                 // THE CENTER-UP
                 //
-            case 'I':
-            case 'i':
-            case 'K':
-            case 'k':
-            case 188:
+            case KEY_I:
+            case KEY_K:
+            case 188: // VK_OEM_COMMA
 
-            case 'M':
-            case 'm':
-            case 'J':
-            case 'j':
-            case 'U':
-            case 'u':
-            case 'N':
-            case 'n':
-            case 'H':
-            case 'h':
-            case 'Y':
-            case 'y':
+            case KEY_M:
+            case KEY_J:
+            case KEY_U:
+            case KEY_N:
+            case KEY_H:
+            case KEY_Y:
                 key_up();
                 return;
 
                 //
                 // THE CENTER-DOWN
                 //
-            case 'T':
-            case 't':
-            case 'G':
-            case 'g':
-            case 'B':
-            case 'b':
-            case 'R':
-            case 'r':
-            case 'F':
-            case 'f':
-            case 'V':
-            case 'v':
-            case 'E':
-            case 'e':
-            case 'D':
-            case 'd':
-            case 'C':
-            case 'c':
+            case KEY_T:
+            case KEY_G:
+            case KEY_B:
+            case KEY_R:
+            case KEY_F:
+            case KEY_V:
+            case KEY_E:
+            case KEY_D:
+            case KEY_C:
                 key_down();
                 return;
 
                 //
                 // THE TOP-LEFT
                 //
-            case '0':
-            case '9':
-            case 'P':
-            case 'p':
-            case 'O':
-            case 'o':
+            case KEY_0:
+            case KEY_9:
+            case KEY_P:
+            case KEY_O:
                 key_topleft();
                 return;
 
                 //
                 // THE TOP-RIGHT
                 //
-            case 13: // enter
-            case 8: // Del
-            case 'L':
-            case 'l':
-            case 190:
-            case 186:
+            case KEY_RETURN: // enter
+            case KEY_BACK: // Del
+            case KEY_L:
+            case 190: // VK_OEM_PERIOD
+            case 186: // VK_OEM_1
                 key_topright();
                 return;
 
                 //
                 // the special Shift and Ctrol
                 //
-            case 0x10:
-            case 0x11:
+            case KEY_SHIFT: // VK_SHIFT
+            case KEY_CONTROL: // VK_CONTROL
                 key_enter();
                 return;
 
@@ -1471,47 +1419,41 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 //
                 // THE BOTTOM BAR
                 //
-            case '1':
-            case '2':
+            case KEY_1:
+            case KEY_2:
                 key_bottombar_previous();
                 return;
 
-            case 'a':
-            case 'A':
-            case 's':
-            case 'S':
-            case 'q':
-            case 'Q':
-            case 'W':
-            case 'w':
+            case KEY_A:
+            case KEY_S:
+            case KEY_Q:
+            case KEY_W:
                 key_next_mode();
                 return;
 
-            case 'z':
-            case 'Z':
-            case 'x':
-            case 'X':
+            case KEY_Z:
+            case KEY_X:
                 key_bottombar_next();
                 return;
 
                 //
                 // THE LEFT SCREEN
                 //
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
+            case KEY_3:
+            case KEY_4:
+            case KEY_5:
+            case KEY_6:
+            case KEY_7:
+            case KEY_8:
                 key_previous_page();
                 return;
 
                 //
                 // THE RIGHT SCREEN
                 //
-            case 0x20: // space
-            case 0xbc: // 188
-            case 0xbe: // 190
+            case KEY_SPACE: // space
+            case 0xbc: // VK_OEM_COMMA
+            case 0xbe: // VK_OEM_PERIOD
                 key_next_page();
                 return;
 
@@ -1519,79 +1461,59 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 //
                 // THE CENTER-UP
                 //
-            case 'I':
-            case 'i':
-            case 'K':
-            case 'k':
-            case 0xba: // 186
+            case KEY_I:
+            case KEY_K:
+            case 0xba: // VK_OEM_1
 
-            case 'M':
-            case 'm':
-            case 'J':
-            case 'j':
-            case 'U':
-            case 'u':
-            case 'N':
-            case 'n':
-            case 'H':
-            case 'h':
-            case 'Y':
-            case 'y':
+            case KEY_M:
+            case KEY_J:
+            case KEY_U:
+            case KEY_N:
+            case KEY_H:
+            case KEY_Y:
                 key_up();
                 return;
 
                 //
                 // THE CENTER-DOWN
                 //
-            case 'T':
-            case 't':
-            case 'G':
-            case 'g':
-            case 'B':
-            case 'b':
-            case 'R':
-            case 'r':
-            case 'F':
-            case 'f':
-            case 'V':
-            case 'v':
-            case 'E':
-            case 'e':
-            case 'D':
-            case 'd':
-            case 'C':
-            case 'c':
+            case KEY_T:
+            case KEY_G:
+            case KEY_B:
+            case KEY_R:
+            case KEY_F:
+            case KEY_V:
+            case KEY_E:
+            case KEY_D:
+            case KEY_C:
                 key_down();
                 return;
 
                 //
                 // THE TOP-LEFT
                 //
-            case '0':
-            case '9':
-            case 'P':
-            case 'p':
-            case 'O':
-            case 'o':
+            case KEY_0:
+            case KEY_9:
+            case KEY_P:
+            case KEY_O:
                 key_topleft();
                 return;
 
                 //
                 // THE TOP-RIGHT
                 //
-            case 13: // enter
-            case 8: // Del
-            case 'L':
-            case 'l':
-            case 0xde: // 222
+            case KEY_RETURN: // enter
+            case KEY_BACK: // Del
+            case KEY_L:
+            case 0xde: // VK_OEM_7
                 key_topright();
                 return;
 
                 //
                 // the special Shift and Ctrol
                 //
-            case 0x10:
-            case 0x11:
+            case KEY_SHIFT: // VK_SHIFT
+            case KEY_CONTROL: // VK_CONTROL
                 key_enter();
                 return;
 
@@ -1611,34 +1533,34 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         #endif
         #endif
         switch (KeyCode) {
-            case '1':
+            case KEY_1:
                 CustomKeyHandler(CustomMenu1 + 1000);
                 return;
-            case '2':
+            case KEY_2:
                 CustomKeyHandler(CustomMenu2 + 1000);
                 return;
-            case '3':
+            case KEY_3:
                 CustomKeyHandler(CustomMenu3 + 1000);
                 return;
-            case '4':
+            case KEY_4:
                 CustomKeyHandler(CustomMenu4 + 1000);
                 return;
-            case '5':
+            case KEY_5:
                 CustomKeyHandler(CustomMenu5 + 1000);
                 return;
-            case '6':
+            case KEY_6:
                 CustomKeyHandler(CustomMenu6 + 1000);
                 break;
-            case '7':
+            case KEY_7:
                 CustomKeyHandler(CustomMenu7 + 1000);
                 return;
-            case '8':
+            case KEY_8:
                 CustomKeyHandler(CustomMenu8 + 1000);
                 return;
-            case '9':
+            case KEY_9:
                 CustomKeyHandler(CustomMenu9 + 1000);
                 return;
-            case '0':
+            case KEY_0:
                 CustomKeyHandler(CustomMenu10 + 1000);
                 return;
             default:
@@ -1657,90 +1579,64 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         #endif
         #endif
         switch (KeyCode) {
-            case '1':
-            case '2':
-            case 'Q':
-            case 'W':
-            case 'q':
-            case 'w':
+            case KEY_1:
+            case KEY_2:
+            case KEY_Q:
+            case KEY_W:
                 CustomKeyHandler(CustomMenu1 + 1000);
                 return;
-            case '3':
-            case '4':
-            case 'e':
-            case 'E':
-            case 'r':
-            case 'R':
+            case KEY_3:
+            case KEY_4:
+            case KEY_E:
+            case KEY_R:
                 CustomKeyHandler(CustomMenu2 + 1000);
                 return;
-            case '5':
-            case '6':
-            case 't':
-            case 'T':
-            case 'Y':
-            case 'y':
+            case KEY_5:
+            case KEY_6:
+            case KEY_T:
+            case KEY_Y:
                 CustomKeyHandler(CustomMenu3 + 1000);
                 return;
-            case '7':
-            case '8':
-            case 'u':
-            case 'i':
-            case 'U':
-            case 'I':
+            case KEY_7:
+            case KEY_8:
+            case KEY_U:
+            case KEY_I:
                 CustomKeyHandler(CustomMenu4 + 1000);
                 return;
-            case '9':
-            case '0':
-            case 'O':
-            case 'o':
-            case 'P':
-            case 'p':
+            case KEY_9:
+            case KEY_0:
+            case KEY_O:
+            case KEY_P:
                 CustomKeyHandler(CustomMenu5 + 1000);
                 return;
-            case 'A':
-            case 'Z':
-            case 'S':
-            case 'X':
-            case 'a':
-            case 'z':
-            case 's':
-            case 'x':
+            case KEY_A:
+            case KEY_Z:
+            case KEY_S:
+            case KEY_X:
                 CustomKeyHandler(CustomMenu6 + 1000);
                 return;
-            case 'D':
-            case 'F':
-            case 'C':
-            case 'V':
-            case 'd':
-            case 'f':
-            case 'c':
-            case 'v':
+            case KEY_D:
+            case KEY_F:
+            case KEY_C:
+            case KEY_V:
                 CustomKeyHandler(CustomMenu7 + 1000);
                 return;
-            case 'G':
-            case 'H':
-            case 'B':
-            case 'N':
-            case 'g':
-            case 'h':
-            case 'b':
-            case 'n':
+            case KEY_G:
+            case KEY_H:
+            case KEY_B:
+            case KEY_N:
                 CustomKeyHandler(CustomMenu8 + 1000);
                 return;
-            case 'J':
-            case 'j':
-            case 'K':
-            case 'k':
-            case 'M':
-            case 'm':
-            case 188:
+            case KEY_J:
+            case KEY_K:
+            case KEY_M:
+            case 188: // VK_OEM_COMMA
                 CustomKeyHandler(CustomMenu9 + 1000);
                 return;
-            case 13: // enter
-            case 8: // Del
-            case 'L':
-            case 'l':
-            case 190:
+            case KEY_RETURN: // enter
+            case KEY_BACK: // Del
+            case KEY_L:
+            case 190: // VK_OEM_PERIOD
                 CustomKeyHandler(CustomMenu10 + 1000);
                 return;
             default:

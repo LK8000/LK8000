@@ -57,6 +57,14 @@ struct Event {
   unsigned GetKeyCode() const {
     assert(IsKey());
 
+    if (event.key.keysym.sym == SDLK_RSHIFT) {
+      return SDLK_LSHIFT;
+    }
+
+    if (event.key.keysym.sym == SDLK_RCTRL) {
+      return SDLK_LCTRL;
+    }
+
     return event.key.keysym.sym;
   }
 

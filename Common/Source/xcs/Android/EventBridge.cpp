@@ -28,36 +28,29 @@ Copyright_License {
 #include "OS/Clock.hpp"
 #include "Compiler.h"
 #include <jni.h>
-
+#include "Event/Key.h"
 /**
  * @see http://developer.android.com/reference/android/view/KeyEvent.html
  */
 enum {
   KEYCODE_BACK = 0x04,
-  KEYCODE_0 = 0x07,
-  KEYCODE_9 = 0x10,
-  KEYCODE_A = 0x1d,
-  KEYCODE_Z = 0x36,
-  KEYCODE_ESCAPE = 0x6f,
+  KEYCODE_SHIFT_RIGHT = 0x3c,
+  KEYCODE_CTRL_RIGHT = 0x72,
 };
-
-static constexpr unsigned KEYCODE_DPAD_UP = 0x13;
-static constexpr unsigned KEYCODE_DPAD_DOWN = 0x14;
 
 static unsigned
 TranslateKeyCode(unsigned key_code)
 {
   if (key_code == KEYCODE_BACK)
     /* the "back" key acts as escape */
-    return KEYCODE_ESCAPE;
+    return KEY_ESCAPE;
 
-  if (key_code >= KEYCODE_0 && key_code <= KEYCODE_9)
-    return '0' + (key_code - KEYCODE_0);
+  if (key_code == KEYCODE_SHIFT_RIGHT)
+    return KEY_SHIFT;
 
-  if (key_code >= KEYCODE_A && key_code <= KEYCODE_Z)
-    /* return upper-case character, because InputEvents::findKey()
-       calls ToUpperASCII() */
-    return 'A' + (key_code - KEYCODE_A);
+  if (key_code == KEYCODE_CTRL_RIGHT)
+    return KEY_CONTROL;
+
 
   return key_code;
 }
@@ -66,7 +59,7 @@ constexpr
 static bool
 IsCursorKey(unsigned key_code)
 {
-  return key_code == KEYCODE_DPAD_UP || key_code == KEYCODE_DPAD_DOWN;
+  return key_code == KEY_UP || key_code == KEY_DOWN;
 }
 
 extern "C"

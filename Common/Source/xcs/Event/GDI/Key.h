@@ -37,6 +37,8 @@ enum {
   KEY_PRIOR = VK_PRIOR,
   KEY_NEXT = VK_NEXT,
   KEY_RETURN = VK_RETURN,
+  KEY_SHIFT = VK_SHIFT,
+  KEY_CONTROL = VK_CONTROL,
   KEY_F1 = VK_F1,
   KEY_F2 = VK_F2,
   KEY_F3 = VK_F3,
@@ -80,6 +82,44 @@ enum {
   KEY_APP5 = '5',
   KEY_APP6 = '6',
 #endif
+
+  KEY_0 = 0x30, // '0'
+  KEY_1,
+  KEY_2,
+  KEY_3,
+  KEY_4,
+  KEY_5,
+  KEY_6,
+  KEY_7,
+  KEY_8,
+  KEY_9 = 0x39, // '9'
+
+  KEY_A = 0x41,  // 'A'
+  KEY_B,
+  KEY_C,
+  KEY_D,
+  KEY_E,
+  KEY_F,
+  KEY_G,
+  KEY_H,
+  KEY_I,
+  KEY_J,
+  KEY_K,
+  KEY_L,
+  KEY_M,
+  KEY_N,
+  KEY_O,
+  KEY_P,
+  KEY_Q,
+  KEY_R,
+  KEY_S,
+  KEY_T,
+  KEY_U,
+  KEY_V,
+  KEY_W,
+  KEY_X,
+  KEY_Y,
+  KEY_Z = 0x5A,  // 'Z'
 };
 
 #ifndef _WIN32_WCE

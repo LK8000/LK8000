@@ -58,12 +58,7 @@ static TCHAR mode_map[MAX_MODE][MAX_MODE_STRING];		// Map mode to location
 static int mode_map_count = 0;
 
 // Key to Event - Keys (per mode) mapped to events
-#ifndef USE_GDI
-// Some linux keycode are defined on 4 Byte, use map instead of array.
-static std::map<int,unsigned> Key2Event[MAX_MODE];
-#else
-static unsigned Key2Event[MAX_MODE][MAX_KEY];
-#endif
+static std::map<unsigned,unsigned> Key2Event[MAX_MODE];
 
 // Glide Computer Events
 static int GC2Event[MAX_MODE][GCE_COUNT];
@@ -228,11 +223,9 @@ void InputEvents::readFile() {
 
     // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file
     if ((line == 1) && (_tcsstr(buffer, TEXT("#CLEAR")))){
-#ifndef USE_GDI
-      for(auto Item : Key2Event) Item.clear();
-#else
-      memset(&Key2Event, 0, sizeof(Key2Event));
-#endif
+      for(auto Item : Key2Event) {
+        Item.clear();
+      }
       clearEvents(); 
 
       memset(&GC2Event, 0, sizeof(GC2Event));
@@ -269,7 +262,7 @@ void InputEvents::readFile() {
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
 	  LKASSERT(mode_id >= 0);
-          LKASSERT(mode_id < (int)std::size(Key2Event));
+	  LKASSERT(mode_id < (int)std::size(Key2Event));
 
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -285,20 +278,14 @@ void InputEvents::readFile() {
 
 	  // Make key (Keyboard input)
 	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
-	    const int ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
+	    unsigned ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (ikey > 0) {
-#ifdef USE_GDI
-            LKASSERT(ikey < (int)std::size(Key2Event[mode_id]));
-            Key2Event[mode_id][ikey] = event_id;
-#else
-            if(event_id > 0) {
-                Key2Event[mode_id][ikey] = event_id;
-            } else {
-                Key2Event[mode_id].erase(ikey);
-            }
-#endif
-
-        }
+	      if(event_id > 0) {
+          Key2Event[mode_id][ikey] = event_id;
+	      } else {
+          Key2Event[mode_id].erase(ikey);
+	      }
+	    }
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    // Make gce (Glide Computer Event)
 	    gc_event iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
@@ -396,61 +383,6 @@ void InputEvents::UnloadString(){
 
 	std::for_each(LabelGarbage.begin(),LabelGarbage.end(), safe_free());
 	LabelGarbage.clear();
-}
-
-int InputEvents::findKey(const TCHAR *data) {
-
-  if (_tcscmp(data, TEXT("APP1")) == 0)
-    return KEY_APP1;
-  else if (_tcscmp(data, TEXT("APP2")) == 0)
-    return KEY_APP2;
-  else if (_tcscmp(data, TEXT("APP3")) == 0)
-    return KEY_APP3;
-  else if (_tcscmp(data, TEXT("APP4")) == 0)
-    return KEY_APP4;
-  else if (_tcscmp(data, TEXT("APP5")) == 0)
-    return KEY_APP5;
-  else if (_tcscmp(data, TEXT("APP6")) == 0)
-    return KEY_APP6;
-  else if (_tcscmp(data, TEXT("F1")) == 0)
-    return KEY_F1;
-  else if (_tcscmp(data, TEXT("F2")) == 0)
-    return KEY_F2;
-  else if (_tcscmp(data, TEXT("F3")) == 0)
-    return KEY_F3;
-  else if (_tcscmp(data, TEXT("F4")) == 0)
-    return KEY_F4;
-  else if (_tcscmp(data, TEXT("F5")) == 0)
-    return KEY_F5;
-  else if (_tcscmp(data, TEXT("F6")) == 0)
-    return KEY_F6;
-  else if (_tcscmp(data, TEXT("F7")) == 0)
-    return KEY_F7;
-  else if (_tcscmp(data, TEXT("F8")) == 0)
-    return KEY_F8;
-  else if (_tcscmp(data, TEXT("F9")) == 0)
-    return KEY_F9;
-  else if (_tcscmp(data, TEXT("F10")) == 0)
-    return KEY_F10;
-  else if (_tcscmp(data, TEXT("LEFT")) == 0)
-    return KEY_LEFT;
-  else if (_tcscmp(data, TEXT("RIGHT")) == 0)
-    return KEY_RIGHT;
-  else if (_tcscmp(data, TEXT("UP")) == 0)
-    return KEY_UP;
-  else if (_tcscmp(data, TEXT("DOWN")) == 0)
-    return KEY_DOWN;
-  else if (_tcscmp(data, TEXT("RETURN")) == 0)
-    return KEY_RETURN;
-  else if (_tcscmp(data, TEXT("ESCAPE")) == 0)
-    return KEY_ESCAPE;
-  else if (_tcscmp(data, TEXT("SPACE")) == 0)
-    return KEY_SPACE;
-  else if (_tcslen(data) == 1)
-    return _totupper(data[0]);
-  else
-    return 0;
-
 }
 
 // Create EVENT Entry
@@ -622,12 +554,12 @@ bool InputEvents::processButton(unsigned MenuId) {
 
 
 /*
-  InputEvent::processKey(KeyID);
+  InputEvent::processKey(unsigned key_code);
   Process keys normally brought in by hardware or keyboard presses
   Future will also allow for long and double click presses...
   Return = We had a valid key (even if nothing happens because of Bounce)
 */
-bool InputEvents::processKey(int KeyID) {
+bool InputEvents::processKey(unsigned key_code) {
   if (ProgramStarted != psNormalOp) {
     return false;
   }
@@ -638,11 +570,9 @@ bool InputEvents::processKey(int KeyID) {
     mode = 0;
   }
 
-#ifndef USE_GDI
-
   unsigned event_id = 0;
 
-  auto It = Key2Event[mode].find(KeyID);
+  auto It = Key2Event[mode].find(key_code);
   if(It != Key2Event[mode].end()) {
     // Valid input
     event_id = It->second;
@@ -650,26 +580,11 @@ bool InputEvents::processKey(int KeyID) {
 
   if (event_id == 0) {
     // fall back to default
-    It = Key2Event[0].find(KeyID);
+    It = Key2Event[0].find(key_code);
     if(It != Key2Event[0].end()) {
       event_id = It->second;
     }
   }
-
-#else
-
-  // Valid input ?
-  if ((KeyID < 0) || (KeyID > MAX_KEY))
-    return false;
-
-  // Which key - can be defined locally or at default (fall back to default)
-  unsigned event_id = Key2Event[mode][KeyID];
-  if (event_id == 0) {
-    // go with default key..
-    event_id = Key2Event[0][KeyID];
-  }
-
-#endif
 
   if (event_id > 0) {
 
@@ -3697,6 +3612,75 @@ namespace {
     DELARE_NE(DUMMY) // to avoid empty initializer list error.
   });
 
+  constexpr auto Text2Key = lookup_table<tstring_view, unsigned, ci_equal<tstring_view>>({
+    { _T("APP1"), KEY_APP1 },
+    { _T("APP2"), KEY_APP2 },
+    { _T("APP3"), KEY_APP3 },
+    { _T("APP4"), KEY_APP4 },
+    { _T("APP5"), KEY_APP5 },
+    { _T("APP6"), KEY_APP6 },
+
+    { _T("F1"), KEY_F1 },
+    { _T("F2"), KEY_F2 },
+    { _T("F3"), KEY_F3 },
+    { _T("F4"), KEY_F4 },
+    { _T("F5"), KEY_F5 },
+    { _T("F6"), KEY_F6 },
+    { _T("F7"), KEY_F7 },
+    { _T("F8"), KEY_F8 },
+    { _T("F9"), KEY_F9 },
+    { _T("F10"), KEY_F10 },
+    { _T("F11"), KEY_F11 },
+    { _T("F12"), KEY_F12 },
+
+    { _T("LEFT"), KEY_LEFT },
+    { _T("RIGHT"), KEY_RIGHT },
+    { _T("UP"), KEY_UP },
+    { _T("DOWN"), KEY_DOWN },
+
+    { _T("RETURN"), KEY_RETURN },
+    { _T("ESCAPE"), KEY_ESCAPE },
+    { _T("SPACE"), KEY_SPACE },
+
+    { _T("0"), KEY_0 },
+    { _T("1"), KEY_1 },
+    { _T("2"), KEY_2 },
+    { _T("3"), KEY_3 },
+    { _T("4"), KEY_4 },
+    { _T("5"), KEY_5 },
+    { _T("6"), KEY_6 },
+    { _T("7"), KEY_7 },
+    { _T("8"), KEY_8 },
+    { _T("9"), KEY_9 },
+
+    { _T("A"), KEY_A },
+    { _T("B"), KEY_B },
+    { _T("C"), KEY_C },
+    { _T("D"), KEY_D },
+    { _T("E"), KEY_E },
+    { _T("F"), KEY_F },
+    { _T("G"), KEY_G },
+    { _T("H"), KEY_H },
+    { _T("I"), KEY_I },
+    { _T("J"), KEY_J },
+    { _T("K"), KEY_K },
+    { _T("L"), KEY_L },
+    { _T("M"), KEY_M },
+    { _T("N"), KEY_N },
+    { _T("O"), KEY_O },
+    { _T("P"), KEY_P },
+    { _T("Q"), KEY_Q },
+    { _T("R"), KEY_R },
+    { _T("S"), KEY_S },
+    { _T("T"), KEY_T },
+    { _T("U"), KEY_U },
+    { _T("V"), KEY_V },
+    { _T("W"), KEY_W },
+    { _T("X"), KEY_X },
+    { _T("Y"), KEY_Y },
+    { _T("Z"), KEY_Z },
+  });
+
 }
 
 pt2Event InputEvents::findEvent(const TCHAR *data) {
@@ -3709,4 +3693,8 @@ gc_event InputEvents::findGCE(const TCHAR *data) {
 
 nmea_event InputEvents::findNE(const TCHAR *data) {
   return Text2NE.get(data, NE_COUNT);
+}
+
+unsigned InputEvents::findKey(const TCHAR *data) {
+  return Text2Key.get(data, 0U);
 }
