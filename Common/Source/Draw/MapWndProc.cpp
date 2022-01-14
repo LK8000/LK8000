@@ -897,98 +897,162 @@ static bool GetShiftKeyState() {
 
 
 void MapWindow::_OnKeyDown(unsigned KeyCode) {
-    //
-    // Special SIM mode keys for PC
-    //
-    if(HasKeyboard() && SIMMODE && IsMultiMapShared()) {
-        if (!ReplayLogger::IsEnabled()) {
-            switch (KeyCode) {
-                case KEY_PRIOR: // VK_PRIOR PAGE UP
-                    if (GetShiftKeyState()) {
-                        if (Units::GetUserAltitudeUnit() == unFeet)
-                            GPS_INFO.Altitude += 45.71999999 * 10;
-                        else
-                            GPS_INFO.Altitude += 10 * 10;
-                    } else {
-                        if (Units::GetUserAltitudeUnit() == unFeet)
-                            GPS_INFO.Altitude += 45.71999999;
-                        else
-                            GPS_INFO.Altitude += 10;
-                    }
-                    TriggerGPSUpdate();
+
+    if(HasKeyboard()) {
+
+        // default keyboard usage
+        switch (KeyCode) {
+        case KEY_F1:
+            PlayResource(TEXT("IDR_WAV_CLICK"));
+            // Toggle Menu
+            InputEvents::setMode(ButtonLabel::IsVisible() ? _T("default") : _T("Menu")); 
+            MenuTimeOut = 0;
+            return;
+        case KEY_ESCAPE:
+            if (ButtonLabel::IsVisible()) {
+                PlayResource(TEXT("IDR_WAV_CLICK"));
+                // Close Menu
+                InputEvents::setMode(_T("default"));
                 return;
-                case KEY_NEXT: // VK_NEXT PAGE DOWN
-                    if (GetShiftKeyState()) {
-                        if (Units::GetUserAltitudeUnit() == unFeet)
-                            GPS_INFO.Altitude -= 45.71999999 * 10;
-                        else
-                            GPS_INFO.Altitude -= 10 * 10;
-                    } else {
-                        if (Units::GetUserAltitudeUnit() == unFeet)
-                            GPS_INFO.Altitude -= 45.71999999;
-                        else
-                            GPS_INFO.Altitude -= 10;
-                    }
-                    if (GPS_INFO.Altitude <= 0) {
-                        GPS_INFO.Altitude = 0;
-                    }
-                    TriggerGPSUpdate();
-                    return;
-                case KEY_UP: // VK_UP
-                    if (GetShiftKeyState()) {
-                        SimFastForward();
-                    } else {
-                        InputEvents::eventChangeGS(_T("kup"));
-                    }
-                    TriggerGPSUpdate();
-                    return;
-                case KEY_DOWN: // VK_DOWN
-                    InputEvents::eventChangeGS(_T("kdown"));
-                    TriggerGPSUpdate();
-                    return;
-                case KEY_LEFT: // VK_LEFT
-                    if (GetShiftKeyState()) {
-                        GPS_INFO.TrackBearing -= 0.1;
-
-                    } else {
-                        GPS_INFO.TrackBearing -= 5;
-                    }
-                    if (GPS_INFO.TrackBearing < 0) GPS_INFO.TrackBearing += 360;
-                    else if (GPS_INFO.TrackBearing > 359) GPS_INFO.TrackBearing -= 360;
-
-                    TriggerGPSUpdate();
-                    return;
-                case KEY_RIGHT: // VK_RIGHT
-                    if (GetShiftKeyState()) {
-                        GPS_INFO.TrackBearing += 0.1;
-                    } else {
-                        GPS_INFO.TrackBearing += 5;
-                    }
-                    GPS_INFO.TrackBearing = AngleLimit360(GPS_INFO.TrackBearing);
-
-                    TriggerGPSUpdate();
-                    return;
             }
-        } else {
-            // ReplayLogger::IsEnabled()
-            extern double ReplayTime;
-            switch (KeyCode) {
-                case KEY_PRIOR: // VK_PRIOR PAGE UP
-                    ReplayTime += 300;
+            // TODO : return to default moving map ?
+            break;
+        case KEY_RETURN:
+            if (ButtonLabel::IsVisible()) {
+                PlayResource(TEXT("IDR_WAV_CLICK"));
+                InputEvents::triggerSelectedButton();
+                MenuTimeOut = 0;
+                return;
+            }
+            break;
+        case KEY_UP:
+        case KEY_RIGHT:
+            if (ButtonLabel::IsVisible()) {
+                PlayResource(TEXT("IDR_WAV_CLICK"));
+                InputEvents::selectPrevButton();
+                MenuTimeOut = 0;
+                return;
+            }
+            break;
+        case KEY_DOWN:
+        case KEY_LEFT:
+            if (ButtonLabel::IsVisible()) {
+                PlayResource(TEXT("IDR_WAV_CLICK"));
+                InputEvents::selectNextButton();
+                MenuTimeOut = 0;
+                return;
+            }
+            break;
+        default:
+            break;
+        } 
+    
+
+        //
+        // Special SIM mode keys for device with hardware keyboard
+        //
+        if(SIMMODE && IsMultiMapShared()) {
+            if (!ReplayLogger::IsEnabled()) {
+                switch (KeyCode) {
+                    case KEY_PRIOR: // VK_PRIOR PAGE UP
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        if (GetShiftKeyState()) {
+                            if (Units::GetUserAltitudeUnit() == unFeet)
+                                GPS_INFO.Altitude += 45.71999999 * 10;
+                            else
+                                GPS_INFO.Altitude += 10 * 10;
+                        } else {
+                            if (Units::GetUserAltitudeUnit() == unFeet)
+                                GPS_INFO.Altitude += 45.71999999;
+                            else
+                                GPS_INFO.Altitude += 10;
+                        }
+                        TriggerGPSUpdate();
                     return;
-                case KEY_UP: // VK_UP
-                    ReplayLogger::TimeScale++;
-                    return;
-                case KEY_DOWN: // VK_DOWN
-                    if (ReplayLogger::TimeScale > 0) ReplayLogger::TimeScale--;
-                    if (ReplayLogger::TimeScale < 0) ReplayLogger::TimeScale = 0; // to be safe
-                    return;
-                case KEY_RIGHT: // VK_RIGHT
-                    ReplayTime += 60;
-                    return;
+                    case KEY_NEXT: // VK_NEXT PAGE DOWN
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        if (GetShiftKeyState()) {
+                            if (Units::GetUserAltitudeUnit() == unFeet)
+                                GPS_INFO.Altitude -= 45.71999999 * 10;
+                            else
+                                GPS_INFO.Altitude -= 10 * 10;
+                        } else {
+                            if (Units::GetUserAltitudeUnit() == unFeet)
+                                GPS_INFO.Altitude -= 45.71999999;
+                            else
+                                GPS_INFO.Altitude -= 10;
+                        }
+                        if (GPS_INFO.Altitude <= 0) {
+                            GPS_INFO.Altitude = 0;
+                        }
+                        TriggerGPSUpdate();
+                        return;
+                    case KEY_UP: // VK_UP
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        if (GetShiftKeyState()) {
+                            SimFastForward();
+                        } else {
+                            InputEvents::eventChangeGS(_T("kup"));
+                        }
+                        TriggerGPSUpdate();
+                        return;
+                    case KEY_DOWN: // VK_DOWN
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        InputEvents::eventChangeGS(_T("kdown"));
+                        TriggerGPSUpdate();
+                        return;
+                    case KEY_LEFT: // VK_LEFT
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        if (GetShiftKeyState()) {
+                            GPS_INFO.TrackBearing -= 0.1;
+
+                        } else {
+                            GPS_INFO.TrackBearing -= 5;
+                        }
+                        GPS_INFO.TrackBearing = AngleLimit360(GPS_INFO.TrackBearing);
+                        TriggerGPSUpdate();
+                        return;
+                    case KEY_RIGHT: // VK_RIGHT
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        if (GetShiftKeyState()) {
+                            GPS_INFO.TrackBearing += 0.1;
+                        } else {
+                            GPS_INFO.TrackBearing += 5;
+                        }
+                        GPS_INFO.TrackBearing = AngleLimit360(GPS_INFO.TrackBearing);
+                        TriggerGPSUpdate();
+                        return;
+                }
+            } else {
+                // ReplayLogger::IsEnabled()
+                extern double ReplayTime;
+                switch (KeyCode) {
+                    case KEY_PRIOR: // VK_PRIOR PAGE UP
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        ReplayTime += 300;
+                        return;
+                    case KEY_UP: // VK_UP
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        ReplayLogger::TimeScale++;
+                        return;
+                    case KEY_DOWN: // VK_DOWN
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        if (ReplayLogger::TimeScale > 0) ReplayLogger::TimeScale--;
+                        if (ReplayLogger::TimeScale < 0) ReplayLogger::TimeScale = 0; // to be safe
+                        return;
+                    case KEY_RIGHT: // VK_RIGHT
+                        PlayResource(TEXT("IDR_WAV_CLICK"));
+                        ReplayTime += 60;
+                        return;
+                }
             }
         }
     }
+
+    if (InputEvents::processKey(KeyCode)) {
+        return;
+    }
+
 
 #ifndef LXMINIMAP
     //
@@ -1038,6 +1102,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
       case KEY_RETURN:
         // Button C is generating a RETURN
         if (ButtonLabel::IsVisible()) {
+          PlayResource(TEXT("IDR_WAV_CLICK"));
           InputEvents::triggerSelectedButton();
           return;
         }
@@ -1091,11 +1156,13 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         return;
 
       case KEY_LEFT:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
         // Rotary knob E is generating a 37 (turn left) and 39 (turn right)
         key_previous_mode();
         return;
 
       case KEY_RIGHT:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
         key_next_mode();
         return;
 
@@ -1680,56 +1747,6 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 break;
         }
     }
-
-    if(HasKeyboard()) {
-      PlayResource(TEXT("IDR_WAV_CLICK"));
-      // default keyboard usage
-      switch (KeyCode) {
-      case KEY_F1:
-        // Toggle Menu
-        InputEvents::setMode(ButtonLabel::IsVisible() ? _T("default") : _T("Menu")); 
-        MenuTimeOut = 0;
-        return;
-      case KEY_ESCAPE:
-        if (ButtonLabel::IsVisible()) {
-          // Close Menu
-          InputEvents::setMode(_T("default"));
-          return;
-        }
-        // TODO : return to default moving map ?
-        break;
-      case KEY_RETURN:
-        if (ButtonLabel::IsVisible()) {
-          InputEvents::triggerSelectedButton();
-          MenuTimeOut = 0;
-          return;
-        }
-        break;
-      case KEY_UP:
-      case KEY_RIGHT:
-          if (ButtonLabel::IsVisible()) {
-            InputEvents::selectPrevButton();
-            MenuTimeOut = 0;
-            return;
-          }
-          // TODO :
-          break;
-      case KEY_DOWN:
-      case KEY_LEFT:
-          if (ButtonLabel::IsVisible()) {
-            InputEvents::selectNextButton();
-            MenuTimeOut = 0;
-            return;
-          }
-          // TODO :
-          break;
-       // always mapped to zoom
-      default:
-          break;
-      } 
-    }
-
-    InputEvents::processKey(KeyCode);
 }
 
 static bool isListPage(void) {
