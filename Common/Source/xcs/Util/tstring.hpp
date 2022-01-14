@@ -102,4 +102,28 @@ tstring to_lower_ascii(const tstring& source) {
     return lower_text;
 }
 
+
+/**
+ * compare ASCII Alpha ('a'..'z') ignoring case
+ * use binary compare for all other
+ */
+template<typename CharT>
+struct ci_equal_to {
+  bool operator()(CharT ca, CharT cb) const {
+    return UpperAlpha(ca) == UpperAlpha(cb);
+  }
+
+  CharT UpperAlpha(CharT c) const {
+    return (c >= 'a' && c <= 'z') ? (c - ('a' - 'A')) : c;
+  }
+};
+
+template<typename StrT>
+struct ci_equal {
+  using CharT = typename StrT::value_type;
+  bool operator()(const StrT& a, const StrT& b) {
+    return std::equal(a.begin(), a.end(), b.begin(), b.end(), ci_equal_to<CharT>());
+  }
+};
+
 #endif
