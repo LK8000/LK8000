@@ -11,6 +11,7 @@
 #include "Sound/Sound.h"
 #include "InputEvents.h"
 #include "Calc/Vario.h"
+#include <optional>
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
@@ -21,65 +22,149 @@ double trackbearingminspeed=0; // minimal speed to use gps bearing
 //#define DEBUGBARO	1	// also needed in UpdateBaroSource
 //#define DEBUGNPM	1
 #endif
+
+namespace {
+
+/**
+ * Searches first device for which predicate "pred" returns true
+ */
+template<typename Predicate>
+std::optional<int> find_device(Predicate&& p) {
+  for (auto& dev : DeviceList) {
+    if (p(dev)) {
+      return dev.PortNumber;
+    }
+  }
+  return {};
+}
+
+/**
+ * Call function "f" for all device
+ */
+template<typename Function>
+void for_each_device(Function&& f) {
+  for (auto& dev : DeviceList) {
+    f(dev);
+  }
+}
+
+/**
+ * Predicate : port Enabled
+ */
+struct port_enabled {
+  bool operator()(DeviceDescriptor_t& dev) {
+    return !dev.Disabled;
+  }
+};
+
+/**
+ * Predicate : port connected
+ */
+struct port_connected {
+  bool operator()(DeviceDescriptor_t& dev) {
+    return !dev.Disabled && dev.nmeaParser.connected;
+  }
+};
+
+/**
+ * Predicate : active port
+ */
+struct port_active {
+  bool operator()(DeviceDescriptor_t& dev) {
+    return !dev.Disabled && dev.nmeaParser.activeGPS;
+  }
+};
+
+/**
+ * Predicate : connected gps with valid fix
+ */
+struct gps_fix {
+  bool operator()(DeviceDescriptor_t& dev) {
+    return !dev.Disabled && dev.nmeaParser.gpsValid;
+  }
+};
+
+/**
+ * Predicate : connected gps without valid fix
+ */
+struct gps_no_fix {
+  bool operator()(DeviceDescriptor_t& dev) {
+    return !dev.Disabled 
+              && devIsGPSSource(&dev) 
+              && ((LKHearthBeats - dev.HB) < 10);
+  }
+};
+
+/**
+ * activate "idx" port and desactivate all others
+ */
+void set_active_gps(int idx) {
+  for_each_device([=](auto& dev) {
+    dev.nmeaParser.activeGPS = (dev.PortNumber == idx);
+  });
+}
+
+/**
+ * @return active GPS DeviceDescriptor
+ */
+DeviceDescriptor_t& get_active_gps() {
+  auto active = find_device(port_active());
+  return DeviceList[active.value_or(0)];
+}
+
 //
 // Run every 5 seconds, approx.
 // This is the hearth of LK. Questions? Ask Paolo..
 // THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
+bool UpdateMonitor() {
 
-static
-bool  UpdateMonitor(void)
-{
-  ScopeLock Lock(CritSec_Comm);
-
-  static int lastactive=0;
   static bool  lastvalidBaro=false;
   static bool wasSilent[std::size(DeviceList)] = { false };
 
-  int active = -1;
-  // find first valid GPS
-  for(const auto& dev : DeviceList) {
-    if(dev.nmeaParser.gpsValid) {
-      active = dev.PortNumber;
-      break; // we got first, no need to continue;
-    }
-  }
-  
-  if(active == -1) {
+  ScopeLock Lock(CritSec_Comm);
+
+  // save current active port.
+  auto last_active = find_device(port_active());
+
+  /**
+   * find and activate first valid port.
+   *   select by priority :
+   *      - first GPS with valid fix
+   *      - first GPS without valid fix
+   *      - first connected device
+   *      - first enabled device
+   *      - first device
+   */
+
+  // get first device with valid gps fix
+  auto active = find_device(gps_fix());
+
+  if (!active) {
     // No valid fix on any port. We use the first port with at least some data going through!
     // This will keep probably at least the time updated since the gps may still be receiving a 
     // valid time, good for us.
-    for(auto& dev : DeviceList) {
-      if(devIsGPSSource(&dev) && ((LKHearthBeats-dev.HB)<10)) {
-        active = dev.PortNumber;
-        break; // we got first, no need to contine;
-      }
-    }    
+    active = find_device(gps_no_fix());
   }
-  if(active == -1) {
+
+  if (!active) {
     // if no activity on any port, let first connected port active.
-    for(const auto& dev : DeviceList) {
-      if(dev.nmeaParser.connected) {
-        active = dev.PortNumber;
-        break; // we got first, no need to contine;
-      }
-    }
-  }
-  if(active == -1) {
-    // if no connected port, let first port active.
-    active = 0;
+    active = find_device(port_connected());
   }
 
-  // activate "active" port and desactivate all others
-  for(auto& dev : DeviceList) {
-      dev.nmeaParser.activeGPS = (dev.PortNumber == active);
+  if (!active) {
+    // if no port connected, use first enabled port.
+    active = find_device(port_enabled());
   }
 
-  PDeviceDescriptor_t active_dev = devX(active);
+  // if no connected port, let first port active.
+  set_active_gps(active.value_or(0));
+
+  DeviceDescriptor_t& active_dev = get_active_gps();
 
   // wait for 10 seconds before monitoring, after startup
   if (LKHearthBeats<20) {
-    return active_dev->nmeaParser.connected;
+    return active_dev.nmeaParser.connected;
   }
 
   /* check if Flarm disappeared after 30 seconds no activity */
@@ -290,7 +375,7 @@ bool  UpdateMonitor(void)
 
   // Nothing has changed? No need to give new alerts. We might have no active gps at all, also.
   // In this case, active and lastactive are 0, nothing we can do about it.
-  if (active != lastactive) {
+  if (active != last_active) {
 
     // we need to reset all data availabilty flags, otherwise some of them 
     // can leave set to "true'" even if new active device don't provide data
@@ -305,17 +390,17 @@ bool  UpdateMonitor(void)
     GPS_INFO.GyroscopeAvailable = false;
     GPS_INFO.ExternalWindAvailable = false;
 
-    if (active!=0)
-      StartupStore(_T(". GPS NMEA source changed to port %d  %s" NEWLINE),active,WhatTimeIsIt());
+    if (active)
+      StartupStore(_T(". GPS NMEA source changed to port %d  %s" NEWLINE),active.value(),WhatTimeIsIt());
     else
       StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s" NEWLINE),WhatTimeIsIt());
 
 
     if (PortMonitorMessages<15) { // do not overload pilot with messages!
       // do not say anything if we never got the first port, on startup essentially
-      if ( (lastactive!=0) && active_dev &&  active_dev->nmeaParser.gpsValid ) {
+      if (last_active && active_dev.nmeaParser.gpsValid) {
         TCHAR vbuf[100];
-        _stprintf(vbuf,_T("%s %d"), MsgToken(277),active); // FALLBACK USING GPS ON PORT ..
+        _stprintf(vbuf,_T("%s %d"), MsgToken(277),active.value_or(0)); // FALLBACK USING GPS ON PORT ..
         DoStatusMessage(vbuf);
         PortMonitorMessages++;
       } 
@@ -326,11 +411,11 @@ bool  UpdateMonitor(void)
         PortMonitorMessages++;	// we go to 16, and never be back here
       }
     }
-
-    lastactive=active;
   }
-  return active_dev->nmeaParser.connected;      
+  return active_dev.nmeaParser.connected;      
 }
+
+} // namespace
 
 // Running at 0.2hz every 5 seconds
 int ConnectionProcessTimer(int itimeout) {
