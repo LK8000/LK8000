@@ -31,8 +31,9 @@
 
 #include <cstddef>
 #include <utility>
+#include <functional>
 
-template<typename key_type, typename mapped_type, size_t size>
+template<typename key_type, typename mapped_type, size_t size, typename key_comp>
 class lookup_table_t {
 private:
   typedef std::pair<const key_type, const mapped_type> value_type; 
@@ -50,8 +51,9 @@ public:
    */
   inline constexpr
   mapped_type get(key_type key, const mapped_type &def_value) const {
+    key_comp compare;
     for (const auto &item : _data) {
-      if (item.first == key) {
+      if (compare(item.first, key)) {
         return item.second;
       }
     }
@@ -74,9 +76,19 @@ public:
  * whith size deduced from argument
  */
 template<typename key_type, typename mapped_type, size_t size>
-constexpr lookup_table_t<key_type, mapped_type, size>
+constexpr lookup_table_t<key_type, mapped_type, size, std::equal_to<key_type>>
 lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
-  return lookup_table_t<key_type, mapped_type, size>(data, std::make_index_sequence<size>());
+  return lookup_table_t<key_type, mapped_type, size, std::equal_to<key_type>>(data, std::make_index_sequence<size>());
+}
+
+/**
+ * convenience function template that constructs a lookup_table_t 
+ * whith size deduced from argument and custom key compare predicate
+ */
+template<typename key_type, typename mapped_type, typename key_comp, size_t size>
+constexpr lookup_table_t<key_type, mapped_type, size, key_comp>
+lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
+  return lookup_table_t<key_type, mapped_type, size, key_comp>(data, std::make_index_sequence<size>());
 }
 
 #endif // _utils_lookup_table_h_
