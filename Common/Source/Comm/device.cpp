@@ -947,11 +947,8 @@ BOOL devIsLogger(PDeviceDescriptor_t d)
 /**
  * used only in UpdateMonitor() : already under LockComm ...
  */
-BOOL devIsGPSSource(PDeviceDescriptor_t d) {
-  if (d && d->IsGPSSource) {
-    return d->IsGPSSource(d);
-  }
-  return false;
+BOOL devIsGPSSource(DeviceDescriptor_t& dev) {
+  return dev.IsGPSSource && dev.IsGPSSource(&dev);
 }
 
 /**

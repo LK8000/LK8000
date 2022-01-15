@@ -89,8 +89,7 @@ struct gps_fix {
  */
 struct gps_no_fix {
   bool operator()(DeviceDescriptor_t& dev) {
-    return !dev.Disabled 
-              && devIsGPSSource(&dev) 
+    return !dev.Disabled && devIsGPSSource(dev) 
               && ((LKHearthBeats - dev.HB) < 10);
   }
 };

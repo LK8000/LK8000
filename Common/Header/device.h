@@ -232,7 +232,7 @@ BOOL devPutFreqStandby(double Freq, const TCHAR* StationName);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);
 BOOL devDeclare(PDeviceDescriptor_t	d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);
-BOOL devIsGPSSource(PDeviceDescriptor_t	d);
+BOOL devIsGPSSource(DeviceDescriptor_t& dev);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 
