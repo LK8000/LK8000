@@ -33,7 +33,6 @@ void CDevFlarm::Install( PDeviceDescriptor_t d ) {
 	d->ParseNMEA = FlarmParse ; // ParseNMEA;
 	d->Open = Open;
 	d->Close = Close;
-	d->IsGPSSource = GetFalse;
 	d->IsBaroSource = GetTrue;
 	d->Config = Config;
 	d->ParseStream  = FlarmParseString;

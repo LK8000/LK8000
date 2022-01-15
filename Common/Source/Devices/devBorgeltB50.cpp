@@ -34,12 +34,6 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 }
 
 
-BOOL B50IsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-}
-
-
 BOOL B50IsGPSSource(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE); // ? is this true
@@ -63,7 +57,6 @@ void b50Install(PDeviceDescriptor_t d){
   d->ParseNMEA = B50ParseNMEA;
   d->LinkTimeout = B50LinkTimeout;
   d->IsGPSSource = B50IsGPSSource;
-  d->IsGPSSource  = B50IsGPSSource;
   d->IsBaroSource = B50IsBaroSource;
 }
 

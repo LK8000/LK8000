@@ -66,19 +66,6 @@ BOOL DevBase::GetTrue(PDeviceDescriptor_t)
   return(true);
 } // GetTrue()
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Constant handler returning always @c false.
-///
-/// @param d  device descriptor (unused)
-///
-//static
-BOOL DevBase::GetFalse(PDeviceDescriptor_t)
-{
-  return(false);
-} // GetFalse()
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Show declaration progress dialog.
 ///

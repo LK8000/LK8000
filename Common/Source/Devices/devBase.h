@@ -63,10 +63,6 @@ class DevBase
     gcc_nonnull(1)
     static BOOL GetTrue(PDeviceDescriptor_t d);
 
-    /// Constant handler returning always @c false.
-    gcc_nonnull(1)
-    static BOOL GetFalse(PDeviceDescriptor_t d);
-
     /// Show declaration progress dialog.
     static void ShowProgress(DeclDlg dlgType);
 
