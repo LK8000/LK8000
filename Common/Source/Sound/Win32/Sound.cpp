@@ -103,31 +103,8 @@ bool SetSoundVolume() {
 #if defined(PNA) && defined(UNDER_CE)
   if (EnableAutoSoundVolume == false ) return false;
 
-  switch (GlobalModelType)
-  {
-	#if 0 // does not work, no idea why - paolo
-	case MODELTYPE_PNA_HP31X:
-		HKEY    hKey;
-		DWORD   Disp=0;
-		HRESULT hRes;
-
-		hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Volume"), 0,  0, &hKey);
-		if (hRes != ERROR_SUCCESS) return false;
-
-		Disp=0xFFFFFFFF; // max volume
-		hRes = RegSetValueEx(hKey, _T("Volume"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
-		Disp=65538;
-		hRes = RegSetValueEx(hKey, _T("Screen"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
-		Disp=0;
-		hRes = RegSetValueEx(hKey, _T("Key"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
-		Disp=7;
-		hRes = RegSetValueEx(hKey, _T("Mute"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
-		SendMessage(HWND_BROADCAST, WM_WININICHANGE, 0xF2, 0);
-	        RegCloseKey(hKey);
-		break;
-	#endif // disabled code for HP314
-
-	case MODELTYPE_PNA_FUNTREK:
+  switch (GlobalModelType) {
+	case ModelType::FUNTREK:
 		GM130MaxSoundVolume();
 		break;
 
