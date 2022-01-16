@@ -674,7 +674,7 @@ BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
 }
 
 
-int DeviceASCIIConvert(TCHAR *pDest, TCHAR *pSrc, int size=11)
+int DeviceASCIIConvert(TCHAR *pDest, const TCHAR *pSrc, int size=11)
 {
   if (pSrc && pDest)
   {
