@@ -648,7 +648,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	char username[std::size(tracking::usr_config)]; 
 	char password[std::size(tracking::pwd_config)];
 
-	char txbuf[500];
+	char txbuf[510];
 	char rxbuf[32];
 	int rxlen;
 	char phone[64];
