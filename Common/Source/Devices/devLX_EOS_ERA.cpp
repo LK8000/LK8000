@@ -806,32 +806,39 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 
   FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
 
+  bool status= false;
+  if ( StopRxThread(d, errBufSize, errBuf)) {
+    // Send complete declaration to logger
+    int orgRxTimeout;
+    StartupStore(_T(". EOS/ERA SetRxTimeout%s "), NEWLINE);
+    status = SetRxTimeout(d, 500, orgRxTimeout, errBufSize, errBuf);
+    int attemps = 0;
+    char RecBuf[4096] = "";
 
-  // Send complete declaration to logger
-  int  orgRxTimeout;
-  SetRxTimeout(d, 4000,orgRxTimeout,  errBufSize , errBuf);
-  int attemps =0;
-  char RecBuf [4096] = "";  
-  do    
-  {
-    for (int ii = 0; ii < i ; ii++){
+    do {
+      Good = true;
+      for (int ii = 0; ii < i; ii++) {
+        StartupStore(_T(". EOS/ERA Decl: %s %s "), DeclStrings[ii], NEWLINE);
+        if (Good)
+          Good = SendNmea(d, DeclStrings[ii]);
 
-      if (Good)
-        Good = SendNmea(d, DeclStrings[ii]);
-     
-      StartupStore(_T(". EOS/ERA Decl: %s %s "),   DeclStrings[ii], NEWLINE);
-      if (Good)
-        Good = ComExpect(d, "$LXDT,ANS,OK*5c", 4095, RecBuf, errBufSize, errBuf);
 
-    }
-    attemps++;
-    if(!Good)
-      Poco::Thread::sleep(500);
-  } while ((!Good) && (attemps < 3));
+        if (Good)
+          Good = ComExpect(d, "$LXDT,ANS,OK*5c", 4095, RecBuf, errBufSize, errBuf);
 
- 
-  int tmp ;
-  SetRxTimeout(d, orgRxTimeout, tmp, errBufSize , errBuf);
+      }
+      attemps++;
+      if (!Good)
+        Poco::Thread::sleep(500);
+    } while ((!Good) && (attemps < 3));
+
+
+
+    // restore Rx timeout
+    status = status && SetRxTimeout(d, orgRxTimeout, orgRxTimeout, status ? errBufSize : 0, errBuf);
+  }
+  // restart RX thread
+  StartRxThread(d, status ? errBufSize : 0, errBuf);
 
   Declare(false);
   ShowProgress(decl_disable);
