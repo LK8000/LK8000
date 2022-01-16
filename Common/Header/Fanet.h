@@ -57,7 +57,7 @@ bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR* szName, size_t size
 
 template<size_t size>
 bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR (&szName)[size]) {
-  static_assert(size > (MAXFANETNAME+1), "out string too small");
+  static_assert(size >= (MAXFANETNAME+1), "out string too small");
   return GetFanetName(ID, info, szName, size);
 }
 
