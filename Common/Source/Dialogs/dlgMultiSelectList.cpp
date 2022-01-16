@@ -23,8 +23,10 @@
 #include "Util/TruncateString.hpp"
 #include "Library/Utm.h"
 
-#define MAX_LEN 80
+#define MAX_LEN 200
+#define MAX_COMMENT 80
 #define MAX_LIST_ITEMS 25
+
 ListElement* pResult = NULL;
 
 ListElement Elements[MAX_LIST_ITEMS];
@@ -311,13 +313,11 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
 
 
 #ifdef FLARM_MS
-int BuildFLARMText(FLARM_TRAFFIC* pFlarm, TCHAR* text1,TCHAR* text2)
-{
-if(pFlarm == NULL) return -1;
-if(text1 == NULL) return -1;
-if(text2 == NULL) return -1;
+static
+int BuildFLARMText(FLARM_TRAFFIC* pFlarm, TCHAR (&text1)[MAX_LEN],TCHAR (&text2)[MAX_LEN]) {
+  if(pFlarm == NULL) return -1;
 
-TCHAR Comment[MAX_LEN] = _T("");;
+  TCHAR Comment[MAX_COMMENT] = _T("");
 
   double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
@@ -330,17 +330,19 @@ TCHAR Comment[MAX_LEN] = _T("");;
   if(flarmId != NULL)
   {
     if(flarmId->freq[3] != ' ')
-      _sntprintf(Comment,MAX_LEN, TEXT("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
+      _sntprintf(Comment,MAX_COMMENT, TEXT("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
                                             , flarmId->freq     // FLARMID_SIZE_FREQ   8    r
                                             , flarmId->name);   // FLARMID_SIZE_NAME   22 => max 52 char
     else
-      _sntprintf(Comment,MAX_LEN, TEXT("%s %s"), flarmId->type            // FLARMID_SIZE_TYPE   22
+      _sntprintf(Comment,MAX_COMMENT, TEXT("%s %s"), flarmId->type            // FLARMID_SIZE_TYPE   22
                                      , flarmId->name);          // FLARMID_SIZE_NAME   22 => max 52 char
 
-    _sntprintf(text1,MAX_LEN, TEXT("%s [%s] %s "), pFlarm->Cn,  pFlarm->Name            // MAXFLARMCN          3
-                                   , Comment);             //                     52  => 70
+    _sntprintf(text1,MAX_LEN, TEXT("%s [%s] %s "), 
+                                    pFlarm->Cn,  // 4
+                                    pFlarm->Name // 31
+                                    , Comment); // 80 => Total 121
   }
-  if(flarmId != NULL)  _sntprintf(Comment,MAX_LEN,TEXT("%s"), flarmId->airfield);
+
   _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s  (%i%s  %3.1f%s  %i°) %s"), Distance*DISTANCEMODIFY                   //        6
                                                           , Units::GetDistanceName()                          // 2+3=   5
                                                           , (int)(pFlarm->Altitude * ALTITUDEMODIFY)  //        5
@@ -348,20 +350,19 @@ TCHAR Comment[MAX_LEN] = _T("");;
                                                           , pFlarm->Average30s *  LIFTMODIFY                  //        5
                                                           , Units::GetVerticalSpeedName()                     // 3+2=   5
                                                           , (int) Bear
-                                                          , Comment );         //FLARMID_SIZE_AIRFIELD           22  =>  53 char
+                                                          , (flarmId ? flarmId->airfield : _T("")) );         //FLARMID_SIZE_AIRFIELD           22  =>  53 char
   return 0;
 }
 #endif
 
 #ifdef WEATHERST_MS
-int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR* text1,TCHAR* text2,TCHAR* name)
+static
+int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR (&text1)[MAX_LEN],TCHAR (&text2)[MAX_LEN], const TCHAR* name)
 {
-if(pWeather == NULL) return -1;
-if(text1 == NULL) return -1;
-if(text2 == NULL) return -1;
+  if(pWeather == NULL) return -1;
 
-TCHAR Comment[MAX_LEN] = _T("");;
-double Distance, Bear;
+  TCHAR Comment[MAX_COMMENT] = _T("");;
+  double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pWeather->Latitude,  pWeather->Longitude, &Distance, &Bear);
   float press = pWeather->pressure;
   if (PressureHg){
@@ -383,7 +384,7 @@ double Distance, Bear;
   else
     _sntprintf(text1,MAX_LEN, TEXT("%s %s"),name,Comment);
 
-  _sntprintf(Comment,MAX_LEN, TEXT("%d°C %d%% %d%%"), (int)round(pWeather->temp)
+  _sntprintf(Comment,MAX_COMMENT, TEXT("%d°C %d%% %d%%"), (int)round(pWeather->temp)
                                             , (int)round(pWeather->hum)
                                             , (int)round(pWeather->Battery));
   _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s (%i°) %s"), Distance*DISTANCEMODIFY
@@ -394,31 +395,29 @@ double Distance, Bear;
 }
 #endif
 
-
-int BuildTaskPointText(int iTaskIdx, TCHAR* text1,TCHAR* text2)
+static
+int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX_LEN])
 {
-if(text1 == NULL) return -1;
-if(text2 == NULL) return -1;
-int idx=0;
-if(ValidTaskPointFast(iTaskIdx)) {
-    idx = Task[iTaskIdx].Index;
-} else return -1;
+  int idx=0;
+  if(ValidTaskPointFast(iTaskIdx)) {
+      idx = Task[iTaskIdx].Index;
+  } else return -1;
 
-int iLastTaskPoint = 0;
+  int iLastTaskPoint = 0;
 
-while (ValidTaskPoint(iLastTaskPoint))
-    iLastTaskPoint++;
+  while (ValidTaskPoint(iLastTaskPoint))
+      iLastTaskPoint++;
 
-iLastTaskPoint--;
+  iLastTaskPoint--;
 
-if (iTaskIdx == 0) {
+  if (iTaskIdx == 0) {
      // _@M2301_  "S"    # S = Start Task point
     _sntprintf(text1, MAX_LEN, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
     _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
                StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                Units::GetAltitudeName());
- } else {
+  } else {
      if (iTaskIdx == iLastTaskPoint) {
          //  _@M2303_  "F"                 // max 30         30 => max 60 char
          _sntprintf(text1,MAX_LEN, TEXT("%s: (%s) "), MsgToken(2303),
@@ -446,11 +445,12 @@ if (iTaskIdx == 0) {
                    (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                    Units::GetAltitudeName());
      }
-   }
+  }
   return 0;
 }
 
-int ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR* text1,TCHAR* text2)
+static
+int ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX_LEN])
 {
   /********************
    * show text
@@ -464,23 +464,20 @@ int ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR* text1,TCHAR* text
   return 0;
 }
 
-
-int BuildLandableText(int idx, double Distance, TCHAR* text1,TCHAR* text2)
+static
+int BuildLandableText(int idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX_LEN])
 {
-if(text1 == NULL) return -1;
-if(text2 == NULL) return -1;
-TCHAR Comment[MAX_LEN] = _T("");
-int j;
+  TCHAR Comment[MAX_COMMENT] = _T("");
 
   if (WayPointList[idx].Comment != NULL) {
-    CopyTruncateString(Comment,MAX_LEN, WayPointList[idx].Comment);
+    CopyTruncateString(Comment, MAX_COMMENT, WayPointList[idx].Comment);
   } else {
       _tcscpy(Comment, TEXT(""));
   }
 
   if (_tcslen(WayPointList[idx].Freq) > 0) {
       // remove spaces from frequency
-      for (j = 1; j < (CUPSIZE_FREQ); j++)
+      for (int j = 1; j < (CUPSIZE_FREQ); j++)
           if (WayPointList[idx].Freq[CUPSIZE_FREQ - j] == ' ')
               WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
 
@@ -516,7 +513,7 @@ int j;
                 (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                 Units::GetAltitudeName());
   }
- return 0;
+  return 0;
 }
 
 void UTF8Pictorial(LKSurface& Surface, const RECT& rc,const TCHAR *Pict ,const LKColor& Color)
@@ -572,8 +569,8 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
         unsigned int idx = 0;
         TCHAR text1[MAX_LEN] = {TEXT("empty")};
         TCHAR text2[MAX_LEN] = {TEXT("empty")};
-        TCHAR Comment[MAX_LEN] = {TEXT("")};
-        TCHAR Comment1[MAX_LEN] = {TEXT("")};
+        TCHAR Comment[MAX_COMMENT] = {TEXT("")};
+        TCHAR Comment1[MAX_COMMENT] = {TEXT("")};
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
         LKASSERT(i < MAX_LIST_ITEMS);
 
@@ -646,7 +643,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             LKASSERT(Elements[i].iIdx  < MAXFANETWEATHER);
             LKASSERT(Elements[i].iIdx  >= 0);
             FANET_WEATHER Station;
-            TCHAR StationName[MAX_LEN];
+            TCHAR StationName[MAXFANETNAME+1];
             StationName[0] = 0; //zero-termination of String;
             //int stationIndex;
             //stationIndex = -1;
@@ -733,7 +730,7 @@ static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Su
             if(idx < WayPointList.size())
             {
               if (WayPointList[idx].Comment != NULL) {
-                CopyTruncateString(Comment,MAX_LEN, WayPointList[idx].Comment);
+                CopyTruncateString(Comment, MAX_COMMENT, WayPointList[idx].Comment);
               } else {
                   _tcscpy(Comment, TEXT(""));
               }
