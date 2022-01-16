@@ -2106,11 +2106,12 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
   if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
-  if(devGetAdvancedMode(d))
+  if(devGetAdvancedMode(d)) {
     _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,MC,W,%3.1f"), MacCready );
-  else
+  } else {
     _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PFLX2,%.2f,,,,,"), MacCready);
-    DevLXNanoIII::SendNmea(d,szTmp);
+  }
+  DevLXNanoIII::SendNmea(d,szTmp);
   Nano3_MacCreadyUpdateTimeout = 5;
 return true;
 

@@ -197,9 +197,10 @@ return lBaudrate;
 
 
 BOOL LXV7_EXPPutMacCready(PDeviceDescriptor_t d, double MacCready){
-TCHAR  szTmp[254];
-if(LXV7_EXP_bValid == false)
-  return false;
+  TCHAR  szTmp[254];
+  if(LXV7_EXP_bValid == false) {
+    return false;
+  }
 
   _stprintf(szTmp, TEXT("$PLXV0,MC,W,%3.1f"), MacCready );
 

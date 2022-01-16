@@ -161,9 +161,10 @@ TCHAR  szTmp[254];
 
 
 BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
-TCHAR  szTmp[254];
-if(bValid == false)
-  return false;
+  TCHAR  szTmp[254];
+  if(bValid == false) {
+    return false;
+  }
 
   _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,CalculateLXBalastFactor(BALLAST),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
@@ -176,19 +177,18 @@ if(bValid == false)
 
 
 BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast){
-TCHAR  szTmp[254];
-if(bValid == false)
-  return false;
-
+  TCHAR  szTmp[254];
+  if(bValid == false) {
+    return false;
+  }
 
   _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,CalculateLXBalastFactor(Ballast),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
- LX16xxNMEAddCheckSumStrg(szTmp);
- d->Com->WriteString(szTmp);
+  LX16xxNMEAddCheckSumStrg(szTmp);
+  d->Com->WriteString(szTmp);
 
- BallastUpdateTimeout =5;
- return(TRUE);
-
+  BallastUpdateTimeout =5;
+  return (TRUE);
 }
 
 // ToDo raw 2.5% may cause circular updates due to inaccurate steps

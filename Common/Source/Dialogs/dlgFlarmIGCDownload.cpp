@@ -1058,15 +1058,17 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
             Sequence++;
             TotalSize += blocksize;
             
-            if (pByteBlk[2] > 50) // if more that 50% read, increase TimeOutFactor
+            if (pByteBlk[2] > 50) { // if more that 50% read, increase TimeOutFactor
               TimeOutFactor =
                   WATCHDOG_TIMEOUT / GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up
                                           // to 8s, for whatever reason
+            }
 
-              _sntprintf(
+            _sntprintf(
                   szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken(2400),
                   pByteBlk[2],
                   IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
+
             static int  prevPercent =0; 
             if (abs((int)pByteBlk[2] - prevPercent) >= 5) 
             {

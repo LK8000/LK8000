@@ -72,9 +72,10 @@ TCHAR  szCheck[254];
 
 
 BOOL VaulterPutMacCready(PDeviceDescriptor_t d, double MacCready){
-TCHAR  szTmp[254];
-if(bVaulterValid == false)
-  return false;
+  TCHAR  szTmp[254];
+  if(bVaulterValid == false) {
+    return false;
+  }
 
   _stprintf(szTmp, TEXT("$PITV1,MC=%4.2f"), MacCready);
   VaulterNMEAddCheckSumStrg(szTmp);
@@ -86,17 +87,17 @@ if(bVaulterValid == false)
 
 
 BOOL VaulterPutBallast(PDeviceDescriptor_t d, double Ballast){
-TCHAR  szTmp[254];
-if(bVaulterValid == false)
-  return false;
-
+  TCHAR  szTmp[254];
+  if(bVaulterValid == false) {
+    return false;
+  }
 
   _stprintf(szTmp, TEXT("$PITV1,WL=%4.2f"), (1.0+Ballast));
- VaulterNMEAddCheckSumStrg(szTmp);
- d->Com->WriteString(szTmp);
+  VaulterNMEAddCheckSumStrg(szTmp);
+  d->Com->WriteString(szTmp);
 
- VaulterBallastUpdateTimeout =5;
- return(TRUE);
+  VaulterBallastUpdateTimeout =5;
+  return(TRUE);
 
 }
 

@@ -455,11 +455,12 @@ static void OnDetailsClicked(WndButton* pWnd){
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
-    	if(airspace->Comment() != NULL)
-  	    _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
-    	else
-    	  _sntprintf(Details, READLINE_LENGTH,_T("%s"), airspace->TypeName());
-  	  _sntprintf(Name,NAME_SIZE, _T("%s %s:"), airspace->TypeName(), MsgToken(231) );
+      if(airspace->Comment()) {
+        _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
+      } else {
+        _sntprintf(Details, READLINE_LENGTH,_T("%s"), airspace->TypeName());
+      }
+      _sntprintf(Name,NAME_SIZE, _T("%s %s:"), airspace->TypeName(), MsgToken(231) );
 
     }
     DebugLog(_T(". Airspace Detail <%s>"),Details);
