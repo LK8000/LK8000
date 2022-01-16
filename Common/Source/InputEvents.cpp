@@ -3504,7 +3504,7 @@ namespace {
   #define DELARE_EVENT(Name) { _T(#Name), &InputEvents::event ## Name }
   // Mapping text names of events to the real thing
 
-  const auto Text2Event = lookup_table<tstring_view, pt2Event>({
+  constexpr auto Text2Event = lookup_table<tstring_view, pt2Event>({
     DELARE_EVENT(AbortTask),
     DELARE_EVENT(AdjustForecastTemperature),
     DELARE_EVENT(AdjustWaypoint),
@@ -3582,7 +3582,7 @@ namespace {
 
   #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }
 
-  const auto Text2GCE = lookup_table<tstring_view, gc_event>({
+  constexpr auto Text2GCE = lookup_table<tstring_view, gc_event>({
     DELARE_GCE(COMMPORT_RESTART),
     DELARE_GCE(FLARM_NOTRAFFIC),
     DELARE_GCE(FLARM_TRAFFIC),
@@ -3608,7 +3608,7 @@ namespace {
 
   #define DELARE_NE(Name) { _T(#Name), NE_ ## Name }
 
-  const auto Text2NE = lookup_table<tstring_view, nmea_event>({
+  constexpr auto Text2NE = lookup_table<tstring_view, nmea_event>({
     DELARE_NE(DUMMY) // to avoid empty initializer list error.
   });
 
