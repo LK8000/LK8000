@@ -335,35 +335,17 @@ passthrough:
 		SoundModeIndex();
 		return true;
 	case ckDeviceA:
-		if(devA() && devA()->Config) {
-			devA()->Config(devA());
-		}
-		return true;
+		return devConfig<0>();
 	case ckDeviceB:
-		if(devB() && devB()->Config) {
-			devB()->Config(devB());
-		}
-		return true;
-        case ckDeviceC:
-                if(devC() && devC()->Config) {
-                        devC()->Config(devC());
-                }
-                return true;
-        case ckDeviceD:
-                if(devD() && devD()->Config) {
-                        devD()->Config(devD());
-                }
-                return true;
-        case ckDeviceE:
-                if(devE() && devE()->Config) {
-                        devE()->Config(devE());
-                }
-                return true;
-        case ckDeviceF:
-                if(devF() && devF()->Config) {
-                        devF()->Config(devF());
-                }
-                return true;
+		return devConfig<1>();
+	case ckDeviceC:
+		return devConfig<2>();
+	case ckDeviceD:
+		return devConfig<3>();
+	case ckDeviceE:
+		return devConfig<4>();
+	case ckDeviceF:
+		return devConfig<5>();
 	case ckResetOdometer:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (MessageBoxX(MsgToken(2229), _T(""), mbYesNo) == IdYes) {

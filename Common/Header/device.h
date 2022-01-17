@@ -18,7 +18,6 @@
 #define devD()      (&DeviceList[3])
 #define devE()      (&DeviceList[4])
 #define devF()      (&DeviceList[5])
-#define devAll()    (NULL)
 
 class COMMPortItem_t {
 public:
@@ -244,5 +243,12 @@ BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence);
 
 BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode);
 BOOL devGetAdvancedMode(PDeviceDescriptor_t d);
+
+template<size_t idx>
+BOOL devConfig() {
+  static_assert(idx < std::size(DeviceList), "invalid index");
+  auto& dev = DeviceList[idx];
+  return dev.Config && dev.Config(&dev);
+}
 
 #endif
