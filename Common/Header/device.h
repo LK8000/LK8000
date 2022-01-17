@@ -236,7 +236,7 @@ BOOL devIsGPSSource(DeviceDescriptor_t& dev);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 
-BOOL devHeartBeat(PDeviceDescriptor_t d);
+BOOL devHeartBeat();
 BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);
 

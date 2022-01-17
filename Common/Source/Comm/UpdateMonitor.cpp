@@ -425,7 +425,8 @@ int ConnectionProcessTimer(int itimeout) {
     StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f%s"),oldoffset,GPSAltitudeOffset,NEWLINE);
     oldoffset=GPSAltitudeOffset;
   }
-  devHeartBeat(devAll());  // Send Heartbeats every 5s to driver e.g. KeepAlive functions if needed
+
+  devHeartBeat();  // Send Heartbeats every 5s to driver e.g. KeepAlive functions if needed
 
   bool gpsconnect = UpdateMonitor();
 
