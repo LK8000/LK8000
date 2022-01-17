@@ -939,26 +939,6 @@ BOOL devPutQNH(double NewQNH) {
   return for_all_device(&DeviceDescriptor_t::PutQNH, NewQNH);
 }
 
-BOOL devOnSysTicker(DeviceDescriptor_t *d)
-{
-  BOOL result = FALSE;
-
-  ScopeLock Lock(CritSec_Comm);
-  if (d == NULL){
-    for (int i=0; i<NUMDEV; i++){
-      d = &DeviceList[i];
-      if (d->OnSysTicker != NULL)
-        d->OnSysTicker(d);
-    }
-    result = TRUE;
-  } else {
-    if (d->OnSysTicker != NULL)
-      result = d->OnSysTicker(d);
-
-  }
-  return result;
-}
-
 static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
 {
   BYTE chk;

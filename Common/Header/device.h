@@ -237,7 +237,6 @@ BOOL devIsRadio(PDeviceDescriptor_t d);
 
 BOOL devHeartBeat();
 BOOL devPutQNH(double NewQNH);
-BOOL devOnSysTicker(DeviceDescriptor_t *d);
 
 BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode);
 BOOL devGetAdvancedMode(PDeviceDescriptor_t d);
