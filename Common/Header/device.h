@@ -239,8 +239,6 @@ BOOL devHeartBeat();
 BOOL devPutQNH(double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);
 
-BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence);
-
 BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode);
 BOOL devGetAdvancedMode(PDeviceDescriptor_t d);
 
