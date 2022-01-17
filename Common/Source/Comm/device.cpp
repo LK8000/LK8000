@@ -935,23 +935,8 @@ BOOL devIsRadio(PDeviceDescriptor_t d) {
 }
 
 
-BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
-{
-  BOOL result = FALSE;
-
-  ScopeLock Lock(CritSec_Comm);
-  if (d == NULL){
-    for (int i=0; i<NUMDEV; i++){
-      d = &DeviceList[i];
-      if (d->PutQNH != NULL)
-        d->PutQNH(d, NewQNH);
-    }
-    result = TRUE;
-  } else {
-    if (d->PutQNH != NULL)
-      result = d->PutQNH(d, NewQNH);
-  }
-  return result;
+BOOL devPutQNH(double NewQNH) {
+  return for_all_device(&DeviceDescriptor_t::PutQNH, NewQNH);
 }
 
 BOOL devOnSysTicker(DeviceDescriptor_t *d)

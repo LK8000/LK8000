@@ -237,7 +237,7 @@ BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 
 BOOL devHeartBeat();
-BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH);
+BOOL devPutQNH(double NewQNH);
 BOOL devOnSysTicker(DeviceDescriptor_t *d);
 
 BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence);

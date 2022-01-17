@@ -67,8 +67,9 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		} else {
 			newqnh = Sender->GetAsFloat();
 		}
-	        if ( UpdateQNH(newqnh) ) devPutQNH(devAll(), newqnh);
-		// VarioWriteSettings();
+		if ( UpdateQNH(newqnh) ) {
+			devPutQNH(newqnh);
+		}
 
 		wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
 		if (wp) {
