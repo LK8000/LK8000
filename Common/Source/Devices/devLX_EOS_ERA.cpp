@@ -162,7 +162,6 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutBugs      = EOSPutBugs;
   d->PutBallast   = EOSPutBallast;
   d->Open         = Open;
-  d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTask;
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;

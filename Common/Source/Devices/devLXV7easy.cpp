@@ -43,7 +43,6 @@ void LXV7easyInstall(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, TEXT("LXV7 easy"));
   d->ParseNMEA    = LXV7easyParseNMEA;
-  d->LinkTimeout  = isTrue;
   d->IsGPSSource  = isTrue;
   d->IsBaroSource = isTrue;
 }

@@ -58,20 +58,12 @@ static BOOL DigiflyIsBaroSource(PDeviceDescriptor_t d){
   return(TRUE);
 }
 
-
-static BOOL DigiflyLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void DigiflyInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". DIGIFLY device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Digifly"));
   d->ParseNMEA = DigiflyParseNMEA;
-  d->LinkTimeout = DigiflyLinkTimeout;
   d->IsGPSSource = DigiflyIsGPSSource;
   d->IsBaroSource = DigiflyIsBaroSource;
 }

@@ -72,7 +72,6 @@ void DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->PutBallast   = LXMiniMapPutBallast;
   d->Open         = Open;
   d->Init         = Init;
-  d->LinkTimeout  = GetTrue;
   d->Declare      = DeclareTaskMinimap;
   d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;

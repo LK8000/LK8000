@@ -44,19 +44,12 @@ static BOOL CompeoIsBaroSource(PDeviceDescriptor_t d){
 }
 
 
-static BOOL CompeoLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void CompeoInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Brauniger/Compeo 5030"));
   d->ParseNMEA = CompeoParseNMEA;
-  d->LinkTimeout = CompeoLinkTimeout;
   d->IsGPSSource = CompeoIsGPSSource;
   d->IsBaroSource = CompeoIsBaroSource;
 }

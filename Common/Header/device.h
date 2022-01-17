@@ -229,7 +229,7 @@ BOOL devPutRadioMode(int Mode);
 BOOL devPutSquelch(int Volume);
 BOOL devPutFreqActive(double Freq, const TCHAR* StationName);
 BOOL devPutFreqStandby(double Freq, const TCHAR* StationName);
-BOOL devLinkTimeout(PDeviceDescriptor_t	d);
+BOOL devLinkTimeout();
 BOOL devDeclare(PDeviceDescriptor_t	d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);
 BOOL devIsGPSSource(DeviceDescriptor_t& dev);

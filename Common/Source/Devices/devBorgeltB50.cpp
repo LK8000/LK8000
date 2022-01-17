@@ -45,17 +45,10 @@ BOOL B50IsBaroSource(PDeviceDescriptor_t d){
   return(bBaroAvailable); // ? is this true
 }
 
-BOOL B50LinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
-  d->LinkTimeout = B50LinkTimeout;
   d->IsGPSSource = B50IsGPSSource;
   d->IsBaroSource = B50IsBaroSource;
 }

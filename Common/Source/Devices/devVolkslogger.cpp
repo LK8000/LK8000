@@ -273,16 +273,10 @@ BOOL VLIsBaroSource(PDeviceDescriptor_t d){ // 100315 added
   return(TRUE);
 }
 
-BOOL VLLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
 
 void vlInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Volkslogger"));
   d->ParseNMEA = VLParseNMEA;
-  d->LinkTimeout = VLLinkTimeout;
   d->Declare = VLDeclare;
   d->IsLogger = VLIsLogger;
   d->IsGPSSource = VLIsGPSSource;

@@ -46,16 +46,9 @@ static BOOL IlecIsBaroSource(PDeviceDescriptor_t d){
 }
 
 
-static BOOL IlecLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void IlecInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Ilec SN10"));
   d->ParseNMEA = IlecParseNMEA;
-  d->LinkTimeout = IlecLinkTimeout;
   d->IsGPSSource = IlecIsGPSSource;
   d->IsBaroSource = IlecIsBaroSource;
 }

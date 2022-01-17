@@ -839,36 +839,12 @@ BOOL devPutBallast(double Ballast) {
     return for_all_device(&DeviceDescriptor_t::PutBallast, Ballast);
 }
 
-
-
 BOOL devHeartBeat() {
-  if (SIMMODE) {
-    return TRUE;
-  }
   return for_all_device(&DeviceDescriptor_t::HeartBeat);
 }
 
-BOOL devLinkTimeout(PDeviceDescriptor_t d)
-{
-  BOOL result = FALSE;
-
-  if (SIMMODE)
-    return TRUE;
-
-  ScopeLock Lock(CritSec_Comm);
-
-  if (d == NULL){
-    for (int i=0; i<NUMDEV; i++){
-      d = &DeviceList[i];
-      if (d->LinkTimeout != NULL)
-        (d->LinkTimeout)(d);
-    }
-    result = TRUE;
-  } else {
-    if (d->LinkTimeout != NULL)
-      result = d->LinkTimeout(d);
-  }
-  return result;
+BOOL devLinkTimeout() {
+  return for_all_device(&DeviceDescriptor_t::LinkTimeout);
 }
 
 

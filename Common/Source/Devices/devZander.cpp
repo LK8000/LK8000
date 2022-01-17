@@ -66,17 +66,9 @@ static BOOL ZanderIsBaroSource(PDeviceDescriptor_t d){
 }
 
 
-static BOOL ZanderLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void zanderInstall(PDeviceDescriptor_t d) {
-
   _tcscpy(d->Name, TEXT("Zander"));
   d->ParseNMEA = ZanderParseNMEA;
-  d->LinkTimeout = ZanderLinkTimeout;
   d->IsGPSSource = ZanderIsGPSSource;
   d->IsBaroSource = ZanderIsBaroSource;
 }

@@ -549,7 +549,6 @@ void BlueFlyInstall(PDeviceDescriptor_t d) {
     d->ParseNMEA = BlueFlyVarioParseNMEA;
     d->Open = BlueFlyVarioOpen;
     d->Close = BlueFlyVarioClose;
-    d->LinkTimeout = LK8EX1LinkTimeout;
     d->IsBaroSource = LK8EX1IsBaroSource;
     d->Config = BlueFlyConfig;
 }

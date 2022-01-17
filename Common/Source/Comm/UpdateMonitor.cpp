@@ -463,7 +463,7 @@ int ConnectionProcessTimer(int itimeout) {
     // re-draw screen every five seconds even if no GPS
     DoTriggerUpdate = true;
 
-    devLinkTimeout(devAll());
+    devLinkTimeout(); // no device connected, call LinkTimeout on all device.
 
     if(s_lockWait == true) {
       // gps was waiting for fix, now waiting for connection

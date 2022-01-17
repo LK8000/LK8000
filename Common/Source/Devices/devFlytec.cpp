@@ -48,16 +48,9 @@ static BOOL FlytecIsBaroSource(PDeviceDescriptor_t d){
 }
 
 
-static BOOL FlytecLinkTimeout(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void FlytecInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Flytec/FLYSEN"));
   d->ParseNMEA = FlytecParseNMEA;
-  d->LinkTimeout = FlytecLinkTimeout;
   d->IsGPSSource = FlytecIsGPSSource;
   d->IsBaroSource = FlytecIsBaroSource;
 }

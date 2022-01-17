@@ -43,7 +43,6 @@ void DevVaulter::Install(PDeviceDescriptor_t d)
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = VaulterPutMacCready;
   d->PutBallast   = VaulterPutBallast;
-  d->LinkTimeout  = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 } // Install()
