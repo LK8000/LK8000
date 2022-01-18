@@ -99,7 +99,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, A
     return (nbDeviceFailed > 0);
 }
 
-static BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
+static BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl);
 static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text);
 
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
@@ -776,18 +776,11 @@ BOOL devGetAdvancedMode(PDeviceDescriptor_t d)
 }
 
 
-BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable)
-{
-  BOOL result = TRUE;
-
-  if (SIMMODE)
-	return TRUE;
-
-  if (d != NULL && d->DirectLink != NULL)
-	result = d->DirectLink(d, bLinkEnable);
-
-
-  return result;
+BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable) {
+  if (SIMMODE) {
+    return TRUE;
+  }
+  return d && d->DirectLink && d->DirectLink(d, bLinkEnable);
 }
 
 /**
@@ -867,22 +860,19 @@ BOOL devDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBu
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(571));
   CreateProgressDialog(buffer);
 
-  ScopeLock Lock(CritSec_Comm);
+  WithLock(CritSec_Comm, [&]() {
+    if (d && !d->Disabled) {
+      devDirectLink(d, true);
 
-  /***********************************************************/
-  devDirectLink(d,true);
-  /***********************************************************/
-  if ((d != NULL) && (d->Declare != NULL))
-	result = d->Declare(d, decl, errBufferLen, errBuffer);
-  else {
-	if(d && d->nmeaParser.isFlarm) {
-    	result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
-  	}
-  }
-  /***********************************************************/
-  devDirectLink(d,false);
-  /***********************************************************/
- 
+      if (d->Declare) {
+        result = d->Declare(d, decl, errBufferLen, errBuffer);
+      } else if(d->nmeaParser.isFlarm) {
+        result |= FlarmDeclare(d, decl);
+      }
+
+      devDirectLink(d, false);
+    }
+  });
   CloseProgressDialog();
   
   return result;
@@ -960,19 +950,13 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
   ScopeLock Lock(CritSec_Comm);
-  if(d != NULL)
-  {
-    if(!d->Disabled)
-    {
-	  TCHAR tmp[512];
-      devFormatNMEAString(tmp, 512, text);
+  if (d && !d->Disabled && d->Com) {
+    TCHAR tmp[512];
+    devFormatNMEAString(tmp, 512, text);
 
-      devDirectLink(d,true);
-      if (d->Com) {
-        d->Com->WriteString(tmp);
-      }
-      devDirectLink(d,false);
-    }
+    devDirectLink(d, true);
+    d->Com->WriteString(tmp);
+    devDirectLink(d, false);
   }
 }
 
@@ -1097,7 +1081,7 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
 };
 
 
-BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl)
 {
   BOOL result = TRUE;
 #define BUFF_LEN 512
