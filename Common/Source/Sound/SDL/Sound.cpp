@@ -48,8 +48,8 @@ SoundGlobalInit::SoundGlobalInit() {
     if(bSoundInit) {
         TCHAR srcfile[MAX_PATH];
         SystemPath(szSoundPath,TEXT(LKD_SOUNDS));
-        _stprintf(srcfile,TEXT("%s%s_SOUNDS"), szSoundPath, _T(DIRSEP));
-        if ( lk::filesystem::exist(srcfile) ) {
+        size_t size = _sntprintf(srcfile, std::size(srcfile), TEXT("%s%s_SOUNDS"), szSoundPath, _T(DIRSEP));
+        if ( size <= std::size(srcfile) && lk::filesystem::exist(srcfile) ) {
             bSoundFile = true;
         } else {
             StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
@@ -93,9 +93,10 @@ void LKSound(const TCHAR *lpName) {
     if(ib.second) {
         // Load AudioChunk
         TCHAR sndfile[MAX_PATH];
-        _stprintf(sndfile,_T("%s%s%s"),szSoundPath, _T(DIRSEP), lpName);
-        
-        ib.first->second = Mix_LoadWAV(sndfile);
+        size_t size = _sntprintf(sndfile, MAX_PATH, _T("%s%s%s"), szSoundPath, _T(DIRSEP), lpName);
+        if (size <= MAX_PATH) {
+            ib.first->second = Mix_LoadWAV(sndfile);
+        }
     }
     
     if(ib.first->second) {
