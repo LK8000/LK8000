@@ -16,6 +16,7 @@
 #include "resource.h"
 #include "dlgFlarmIGCDownload.h"
 #include "utils/tokenizer.h"
+#include "Util/UTF8.hpp"
 
 #define MAX_FLARM_ANSWER_LEN 640 
       // FLARM Docu does not tell the max. answer len
@@ -28,7 +29,7 @@
 #define REC_TIMEOUT       1000 // receive timeout in ms
 #define MAX_RETRY         3
 #define LST_STRG_LEN      100
-#define STATUS_TXT_LEN    100
+#define STATUS_TXT_LEN    200
 #define PRPGRESS_DLG
 
 //#define deb_
@@ -732,8 +733,12 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
   if (CN == NULL) {
     CN = empty;
   };
-  _stprintf(NewElement.Line1, _T("%s (%s  [%5s])"), Filename, Date,
-            Takeoff);
+  int size = _sntprintf(NewElement.Line1, 100, _T("%s (%s  [%5s])"), Filename, Date, Takeoff);
+  if ( size >= 100 ) {
+    #ifndef UNICODE
+    CropIncompleteUTF8(NewElement.Line1);
+    #endif
+  }
   _stprintf(NewElement.Line2, _T("%s"), Duration);
   if (Pilot) {
     _tcscat(NewElement.Line2, _T(" "));
