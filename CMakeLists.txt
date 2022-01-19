@@ -659,6 +659,7 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devFlarm.cpp
     Common/Source/Devices/devLX_EOS_ERA.cpp
     Common/Source/Devices/devFanet.cpp
+    Common/Source/Devices/devRCFenix.cpp
     Common/Source/Devices/DeviceRegister.cpp
 
     Common/Source/Dialogs/dlgSelectObject.cpp
