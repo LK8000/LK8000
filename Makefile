@@ -1192,6 +1192,7 @@ DEVS	:=\
 	$(DEV)/devLXV7easy.cpp \
 	$(DEV)/devLXV7_EXP.cpp \
 	$(DEV)/devPosiGraph.cpp \
+	$(DEV)/devRCFenix.cpp \
 	$(DEV)/devVaulter.cpp \
 	$(DEV)/devVolkslogger.cpp \
 	$(DEV)/devXCOM760.cpp \
