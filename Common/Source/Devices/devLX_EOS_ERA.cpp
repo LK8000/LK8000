@@ -811,7 +811,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
     // Send complete declaration to logger
     int orgRxTimeout;
     StartupStore(_T(". EOS/ERA SetRxTimeout%s "), NEWLINE);
-    status = SetRxTimeout(d, 500, orgRxTimeout, errBufSize, errBuf);
+    status = SetRxTimeout(d, 2000, orgRxTimeout, errBufSize, errBuf);
     int attemps = 0;
     char RecBuf[4096] = "";
 
@@ -824,7 +824,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 
 
         if (Good)
-          Good = ComExpect(d, "$LXDT,ANS,OK*5c", 4095, RecBuf, errBufSize, errBuf);
+          Good = ComExpect(d, "$LXDT,ANS,OK*5", 4095, RecBuf, errBufSize, errBuf);
 
       }
       attemps++;
