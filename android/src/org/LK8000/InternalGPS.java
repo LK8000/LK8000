@@ -102,7 +102,6 @@ public class InternalGPS
    * Called by the #Handler, indirectly by update().  Updates the
    * LocationManager subscription inside the main thread.
    */
-  @SuppressLint("MissingPermission")
   @Override public void run() {
     Log.d(TAG, "Updating GPS subscription...");
     locationManager.removeUpdates(this);
@@ -124,7 +123,7 @@ public class InternalGPS
       try {
         // Must be Bound to MainThread
         locationManager.requestLocationUpdates(locationProvider,1000, 0, this, Looper.getMainLooper());
-      } catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException | SecurityException e) {
       /* this exception was recorded on the Android Market, message
          was: "provider=gps" - no idea what that means */
         setConnectedSafe(false);
@@ -141,7 +140,13 @@ public class InternalGPS
           listener_N = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
         }
         // Must be Bound to MainThread
-        locationManager.addNmeaListener(listener_N, new Handler(Looper.getMainLooper()));
+        try {
+          locationManager.addNmeaListener(listener_N, new Handler(Looper.getMainLooper()));
+        } catch (SecurityException e) {
+          /* this exception was recorded on the Android Vital  "Pixel 6 - Android 12"  */
+          setConnectedSafe(false);
+          return;
+        }
       }
 
       setConnectedSafe(true); // waiting for fix
