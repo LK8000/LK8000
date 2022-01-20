@@ -667,6 +667,8 @@ ifeq ($(TARGET_IS_KOBO),y)
  # the stock Kobo firmware, as it may be incompatible
  LDFLAGS += -Wl,--dynamic-linker=/opt/LK8000/lib/ld-linux-armhf.so.3
  LDFLAGS += -Wl,--rpath=/opt/LK8000/lib
+ 
+ LDLIBS += -lstdc++fs
 endif
 
 ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)

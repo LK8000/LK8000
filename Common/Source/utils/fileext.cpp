@@ -12,18 +12,9 @@
 #include "stringext.h"
 
 #include <memory>
-
-//______________________________________________________________________________
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Initializes file.
-//
-Utf8File::Utf8File()
-: fp(NULL), convErReported(), writeErReported()
-{
-  path[0] = _T('\0');
-} // Utf8File()
+#ifdef __linux__
+#include <filesystem>
+#endif
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,9 +37,6 @@ void Utf8File::Close()
   }
 } // Close()
 
-#ifndef countof
-    #define countof(array) (sizeof(array)/sizeof(array[0]))
-#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Opens existing UTF-8 encoded file.
 ///
@@ -67,7 +55,8 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       return(false);
   }
 
-  LK_tcsncpy(path, fileName, countof(path)-1);
+  _tcsncpy(path, fileName, std::size(path));
+
 
   fp = _tfopen(fileName, fmode);
   if (fp) return true;
@@ -75,47 +64,20 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   //
   // Windows has case-insensitive file system. We try alternatives only for unix
   //
-  #ifdef __linux__
-  TCHAR stmp[MAX_PATH+1], tdrive[255], tdir[255], tname[255], text[255];
+#ifdef __linux__
+  namespace fs = std::filesystem;
 
-  _tcscpy(stmp,fileName);
-  LK_tsplitpath(stmp, tdrive, tdir, tname, text);
+  fs::path file_path = fileName;
+  std::string name = file_path.filename().string();
 
-  // Try ???.EXT
-  CharUpper(text);
-  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
-  fp = _tfopen(stmp, fmode);
-  if (fp) {
-      LK_tcsncpy(path, stmp, countof(path)-1);
-      return(true);
-  }
-
-  // Try ???.ext
-  CharLower(text);
-  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
-  fp = _tfopen(stmp, fmode);
-  if (fp) {
-      LK_tcsncpy(path, stmp, countof(path)-1);
-      return(true);
-  }
-
-  // Try name.ext
-  CharLower(tname);
-  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
-  fp = _tfopen(stmp, fmode);
-  if (fp) {
-      LK_tcsncpy(path, stmp, countof(path)-1);
-      return(true);
-  }
-
-  // Try NAME.EXT
-  CharUpper(tname);
-  CharUpper(text);
-  _stprintf(stmp,_T("%s%s%s%s"),tdrive,tdir,tname,text);
-  fp = _tfopen(stmp, fmode);
-  if (fp) {
-      LK_tcsncpy(path, stmp, countof(path)-1);
-      return(true);
+  ci_equal<std::string> comp;
+  for (auto const& dir_entry : std::filesystem::directory_iterator{file_path.parent_path()}) {
+    if (comp(name, dir_entry.path().filename().string())) {
+      fp = _tfopen(dir_entry.path().c_str(), fmode);
+      if (fp) {
+        return true;
+      }
+    }
   }
 #endif
 

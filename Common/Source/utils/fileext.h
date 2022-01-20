@@ -33,7 +33,9 @@ class Utf8File
       io_create // orverride existing file if exist
     };
 
-    Utf8File();
+    Utf8File() = default;
+    Utf8File(const Utf8File&) = delete;
+
     ~Utf8File();
 
     bool Open(const TCHAR* fileName, Mode ioMode);
@@ -41,12 +43,13 @@ class Utf8File
     void WriteLn(const TCHAR* unicode = NULL);
 
     static bool Exists(const TCHAR* fileName);
+
   protected:
 
-    TCHAR path[MAX_PATH];
-    FILE* fp;
-    bool  convErReported;
-    bool  writeErReported;
+    TCHAR path[MAX_PATH] = {};
+    FILE* fp = nullptr;
+    bool  convErReported = false;
+    bool  writeErReported = false;
 }; // Utf8File
 
 #endif /* __fileext_h__ */
