@@ -96,29 +96,10 @@ namespace {
   std::queue<uint8_t> Fenixbuffered_data;
   Mutex Fenixmutex;
   Cond Fenixcond;
-  bool bFenixBinMode= false;
 }
 
-bool FenixBlockReceived() {
-  ScopeLock lock(Fenixmutex);
-  return (!Fenixbuffered_data.empty());
-}
-  
-bool IsFenixInBinaryMode() {
-  ScopeLock lock(Fenixmutex);
-  return bFenixBinMode;
-}
 
-bool SetFenixBinaryModeFlag(bool bBinMode) {
-  ScopeLock lock(Fenixmutex);
-  bool OldVal = bFenixBinMode;
-  bFenixBinMode = bBinMode;
-  if(!bFenixBinMode) {
-    // same as clear() but free allocated memory.
-    Fenixbuffered_data = std::queue<uint8_t>();
-  }
-  return OldVal;
-}
+
 
 
 
@@ -128,7 +109,8 @@ BOOL DevRCFenix::FenixParseStream(DeviceDescriptor_t *d, char *String, int len, 
   }
   
   static BOOL slowdown = false;
-    if (!IsFenixInBinaryMode()) {    
+ 
+
       if(slowdown)
       {
          SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
@@ -139,8 +121,8 @@ BOOL DevRCFenix::FenixParseStream(DeviceDescriptor_t *d, char *String, int len, 
         slowdown = false;
       }       
       return FALSE;      
-   }
-  
+
+
   if(!slowdown)
   {
      SendNmea(d, TEXT("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
@@ -183,7 +165,7 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
  if (Declare()) return false ;  // do not configure during declaration
  
  
- if( IsFenixInBinaryMode()) return false;
+
 static char lastSec =0;
   if( /*!Declare() &&*/ (info->Second != lastSec))  // execute every second only if no task is declaring
   {
