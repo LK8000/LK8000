@@ -824,7 +824,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 
 
         if (Good)
-          Good = ComExpect(d, "$LXDT,ANS,OK*5c", 4095, RecBuf, errBufSize, errBuf);
+          Good = ComExpect(d, "$LXDT,ANS,OK*5", 4095, RecBuf, errBufSize, errBuf);
 
       }
       attemps++;
