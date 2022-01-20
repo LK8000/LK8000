@@ -47,12 +47,7 @@ extern bool UpdateQNH(const double newqnh);
 #define BLOCK_SIZE 32
 #define _deb (0)
 
-PDeviceDescriptor_t DevRCFenix::m_pDevice=NULL;
-BOOL DevRCFenix::m_bShowValues = false;
-BOOL DevRCFenix::bIGC_Download = false;
-BOOL DevRCFenix::m_bDeclare = false;
-BOOL DevRCFenix::m_bRadioEnabled = true;
-BOOL DevRCFenix::m_bTriggered = false;
+
 #define TIMEOUTCHECK
 
 
@@ -396,18 +391,8 @@ return false;
 
 
 
-BOOL DevRCFenix::Open( PDeviceDescriptor_t d) {
-
-  return TRUE;
-}
 
 
-
-
-CallBackTableEntry_t DevRCFenix::CallBackTable[]={
-
-  EndCallBackEntry()
-};
 
 
 
@@ -964,13 +949,6 @@ void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
     SendNmea(Device(),_T("RCDT,GET,MC_BAL"));  // request new data
   }
 
-}
-
-
-
-BOOL DevRCFenix::Close (PDeviceDescriptor_t d) {
-  Device(NULL);
-  return TRUE;
 }
 
 

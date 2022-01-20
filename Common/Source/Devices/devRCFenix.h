@@ -39,39 +39,12 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Fenix  device (parsing sentences and declaring tasks).
 
-#define I_MC     0
-#define I_BAL    1
-#define I_BUGS   2
-#define I_BRIGHT 3
-#define I_V_VOL  4
-#define I_S_VOL  5
-#define I_SIGNAL 6
-
-
-
-#define REC_NO_ERROR      0
-#define REC_TIMEOUT_ERROR 1
-#define REC_CRC_ERROR     2
-#define REC_ABORTED       3
-#define FILENAME_ERROR    4
-#define FILE_OPEN_ERROR   5
-#define IGC_RECEIVE_ERROR 6
-#define REC_NO_DEVICE     7
-#define REC_NOMSG         8
-#define REC_INVALID_SIZE  9
-#define REC_WRONG_BLOCK  10
-#define REC_ZERO_BLOCK   11
-
 
           
   
 
-void StartFenix_IGCReadThread(void) ;
-void StopFenix_IGCReadThread(void) ;
-bool SetFenixBinaryModeFlag(bool ) ;
-
-uint8_t FenixRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) ;
-uint8_t FenixRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) ;
+//uint8_t FenixRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) ;
+//uint8_t FenixRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) ;
 bool FenixBlockReceived(void);
 class DevRCFenix : public DevLX_EOS_ERA
 {
@@ -128,8 +101,8 @@ class DevRCFenix : public DevLX_EOS_ERA
 
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL Open( PDeviceDescriptor_t d);
-   static BOOL Close( PDeviceDescriptor_t d);
+//   static BOOL Open( PDeviceDescriptor_t d);
+//   static BOOL Close( PDeviceDescriptor_t d);
 
 
    static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
@@ -149,13 +122,13 @@ class DevRCFenix : public DevLX_EOS_ERA
    static BOOL Declare(void) {return m_bDeclare;};
    static void Declare(BOOL bDL) {m_bDeclare = bDL;};
 
-   static CallBackTableEntry_t CallBackTable[];
-   static PDeviceDescriptor_t m_pDevice;
-   static BOOL bIGC_Download ;
-   static BOOL m_bShowValues;
-   static BOOL m_bDeclare;
-   static BOOL m_bRadioEnabled;
-   static BOOL m_bTriggered;
+//   static CallBackTableEntry_t CallBackTable[];
+//   static PDeviceDescriptor_t m_pDevice;
+//   static BOOL bIGC_Download ;
+//   static BOOL m_bShowValues;
+ //  static BOOL m_bDeclare;
+ //  static BOOL m_bRadioEnabled;
+ //  static BOOL m_bTriggered;
 
    static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { return m_bRadioEnabled;};
    static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
