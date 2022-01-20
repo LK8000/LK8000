@@ -108,12 +108,12 @@ class DevRCFenix : public DevLX_EOS_ERA
    static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupFenix_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
-//   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
+
 
    static void GetDirections(WndButton* pWnd);
 
-   static BOOL Declare(void) {return m_bDeclare;};
-   static void Declare(BOOL bDL) {m_bDeclare = bDL;};
+   //static BOOL Declare(void) {return m_bDeclare;};
+   //static void Declare(BOOL bDL) {m_bDeclare = bDL;};
 
 
 

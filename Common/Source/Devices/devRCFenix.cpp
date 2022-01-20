@@ -12,47 +12,21 @@
 //_____________________________________________________________________includes_
 
 
-#include <time.h>
+
 #include "externs.h"
-#include "utils/stringext.h"
 #include "devRCFenix.h"
-
-
-#include "dlgTools.h"
-#include "Dialogs.h"
-#include "WindowControls.h"
 #include "resource.h"
-#include "dlgIGCProgress.h"
-#include "Util/Clamp.hpp"
-#include "OS/Sleep.h"
-
-
-#include "externs.h"
-#include "Baro.h"
-#include "Utils.h"
 #include "LKInterface.h"
-#include "InputEvents.h"
 #include "McReady.h"
-#include "Time/PeriodClock.hpp"
-#include "Calc/Vario.h"
 #include <queue>
-#include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
-#include "Radio.h"
+
 
 unsigned int uiFenixDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
 
-#define NANO_PROGRESS_DLG
-#define BLOCK_SIZE 32
-#define _deb (0)
 
 
-#define TIMEOUTCHECK
-
-
-
-#define MAX_NMEA_PAR_LEN    30
 #define MAX_VAL_STR_LEN    60
 
 
@@ -60,15 +34,6 @@ BOOL RCFenix_bValid = false;
 
 
 
-
-typedef union{
-  uint16_t val;
-  uint8_t byte[2];
-} ConvUnion;     
-
-
-extern Mutex  CritSec_LXDebugStr;
-extern TCHAR LxValueStr[_LAST][ MAX_VAL_STR_LEN];
 
 extern BOOL IsDirInput( DataBiIoDir IODir);
 extern BOOL IsDirOutput( DataBiIoDir IODir);
@@ -199,36 +164,8 @@ BOOL DevRCFenix::FenixParseStream(DeviceDescriptor_t *d, char *String, int len, 
 
 
 
-uint8_t FenixRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
-  ScopeLock lock(Fenixmutex);
 
-  while(Fenixbuffered_data.empty()) {
-    Poco::Thread::sleep(1);
-    Poco::Thread::yield();
 
-    if(!Fenixcond.Wait(Fenixmutex, Timeout)) 
-    {
-      return REC_TIMEOUT_ERROR;
-    }
-  }
-  if(inchar) {
-    *inchar = Fenixbuffered_data.front();
-   
-  }
-  Fenixbuffered_data.pop();
-
-  return REC_NO_ERROR;
-}
-
-uint8_t FenixRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
-  ConvUnion tmp;
-  int error = FenixRecChar(d, &(tmp.byte[0]), Timeout);
-  if (error == REC_NO_ERROR) {
-    error = FenixRecChar(d, &(tmp.byte[1]), Timeout);
-  }
-  *inchar = tmp.val;
-  return error;
-}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
@@ -903,8 +840,8 @@ static int iNoFlights=0;
   if(_tcsncmp(szTmp, _T("RADIO"), 5) == 0)
   {
     m_bRadioEnabled = true;
-    if(ParToDouble(sentence, 2, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.ActiveFrequency  = fTmp;
-    if(ParToDouble(sentence, 3, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.PassiveFrequency = fTmp;
+//    if(ParToDouble(sentence, 2, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.ActiveFrequency  = fTmp;
+ //   if(ParToDouble(sentence, 3, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.PassiveFrequency = fTmp;
     if(ParToDouble(sentence, 4, &fTmp)) RadioPara.Volume  = (int) fTmp;
     if(ParToDouble(sentence, 5, &fTmp)) RadioPara.Squelch = (int) fTmp;
     if(ParToDouble(sentence, 6, &fTmp)) RadioPara.Vox     = (int) fTmp;
@@ -912,7 +849,7 @@ static int iNoFlights=0;
   else
   if(_tcsncmp(szTmp, _T("MC_BAL"), 6) == 0)
   {
-    if(_deb)  StartupStore(TEXT("MC_BAL %s"), sentence);
+    if(uiFenixDebugLevel> 0)  StartupStore(TEXT("MC_BAL %s"), sentence);
     if(ParToDouble(sentence, 2, &fTmp)) {EOSSetMC(d, fTmp,_T("($RCDT)") );}
     if(ParToDouble(sentence, 3, &fTmp)) {EOSSetBAL(d, fTmp,_T("($RCDT)") );}
     if(ParToDouble(sentence, 4, &fTmp)) {EOSSetBUGS(d, fTmp,_T("($RCDT)") );}
@@ -1089,7 +1026,7 @@ if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
 return true;
 }
 
-#define  REQ_DEADTIME 500
+
 
 
 BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready){
