@@ -562,76 +562,8 @@ DevRCFenix::Class::Class(){
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Sets the value of @c name member.
-///
-/// @param text  string to be set (will be converted into ASCII)
-///
-void DevRCFenix::Class::SetName(const TCHAR* text){
-  Wide2LxAscii(text, sizeof(name), name);
-} // SetName()
 
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-///
-/// @param d           device descriptor
-/// @param buf         string for sending
-/// @param errBufSize  error message buffer size
-/// @param errBuf[]    [out] error message
-///
-/// @retval true  NMEA sentence successfully written
-/// @retval false error (description in @p errBuf)
-///
-// static
-bool DevRCFenix::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
-
-  ScopeLock Lock(CritSec_Comm);
-  if(!d || !d->Com) {
-    return false;
-  }
-
-  char asciibuf[256];
-  DevRCFenix::Wide2LxAscii(buf, 256, asciibuf);
-  unsigned char chksum = 0;
-
-  if (!ComWrite(d, '$', errBufSize, errBuf)) {
-    return (false);
-  }
-
-  for(size_t i = 0; i < strlen(asciibuf); i++) {
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
-      return (false);
-    }
-    chksum ^= asciibuf[i];
-  }
-
-  sprintf(asciibuf, "*%02X\r\n",chksum);
-  for(size_t i = 0; i < strlen(asciibuf); i++) {
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
-      return (false);
-    }
-  }
-
-//  StartupStore(_T("request: $%s*%02X %s "),   buf,chksum, NEWLINE);
-
-  return (true);
-} // SendNmea()
-
-
-bool DevRCFenix::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[]){
-TCHAR errBuf[10]= _T("");
-TCHAR errBufSize=10;
-  DevRCFenix::SendNmea(d,  buf,errBufSize,errBuf);
-  if(_tcslen (errBuf) > 1)
-  {
-    DoStatusMessage(errBuf);
-    return false;
-  }
- // StartupStore(_T(" RCFenix SenadNmea %s %s"),buf, NEWLINE);
-  return true;
-} // SendNmea()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Send one line of declaration to logger
