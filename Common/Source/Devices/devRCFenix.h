@@ -66,7 +66,7 @@ class DevRCFenix : public DevLX_EOS_ERA
    static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
 
    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
-   static BOOL FenixParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+//   static BOOL FenixParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
    
    static BOOL Config(PDeviceDescriptor_t d);
    static void OnCloseClicked(WndButton* pWnd);
@@ -80,7 +80,7 @@ class DevRCFenix : public DevLX_EOS_ERA
    static BOOL PutTarget(PDeviceDescriptor_t d);
 
 
-   static void GetDirections(WndButton* pWnd);
+   
 
    static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { return false;};
    static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
