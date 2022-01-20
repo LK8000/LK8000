@@ -88,62 +88,6 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 // #############################################################################
 
 
-//  NANO 3Commands:
-
-/// LOGBOOK
-/// Reading logbook info (number of flights)
-//  Query : "$PLXVC,LOGBOOK,R*<checksum><cr><lf>"
-//  Answer: "$PLXVC,LOGBOOK,A,<number_of_flights>*<checksum><cr><lf>"
-/// Reading logbook (number of flights)
-//  Query : "$PLXVC,LOGBOOK,R,<startflight>,<endflight>*<checksum><cr><lf>"
-//  Answer: "$PLXVC,LOGBOOK,A,<fl>,<n>,<name>,<date>,<takeoff>,<landing>*<checksum><cr><lf>"
-//  fl      : flight number
-//  n       : number of flights in logbook
-//  name    : filename, it can be igc or kml
-//  date    : date of flight
-//  takeoff : hhmmss
-//  landing : hhmmss
-//  This line is repeated for n times, where n==(endflight-startflight)
-
-/// FLIGHT
-/// Reading flight
-//  Query : "$PLXVC,FLIGHT,R,<filename>,<startrow>,<endrow>*<checksum><cr><lf>"
-//  Answer: "$PLXVC,FLIGHT,A,<filename>,<row>,<number of rows>,<content of row>*<checksum><cr><lf>"
-//  This line is repeated for n times, where n==(endrow-startrow)
-
-/// DECL
-/// Reading declaration
-//  Query : "$PLXVC,DECL,R,<startrow>,<endrow>*<checksum><cr><lf>"
-//  Answer: "$PLXVC,DECL,A,<row>,<number of rows>,<content of row>*<checksum><cr><lf>"
-//  This line is repeated for n times, where n==(endrow-startrow)
-/// Writing declaration
-//  Query : "$PLXVC,DECL,W,<row>,<number of rows>,<content of row>*<checksum><cr><lf>"
-//  Output file is closed, when row==number of rows.
-//  Confirm: "$PLXVC,DECL,C,<row>*<checksum><cr><lf>"
-
-/// INFO
-/// Reading basic info about NANO
-//  Query : "$PLXVC,INFO,R*<checksum><cr><lf>"
-//  Answer: "$PLXVC,INFO,A,<name>,<version>,<ver.date>,<HW ident>,<batt voltage>,
-//           <backupbatt voltage>,<pressure alt>,<ENL>,<status>*<checksum><cr><lf>"
-//  ENL   : 0..999
-//  status: Stop=0,CanStop=1,Start=2
-
-
-BOOL  DevRCFenix::Values( PDeviceDescriptor_t d)
-{
-  bool res = false;
-
-    if(d != NULL)
-      if( Port() == d->PortNumber)
-      {
-        if( Port() >= 0)   res = true;
-      }
-
-  return res;
-
-}
-
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,13 +114,7 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->Config       = Config;
 
   d->IsRadio        = FenixRadioEnabled;
-  d->PutVolume      = FenixPutVolume;
-  d->PutSquelch     = FenixPutSquelch;
-  d->PutFreqActive  = FenixPutFreqActive;
-  d->PutFreqStandby = FenixPutFreqStandby;
-  d->StationSwap    = FenixStationSwap;
-  d->PutRadioMode   = FenixRadioMode;
-  d->ParseStream    = FenixParseStream;
+
 
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),
@@ -419,14 +357,6 @@ BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d)
   return true;
 }
 
-
-BOOL DevRCFenix::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
-{
-  CritSec_LXDebugStr.lock();
-  _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
-  CritSec_LXDebugStr.unlock();
-  return true;
-}
 
 static bool OnTimer(WndForm* pWnd)
 {
@@ -954,125 +884,7 @@ void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
 
 
 
-BOOL DevRCFenix::FenixSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info )
-{
-bool ret = false;
 
-
-  int iTmp =(int) (fTmp*100.0+0.5f);
-  fTmp = (double)(iTmp)/100.0;
-  if(Values(d))
-  {
-    TCHAR szTmp[MAX_NMEA_LEN];
-    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s %s"),fTmp,info);
-    SetDataText( _MC,   szTmp);
-  }
-  if(IsDirInput(PortIO[d->PortNumber].MCDir))
-  {
-    if(fabs(MACCREADY - fTmp)> 0.001)
-    {
-      CheckSetMACCREADY(fTmp);
-      ret = true;
-    }
-  }
-
-  return ret;
-}
-
-
-
-BOOL DevRCFenix::FenixSetSTF(PDeviceDescriptor_t d,int  iTmp, const TCHAR *info)
-{
-bool ret = false;
-
-
-  if(Values(d))
-  {
-    TCHAR szTmp[MAX_NMEA_LEN];
-    if(iTmp > 0)
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("STF %s"), info);
-    else
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("VARIO %s"), info);      
-    SetDataText(_STF,  szTmp);
-  }
-  if(IsDirInput(PortIO[d->PortNumber].STFDir  ))
-  {
-    static int  iOldVarioSwitch=-1;
-    if(iTmp != iOldVarioSwitch)
-    {
-      iOldVarioSwitch = iTmp;
-      if(iTmp==1)
-      {
-        ExternalTriggerCruise = true;
-        ExternalTriggerCircling = false;
-         MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
-      }
-      else
-      {
-        ExternalTriggerCruise = false;
-        ExternalTriggerCircling = true;
-        MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);        
-      }
-    }
-  }
-
-  return ret;
-}
-
-BOOL DevRCFenix::FenixSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
-{
-bool ret = false;
-
-
-  if(Values(d))
-  {
-    TCHAR szTmp[MAX_NMEA_LEN];
-    if(WEIGHTS[2] > 0)
-    {
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
-      SetDataText(_BAL,  szTmp);
-    }
-  }
-  if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
-  {
-    if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[2] > 0))
-    {
-      GlidePolar::BallastLitres = fTmp;
-      BALLAST =  GlidePolar::BallastLitres / WEIGHTS[2];
-      ret = true;
-    }
-  }
-
-  return ret;
-}
-
-BOOL DevRCFenix::FenixSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
-{
-bool ret = false;
-
-
-  if(Values(d))
-  {
-    TCHAR szTmp[MAX_NMEA_LEN];
-    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% %s"),fTmp, info);
-    SetDataText(_BUGS,  szTmp);
-  }
-  if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
-  {
-    if(  fabs(fTmp -BUGS) >= 0.01)
-    {
-      fTmp = CalculateBugsFromLX(fTmp);
-      CheckSetBugs(fTmp);
-      if(  fabs(fTmp -BUGS) >= 0.01) // >= 1% difference
-      {
-        BUGS = fTmp;
-        ret = true;
-      }
-    }
-  }
-
-  return ret;
-}
 
 
 BOOL DevRCFenix::RCDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
@@ -1101,9 +913,9 @@ static int iNoFlights=0;
   if(_tcsncmp(szTmp, _T("MC_BAL"), 6) == 0)
   {
     if(_deb)  StartupStore(TEXT("MC_BAL %s"), sentence);
-    if(ParToDouble(sentence, 2, &fTmp)) {FenixSetMC(d, fTmp,_T("($RCDT)") );}
-    if(ParToDouble(sentence, 3, &fTmp)) {FenixSetBAL(d, fTmp,_T("($RCDT)") );}
-    if(ParToDouble(sentence, 4, &fTmp)) {FenixSetBUGS(d, fTmp,_T("($RCDT)") );}
+    if(ParToDouble(sentence, 2, &fTmp)) {EOSSetMC(d, fTmp,_T("($RCDT)") );}
+    if(ParToDouble(sentence, 3, &fTmp)) {EOSSetBAL(d, fTmp,_T("($RCDT)") );}
+    if(ParToDouble(sentence, 4, &fTmp)) {EOSSetBUGS(d, fTmp,_T("($RCDT)") );}
     if(ParToDouble(sentence, 5, &fTmp)) {}  // Screen brightness in percent
     if(ParToDouble(sentence, 6, &fTmp)) {}  // Variometer volume in percent
     if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
@@ -1144,7 +956,7 @@ static int iNoFlights=0;
   if(_tcsncmp(szTmp, _T("SC_VAR"), 6) == 0)  // Vario / STF
   {
     if(ParToDouble(sentence, 2, &fTmp)) {
-      FenixSetSTF(d, (int)fTmp,_T(" ($RCDT,SC_VAR)") );
+      EOSSetSTF(d, (int)fTmp,_T(" ($RCDT,SC_VAR)") );
     }
   }
   else
@@ -1220,7 +1032,7 @@ double fTmp;
   if(ParToDouble(sentence, ParNo++, &fTmp)) {  // Current landing gear position (0 = out, 1 = inside, left empty if gear input not configured)
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) {  // SC/Vario mode (0 = Vario, 1 = SC)
-    FenixSetSTF(d, (int)fTmp,_T(" ($RCDT,SENS)"));
+    EOSSetSTF(d, (int)fTmp,_T(" ($RCDT,SENS)"));
   }
   return true;
 }
@@ -1436,137 +1248,4 @@ return(true);
 }
 
 
-BOOL DevRCFenix::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-  if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG) {
-    return false;
-  }
-
-TCHAR  szTmp[MAX_NMEA_LEN];
-
-double fTmp;
-  NMEAParser::ExtractParameter(sentence,szTmp,3);
-
-
-    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-      Alternate2 = -1;                 // clear external =re-enable!
-
-  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
-
-
-  ParToDouble(sentence, 4, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Latitude= fTmp/60000;
-  ParToDouble(sentence, 5, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Longitude= fTmp/60000;
-  ParToDouble(sentence, 6, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Altitude= fTmp; 
-  Alternate2 = RESWP_EXT_TARGET;
-//  ParToDouble(sentence, 7, &fTmp);  // distance
-//  ParToDouble(sentence, 8, &fTmp);  // bearing
-  
-  ParToDouble(sentence, 9, &fTmp);
-  if( fTmp > 0 )
-    WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;
-  else
-    WayPointList[RESWP_EXT_TARGET].Flags =0;
-  
-  if(Values(d))
-  {
-    _tcsncat(szTmp, _T(" ($RCDT)"), std::size(szTmp) - _tcslen(szTmp));
-    SetDataText( _R_TRGT,  szTmp);
-  }
-  return false;
-}
-
-
-
-
-BOOL DevRCFenix::FenixRequestRadioInfo(PDeviceDescriptor_t d)
-{
-  if(!FenixRadioEnabled(d)) return false;
-  Poco::Thread::sleep(50);
-  SendNmea(d,(TCHAR*)_T("RCDT,GET,RADIO"));
-  return true;
-}
-
-BOOL DevRCFenix::FenixPutVolume(PDeviceDescriptor_t d, int Volume) {
-  if(!FenixRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("RCDT,SET,RADIO,,,%i,,,"),Volume)  ;
-  SendNmea(d,szTmp);
-  if(uiFenixDebugLevel) StartupStore(_T(". Fenix Volume  %i%s"), Volume,NEWLINE);
-  RadioPara.Volume = Volume;
-  FenixRequestRadioInfo(d);
-  return(TRUE);
-}
-
-
-
-
-BOOL DevRCFenix::FenixPutSquelch(PDeviceDescriptor_t d, int Squelch) {
- if(!FenixRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("RCDT,SET,RADIO,,,,%i,,"),Squelch)  ;
-  SendNmea(d,szTmp);
-  if(uiFenixDebugLevel) StartupStore(_T(". Fenix Squelch  %i%s"), Squelch,NEWLINE);
-  RadioPara.Squelch = Squelch;
-  FenixRequestRadioInfo(d);
-  return(TRUE);
-}
-
-
-
-BOOL DevRCFenix::FenixPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
- if(!FenixRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("RCDT,SET,RADIO,%7.3f,,,,,"),Freq)  ;
-  SendNmea(d,szTmp);
-  FenixRequestRadioInfo(d);
-  RadioPara.ActiveFrequency=  Freq;
-  if(StationName != NULL)
-    _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
-  if(uiFenixDebugLevel) StartupStore(_T(". Fenix Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-
-  return(TRUE);
-}
-
-
-BOOL DevRCFenix::FenixPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
- if(!FenixRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("RCDT,SET,RADIO,,%7.3f,,,,"),Freq)  ;
-  SendNmea(d,szTmp);
-  FenixRequestRadioInfo(d);
-  RadioPara.PassiveFrequency =  Freq;
-  if(StationName != NULL)
-    _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
-  if(uiFenixDebugLevel) StartupStore(_T(". Fenix Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-
-  return(TRUE);
-}
-
-
-BOOL DevRCFenix::FenixStationSwap(PDeviceDescriptor_t d) {
-
- if(!FenixRadioEnabled(d)) return false;
-  SendNmea(d,_T("RCDT,SET,R_SWITCH"));
-
-  FenixRequestRadioInfo(d);
-
-  if(uiFenixDebugLevel) StartupStore(_T(". Fenix  station swap %s"), NEWLINE);
-
-  return(TRUE);
-}
-
-
-BOOL DevRCFenix::FenixRadioMode(PDeviceDescriptor_t d, int mode) {
- if(!FenixRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("RCDT,SET,R_DUAL,%i"),mode);
-  SendNmea(d,(TCHAR*)szTmp);
-  FenixRequestRadioInfo(d);
-  if(uiFenixDebugLevel) StartupStore(_T(". Fenix  Dual Mode: %i %s"), mode, NEWLINE);
-  return(TRUE);
-}
 
