@@ -37,7 +37,7 @@
 // #############################################################################
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Fenix  device (parsing sentences and declaring tasks).
+
 
 
           
@@ -49,17 +49,6 @@ class DevRCFenix : public DevLX_EOS_ERA
   //----------------------------------------------------------------------------
   public:
 
-    /// Registers device into device subsystem.
-    static constexpr 
-    DeviceRegister_t Register() {
-      return devRegister(GetName(), Install);
-    }
-
-    static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
-
-    /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
-    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
 
   //----------------------------------------------------------------------------
   protected:
@@ -99,10 +88,6 @@ class DevRCFenix : public DevLX_EOS_ERA
 
    static void OnValuesClicked(WndButton* pWnd);
 
-
-
-//   static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-
    static BOOL RCDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
@@ -111,11 +96,6 @@ class DevRCFenix : public DevLX_EOS_ERA
 
 
    static void GetDirections(WndButton* pWnd);
-
-   //static BOOL Declare(void) {return m_bDeclare;};
-   //static void Declare(BOOL bDL) {m_bDeclare = bDL;};
-
-
 
    static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { return false;};
    static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
@@ -220,7 +200,7 @@ class DevRCFenix::Class
     Class();
 
     /// Sets the value of @c name member.
-    void SetName(const TCHAR* text);
+
 
 
 }; // DevRCFenix::Class
