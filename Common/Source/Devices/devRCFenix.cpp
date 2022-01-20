@@ -10,9 +10,6 @@
 
 
 //_____________________________________________________________________includes_
-
-
-
 #include "externs.h"
 #include "devRCFenix.h"
 #include "resource.h"
@@ -255,10 +252,10 @@ return false;
 
 BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d)
 {
-#ifdef TIMEOUTCHECK
+
   static int i=0;
  if (Declare()) return false ;  // do not configure during declaration
-  if(IsFenixInBinaryMode()) return false;
+	
   if((i++%10)==0)
   {
     SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
@@ -271,7 +268,7 @@ BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d)
      SendNmea(d,_T("RCDT,GET,MC_BAL"));
      StartupStore(TEXT("Config: RCDT"));      
     }
-#endif
+
 
   return true;
 }
