@@ -1523,37 +1523,37 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
 
 void InputEvents::eventSendNMEAPort1(const TCHAR *misc) {
   if (misc) {
-    Port1WriteNMEA(misc);
+    devWriteNMEA<0>(misc);
   }
 }
 
 void InputEvents::eventSendNMEAPort2(const TCHAR *misc) {
   if (misc) {
-    Port2WriteNMEA(misc);
+    devWriteNMEA<1>(misc);
   }
 }
 
 void InputEvents::eventSendNMEAPort3(const TCHAR *misc) {
   if (misc) {
-    Port3WriteNMEA(misc);
+    devWriteNMEA<2>(misc);
   }
 }
 
 void InputEvents::eventSendNMEAPort4(const TCHAR *misc) {
   if (misc) {
-    Port4WriteNMEA(misc);
+    devWriteNMEA<3>(misc);
   }
 }
 
 void InputEvents::eventSendNMEAPort5(const TCHAR *misc) {
   if (misc) {
-    Port5WriteNMEA(misc);
+    devWriteNMEA<4>(misc);
   }
 }
 
 void InputEvents::eventSendNMEAPort6(const TCHAR *misc) {
   if (misc) {
-    Port6WriteNMEA(misc);
+    devWriteNMEA<5>(misc);
   }
 }
 // AdjustWaypoint

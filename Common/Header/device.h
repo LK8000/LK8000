@@ -174,13 +174,6 @@ struct DeviceDescriptor_t {
 
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 
-#define Port1WriteNMEA(s)	devWriteNMEAString(devA(), s)
-#define Port2WriteNMEA(s)	devWriteNMEAString(devB(), s)
-#define Port3WriteNMEA(s)       devWriteNMEAString(devC(), s)
-#define Port4WriteNMEA(s)       devWriteNMEAString(devD(), s)
-#define Port5WriteNMEA(s)       devWriteNMEAString(devE(), s)
-#define Port6WriteNMEA(s)       devWriteNMEAString(devF(), s)
-
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 void VarioWriteSettings(void);
 
@@ -246,6 +239,12 @@ BOOL devConfig() {
   static_assert(idx < std::size(DeviceList), "invalid index");
   auto& dev = DeviceList[idx];
   return dev.Config && dev.Config(&dev);
+}
+
+template<size_t idx>
+void devWriteNMEA(const TCHAR *Text) {
+  static_assert(idx < std::size(DeviceList), "invalid index");
+  devWriteNMEAString(&DeviceList[idx], Text);
 }
 
 #endif
