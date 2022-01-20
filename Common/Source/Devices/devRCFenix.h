@@ -15,12 +15,8 @@
 
 //_____________________________________________________________________includes_
 
-#include "devLX.h"
 #include "devLX_EOS_ERA.h"
-#include "dlgTools.h"
-#include "Dialogs.h"
-#include "Parser.h"
-#include "WindowControls.h"
+
 
 
 //______________________________________________________________________defines_
