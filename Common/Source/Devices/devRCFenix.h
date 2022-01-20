@@ -43,8 +43,6 @@
           
   
 
-//uint8_t FenixRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) ;
-//uint8_t FenixRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) ;
 bool FenixBlockReceived(void);
 class DevRCFenix : public DevLX_EOS_ERA
 {
@@ -101,51 +99,28 @@ class DevRCFenix : public DevLX_EOS_ERA
 
    static void OnValuesClicked(WndButton* pWnd);
 
-//   static BOOL Open( PDeviceDescriptor_t d);
-//   static BOOL Close( PDeviceDescriptor_t d);
 
 
-   static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+//   static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
    static BOOL RCDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupFenix_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
-   static BOOL Values(PDeviceDescriptor_t d);
-   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
-//   static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
+//   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
+
    static void GetDirections(WndButton* pWnd);
-   static BOOL ShowValues(void) {return m_bShowValues;};
-   static void ShowValues(BOOL bShow) {m_bShowValues = bShow;};
-   
+
    static BOOL Declare(void) {return m_bDeclare;};
    static void Declare(BOOL bDL) {m_bDeclare = bDL;};
 
-//   static CallBackTableEntry_t CallBackTable[];
-//   static PDeviceDescriptor_t m_pDevice;
-//   static BOOL bIGC_Download ;
-//   static BOOL m_bShowValues;
- //  static BOOL m_bDeclare;
- //  static BOOL m_bRadioEnabled;
- //  static BOOL m_bTriggered;
 
-   static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { return m_bRadioEnabled;};
+
+   static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { return false;};
    static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
    static BOOL FenixPutBallast(PDeviceDescriptor_t d, double Ballast);
    static BOOL FenixPutBugs(PDeviceDescriptor_t d, double Bugs);
-   static BOOL FenixRequestRadioInfo(PDeviceDescriptor_t d);
-   static BOOL FenixPutVolume(PDeviceDescriptor_t d, int Volume) ;
-   static BOOL FenixPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
-   static BOOL FenixPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
-   static BOOL FenixPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
-   static BOOL FenixStationSwap(PDeviceDescriptor_t d) ;
-   static BOOL FenixRadioMode(PDeviceDescriptor_t d, int mode) ;
-
-   static BOOL FenixSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info );
-   static BOOL FenixSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
-   static BOOL FenixSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
-   static BOOL FenixSetSTF(PDeviceDescriptor_t d,int iTmp, const TCHAR *info);
 
 }; // DevRCFenix
 
