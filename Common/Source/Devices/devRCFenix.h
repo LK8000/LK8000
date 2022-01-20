@@ -70,7 +70,7 @@ class DevRCFenix : public DevLX_EOS_ERA
    static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
 
    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
-//   static BOOL FenixParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+
    
    static BOOL Config(PDeviceDescriptor_t d);
    static void OnCloseClicked(WndButton* pWnd);

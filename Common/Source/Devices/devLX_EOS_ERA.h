@@ -111,7 +111,7 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     const TCHAR* GetName() {
       return _T("LX EOS/ERA");  
     }
-
+    static bool OnTimer(WndForm* pWnd);
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 

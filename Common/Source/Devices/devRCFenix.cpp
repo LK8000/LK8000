@@ -233,35 +233,6 @@ BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d)
   return true;
 }
 
-
-static bool OnTimer(WndForm* pWnd)
-{
-  WndForm * wf = pWnd->GetParentWndForm();
-  WndProperty *wp = NULL;
-
-  if(wf)
-  {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir")    ); UpdateValueTxt( wp,  _STF   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir")   ); UpdateValueTxt( wp,  _WIND  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir")   ); UpdateValueTxt( wp,  _BARO  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir")  ); UpdateValueTxt( wp,  _VARIO );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir")  ); UpdateValueTxt( wp,  _SPEED );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir") ); UpdateValueTxt( wp,  _R_TRGT);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir") ); UpdateValueTxt( wp,  _T_TRGT);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir") ); UpdateValueTxt( wp,  _GFORCE);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir")    ); UpdateValueTxt( wp,  _OAT   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir")   ); UpdateValueTxt( wp,  _BAT1  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir")   ); UpdateValueTxt( wp,  _BAT2  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir")  ); UpdateValueTxt( wp,  _POLAR );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);    
-  }
-  return true;
-}
-
 BOOL DevRCFenix::Config(PDeviceDescriptor_t d){
 
   WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P);
@@ -520,7 +491,7 @@ void DevRCFenix::OnCloseClicked(WndButton* pWnd)
 
 
 void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
-
+#ifdef EEE
   WndForm * wf = pWnd->GetParentWndForm();
   if(wf)
   {
@@ -553,10 +524,13 @@ void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
     SetDataText( _BAT2,  _T(""));
     SetDataText( _POLAR, _T(""));
     SetDataText( _DIRECT,_T(""));
-    SetDataText( _T_TRGT,_T(""));    
-    SendNmea(Device(),_T("RCDT,GET,MC_BAL"));  // request new data
+    SetDataText( _T_TRGT,_T(""));   
+		
   }
-
+#endif
+		
+		DevLX_EOS_ERA::OnValuesClicked(pWnd);
+    SendNmea(Device(),_T("RCDT,GET,MC_BAL"));  // request new data
 }
 
 

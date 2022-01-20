@@ -589,7 +589,7 @@ int PortNum = d->PortNumber;
 }
 
 
-static bool OnTimer(WndForm* pWnd)
+bool DevLX_EOS_ERA::OnTimer(WndForm* pWnd)
 {
   WndForm * wf = pWnd->GetParentWndForm();
   WndProperty *wp = NULL;
