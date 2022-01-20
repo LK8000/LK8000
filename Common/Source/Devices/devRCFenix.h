@@ -38,7 +38,11 @@ class DevRCFenix : public DevLX_EOS_ERA
 {
   //----------------------------------------------------------------------------
   public:
-
+    /// Registers device into device subsystem.
+    static constexpr 
+    DeviceRegister_t Register() {
+      return devRegister(GetName(), Install);
+    }
 
   //----------------------------------------------------------------------------
   protected:
