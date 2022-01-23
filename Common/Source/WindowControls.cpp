@@ -2198,12 +2198,10 @@ WndProperty::WndProperty(WindowControl *Parent,
 			 TCHAR *Caption, 
 			 int X, int Y, 
 			 int Width, int Height, 
-			 int CaptionWidth, 
-			 DataChangeCallback_t DataChangeNotify,
+			 int CaptionWidth,
 			 int MultiLine):
   WindowControl(Parent, Name, X, Y, Width, Height){
 
-  mOnDataChangeNotify = DataChangeNotify;
   if(Caption) {
       SetCaption(Caption);
   }

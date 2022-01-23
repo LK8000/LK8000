@@ -384,15 +384,11 @@ void LoadChildsFromXML(WindowControl *Parent,
       int MultiLine = AttributeToLong(*child, "MultiLine", 0);
       int ReadOnly = AttributeToLong(*child, "ReadOnly", 0);
 
-
-      const char* DataNotifyCallback = AttributeToString(*child, "OnDataNotify", "");
-
       const char* OnHelpCallback = AttributeToString(*child, "OnHelp", "");
 
       WC = W =
         new WndProperty(Parent, Name, Caption, X, Y,
                         Width, Height, CaptionWidth,
-                        CallBackLookup<WndProperty::DataChangeCallback_t>(LookUpTable, DataNotifyCallback),
                         MultiLine);
 
       W->SetOnHelpCallback(CallBackLookup<WindowControl::OnHelpCallback_t>(LookUpTable, OnHelpCallback));

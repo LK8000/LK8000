@@ -1024,9 +1024,6 @@ class WndButton:public WindowControl{
 #define STRINGVALUESIZE         128
 
 class WndProperty:public WindowControl{
-  public:
-    using DataChangeCallback_t = std::function<int(WindowControl*, int, int)>;
-
   private:
 
     RECT mEditRect;
@@ -1043,8 +1040,6 @@ class WndProperty:public WindowControl{
 
     virtual void Paint(LKSurface& Surface) override;
 
-    DataChangeCallback_t mOnDataChangeNotify;
-
     int CallSpecial(void);
     int IncValue(void);
     int DecValue(void);
@@ -1057,7 +1052,7 @@ class WndProperty:public WindowControl{
 
   public:
 
-    WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, int X, int Y, int Width, int Height, int CaptionWidth, DataChangeCallback_t DataChangeNotify, int MultiLine=false);
+    WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, int X, int Y, int Width, int Height, int CaptionWidth, int MultiLine=false);
     ~WndProperty(void);
     virtual void Destroy(void) override;
 

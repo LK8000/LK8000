@@ -19,7 +19,6 @@ using callback_variant = std::variant<
          WndListFrame::OnListCallback_t,
          WndOwnerDrawFrame::OnPaintCallback_t,
          WndButton::ClickNotifyCallback_t,
-         WndProperty::DataChangeCallback_t,
          DataField::DataAccessCallback_t,
          std::nullptr_t>;
 
@@ -40,8 +39,6 @@ CallBackTableEntry_t callback_entry(const char* Name, Callback_t&& callback) {
 #define OnPaintCallbackEntry(x) callback_entry<WndOwnerDrawFrame::OnPaintCallback_t>(#x, x)
 
 #define ClickNotifyCallbackEntry(x) callback_entry<WndButton::ClickNotifyCallback_t>(#x, x)
-
-#define DataChangeCallbackEntry(x) callback_entry<WndProperty::DataChangeCallback_t>(#x, x)
 
 #define DataAccessCallbackEntry(x) callback_entry<DataField::DataAccessCallback_t>(#x, x)
 
