@@ -258,6 +258,7 @@ add_library( LK8000 SHARED
     Common/Source/Globals.cpp
     Common/Source/InitFunctions.cpp
     Common/Source/InputEvents.cpp
+    Common/Source/InputEvents_Default.cpp
     Common/Source/lk8000.cpp
     Common/Source/LKInstall.cpp
     Common/Source/LKLanguage.cpp

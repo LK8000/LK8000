@@ -1357,6 +1357,7 @@ SRC_FILES :=\
 	$(SRC)/Globals.cpp	\
 	$(SRC)/InitFunctions.cpp\
 	$(SRC)/InputEvents.cpp 		\
+	$(SRC)/InputEvents_Default.cpp \
 	$(SRC)/lk8000.cpp\
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\

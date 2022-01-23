@@ -9,6 +9,8 @@
 #ifndef INPUTEVENTS_H
 #define INPUTEVENTS_H
 
+#include "types.h"
+#include "stdint.h"
 
 typedef void (*pt2Event)(const TCHAR *);
 
@@ -63,6 +65,8 @@ public:
     PopupWeatherSt,
   } PopupType;
 
+
+  static void InitDefaultMode();
 
   static void readFile();
   static void UnloadString();

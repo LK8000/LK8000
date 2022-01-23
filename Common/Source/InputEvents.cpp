@@ -130,7 +130,7 @@ void InputEvents::readFile() {
 
   // Get defaults
   if (!InitONCE) {
-	#include "InputEvents_LK8000.cpp"
+    InitDefaultMode();
     InitONCE = true;
   }
 
