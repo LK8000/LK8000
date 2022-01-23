@@ -414,36 +414,36 @@ void LoadChildsFromXML(WindowControl *Parent,
 
         if (strcasecmp(DataType, "enum")==0){
           W->SetDataField(
-              new DataFieldEnum(EditFormat, DisplayFmt, false,
+              new DataFieldEnum(*W, EditFormat, DisplayFmt, false,
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess)));
         } else if (strcasecmp(DataType, "filereader")==0){
           W->SetDataField(
-              new DataFieldFileReader(EditFormat, DisplayFmt,
+              new DataFieldFileReader(*W, EditFormat, DisplayFmt,
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else if (strcasecmp(DataType, "boolean")==0){
           W->SetDataField(
-              new DataFieldBoolean(EditFormat, DisplayFmt, false, MsgToken(958), MsgToken(959), // ON OFF
+              new DataFieldBoolean(*W, EditFormat, DisplayFmt, false, MsgToken(958), MsgToken(959), // ON OFF
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else if (strcasecmp(DataType, "double")==0){
           W->SetDataField(
-			        new DataFieldFloat(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
+			        new DataFieldFloat(*W, EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else if (strcasecmp(DataType, "integer")==0){
           W->SetDataField(
-              new DataFieldInteger(EditFormat, DisplayFmt, (int)Min, (int)Max, (int)0, (int)Step,
+              new DataFieldInteger(*W, EditFormat, DisplayFmt, (int)Min, (int)Max, (int)0, (int)Step,
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else if (strcasecmp(DataType, "string")==0){
           W->SetDataField(
-              new DataFieldString(EditFormat, DisplayFmt, TEXT(""),
+              new DataFieldString(*W, EditFormat, DisplayFmt, TEXT(""),
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else if (strcasecmp(DataType, "time")==0){
           W->SetDataField(
-      			  new DataFieldTime(EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
+      			  new DataFieldTime(*W, EditFormat, DisplayFmt, Min, Max, 0, Step, Fine,
                     CallBackLookup<DataField::DataAccessCallback_t>(LookUpTable, OnDataAccess))
           );
         } else {

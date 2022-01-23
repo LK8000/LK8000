@@ -93,8 +93,8 @@ static bool KeyTimer(bool isdown, unsigned thekey) {
 }
 
 
-DataFieldFileReader::DataFieldFileReader(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess):
-  DataField(EditFormat, DisplayFormat, OnDataAccess){
+DataFieldFileReader::DataFieldFileReader(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess):
+  DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
 
   SupportCombo=true;
   (mOnDataAccess)(this, daGet);
@@ -321,20 +321,22 @@ void DataFieldFileReader::Set(int Value){
 }
 
 
-void DataFieldFileReader::Inc(void){
+void DataFieldFileReader::Inc(){
   if (mValue < file_list.size() - 1) {
     ++mValue;
-    // (mOnDataAccess)(this, daChange); 091126
-    if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
+    if (!GetDetachGUI()) {
+      mOnDataAccess(this, daChange);
+    }
   }
 }
 
 
-void DataFieldFileReader::Dec(void){
+void DataFieldFileReader::Dec(){
   if (mValue > 0) {
     --mValue;
-    // (mOnDataAccess)(this, daChange); 091126
-    if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
+    if (!GetDetachGUI()) {
+      mOnDataAccess(this, daChange);
+    }
   }
 }
 
@@ -372,29 +374,34 @@ int DataFieldFileReader::CreateComboList(void) {
 }
 
 
-void DataField::Special(void){
-  // (mOnDataAccess)(this, daSpecial); 091126
-  if (!GetDetachGUI()) (mOnDataAccess)(this, daSpecial); 
+void DataField::Special() {
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daSpecial);
+  }
 }
 
-void DataField::Inc(void){
-  // (mOnDataAccess)(this, daInc); 091126
-  if (!GetDetachGUI()) (mOnDataAccess)(this, daInc); 
+void DataField::Inc(){
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daInc);
+  }
 }
 
-void DataField::Dec(void){
-  // (mOnDataAccess)(this, daDec); 091126
-  if (!GetDetachGUI()) (mOnDataAccess)(this, daDec); 
+void DataField::Dec() {
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daDec);
+  }
 }
 
-void DataField::GetData(void){
-  // (mOnDataAccess)(this, daGet); 091126
-  if (!GetDetachGUI()) (mOnDataAccess)(this, daGet); 
+void DataField::GetData() {
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daGet);
+  }
 }
 
 void DataField::SetData(void){
-  // (mOnDataAccess)(this, daPut); 091126
-  if (!GetDetachGUI()) (mOnDataAccess)(this, daPut); 
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daPut); 
+  }
 }
 
   void __Dummy(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -402,7 +409,7 @@ void DataField::SetData(void){
     (void) Mode;
   }
 
-DataField::DataField(const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess) {
+DataField::DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess) : mOwnerProperty(Owner) {
   mUsageCounter=0;
   mOnDataAccess = OnDataAccess;
   
@@ -412,7 +419,7 @@ DataField::DataField(const char *EditFormat, const char *DisplayFormat, DataAcce
   SetDisableSpeedUp(false);
   SetDetachGUI(false); // disable dispaly of inc/dec/change values
 
-  if (mOnDataAccess == NULL){
+  if (!mOnDataAccess) {
     mOnDataAccess = __Dummy;
   }
 
@@ -491,7 +498,9 @@ bool DataFieldBoolean::SetAsBoolean(bool Value){
   bool res = mValue;
   if (mValue != Value){
     mValue = Value;
-    if (!GetDetachGUI())(mOnDataAccess)(this,daChange); // fix rev 1.85
+    if (!GetDetachGUI()) {
+      mOnDataAccess(this,daChange); // fix rev 1.85
+    }
   }
   return(res);
 }
@@ -615,7 +624,9 @@ void DataFieldEnum::Set(unsigned Value){
       unsigned lastValue = mValue;
       mValue = i;
       if (mValue != lastValue){
-        if (!GetDetachGUI())(mOnDataAccess)(this, daChange); 
+        if (!GetDetachGUI()) {
+          mOnDataAccess(this, daChange);
+        }
       }
       return;
     }
@@ -629,17 +640,21 @@ int DataFieldEnum::SetAsInteger(int Value){
   // JMW fixed (was Value, should be mValue)
 }
 
-void DataFieldEnum::Inc(void){
-  if (mValue<mEntries.size()-1) {
+void DataFieldEnum::Inc(){
+  if (mValue < mEntries.size() - 1) {
     mValue++;
-    if (!GetDetachGUI())(mOnDataAccess)(this, daChange); // rev 1.85
+    if (!GetDetachGUI()) {
+      mOnDataAccess(this, daChange); // rev 1.85
+    }
   }
 }
 
-void DataFieldEnum::Dec(void){
-  if (mValue>0) {
+void DataFieldEnum::Dec(){
+  if (mValue > 0) {
     mValue--;
-    if (!GetDetachGUI())(mOnDataAccess)(this, daChange);
+    if (!GetDetachGUI()) {
+      (mOnDataAccess)(this, daChange);
+    }
   }
 }
 
@@ -864,7 +879,9 @@ int DataFieldInteger::SetAsInteger(int Value){
     Value = mMax;
   if (mValue != Value){
     mValue = Value;
-    if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
+    if (!GetDetachGUI()) {
+      mOnDataAccess(this, daChange);
+    }
   }
   return(res);
 }
@@ -1004,7 +1021,9 @@ double DataFieldFloat::SetAsFloat(double Value){
   Value = Clamp(Value, mMin, mMax);
   if (res != Value){
     mValue = Value;
-    if (!GetDetachGUI()) (mOnDataAccess)(this, daChange);
+    if (!GetDetachGUI()) {
+      mOnDataAccess(this, daChange);
+    }
   }
   return(res);
 }
