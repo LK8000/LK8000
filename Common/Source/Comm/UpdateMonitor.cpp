@@ -488,7 +488,7 @@ int ConnectionProcessTimer(int itimeout) {
       if ((itimeout % 90 == 0) && !LKDoNotResetComms && !MenuActive) {
         // no activity for 90/2 seconds (running at 2Hz), then reset.
         // This is needed only for virtual com ports..
-        if (!(devIsDisabled(0) && devIsDisabled(1))) {
+        if (!devIsDisabled()) {
           extGPSCONNECT = FALSE;
           StartupStore(_T(". ComPort RESET ordered" NEWLINE));
           if (MapSpaceMode != MSM_WELCOME) {

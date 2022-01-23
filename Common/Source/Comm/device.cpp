@@ -168,11 +168,13 @@ BOOL ExpectFlarmString(PDeviceDescriptor_t d, const TCHAR *token){
 
 // This device is not available if Disabled
 // Index 0 or 1 
-bool devIsDisabled(int Index) {
-  if (Index < 0 || Index >1)
-	return (true);
-	
-  return DeviceList[Index].Disabled;
+bool devIsDisabled() {
+  for (auto& item : DeviceList) {
+    if (!item.Disabled) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void RefreshComPortList() {

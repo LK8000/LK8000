@@ -196,7 +196,8 @@ void devCloseAll();
 PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 
-bool devIsDisabled(int devindex);
+// return true if all device are disabled 
+bool devIsDisabled();
 
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
 BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
