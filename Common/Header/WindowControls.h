@@ -743,7 +743,7 @@ class WndListFrame:public WndFrame{
       int ItemInPageCount;
     }ListInfo_t;
 
-    using OnListCallback_t = std::function<void(WindowControl*, ListInfo_t*)>;
+    using OnListCallback_t = std::function<void(WndListFrame*, ListInfo_t*)>;
 
     WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
                  int Width, int Height, OnListCallback_t OnListCallback);
@@ -815,7 +815,7 @@ private:
 class WndOwnerDrawFrame:public WndFrame{
 
   public:
-    using OnPaintCallback_t = std::function<void(WindowControl*, LKSurface&)>;
+    using OnPaintCallback_t = std::function<void(WndOwnerDrawFrame*, LKSurface&)>;
 
     WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, OnPaintCallback_t OnPaintCallback):
       WndFrame(Owner, Name, X, Y, Width, Height)
