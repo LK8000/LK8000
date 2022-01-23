@@ -840,7 +840,6 @@ void CDevIMI::Install(PDeviceDescriptor_t d)
 
   _tcscpy(d->Name, GetName());
   d->Declare      = DeclareTask;
-  d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 }

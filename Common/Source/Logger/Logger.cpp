@@ -573,8 +573,8 @@ bool DeclaredToDevice = false;
 
 static bool LoggerDeclare(PDeviceDescriptor_t dev, const Declaration_t *decl)
 {
-  if (!devIsLogger(dev))
-	return FALSE;
+  if (!devIsLogger(*dev))
+  	return FALSE;
 
   // If a Flarm is reset while we are here, then it will come up with isFlarm set to false,
   // and task declaration will fail. The solution is to let devices have a flag for "HaveFlarm".

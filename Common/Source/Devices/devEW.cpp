@@ -286,13 +286,6 @@ BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
 }
 
-
-BOOL EWIsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 BOOL EWIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE);
@@ -314,6 +307,5 @@ void ewInstall(PDeviceDescriptor_t d){
   d->ParseNMEA = EWParseNMEA;
   d->LinkTimeout = EWLinkTimeout;
   d->Declare = EWDeclare;
-  d->IsLogger = EWIsLogger;
   d->IsGPSSource = EWIsGPSSource;
 }

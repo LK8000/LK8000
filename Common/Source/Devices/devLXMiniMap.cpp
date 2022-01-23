@@ -73,7 +73,6 @@ void DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->Open         = Open;
   d->Init         = Init;
   d->Declare      = DeclareTaskMinimap;
-  d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->PutQNH = LXMiniMapPutQNH;

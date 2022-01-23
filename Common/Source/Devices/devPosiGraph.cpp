@@ -42,13 +42,6 @@ BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-
-BOOL PGIsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 BOOL PGIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE);
@@ -64,7 +57,6 @@ void pgInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
-  d->IsLogger = PGIsLogger;
   d->IsGPSSource = PGIsGPSSource;
   d->IsBaroSource = PGIsBaroSource;
 }

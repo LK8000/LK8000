@@ -256,12 +256,6 @@ BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 }
 
 
-BOOL VLIsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 BOOL VLIsGPSSource(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE);
@@ -278,7 +272,6 @@ void vlInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Volkslogger"));
   d->ParseNMEA = VLParseNMEA;
   d->Declare = VLDeclare;
-  d->IsLogger = VLIsLogger;
   d->IsGPSSource = VLIsGPSSource;
   d->IsBaroSource = VLIsBaroSource; // 100315 XCSOAR BUG missing
 }

@@ -384,7 +384,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Init = nullptr;
     LinkTimeout = nullptr;
     Declare = nullptr;
-    IsLogger = nullptr;
     IsGPSSource = nullptr;
     IsBaroSource = nullptr;
     IsRadio = nullptr;
@@ -878,20 +877,9 @@ BOOL devDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBu
   return result;
 }
 
-BOOL devIsLogger(PDeviceDescriptor_t d)
-{
-  bool result = false;
-
+BOOL devIsLogger(DeviceDescriptor_t& d) {
   ScopeLock Lock(CritSec_Comm);
-  if ((d != NULL) && (d->IsLogger != NULL)) {
-    if (d->IsLogger(d)) {
-      result = true;
-    }
-  }
-  if ((d != NULL) && !result) {
-    result |= d->nmeaParser.isFlarm;
-  }
-  return result;
+  return d.Declare || d.nmeaParser.isFlarm;
 }
 
 /**

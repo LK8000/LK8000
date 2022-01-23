@@ -80,7 +80,6 @@ void DevLXNano::Install(PDeviceDescriptor_t d)
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->Declare      = DeclareTask;
-  d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 

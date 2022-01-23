@@ -191,7 +191,6 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->PutBallast   = Nano3_PutBallast;
   d->Open         = Open;
   d->Declare      = DeclareTask;
-  d->IsLogger     = GetTrue;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
