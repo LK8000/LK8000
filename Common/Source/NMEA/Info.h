@@ -76,10 +76,6 @@ struct NMEA_INFO {
 
     double SupplyBatteryVoltage;
 
-#if USESWITCHES
-    SWITCH_INFO SwitchState;
-#endif
-
     bool MagneticHeadingAvailable;
     double MagneticHeading;
 

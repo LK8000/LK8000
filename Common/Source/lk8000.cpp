@@ -326,21 +326,6 @@ bool Startup(const TCHAR* szCmdLine) {
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
 
-  #if USESWITCHES
-  GPS_INFO.SwitchState.AirbrakeLocked = false;
-  GPS_INFO.SwitchState.FlapPositive = false;
-  GPS_INFO.SwitchState.FlapNeutral = false;
-  GPS_INFO.SwitchState.FlapNegative = false;
-  GPS_INFO.SwitchState.GearExtended = false;
-  GPS_INFO.SwitchState.Acknowledge = false;
-  GPS_INFO.SwitchState.Repeat = false;
-  GPS_INFO.SwitchState.SpeedCommand = false;
-  GPS_INFO.SwitchState.UserSwitchUp = false;
-  GPS_INFO.SwitchState.UserSwitchMiddle = false;
-  GPS_INFO.SwitchState.UserSwitchDown = false;
-  GPS_INFO.SwitchState.VarioCircling = false;
-  #endif
-
   time_t  linux_time;
   linux_time = time(0);
   tm utc_tm = {};

@@ -110,12 +110,6 @@ BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   // inclimb/incruise 1=cruise,0=climb, OAT
   NMEAParser::ExtractParameter(String,ctemp,6);
 
-
-  #if USESWITCHES
-  int climb = iround(StrToDouble(ctemp,NULL));
-  pGPS->SwitchState.VarioCircling = (climb==1);
-  #endif
-
   #if 0 // UNUSED EnableExternalTriggerCruise
   if (EnableExternalTriggerCruise) {
     if (climb) {

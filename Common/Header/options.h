@@ -197,12 +197,6 @@
 //
 // ----------------------------------------------------------------------------------------
 
-
-// #define USESWITCHES	1	// External device switch support / to be completed because unused
-				// Do not remove, it can be worked out with no problems if we want to
-				// support external switches through NMEA input.
-
-
 // LKAIRSPACE OPTIM STUFF
 // Recalculate airspace positions only if the draw area has changed by more than 2 pixels
 // There is a problem: enabling/disabling/ack/etc will not show up until a zoom is performed.

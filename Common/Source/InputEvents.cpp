@@ -2523,10 +2523,6 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     dlgAirspaceShowModal(false);
   } else if (_tcscmp(misc,TEXT("Replay"))==0){
       dlgLoggerReplayShowModal();
-#if USESWITCHES
-  } else if (_tcscmp(misc,TEXT("Switches"))==0){
-    dlgSwitchesShowModal();
-#endif
   } else if (_tcscmp(misc,TEXT("OlcAnalysis"))==0){
     dlgAnalysisShowModal(ANALYSIS_PAGE_CONTEST);
   } else if (_tcscmp(misc,TEXT("Teamcode"))==0){

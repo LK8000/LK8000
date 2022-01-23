@@ -15,28 +15,6 @@
 
 struct DeviceDescriptor_t;
 
-#if USESWITCHES
-typedef struct _SWITCH_INFO
-{
-  bool AirbrakeLocked;
-  bool FlapPositive;
-  bool FlapNeutral;
-  bool FlapNegative;
-  bool GearExtended;
-  bool Acknowledge;
-  bool Repeat;
-  bool SpeedCommand;
-  bool UserSwitchUp;
-  bool UserSwitchMiddle;
-  bool UserSwitchDown;
-  bool VarioCircling;
-  bool FlapLanding;
-  // bool Stall;
-} SWITCH_INFO;
-#endif
-
-
-
 GeoPoint GetCurrentPosition(const NMEA_INFO& Info);
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay);
