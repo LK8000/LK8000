@@ -20,7 +20,6 @@ struct NMEA_INFO {
     double Speed;
     double Altitude; // GPS Altitude
 
-    double CrossTrackError;
     double Time;
     int Hour;
     int Minute;
@@ -80,8 +79,6 @@ struct NMEA_INFO {
 #if USESWITCHES
     SWITCH_INFO SwitchState;
 #endif
-
-    double StallRatio;
 
     bool MagneticHeadingAvailable;
     double MagneticHeading;
