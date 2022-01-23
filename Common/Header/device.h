@@ -174,7 +174,6 @@ struct DeviceDescriptor_t {
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
-void VarioWriteSettings(void);
 
 #ifdef ANDROID
 extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan
