@@ -185,21 +185,21 @@ void RefreshComPortList() {
     TCHAR szPort[10];
     for (unsigned i = 1; i < 10; ++i) {
         _stprintf(szPort, _T("COM%u"), i);
-        COMMPort.push_back(szPort);
+        COMMPort.emplace_back(szPort);
     }
 
 #ifndef UNDER_CE
     for (unsigned i = 10; i < 41; ++i) {
         _stprintf(szPort, _T("COM%u"), i);
-        COMMPort.push_back(szPort);
+        COMMPort.emplace_back(szPort);
     }
 #endif
 
-    COMMPort.push_back(_T("COM0"));
+    COMMPort.emplace_back(_T("COM0"));
 
 #if defined(PNA) && defined(UNDER_CE)
-    COMMPort.push_back(_T("VSP0"));
-    COMMPort.push_back(_T("VSP1"));
+    COMMPort.emplace_back(_T("VSP0"));
+    COMMPort.emplace_back(_T("VSP1"));
 #endif
 #endif
     
@@ -226,7 +226,7 @@ void RefreshComPortList() {
         char path[512]; // at least MAX_NAME + prefix size
         sprintf(path, "/dev/%s", namelist[i]->d_name);
         if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
-          COMMPort.push_back(path);
+          COMMPort.emplace_back(path);
         }
       }
       free(namelist[i]);
@@ -242,7 +242,7 @@ void RefreshComPortList() {
       sprintf(path, "/dev/serial/by-id/%s", namelist[i]->d_name);
       if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
         sprintf(path, "id:%s", namelist[i]->d_name);
-        COMMPort.push_back(path);
+        COMMPort.emplace_back(path);
       }
       free(namelist[i]);
     }      
@@ -255,17 +255,17 @@ void RefreshComPortList() {
 
   if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
     if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
-      COMMPort.push_back(_T("/dev/ttyGS0"));
+      COMMPort.emplace_back(_T("/dev/ttyGS0"));
     }
   }
 
 #elif defined(TESTBENCH) && defined (__linux__)
 
   if(lk::filesystem::exist(_T("/lk"))) {
-    COMMPort.push_back(_T("/lk/ptycom1"));
-    COMMPort.push_back(_T("/lk/ptycom2"));
-    COMMPort.push_back(_T("/lk/ptycom3"));
-    COMMPort.push_back(_T("/lk/ptycom4"));
+    COMMPort.emplace_back(_T("/lk/ptycom1"));
+    COMMPort.emplace_back(_T("/lk/ptycom2"));
+    COMMPort.emplace_back(_T("/lk/ptycom3"));
+    COMMPort.emplace_back(_T("/lk/ptycom4"));
   }
 
 #endif
@@ -282,18 +282,18 @@ void RefreshComPortList() {
     }
 #endif
 
-    COMMPort.push_back(_T("TCPClient"));
-    COMMPort.push_back(_T("TCPServer"));
-    COMMPort.push_back(_T("UDPServer"));
+    COMMPort.emplace_back(_T("TCPClient"));
+    COMMPort.emplace_back(_T("TCPServer"));
+    COMMPort.emplace_back(_T("UDPServer"));
     if(EngineeringMenu)
-      COMMPort.push_back(NMEA_REPLAY);
+      COMMPort.emplace_back(NMEA_REPLAY);
 #ifdef ANDROID
 
   JNIEnv *env = Java::GetEnv();
   if (env) {
     if (BluetoothHelper::isEnabled(env)) {
 
-      COMMPort.push_back(_T("Bluetooth Server"));
+      COMMPort.emplace_back(_T("Bluetooth Server"));
 
 
       Java::LocalRef<jobjectArray> bonded = BluetoothHelper::list(env);
@@ -315,7 +315,7 @@ void RefreshComPortList() {
           prefixed_address << "BT:" << address;
           name << "BT:" << (j_name ? j_name.ToString() : std::string());
 
-          COMMPort.push_back(COMMPortItem_t(prefixed_address.str(), name.str()));
+          COMMPort.emplace_back(prefixed_address.str(), name.str());
         }
       }
     }
@@ -334,24 +334,24 @@ void RefreshComPortList() {
           std::stringstream prefixed_name;
           prefixed_name << "USB:" << j_name.ToString();
           const std::string name = prefixed_name.str();
-          COMMPort.push_back(COMMPortItem_t(name.c_str(), name.c_str()));
+          COMMPort.emplace_back(name.c_str(), name.c_str());
         }
       }
     }
   }
 
   if(ioio_helper) {
-    COMMPort.push_back(COMMPortItem_t("IOIOUart_0", "IOIO Uart 0"));
-    COMMPort.push_back(COMMPortItem_t("IOIOUart_1", "IOIO Uart 1"));
-    COMMPort.push_back(COMMPortItem_t("IOIOUart_2", "IOIO Uart 2"));
-    COMMPort.push_back(COMMPortItem_t("IOIOUart_3", "IOIO Uart 3"));
+    COMMPort.emplace_back("IOIOUart_0", "IOIO Uart 0");
+    COMMPort.emplace_back("IOIOUart_1", "IOIO Uart 1");
+    COMMPort.emplace_back("IOIOUart_2", "IOIO Uart 2");
+    COMMPort.emplace_back("IOIOUart_3", "IOIO Uart 3");
   }
 
 #endif
 
     if(COMMPort.empty()) {
         // avoid segfault on device config  dialog if no comport detected.
-        COMMPort.push_back(_T("Null"));
+        COMMPort.emplace_back(_T("Null"));
     }
 }
 
