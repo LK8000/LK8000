@@ -185,14 +185,6 @@ extern DeviceDescriptor_t	DeviceList[NUMDEV];
 extern DeviceDescriptor_t *pDevPrimaryBaroSource;
 extern DeviceDescriptor_t *pDevSecondaryBaroSource;
 
-inline 
-PDeviceDescriptor_t devX(unsigned idx) {
-	if(idx < std::size(DeviceList)) {
-		return &DeviceList[idx];
-	}
-	return nullptr;
-}
-
 extern Mutex CritSec_Comm;
 
 void RefreshComPortList();

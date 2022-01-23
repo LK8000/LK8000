@@ -204,7 +204,7 @@ Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj, jboolean conn
   unsigned index = getDeviceIndex(env, obj);
   ScopeLock Lock(CritSec_Comm);
 
-  PDeviceDescriptor_t pdev = devX(index);
+  PDeviceDescriptor_t pdev = devGetDeviceOnPort(index);
   if(pdev) {
     pdev->HB = LKHearthBeats;
     pdev->nmeaParser.connected = connected;
@@ -306,7 +306,7 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
     double vario = WithLock(CritSec_Comm, [index, pressure, sensor_noise_variance]() {
 
-        PDeviceDescriptor_t pdev = devX(index);
+        PDeviceDescriptor_t pdev = devGetDeviceOnPort(index);
         if (!pdev) {
           throw std::runtime_error("invalid device index");
         }
