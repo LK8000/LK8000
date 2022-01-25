@@ -40,7 +40,9 @@ bool RasterMap::Open(const TCHAR* zfilename) {
   }
   
   const size_t nsize = TerrainInfo.Rows*TerrainInfo.Columns;
-  StartupStore(_T("... Terrain size is %u"), static_cast<unsigned>(nsize*sizeof(short)));
+  const size_t file_size = (nsize * sizeof(short)) + sizeof(TERRAIN_INFO);
+
+  StartupStore(_T("... Terrain size is %u"), static_cast<unsigned>(file_size));
   StartupStore(_T("... Available memory is %ukB"), static_cast<unsigned>(CheckFreeRam()/1024));
 
   /* 
@@ -48,9 +50,9 @@ bool RasterMap::Open(const TCHAR* zfilename) {
    * than memory mapped file,
    * if file size less than 10MB, store DEM data into heap memory. 
    */
-  if((nsize*sizeof(short)) < (10*1024*1024)) {
+  if (file_size < (10*1024*1024)) {
     /*
-     *  try to create buffer for store DEM data
+     *  try to create buffer to store DEM data
      */
     pTerrainMem.reset(new(std::nothrow) short[nsize]);
     /*
@@ -86,15 +88,19 @@ bool RasterMap::Open(const TCHAR* zfilename) {
 
     TerrainFile.open(zfilename, false);
     if(TerrainFile.is_open()) {
-      TerrainFile.map(sizeof(TERRAIN_INFO), nsize*sizeof(short));
-      if(TerrainFile.data()) {
-        TerrainMem = reinterpret_cast<const short*>(TerrainFile.data());
-      } else {
+      size_t read_size = TerrainFile.file_size();
+      if (read_size == file_size) {
+        TerrainFile.map(sizeof(TERRAIN_INFO), nsize*sizeof(short));
+        if (TerrainFile.data()) {
+          TerrainMem = reinterpret_cast<const short*>(TerrainFile.data());
+        }
+      }
+      if (!TerrainMem) {
         TerrainFile.close();
       }
     }
 #else
-    StartupStore(_T("... Terrain File to huge."));
+    StartupStore(_T("... Terrain File too large."));
 #endif    
   }
   
