@@ -2052,41 +2052,41 @@ return(true);
 }
 
 
-BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-  if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG) {
-    return false;
+BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
+    if (PortIO[d->PortNumber].R_TRGTDir != TP_VTARG) {
+        return false;
+    }
+
+    TCHAR szTmp[MAX_NMEA_LEN];
+
+    double fTmp4, fTmp5, fTmp6, fTmp9;
+    NMEAParser::ExtractParameter(sentence, szTmp, 3);
+    ParToDouble(sentence, 4, &fTmp4);  // latitude
+    ParToDouble(sentence, 5, &fTmp5);  // longitude
+    ParToDouble(sentence, 6, &fTmp6);  // altitude (elevation)
+//  ParToDouble(sentence, 7, &fTmp);  // distance (not needed)
+//  ParToDouble(sentence, 8, &fTmp);  // bearing  (not needed)
+    ParToDouble(sentence, 9, &fTmp9);   // landable?
+
+  LockTaskData();
+  {
+    if (Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+        Alternate2 = -1;                 // clear external =re-enable!
+
+    _sntprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), szTmp);
+    WayPointList[RESWP_EXT_TARGET].Latitude = fTmp4 / 60000;
+    WayPointList[RESWP_EXT_TARGET].Longitude = fTmp5 / 60000;
+    WayPointList[RESWP_EXT_TARGET].Altitude = fTmp6;
+    Alternate2 = RESWP_EXT_TARGET;
+
+    if (fTmp9 > 0)
+        WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;
+    else
+        WayPointList[RESWP_EXT_TARGET].Flags = 0;
+    Alternate2 = RESWP_EXT_TARGET;
   }
+  UnlockTaskData();
 
-TCHAR  szTmp[MAX_NMEA_LEN];
-
-double fTmp;
-  NMEAParser::ExtractParameter(sentence,szTmp,3);
-
-
-    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-      Alternate2 = -1;                 // clear external =re-enable!
-
-  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
-
-
-  ParToDouble(sentence, 4, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Latitude= fTmp/60000;
-  ParToDouble(sentence, 5, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Longitude= fTmp/60000;
-  ParToDouble(sentence, 6, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Altitude= fTmp; 
-  Alternate2 = RESWP_EXT_TARGET;
-//  ParToDouble(sentence, 7, &fTmp);  // distance
-//  ParToDouble(sentence, 8, &fTmp);  // bearing
-  
-  ParToDouble(sentence, 9, &fTmp);
-  if( fTmp > 0 )
-    WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;
-  else
-    WayPointList[RESWP_EXT_TARGET].Flags =0;
-  
   if(Values(d))
   {
     _tcsncat(szTmp, _T(" ($LXDT)"), std::size(szTmp) - _tcslen(szTmp));
@@ -2121,9 +2121,9 @@ double fTmp;
   double DegLat = (double)((int) (fTmp/100.0));
   double MinLat =  fTmp- (100.0*DegLat);
   double Latitude = DegLat+MinLat/60.0;
-  TCHAR NoS;
-  NMEAParser::ExtractParameter(sentence,&NoS,6);
-  if (NoS==_T('S')) {
+
+  NMEAParser::ExtractParameter(sentence,szTmp,6);
+  if (szTmp[0]==_T('S')) {
     Latitude *= -1;
   }
 
@@ -2131,16 +2131,19 @@ double fTmp;
   double DegLon =  (double) ((int) (fTmp/100.0));
   double MinLon =  fTmp- (100.0*DegLon);
   double Longitude = DegLon+MinLon/60.0;
-  TCHAR EoW;
-  NMEAParser::ExtractParameter(sentence,&EoW,8);
-  if (EoW==_T('W')) {
+
+  NMEAParser::ExtractParameter(sentence,szTmp,8);
+  if (szTmp[0]==_T('W')) {
     Longitude *= -1;
   }
-  WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
-  WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
-  WayPointList[RESWP_EXT_TARGET].Altitude=0;  // GPRMB has no elevation information
-  Alternate2 = RESWP_EXT_TARGET;
-
+  LockTaskData();
+  {
+    WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
+    WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
+    WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information
+    Alternate2 = RESWP_EXT_TARGET;
+  }
+  UnlockTaskData();
   if(Values(d))
   {
     _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
