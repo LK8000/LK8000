@@ -423,7 +423,7 @@ static void UpdateValuesFlight(void) {
   double bearing;
   double distance;
   TCHAR sCoordinate[33]={0};
-  TCHAR sBaroDevice[32]={0};
+  TCHAR sBaroDevice[33]={0};
 
   Units::CoordinateToString(GPS_INFO.Longitude, GPS_INFO.Latitude, sCoordinate);
 
