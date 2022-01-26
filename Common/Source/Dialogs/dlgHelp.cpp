@@ -39,8 +39,8 @@ static void OnPaintDetailsListItem(WndOwnerDrawFrame * Sender, LKSurface& Surfac
 }
 
 
-static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-        (void)Sender;
+static void OnDetailsListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *ListInfo){
+
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = aTextLine.size();
   } else {

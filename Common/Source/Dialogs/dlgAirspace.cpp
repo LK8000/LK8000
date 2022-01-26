@@ -118,9 +118,9 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 }
 
 
-static void OnAirspaceListInfo(WindowControl * Sender,
+static void OnAirspaceListInfo(WndListFrame * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
-  (void)Sender;
+
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = AIRSPACECLASSCOUNT;
   } else {

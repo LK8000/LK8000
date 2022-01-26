@@ -48,7 +48,7 @@ static void OnPaintComboPopupListItem(WndOwnerDrawFrame * Sender, LKSurface& Sur
     }
 }
 
-static void OnComboPopupListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo)
+static void OnComboPopupListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *ListInfo)
 { // callback function for the ComboPopup
   if (ListInfo->DrawIndex == -1) { // initialize
     ListInfo->ItemCount = ComboListPopup->ComboPopupItemCount;

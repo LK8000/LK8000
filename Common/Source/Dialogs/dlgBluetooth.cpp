@@ -106,8 +106,8 @@ namespace DlgBluetooth {
         }
     }
 
-    void OnListInfo(WindowControl * Sender, WndListFrame::ListInfo_t * ListInfo) {
-        (void) Sender;
+    void OnListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t * ListInfo) {
+
         CBtHandler* pBtHandler = CBtHandler::Get();
         if (pBtHandler) {
             ListInfo->ItemCount = pBtHandler->m_devices.size();

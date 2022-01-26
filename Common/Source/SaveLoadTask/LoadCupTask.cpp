@@ -686,9 +686,7 @@ static void OnDownClicked(WndButton* pWnd) {
 
 
 
-static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
-
-  (void) Sender;
+static void OnMultiSelectListListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *ListInfo) {
 
   if (ListInfo->DrawIndex == -1) {
       ListInfo->ItemCount = iNO_Tasks;

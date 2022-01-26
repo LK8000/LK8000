@@ -189,8 +189,8 @@ static void OnDownClicked(WndButton *pWnd) {
 }
 
 
-static void OnMultiSelectListListInfo(WindowControl *Sender, WndListFrame::ListInfo_t *ListInfo) {
-  (void) Sender;
+static void OnMultiSelectListListInfo(WndListFrame *Sender, WndListFrame::ListInfo_t *ListInfo) {
+
   if (EOS_IGCReadDialog.FileList()->size() == 0) return;
   if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = EOS_IGCReadDialog.FileList()->size();

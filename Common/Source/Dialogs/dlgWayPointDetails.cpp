@@ -123,8 +123,8 @@ static void OnPaintDetailsListItem(WndOwnerDrawFrame * Sender, LKSurface& Surfac
 }
 
 
-static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-	(void)Sender;
+static void OnDetailsListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *ListInfo){
+
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = aDetailTextLine.size();
   } else {
@@ -168,8 +168,8 @@ static void OnPaintWpCommentListItem(WndOwnerDrawFrame * Sender, LKSurface& Surf
   }
 }
 
-static void OnWpCommentListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-	(void)Sender;
+static void OnWpCommentListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *ListInfo){
+
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = aCommentTextLine.size();
     //AlphaLima

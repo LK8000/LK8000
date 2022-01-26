@@ -80,9 +80,9 @@ static void OnStartPointListEnter(WindowControl * Sender,
 }
 
 
-static void OnStartPointListInfo(WindowControl * Sender,
+static void OnStartPointListInfo(WndListFrame * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
-	(void)Sender;
+
   if (ListInfo->DrawIndex == -1){
       ListInfo->ItemCount = 0;
       while(ValidStartPoint(ListInfo->ItemCount++)) { }

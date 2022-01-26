@@ -363,7 +363,7 @@ static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 
 
 
-static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t* ListInfo){
+static void OnTaskListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t* ListInfo){
   if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = UpLimit - LowLimit + 3;
   } else {

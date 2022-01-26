@@ -820,9 +820,8 @@ static void OnEnterClicked(WndButton* pWnd) {
 
 }
 
-static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
+static void OnMultiSelectListListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *ListInfo) {
 
-    (void) Sender;
     if (ListInfo->DrawIndex == -1) {
         ListInfo->ItemCount = iNO_ELEMENTS;
     } else {

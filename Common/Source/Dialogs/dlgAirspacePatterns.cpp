@@ -62,9 +62,9 @@ static void OnAirspacePatternsListEnter(WindowControl * Sender,
 }
 
 
-static void OnAirspacePatternsListInfo(WindowControl * Sender,
+static void OnAirspacePatternsListInfo(WndListFrame * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
-  (void)Sender;
+
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = NUMAIRSPACEBRUSHES;
   } else {

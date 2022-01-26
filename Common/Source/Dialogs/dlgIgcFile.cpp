@@ -148,8 +148,8 @@ namespace DlgIgcFile {
         }
     }
 
-    void OnIgcFileListInfo(WindowControl * Sender, WndListFrame::ListInfo_t * ListInfo) {
-        (void) Sender;
+    void OnIgcFileListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t * ListInfo) {
+
         ListInfo->ItemCount = FileList.size();
         if (ListInfo->DrawIndex != -1) {
             DrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;

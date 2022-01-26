@@ -60,9 +60,9 @@ static void OnAirspaceColoursListEnter(WindowControl * Sender,
 }
 
 
-static void OnAirspaceColoursListInfo(WindowControl * Sender,
+static void OnAirspaceColoursListInfo(WndListFrame * Sender,
 			       WndListFrame::ListInfo_t *ListInfo){
-  (void)Sender;
+
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = NUMAIRSPACECOLORS;
   } else {

@@ -356,9 +356,8 @@ static void OnDownClicked(WndButton *pWnd) {
   }
 }
 
-static void OnMultiSelectListListInfo(WindowControl *Sender,
+static void OnMultiSelectListListInfo(WndListFrame *Sender,
                                       WndListFrame::ListInfo_t *ListInfo) {
-  (void)Sender;
 
   if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = IGCFileList.size();
