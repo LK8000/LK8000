@@ -54,7 +54,7 @@ static void UpdateCaption (WndForm* pWnd) {
   TaskFileName(MAX_PATH, name);
 
   if (_tcslen(name)>0) {
-    _stprintf(title, TEXT("%s: %s"),
+    _sntprintf(title, std::size(title), TEXT("%s: %s"),
 	// LKTOKEN  _@M688_ = "Task Overview"
               MsgToken(688),
               name);
@@ -73,10 +73,10 @@ static void UpdateCaption (WndForm* pWnd) {
 
 static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   TCHAR sTmp[120];
-  TCHAR wpName[120];
+  TCHAR wpName[40];
   TCHAR landableStr[] = TEXT(" [X]");
   // LKTOKEN _@M1238_ "L"
-  landableStr[2] = MsgToken(1238)[0];
+  landableStr[2] = MsgToken(1238)[0]; // TODO : to fix : only work if string[0] is usascii char...
   LockTaskData();
 
   const PixelRect rcClient(Sender->GetClientRect());
