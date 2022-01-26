@@ -230,7 +230,7 @@ static void UpdateCaption(void) {
 
   SetValues(true);
 //******************************************************/
-  TCHAR sTmp[128];
+  TCHAR sTmp[256];
   TCHAR title[128];
   if (ValidTaskPoint(twItemIndex)) {
     switch (twType) {
