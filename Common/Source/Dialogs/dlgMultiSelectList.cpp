@@ -548,7 +548,7 @@ if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken(2382) ,Bas
 
 
 
-static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
+static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 #define PICTO_WIDTH 50
     Surface.SetTextColor(RGB_BLACK);
     if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {

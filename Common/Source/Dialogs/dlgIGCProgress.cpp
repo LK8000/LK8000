@@ -49,8 +49,8 @@ static bool OnIGCProgressTimer(WndForm *pWnd) {
 }
 
 
-static void OnIGCSplashPaint(WindowControl * Sender, LKSurface& Surface) {
-LKBitmap SplashBitmap;
+static void OnIGCSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
+    LKBitmap SplashBitmap;
     if(!SplashBitmap) {
         SplashBitmap = LoadSplash(_T("LKSTART"));
     }
@@ -58,7 +58,7 @@ LKBitmap SplashBitmap;
 
 }
 
-static void OnIGCProgressPaint(WindowControl * Sender, LKSurface& Surface) {
+static void OnIGCProgressPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
   RECT PrintAreaR = Sender->GetClientRect();
     

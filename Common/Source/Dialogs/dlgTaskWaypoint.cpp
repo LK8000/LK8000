@@ -692,8 +692,7 @@ static void OnTaskRulesClicked(WndButton* pWnd){
   wf->SetVisible(true);
 }
 
-static void OnTaskPointPicto(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
+static void OnTaskPointPicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
     WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmTaskPointPicto")));
     if(wPicto) {

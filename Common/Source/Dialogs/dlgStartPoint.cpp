@@ -25,8 +25,7 @@ static void UpdateList(void){
 
 static int DrawListIndex=0;
 
-static void OnStartPointPaintListItem(WindowControl * Sender, LKSurface& Surface){
-	(void)Sender;
+static void OnStartPointPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   TCHAR label[MAX_PATH];
 

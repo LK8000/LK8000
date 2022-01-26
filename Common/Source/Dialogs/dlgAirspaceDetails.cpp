@@ -23,7 +23,7 @@ static CAirspaceBase airspace_copy;
 static void OnDetailsClicked(WndButton* pWnd);
 static void SetValues(WndForm* wf);
 
-static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface){
+static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
 	  const RECT rc = Sender->GetClientRect();
 

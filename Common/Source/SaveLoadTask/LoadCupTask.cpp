@@ -701,7 +701,7 @@ static void OnMultiSelectListListInfo(WindowControl * Sender, WndListFrame::List
 
 
 
-static void OnMultiSelectListPaintListItem(WindowControl * Sender, LKSurface& Surface) {
+static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
 #define PICTO_WIDTH 50
 

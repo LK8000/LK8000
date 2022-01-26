@@ -25,7 +25,7 @@ int timer_counter;
 
 static void dlgLKAirspaceFill(WndForm* dlg);
 
-static void OnPaintAirspacePicto(WindowControl * Sender, LKSurface& Surface) {
+static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
     if (Sender) {
         Surface.SetBkColor(RGB_LIGHTGREY);
         /****************************************************************

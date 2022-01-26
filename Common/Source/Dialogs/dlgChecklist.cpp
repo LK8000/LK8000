@@ -112,7 +112,7 @@ static void NextPage(WndForm* pForm, int Step){
 }
 
 
-static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
+static void OnPaintDetailsListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   (void)Sender;
   if (DrawListIndex < (int)aTextLine.size()){
       LKASSERT(DrawListIndex>=0);

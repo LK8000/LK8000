@@ -71,7 +71,7 @@ static void UpdateCaption (WndForm* pWnd) {
   pWnd->SetCaption(title);
 }
 
-static void OnTaskPaintListItem(WindowControl * Sender, LKSurface& Surface){
+static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   TCHAR sTmp[120];
   TCHAR wpName[120];
   TCHAR landableStr[] = TEXT(" [X]");

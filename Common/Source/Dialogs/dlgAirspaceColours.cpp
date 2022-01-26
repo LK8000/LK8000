@@ -24,8 +24,8 @@ static void UpdateList(WndListFrame* pWnd){
 
 static int DrawListIndex=0;
 
-static void OnAirspaceColoursPaintListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
+static void OnAirspaceColoursPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
+
   if ((DrawListIndex < NUMAIRSPACECOLORS) &&(DrawListIndex>=0)) {
     Surface.SelectObject(LKBrush_White);
     Surface.SelectObject(LK_BLACK_PEN);

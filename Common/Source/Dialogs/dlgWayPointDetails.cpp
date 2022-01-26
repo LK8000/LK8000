@@ -40,7 +40,7 @@ static TextWrapArray aDetailTextLine;
 static int CommentDrawListIndex=0;
 static TextWrapArray aCommentTextLine;
 
-static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
+static void OnPaintWaypointPicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
     if (Sender) {
         const RECT rc = Sender->GetClientRect();
 
@@ -112,8 +112,7 @@ static void NextPage(int Step){
 }
 
 
-static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
+static void OnPaintDetailsListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   if (DetailDrawListIndex < (int)aDetailTextLine.size()){
       LKASSERT(DetailDrawListIndex>=0);
@@ -136,7 +135,7 @@ static void OnDetailsListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *
 
 
 
-static void OnPaintWpCommentListItem(WindowControl * Sender, LKSurface& Surface){
+static void OnPaintWpCommentListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   if (CommentDrawListIndex < (int)aCommentTextLine.size()){
     LKASSERT(CommentDrawListIndex>=0);

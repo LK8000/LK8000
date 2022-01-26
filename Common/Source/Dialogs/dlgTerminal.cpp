@@ -36,8 +36,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
 }
 
 
-static void OnPaintListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
+static void OnPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   unsigned int hline, hframe, numlines;
   short active;

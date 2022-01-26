@@ -429,7 +429,7 @@ static void OnEnterClicked(WndButton *pWnd) {
   }
 }
 
-static void OnMultiSelectListPaintListItem(WindowControl *Sender,
+static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender,
                                            LKSurface &Surface) {
 #define PICTO_WIDTH 50
   Surface.SetTextColor(RGB_BLACK);

@@ -101,7 +101,7 @@ void RawWrite(LKSurface& Surface, const TCHAR *text, int line, short fsize, cons
     Surface.SelectObject(oldfont);
 }
 
-static void OnSplashPaint(WindowControl * Sender, LKSurface& Surface) {
+static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
     TCHAR srcfile[MAX_PATH];
 

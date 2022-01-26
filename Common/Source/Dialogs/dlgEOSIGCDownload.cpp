@@ -270,7 +270,7 @@ static void OnEnterClicked(WndButton *pWnd) {
 }
 
 
-static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Surface) {
+static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface &Surface) {
 
   if (EOS_IGCReadDialog.FileList()->size() == 0) return;
   if (EOS_IGCReadDialog.FileList()->size() < (uint) EOS_IGCReadDialog.DrawIndex()) return;

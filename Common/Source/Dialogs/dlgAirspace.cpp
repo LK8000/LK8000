@@ -25,10 +25,10 @@ static void UpdateList(WndListFrame* pWnd){
 
 static int DrawListIndex=0;
 
-static void OnAirspacePaintListItem(WindowControl * Sender, LKSurface& Surface){
+static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   TCHAR label[40];
-  (void)Sender;
+
   if (DrawListIndex < AIRSPACECLASSCOUNT){
     int i = DrawListIndex;
 	LK_tcsncpy(label, CAirspaceManager::GetAirspaceTypeText(i), 39);

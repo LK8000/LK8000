@@ -217,7 +217,7 @@ static void OnEnterClicked(WndButton *pWnd) {
 }
 
 
-static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Surface) {
+static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface &Surface) {
 
   if (LX_IGCReadDialog.FileList()->size() == 0) return;
   if (LX_IGCReadDialog.FileList()->size() < (uint) LX_IGCReadDialog.DrawIndex()) return;

@@ -28,8 +28,8 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 
-static void OnPaintDetailsListItem(WindowControl * Sender, LKSurface& Surface){
-  (void)Sender;
+static void OnPaintDetailsListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
+
   if (DrawListIndex < (int)aTextLine.size()){
       LKASSERT(DrawListIndex>=0);
       const TCHAR* szText = aTextLine[DrawListIndex];

@@ -27,8 +27,8 @@ static void UpdateList(WndListFrame* pWnd){
 
 static int DrawListIndex=0;
 
-static void OnAirspacePatternsPaintListItem(WindowControl * Sender, LKSurface& Surface) {
-    (void) Sender;
+static void OnAirspacePatternsPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
+
     if ((DrawListIndex < NUMAIRSPACEBRUSHES) &&(DrawListIndex >= 0)) {
         Surface.SelectObject(LKBrush_White);
         Surface.SelectObject(LK_BLACK_PEN);

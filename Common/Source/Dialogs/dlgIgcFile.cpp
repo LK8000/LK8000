@@ -157,7 +157,7 @@ namespace DlgIgcFile {
         }
     }
 
-    void OnPaintIgcFileListItem(WindowControl * Sender, LKSurface& Surface) {
+    void OnPaintIgcFileListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
         if (DrawListIndex < FileList.size()) {
             FileList_t::const_iterator ItFileName = FileList.begin();
             std::advance(ItFileName, DrawListIndex);

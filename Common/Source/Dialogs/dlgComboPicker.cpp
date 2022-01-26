@@ -21,7 +21,7 @@ ComboList * ComboListPopup=NULL;
 static TCHAR sSavedInitialValue[ComboPopupITEMMAX];
 static int iSavedInitialDataIndex=-1;
 
-static void OnPaintComboPopupListItem(WindowControl * Sender, LKSurface& Surface) {
+static void OnPaintComboPopupListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
     if (Sender) {
 

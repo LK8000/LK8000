@@ -24,7 +24,7 @@
 
 static short retStatus;
 
-static void OnPaintWaypointPicto(WindowControl * Sender, LKSurface& Surface) {
+static void OnPaintWaypointPicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
     if (Sender) {
         const RECT rc = Sender->GetClientRect();
 

@@ -91,7 +91,7 @@ namespace DlgBluetooth {
         StopHourglassCursor();
     }
 
-    void OnPaintListItem(WindowControl * Sender, LKSurface& Surface) {
+    void OnPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
         CBtHandler* pBtHandler = CBtHandler::Get();
         if (pBtHandler) {
             CBtDevice * bt = pBtHandler->GetDevice(DrawListIndex);

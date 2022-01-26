@@ -72,7 +72,7 @@ void Statistics::FormatTicText(TCHAR *text, const double val, const double step)
   }
 }
 
-static void OnAnalysisPaint(WindowControl * Sender, LKSurface& Surface){
+static void OnAnalysisPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   WndForm* pForm = Sender->GetParentWndForm();
 
