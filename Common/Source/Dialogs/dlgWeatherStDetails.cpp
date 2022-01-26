@@ -49,11 +49,11 @@ void dlgWeatherStDetails(int indexid) {
   GetFanetName(Station.ID, GPS_INFO, StationName);
   UnlockFlightData();
 
-  TCHAR caption[MAX_LEN];
+  TCHAR caption[MAX_LEN + 10];
   if(_tcslen(StationName) == 0)
-    _sntprintf(caption,MAX_LEN, TEXT("%X"),Station.ID);
+    _stprintf(caption, TEXT("%X"),Station.ID);
   else
-    _sntprintf(caption,MAX_LEN, TEXT("%s [%X]"),StationName,Station.ID);
+    _stprintf(caption, TEXT("%s [%X]"),StationName,Station.ID);
   wf->SetCaption(caption);
 
 
