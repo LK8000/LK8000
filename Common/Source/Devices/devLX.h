@@ -84,6 +84,7 @@ class DevLX : public DevBase
     /// Parses LXWP3 sentence.
     static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
+    static bool GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 }; // DevLX
 
 //______________________________________________________________________________

@@ -52,10 +52,10 @@ uint uTimeout =0;
 /// polynom for LX data CRC
 #define LX_CRC_POLY 0x69
 #define QNH_OR_ELEVATION
-TCHAR m_Filename[64];
+TCHAR m_Filename[19];
 uint m_CurLine =0;
 
-#define MAX_NMEA_PAR_LEN    30
+#define MAX_NMEA_PAR_LEN    28
 #define MAX_VAL_STR_LEN    60
 
 int iRxUpdateTime=0;
@@ -475,11 +475,28 @@ BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
 }
 
 
-BOOL DevLXNanoIII::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
+BOOL DevLXNanoIII::SetDataText( PDeviceDescriptor_t d, ValueStringIndex Idx,  const TCHAR ValueText[])
 {
+	bool res = false;
+if(d)
+ if( Port() == d->PortNumber)
+ {
   CritSec_LXDebugStr.lock();
   _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
   CritSec_LXDebugStr.unlock();
+	res = true;
+ }
+  return res;
+}
+
+BOOL DevLXNanoIII::ClearDataText( ValueStringIndex Idx )
+{
+
+ {
+  CritSec_LXDebugStr.lock();
+  _tcsncpy(LxValueStr[Idx] , _T(""), MAX_VAL_STR_LEN);
+  CritSec_LXDebugStr.unlock();
+ }
   return true;
 }
 
@@ -1200,23 +1217,24 @@ void DevLXNanoIII::OnValuesClicked(WndButton* pWnd) {
     }
     
     StartupStore(_T(" Nano3 CLEAR VALUES %s"), NEWLINE);
-    SetDataText( _QNH,   _T(""));    
-    SetDataText( _MC,    _T(""));
-    SetDataText( _BUGS,  _T(""));
-    SetDataText( _BAL,   _T(""));
-    SetDataText( _STF,   _T(""));
-    SetDataText( _WIND,  _T(""));
-    SetDataText( _BARO,  _T(""));
-    SetDataText( _VARIO, _T(""));
-    SetDataText( _SPEED, _T(""));
-    SetDataText( _R_TRGT,_T(""));
-    SetDataText( _GFORCE,_T(""));
-    SetDataText( _OAT,   _T(""));
-    SetDataText( _BAT1,  _T(""));
-    SetDataText( _BAT2,  _T(""));
-    SetDataText( _POLAR, _T(""));
-    SetDataText( _DIRECT,_T(""));
-    SetDataText( _T_TRGT,_T(""));
+    devSetAdvancedMode(m_pDevice,false);
+    ClearDataText( _QNH   );    
+    ClearDataText( _MC    );
+    ClearDataText( _BUGS  );
+    ClearDataText( _BAL   );
+    ClearDataText( _STF   );
+    ClearDataText( _WIND  );
+    ClearDataText( _BARO  );
+    ClearDataText( _VARIO );
+    ClearDataText( _SPEED );
+    ClearDataText( _R_TRGT);
+    ClearDataText( _GFORCE);
+    ClearDataText( _OAT   );
+    ClearDataText( _BAT1  );
+    ClearDataText( _BAT2  );
+    ClearDataText( _POLAR );
+    ClearDataText( _DIRECT);
+    ClearDataText( _T_TRGT);
   }
 }
 
@@ -1415,7 +1433,7 @@ double fDir,fTmp,airspeed=0;
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"),fTmp);
-        SetDataText(_SPEED,   szTmp);
+        SetDataText( d,_SPEED,   szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
       {
@@ -1430,7 +1448,7 @@ double fDir,fTmp,airspeed=0;
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp);
-        SetDataText( _BARO,   szTmp);
+        SetDataText( d, _BARO,   szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
       {
@@ -1446,7 +1464,7 @@ double fDir,fTmp,airspeed=0;
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp/TOKPH);
-        SetDataText( _VARIO,   szTmp);
+        SetDataText( d, _VARIO,   szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
       {
@@ -1462,7 +1480,7 @@ double fDir,fTmp,airspeed=0;
     if(Values(d))
     { TCHAR szTmp[MAX_NMEA_LEN];
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
-      SetDataText( _WIND,   szTmp);
+      SetDataText( d, _WIND,   szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
     {
@@ -1582,7 +1600,7 @@ int iTmp;
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s ($LXWP2)"),fTmp);
-        SetDataText( _MC,   szTmp);
+        SetDataText( d, _MC,   szTmp);
       }
       Nano3_bValid = true;
       if(IsDirInput(PortIO[d->PortNumber].MCDir))
@@ -1611,7 +1629,7 @@ int iTmp;
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%5.2f = %3.0f%% ($LXWP2)"),fTmp,(fBALPerc*100.0));
-        SetDataText(_BAL,  szTmp);
+        SetDataText( d, _BAL,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
       {
@@ -1636,7 +1654,7 @@ int iTmp;
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp);
-        SetDataText(_BUGS,  szTmp);
+        SetDataText( d,_BUGS,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
       {
@@ -1664,7 +1682,7 @@ int iTmp;
       {
           TCHAR szTmp[MAX_NMEA_LEN];
           _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
-          SetDataText(  _POLAR,  szTmp);
+          SetDataText( d,  _POLAR,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
       {
@@ -1774,7 +1792,7 @@ devSetAdvancedMode(d,true);
       if(Values(d))
       {
         _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f %5.2f %5.2f ($PLXVF)"),fZ,fY,fX);
-        SetDataText( _GFORCE,  szTmp);
+        SetDataText( d, _GFORCE,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
       {
@@ -1792,7 +1810,7 @@ devSetAdvancedMode(d,true);
     if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0fkm/h ($PLXVF)"),airspeed*TOKPH);
-      SetDataText( _SPEED,  szTmp);
+      SetDataText( d, _SPEED,  szTmp);
     }
 //  airspeed = 135.0/TOKPH;
     if(IsDirInput(PortIO[d->PortNumber].SPEEDDir ))
@@ -1808,7 +1826,7 @@ devSetAdvancedMode(d,true);
     if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.0fm ($PLXVF)"),alt);
-      SetDataText(_BARO,  szTmp);
+      SetDataText( d,_BARO,  szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].BARODir))
     {
@@ -1825,7 +1843,7 @@ devSetAdvancedMode(d,true);
     if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s ($PLXVF)"),alt);
-      SetDataText(_VARIO,  szTmp);
+      SetDataText( d,_VARIO,  szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].VARIODir))
     {
@@ -1842,9 +1860,9 @@ devSetAdvancedMode(d,true);
     if(Values(d))
     {
       if(iTmp == 1)
-        SetDataText( _STF,  _T("STF ($PLXVF)"));
+        SetDataText( d, _STF,  _T("STF ($PLXVF)"));
       else
-        SetDataText( _STF,  _T("VARIO ($PLXVF)"));
+        SetDataText( d, _STF,  _T("VARIO ($PLXVF)"));
     }
 
     static int  iOldVarioSwitch=0;
@@ -1885,7 +1903,7 @@ iS_SeriesTimeout = 30;
     if(Values(d))
     {
       _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.1f°C ($PLXVS)"),OAT);
-      SetDataText( _OAT,  szTmp);
+      SetDataText( d, _OAT,  szTmp);
     }
 
     if(IsDirInput(PortIO[d->PortNumber].OATDir))
@@ -1900,7 +1918,7 @@ iS_SeriesTimeout = 30;
     if(Values(d))
     {
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV ($PLXVS)"),Batt);
-      SetDataText( _BAT1,  szTmp);
+      SetDataText( d, _BAT1,  szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
     {
@@ -1941,11 +1959,12 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     
     NMEAParser::ExtractParameter(sentence,szTmp2,2);
     double newQNH = StrToDouble(szTmp2,NULL)/100.0;
-    SetDataText( _QNH,   szTmp2);
+	  _sntprintf(szTmp1,MAX_NMEA_LEN, TEXT("%6.1f $PLXV"),newQNH);
+    SetDataText( d, _QNH,   szTmp1);
     if(IsDirInput(PortIO[d->PortNumber].QNHDir))
     {
       UpdateQNH(newQNH);
-      StartupStore(_T("Nano3 QNH: %s"),szTmp2);
+      StartupStore(_T("Nano3 QNH: %s"),szTmp1);
     }
     return true;
   }
@@ -1967,7 +1986,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2f PLXV0"),fTmp);
-        SetDataText( _MC,  szTmp);
+        SetDataText( d, _MC,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].MCDir))
       {
@@ -2001,7 +2020,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN,_T("%2.1f %3.0f PLXV0"),fTmp, fNewBal);
-        SetDataText(_BAL,  szTmp);
+        SetDataText( d,_BAL,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BALDir))
       {
@@ -2033,7 +2052,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       {
         TCHAR szTmp[20];
         _sntprintf(szTmp, std::size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
-        SetDataText(_BUGS,  szTmp);
+        SetDataText( d,_BUGS,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BUGDir))
       {
@@ -2236,7 +2255,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
 #endif
   }
 
-  SetDataText( _T_TRGT,  szName);
+  SetDataText( d, _T_TRGT,  szName);
   DevLXNanoIII::SendNmea(d,szTmp);
 
 return(true);
@@ -2250,47 +2269,15 @@ BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     return false;
   }
 
-TCHAR  szTmp[MAX_NMEA_LEN];
-
-double fTmp;
-  NMEAParser::ExtractParameter(sentence,szTmp,4);
-
-
-    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-      Alternate2 = -1;                 // clear external =re-enable!
-
-
-  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
-
-  ParToDouble(sentence, 5, &fTmp);
-  double DegLat = (double)((int) (fTmp/100.0));
-  double MinLat =  fTmp- (100.0*DegLat);
-  double Latitude = DegLat+MinLat/60.0;
-  TCHAR NoS;
-  NMEAParser::ExtractParameter(sentence,&NoS,6);
-  if (NoS==_T('S')) {
-    Latitude *= -1;
-  }
-
-  ParToDouble(sentence, 7, &fTmp);
-  double DegLon =  (double) ((int) (fTmp/100.0));
-  double MinLon =  fTmp- (100.0*DegLon);
-  double Longitude = DegLon+MinLon/60.0;
-  TCHAR EoW;
-  NMEAParser::ExtractParameter(sentence,&EoW,8);
-  if (EoW==_T('W')) {
-    Longitude *= -1;
-  }
-  WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
-  WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
-  WayPointList[RESWP_EXT_TARGET].Altitude=0;  // GPRMB has no elevation information
-  Alternate2 = RESWP_EXT_TARGET;
+  DevLX::GPRMB( d,  sentence,  info);
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
-    SetDataText( _R_TRGT,  szTmp);
+    TCHAR  szTmp[MAX_NMEA_LEN];
+    LockTaskData();
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%s ($GPRMB)"), WayPointList[RESWP_EXT_TARGET].Name);
+    UnlockTaskData();
+    SetDataText( d, _R_TRGT,  szTmp);
   }
   return false;
 }
@@ -2304,21 +2291,14 @@ double fTmp;
   if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG)
      return false;
 
-  NMEAParser::ExtractParameter(sentence,szTmp,0);
-
-  if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-    Alternate2 = -1;                 // clear external =re-enable!
-
-  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
 
   ParToDouble(sentence, 1, &fTmp);
   double DegLat = (double)((int) (fTmp/100.0));
   double MinLat =  fTmp- (100.0*DegLat);
   double Latitude = DegLat+MinLat/60.0;
-  TCHAR NoS;
-  NMEAParser::ExtractParameter(sentence,&NoS,2);
-  if (NoS==_T('S')) {
+
+  NMEAParser::ExtractParameter(sentence,szTmp,2);
+  if (szTmp[0]==_T('S')) {
     Latitude *= -1;
   }
 
@@ -2326,22 +2306,29 @@ double fTmp;
   double DegLon =  (double) ((int) (fTmp/100.0));
   double MinLon =  fTmp- (100.0*DegLon);
   double Longitude = DegLon+MinLon/60.0;
-  TCHAR EoW;
-  NMEAParser::ExtractParameter(sentence,&EoW,4);
-  if (EoW==_T('W')) {
+
+  NMEAParser::ExtractParameter(sentence,szTmp,4);
+  if (szTmp[0]==_T('W')) {
     Longitude *= -1;
   }
-  WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
-  WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
 
-  ParToDouble(sentence, 5, &fTmp);
-  WayPointList[RESWP_EXT_TARGET].Altitude=fTmp;
-  Alternate2 = RESWP_EXT_TARGET;
+  NMEAParser::ExtractParameter(sentence,szTmp,0);
+  LockTaskData();
+  {
+    _sntprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), szTmp);
+    WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
+    WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
+
+    ParToDouble(sentence, 5, &fTmp);
+    WayPointList[RESWP_EXT_TARGET].Altitude=fTmp;
+    Alternate2 = RESWP_EXT_TARGET;
+  }
+  UnlockTaskData();
 
   if(Values(d))
   {
     _tcsncat(szTmp, _T(" ($PLXVTARG)"), std::size(szTmp) - _tcslen(szTmp));
-    SetDataText( _R_TRGT,  szTmp);
+    SetDataText( d, _R_TRGT,  szTmp);
   }
   return false;
 }
@@ -2370,7 +2357,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
       if(Values(d))
       {
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV ($PLXVC_INFO)"),Batt);
-        SetDataText(_BAT1,  szTmp);
+        SetDataText( d,_BAT1,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
       {
@@ -2383,7 +2370,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
       if(Values(d))
       {
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV (&PLXVC_INFO)"),Batt);
-        SetDataText( _BAT2,  szTmp);
+        SetDataText( d, _BAT2,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
       {
@@ -2395,3 +2382,12 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
 } // PLXVC
 
+    void DevLXNanoIII::Device(PDeviceDescriptor_t d) 
+	 {
+
+		 if(d) 
+			 StartupStore(TEXT("Config Device %i: %s"),d->PortNumber, d->Name);
+		 else
+			 StartupStore(TEXT("Remove Config Device %i: %s"),m_pDevice->PortNumber, m_pDevice->Name);
+		 m_pDevice = d;
+	 };
