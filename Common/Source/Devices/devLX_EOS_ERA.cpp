@@ -47,7 +47,7 @@ extern bool UpdateQNH(const double newqnh);
 #define BLOCK_SIZE 32
 #define _deb (0)
 
-PDeviceDescriptor_t DevLX_EOS_ERA::m_pDevice=NULL;
+
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;
 BOOL DevLX_EOS_ERA::m_bDeclare = false;
@@ -129,20 +129,6 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 //  ENL   : 0..999
 //  status: Stop=0,CanStop=1,Start=2
 
-
-BOOL  DevLX_EOS_ERA::Values( PDeviceDescriptor_t d)
-{
-  bool res = false;
-
-    if(d != NULL)
-      if( Port() == d->PortNumber)
-      {
-        if( Port() >= 0)   res = true;
-      }
-
-  return res;
-
-}
 
 
 
@@ -426,13 +412,6 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
 }
 
 
-BOOL DevLX_EOS_ERA::SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[])
-{
-  CritSec_LXDebugStr.lock();
-  _tcsncpy(LxValueStr[Idx] , ValueText, MAX_VAL_STR_LEN);
-  CritSec_LXDebugStr.unlock();
-  return true;
-}
 
 
 BOOL DevLX_EOS_ERA::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
@@ -1149,23 +1128,24 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
         if (wf) ShowData(wf, Device());
       }
     }
-    SetDataText( _QNH,   _T(""));
-    SetDataText( _MC,    _T(""));
-    SetDataText( _BUGS,  _T(""));
-    SetDataText( _BAL,   _T(""));
-    SetDataText( _STF,   _T(""));
-    SetDataText( _WIND,  _T(""));
-    SetDataText( _BARO,  _T(""));
-    SetDataText( _VARIO, _T(""));
-    SetDataText( _SPEED, _T(""));
-    SetDataText( _R_TRGT,_T(""));
-    SetDataText( _GFORCE,_T(""));
-    SetDataText( _OAT,   _T(""));
-    SetDataText( _BAT1,  _T(""));
-    SetDataText( _BAT2,  _T(""));
-    SetDataText( _POLAR, _T(""));
-    SetDataText( _DIRECT,_T(""));
-    SetDataText( _T_TRGT,_T(""));    
+    devSetAdvancedMode(m_pDevice,false);
+    ClearDataText( _QNH   );
+    ClearDataText( _MC    );
+    ClearDataText( _BUGS  );
+    ClearDataText( _BAL   );
+    ClearDataText( _STF   );
+    ClearDataText( _WIND  );
+    ClearDataText( _BARO  );
+    ClearDataText( _VARIO );
+    ClearDataText( _SPEED );
+    ClearDataText( _R_TRGT);
+    ClearDataText( _GFORCE);
+    ClearDataText( _OAT   );
+    ClearDataText( _BAT1  );
+    ClearDataText( _BAT2  );
+    ClearDataText( _POLAR );
+    ClearDataText( _DIRECT);
+    ClearDataText( _T_TRGT);
     SendNmea(Device(),_T("LXDT,GET,MC_BAL"));  // request new data
   }
 
@@ -1239,7 +1219,7 @@ double fDir,fTmp,airspeed=0;
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"),fTmp);
-        SetDataText(_SPEED,   szTmp);
+        SetDataText( d,_SPEED,   szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
       {
@@ -1254,7 +1234,7 @@ double fDir,fTmp,airspeed=0;
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp);
-        SetDataText( _BARO,   szTmp);
+        SetDataText( d, _BARO,   szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
       {
@@ -1270,7 +1250,7 @@ double fDir,fTmp,airspeed=0;
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp/TOKPH);
-        SetDataText( _VARIO,   szTmp);
+        SetDataText( d, _VARIO,   szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
       {
@@ -1286,7 +1266,7 @@ double fDir,fTmp,airspeed=0;
     if(Values(d))
     { TCHAR szTmp[MAX_NMEA_LEN];
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
-      SetDataText( _WIND,   szTmp);
+      SetDataText( d, _WIND,   szTmp);
     }
     if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
     {
@@ -1301,66 +1281,6 @@ double fDir,fTmp,airspeed=0;
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Parses LXWP1 sentence.
-///
-/// @param d         device descriptor
-/// @param sentence  received NMEA sentence
-/// @param info      GPS info to be updated
-///
-/// @retval true if the sentence has been parsed
-///
-//static
-BOOL DevLX_EOS_ERA::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
-{
-  // $LXWP1,serial number,instrument ID, software version, hardware
-  //   version,license string,NU*SC<CR><LF>
-  //
-  // instrument ID ID of LX1600
-  // serial number unsigned serial number
-  // software version float sw version
-  // hardware version float hw version
-  // license string (option to store a license of PDA SW into LX1600)
- // ParToDouble(sentence, 1, &MACCREADY);
-//  $LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
-#ifdef DEVICE_SERIAL
-TCHAR ctemp[MAX_NMEA_LEN];
-static int NoMsg=0;
-static int oldSerial=0;
-if(_tcslen(String) < 180)
-  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
-  {
-    NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
-    if(_tcslen(ctemp) < DEVNAMESIZE)
-      _tcsncpy(d->Name, ctemp, DEVNAMESIZE);
-    StartupStore(_T(". %s\n"),ctemp);
-
-    NMEAParser::ExtractParameter(String,ctemp,1);
-    d->SerialNumber= (int)StrToDouble(ctemp,NULL);
-    oldSerial = d->SerialNumber;
-    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
-    StartupStore(_T(". %s\n"),ctemp);
-
-    NMEAParser::ExtractParameter(String,ctemp,2);
-    d->SoftwareVer= StrToDouble(ctemp,NULL);
-    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
-    StartupStore(_T(". %s\n"),ctemp);
-
-    NMEAParser::ExtractParameter(String,ctemp,3);
-    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
-    StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
-    DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
-    DoStatusMessage(ctemp);
-  }
-  // nothing to do
-#endif
-  return(true);
-} // LXWP1()
-
 
 BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info )
 {
@@ -1373,7 +1293,7 @@ bool ret = false;
   {
     TCHAR szTmp[MAX_NMEA_LEN];
     _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s %s"),fTmp,info);
-    SetDataText( _MC,   szTmp);
+    SetDataText( d, _MC,   szTmp);
   }
   if(IsDirInput(PortIO[d->PortNumber].MCDir))
   {
@@ -1401,7 +1321,7 @@ bool ret = false;
       _sntprintf(szTmp,MAX_NMEA_LEN,  _T("STF %s"), info);
     else
       _sntprintf(szTmp,MAX_NMEA_LEN,  _T("VARIO %s"), info);      
-    SetDataText(_STF,  szTmp);
+    SetDataText( d,_STF,  szTmp);
   }
   if(IsDirInput(PortIO[d->PortNumber].STFDir  ))
   {
@@ -1438,7 +1358,7 @@ bool ret = false;
     if(WEIGHTS[2] > 0)
     {
       _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
-      SetDataText(_BAL,  szTmp);
+      SetDataText( d,_BAL,  szTmp);
     }
   }
   if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
@@ -1463,7 +1383,7 @@ bool ret = false;
   {
     TCHAR szTmp[MAX_NMEA_LEN];
     _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% %s"),fTmp, info);
-    SetDataText(_BUGS,  szTmp);
+    SetDataText( d,_BUGS,  szTmp);
   }
   if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
   {
@@ -1528,7 +1448,7 @@ if(!LX_EOS_ERA_bValid)
             if(Values(d))
             {
                _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
-               SetDataText(  _POLAR,  szTmp);
+               SetDataText( d, _POLAR,  szTmp);
             }
 
             if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
@@ -1585,9 +1505,9 @@ double fTmp;
     {
       switch(iTmp)
       {
-        case 0:  SetDataText( _STF, _T("MANUAL ($LXWP3)"));
-        case 1:  SetDataText( _STF, _T("VARIO ($LXWP3)"));
-        case 2:  SetDataText( _STF, _T("SPEED ($LXWP3)"));
+        case 0:  SetDataText( d,_STF, _T("MANUAL ($LXWP3)"));
+        case 1:  SetDataText( d,_STF, _T("VARIO ($LXWP3)"));
+        case 2:  SetDataText( d,_STF, _T("SPEED ($LXWP3)"));
       }
     }
 
@@ -1642,21 +1562,7 @@ double fTmp;
 
 
 
-BOOL DevLX_EOS_ERA::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
-// Sc  float (m/s)
-// Netto  float (m/s)
-// Relativ  float (m/s)
-// Distance float (m)
-// gl.dif  int (ft)
-// leg speed (km/h)
-// leg time (km/h)
-// integrator float (m/s)
-// flight time unsigned in seconds
-// battery voltage float (V)
-  return(true);
-} // LXWP4()
+
 
 
 
@@ -1696,8 +1602,9 @@ static int iNoFlights=0;
     {
       if(IsDirInput(PortIO[d->PortNumber].QNHDir))
       { 
-        _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
-        if(Values(d)) SetDataText( _QNH,   szTmp);
+        TCHAR szQNH[MAX_NMEA_LEN];
+        _stprintf( szQNH, _T("%6.1fhPa ($LXDT)"),fTmp);
+        if(Values(d)) SetDataText( d, _QNH,   szQNH);
         static double oldQNH = -1;
         if ( fabs( oldQNH - fTmp) > 0.1)
         {
@@ -1806,7 +1713,7 @@ double fTmp;
 
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
-     if(Values(d)) SetDataText(_OAT,  szTmp);
+     if(Values(d)) SetDataText( d,_OAT,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].OATDir))
     {
       info->OutsideAirTemperature = fTmp;
@@ -1815,7 +1722,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-    if(Values(d)) SetDataText(_BAT1,  szTmp);
+    if(Values(d)) SetDataText( d,_BAT1,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
     {
       info->ExtBatt1_Voltage = fTmp;	
@@ -1823,7 +1730,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
-     if(Values(d)) SetDataText(_BAT2,  szTmp);
+     if(Values(d)) SetDataText( d,_BAT2,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
     {
       info->ExtBatt2_Voltage = fTmp;	
@@ -1874,7 +1781,7 @@ if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
           _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($LXDT)"),fX,fY,fZ, fPitch, fRoll, fYaw, fSlip);
         else
           _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($LXDT)"),fX,fY,fZ);
-        SetDataText( _GFORCE,  szTmp);
+        SetDataText( d, _GFORCE,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
       {
@@ -2047,11 +1954,13 @@ TCHAR szName[MAX_VAL_STR_LEN];
 #endif
   }
 
-  if(Values(d)) SetDataText( _T_TRGT,  szName);
+  if(Values(d)) SetDataText( d, _T_TRGT,  szName);
   DevLX_EOS_ERA::SendNmea(d,szTmp);
 
 return(true);
 }
+
+
 
 
 BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
@@ -2059,16 +1968,16 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
         return false;
     }
 
-    TCHAR szTmp[MAX_NMEA_LEN];
+    TCHAR szTmp[MAX_NMEA_PAR_LEN];
 
-    double fTmp4, fTmp5, fTmp6, fTmp9;
+    double fLat, fLon, fAlt, fFlags;
     NMEAParser::ExtractParameter(sentence, szTmp, 3);
-    ParToDouble(sentence, 4, &fTmp4);  // latitude
-    ParToDouble(sentence, 5, &fTmp5);  // longitude
-    ParToDouble(sentence, 6, &fTmp6);  // altitude (elevation)
-//  ParToDouble(sentence, 7, &fTmp);  // distance (not needed)
-//  ParToDouble(sentence, 8, &fTmp);  // bearing  (not needed)
-    ParToDouble(sentence, 9, &fTmp9);   // landable?
+    ParToDouble(sentence, 4, &fLat);   // latitude
+    ParToDouble(sentence, 5, &fLon);   // longitude
+    ParToDouble(sentence, 6, &fAlt);   // altitude (elevation)
+//  ParToDouble(sentence, 7, &fTmp);   // distance (not needed)
+//  ParToDouble(sentence, 8, &fTmp);   // bearing  (not needed)
+    ParToDouble(sentence, 9, &fFlags); // landable?
 
   LockTaskData();
   {
@@ -2076,12 +1985,12 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
         Alternate2 = -1;                 // clear external =re-enable!
 
     _sntprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), szTmp);
-    WayPointList[RESWP_EXT_TARGET].Latitude = fTmp4 / 60000;
-    WayPointList[RESWP_EXT_TARGET].Longitude = fTmp5 / 60000;
-    WayPointList[RESWP_EXT_TARGET].Altitude = fTmp6;
+    WayPointList[RESWP_EXT_TARGET].Latitude  = fLat / 60000;
+    WayPointList[RESWP_EXT_TARGET].Longitude = fLon / 60000;
+    WayPointList[RESWP_EXT_TARGET].Altitude  = fAlt;
     Alternate2 = RESWP_EXT_TARGET;
 
-    if (fTmp9 > 0)
+    if (fFlags > 0)
         WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;
     else
         WayPointList[RESWP_EXT_TARGET].Flags = 0;
@@ -2092,67 +2001,12 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
   if(Values(d))
   {
     _tcsncat(szTmp, _T(" ($LXDT)"), std::size(szTmp) - _tcslen(szTmp));
-    SetDataText( _R_TRGT,  szTmp);
+    SetDataText( d, _R_TRGT,  szTmp);
   }
   return false;
 }
 
 
-
-
-BOOL DevLX_EOS_ERA::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-  if(PortIO[d->PortNumber].R_TRGTDir != TP_GPRMB) {
-    return false;
-  }
-
-TCHAR  szTmp[MAX_NMEA_LEN];
-
-double fTmp;
-  NMEAParser::ExtractParameter(sentence,szTmp,4);
-
-
-    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-      Alternate2 = -1;                 // clear external =re-enable!
-
-
-  _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
-
-  ParToDouble(sentence, 5, &fTmp);
-  double DegLat = (double)((int) (fTmp/100.0));
-  double MinLat =  fTmp- (100.0*DegLat);
-  double Latitude = DegLat+MinLat/60.0;
-
-  NMEAParser::ExtractParameter(sentence,szTmp,6);
-  if (szTmp[0]==_T('S')) {
-    Latitude *= -1;
-  }
-
-  ParToDouble(sentence, 7, &fTmp);
-  double DegLon =  (double) ((int) (fTmp/100.0));
-  double MinLon =  fTmp- (100.0*DegLon);
-  double Longitude = DegLon+MinLon/60.0;
-
-  NMEAParser::ExtractParameter(sentence,szTmp,8);
-  if (szTmp[0]==_T('W')) {
-    Longitude *= -1;
-  }
-  LockTaskData();
-  {
-    WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
-    WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
-    WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information
-    Alternate2 = RESWP_EXT_TARGET;
-  }
-  UnlockTaskData();
-  if(Values(d))
-  {
-    _tcsncat(szTmp, _T(" ($GPRMB)"), std::size(szTmp) - _tcslen(szTmp));
-    SetDataText( _R_TRGT,  szTmp);
-  }
-  return false;
-}
 
 
 

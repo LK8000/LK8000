@@ -121,7 +121,8 @@ class DevLXNanoIII : public DevLX
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
    static BOOL Values(PDeviceDescriptor_t d);
-   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
+   static BOOL ClearDataText( ValueStringIndex Idx );
+   static BOOL SetDataText(PDeviceDescriptor_t d, ValueStringIndex Idx,  const TCHAR ValueText[]);
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
    static void GetDirections(WndButton* pWnd);
    static BOOL ShowValues(void) {return m_bShowValues;};
@@ -133,7 +134,7 @@ class DevLXNanoIII : public DevLX
    static int Port(void) { if(m_pDevice) return m_pDevice->PortNumber; else return -1;};
 
    static PDeviceDescriptor_t Device(void) {return m_pDevice;};
-   static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
+   static void Device(PDeviceDescriptor_t d);
 
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
