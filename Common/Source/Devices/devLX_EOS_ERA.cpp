@@ -1627,8 +1627,8 @@ static int iNoFlights=0;
   }
   else
   if(_tcsncmp(szTmp, _T("FLIGHT_INFO"), 11) == 0)
-  { TCHAR FileName[50]= _T("FileName"), Pilot[50]= _T(""),Surname[50]= _T(""), Takeoff[50]= _T(""),Date[50]= _T(""),Landing[50]= _T(""),Type[50]= _T(""), Reg[50]= _T("");
-    StartupStore(TEXT("FLIGHT_INFO %s"), sentence);
+  { TCHAR FileName[50]= _T("FileName"), Pilot[20]= _T(""),Surname[20]= _T(""), Takeoff[30]= _T(""),Date[20]= _T(""),Landing[30]= _T(""),Type[20]= _T(""), Reg[20]= _T("");
+     StartupStore(TEXT("FLIGHT_INFO %s"), sentence);
 
     NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = (int) StrToDouble(Date,nullptr);
     NMEAParser::ExtractParameter(sentence, FileName ,3 );
@@ -1966,23 +1966,27 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
         return false;
     }
 
-    TCHAR szTmp[MAX_NMEA_PAR_LEN];
-
+    TCHAR szTmp[MAX_NMEA_PAR_LEN ];
+    TCHAR szTmp2[NAME_SIZE +2];
     double fLat, fLon, fAlt, fFlags;
     NMEAParser::ExtractParameter(sentence, szTmp, 3);
+		_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
     ParToDouble(sentence, 4, &fLat);   // latitude
     ParToDouble(sentence, 5, &fLon);   // longitude
     ParToDouble(sentence, 6, &fAlt);   // altitude (elevation)
 //  ParToDouble(sentence, 7, &fTmp);   // distance (not needed)
 //  ParToDouble(sentence, 8, &fTmp);   // bearing  (not needed)
     ParToDouble(sentence, 9, &fFlags); // landable?
+		
 
   LockTaskData();
   {
     if (Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
         Alternate2 = -1;                 // clear external =re-enable!
 
-    _sntprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), szTmp);
+
+	  LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
+
     WayPointList[RESWP_EXT_TARGET].Latitude  = fLat / 60000;
     WayPointList[RESWP_EXT_TARGET].Longitude = fLon / 60000;
     WayPointList[RESWP_EXT_TARGET].Altitude  = fAlt;

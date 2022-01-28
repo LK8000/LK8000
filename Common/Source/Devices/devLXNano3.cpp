@@ -40,7 +40,6 @@ extern bool UpdateQNH(const double newqnh);
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32
 
-
 PDeviceDescriptor_t DevLXNanoIII::m_pDevice=NULL;
 BOOL DevLXNanoIII::m_bShowValues = false;
 BOOL DevLXNanoIII::bIGC_Download = false;
@@ -2285,7 +2284,8 @@ BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
-TCHAR  szTmp[MAX_NMEA_LEN];
+TCHAR  szTmp[MAX_NMEA_PAR_LEN];
+TCHAR  szTmp2[MAX_NMEA_LEN+2];
 double fTmp;
 
   if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG)
@@ -2312,10 +2312,13 @@ double fTmp;
     Longitude *= -1;
   }
 
+	
   NMEAParser::ExtractParameter(sentence,szTmp,0);
+	_sntprintf(szTmp2, NAME_SIZE, TEXT("^%s"), szTmp);
   LockTaskData();
   {
-    _sntprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), szTmp);
+   
+		LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
     WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
     WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
 
