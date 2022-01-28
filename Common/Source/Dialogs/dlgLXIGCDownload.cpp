@@ -236,16 +236,18 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
     TCHAR PathAndFilename[MAX_PATH];
    
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
+    _tcscat(IGCFilename, _T(".IGC"));
     TCHAR Tmp[MAX_NMEA_LEN];
-    _sntprintf(Tmp, MAX_NMEA_LEN, _T("%s"),text1);     // missing
+    _tcscpy(Tmp, text1);     // missing
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-        _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), Tmp); // already copied
+        _tcscpy(text1,_T("✔ ")); // already copied
     } else {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-       _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), Tmp);// already copied
+			 _tcscpy(text1,_T("* "));// already copied
     }
+	_tcscat(text1,Tmp);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
                     static_cast<PixelScalar>(Sender->GetHeight()) };

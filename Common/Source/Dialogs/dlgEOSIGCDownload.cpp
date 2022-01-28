@@ -36,7 +36,7 @@
 int ReadEOS_IGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) ;
 static void UpdateList(void);
 
-TCHAR DownoadIGCFilename[MAX_PATH];
+TCHAR DownoadIGCFilename[MAX_NMEA_PAR_LEN];
 TCHAR szEOS_DL_StatusText[STATUS_TXT_LEN];
 volatile bool  bDlgShown = false; 
 
@@ -290,15 +290,16 @@ static void OnMultiSelectListPaintListItem(WindowControl *Sender, LKSurface &Sur
     _tcscat(IGCFilename, _T(".IGC"));
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
     TCHAR Tmp[MAX_NMEA_LEN];
-    _sntprintf(Tmp, MAX_NMEA_LEN, _T("%s"),text1);     // missing
+    _tcscpy(Tmp, text1);     // missing
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-        _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), Tmp); // already copied
+       _tcscpy(text1,_T("✔ ")); // already copied
     } else {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-       _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), Tmp);// already copied
+       _tcscpy(text1,_T("* "));// already copied
     }
+	_tcscat(text1,Tmp);
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
                     static_cast<PixelScalar>(Sender->GetHeight()) };

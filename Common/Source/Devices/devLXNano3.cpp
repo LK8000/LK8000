@@ -54,7 +54,7 @@ uint uTimeout =0;
 TCHAR m_Filename[19];
 uint m_CurLine =0;
 
-#define MAX_NMEA_PAR_LEN    28
+
 #define MAX_VAL_STR_LEN    60
 
 int iRxUpdateTime=0;
@@ -2286,7 +2286,7 @@ BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 TCHAR  szTmp[MAX_NMEA_PAR_LEN];
-TCHAR  szTmp2[MAX_NMEA_LEN+2];
+
 double fTmp;
 
   if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG)
@@ -2315,7 +2315,8 @@ double fTmp;
 
 	
   NMEAParser::ExtractParameter(sentence,szTmp,0);
-	_sntprintf(szTmp2, NAME_SIZE, TEXT("^%s"), szTmp);
+  TCHAR szTmp2[NAME_SIZE +2];
+	_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
   LockTaskData();
   {
    
