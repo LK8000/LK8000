@@ -57,7 +57,7 @@ BOOL DevLX_EOS_ERA::m_bTriggered = false;
 
 
 
-#define MAX_NMEA_PAR_LEN    30
+
 #define MAX_VAL_STR_LEN    60
 
 
@@ -1966,11 +1966,8 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
         return false;
     }
 
-    TCHAR szTmp[MAX_NMEA_PAR_LEN ];
-    TCHAR szTmp2[NAME_SIZE +2];
     double fLat, fLon, fAlt, fFlags;
-    NMEAParser::ExtractParameter(sentence, szTmp, 3);
-		_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
+
     ParToDouble(sentence, 4, &fLat);   // latitude
     ParToDouble(sentence, 5, &fLon);   // longitude
     ParToDouble(sentence, 6, &fAlt);   // altitude (elevation)
@@ -1978,6 +1975,10 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
 //  ParToDouble(sentence, 8, &fTmp);   // bearing  (not needed)
     ParToDouble(sentence, 9, &fFlags); // landable?
 		
+    TCHAR szTmp[MAX_NMEA_PAR_LEN];		
+    TCHAR szTmp2[NAME_SIZE +2];
+    NMEAParser::ExtractParameter(sentence, szTmp, 3);
+		_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
 
   LockTaskData();
   {
@@ -1985,7 +1986,7 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
         Alternate2 = -1;                 // clear external =re-enable!
 
 
-	  LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
+	LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
 
     WayPointList[RESWP_EXT_TARGET].Latitude  = fLat / 60000;
     WayPointList[RESWP_EXT_TARGET].Longitude = fLon / 60000;

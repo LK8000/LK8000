@@ -159,7 +159,7 @@ if(_tcslen(String) < 180)
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
     if(_tcslen(ctemp) < DEVNAMESIZE)
-	  _stprintf(d->Name, _T("%s"),ctemp);
+	  	LK_tcsncpy(d->Name, ctemp, DEVNAMESIZE);
     StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
@@ -265,7 +265,7 @@ bool DevLX::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
 
-TCHAR  szTmp[MAX_NMEA_LEN];
+TCHAR  szTmp[MAX_NMEA_PAR_LEN];
 
 double fTmp;
 
@@ -290,11 +290,13 @@ double fTmp;
     Longitude *= -1;
   }
 	
-	
-  NMEAParser::ExtractParameter(sentence,szTmp,4);   
+  NMEAParser::ExtractParameter(sentence,szTmp,4);
+  TCHAR szTmp2[NAME_SIZE +2];
+	_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
+
   LockTaskData();
   {
-	  _sntprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT(">%s"), szTmp);
+	  LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
     WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
     WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
     WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information

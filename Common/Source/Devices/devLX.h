@@ -17,6 +17,7 @@
 
 //___________________________________________________________class_declarations_
 
+#define MAX_NMEA_PAR_LEN    30
 
 typedef enum {
   _MC   =0,
