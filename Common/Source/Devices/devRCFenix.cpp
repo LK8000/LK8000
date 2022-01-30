@@ -491,7 +491,7 @@ void DevRCFenix::OnCloseClicked(WndButton* pWnd)
 
 
 void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
-#ifdef EEE
+#ifdef EEEEE
   WndForm * wf = pWnd->GetParentWndForm();
   if(wf)
   {
@@ -508,27 +508,27 @@ void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
         if (wf) ShowData(wf, Device());
       }
     }
-    SetDataText( _QNH,   _T(""));
-    SetDataText( _MC,    _T(""));
-    SetDataText( _BUGS,  _T(""));
-    SetDataText( _BAL,   _T(""));
-    SetDataText( _STF,   _T(""));
-    SetDataText( _WIND,  _T(""));
-    SetDataText( _BARO,  _T(""));
-    SetDataText( _VARIO, _T(""));
-    SetDataText( _SPEED, _T(""));
-    SetDataText( _R_TRGT,_T(""));
-    SetDataText( _GFORCE,_T(""));
-    SetDataText( _OAT,   _T(""));
-    SetDataText( _BAT1,  _T(""));
-    SetDataText( _BAT2,  _T(""));
-    SetDataText( _POLAR, _T(""));
-    SetDataText( _DIRECT,_T(""));
-    SetDataText( _T_TRGT,_T(""));   
-		
+    devSetAdvancedMode(m_pDevice,false);
+    ClearDataText( _QNH   );
+    ClearDataText( _MC    );
+    ClearDataText( _BUGS  );
+    ClearDataText( _BAL   );
+    ClearDataText( _STF   );
+    ClearDataText( _WIND  );
+    ClearDataText( _BARO  );
+    ClearDataText( _VARIO );
+    ClearDataText( _SPEED );
+    ClearDataText( _R_TRGT);
+    ClearDataText( _GFORCE);
+    ClearDataText( _OAT   );
+    ClearDataText( _BAT1  );
+    ClearDataText( _BAT2  );
+    ClearDataText( _POLAR );
+    ClearDataText( _DIRECT);
+    ClearDataText( _T_TRGT);
   }
+
 #endif
-		
 		DevLX_EOS_ERA::OnValuesClicked(pWnd);
     SendNmea(Device(),_T("RCDT,GET,MC_BAL"));  // request new data
 }
@@ -576,7 +576,7 @@ static int iNoFlights=0;
       if(IsDirInput(PortIO[d->PortNumber].QNHDir))
       { 
         _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
-        if(Values(d)) SetDataText( _QNH,   szTmp);
+        if(Values(d)) SetDataText( d, _QNH,   szTmp);
         static double oldQNH = -1;
         if ( fabs( oldQNH - fTmp) > 0.1)
         {
@@ -652,7 +652,7 @@ double fTmp;
 
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($RCDT)"),fTmp);
-     if(Values(d)) SetDataText(_OAT,  szTmp);
+     if(Values(d)) SetDataText(d, _OAT,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].OATDir))
     {
       info->OutsideAirTemperature = fTmp;
@@ -661,7 +661,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($RCDT)"),fTmp);
-    if(Values(d)) SetDataText(_BAT1,  szTmp);
+    if(Values(d)) SetDataText( d, _BAT1,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
     {
       info->ExtBatt1_Voltage = fTmp;	
@@ -669,7 +669,7 @@ double fTmp;
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($RCDT)"),fTmp);
-     if(Values(d)) SetDataText(_BAT2,  szTmp);
+     if(Values(d)) SetDataText( d, _BAT2,  szTmp);
     if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
     {
       info->ExtBatt2_Voltage = fTmp;	
@@ -720,7 +720,7 @@ if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
           _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($RCDT)"),fX,fY,fZ, fPitch, fRoll, fYaw, fSlip);
         else
           _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($RCDT)"),fX,fY,fZ);
-        SetDataText( _GFORCE,  szTmp);
+        SetDataText( d, _GFORCE,  szTmp);
       }
       if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
       {
@@ -893,7 +893,7 @@ TCHAR szName[MAX_VAL_STR_LEN];
 #endif
   }
 
-  if(Values(d)) SetDataText( _T_TRGT,  szName);
+  if(Values(d)) SetDataText( d, _T_TRGT,  szName);
   DevRCFenix::SendNmea(d,szTmp);
 
 return(true);
