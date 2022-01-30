@@ -91,7 +91,11 @@ void NMEAParser::ExtractParameter(const TCHAR *Source,
              (*sptr != '*') &&
              (*sptr != '\0') )
         {
-          Destination[dest_index] = *sptr;
+          if(IsASCII((char)*sptr)) {
+            Destination[dest_index] = *sptr;
+          }  else  {
+            Destination[dest_index] = '_'; 
+					}
           ++sptr; ++dest_index;
         }
       Destination[dest_index] = '\0';
