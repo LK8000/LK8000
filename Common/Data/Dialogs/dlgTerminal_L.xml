@@ -7,7 +7,7 @@
     <WndButton Name="cmdSelectStop" Caption="_@M670_" X="158" Y="2" Width="77"  Height="28" Font="2" Tag="3" />
     <WndButton Name="cmdClose" Caption="_@M186_" X="237" Y="2" Width="77"  Height="28" Font="2" Tag="3" />
 
-    <WndListFrame Name="frmTTYList" X="1" Y="32" Width="-1" Height="160" Font="2" OnListInfo="OnTTYListInfo">
+    <WndListFrame Name="frmTTYList" X="1" Y="32" Width="-1" Height="160" Font="2" >
     <WndOwnerDrawFrame Name="frmTTYListEntry" X="1" Y="1" Width="-1" Height="160" Font="2"  OnPaint="OnPaintListItem"/>
     </WndListFrame>
     <WndProperty Name="prpSendText" Caption="_@M711_"  X="2" Y="197"  Width="220" Height="22" CaptionWidth="30" Font="2" Keyboard="1">
