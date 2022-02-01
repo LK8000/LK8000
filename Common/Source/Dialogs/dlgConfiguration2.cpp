@@ -14,10 +14,8 @@
 
 extern int page2mode(void);
 
-void OnInfoBoxHelp(WindowControl * Sender){
-
-  WndProperty *wp = (WndProperty*)Sender;
-  int type = wp->GetDataField()->GetAsInteger();
+void OnInfoBoxHelp(WndProperty * Sender){
+  int type = Sender->GetDataField()->GetAsInteger();
   TCHAR caption[100];
   TCHAR mode[20];
   TCHAR shelp[20];
@@ -46,7 +44,7 @@ void OnInfoBoxHelp(WindowControl * Sender){
     return;
   }
 
-  _stprintf(caption, TEXT("InfoBox %s in %s mode"), wp->GetCaption(), mode);
+  _stprintf(caption, TEXT("InfoBox %s in %s mode"), Sender->GetCaption(), mode);
 
   _stprintf(shelp,_T("_@H%d_"),type+800);
   dlgHelpShowModal(caption, shelp);

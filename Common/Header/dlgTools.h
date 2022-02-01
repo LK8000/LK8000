@@ -15,7 +15,7 @@
 
 
 using callback_variant = std::variant<
-         WindowControl::OnHelpCallback_t,
+         WndProperty::OnHelpCallback_t,
          WndListFrame::OnListCallback_t,
          WndOwnerDrawFrame::OnPaintCallback_t,
          WndButton::ClickNotifyCallback_t,
@@ -32,7 +32,7 @@ CallBackTableEntry_t callback_entry(const char* Name, Callback_t&& callback) {
   return { Name, std::forward<Callback_t>(callback) };
 }
 
-#define OnHelpCallbackEntry(x) callback_entry<WindowControl::OnHelpCallback_t>(#x, x)
+#define OnHelpCallbackEntry(x) callback_entry<WndProperty::OnHelpCallback_t>(#x, x)
 
 #define OnListCallbackEntry(x) callback_entry<WndListFrame::OnListCallback_t>(#x, x)
 

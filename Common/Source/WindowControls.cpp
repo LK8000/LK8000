@@ -36,8 +36,6 @@
 #include "Screen/SubCanvas.hpp"
 #endif
 
-using std::placeholders::_1;
-
 // Old selector style has corners smoothed badly looking
 // #define USE_OLD_SELECTOR
 
@@ -93,8 +91,8 @@ static bool KeyTimer(bool isdown, unsigned thekey) {
 }
 
 
-DataFieldFileReader::DataFieldFileReader(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess):
-  DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
+DataFieldFileReader::DataFieldFileReader(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t&& OnDataAccess):
+  DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)) {
 
   SupportCombo=true;
   (mOnDataAccess)(this, daGet);
@@ -409,7 +407,7 @@ void DataField::SetData(void){
     (void) Mode;
   }
 
-DataField::DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess) : mOwnerProperty(Owner) {
+DataField::DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t&& OnDataAccess) : mOwnerProperty(Owner) {
   mUsageCounter=0;
   mOnDataAccess = OnDataAccess;
   
@@ -1213,14 +1211,9 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
 			     int X, int Y, int Width, int Height, bool Visible)
                 : WndCtrlBase(Name)
 {
-
-  mHelpText = nullptr;
-
   mCanFocus = false;
 
   mReadOnly = false;
-
-  mOnHelpCallback = nullptr;
 
   mOwner = Owner?Owner->GetClientArea():NULL;
   // setup Master Window (the owner of all)
@@ -1262,11 +1255,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   }
 }
 
-WindowControl::~WindowControl(void){
-  if (mHelpText) {
-    free(mHelpText);
-    mHelpText = nullptr;
-  }
+WindowControl::~WindowControl(){
 }
 
 void WindowControl::Destroy(){
@@ -1476,17 +1465,6 @@ void WindowControl::ForEachChild(std::function<void(WindowControl*)> visitor) {
   }
 }
 
-
-void WindowControl::SetHelpText(const TCHAR *Value) {  
-  if (mHelpText) {
-    free(mHelpText);
-    mHelpText = nullptr;
-  }
-  if (Value && Value[0]) {
-    mHelpText = _tcsdup(Value);
-  }
-}
-
 void WindowControl::SetCaption(const TCHAR *Value) {
     const TCHAR* szCaption = GetWndText();
     if (Value == NULL) {
@@ -1609,18 +1587,6 @@ void WindowControl::PaintSelector(LKSurface& Surface){
     Surface.SelectObject(oldPen);
   }
 #endif
-}
-
-int WindowControl::OnHelp() {
-    if (mHelpText) {
-      dlgHelpShowModal(GetWndText(), mHelpText);
-      return(1);
-    }
-    if (mOnHelpCallback) {
-      (mOnHelpCallback)(this);
-      return(1);
-    }
-    return(0);
 }
 
 void WindowControl::Paint(LKSurface& Surface) {
@@ -1997,10 +1963,9 @@ bool WndForm::OnKeyDownNotify(Window* pWnd, unsigned KeyCode) {
 // WndButton
 //-----------------------------------------------------------
 
-WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t Function):
-      WindowControl(Parent, Name, X, Y, Width, Height){
-
-  SetOnClickNotify(Function);
+WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t&& Function):
+      WindowControl(Parent, Name, X, Y, Width, Height), mOnClickNotify(std::move(Function))
+{
   mDown = false;
   mDefault = false;
   mCanFocus = true;
@@ -2212,14 +2177,11 @@ void WndButton::Paint(LKSurface& Surface){
   }
 }
 
-WndProperty::WndProperty(WindowControl *Parent, 
-			 TCHAR *Name, 
-			 TCHAR *Caption, 
-			 int X, int Y, 
-			 int Width, int Height, 
-			 int CaptionWidth,
-			 int MultiLine):
-  WindowControl(Parent, Name, X, Y, Width, Height){
+WndProperty::WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, 
+                          int X, int Y,  int Width, int Height, int CaptionWidth,
+                          int MultiLine, OnHelpCallback_t&& Function) 
+    : WindowControl(Parent, Name, X, Y, Width, Height), mOnHelpCallback(std::move(Function))
+{
 
   if(Caption) {
       SetCaption(Caption);
@@ -2251,7 +2213,11 @@ WndProperty::WndProperty(WindowControl *Parent,
 };
 
 
-WndProperty::~WndProperty(void){
+WndProperty::~WndProperty(void) {
+  if (mHelpText) {
+    free(mHelpText);
+    mHelpText = nullptr;
+  }
 }
 
 void WndProperty::Destroy(void){
@@ -2266,6 +2232,29 @@ void WndProperty::Destroy(void){
   }
   WindowControl::Destroy();
 }
+
+void WndProperty::SetHelpText(const TCHAR *Value) {  
+  if (mHelpText) {
+    free(mHelpText);
+    mHelpText = nullptr;
+  }
+  if (Value && Value[0]) {
+    mHelpText = _tcsdup(Value);
+  }
+}
+
+int WndProperty::OnHelp() {
+    if (mHelpText) {
+      dlgHelpShowModal(GetWndText(), mHelpText);
+      return(1);
+    }
+    if (mOnHelpCallback) {
+      (mOnHelpCallback)(this);
+      return(1);
+    }
+    return(0);
+}
+
 
 void WndProperty::SetText(const TCHAR *Value) {
     if ( !Value && mValue != _T("")) {
@@ -2646,7 +2635,7 @@ UINT WndFrame::SetCaptionStyle(UINT Value) {
 
 WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, 
                            int Width, int Height, 
-                           OnListCallback_t OnListCallback):
+                           OnListCallback_t&& OnListCallback):
   WndFrame(Owner, Name, X, Y, Width, Height)
 {
   mListInfo.ScrollIndex = 0;

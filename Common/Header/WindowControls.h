@@ -112,7 +112,7 @@ class DataField{
 
     using DataAccessCallback_t = std::function<void(DataField*, DataAccessKind_t)>;
 
-    DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
+    DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t&& OnDataAccess);
     virtual ~DataField(void){};
 
 	virtual void Clear();
@@ -214,8 +214,8 @@ class DataFieldBoolean:public DataField{
     TCHAR mTextFalse[FORMATSIZE+1];
 
   public:
-    DataFieldBoolean(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, DataAccessCallback_t OnDataAccess):
-      DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
+    DataFieldBoolean(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, DataAccessCallback_t&& OnDataAccess):
+      DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)){
 		  if (Default) {mValue=true;} else {mValue=false;}
       _tcscpy(mTextTrue, TextTrue);
       _tcscpy(mTextFalse, TextFalse);
@@ -266,8 +266,8 @@ class DataFieldEnum: public DataField {
   public:
     DataFieldEnum(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat,
       int Default,
-      DataAccessCallback_t OnDataAccess = nullptr):
-      DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
+      DataAccessCallback_t&& OnDataAccess):
+      DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)) {
       SupportCombo=true;
 
       if (Default>=0)
@@ -329,7 +329,7 @@ public:
   file_list_t file_list = {{nullptr, nullptr}}; // initialize with first blank entry
 
  public:
-  DataFieldFileReader(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t OnDataAccess=nullptr);
+  DataFieldFileReader(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t&& OnDataAccess);
   ~DataFieldFileReader();
 
 	void Clear() override;
@@ -431,8 +431,8 @@ class DataFieldInteger:public DataField{
   protected:
     int SpeedUp(bool keyup);
   public:
-    DataFieldInteger(WndProperty& Owner, const char* EditFormat, const char* DisplayFormat, int Min, int Max, int Default, int Step, DataAccessCallback_t OnDataAccess=nullptr):
-      DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
+    DataFieldInteger(WndProperty& Owner, const char* EditFormat, const char* DisplayFormat, int Min, int Max, int Default, int Step, DataAccessCallback_t&& OnDataAccess):
+      DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)) {
       mMin = Min;
       mMax = Max;
       mValue = Default;
@@ -485,8 +485,8 @@ class DataFieldFloat:public DataField{
 
 
   public:
-    DataFieldFloat(WndProperty& Owner, const char* EditFormat, const char* DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
-      DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
+    DataFieldFloat(WndProperty& Owner, const char* EditFormat, const char* DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t&& OnDataAccess):
+      DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)){
       mMin = Min;
       mMax = Max;
       mValue = Default;
@@ -527,8 +527,8 @@ class DataFieldFloat:public DataField{
 
 class DataFieldTime : public DataFieldFloat {
 public:
-  DataFieldTime(WndProperty& Owner, const char* EditFormat, const char* DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t OnDataAccess=nullptr):
-          DataFieldFloat(Owner, EditFormat, DisplayFormat, Min, Max, Default, Step, Fine, OnDataAccess) {}
+  DataFieldTime(WndProperty& Owner, const char* EditFormat, const char* DisplayFormat, double Min, double Max, double Default, double Step, int Fine, DataAccessCallback_t&& OnDataAccess):
+          DataFieldFloat(Owner, EditFormat, DisplayFormat, Min, Max, Default, Step, Fine, std::move(OnDataAccess)) {}
 
   const TCHAR *GetAsDisplayString(void) override;
 };
@@ -541,8 +541,8 @@ class DataFieldString:public DataField{
     TCHAR mValue[EDITSTRINGSIZE];
 
   public:
-    DataFieldString(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, const TCHAR *Default, DataAccessCallback_t OnDataAccess=nullptr):
-      DataField(Owner, EditFormat, DisplayFormat, OnDataAccess){
+    DataFieldString(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, const TCHAR *Default, DataAccessCallback_t&& OnDataAccess):
+      DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)){
       _tcscpy(mValue, Default);
       SupportCombo=false;
     };
@@ -569,8 +569,6 @@ class WndForm;
 class WindowControl : public WndCtrlBase {
     friend class WndForm;
     friend class WndProperty;
- public:
-    using OnHelpCallback_t = std::function<void(WindowControl*)>;
 
   private:
 
@@ -583,10 +581,6 @@ class WindowControl : public WndCtrlBase {
     LKColor mColorFore;
     LKBrush mBrushBk;
     LKBrush mBrushBorder;
-
-    TCHAR *mHelpText;
-
-    OnHelpCallback_t mOnHelpCallback;
 
     int mTag;
     bool mReadOnly;
@@ -614,12 +608,6 @@ class WindowControl : public WndCtrlBase {
     virtual void AddClient(WindowControl *Client);
 
     virtual void Paint(LKSurface& Surface);
-
-    virtual int OnHelp();
-
-    void SetOnHelpCallback(OnHelpCallback_t Function){
-      mOnHelpCallback = Function;
-    }
 
     WindowControl *GetCanFocus(void);
     bool SetCanFocus(bool Value);
@@ -649,8 +637,6 @@ class WindowControl : public WndCtrlBase {
     void SetBorderColor(const LKColor& Color) { mBrushBorder.Create(Color);}
 
     virtual void SetCaption(const TCHAR *Value);
-    void SetHelpText(const TCHAR *Value);
-    bool HasHelpText() const { return (mHelpText||mOnHelpCallback); }
 
     virtual WindowControl* GetClientArea(void) { return (this); }
 
@@ -754,15 +740,15 @@ class WndListFrame:public WndFrame{
     using OnListCallback_t = std::function<void(WndListFrame*, ListInfo_t*)>;
 
     WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
-                 int Width, int Height, OnListCallback_t OnListCallback);
+                 int Width, int Height, OnListCallback_t&& OnListCallback);
 
     virtual bool OnMouseMove(const POINT& Pos);
     bool OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
     int PrepareItemDraw(void);
     void ResetList(void);
 
-    void SetEnterCallback(OnListCallback_t OnListCallback) {
-        mOnListEnterCallback = OnListCallback;
+    void SetEnterCallback(OnListCallback_t&& OnListCallback) {
+        mOnListEnterCallback = std::move(OnListCallback);
     }
 
 
@@ -825,18 +811,16 @@ class WndOwnerDrawFrame:public WndFrame{
   public:
     using OnPaintCallback_t = std::function<void(WndOwnerDrawFrame*, LKSurface&)>;
 
-    WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, OnPaintCallback_t OnPaintCallback):
-      WndFrame(Owner, Name, X, Y, Width, Height)
+    WndOwnerDrawFrame(WindowControl *Owner, TCHAR *Name, int X, int Y, int Width, int Height, OnPaintCallback_t&& OnPaintCallback):
+      WndFrame(Owner, Name, X, Y, Width, Height), mOnPaintCallback(std::move(OnPaintCallback))
     {
-      SetOnPaintNotify(OnPaintCallback);
-
       SetForeColor(GetParent()->GetForeColor());
       SetBackColor(GetParent()->GetBackColor());
 
     };
 
-    void SetOnPaintNotify(OnPaintCallback_t OnPaintCallback){
-      mOnPaintCallback = OnPaintCallback;
+    void SetOnPaintNotify(OnPaintCallback_t&& OnPaintCallback){
+      mOnPaintCallback = std::move(OnPaintCallback);
     }
 
   protected:
@@ -1008,7 +992,7 @@ class WndButton:public WindowControl{
 
   public:
 
-    WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t Function = NULL);
+    WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t&& Function);
 
     virtual bool OnLButtonDown(const POINT& Pos) override;
     virtual bool OnLButtonUp(const POINT& Pos) override;
@@ -1022,8 +1006,8 @@ class WndButton:public WindowControl{
     virtual void LedSetColor(unsigned short ledcolor);
     virtual void LedSetOnOff(bool ledonoff);
 
-    void SetOnClickNotify(ClickNotifyCallback_t Function){
-      mOnClickNotify = Function;
+    void SetOnClickNotify(ClickNotifyCallback_t&& Function){
+      mOnClickNotify = std::move(Function);
     }
 };
 
@@ -1032,6 +1016,9 @@ class WndButton:public WindowControl{
 #define STRINGVALUESIZE         128
 
 class WndProperty:public WindowControl{
+  public:  
+    using OnHelpCallback_t = std::function<void(WndProperty*)>;
+
   private:
 
     RECT mEditRect;
@@ -1058,11 +1045,21 @@ class WndProperty:public WindowControl{
     void UpdateButtonData();
     bool mDialogStyle;
 
+    OnHelpCallback_t mOnHelpCallback;
+    TCHAR *mHelpText = nullptr;
+
   public:
 
-    WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, int X, int Y, int Width, int Height, int CaptionWidth, int MultiLine=false);
+    WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, int X, int Y, int Width, int Height, int CaptionWidth, int MultiLine, OnHelpCallback_t&& Function);
     ~WndProperty(void);
     virtual void Destroy(void) override;
+
+    void SetHelpText(const TCHAR *Value);
+    bool HasHelpText() const { 
+      return (mHelpText||mOnHelpCallback); 
+    }
+
+    int OnHelp();
 
     bool SetReadOnly(bool Value) override;
     bool SetUseKeyboard(bool Value);

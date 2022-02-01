@@ -290,8 +290,10 @@ function_t CallBackLookup(const CallBackTableEntry_t *LookUpTable, const char* N
         }
       }
     }
+    StartupStore(_T("CallBackLookup(\"%s\"): callback not found"), Name);
+    assert(false);
   }
-  return nullptr;
+  return {};
 }
 
 
@@ -389,9 +391,7 @@ void LoadChildsFromXML(WindowControl *Parent,
       WC = W =
         new WndProperty(Parent, Name, Caption, X, Y,
                         Width, Height, CaptionWidth,
-                        MultiLine);
-
-      W->SetOnHelpCallback(CallBackLookup<WindowControl::OnHelpCallback_t>(LookUpTable, OnHelpCallback));
+                        MultiLine, CallBackLookup<WndProperty::OnHelpCallback_t>(LookUpTable, OnHelpCallback));
 
       W->SetHelpText(utf8_to_tstring(AttributeToString(*child, "Help", "")).c_str());
 

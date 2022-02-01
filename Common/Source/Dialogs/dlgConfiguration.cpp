@@ -869,8 +869,6 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
-extern void OnInfoBoxHelp(WindowControl * Sender);
-
 static void OnWaypointNewClicked(WndButton* pWnd){
 
   // Cannot save waypoint if no file
@@ -1044,8 +1042,9 @@ static void OnWaypointDeleteClicked(WndButton* pWnd) {
 	}
   }
 }
-#ifndef NO_BLUETOOTH
+
 static void OnBthDevice(WndButton* pWnd) {
+#ifndef NO_BLUETOOTH
     DlgBluetooth::Show();
     
     TCHAR szPort[MAX_PATH];
@@ -1054,8 +1053,8 @@ static void OnBthDevice(WndButton* pWnd) {
 
     // ReadPort2Settings(szPort, NULL, NULL);
     // UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
-}
 #endif
+}
 
 
 
@@ -1294,6 +1293,7 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
   }
 }
 
+void OnInfoBoxHelp(WndProperty * Sender);
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnAirspaceColoursClicked),
@@ -1333,9 +1333,9 @@ static CallBackTableEntry_t CallBackTable[]={
   DataAccessCallbackEntry(OnGearWarningModeChange),
   DataAccessCallbackEntry(OnLiveTrackerStartConfig),
   DataAccessCallbackEntry(OnAutoContrastChange),
-#ifndef NO_BLUETOOTH
+
   ClickNotifyCallbackEntry(OnBthDevice),
-#endif
+
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnA),
   ClickNotifyCallbackEntry(OnB),
