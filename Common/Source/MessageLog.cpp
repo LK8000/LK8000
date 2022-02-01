@@ -18,10 +18,6 @@
 
 constexpr size_t MAX_LOG_SIZE = 1024*1024; // 1MB
 
-/**
- * it's for debug build only.
- *  - file are cleared by first use.
- */
 void DebugStore(const char *Str, ...)
 {
 #ifndef NDEBUG
@@ -51,17 +47,14 @@ void DebugStore(const char *Str, ...)
 #endif
 }
 
-void StartupStore(const TCHAR *Str, ...)
+void StartupStoreV(const TCHAR *Str, va_list ap)
 {
   static Mutex mutex;
   ScopeLock Lock(mutex);
 
   TCHAR buf[1024]; // 2 kByte for unicode, 1kByte for utf-8
 
-  va_list ap;
-  va_start(ap, Str);
   _vsntprintf(buf, std::size(buf), Str, ap);
-  va_end(ap);
 
   buf[std::size(buf) -1] = _T('\0'); // grant string is null terminated.
 
@@ -97,11 +90,11 @@ void StartupStore(const TCHAR *Str, ...)
     /* each codepoints can be encoded in one to four bytes.
     * worst case : ( <number of codepoint> x 4 ) + <size of '\0'>
     */
-    const size_t buff_size = (_tcslen(buf) * 4) + 1;
+    const size_t buff_size = (_tcslen(buf) * 4) + 1; // (max 4kByte + 1Byte)
     char sbuf[buff_size]; 
     size_t i = to_utf8(buf, sbuf, buff_size);
 #else
-    char* sbuf = buf; // string are already utf-8 encoded, no need to convert.
+    char* sbuf = buf; // string is already utf-8 encoded, no need to convert.
     size_t i = strlen(sbuf);
 #endif
 

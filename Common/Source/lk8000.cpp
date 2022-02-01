@@ -109,6 +109,9 @@ bool Startup(const TCHAR* szCmdLine) {
   StartupStore(TEXT(". [%09u] Starting %s %s%s"),(unsigned int)GetTickCount(),LK8000_Version,_T("PC"),NEWLINE);
 #endif
 
+  DebugLog(_T(". DebugLog Enabled"));
+  TestLog(_T(". TestLog Enabled"));
+
   #if TESTBENCH
     #ifdef __GNUC__
         #ifdef __MINGW32__
