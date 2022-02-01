@@ -317,7 +317,7 @@ public:
 #endif
 
 #ifndef USE_GDI
-  virtual void Invalidate() override;
+  void Invalidate() override;
 
 protected:
   void Expose();
@@ -414,7 +414,7 @@ protected:
 #endif
 
 #ifdef DRAW_MOUSE_CURSOR
-  virtual void OnPaint(Canvas &canvas) override;
+  void OnPaint(Canvas &canvas) override;
 #endif
 
 #ifdef USE_GDI
@@ -423,7 +423,7 @@ protected:
 #endif
 
 #ifndef USE_GDI
-  virtual void OnResize(PixelSize new_size) override;
+  void OnResize(PixelSize new_size) override;
 #endif
 
 #ifdef ANDROID

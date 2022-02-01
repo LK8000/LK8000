@@ -510,7 +510,7 @@ class DataFieldFloat:public DataField{
   const TCHAR *GetAsString(void) override;
   const TCHAR *GetAsDisplayString(void) override;
 
-  virtual void Set(int Value) override { Set((double)Value); };
+  void Set(int Value) override { Set((double)Value); };
 
 
   void Set(double Value) override;
@@ -597,7 +597,7 @@ class WindowControl : public WndCtrlBase {
     virtual void PaintBorder(LKSurface& Surface);
     virtual void PaintSelector(LKSurface& Surface);
 
-    virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) override;
+    bool OnPaint(LKSurface& Surface, const RECT& Rect) override;
 
   public:
     const TCHAR* GetCaption(void) const { return GetWndText(); }
@@ -667,8 +667,8 @@ class WindowControl : public WndCtrlBase {
 
 protected:
 
-    virtual void OnSetFocus() override;
-    virtual void OnKillFocus() override;
+    void OnSetFocus() override;
+    void OnKillFocus() override;
 
     bool OnClose() override{
         SetVisible(false);
@@ -860,7 +860,7 @@ class WndForm:public WindowControl{
     OnKeyUpNotify_t mOnKeyUpNotify;
     OnUser_t mOnUser;
 
-    virtual void Paint(LKSurface& Surface) override;
+    void Paint(LKSurface& Surface) override;
 
   public:
 
@@ -868,8 +868,8 @@ class WndForm:public WindowControl{
     ~WndForm(void);
     void Destroy(void) override;
 
-    virtual WindowControl* GetClientArea() override { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
-	  virtual WndForm* GetParentWndForm(void) override { return (this);}
+    WindowControl* GetClientArea() override { return (mClientWindow ?mClientWindow:WindowControl::GetClientArea()); }
+    WndForm* GetParentWndForm(void) override { return (this);}
 
     void AddClient(WindowControl *Client) override;
 
@@ -937,7 +937,7 @@ protected:
       return (mOnUser && mOnUser(this, id));
     }
 
-    virtual void OnDestroy() override {
+    void OnDestroy() override {
         mModalResult = mrCancel;
         WndCtrlBase::OnDestroy();
     }
@@ -979,7 +979,7 @@ class WndButton:public WindowControl{
 
   private:
 
-    virtual void Paint(LKSurface& Surface) override;
+    void Paint(LKSurface& Surface) override;
     bool mDown;
     bool mDefault;
     unsigned short mLedMode;   // 0=no led  1=OnOff mode  2=manual (choose colors)
@@ -994,12 +994,12 @@ class WndButton:public WindowControl{
 
     WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Caption, int X, int Y, int Width, int Height, ClickNotifyCallback_t&& Function);
 
-    virtual bool OnLButtonDown(const POINT& Pos) override;
-    virtual bool OnLButtonUp(const POINT& Pos) override;
-    virtual bool OnLButtonDblClick(const POINT& Pos) override;
+    bool OnLButtonDown(const POINT& Pos) override;
+    bool OnLButtonUp(const POINT& Pos) override;
+    bool OnLButtonDblClick(const POINT& Pos) override;
 
-    virtual bool OnKeyDown(unsigned KeyCode) override;
-    virtual bool OnKeyUp(unsigned KeyCode) override;
+    bool OnKeyDown(unsigned KeyCode) override;
+    bool OnKeyUp(unsigned KeyCode) override;
 
     virtual void LedSetMode(unsigned short leduse);
     virtual void LedSetSize(unsigned short ledsize);
@@ -1033,7 +1033,7 @@ class WndProperty:public WindowControl{
     bool mUseKeyboard;
     bool mMultiLine;
 
-    virtual void Paint(LKSurface& Surface) override;
+    void Paint(LKSurface& Surface) override;
 
     int CallSpecial(void);
     int IncValue(void);
@@ -1052,7 +1052,7 @@ class WndProperty:public WindowControl{
 
     WndProperty(WindowControl *Parent, TCHAR *Name, TCHAR *Caption, int X, int Y, int Width, int Height, int CaptionWidth, int MultiLine, OnHelpCallback_t&& Function);
     ~WndProperty(void);
-    virtual void Destroy(void) override;
+    void Destroy(void) override;
 
     void SetHelpText(const TCHAR *Value);
     bool HasHelpText() const { 

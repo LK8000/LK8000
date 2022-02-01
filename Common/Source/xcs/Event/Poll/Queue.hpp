@@ -200,7 +200,7 @@ public:
 
 private:
   /* virtual methods from SignalListener */
-  virtual void OnSignal(int signo) override;
+  void OnSignal(int signo) override;
 };
 
 #endif
