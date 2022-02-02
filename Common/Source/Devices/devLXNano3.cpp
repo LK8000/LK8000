@@ -2200,9 +2200,16 @@ double MinLat, MinLon;
 char NoS, EoW;
 
 if (!ValidWayPoint(overindex)) return TRUE;
+LockTaskData();
+	DegLat = (int)WayPointList[overindex].Latitude;
+	MinLat = WayPointList[overindex].Latitude - DegLat;
+	DegLon = (int)WayPointList[overindex].Longitude ;
+	MinLon = WayPointList[overindex].Longitude  - DegLon;
+  _tcsncpy(szTmp, WayPointList[overindex].Name, MAX_NMEA_LEN);
+UnlockTaskData();
 
-DegLat = (int)WayPointList[overindex].Latitude;
-MinLat = WayPointList[overindex].Latitude - DegLat;
+
+
 NoS = 'N';
 if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
 {
@@ -2211,8 +2218,7 @@ if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
 }
 MinLat *= 60;
 
-DegLon = (int)WayPointList[overindex].Longitude ;
-MinLon = WayPointList[overindex].Longitude  - DegLon;
+
 EoW = 'E';
 if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
   {
@@ -2224,9 +2230,9 @@ MinLon *=60;
 
 TCHAR szName[MAX_VAL_STR_LEN];
   if( 0 /*bTaskpresent*/)  {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"), MsgToken(1323), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"), MsgToken(1323), szTmp); // LKTOKEN _@M1323_ "T>"
   } else {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), szTmp); // LKTOKEN _@M1323_ "T>"
   }
 
   if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
