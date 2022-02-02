@@ -65,26 +65,12 @@ class DevRCFenix : public DevLX_EOS_ERA
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-
-    /// Send one line of ceclaration to logger
-   static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
-
    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
-   
    static BOOL Config(PDeviceDescriptor_t d);
-   static void OnCloseClicked(WndButton* pWnd);
 
-   static void OnValuesClicked(WndButton* pWnd);
-
-   static BOOL RCDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupFenix_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
-
-
-   
 
    static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { return false;};
    static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);

@@ -182,7 +182,7 @@ static char lastSec =0;
       return FALSE;
     }
     if (_tcsncmp(_T("$RCDT"), sentence, 5) == 0)
-      return RCDT(d, sentence + 6, info);
+      return LXDT(d, sentence + 6, info);
     else
       if (_tcsncmp(_T("$LXBC"), sentence, 5) == 0)
         return LXBC(d, sentence + 6, info);
@@ -218,14 +218,16 @@ BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d)
 	
   if((i++%10)==0)
   {
-    SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
+    SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,1,LXWP2,1,LXWP3,1,GPRMB,5"));
 
     SendNmea( d, _T("RCDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));      
   }
   else
-    if(!RCFenix_bValid)
+ //   if(!RCFenix_bValid)
     {
+	 SendNmea(d, TEXT("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
      SendNmea(d,_T("RCDT,GET,MC_BAL"));
+	 SendNmea(d,_T("LXDT,GET,MC_BAL"));
      StartupStore(TEXT("Config: RCDT"));      
     }
 
@@ -442,305 +444,6 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Send one line of declaration to logger
-///
-/// @param d           device descriptor
-/// @param row         row number
-/// @param row         number of rows
-/// @param content     row content
-/// @param errBufSize  error message buffer size
-/// @param errBuf[]    [out] error message
-///
-/// @retval true  row successfully written
-/// @retval false error (description in @p errBuf)
-///
-// static
-bool DevRCFenix::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows,
-                   TCHAR content[], unsigned errBufSize, TCHAR errBuf[]){
-  TCHAR szTmp[MAX_NMEA_LEN];
-
-  char retstr[20];
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXVC,DECL,W,%u,%u,%s"), row, n_rows, content);
-  bool status = DevRCFenix::SendNmea(d, szTmp, errBufSize, errBuf);
-  if (status) {
-    sprintf(retstr, "$PLXVC,DECL,C,%u", row);
-    status = status && ComExpect(d, retstr, 512, NULL, errBufSize, errBuf);
-
-  }
-  return status;
-
-} // SendDecl()
-
-
-
-
-
-void DevRCFenix::OnCloseClicked(WndButton* pWnd)
-{
-  WndForm * wf = pWnd->GetParentWndForm();
-
-  if(!ShowValues())
-    GetDirections(pWnd);
-  if(wf)
-  {
-    wf->SetTimerNotify(0, NULL);
-    wf->SetModalResult(mrOK);
-  }
-}
-
-
-void DevRCFenix::OnValuesClicked(WndButton* pWnd) {
-#ifdef EEEEE
-  WndForm * wf = pWnd->GetParentWndForm();
-  if(wf)
-  {
-    ShowValues (!ShowValues());
-    WndButton *wBt = (WndButton *) wf->FindByName(TEXT("cmdValues"));
-    if (wBt) {
-      if (ShowValues()) {
-        wf->SetTimerNotify(250, OnTimer); // update values 4 times a second
-        GetDirections(pWnd);
-        wBt->SetCaption(MsgToken(2468));//  _@M2468_ "Direction"
-      } else {
-        wf->SetTimerNotify(0, NULL);    // turn Off the timer
-        wBt->SetCaption(MsgToken(2467));// _@M2467_ "Values"
-        if (wf) ShowData(wf, Device());
-      }
-    }
-    devSetAdvancedMode(m_pDevice,false);
-    ClearDataText( _QNH   );
-    ClearDataText( _MC    );
-    ClearDataText( _BUGS  );
-    ClearDataText( _BAL   );
-    ClearDataText( _STF   );
-    ClearDataText( _WIND  );
-    ClearDataText( _BARO  );
-    ClearDataText( _VARIO );
-    ClearDataText( _SPEED );
-    ClearDataText( _R_TRGT);
-    ClearDataText( _GFORCE);
-    ClearDataText( _OAT   );
-    ClearDataText( _BAT1  );
-    ClearDataText( _BAT2  );
-    ClearDataText( _POLAR );
-    ClearDataText( _DIRECT);
-    ClearDataText( _T_TRGT);
-  }
-
-#endif
-		DevLX_EOS_ERA::OnValuesClicked(pWnd);
-    SendNmea(Device(),_T("RCDT,GET,MC_BAL"));  // request new data
-}
-
-
-
-
-
-
-
-BOOL DevRCFenix::RCDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-TCHAR szTmp[MAX_NMEA_LEN];
-
-double fTmp=0.0;
-
-devSetAdvancedMode(d,true);
-static int iNoFlights=0;
-  NMEAParser::ExtractParameter(sentence, szTmp, 0);
-  if(_tcsncmp(szTmp, _T("ANS"), 3) != 0)  // really an Answer?
-    return 0;
-
-  NMEAParser::ExtractParameter(sentence, szTmp, 1);  // Command?
-  if(_tcsncmp(szTmp, _T("RADIO"), 5) == 0)
-  {
-    m_bRadioEnabled = true;
-//    if(ParToDouble(sentence, 2, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.ActiveFrequency  = fTmp;
- //   if(ParToDouble(sentence, 3, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.PassiveFrequency = fTmp;
-    if(ParToDouble(sentence, 4, &fTmp)) RadioPara.Volume  = (int) fTmp;
-    if(ParToDouble(sentence, 5, &fTmp)) RadioPara.Squelch = (int) fTmp;
-    if(ParToDouble(sentence, 6, &fTmp)) RadioPara.Vox     = (int) fTmp;
-  }
-  else
-  if(_tcsncmp(szTmp, _T("MC_BAL"), 6) == 0)
-  {
-    if(uiFenixDebugLevel> 0)  StartupStore(TEXT("MC_BAL %s"), sentence);
-    if(ParToDouble(sentence, 2, &fTmp)) {EOSSetMC(d, fTmp,_T("($RCDT)") );}
-    if(ParToDouble(sentence, 3, &fTmp)) {EOSSetBAL(d, fTmp,_T("($RCDT)") );}
-    if(ParToDouble(sentence, 4, &fTmp)) {EOSSetBUGS(d, fTmp,_T("($RCDT)") );}
-    if(ParToDouble(sentence, 5, &fTmp)) {}  // Screen brightness in percent
-    if(ParToDouble(sentence, 6, &fTmp)) {}  // Variometer volume in percent
-    if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
-    if(ParToDouble(sentence, 8, &fTmp))   // QNH in hPa (NEW)
-    {
-      if(IsDirInput(PortIO[d->PortNumber].QNHDir))
-      { 
-        _stprintf( szTmp, _T("%4.0f hPa"),fTmp);      
-        if(Values(d)) SetDataText( d, _QNH,   szTmp);
-        static double oldQNH = -1;
-        if ( fabs( oldQNH - fTmp) > 0.1)
-        {
-          UpdateQNH( fTmp);
-          oldQNH = fTmp;
-        }
-      }  
-    }
-    RCFenix_bValid = true;    
-  }
-  else
-  if(_tcsncmp(szTmp, _T("FLIGHTS_NO"), 10) == 0)
-  {
-    if(ParToDouble(sentence, 2, &fTmp)) iNoFlights =(int) (fTmp+0.05);
-    if((iNoFlights > 0)
-      && m_bTriggered)  // call next if triggerd from here only
-    {
-//      FenixListFilled(false);
-      _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,GET,FLIGHT_INFO,%i"),1);
-      SendNmea(d,szTmp);
-    }
-  }
-  else
-  if(_tcsncmp(szTmp, _T("SENS"), 4) == 0)  // Sensor Data?
-  {
-    SENS(d, sentence,  info, 2);
-  }
-  else
-  if(_tcsncmp(szTmp, _T("SC_VAR"), 6) == 0)  // Vario / STF
-  {
-    if(ParToDouble(sentence, 2, &fTmp)) {
-      EOSSetSTF(d, (int)fTmp,_T(" ($RCDT,SC_VAR)") );
-    }
-  }
-  else
-  if(_tcsncmp(szTmp, _T("NAVIGATE"), 7) == 0)  // Navigation Target
-  {
-    GetTarget( d, sentence,  info);    
-  }
-
-  if(_tcsncmp(szTmp, _T("ERROR"), 5) == 0)  // ERROR?
-  {
-    NMEAParser::ExtractParameter(sentence, szTmp, 2);
-    if(_tcsncmp(szTmp, _T("Radio not enabled"), 17) == 0)  
-    {
-      m_bRadioEnabled = false;
-    }
-    else
-    {
-      DoStatusMessage(TEXT("RC Fenix Error:"), szTmp, false);
-      StartupStore(TEXT("RC Fenix Error: %s"), szTmp);
-    }
-  }
-  else
-  if(_tcsncmp(szTmp, _T("OK"), 2) == 0)
-  {
-    if(!Declare())
-      SendNmea(d,_T("RCDT,GET,MC_BAL"));
-    else
-    {
-    }
-  }
-  return(true);
-} // RCDT()
-
-
-
-
-BOOL DevRCFenix::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INFO* info, int ParNo)
-{ 
-TCHAR szTmp[MAX_NMEA_LEN];
-double fTmp;
-
-  if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
-    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($RCDT)"),fTmp);
-     if(Values(d)) SetDataText(d, _OAT,  szTmp);
-    if(IsDirInput(PortIO[d->PortNumber].OATDir))
-    {
-      info->OutsideAirTemperature = fTmp;
-      info->TemperatureAvailable  = TRUE;
-    }
-  }
-  if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
-    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($RCDT)"),fTmp);
-    if(Values(d)) SetDataText( d, _BAT1,  szTmp);
-    if(IsDirInput(PortIO[d->PortNumber].BAT1Dir))
-    {
-      info->ExtBatt1_Voltage = fTmp;	
-    }
-  }
-  if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
-    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($RCDT)"),fTmp);
-     if(Values(d)) SetDataText( d, _BAT2,  szTmp);
-    if(IsDirInput(PortIO[d->PortNumber].BAT2Dir))
-    {
-      info->ExtBatt2_Voltage = fTmp;	
-    }
-  }
-  NMEAParser::ExtractParameter(sentence, szTmp, ParNo++); 
-  {  // Current flap setting
-  }
-  NMEAParser::ExtractParameter(sentence, szTmp, ParNo++);
-  { // Recommended flap setting
-  }
-  if(ParToDouble(sentence, ParNo++, &fTmp)) {  // Current landing gear position (0 = out, 1 = inside, left empty if gear input not configured)
-  }
-  if(ParToDouble(sentence, ParNo++, &fTmp)) {  // SC/Vario mode (0 = Vario, 1 = SC)
-    EOSSetSTF(d, (int)fTmp,_T(" ($RCDT,SENS)"));
-  }
-  return true;
-}
-
-BOOL DevRCFenix::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
-{
-TCHAR szTmp[MAX_NMEA_LEN];
-
-devSetAdvancedMode(d,true);
-if(_tcsncmp(sentence, _T("SENS"), 4) == 0)
-{  
-  SENS(d,  sentence,  info,1);
-}
-
-if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
-{
-  if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-  { bool bAHRS = false;
-    double fX,fY,fZ, fPitch, fRoll, fYaw, fSlip;
-    if(ParToDouble(sentence, 1, &fPitch))  // pitch
-      if(ParToDouble(sentence, 2, &fRoll)) // Roll
-        if(ParToDouble(sentence, 3, &fYaw)) // Yaw
-          if(ParToDouble(sentence, 4, &fSlip)) // slip
-            bAHRS = true;
-
-    if(ParToDouble(sentence, 5, &fX) &&
-       ParToDouble(sentence, 6, &fY) &&
-       ParToDouble(sentence, 7, &fZ))
-    {
-      if(Values(d))
-      {
-        if(bAHRS)
-          _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($RCDT)"),fX,fY,fZ, fPitch, fRoll, fYaw, fSlip);
-        else
-          _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($RCDT)"),fX,fY,fZ);
-        SetDataText( d, _GFORCE,  szTmp);
-      }
-      if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
-      {
-        info->AccelX  = fX;
-        info->AccelY  = fY;
-        info->AccelZ  = fZ;
-        info->AccelerationAvailable = true;
-        if(bAHRS)
-        {
-          info->Pitch = fPitch;
-          info->Roll  = fRoll;
-          info->GyroscopeAvailable = true;
-        }
-      }
-    }
-  }
-}
-return true;
-}
-
 
 
 
@@ -887,14 +590,14 @@ TCHAR szName[MAX_VAL_STR_LEN];
 
       _tcsncat (szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
     }
-   
+
 #ifdef TESTBENCH
     StartupStore(TEXT("Send navigation Target Fenix: %s"), szName);
 #endif
   }
 
   if(Values(d)) SetDataText( d, _T_TRGT,  szName);
-  DevRCFenix::SendNmea(d,szTmp);
+  SendNmea(d,szTmp);
 
 return(true);
 }
