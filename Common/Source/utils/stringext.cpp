@@ -11,10 +11,13 @@
 #include <cassert>
 #include <string_view>
 #include <algorithm>
+
+#include <cstring>
 #include "array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
 #include "unicode/unicode_to_ascii.h"
 #include "unicode/UTF16.h"
+#include "unicode/CP1252.h"
 //______________________________________________________________________________
 namespace {
 
@@ -113,12 +116,10 @@ size_t safe_copy(const char* gcc_restrict src, char* gcc_restrict dst, size_t si
 
   char* end = std::next(dst, size - 1); // let place holder for trailing '\0'
   char* p = dst;
-  while (p < end) {
-    if ((*p++ = *src++) == 0) {
-      break; // stop copy if null terminator is found
-    }
+  while (p < end && *src) {
+    *p++ = *src++;
   }
-  *end = 0; /* granted NULL-terminate dst */
+  *p = 0; /* granted NULL-terminate dst */
 
   if(p >= end && *src != 0) {
     CropIncompleteUTF8(dst);
@@ -153,6 +154,63 @@ CharT* ci_search_substr(CharT* string, CharT* sub_string) {
   return nullptr;
 }
 
+template<typename InCharT, typename OutCharT, typename NextChar, typename UnicodeTo >
+size_t from_to(const InCharT *in, OutCharT *out, size_t size, NextChar next_char, UnicodeTo unicode_to) {
+  const auto end = std::next(out, size - 1); // size - 1 to let placeholder for '\0'
+  auto p = out;
+
+  auto next = next_char(in);
+  while (next.first && out < end) {
+    p = unicode_to(next.first, p);
+    next = next_char(next.second);
+  }
+  *p = '\0'; // add leading '\0'
+
+  return std::distance(out, p);
+}
+
+
+template<typename CharT>
+size_t max_size_need(const char* string);
+
+template<>
+size_t max_size_need<char>(const char* string) {
+  return (strlen(string) * 4) + 1;
+}
+
+template<>
+size_t max_size_need<wchar_t>(const char* string) {
+  return strlen(string);
+}
+
+template<typename CharT>
+std::basic_string<CharT> utf8_to_string(const char* utf8) {
+  std::basic_string<CharT> out;
+  out.resize(max_size_need<CharT>(utf8));
+  size_t size = from_utf8(utf8, out.data(), out.size());
+  out.resize(size);
+  return out;
+}
+
+template<typename CharT>
+std::basic_string<CharT> ansi_to_string(const char* ansi) {
+  std::basic_string<CharT> out;
+  out.resize(max_size_need<CharT>(ansi));
+  size_t size = from_ansi(ansi, out.data(), out.size());
+  out.resize(size);
+  return out;
+}
+
+template<typename CharT>
+std::basic_string<CharT> from_unknow_charset(const char* string) {
+  if (ValidateUTF8(string)) {
+    return utf8_to_string<CharT>(string);
+  }
+  else {
+    return ansi_to_string<CharT>(string);
+  }
+}
+
 } // namespace
 
 size_t to_usascii(const char* utf8, char* ascii, size_t size) {
@@ -165,35 +223,12 @@ size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
 
 
 size_t to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
-
-  const auto end = std::next(utf8, size - 1); // size - 1 to let placeholder for '\0'
-  auto out = utf8;
-
-  auto next = NextChar<wchar_t>(unicode);
-  while (next.first && out < end) {
-    out = UnicodeToUTF8(next.first, out);
-    next = NextChar<wchar_t>(next.second);
-  }
-  *out = '\0'; // add leading '\0'
-
-  return std::distance(utf8, out);
+  return from_to(unicode, utf8, size, NextChar<wchar_t>,  UnicodeToUTF8);
 }
 
 size_t from_utf8(const char *utf8, wchar_t *unicode, size_t size) {
-
-  const auto end = std::next(unicode, size - 1); // size - 1 to let placeholder for '\0'
-  auto out = unicode;
-
-  auto next = NextUTF8(utf8);
-  while (next.first && out < end) {
-    out = UnicodeToWChar(next.first, out);
-    next = NextUTF8(next.second);
-  }
-  *out = '\0'; // add leading '\0'
-
-  return std::distance(unicode, out);
+  return from_to(utf8, unicode, size, NextUTF8,  UnicodeToWChar<wchar_t>);
 }
-
 
 size_t to_utf8(const char *string, char *utf8, size_t size) {
   return safe_copy(string, utf8, size);
@@ -203,6 +238,25 @@ size_t from_utf8(const char *utf8, char *string, size_t size) {
   return safe_copy(utf8, string, size);
 }
 
+tstring from_utf8(const char *utf8) {
+  return utf8_to_string<tstring::value_type>(utf8);
+}
+
+size_t from_ansi(const char *ansi, wchar_t *unicode, size_t size) {
+  return from_to(ansi, unicode, size, NextACP,  UnicodeToWChar<wchar_t>);
+}
+
+size_t from_ansi(const char *ansi, char *utf8, size_t size) {
+  return from_to(ansi, utf8, size, NextACP,  UnicodeToUTF8);
+}
+
+tstring from_ansi(const char *ansi) {
+  return ansi_to_string<tstring::value_type>(ansi);
+}
+
+std::string ansi_to_utf8(const char *ansi) {
+  return ansi_to_string<std::string::value_type>(ansi);
+}
 
 const char* ci_search_substr(const char* string, const char* sub_string) {
   return ci_search_substr<const char>(string, sub_string);
@@ -211,3 +265,56 @@ const char* ci_search_substr(const char* string, const char* sub_string) {
 const wchar_t* ci_search_substr(const wchar_t* string, const wchar_t* sub_string) {
   return ci_search_substr<const wchar_t>(string, sub_string);
 }
+
+/**
+ * Helper to do implicit charset transcoding
+ */
+class from_unknow_charset_t {
+public:
+  explicit from_unknow_charset_t(const char* string) : input_string(string) {}
+
+  operator std::string() const {
+    return from_unknow_charset<std::string::value_type>(input_string);
+  }
+
+  operator std::wstring() const {
+    return from_unknow_charset<std::wstring::value_type>(input_string);
+  }
+
+private:
+  const char* input_string;
+};
+
+from_unknow_charset_t from_unknow_charset(const char* string) {
+  return  from_unknow_charset_t(string);
+}
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("to_tchar_string") {
+    const std::string test_utf8("10€ƒ¶Æ");
+    const std::wstring test_unicode(L"10€ƒ¶Æ");
+
+  	SUBCASE("UTF8 -> UTF8") {
+      std::string utf8 = from_unknow_charset("10€ƒ¶Æ");
+      CHECK_EQ(utf8, test_utf8);
+    }
+
+  	SUBCASE("ANSI -> UTF8") {
+      std::string utf8 = from_unknow_charset("10\x80\x83\xB6\xC6");
+      CHECK_EQ(utf8, test_utf8);
+    }
+
+  	SUBCASE("UTF8 -> UNICODE") {
+      std::wstring unicode = from_unknow_charset("10€ƒ¶Æ");
+      CHECK_EQ(unicode, test_unicode);
+    }
+
+  	SUBCASE("ANSI -> UNICODE") {
+      std::wstring unicode = from_unknow_charset("10\x80\x83\xB6\xC6");
+      CHECK_EQ(unicode, test_unicode);
+    }
+}
+
+#endif

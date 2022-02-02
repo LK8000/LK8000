@@ -82,6 +82,7 @@ add_library( LK8000 SHARED
 
     Common/Source/utils/unicode/unicode_to_ascii.cpp # put it first to speedup parallel build 
     Common/Source/utils/unicode/UTF16.cpp
+    Common/Source/utils/unicode/CP1252.cpp
 
     Common/Source/xcs/Android/Assert.cpp
     Common/Source/xcs/Android/Bitmap.cpp

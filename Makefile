@@ -1140,6 +1140,7 @@ UTILS	:=\
 	$(SRC)/utils/hmac_sha2.cpp \
 	$(SRC)/utils/unicode/unicode_to_ascii.cpp \
 	$(SRC)/utils/unicode/UTF16.cpp \
+	$(SRC)/utils/unicode/CP1252.cpp \
 	$(SRC)/utils/base64.cpp \
 
 
