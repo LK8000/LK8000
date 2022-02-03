@@ -160,7 +160,7 @@ size_t from_to(const InCharT *in, OutCharT *out, size_t size, NextChar next_char
   auto p = out;
 
   auto next = next_char(in);
-  while (next.first && out < end) {
+  while (next.first && p < end) {
     p = unicode_to(next.first, p);
     next = next_char(next.second);
   }
