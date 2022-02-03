@@ -293,6 +293,7 @@ EBROWSE         :=ebrowse
 
 GCCVERSION = $(shell $(CXX) -dumpversion)
 GCC_GTEQ_820 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 80200)
+GCC_GTEQ_910 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 90100)
 
 $(info GCC VERSION : $(GCCVERSION))
 
@@ -667,8 +668,7 @@ ifeq ($(TARGET_IS_KOBO),y)
  # the stock Kobo firmware, as it may be incompatible
  LDFLAGS += -Wl,--dynamic-linker=/opt/LK8000/lib/ld-linux-armhf.so.3
  LDFLAGS += -Wl,--rpath=/opt/LK8000/lib
- 
- LDLIBS += -lstdc++fs
+
 endif
 
 ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
@@ -706,6 +706,9 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(LIBINPUT_LDLIBS)
  LDLIBS += $(LIBUDEV_LDLIBS)
 
+ ifneq ($(GCC_GTEQ_910),1) 
+  LDLIBS += -lstdc++fs
+ endif
 endif
 
 
