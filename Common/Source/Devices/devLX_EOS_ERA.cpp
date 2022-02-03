@@ -39,6 +39,8 @@
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
 #include "Radio.h"
+#include "utils/charset_helper.h"
+
 
 unsigned int uiEOSDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
@@ -2058,19 +2060,32 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
     return false;
   }
 
-TCHAR  szTmp[MAX_NMEA_LEN];
+  TCHAR  szTmp[MAX_NMEA_LEN];
 
-double fTmp;
   NMEAParser::ExtractParameter(sentence,szTmp,3);
+  ////////////////////////////////////////////////////// 
+  // workaround to fix turnpoint charset
+#ifdef UNICODE  
+  // 1 - copy back TCHAR to char
+  char  szName[MAX_NMEA_LEN];
+  for (size_t i = 0; szTmp[0]; ++i) {
+    szName[i] = szTmp[i];
+  }
+#else
+  // TCHAR is alias to char, no need copy back to char.
+  char* szName = szTmp;
+#endif
+  // 2 - detect and fix chatset
+  tstring tname = from_unknown_charset(szName);
+  ////////////////////////////////////////////////////// 
 
-
-    if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-      Alternate2 = -1;                 // clear external =re-enable!
+  if(Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
+    Alternate2 = -1;                 // clear external =re-enable!
 
   _tcscpy(WayPointList[RESWP_EXT_TARGET].Name, _T("^") );
-  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, szTmp );
+  _tcscat(WayPointList[RESWP_EXT_TARGET].Name, tname.c_str() );
 
-
+  double fTmp;
   ParToDouble(sentence, 4, &fTmp);
   WayPointList[RESWP_EXT_TARGET].Latitude= fTmp/60000;
   ParToDouble(sentence, 5, &fTmp);
