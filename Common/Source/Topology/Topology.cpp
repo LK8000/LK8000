@@ -13,11 +13,6 @@
 #include "OS/Memory.h"
 #include "resource_data.h"
 
-#include <Poco/Latin1Encoding.h>
-#include <Poco/UTF16Encoding.h>
-#include <Poco/UTF8Encoding.h>
-#include <Poco/TextConverter.h>
-
 #include "../Draw/ScreenProjection.h"
 #include "ShapeSpecialRenderer.h"
 #include "NavFunctions.h"
@@ -855,51 +850,19 @@ void XShapeLabel::setlabel(const char* src, charset& csLabel) {
       label= NULL;
   }
 
-#ifdef UNICODE
+  size_t size = strlen(src) + 1;
+  if(size) {
+    label = (TCHAR*) malloc(size * sizeof (TCHAR));
 
     if ( (csLabel != latin1 || csLabel == utf8) && ValidateUTF8(src) ) {
       // from utf-8 to UNICODE
-      size_t size = strlen(src) + 1;
-      if(size) {
-        label = (TCHAR*) malloc(size * sizeof (TCHAR));
-        from_utf8(src, label, size);
-      }
+      from_utf8(src, label, size);
     }
     else {
       csLabel = latin1;
-      // from Latin1 (ANSI) To UNICODE
-      int nChars = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
-      if (nChars) {
-          label = (TCHAR*) malloc(nChars * sizeof (TCHAR));
-          if (label) {
-              MultiByteToWideChar(CP_ACP, 0, src, -1, label, nChars);
-          }
-      }
+      from_ansi(src, label, size);
     }
-
-
-#else
-
-
-    if ( (csLabel != latin1 || csLabel == utf8) && ValidateUTF8(src) ) {
-      // do simple copy 
-      label = strdup(src);
-    }
-    else {
-      csLabel = latin1;
-      std::string utf8String;
-
-      Poco::Latin1Encoding Latin1Encoding;
-      Poco::UTF8Encoding utf8Encoding;
-       
-      // from Latin1 (ISO-8859-1) To Utf8
-      Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
-      converter.convert(src, strlen(src), utf8String);
-      label = strdup(utf8String.c_str());
-    }
-
-
-#endif
+  }
 
   hide=false;
 }

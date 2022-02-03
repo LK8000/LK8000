@@ -18,11 +18,6 @@
 #include "utils/stringext.h"
 #include "utils/array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
-#include "Util/ConvertString.hpp"
-
-#include "Poco/Latin1Encoding.h"
-#include "Poco/TextConverter.h"
-#include "Poco/UTF8Encoding.h"
 
 zzip_stream::zzip_stream(const TCHAR *szFile, const char *mode) {
   open(szFile, mode);
@@ -133,19 +128,14 @@ bool zzip_stream::read_line(char *string, size_t size) {
     // from Latin1 (ISO-8859-1) To Utf8
 
     utf8String.clear();
-
-    Poco::Latin1Encoding Latin1Encoding;
-    Poco::UTF8Encoding utf8Encoding;
-
-    Poco::TextConverter converter(Latin1Encoding, utf8Encoding);
-    converter.convert(string, strlen(string), utf8String);
+    utf8String = ansi_to_utf8(string);
 
     if(utf8String.size() >= (size - 1)) {
       printf("read_line overflow %u > %u\n", (unsigned)utf8String.size(), (unsigned)(size - 1));
     }
 
     size_t str_len = std::min(utf8String.size(), size-1);
-    (*std::copy_n(utf8String.begin(), str_len, string)) = '\0';
+    (*std::copy_n(utf8String.data(), str_len, string)) = '\0';
   }
   return true;
 }
@@ -160,18 +150,7 @@ bool zzip_stream::read_line(wchar_t *string, size_t size) {
   }
 
   if (_cs == charset::latin1) {
-    const ACPToWideConverter converter(raw_string.begin());
-    if(converter.IsValid()) {
-
-      if(wcslen(converter) >= (size - 1)) {
-        printf("read_line overflow %u > %u\n", (unsigned)wcslen(converter), (unsigned)(size - 1));
-      }
-
-      size_t str_len = std::min(wcslen(converter), size-1);
-      (*std::copy_n(static_cast<const TCHAR*>(converter), str_len, string)) = '\0';
-    } else {
-      assert(false); // faild to convert string
-    }
+    from_ansi(raw_string.begin(), string, size);
   } else {
     from_utf8(raw_string.begin(), string, size);
   }
