@@ -1145,6 +1145,7 @@ UTILS	:=\
 	$(SRC)/utils/unicode/UTF16.cpp \
 	$(SRC)/utils/unicode/CP1252.cpp \
 	$(SRC)/utils/base64.cpp \
+	$(SRC)/utils/charset_helper.cpp \
 
 
 COMMS	:=\

@@ -15,7 +15,7 @@
 
 #include <memory>
 #include "utils/stl_utils.h"
-#include "utils/stringext.h"
+#include "utils/charset_helper.h"
 #include "utils/array_back_insert_iterator.h"
 #include "Util/UTF8.hpp"
 

@@ -29,9 +29,6 @@ size_t from_utf8(const char* utf, wchar_t* string, size_t size);
 #ifdef __cplusplus
 }
 
-#include "Util/tstring.hpp"
-
-
 size_t to_utf8(const char* string, char* utf, size_t size);
 size_t from_utf8(const char* utf, char* string, size_t size);
 
@@ -46,8 +43,6 @@ size_t from_utf8(const char* utf8, CharT (&string)[size]) {
    static_assert(size > 0, "invalid output size");
    return from_utf8(utf8, string, size);
 }
-
-tstring from_utf8(const char *utf8);
 
 size_t to_usascii(const char* utf8, char* ascii, size_t size);
 size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size);
@@ -64,19 +59,6 @@ template<typename CharT, size_t size>
 size_t from_ansi(const char* ansi, CharT (&string)[size]) {
   return from_ansi(ansi, string, size);
 }
-
-tstring from_ansi(const char *ansi);
-
-std::string ansi_to_utf8(const char *ansi);
-
-
-class from_unknow_charset_t;
-/**
- * Convert utf8 or Ansi string to utf8 or unicode string (aka const char* or const wchar_t*)
- *  input string life time must be at least the same as the return value.
- */
-from_unknow_charset_t from_unknow_charset(const char* string);
-
 
 inline wchar_t to_lower(wchar_t c) {
   return towlower(c);

@@ -169,48 +169,6 @@ size_t from_to(const InCharT *in, OutCharT *out, size_t size, NextChar next_char
   return std::distance(out, p);
 }
 
-
-template<typename CharT>
-size_t max_size_need(const char* string);
-
-template<>
-size_t max_size_need<char>(const char* string) {
-  return (strlen(string) * 4) + 1;
-}
-
-template<>
-size_t max_size_need<wchar_t>(const char* string) {
-  return strlen(string);
-}
-
-template<typename CharT>
-std::basic_string<CharT> utf8_to_string(const char* utf8) {
-  std::basic_string<CharT> out;
-  out.resize(max_size_need<CharT>(utf8));
-  size_t size = from_utf8(utf8, out.data(), out.size());
-  out.resize(size);
-  return out;
-}
-
-template<typename CharT>
-std::basic_string<CharT> ansi_to_string(const char* ansi) {
-  std::basic_string<CharT> out;
-  out.resize(max_size_need<CharT>(ansi));
-  size_t size = from_ansi(ansi, out.data(), out.size());
-  out.resize(size);
-  return out;
-}
-
-template<typename CharT>
-std::basic_string<CharT> from_unknow_charset(const char* string) {
-  if (ValidateUTF8(string)) {
-    return utf8_to_string<CharT>(string);
-  }
-  else {
-    return ansi_to_string<CharT>(string);
-  }
-}
-
 } // namespace
 
 size_t to_usascii(const char* utf8, char* ascii, size_t size) {
@@ -238,24 +196,12 @@ size_t from_utf8(const char *utf8, char *string, size_t size) {
   return safe_copy(utf8, string, size);
 }
 
-tstring from_utf8(const char *utf8) {
-  return utf8_to_string<tstring::value_type>(utf8);
-}
-
 size_t from_ansi(const char *ansi, wchar_t *unicode, size_t size) {
   return from_to(ansi, unicode, size, NextACP,  UnicodeToWChar<wchar_t>);
 }
 
 size_t from_ansi(const char *ansi, char *utf8, size_t size) {
   return from_to(ansi, utf8, size, NextACP,  UnicodeToUTF8);
-}
-
-tstring from_ansi(const char *ansi) {
-  return ansi_to_string<tstring::value_type>(ansi);
-}
-
-std::string ansi_to_utf8(const char *ansi) {
-  return ansi_to_string<std::string::value_type>(ansi);
 }
 
 const char* ci_search_substr(const char* string, const char* sub_string) {
@@ -265,56 +211,3 @@ const char* ci_search_substr(const char* string, const char* sub_string) {
 const wchar_t* ci_search_substr(const wchar_t* string, const wchar_t* sub_string) {
   return ci_search_substr<const wchar_t>(string, sub_string);
 }
-
-/**
- * Helper to do implicit charset transcoding
- */
-class from_unknow_charset_t {
-public:
-  explicit from_unknow_charset_t(const char* string) : input_string(string) {}
-
-  operator std::string() const {
-    return from_unknow_charset<std::string::value_type>(input_string);
-  }
-
-  operator std::wstring() const {
-    return from_unknow_charset<std::wstring::value_type>(input_string);
-  }
-
-private:
-  const char* input_string;
-};
-
-from_unknow_charset_t from_unknow_charset(const char* string) {
-  return  from_unknow_charset_t(string);
-}
-
-#ifndef DOCTEST_CONFIG_DISABLE
-#include <doctest/doctest.h>
-
-TEST_CASE("to_tchar_string") {
-    const std::string test_utf8("10€ƒ¶Æ");
-    const std::wstring test_unicode(L"10€ƒ¶Æ");
-
-  	SUBCASE("UTF8 -> UTF8") {
-      std::string utf8 = from_unknow_charset("10€ƒ¶Æ");
-      CHECK_EQ(utf8, test_utf8);
-    }
-
-  	SUBCASE("ANSI -> UTF8") {
-      std::string utf8 = from_unknow_charset("10\x80\x83\xB6\xC6");
-      CHECK_EQ(utf8, test_utf8);
-    }
-
-  	SUBCASE("UTF8 -> UNICODE") {
-      std::wstring unicode = from_unknow_charset("10€ƒ¶Æ");
-      CHECK_EQ(unicode, test_unicode);
-    }
-
-  	SUBCASE("ANSI -> UNICODE") {
-      std::wstring unicode = from_unknow_charset("10\x80\x83\xB6\xC6");
-      CHECK_EQ(unicode, test_unicode);
-    }
-}
-
-#endif
