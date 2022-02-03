@@ -152,27 +152,27 @@ TEST_CASE("rmc parse date with week rollover workarround") {
 			for (uint16_t month = 1; month <= 12; month++) {
 				for (uint16_t day = 1; day <= 31; day++) {
           const TCHAR *gprmc = int2gprmc(year, month, day);
-					CHECK(parse_rmc_date(gprmc, strlen(gprmc), _year, _month, _day));
+					CHECK(parse_rmc_date(gprmc, _tcslen(gprmc), _year, _month, _day));
 				}
 			}
 		}
 
 		SUBCASE("invalid string") {
-			CHECK_FALSE(parse_rmc_date("aabbcc", 6, _year, _month, _day));
-			CHECK_FALSE(parse_rmc_date("000000", 6, _year, _month, _day));
-			CHECK_FALSE(parse_rmc_date("999999", 6, _year, _month, _day));
-			CHECK_FALSE(parse_rmc_date("a", 1, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date(_T("aabbcc"), 6, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date(_T("000000"), 6, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date(_T("999999"), 6, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date(_T("a"), 1, _year, _month, _day));
 		}
 
 		SUBCASE("valid date  2019-04-07 (with rollover)") {
-            CHECK(parse_rmc_date("220899", 6, _year, _month, _day));
+            CHECK(parse_rmc_date(_T("220899"), 6, _year, _month, _day));
 			CHECK(_year == 2019);
 			CHECK(_month >= 4);
 			CHECK(_day >= 7);
 		}
 
 		SUBCASE("valid date  2019-04-07 (without rollover)") {
-			CHECK(parse_rmc_date("070419", 6, _year, _month, _day));
+			CHECK(parse_rmc_date(_T("070419"), 6, _year, _month, _day));
 			CHECK(_year == 2019);
 			CHECK(_month >= 4);
 			CHECK(_day >= 7);

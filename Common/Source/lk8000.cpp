@@ -559,6 +559,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
     const TCHAR* szCmdLine = GetCommandLine();
 #endif
 
+#ifndef DOCTEST_CONFIG_DISABLE
+  auto argc = __argc;
+  auto argv = __argv;
+#endif
+
 #else
 int main(int argc, char *argv[]) {
 

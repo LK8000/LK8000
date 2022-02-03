@@ -43,9 +43,9 @@ double ReadAltitude(const TCHAR *temp)
 
 TEST_CASE("ReadAltitude") {
 
-	CHECK(ReadAltitude("12345.12m") == doctest::Approx(12345.12).epsilon(0.0000001));
-	CHECK(ReadAltitude("12345.12M") == doctest::Approx(12345.12).epsilon(0.0000001));
-	CHECK(ReadAltitude("40502.362205f") == doctest::Approx(12345.12).epsilon(0.0000001));
-	CHECK(ReadAltitude("40502.362205F") == doctest::Approx(12345.12).epsilon(0.0000001));
+	CHECK(ReadAltitude(_T("12345.12m")) == doctest::Approx(12345.12).epsilon(0.0000001));
+	CHECK(ReadAltitude(_T("12345.12M")) == doctest::Approx(12345.12).epsilon(0.0000001));
+	CHECK(ReadAltitude(_T("40502.362205f")) == doctest::Approx(12345.12).epsilon(0.0000001));
+	CHECK(ReadAltitude(_T("40502.362205F")) == doctest::Approx(12345.12).epsilon(0.0000001));
 }
 #endif

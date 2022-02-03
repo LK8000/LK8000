@@ -311,13 +311,13 @@ double ReadLength(const TCHAR *temp)
 TEST_CASE("ParseCUP") {
 
 	SUBCASE("ReadLength") {
-		CHECK(ReadLength("1m") == doctest::Approx(1).epsilon(0.0000001));
-		CHECK(ReadLength("12345.12m") == doctest::Approx(12345.12).epsilon(0.0000001));
-		CHECK(ReadLength("6.6658315335nm") == doctest::Approx(12345.12).epsilon(0.0000001));
-		CHECK(ReadLength("7.6709019327ml") == doctest::Approx(12345.12).epsilon(0.0000001));
-		CHECK(ReadLength("1000000.0m") == doctest::Approx(1000000.0).epsilon(0.0000001));
-		CHECK(ReadLength("539.956803nm") == doctest::Approx(1000000.0).epsilon(0.0000001));
-		CHECK(ReadLength("621.371192ml") == doctest::Approx(1000000.0).epsilon(0.0000001));
+		CHECK(ReadLength(_T("1m")) == doctest::Approx(1).epsilon(0.0000001));
+		CHECK(ReadLength(_T("12345.12m")) == doctest::Approx(12345.12).epsilon(0.0000001));
+		CHECK(ReadLength(_T("6.6658315335nm")) == doctest::Approx(12345.12).epsilon(0.0000001));
+		CHECK(ReadLength(_T("7.6709019327ml")) == doctest::Approx(12345.12).epsilon(0.0000001));
+		CHECK(ReadLength(_T("1000000.0m")) == doctest::Approx(1000000.0).epsilon(0.0000001));
+		CHECK(ReadLength(_T("539.956803nm")) == doctest::Approx(1000000.0).epsilon(0.0000001));
+		CHECK(ReadLength(_T("621.371192ml")) == doctest::Approx(1000000.0).epsilon(0.0000001));
 	}
 }
 #endif

@@ -184,7 +184,17 @@
     #endif
 #endif
 
-#if defined(TESTBENCH) || !defined(NDEBUG)
+#ifdef __GNUC__
+# ifdef __MINGW32__
+#  ifndef __STDCPP_THREADS__
+// c++11 thread library is required to use doctest
+#    define DOCTEST_CONFIG_DISABLE
+#  endif
+# endif
+#endif
+
+
+#if (defined(TESTBENCH) || !defined(NDEBUG))
 #  if !__has_include(<doctest/doctest.h>)
 #    define DOCTEST_CONFIG_DISABLE
 #  endif

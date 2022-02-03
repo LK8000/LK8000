@@ -597,6 +597,7 @@ else
 endif
 
 INCLUDES	+=  -I$(SRC)/xcs
+INCLUDES	+=  -Ilib/doctest
 
 ######## compiler flags
 

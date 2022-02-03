@@ -9,6 +9,7 @@
  * Created on October 18, 2016, 10:15 PM
  */
 
+#include "options.h"
 #include "Main.hpp"
 #include "Compiler.h"
 #include "Java/Object.hxx"
@@ -37,6 +38,10 @@
 #include "UsbSerialHelper.h"
 #include "AndroidFileUtils.h"
 #include "NetUtil.h"
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#  include <doctest/doctest.h>
+#endif
 
 Context *context;
 NativeView *native_view;
@@ -129,6 +134,14 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
 
 
   ScreenInitialized();
+
+#ifndef DOCTEST_CONFIG_DISABLE
+  doctest::Context test_context;
+  int test_ret = test_context.run();
+  if(test_context.shouldExit()) {
+    return test_ret;
+  }
+#endif
 
   return Startup(nullptr);
 }

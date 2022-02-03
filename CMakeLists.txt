@@ -883,6 +883,7 @@ target_include_directories( LK8000 PRIVATE
     Common/Source
     Common/Source/xcs
     ./
+    lib/doctest
     ${GLM_INCLUDE}
 )
 
