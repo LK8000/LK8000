@@ -70,7 +70,7 @@ void ApplyFontSize(LOGFONT *logfont) {
 void ApplyCustomResize(LOGFONT *logfont, short change) {
   if (change != MAXFONTRESIZE) {
     int f = change - MAXFONTRESIZE;
-    logfont->lfHeight += logfont->lfHeight * f / 16;
+    logfont->lfHeight += (int)logfont->lfHeight * f / 16;
   }
 }
 
