@@ -111,22 +111,6 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
   return out.length();
 }
 
-size_t safe_copy(const char* gcc_restrict src, char* gcc_restrict dst, size_t size) {
-  assert(src && dst && size > 0); // invalid src or dst
-
-  char* end = std::next(dst, size - 1); // let place holder for trailing '\0'
-  char* p = dst;
-  while (p < end && *src) {
-    *p++ = *src++;
-  }
-  *p = 0; /* granted NULL-terminate dst */
-
-  if(p >= end && *src != 0) {
-    CropIncompleteUTF8(dst);
-  }
-
-  return std::distance(dst, p);
-}
 
 template<typename CharT>
 CharT* ci_search_substr(CharT* string, CharT* sub_string) {
@@ -154,19 +138,75 @@ CharT* ci_search_substr(CharT* string, CharT* sub_string) {
   return nullptr;
 }
 
+/**
+ * required size to store unicode character with utf8 encoding 
+ */ 
+template<typename CharT, 
+         typename std::enable_if_t<std::is_same_v<CharT, char>>* = nullptr>
+size_t unicode_alloc_size(unsigned ch) {
+  if (gcc_likely(ch < 0x80)) {
+    return 1;
+  } 
+  if (gcc_likely(ch < 0x800)) {
+    return 2;
+  }
+  if (ch < 0x10000) {
+    return 3;
+  }
+  if (ch < 0x200000) {
+    return 4;
+  }
+  if (ch < 0x4000000) {
+    return 5;
+  }
+  if (ch < 0x80000000) {
+    return 6;
+  }
+  // error
+  return 0;
+}
+
+/**
+ * required size to store unicode character with utf16 encoding 
+ */ 
+template<typename CharT, 
+         typename std::enable_if_t<sizeof(CharT) == sizeof(uint16_t)>* = nullptr>
+size_t unicode_alloc_size(unsigned ch) {
+    if (ch < 0x10000) {
+    return 1;
+  }
+  return 2;
+}
+
+/**
+ * required size to store unicode character with utf32 encoding 
+ */ 
+template<typename CharT, 
+         typename std::enable_if_t<sizeof(CharT) == sizeof(uint32_t)>* = nullptr>
+size_t unicode_alloc_size(unsigned ch) {
+  return 1;
+}
+
 template<typename InCharT, typename OutCharT, typename NextChar, typename UnicodeTo >
 size_t from_to(const InCharT *in, OutCharT *out, size_t size, NextChar next_char, UnicodeTo unicode_to) {
-  const auto end = std::next(out, size - 1); // size - 1 to let placeholder for '\0'
+  const auto end = std::next(out, size);
   auto p = out;
 
+  size_t required_size = 0;
   auto next = next_char(in);
-  while (next.first && p < end) {
-    p = unicode_to(next.first, p);
+  while (next.first) {
+    size_t char_size = unicode_alloc_size<OutCharT>(next.first);
+    if (p && (p + char_size) < end) {
+      p = unicode_to(next.first, p);
+    }
+    required_size += char_size;
     next = next_char(next.second);
   }
-  *p = '\0'; // add leading '\0'
+  if (p) {
+    *p = '\0'; // add leading '\0'
+  }
 
-  return std::distance(out, p);
+  return required_size;
 }
 
 } // namespace
@@ -179,7 +219,6 @@ size_t to_usascii(const wchar_t* unicode, char* ascii, size_t size) {
   return to_usascii<wchar_t>(unicode, ascii, size);
 }
 
-
 size_t to_utf8(const wchar_t *unicode, char *utf8, size_t size) {
   return from_to(unicode, utf8, size, NextChar<wchar_t>,  UnicodeToUTF8);
 }
@@ -189,11 +228,11 @@ size_t from_utf8(const char *utf8, wchar_t *unicode, size_t size) {
 }
 
 size_t to_utf8(const char *string, char *utf8, size_t size) {
-  return safe_copy(string, utf8, size);
+  return from_to(string, utf8, size, NextUTF8, UnicodeToUTF8);
 }
 
 size_t from_utf8(const char *utf8, char *string, size_t size) {
-  return safe_copy(utf8, string, size);
+  return from_to(utf8, string, size, NextUTF8, UnicodeToUTF8);
 }
 
 size_t from_ansi(const char *ansi, wchar_t *unicode, size_t size) {

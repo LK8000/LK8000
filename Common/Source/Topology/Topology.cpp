@@ -850,16 +850,18 @@ void XShapeLabel::setlabel(const char* src, charset& csLabel) {
       label= NULL;
   }
 
-  size_t size = strlen(src) + 1;
+  size_t size = strlen(src);
   if(size) {
-    label = (TCHAR*) malloc(size * sizeof (TCHAR));
-
     if ( (csLabel != latin1 || csLabel == utf8) && ValidateUTF8(src) ) {
-      // from utf-8 to UNICODE
+      size = from_utf8(src, label, 0) + 1;
+      label = (TCHAR*) malloc(size * sizeof (TCHAR));
       from_utf8(src, label, size);
     }
     else {
       csLabel = latin1;
+
+      size = from_ansi(src, label, 0) + 1;
+      label = (TCHAR*) malloc(size * sizeof (TCHAR));
       from_ansi(src, label, size);
     }
   }

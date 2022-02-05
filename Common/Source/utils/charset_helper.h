@@ -17,27 +17,6 @@
 #include "utils/stringext.h"
 #include <cstring>
 
-
-namespace detail {
-  template<typename CharT>
-  inline
-  size_t max_size_need(const char* string);
-
-  template<>
-  inline
-  size_t max_size_need<char>(const char* string) {
-    // max required target string size to convert ansi or utf8 to utf8
-    return (strlen(string) * 2) + 1; // 2 Byte for each codepoint + trailing 0
-  }
-
-  template<>
-  inline
-  size_t max_size_need<wchar_t>(const char* string) {
-    // max required target string size to convert ansi or utf8 to unicode
-    return strlen(string) + 1; // 1 wchar_t for each code point + trailing 0
-  }
-}
-
 /**
  * To Convert UTF8 string to std::basic_string
  */
@@ -45,7 +24,7 @@ template<typename CharT>
 inline
 std::basic_string<CharT> utf8_to_string(const char* utf8) {
   std::basic_string<CharT> out;
-  out.resize(detail::max_size_need<CharT>(utf8));
+  out.resize(from_utf8(utf8, (CharT*)nullptr, 0) + 1);
   size_t size = from_utf8(utf8, out.data(), out.size());
   out.resize(size);
   return out;
@@ -58,7 +37,7 @@ template<typename CharT>
 inline
 std::basic_string<CharT> ansi_to_string(const char* ansi) {
   std::basic_string<CharT> out;
-  out.resize(detail::max_size_need<CharT>(ansi));
+  out.resize(from_ansi(ansi, (CharT*)nullptr, 0) + 1);
   size_t size = from_ansi(ansi, out.data(), out.size());
   out.resize(size);
   return out;
