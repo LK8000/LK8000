@@ -53,14 +53,7 @@ class XShapeLabel: public XShape {
 
   virtual void clear();
 
-  enum charset {
-      unknown, // used for detect charset using content
-      utf8,    // utf8 detected : -> convert 
-      latin1   // latin1 (invalid utf8 code point detected) -> convert to utf8
-  };
-
-
-  void setlabel(const char* src, charset& csLabel);
+  void setlabel(const char* src);
 
   virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
   virtual bool nearestItem(int category, double lon, double lat);
@@ -131,8 +124,6 @@ class Topology final {
 
   char filename[MAX_PATH];
   int field;
-
-  XShapeLabel::charset csLabel;
 };
 
 

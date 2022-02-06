@@ -17,8 +17,7 @@
 #include "ShapeSpecialRenderer.h"
 #include "NavFunctions.h"
 #include "ScreenGeometry.h"
-#include "utils/stringext.h"
-#include "Util/UTF8.hpp"
+#include "utils/charset_helper.h"
 #include <functional>
 #include "Utils.h"
 
@@ -158,7 +157,6 @@ Topology::Topology(const TCHAR* shpname, int field1) {
   in_scale = false;
 
   field = field1;
-  csLabel = XShapeLabel::unknown;
 
   // filename aleady points to _MAPS subdirectory!
   to_utf8(shpname, filename);
@@ -525,7 +523,7 @@ XShape* Topology::addShape(const int i) {
     XShapeLabel* theshape = new(std::nothrow) XShapeLabel();
     if(theshape) {
       theshape->load(&shpfile,i);
-      theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field), csLabel);
+      theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
     }
     return theshape;
   }
@@ -816,7 +814,7 @@ bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surfa
 }
 
 
-void XShapeLabel::setlabel(const char* src, charset& csLabel) {
+void XShapeLabel::setlabel(const char* src) {
   // Case1 : NULL or not informative label, we show the shape without label
   if (
       (src == NULL) ||
@@ -852,18 +850,9 @@ void XShapeLabel::setlabel(const char* src, charset& csLabel) {
 
   size_t size = strlen(src);
   if(size) {
-    if ( (csLabel != latin1 || csLabel == utf8) && ValidateUTF8(src) ) {
-      size = from_utf8(src, label, 0) + 1;
-      label = (TCHAR*) malloc(size * sizeof (TCHAR));
-      from_utf8(src, label, size);
-    }
-    else {
-      csLabel = latin1;
-
-      size = from_ansi(src, label, 0) + 1;
-      label = (TCHAR*) malloc(size * sizeof (TCHAR));
-      from_ansi(src, label, size);
-    }
+    size = from_unknown_charset(src, label, 0) + 1;
+    label = (TCHAR*) malloc(size * sizeof (TCHAR));
+    size = from_unknown_charset(src, label, size);
   }
 
   hide=false;
