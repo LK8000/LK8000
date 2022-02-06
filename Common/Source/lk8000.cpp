@@ -595,12 +595,18 @@ int main(int argc, char *argv[]) {
   std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
 
 #ifndef DOCTEST_CONFIG_DISABLE
-  doctest::Context test_context(argc, argv);
-  int test_ret = test_context.run();
-  if(test_context.shouldExit()) {
-    return test_ret;
+  {
+    doctest::Context test_context(argc, argv);
+    startup_store_ostream<char> out;
+    test_context.setCout(&out);
+    test_context.setOption("no-intro", true);
+    test_context.setOption("no-colors", true);
+    int test_ret = test_context.run();
+    if (test_context.shouldExit()) {
+      return test_ret;
+    }
   }
-#endif  
+#endif
 
   if(Startup(szCmdLine)) {
     //

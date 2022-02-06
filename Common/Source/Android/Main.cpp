@@ -136,10 +136,16 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   ScreenInitialized();
 
 #ifndef DOCTEST_CONFIG_DISABLE
-  doctest::Context test_context;
-  int test_ret = test_context.run();
-  if(test_context.shouldExit()) {
-    return test_ret;
+  { 
+    doctest::Context test_context;
+    startup_store_ostream<char> out;
+    test_context.setCout(&out);
+    test_context.setOption("no-intro", true);
+    test_context.setOption("no-colors", true);
+    int test_ret = test_context.run();
+    if (test_context.shouldExit()) {
+      return test_ret;
+    }
   }
 #endif
 

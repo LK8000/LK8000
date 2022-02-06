@@ -15,6 +15,7 @@
 #include "Compiler.h"
 #include <tchar.h>
 #include <stdarg.h>
+#include <iostream>
 #include "Util/tstring.hpp"
 
 /**
@@ -71,10 +72,41 @@ void DebugLog(const TCHAR* fmt, ...) {
 #endif
 }
 
+/**
+ * stream to write log line to RUNTIME.LOG.
+ */
+template<typename _CharT, typename _Traits = std::char_traits<_CharT>>
+class startup_store_streambuf : public std::basic_streambuf<_CharT, _Traits> {
+
+    using char_type = typename std::basic_streambuf<_CharT, _Traits>::char_type;
+    using traits_type = typename std::basic_streambuf<_CharT, _Traits>::traits_type;
+    using int_type = typename traits_type::int_type;
+
+    std::basic_string<char_type> string;
+
+protected:
+    int_type overflow(int_type c) override {
+        if (c == '\n') {
+            StartupStore(_T("%s"), to_tstring(string).c_str());
+            string.clear();
+        } else {
+            string.push_back( c );
+        }
+        return traits_type::not_eof(c);
+    }
+};
+
+template<typename _CharT, typename _Traits = std::char_traits<_CharT>>
+class startup_store_ostream : public std::basic_ostream<_CharT, _Traits> {
+public:
+	startup_store_ostream () : std::ostream(&_streambuf) { }
+
+protected:
+	startup_store_streambuf<_CharT, _Traits> _streambuf;
+};
 
 tstring toHexString(const void* data, size_t size);
 
 void StartupLogFreeRamAndStorage();
 
 #endif	/* MESSAGELOG_H */
-
