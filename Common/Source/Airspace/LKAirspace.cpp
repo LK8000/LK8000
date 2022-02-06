@@ -1350,8 +1350,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
             Alt->Altitude = QNEAltitudeToQNHAltitude((Alt->FL * 100) / TOFEET);
 
         }
-        else if ((_tcscmp(pToken, TEXT("UNL")) == 0)
-              || (_tcscmp(pToken, TEXT("UNLTD")) == 0))  {
+        else if ((_tcsncmp(pToken, TEXT("UNL"), 3) == 0))  {
             // JMW added Unlimited (used by WGC2008)
             Alt->Base = abMSL;
             Alt->AGL = -1;
