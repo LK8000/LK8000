@@ -29,37 +29,46 @@ class XShape {
   /**
    * return true if shape have label ( XShapeLabel object without empty label )
    */
-  virtual bool HasLabel() const { return false; }
+  virtual bool HasLabel() const {
+    return false;
+  }
 
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
 
-  virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const { (void)x; (void)y; (void)Surface; return false;};
-  virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
+  virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const {
+    return false;
+  }
 
-  bool hide;
+  virtual bool nearestItem(int category, double lon, double lat) const {
+    return true;
+  }
+
+  bool hide = false;
   shapeObj shape;
 };
 
 
 class XShapeLabel: public XShape {
  public:
-  XShapeLabel() : label() { }
-  virtual ~XShapeLabel();
+  XShapeLabel() = default;
+  ~XShapeLabel();
 
-  virtual bool HasLabel() const {
+  bool HasLabel() const override {
       return ( label && ( label[0] != TEXT('\0')));
   }
 
-  virtual void clear();
+  void clear() override;
 
-  void setlabel(const char* src);
+  void clearLabel();
 
-  virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const;
-  virtual bool nearestItem(int category, double lon, double lat);
+  void setLabel(const char* src);
+
+  bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface, int x, int y, const RECT& ClipRect) const override;
+  bool nearestItem(int category, double lon, double lat) const override;
 
 protected:
-  TCHAR *label;
+  TCHAR *label = nullptr;
 };
 
 

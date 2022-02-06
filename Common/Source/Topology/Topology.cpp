@@ -523,7 +523,7 @@ XShape* Topology::addShape(const int i) {
     XShapeLabel* theshape = new(std::nothrow) XShapeLabel();
     if(theshape) {
       theshape->load(&shpfile,i);
-      theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
+      theshape->setLabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
     }
     return theshape;
   }
@@ -722,7 +722,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   Surface.SelectObject(hfOld);
 }
 
-bool XShapeLabel::nearestItem(int category, double lon, double lat) {
+bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
 
   NearestTopoItem *item;
   if(!label || _tcslen(label) == 0) {
@@ -813,41 +813,59 @@ bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surfa
     return false; // 101016
 }
 
+namespace {
 
-void XShapeLabel::setlabel(const char* src) {
+bool ValidLabel(const char* src) {
+  if (!src) {
+    return false;
+  }
+  if (strcmp(src, "NULL") == 0) {
+    return false;
+  }
+  if (strcmp(src, "UNK") == 0) {
+    return false;
+  }
+  return true;
+}
+
+static
+bool HiddenLabel(const char* src) {
+  if (src) {
+    if (strcmp(src, "RAILWAY STATION") == 0) {
+      return true;
+    }
+    if (strcmp(src, "RAILROAD STATION") == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+} // namespace
+
+void XShapeLabel::clearLabel() {
+  if (label) {
+    free(label);
+    label = nullptr;
+  }
+}
+
+void XShapeLabel::setLabel(const char* src) {
+  clearLabel();
+
   // Case1 : NULL or not informative label, we show the shape without label
-  if (
-      (src == NULL) ||
-      (strcmp(src,"NULL") == 0) ||
-      (strcmp(src,"UNK") == 0)
-     ) {
-	if (label) {
-		free(label);
-		label= NULL;
-	}
-	hide=false;
-	return;
+  if (!ValidLabel(src)) {
+    hide = false;
+    return;
   }
 
   // Case2 : shapes that do not contain any useful information, we HIDE the shape and the label
-  if (
-      (strcmp(src,"RAILWAY STATION") == 0) ||
-      (strcmp(src,"RAILROAD STATION") == 0)
-     ) {
-	if (label) {
-		free(label);
-		label= NULL;
-	}
-	hide=true;
-	return;
+  if (HiddenLabel(src)) {
+    hide = true;
+    return;
   }
+
   // Any other case : we display shape and its label as well
-
-  if (label) {
-      free(label);
-      label= NULL;
-  }
-
   size_t size = strlen(src);
   if(size) {
     size = from_unknown_charset(src, label, 0) + 1;
@@ -855,25 +873,16 @@ void XShapeLabel::setlabel(const char* src) {
     size = from_unknown_charset(src, label, size);
   }
 
-  hide=false;
+  hide = false;
 }
-
 
 XShapeLabel::~XShapeLabel() {
-  if (label) {
-    free(label);
-    label= NULL;
-  }
+  clearLabel();
 }
-
-
 
 void XShapeLabel::clear() {
   XShape::clear();
-  if (label) {
-    free(label);
-    label= NULL;
-  }
+  clearLabel();
 }
 
 void Topology::SearchNearest(const rectObj& bounds) {
@@ -881,13 +890,13 @@ void Topology::SearchNearest(const rectObj& bounds) {
   if (!shapefileopen) return;
 
   if(msRectOverlap(&shpfile.bounds, &bounds) != MS_TRUE) {
-      return;
+    return;
   }
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
 
     std::unique_ptr<XShape> shape_tmp;
-	XShape *cshape = shpCache[ixshp];
+    XShape *cshape = shpCache[ixshp];
     if(!cshape) {
       if((cache_mode == 1) && (msRectOverlap(&shpBounds[ixshp], &bounds) != MS_TRUE)) {
           // if bounds is in cache and does not overlap no need to load shape;
