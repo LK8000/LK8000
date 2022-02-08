@@ -212,7 +212,8 @@ BOOL DevRCFenix::Config(PDeviceDescriptor_t d) {
 
 extern int DeviceASCIIConvert(TCHAR *pDest,const TCHAR *pSrc, int size=11);
 
-BOOL DevRCFenix::FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
+static
+BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
   if(DeclStrings) {
     int  lat = 0; 
     int  lon = 0; 
@@ -298,12 +299,12 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
     pTakeOff = &WayPointList[HomeWaypoint];
   }
-  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Takeoff
+  FormatTP(DeclStrings[i++], num++ , wpCount, pTakeOff);   // Takeoff
 
   
 
   for (int ii = 0; ii < wpCount; ii++) {
-    FormatTP( (TCHAR*) &DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
+    FormatTP(DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
 
     GetTaskSectorParameter(ii, &Type, &SecRadius);
     switch(Type) {
@@ -320,7 +321,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     num++;
   }
 
-  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
+  FormatTP(DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
 
   bool status= false;
   if ( StopRxThread(d, errBufSize, errBuf)) {

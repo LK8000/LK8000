@@ -54,8 +54,6 @@ protected:
   const TCHAR* GetName() {
     return _T("RC Fenix");  
   }
-
-  static BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp);
   /// Writes declaration into the logger.
   static BOOL DeclareTask(PDeviceDescriptor_t d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
