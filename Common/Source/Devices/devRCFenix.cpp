@@ -246,8 +246,6 @@ BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
 //static
 BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
-  
-  Class lxClass;
 
   bool Good  = true;
 

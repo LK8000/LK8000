@@ -870,15 +870,6 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Constructor - sets all data to 0.
-///
-DevLXNanoIII::Decl::Decl(){
-  memset(this, 0, sizeof(*this));
-} // Decl()
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Format waypoint data
 ///
 /// @param buf  [out] buffer
@@ -928,17 +919,6 @@ void DevLXNanoIII::Decl::WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type){
 //
 // *****************************************************************************
 // #############################################################################
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Constructor - sets all data to 0.
-///
-DevLXNanoIII::Class::Class(){
-  memset(this, 0, sizeof(*this));
-} // Class()
-
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Sets the value of @c name member.

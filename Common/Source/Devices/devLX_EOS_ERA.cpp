@@ -777,26 +777,6 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
 } // DeclareTask()
 
 
-// #############################################################################
-// *****************************************************************************
-//
-//   DevLX_EOS_ERA::Class
-//
-// *****************************************************************************
-// #############################################################################
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Sets the value of @c name member.
-///
-/// @param text  string to be set (will be converted into ASCII)
-///
-void DevLX_EOS_ERA::Class::SetName(const TCHAR* text){
-  Wide2LxAscii(text, name);
-} // SetName()
-
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Send one line of declaration to logger
 ///

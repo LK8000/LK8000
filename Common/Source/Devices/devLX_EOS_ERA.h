@@ -88,14 +88,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
   //----------------------------------------------------------------------------
   protected:
 
-    /// task declaration structure for device
-    class Decl;
-
-    /// competition class
-    class Class;
-
-    //..........................................................................
-
     /// Protected only constructor - class should not be instantiated.
     DevLX_EOS_ERA() {}
 
@@ -170,102 +162,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static BOOL EOSSetSTF(PDeviceDescriptor_t d,int iTmp, const TCHAR *info);
 
 }; // DevLX_EOS_ERA
-
-
-// #############################################################################
-// *****************************************************************************
-//
-//   DevLX_EOS_ERA::Decl
-//
-// *****************************************************************************
-// #############################################################################
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// LX task declaration data.
-/// This data are byte-by-byte sent to device.
-///
-
-
-
-class DevLX_EOS_ERA::Decl
-{
-  //----------------------------------------------------------------------------
-  public:
-
-    /// class constants
-    enum Consts
-    {
-      min_wp_count =  4,  ///< minimum waypoint count
-      max_wp_count = 12,  ///< maximum waypoint count
-    }; // Consts
-
-    /// String member ID (all explicitly defined ids here must have value <0)
-    enum StrId
-    {
-      fl_pilot    = -1,
-      fl_glider   = -2,
-      fl_reg_num  = -3,
-      fl_cmp_num  = -4,
-      fl_observer = -5,
-      fl_gps      = -6,
-    }; // StrId
-
-    /// Competitions Class
-    enum Class
-    {
-      cls_standard    = 0,
-      cls_15_meter    = 1,
-      cls_open        = 2,
-      cls_18_meter    = 3,
-      cls_world       = 4,
-      cls_double      = 5,
-      cls_motor_gl    = 6,
-      cls_textdef     = 7, ///< class will be written with PKT_CCWRITE)
-    }; // Class
-
-    /// waypoint type
-    enum WpType
-    {
-      tp_undef   = 0, ///< waypoint will be ignored
-      tp_regular = 1, ///< Start, TP, Finish
-      tp_landing = 2,
-      tp_takeoff = 3,
-    }; // WpType
-
-}; // DevLX_EOS_ERA::Decl
-
-
-
-// #############################################################################
-// *****************************************************************************
-//
-//   DevLX_EOS_ERA::Class
-//
-// *****************************************************************************
-// #############################################################################
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// LX task declaration data - competition class.
-/// This data are byte-by-byte sent to device.
-///
-class DevLX_EOS_ERA::Class
-{
-  //----------------------------------------------------------------------------
-  public:
-
-    /// competition class name
-    char  name[9] = {};
-
-    //..........................................................................
-
-    /// Constructor - sets all data to 0.
-    Class() = default;
-
-    /// Sets the value of @c name member.
-    void SetName(const TCHAR* text);
-
-
-}; // DevLX_EOS_ERA::Class
 
 //______________________________________________________________________________
 

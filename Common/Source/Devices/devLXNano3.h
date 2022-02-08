@@ -209,12 +209,8 @@ class DevLXNanoIII::Decl
 
     //..........................................................................
 
-    /// Constructor - sets all data to 0.
-    Decl();
-
     // Format waypoint
     void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type);
-
 
 }; // DevLXNanoIII::Decl
 
@@ -238,16 +234,15 @@ class DevLXNanoIII::Class
   public:
 
     /// competition class name
-    char  name[9];
+    char  name[9] = {};
 
     //..........................................................................
 
     /// Constructor - sets all data to 0.
-    Class();
+    Class() = default;
 
     /// Sets the value of @c name member.
     void SetName(const TCHAR* text);
-
 
 }; // DevLXNanoIII::Class
 
