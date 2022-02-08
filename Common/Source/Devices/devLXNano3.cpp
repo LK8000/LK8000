@@ -188,7 +188,6 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->PutMacCready = Nano3_PutMacCready;
   d->PutBugs      = Nano3_PutBugs;
   d->PutBallast   = Nano3_PutBallast;
-  d->Open         = Open;
   d->Declare      = DeclareTask;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
@@ -449,16 +448,6 @@ static char lastSec =0;
                 }
 return false;
 } // ParseNMEA()
-
-
-
-BOOL DevLXNanoIII::Open( PDeviceDescriptor_t d) {
-
-  return TRUE;
-}
-
-
-
 
 CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
@@ -1262,14 +1251,6 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
 #endif
   return bWasInProgress;
 }
-
-
-BOOL DevLXNanoIII::Close (PDeviceDescriptor_t d) {
-  Device(NULL);
-  return TRUE;
-}
-
-
 
 
 BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)

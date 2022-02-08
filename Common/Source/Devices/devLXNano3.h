@@ -100,8 +100,6 @@ class DevLXNanoIII : public DevLX
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL Open( PDeviceDescriptor_t d);
-   static BOOL Close( PDeviceDescriptor_t d);
    static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
