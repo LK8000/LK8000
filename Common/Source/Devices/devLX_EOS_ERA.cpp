@@ -622,8 +622,8 @@ int DeviceASCIIConvert(TCHAR *pDest, const TCHAR *pSrc, int size=11)
   return 0;
 }
 
-
-BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
+static
+BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
 {
   if(DeclStrings) {
 
@@ -708,13 +708,13 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
   {
     pTakeOff = &WayPointList[HomeWaypoint];
   }
-  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Takeoff
+  FormatTP(DeclStrings[i++], num++ , wpCount, pTakeOff);   // Takeoff
 
   
 
   for (int ii = 0; ii < wpCount; ii++)
   {
-    FormatTP( (TCHAR*) &DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
+    FormatTP(DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
 
     double SecRadius;
     int Type;
@@ -735,7 +735,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
     num++;
   }
 
-  FormatTP( (TCHAR*) &DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
+  FormatTP(DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
 
   bool status= false;
   if ( StopRxThread(d, errBufSize, errBuf)) {
@@ -1366,12 +1366,6 @@ BOOL DevLX_EOS_ERA::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
   // nothing to do
   return(true);
 } // LXWP3()
-
-
-
-
-
-
 
 
 BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
