@@ -15,9 +15,6 @@
 #include "resource.h"
 #include "LKInterface.h"
 #include "McReady.h"
-#include <queue>
-#include "Thread/Cond.hpp"
-
 
 extern bool UpdateQNH(const double newqnh);
 
