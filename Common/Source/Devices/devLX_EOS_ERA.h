@@ -122,10 +122,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL Open( PDeviceDescriptor_t d);
-   static BOOL Close( PDeviceDescriptor_t d);
-
-
    static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
  //  static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
   static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
@@ -149,12 +145,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static void IGCDownload(BOOL bDL) {bIGC_Download = bDL;};
    static BOOL Declare(void) {return m_bDeclare;};
    static void Declare(BOOL bDL) {m_bDeclare = bDL;};
-  // static int Port(void) { if(pDevice) return m_pDevice->PortNumber; else return -1;};
-
- //  static PDeviceDescriptor_t Device(void) {return m_pDevice;};
-   //static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
-
-   static CallBackTableEntry_t CallBackTable[];
 
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
@@ -242,11 +232,6 @@ class DevLX_EOS_ERA::Decl
       tp_takeoff = 3,
     }; // WpType
 
-    //..........................................................................
-
-    /// Constructor - sets all data to 0.
-    Decl();
-
 }; // DevLX_EOS_ERA::Decl
 
 
@@ -269,12 +254,12 @@ class DevLX_EOS_ERA::Class
   public:
 
     /// competition class name
-    char  name[9];
+    char  name[9] = {};
 
     //..........................................................................
 
     /// Constructor - sets all data to 0.
-    Class();
+    Class() = default;
 
     /// Sets the value of @c name member.
     void SetName(const TCHAR* text);

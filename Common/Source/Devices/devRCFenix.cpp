@@ -61,7 +61,6 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->PutMacCready = FenixPutMacCready;
   d->PutBugs      = FenixPutBugs;
   d->PutBallast   = FenixPutBallast;
-  d->Open         = Open;
   d->Declare      = DeclareTask;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
@@ -247,7 +246,6 @@ BOOL DevRCFenix::FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT
 BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
   
-  Decl  decl;
   Class lxClass;
 
   bool Good  = true;
