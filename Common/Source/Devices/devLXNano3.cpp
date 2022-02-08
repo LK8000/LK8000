@@ -871,41 +871,6 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
   return(status);
 } // DeclareTask()
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts TCHAR[] string into US-ASCII string with characters safe for
-/// writing to LX devices.
-///
-/// Characters are converted into their most similar representation
-/// in ASCII. Nonconvertable characters are replaced by '?'.
-///
-/// Output string will always be terminated by '\0'.
-///
-/// @param input    input string (must be terminated with '\0')
-/// @param outSize  output buffer size
-/// @param output   output buffer
-///
-/// @retval true  all characters copied
-/// @retval false some characters could not be copied due to buffer size
-///
-//static
-bool DevLXNanoIII::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
-  if (outSize == 0)
-    return(false);
-  int res = to_usascii(input, output, outSize);
-  // replace all non-ascii characters with '?' - LX devices is very sensitive
-  // on non-ascii chars - the electronic seal can be broken
-  // (to_usascii() should be enough, but to be sure that someone has not
-  // incorrectly changed to_usascii())
-  output--;
-  while (*++output != '\0') {
-    if (*output < 32 || *output > 126) *output = '?';
-  }
-  return(res >= 0);
-} // Wide2LxAscii()
-
-
-
 // #############################################################################
 // *****************************************************************************
 //
@@ -992,7 +957,7 @@ DevLXNanoIII::Class::Class(){
 /// @param text  string to be set (will be converted into ASCII)
 ///
 void DevLXNanoIII::Class::SetName(const TCHAR* text){
-  Wide2LxAscii(text, sizeof(name), name);
+  Wide2LxAscii(text, name);
 } // SetName()
 
 
@@ -1017,7 +982,7 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned e
   }
 
   char asciibuf[256];
-  Wide2LxAscii(buf, 256, asciibuf);
+  Wide2LxAscii(buf, asciibuf);
   unsigned char chksum = 0;
 
   if (!ComWrite(d, '$', errBufSize, errBuf)) {

@@ -11,6 +11,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "devLX.h"
+#include "utils/stringext.h"
 #include "utils/printf.h"
 
 //____________________________________________________________class_definitions_
@@ -306,3 +307,35 @@ double fTmp;
 
   return false;
 }
+
+/**
+ * Converts TCHAR[] string into US-ASCII string with characters safe for
+ * writing to LX devices.
+ *
+ * Characters are converted into their most similar representation
+ * in ASCII. Nonconvertable characters are replaced by '?'.
+ *
+ * Output string will always be terminated by '\0'.
+ *
+ * @param input    input string (must be terminated with '\0')
+ * @param outSize  output buffer size
+ * @param output   output buffer
+ */
+void DevLX::Wide2LxAscii(const TCHAR* input, int outSize, char* output) {
+  assert(output && (outSize > 0));
+
+  if (output && (outSize > 0)) {
+
+    to_usascii(input, output, outSize);
+
+    // replace all non-ascii characters with '?' - LX Colibri is very sensitive
+    // on non-ascii chars - the electronic seal can be broken
+    // (to_usascii() should be enough, but to be sure that someone has not
+    // incorrectly changed to_usascii())
+    for (; *output != '\0'; ++output) {
+      if (*output < 32 || *output > 126) {
+        *output = '?';
+      }
+    }
+  }
+} // Wide2LxAscii()

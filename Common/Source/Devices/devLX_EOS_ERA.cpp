@@ -792,7 +792,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
 /// @param text  string to be set (will be converted into ASCII)
 ///
 void DevLX_EOS_ERA::Class::SetName(const TCHAR* text){
-  Wide2LxAscii(text, sizeof(name), name);
+  Wide2LxAscii(text, name);
 } // SetName()
 
 

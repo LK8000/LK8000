@@ -86,6 +86,15 @@ class DevLX : public DevBase
     static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
     static bool GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+    /// Converts TCHAR[] string into US-ASCII string.
+    static void Wide2LxAscii(const TCHAR* input, int outSize, char* output);
+
+    template<size_t size>
+    static void Wide2LxAscii(const TCHAR* input, char (&output)[size]) {
+      Wide2LxAscii(input, size, output);
+    }
+
 }; // DevLX
 
 //______________________________________________________________________________
