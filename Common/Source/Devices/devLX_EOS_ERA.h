@@ -83,8 +83,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
       return devRegister(GetName(), Install);
     }
 
-    static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
-
   //----------------------------------------------------------------------------
   protected:
 
