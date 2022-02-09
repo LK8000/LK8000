@@ -65,9 +65,9 @@ list(APPEND	BUILD_FLAGS
     -Wunused-value 
     -Wuninitialized 
     -Wmissing-field-initializers
-    -Wno-char-subscripts 
     -Wparentheses
     -Wredundant-decls
+    -Wno-unknown-warning-option
 )
 string(REPLACE ";" " " BUILD_FLAGS "${BUILD_FLAGS}")
 
@@ -591,6 +591,7 @@ add_library( LK8000 SHARED
     Common/Source/utils/hmac_sha2.cpp
     Common/Source/utils/base64.cpp
     Common/Source/utils/charset_helper.cpp
+    Common/Source/utils/printf.cpp
 
     Common/Source/Comm/LKFlarm.cpp
     Common/Source/Comm/LKFanet.cpp
