@@ -32,7 +32,7 @@
 #include "InputEvents.h"
 #include "McReady.h"
 #include "Time/PeriodClock.hpp"
-
+#include "utils/printf.h"
 
 
 extern bool UpdateQNH(const double newqnh);
@@ -1343,7 +1343,7 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
          uint uPercent = 0;
          if(TotalLines > 0)
            uPercent = (m_CurLine*100) / TotalLines;
-         _sntprintf(Par[1], MAX_NMEA_PAR_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
+         lk::snprintf(Par[1], _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
 
     #ifdef NANO_PROGRESS_DLG
          IGCProgressDialogText(Par[1]);

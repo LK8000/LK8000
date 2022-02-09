@@ -55,7 +55,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       return(false);
   }
 
-  _tcsncpy(path, fileName, std::size(path));
+  path = fileName;
 
 
   fp = _tfopen(fileName, fmode);
@@ -108,7 +108,7 @@ void Utf8File::WriteLn(const TCHAR* unicode) {
 #endif
   
     if (fputs(cstr, fp) == EOF && !writeErReported) {
-      StartupStore(_T("Cannot wite to file '%s'\n"), path);
+      StartupStore(_T("Cannot wite to file '%s'\n"), path.c_str());
       writeErReported = true;
     }
   }

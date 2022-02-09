@@ -30,6 +30,7 @@
 #include "Radio.h"
 #include "Library/rapidxml/rapidxml.hpp"
 #include "utils/tokenizer.h"
+#include "utils/printf.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
@@ -1993,9 +1994,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
             default:
                 if (maxwarning > 0) {
                     if (maxwarning == 1) {
-                        _stprintf(sTmp, TEXT("Parse error 7 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                        lk::snprintf(sTmp, TEXT("Parse error 7 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
                     } else {
-                        _stprintf(sTmp, TEXT("Parse error 8 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                        lk::snprintf(sTmp, TEXT("Parse error 8 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                     }
                     maxwarning--;
                     // LKTOKEN  _@M68_ = "Airspace"

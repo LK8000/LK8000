@@ -16,6 +16,7 @@
 #include "dlgEOSIGCDownload.h"
 #include "dlgIGCProgress.h"
 #include "utils/tokenizer.h"
+#include "utils/printf.h"
 
 #define EOS_PRPGRESS_DLG    
   
@@ -294,10 +295,10 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-        _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), Tmp); // already copied
+        lk::snprintf(text1, _T("✔ %s"), Tmp); // already copied
     } else {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-       _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), Tmp);// already copied
+       lk::snprintf(text1, _T("* %s"), Tmp);// already copied
     }
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
@@ -712,10 +713,10 @@ uint16_t error= REC_NO_ERROR;
         if(FileSize > 0) // (BytesRead*100)/FileSize
         {
           double fPercent = ((double)BytesRead*100.0)/(double)FileSize;
-          _stprintf(szEOS_DL_StatusText, _T("%3.1f%% %s"),fPercent, DownoadIGCFilename); 
+          lk::snprintf(szEOS_DL_StatusText, _T("%3.1f%% %s"),fPercent, DownoadIGCFilename); 
         }
         else
-          _stprintf(szEOS_DL_StatusText, _T("%i %s"),BlockNo, DownoadIGCFilename);
+          lk::snprintf(szEOS_DL_StatusText, _T("%i %s"),BlockNo, DownoadIGCFilename);
 
         EOS_IGCReadDialog.DownloadError(error);
         
@@ -739,7 +740,7 @@ uint16_t error= REC_NO_ERROR;
       
     case ALL_RECEIVED_STATE:      
       StartupStore(TEXT("EOS/ERA/10k IGC File Download end (%i Blocks)"),BlockNo);    
-      _stprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken(2406));
+      lk::snprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken(2406));
       fclose (pf_IGCFile);
       pf_IGCFile = NULL;
       EOS_IGCReadDialog.DownloadError(REC_NO_ERROR);
@@ -751,7 +752,7 @@ uint16_t error= REC_NO_ERROR;
       fclose (pf_IGCFile);
        pf_IGCFile = NULL;
       GetEOSIGCFilename(PathIGCFilename, DownoadIGCFilename);   
-        _stprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken(2415));
+      lk::snprintf(szEOS_DL_StatusText, _T("%s %s"), DownoadIGCFilename,MsgToken(2415));
       lk::filesystem::deleteFile( PathIGCFilename); 
       EOS_IGCReadDialog.DownloadError(REC_ABORTED);
       EOS_ThreadState = SIGNAL_STATE;       
@@ -795,7 +796,7 @@ static bool OnTimer(WndForm *pWnd) {
 
           switch (EOS_IGCReadDialog.DownloadError()) {
           case REC_NO_ERROR:
-            _sntprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"),
+            lk::snprintf(Tmp, STATUS_TXT_LEN, _T("%s\n%s"),
                        DownoadIGCFilename, MsgToken(2406));
             break; // 	_@M2406_ "IGC File download complete"
           case REC_TIMEOUT_ERROR:

@@ -21,6 +21,7 @@
 #include "Draw/LoadSplash.h"
 #include "InfoBoxLayout.h"
 #include "LKInterface.h"
+#include "utils/printf.h"
 
 #ifdef KOBO
   #include "Kobo/Kernel.hpp"
@@ -247,12 +248,12 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
             LKASSERT(szPolarFile[0]);
             LK_tsplitpath(szPolarFile, NULL, NULL, srcfile, NULL);
 
-            _stprintf(mes, _T("%s %s"), MsgToken(528), srcfile); // polar file
+            lk::snprintf(mes, _T("%s %s"), MsgToken(528), srcfile); // polar file
             RawWrite(Surface, mes, 7, 2, RGBAMBER, WTMODE_OUTLINED);
 
             LKASSERT(startProfileFile[0]);
             LK_tsplitpath(startProfileFile, NULL, NULL, srcfile, NULL);
-            _stprintf(mes, _T("%s: %s"), MsgToken(1746), srcfile);
+            lk::snprintf(mes, _T("%s: %s"), MsgToken(1746), srcfile);
             RawWrite(Surface, mes, 11, 1, RGBICEWHITE, WTMODE_NORMAL);
         }
 
@@ -787,7 +788,7 @@ short dlgStartupShowModal(void) {
         TCHAR mes[MAX_PATH];
         StartupStore(_T("... CHECK LANGUAGE en.json FAILED!%s"), NEWLINE);
         LocalPath(mydir, _T(LKD_LANGUAGE));
-        _stprintf(mes, _T("%s/en.json"), mydir);
+        lk::snprintf(mes, _T("%s/en.json"), mydir);
         MessageBoxX(_T("en.json MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
@@ -799,7 +800,7 @@ short dlgStartupShowModal(void) {
         TCHAR mes[MAX_PATH];
         StartupStore(_T("... CHECK SYSTEM DEFAULT_MENU.TXT FAILED!%s"), NEWLINE);
         SystemPath(mydir, _T(LKD_SYSTEM));
-        _stprintf(mes, _T("%s/DEFAULT_MENU.TXT"), mydir);
+        lk::snprintf(mes, _T("%s/DEFAULT_MENU.TXT"), mydir);
         MessageBoxX(_T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;
@@ -817,7 +818,7 @@ short dlgStartupShowModal(void) {
         TCHAR mes[MAX_PATH];
         StartupStore(_T("... CHECK SYSTEM _BITMAPSH FAILED!%s"), NEWLINE);
         SystemPath(mydir, _T(LKD_BITMAPS));
-        _stprintf(mes, _T("%s/_BITMAPSH"), mydir);
+        lk::snprintf(mes, _T("%s/_BITMAPSH"), mydir);
         MessageBoxX(_T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), mbOk);
         MessageBoxX(mes, _T("MISSING FILE!"), mbOk, true);
         RUN_MODE = RUN_EXIT;

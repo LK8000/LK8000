@@ -14,6 +14,7 @@
 #include <ctype.h>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"
+#include "utils/printf.h"
 #include "utils/array_back_insert_iterator.h"
 #include "OS/Memory.h"
 #include "Util/Clamp.hpp"
@@ -600,15 +601,15 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, const Declaration_t *decl)
 
 		if(errorBuffer[0] == '\0') {
 			// LKTOKEN  _@M1410_ = "Unknown error"
-			_tcsncpy(errorBuffer, MsgToken(1410), ERROR_BUFFER_LEN);
+			lk::snprintf(errorBuffer, _T("%s"), MsgToken(1410));
 		} else {
 			// do it just to be sure
 			errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
 		}
-        StartupStore(_T("Error! Task NOT declared : %s" NEWLINE), errorBuffer);
+    StartupStore(_T("Error! Task NOT declared : %s"), errorBuffer);
 
 		// LKTOKEN  _@M265_ = "Error! Task NOT declared!"
-		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), MsgToken(265), errorBuffer);
+		lk::snprintf(buffer, _T("%s\n%s"), MsgToken(265), errorBuffer);
 		MessageBoxX(buffer, dev->Name, mbOk);
 
 		DeclaredToDevice = false;

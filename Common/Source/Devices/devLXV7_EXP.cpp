@@ -13,6 +13,7 @@
 #include "devLXV7_EXP.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
+#include "utils/printf.h"
 
 extern bool UpdateQNH(const double newqnh);
 
@@ -601,8 +602,7 @@ if(_tcslen(String) < 180)
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
-    if(_tcslen(ctemp) < DEVNAMESIZE)
-	  _stprintf(d->Name, _T("%s"),ctemp);
+    lk::snprintf(d->Name, _T("%s"),ctemp);
     StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,1);

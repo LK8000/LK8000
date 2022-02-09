@@ -143,7 +143,8 @@ void CreateIGCProgressDialog() {
 
 
 void IGCProgressDialogText(const TCHAR *text) {
-	_tcsncpy(m_szTmp,text,MAX_STATUS_TXT_LEN);
+	_tcsncpy(m_szTmp,text,MAX_STATUS_TXT_LEN - 1);
+  m_szTmp[MAX_STATUS_TXT_LEN - 1] = _T('\0');
 }
 
 

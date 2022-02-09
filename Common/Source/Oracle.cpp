@@ -15,6 +15,8 @@
 #include "Draw/ScreenProjection.h"
 #include "LKStyle.h"
 #include "NavFunctions.h"
+#include "utils/printf.h"
+#include "utils/printf.h"
 
 const TCHAR *DegreesToText(double brg) {
   if (brg<23||brg>=338) { return MsgToken(1703); } // North
@@ -364,7 +366,7 @@ _dowp:
 	_stprintf(ttmp,_T("\n%.0f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 	_tcscat(toracle,ttmp);
 
-	 _stprintf(ttmp,_T("%s %s<%s>"), MsgToken(1711),wptype,WayPointList[j].Name); // of
+	 lk::snprintf(ttmp,_T("%s %s<%s>"), MsgToken(1711),wptype,WayPointList[j].Name); // of
 	 _tcscat(toracle,ttmp);
 
   } else {
@@ -379,24 +381,24 @@ _dowp:
 				// Over city and lake
 				// near waypoint
 
-				_stprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
+				lk::snprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
 				_tcscat(toracle,ttmp);
 			} else {
 				// Over city
 				// near lake and waypoint
 
-				_stprintf(ttmp,_T(" %s %s<%s>"), MsgToken(1717),wptype,WayPointList[j].Name); // and
+				lk::snprintf(ttmp,_T(" %s %s<%s>"), MsgToken(1717),wptype,WayPointList[j].Name); // and
 				_tcscat(toracle,ttmp);
 			}
 		} else {
-			_stprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
+			lk::snprintf(ttmp,_T("\n%s %s<%s>"), MsgToken(1719),wptype,WayPointList[j].Name); // near to
 			_tcscat(toracle,ttmp);
 		}
 	} else {
 		//
 		// Near waypoint (because "over" could be wrong, we have altitudes in wp!)
 		//
-		_stprintf(ttmp,_T("%s %s<%s>"), MsgToken(1723),wptype,WayPointList[j].Name); // Near to
+		lk::snprintf(ttmp,_T("%s %s<%s>"), MsgToken(1723),wptype,WayPointList[j].Name); // Near to
 		_tcscat(toracle,ttmp);
 	}
   }

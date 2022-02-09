@@ -10,6 +10,7 @@
 #include "LKProcess.h"
 #include "Logger.h"
 #include "utils/fileext.h"
+#include "utils/printf.h"
 
 //
 // Called by Calculations at landing detection (not flying anymore)
@@ -138,7 +139,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   Units::TimeToTextS(Temp, LocalTime(CALCULATED_INFO.TakeOffTime));
   Units::TimeToText(TUtc, CALCULATED_INFO.TakeOffTime);
 
-  _stprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken(680),Temp,TUtc);
+  lk::snprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken(680),Temp,TUtc);
   file.WriteLn(line);
   _stprintf(line,_T("%s:  %s"),MsgToken(930),TAKEOFFWP_Name);
   file.WriteLn(line);
@@ -150,7 +151,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     const int utc_landing_time = CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime;
     Units::TimeToTextS(Temp, LocalTime(utc_landing_time));
     Units::TimeToText(TUtc,  utc_landing_time);
-    _stprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken(386),Temp,TUtc);
+    lk::snprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken(386),Temp,TUtc);
     file.WriteLn(line);
 
     _stprintf(line,_T("%s:  %s"),MsgToken(931),LANDINGWP_Name);
@@ -167,7 +168,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   // Flight time
   //
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
-  _stprintf(line,_T("%s: %s"),MsgToken(306),Temp);
+  lk::snprintf(line,_T("%s: %s"),MsgToken(306),Temp);
   file.WriteLn(line);
   file.WriteLn();
 
@@ -179,7 +180,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     // Attention, FFStartTime is 0 for CAR,SIMMODE and other situations
     if ( CALCULATED_INFO.FreeFlightStartTime>0 ) {
         Units::TimeToTextS(Temp, LocalTime(CALCULATED_INFO.FreeFlightStartTime));
-        _stprintf(line,_T("%s: %s  @%.0f%s QNH"),
+        lk::snprintf(line,_T("%s: %s  @%.0f%s QNH"),
             MsgToken(1754),
             Temp,
             ALTITUDEMODIFY*CALCULATED_INFO.FreeFlightStartQNH,
@@ -187,7 +188,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
         file.WriteLn(line);
 
         Units::TimeToTextS(Temp, (int)(CALCULATED_INFO.FreeFlightStartTime-CALCULATED_INFO.TakeOffTime) );
-        _stprintf(line,_T("%s: %s  @%.0f%s QFE"),
+        lk::snprintf(line,_T("%s: %s  @%.0f%s QFE"),
             MsgToken(1755),
             Temp,
             ALTITUDEMODIFY*(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE),
@@ -204,7 +205,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     ivalue=CContestMgr::TYPE_OLC_CLASSIC;
     if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
         _stprintf(Temp, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
-        _stprintf(line,_T("%s: %s %s"),
+        lk::snprintf(line,_T("%s: %s %s"),
             MsgToken(1455),
             Temp,
             Units::GetDistanceName());
@@ -217,7 +218,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     ivalue=CContestMgr::TYPE_OLC_FAI;
     if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
         _stprintf(Temp, TEXT("%5.0f"), DISTANCEMODIFY*OlcResults[ivalue].Distance());
-        _stprintf(line,_T("%s: %s %s"),MsgToken(1457),
+        lk::snprintf(line,_T("%s: %s %s"),MsgToken(1457),
             Temp,
             Units::GetDistanceName());
         file.WriteLn(line);
@@ -316,7 +317,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
     towaltitude=(int) (ALTITUDEMODIFY*(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE));
   }
 
-  _stprintf(line,_T("%04d,%02d,%02d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%d,%s,%s%s"),
+  lk::snprintf(line,_T("%04d,%02d,%02d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%d,%s,%s%s"),
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
@@ -374,13 +375,13 @@ bool UpdateLogBookLST(bool welandedforsure) {
 
   Units::TimeToTextS(stakeoff,LocalTime(CALCULATED_INFO.TakeOffTime));
   Units::TimeToText(Temp, CALCULATED_INFO.TakeOffTime);
-  _stprintf(stakeoffutc,_T("(UTC %s)"),Temp);
+  lk::snprintf(stakeoffutc,_T("(UTC %s)"),Temp);
 
   if (!CALCULATED_INFO.Flying || welandedforsure) {
     const int utc_landing_time = CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime;
     Units::TimeToTextS(slanding,LocalTime(utc_landing_time));
     Units::TimeToText(Temp, utc_landing_time);
-    _stprintf(slandingutc,_T("(UTC %s)"),Temp);
+    lk::snprintf(slandingutc,_T("(UTC %s)"),Temp);
   } else {
     #if TESTBENCH
     StartupStore(_T(".... LogBookLST, logging but still flying!%s"),NEWLINE);

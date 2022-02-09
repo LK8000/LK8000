@@ -10,6 +10,7 @@
 #include "LKProcess.h"
 #include "Waypointparser.h"
 #include "utils/stringext.h"
+#include "utils/printf.h"
 
 
 extern int GetVirtualWaypointMarkerSlot(void);
@@ -77,7 +78,7 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 	WayPointList[j].FarVisible=TRUE;
 
     from_utf8(marktime, tstring);
-	_stprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
+	lk::snprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
 	from_utf8(snear, tstring);
 	TCHAR comment[60];
 	_stprintf(comment, _T("Near: %s"), tstring);

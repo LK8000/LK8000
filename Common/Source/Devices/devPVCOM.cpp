@@ -12,6 +12,7 @@
 #include "devPVCOM.h"
 #include "device.h"
 #include "devBase.h"
+#include "utils/printf.h"
 
 namespace {
 
@@ -142,7 +143,7 @@ BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* Station
      _stprintf(StationName, TEXT("%s"), Station);
   ReplaceNMEAControlChars(StationName);
 
-  _stprintf(szTmp, TEXT("$PVCOM,S,AF,%7.3f,%s"), Freq,StationName);
+  lk::snprintf(szTmp, TEXT("$PVCOM,S,AF,%7.3f,%s"), Freq,StationName);
 #ifdef TESTBENCH
   StartupStore(_T(". RADIO Active Station  %7.3f %s%s"), Freq,StationName,NEWLINE);
 #endif
@@ -162,7 +163,7 @@ BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* Stati
      _stprintf(StationName, TEXT("%s"), Station);
   ReplaceNMEAControlChars(StationName);
 
-  _stprintf(szTmp, TEXT("$PVCOM,S,PF,%7.3f,%s"), Freq,StationName);
+  lk::snprintf(szTmp, TEXT("$PVCOM,S,PF,%7.3f,%s"), Freq,StationName);
 #ifdef TESTBENCH
     StartupStore(_T(". RADIO Stanby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
 #endif
@@ -335,14 +336,14 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 	NMEAParser::ExtractParameter(String,para1,3);
 	NMEAParser::ExtractParameter(String,para2,4);
 	RadioPara.ActiveFrequency = StrToDouble(para1,NULL);
-	_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),para2);
+	lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
       } else
       if(_tcscmp(_T("PF"), cmd) == 0)
       {
 	NMEAParser::ExtractParameter(String,para1,3);
 	NMEAParser::ExtractParameter(String,para2,4);
 	RadioPara.PassiveFrequency = StrToDouble(para1,NULL);
-	_sntprintf(RadioPara.PassiveName,NAME_SIZE,_T("%s"),para2);
+	lk::snprintf(RadioPara.PassiveName, _T("%s"),para2);
       }  else
       if(_tcscmp(_T("VOL"), cmd) == 0)
       {
@@ -360,12 +361,12 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 		NMEAParser::ExtractParameter(String,para1,3);
 		NMEAParser::ExtractParameter(String,para2,4);
 	RadioPara.ActiveFrequency = StrToDouble(para1,NULL);
-	_sntprintf(RadioPara.ActiveName,NAME_SIZE,_T("%s"),para2);
+    lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
 
 		NMEAParser::ExtractParameter(String,para1,5);
 		NMEAParser::ExtractParameter(String,para2,6);
 	RadioPara.PassiveFrequency = StrToDouble(para1,NULL);
-	_sntprintf(RadioPara.PassiveName,NAME_SIZE,_T("%s"),para2);
+    lk::snprintf(RadioPara.PassiveName,_T("%s"),para2);
 
 	  } else
       if(_tcscmp(_T("STA"), cmd) == 0)

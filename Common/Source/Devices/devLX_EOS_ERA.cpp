@@ -40,7 +40,7 @@
 #include "Thread/Cond.hpp"
 #include "Radio.h"
 #include "utils/charset_helper.h"
-
+#include "utils/printf.h"
 
 unsigned int uiEOSDebugLevel = 1;
 extern bool UpdateQNH(const double newqnh);
@@ -1739,8 +1739,8 @@ static int iNoFlights=0;
        filesize = (uint32_t)fTmp;
     
     TCHAR Line[2][MAX_NMEA_LEN];
-    _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
-    _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Date ,Takeoff ,Landing,filesize/1024);
+    lk::snprintf(Line[0], _T("%s %s %s  %s %s"),FileName, Pilot,Surname, Reg, Type);
+    lk::snprintf(Line[1], _T("%s (%s-%s) %ukB"), Date ,Takeoff ,Landing,filesize/1024);
     AddEOSElement(Line[0], Line[1], filesize );
     if((iNo < iNoFlights) && m_bTriggered)
     {

@@ -15,7 +15,7 @@
 #include "Devices/devLXNano3.h"
 #include "dlgLXIGCDownload.h"
 #include "utils/tokenizer.h"
-
+#include "utils/printf.h"
 
 #define LST_STRG_LEN          100
 
@@ -241,10 +241,10 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-        _sntprintf(text1, MAX_NMEA_LEN, _T("✔ %s"), Tmp); // already copied
+        lk::snprintf(text1, _T("✔ %s"), Tmp); // already copied
     } else {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
-       _sntprintf(text1, MAX_NMEA_LEN, _T("* %s"), Tmp);// already copied
+       lk::snprintf(text1, _T("* %s"), Tmp);// already copied
     }
     Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),

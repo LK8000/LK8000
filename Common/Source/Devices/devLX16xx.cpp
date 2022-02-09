@@ -13,6 +13,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "Utils.h"
+#include "utils/printf.h"
 
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;
@@ -372,9 +373,7 @@ if(_tcslen(String) < 180)
   {
 	NoMsg++ ;
     NMEAParser::ExtractParameter(String,ctemp,0);
-    if(_tcslen(ctemp) < DEVNAMESIZE)
-	  _stprintf(d->Name, _T("%s"),ctemp);
-
+    lk::snprintf(d->Name, _T("%s"),ctemp);
     StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,1);

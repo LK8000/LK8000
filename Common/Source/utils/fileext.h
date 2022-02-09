@@ -46,7 +46,7 @@ class Utf8File
 
   protected:
 
-    TCHAR path[MAX_PATH] = {};
+    tstring path;
     FILE* fp = nullptr;
     bool  convErReported = false;
     bool  writeErReported = false;

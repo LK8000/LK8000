@@ -216,12 +216,11 @@ WndProperty* wp = NULL;
 
   if(wp)
   {
-    TCHAR Tmp[MAX_NMEA_LEN+6] =_T(""); // additional space for the checksum
+    TCHAR Tmp[MAX_NMEA_LEN] =_T(""); 
     short active=ComCheck_ActivePort; // can change in thread
-    _tcsncpy(Tmp, wp->GetDataField()->GetAsString(),MAX_NMEA_LEN);
-     Tmp[MAX_NMEA_LEN-1]= '\0';
-    _tcsncpy(TxText,Tmp,MAX_NMEA_LEN);
-
+    _tcsncpy(Tmp, wp->GetDataField()->GetAsString(), MAX_NMEA_LEN - 6);
+    Tmp[MAX_NMEA_LEN - 6]= '\0'; // additional space for the checksum
+    _tcscpy(TxText, Tmp);
 
     AddCheckSumStrg(Tmp);
 

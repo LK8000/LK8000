@@ -22,6 +22,7 @@
 #include "InputEvents.h"
 #include "Util/UTF8.hpp"
 #include "utils/tokenizer.h"
+#include "utils/printf.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -382,7 +383,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                 {
                   StartupStore(_T(". no Task name, named it %s%i %s"), MsgToken(699),i, NEWLINE);// _@M699_ "Task"
                   if(TaskLine != NULL)
-                    _sntprintf(TaskLine,READLINE_LENGTH,_T("%s%i%s"),MsgToken(699),i,szString);  // _@M699_ "Task"
+                    lk::snprintf(TaskLine, READLINE_LENGTH,_T("%s%i%s"),MsgToken(699),i,szString);  // _@M699_ "Task"
                 }
                 else
                 {
@@ -572,15 +573,15 @@ TCHAR szString[READLINE_LENGTH + 1];
       if(bClosedTask)
       {
           if (gTaskType == TSK_AAT)
-              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
           else if (CALCULATED_INFO.TaskFAI)
-              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken(2432), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
           else
-              _sntprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken(2430 + NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken(2430 + NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
       }
       else
       {
-        _sntprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") , MsgToken(2429) ,lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // MsgToken(2432)   ,
+        lk::snprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") , MsgToken(2429) ,lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // MsgToken(2432)   ,
       }
     }
     UnlockTaskData();

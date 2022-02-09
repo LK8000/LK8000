@@ -15,6 +15,7 @@
 #include "WindowControls.h"
 #include "CTaskFileHelper.h"
 #include "resource.h"
+#include "utils/printf.h"
 
 #ifdef ANDROID
 #include "Android/LK8000Activity.h"
@@ -54,10 +55,8 @@ static void UpdateCaption (WndForm* pWnd) {
   TaskFileName(MAX_PATH, name);
 
   if (_tcslen(name)>0) {
-    _sntprintf(title, std::size(title), TEXT("%s: %s"),
-	// LKTOKEN  _@M688_ = "Task Overview"
-              MsgToken(688),
-              name);
+  	// LKTOKEN  _@M688_ = "Task Overview"
+    lk::snprintf(title, _T("%s: %s"), MsgToken(688), name);
   } else {
     _stprintf(title, TEXT("%s"),
 	// LKTOKEN  _@M688_ = "Task Overview"

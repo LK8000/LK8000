@@ -20,7 +20,7 @@
 #include "Calc/Vario.h"
 #include "Radio.h"
 #include "Devices/DeviceRegister.h"
-
+#include "utils/printf.h"
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -930,7 +930,7 @@ static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
   for (chk = i = 0; i < len; i++)
     chk ^= (BYTE)text[i];
 
-  _sntprintf(dst, sz, TEXT("$%s*%02X\r\n"), text, chk);
+  lk::snprintf(dst, sz, TEXT("$%s*%02X\r\n"), text, chk);
 }
 
 //

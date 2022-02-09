@@ -12,7 +12,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "resource.h"
-
+#include "utils/printf.h"
 
 static WndForm *wf=NULL;
 static short profilemode=0;
@@ -96,7 +96,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   file_index = dfe->GetAsInteger();
 
   if (file_index==0) {
-	_stprintf(tmptext, TEXT("%s: %s"),
+	lk::snprintf(tmptext, TEXT("%s: %s"),
 		// LKTOKEN  _@M458_ = "New profile"
 		MsgToken(458),
 		profile_name);
@@ -134,7 +134,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   }
 
   if (file_index>0) {
-	_stprintf(tmptext, TEXT("%s: %s"),
+	lk::snprintf(tmptext, TEXT("%s: %s"),
 	// LKTOKEN  _@M533_ = "Profile already exists"
 		MsgToken(533),
 		profile_name);

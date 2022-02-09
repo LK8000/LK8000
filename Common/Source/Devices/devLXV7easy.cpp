@@ -11,6 +11,7 @@
 #include "Calc/Vario.h"
 #include "devBase.h"
 #include "devLXV7easy.h"
+#include "utils/printf.h"
 
 static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
@@ -117,9 +118,7 @@ bool LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
     if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5)) {
         NoMsg++ ;
         NMEAParser::ExtractParameter(String,ctemp,0);
-        if(_tcslen(ctemp) < DEVNAMESIZE)
-	    _stprintf(d->Name, _T("%s"),ctemp);
-
+        lk::snprintf(d->Name, _T("%s"),ctemp);
         StartupStore(_T(". %s\n"),ctemp);
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
