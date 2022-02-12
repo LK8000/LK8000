@@ -44,12 +44,7 @@ public:
 
 //----------------------------------------------------------------------------
 protected:
-
-
-  //..........................................................................
-
-  /// Protected only constructor - class should not be instantiated.
-  DevRCFenix() {}
+  DevRCFenix() = delete;
 
   /// Installs device specific handlers.
   static void Install(PDeviceDescriptor_t d);
@@ -59,6 +54,7 @@ protected:
   const TCHAR* GetName() {
     return _T("RC Fenix");  
   }
+
   static BOOL FormatTP( TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp);
   /// Writes declaration into the logger.
   static BOOL DeclareTask(PDeviceDescriptor_t d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
@@ -69,10 +65,6 @@ protected:
 
   static BOOL SetupFenix_Sentence(PDeviceDescriptor_t d);
   static BOOL PutTarget(PDeviceDescriptor_t d);
-
-  static BOOL FenixRadioEnabled(PDeviceDescriptor_t d) { 
-    return false;
-  }
 
   static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
   static BOOL FenixPutBallast(PDeviceDescriptor_t d, double Ballast);
