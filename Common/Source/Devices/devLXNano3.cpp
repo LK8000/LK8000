@@ -1017,7 +1017,7 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned e
   }
 
   char asciibuf[256];
-  DevLXNanoIII::Wide2LxAscii(buf, 256, asciibuf);
+  Wide2LxAscii(buf, 256, asciibuf);
   unsigned char chksum = 0;
 
   if (!ComWrite(d, '$', errBufSize, errBuf)) {

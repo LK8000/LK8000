@@ -825,40 +825,6 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d,
 } // DeclareTask()
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts TCHAR[] string into US-ASCII string with characters safe for
-/// writing to LX devices.
-///
-/// Characters are converted into their most similar representation
-/// in ASCII. Nonconvertable characters are replaced by '?'.
-///
-/// Output string will always be terminated by '\0'.
-///
-/// @param input    input string (must be terminated with '\0')
-/// @param outSize  output buffer size
-/// @param output   output buffer
-///
-/// @retval true  all characters copied
-/// @retval false some characters could not be copied due to buffer size
-///
-//static
-bool DevLX_EOS_ERA::Wide2LxAscii(const TCHAR* input, int outSize, char* output){
-  if (outSize == 0)
-    return(false);
-  int res = to_usascii(input, output, outSize);
-  // replace all non-ascii characters with '?' - LX devices is very sensitive
-  // on non-ascii chars - the electronic seal can be broken
-  // (unicode2usascii() should be enough, but to be sure that someone has not
-  // incorrectly changed unicode2usascii())
-  output--;
-  while (*++output != '\0') {
-    if (*output < 32 || *output > 126) *output = '?';
-  }
-  return(res >= 0);
-} // Wide2LxAscii()
-
-
-
 // #############################################################################
 // *****************************************************************************
 //
@@ -904,66 +870,6 @@ void DevLX_EOS_ERA::Class::SetName(const TCHAR* text){
 } // SetName()
 
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-///
-/// @param d           device descriptor
-/// @param buf         string for sending
-/// @param errBufSize  error message buffer size
-/// @param errBuf[]    [out] error message
-///
-/// @retval true  NMEA sentence successfully written
-/// @retval false error (description in @p errBuf)
-///
-// static
-bool DevLX_EOS_ERA::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
-
-  ScopeLock Lock(CritSec_Comm);
-  if(!d || !d->Com) {
-    return false;
-  }
-
-  char asciibuf[256];
-  DevLX_EOS_ERA::Wide2LxAscii(buf, 256, asciibuf);
-  unsigned char chksum = 0;
-
-  if (!ComWrite(d, '$', errBufSize, errBuf)) {
-    return (false);
-  }
-
-  for(size_t i = 0; i < strlen(asciibuf); i++) {
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
-      return (false);
-    }
-    chksum ^= asciibuf[i];
-  }
-
-  sprintf(asciibuf, "*%02X\r\n",chksum);
-  for(size_t i = 0; i < strlen(asciibuf); i++) {
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
-      return (false);
-    }
-  }
-
-//  StartupStore(_T("request: $%s*%02X %s "),   buf,chksum, NEWLINE);
-
-  return (true);
-} // SendNmea()
-
-
-bool DevLX_EOS_ERA::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[]){
-TCHAR errBuf[10]= _T("");
-TCHAR errBufSize=10;
-  DevLX_EOS_ERA::SendNmea(d,  buf,errBufSize,errBuf);
-  if(_tcslen (errBuf) > 1)
-  {
-    DoStatusMessage(errBuf);
-    return false;
-  }
- // StartupStore(_T(" LX_EOS_ERA SenadNmea %s %s"),buf, NEWLINE);
-  return true;
-} // SendNmea()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Send one line of declaration to logger

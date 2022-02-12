@@ -85,10 +85,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
 
     static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
 
-    /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
-    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
-
   //----------------------------------------------------------------------------
   protected:
 
@@ -114,9 +110,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     static bool OnTimer(WndForm* pWnd);
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
-
-    /// Converts TCHAR[] string into US-ASCII string.
-    static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);
 
     /// Send one line of ceclaration to logger
     static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
