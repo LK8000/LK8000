@@ -266,9 +266,6 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     // Simplified, shadowing better and faster
     // ETO_OPAQUE not necessary since we pass a NULL rect
     //
-#ifdef USE_FREETYPE
-#warning "to slow, rewrite using freetype outline"
-#endif
 
 #if !defined(PNA) || defined(UNDER_CE)
     short emboldsize=IBLSCALE(1);

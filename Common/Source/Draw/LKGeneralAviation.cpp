@@ -16,10 +16,6 @@
 #include "RGB.h"
 
 void drawOutlineText(LKSurface& Surface, int x, int y, const TCHAR * textBuffer) {
-#ifdef USE_FREETYPE
-#warning "to slow, rewrite using freetype outline"
-#endif
-
 	Surface.SetTextColor(MapWindow::GetOutlineColor(OverColorRef));
 
 	Surface.DrawText(x -1, y -1, textBuffer);
