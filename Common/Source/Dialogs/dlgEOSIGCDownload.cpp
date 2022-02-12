@@ -291,7 +291,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     _tcscat(IGCFilename, _T(".IGC"));
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
     TCHAR Tmp[MAX_NMEA_LEN];
-    _sntprintf(Tmp, MAX_NMEA_LEN, _T("%s"),text1);     // missing
+    _tcscpy(Tmp, text1);     // missing
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists

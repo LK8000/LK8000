@@ -2230,9 +2230,9 @@ MinLon *=60;
 
 TCHAR szName[MAX_VAL_STR_LEN];
   if( 0 /*bTaskpresent*/)  {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"), MsgToken(1323), szTmp); // LKTOKEN _@M1323_ "T>"
+    lk::snprintf(szName, _T("%s%s"), MsgToken(1323), szTmp); // LKTOKEN _@M1323_ "T>"
   } else {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), szTmp); // LKTOKEN _@M1323_ "T>"
+    lk::snprintf(szName, _T("%s%s"), GetOvertargetHeader(), szTmp); // LKTOKEN _@M1323_ "T>"
   }
 
   if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)

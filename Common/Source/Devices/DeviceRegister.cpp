@@ -57,6 +57,7 @@
 #include "devLXV7easy.h"
 #include "devOpenVario.h"
 #include "devLX_EOS_ERA.h"
+#include "devRCFenix.h"
 
 namespace {
 
@@ -107,7 +108,8 @@ DeviceRegister_t device_list[] = {
     DevVaulter::Register(),
     DevOpenVario::Register(),
     DevLX_EOS_ERA::Register(),
-    FanetRegister()
+    FanetRegister(),
+    DevRCFenix::Register()
 };
 
 

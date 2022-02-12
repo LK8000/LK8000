@@ -515,7 +515,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(_T("$LXDT,GET,NAVIGATE")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$xxDT,GET,NAVIGATE")); // "IN" 
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO[PortNum].R_TRGTDir);
     wp->RefreshDisplay();
@@ -525,7 +525,7 @@ int PortNum = d->PortNumber;
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
-    dfe->addEnumText(_T("$LXDT,SET,NAVIGATE")); // "IN" = $PLXVTARG
+    dfe->addEnumText(_T("$xxDT,SET,NAVIGATE")); // "IN"
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
     dfe->Set((uint) PortIO[PortNum].T_TRGTDir);
     wp->RefreshDisplay();
@@ -589,7 +589,7 @@ int PortNum = d->PortNumber;
 }
 
 
-static bool OnTimer(WndForm* pWnd)
+bool DevLX_EOS_ERA::OnTimer(WndForm* pWnd)
 {
   WndForm * wf = pWnd->GetParentWndForm();
   WndProperty *wp = NULL;

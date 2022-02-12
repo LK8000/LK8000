@@ -764,16 +764,19 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 }
 
 
-BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode)
-{
-
-  d->m_bAdvancedMode = bAdvMode;
-  return true;
+BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode) {
+  if(d) {
+    d->m_bAdvancedMode = bAdvMode;
+    return true;
+  }
+  return false;
 }
 
-BOOL devGetAdvancedMode(PDeviceDescriptor_t d)
-{
-  return d->m_bAdvancedMode;
+BOOL devGetAdvancedMode(PDeviceDescriptor_t d) {
+  if(d) {
+    return d->m_bAdvancedMode;
+  }
+  return false;
 }
 
 
