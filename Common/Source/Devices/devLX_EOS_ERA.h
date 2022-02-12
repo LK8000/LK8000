@@ -7,7 +7,7 @@
  */
 
 //__Version_1.0____________________________________________Vladimir Fux 12/2015_
-
+ 
 //__________________________________________________________compilation_control_
 
 #ifndef __DevLX_EOS_ERA_H_
@@ -15,7 +15,7 @@
 
 //_____________________________________________________________________includes_
 
-#include "devLX.h"
+#include "devLXNano3.h"
 #include "dlgTools.h"
 #include "Dialogs.h"
 #include "Parser.h"
@@ -72,7 +72,7 @@ bool SetEOSBinaryModeFlag(bool ) ;
 uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) ;
 uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) ;
 bool EOSBlockReceived(void);
-class DevLX_EOS_ERA : public DevLX
+class DevLX_EOS_ERA : public DevLXNanoIII
 {
   //----------------------------------------------------------------------------
   public:
@@ -134,12 +134,12 @@ class DevLX_EOS_ERA : public DevLX
 
 
    static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+ //  static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+  // static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-   static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
    static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
    static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
@@ -147,8 +147,7 @@ class DevLX_EOS_ERA : public DevLX
    static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
-   static BOOL Values(PDeviceDescriptor_t d);
-   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
+
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
    static void GetDirections(WndButton* pWnd);
    static BOOL ShowValues(void) {return m_bShowValues;};
@@ -157,13 +156,13 @@ class DevLX_EOS_ERA : public DevLX
    static void IGCDownload(BOOL bDL) {bIGC_Download = bDL;};
    static BOOL Declare(void) {return m_bDeclare;};
    static void Declare(BOOL bDL) {m_bDeclare = bDL;};
-   static int Port(void) { if(m_pDevice) return m_pDevice->PortNumber; else return -1;};
+  // static int Port(void) { if(pDevice) return m_pDevice->PortNumber; else return -1;};
 
-   static PDeviceDescriptor_t Device(void) {return m_pDevice;};
-   static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
+ //  static PDeviceDescriptor_t Device(void) {return m_pDevice;};
+   //static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
 
    static CallBackTableEntry_t CallBackTable[];
-   static PDeviceDescriptor_t m_pDevice;
+
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;

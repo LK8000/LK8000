@@ -257,3 +257,52 @@ bool DevLX::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
   // nothing to do
   return(true);
 } // LXWP3()
+
+
+
+
+bool DevLX::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+
+
+TCHAR  szTmp[MAX_NMEA_PAR_LEN];
+
+double fTmp;
+
+
+  ParToDouble(sentence, 5, &fTmp);
+  double DegLat = (double)((int) (fTmp/100.0));
+  double MinLat =  fTmp- (100.0*DegLat);
+  double Latitude = DegLat+MinLat/60.0;
+
+  NMEAParser::ExtractParameter(sentence,szTmp,6);
+  if (szTmp[0]==_T('S')) {
+    Latitude *= -1;
+  }
+
+  ParToDouble(sentence, 7, &fTmp);
+  double DegLon =  (double) ((int) (fTmp/100.0));
+  double MinLon =  fTmp- (100.0*DegLon);
+  double Longitude = DegLon+MinLon/60.0;
+
+  NMEAParser::ExtractParameter(sentence,szTmp,8);
+  if (szTmp[0]==_T('W')) {
+    Longitude *= -1;
+  }
+	
+  NMEAParser::ExtractParameter(sentence,szTmp,4);
+  TCHAR szTmp2[NAME_SIZE +2];
+	_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
+
+  LockTaskData();
+  {
+	  LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
+    WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
+    WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
+    WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information
+    Alternate2 = RESWP_EXT_TARGET;
+  }
+  UnlockTaskData();
+
+  return false;
+}

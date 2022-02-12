@@ -37,7 +37,7 @@
 int ReadEOS_IGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) ;
 static void UpdateList(void);
 
-TCHAR DownoadIGCFilename[MAX_PATH];
+TCHAR DownoadIGCFilename[MAX_NMEA_PAR_LEN];
 TCHAR szEOS_DL_StatusText[STATUS_TXT_LEN];
 volatile bool  bDlgShown = false; 
 

@@ -11,7 +11,7 @@
      <WndProperty Name="prpMCDir" Caption="_@M2447_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1345_">
         <DataField Name="" DataType="enum"  Min="0" Max="3" Step="1"/>
       </WndProperty>  
-      <WndProperty Name="prpR_TRGTDir" Caption="_@M2448_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1346_">
+      <WndProperty Name="prpR_TRGTDir" Caption="_@M2458_" X="130" Y="-999" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1346_">
         <DataField Name="" DataType="enum"  Min="0" Max="2" Step="1"/>
       </WndProperty>       
      <WndProperty Name="prpBALDir" Caption="_@M2448_" X="2" Y="-1" Width="120" Height="21" CaptionWidth="50" Font="2" Help="_@H1347_">
