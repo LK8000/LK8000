@@ -522,6 +522,7 @@ INCLUDES	+= -I$(SRC)
 INCLUDES	+= -I$(SRC)/Library 
 INCLUDES	+= -I$(SRC)/xcs
 INCLUDES	+= -Ilib/doctest
+INCLUDES	+= -Ilib/json/include
 
 ifeq ($(GLES2),y)
  INCLUDES	+=  -Ilib/glm

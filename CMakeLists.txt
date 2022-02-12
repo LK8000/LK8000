@@ -893,6 +893,7 @@ target_include_directories( LK8000 PRIVATE
     ./
     lib/doctest
     lib/glm
+    lib/json/include
 )
 
 target_link_libraries(LK8000 PRIVATE
