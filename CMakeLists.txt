@@ -6,26 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(ExternalProject)
-
-set(GLM_PREFIX ${CMAKE_CURRENT_LIST_DIR}/android-thirdparty/${ANDROID_ABI}/glm)
-
-ExternalProject_Add (
-    glm
-    URL https://github.com/g-truc/glm/releases/download/0.9.9.6/glm-0.9.9.6.zip
-    URL_HASH MD5=26aaac404364c494cf82d2ef12faae41
-    PREFIX ${GLM_PREFIX}
-    UPDATE_COMMAND ""
-    PATCH_COMMAND ""
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-)
-
-ExternalProject_Get_Property(glm source_dir)
-set(GLM_INCLUDE ${source_dir})
-
-
 add_definitions(
     -DBOOST_NO_IOSTREAM
     -DBOOST_NO_IOSFWD
@@ -839,7 +819,7 @@ file(
 
 set_source_files_properties (
     Common/Source/Resource/resource_xml.S
-     PROPERTIES OBJECT_DEPENDS "${xml_files}"
+    PROPERTIES OBJECT_DEPENDS "${xml_files}"
 )
 
 # resource_data.S dependencies
@@ -850,13 +830,11 @@ file(
 
 set_source_files_properties (
     Common/Source/Resource/resource_data.S
-     PROPERTIES OBJECT_DEPENDS "${data_files}"
+    PROPERTIES OBJECT_DEPENDS "${data_files}"
 )
 
-add_dependencies(LK8000 glm)
-
 find_package (geographiclib REQUIRED CONFIG)
-find_package(oboe REQUIRED CONFIG)
+find_package (oboe REQUIRED CONFIG)
 
 find_package (boost_config REQUIRED CONFIG)
 find_package (boost_type_traits REQUIRED CONFIG)
@@ -885,7 +863,7 @@ target_include_directories( LK8000 PRIVATE
     Common/Source/xcs
     ./
     lib/doctest
-    ${GLM_INCLUDE}
+    lib/glm
 )
 
 target_link_libraries(LK8000 PRIVATE

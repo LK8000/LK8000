@@ -496,7 +496,6 @@ ifeq ($(CONFIG_LINUX),y)
    CE_DEFS += -DGLM_FORCE_RADIANS -DGLM_FORCE_SIZE_T_LENGTH
    ifeq ($(TARGET_IS_PI),y)
     $(eval $(call pkg-config-library,OPENGL,brcmglesv2))
-    $(eval $(call pkg-config-library,GLM,glm))
     OPENGL_LDLIBS += -ldl
    else
     OPENGL_LDLIBS = -lGLESv2 -ldl
@@ -599,6 +598,9 @@ endif
 INCLUDES	+=  -I$(SRC)/xcs
 INCLUDES	+=  -Ilib/doctest
 
+ifeq ($(GLES2),y)
+ INCLUDES	+=  -Ilib/glm
+endif
 ######## compiler flags
 
 CPPFLAGS	:= $(INCLUDES) $(CE_DEFS)
