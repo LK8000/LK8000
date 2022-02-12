@@ -2216,9 +2216,9 @@ BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
-TCHAR  szTmp[MAX_NMEA_PAR_LEN];
+  TCHAR  szTmp[MAX_NMEA_LEN];
 
-double fTmp;
+  double fTmp;
 
   if(PortIO[d->PortNumber].R_TRGTDir != TP_VTARG)
      return false;
@@ -2246,17 +2246,17 @@ double fTmp;
 
 	
   NMEAParser::ExtractParameter(sentence,szTmp,0);
-  TCHAR szTmp2[NAME_SIZE +2];
-	_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
+  tstring tname = FixCharset(szTmp);
+
+  double Altitude = 0;
+  ParToDouble(sentence, 5, &Altitude);
+
   LockTaskData();
   {
-   
-		LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
+    lk::snprintf(WayPointList[RESWP_EXT_TARGET].Name, TEXT("^%s"), tname.c_str());
     WayPointList[RESWP_EXT_TARGET].Latitude=Latitude;
     WayPointList[RESWP_EXT_TARGET].Longitude=Longitude;
-
-    ParToDouble(sentence, 5, &fTmp);
-    WayPointList[RESWP_EXT_TARGET].Altitude=fTmp;
+    WayPointList[RESWP_EXT_TARGET].Altitude=Altitude;
     Alternate2 = RESWP_EXT_TARGET;
   }
   UnlockTaskData();

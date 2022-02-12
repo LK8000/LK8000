@@ -1736,36 +1736,19 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
 //ParToDouble(sentence, 8, &fTmp);   // bearing  (not needed)
   ParToDouble(sentence, 9, &fFlags); // landable?
 
-  TCHAR szTmp[MAX_NMEA_PAR_LEN];
-  NMEAParser::ExtractParameter(sentence, szTmp, 3);
-
-  ////////////////////////////////////////////////////// 
-  // workaround to fix turnpoint charset
-#ifdef UNICODE  
-  // 1 - copy back TCHAR to char
-  char  szName[MAX_NMEA_LEN];
-  for (size_t i = 0; szTmp[0]; ++i) {
-    szName[i] = szTmp[i];
-  }
-#else
-  // TCHAR is alias to char, no need copy back to char.
-  char* szName = szTmp;
-#endif
-  // 2 - detect and fix chatset
-  tstring tname = from_unknown_charset(szName);
-  ////////////////////////////////////////////////////// 
+  TCHAR szTmp[MAX_NMEA_LEN];
+  NMEAParser::ExtractParameter(sentence,szTmp,3);
+  tstring tname = FixCharset(szTmp);
 
   LockTaskData();
   {
-    if (Alternate2 == RESWP_EXT_TARGET) // pointing to external target?
-        Alternate2 = -1;                 // clear external =re-enable!
-
-    lk::snprintf(WayPointList[RESWP_EXT_TARGET].Name, TEXT("^%s"), tname.c_str());
-
+    if (Alternate2 == RESWP_EXT_TARGET) { // pointing to external target?
+      Alternate2 = -1;                 // clear external =re-enable!
+    }
+  	lk::snprintf(WayPointList[RESWP_EXT_TARGET].Name, TEXT("^%s"), tname.c_str());
     WayPointList[RESWP_EXT_TARGET].Latitude  = fLat / 60000;
     WayPointList[RESWP_EXT_TARGET].Longitude = fLon / 60000;
     WayPointList[RESWP_EXT_TARGET].Altitude  = fAlt;
-    Alternate2 = RESWP_EXT_TARGET;
 
     if (fFlags > 0)
         WayPointList[RESWP_EXT_TARGET].Flags = LANDPOINT;

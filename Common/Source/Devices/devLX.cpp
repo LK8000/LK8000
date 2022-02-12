@@ -13,6 +13,7 @@
 #include "devLX.h"
 #include "utils/stringext.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
 
 //____________________________________________________________class_definitions_
 
@@ -265,11 +266,8 @@ bool DevLX::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 bool DevLX::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
-
-TCHAR  szTmp[MAX_NMEA_PAR_LEN];
-
-double fTmp;
-
+  TCHAR  szTmp[MAX_NMEA_LEN];
+  double fTmp;
 
   ParToDouble(sentence, 5, &fTmp);
   double DegLat = (double)((int) (fTmp/100.0));
@@ -292,12 +290,11 @@ double fTmp;
   }
 	
   NMEAParser::ExtractParameter(sentence,szTmp,4);
-  TCHAR szTmp2[NAME_SIZE +2];
-	_sntprintf(szTmp2, NAME_SIZE+2, TEXT("^%s"), szTmp);
+  tstring tname = FixCharset(szTmp);
 
   LockTaskData();
   {
-	  LK_tcsncpy(WayPointList[RESWP_EXT_TARGET].Name,szTmp2,NAME_SIZE);
+  	lk::snprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), tname.c_str());
     WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
     WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
     WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information
@@ -339,3 +336,18 @@ void DevLX::Wide2LxAscii(const TCHAR* input, int outSize, char* output) {
     }
   }
 } // Wide2LxAscii()
+
+tstring DevLX::FixCharset(const TCHAR (&string)[MAX_NMEA_LEN]) {
+#ifdef UNICODE  
+  // 1 - copy back TCHAR to char
+  char  szTmp[MAX_NMEA_LEN];
+  for (size_t i = 0; string[0]; ++i) {
+    szTmp[i] = string[i];
+  }
+#else
+  // TCHAR is alias to char, no need copy back to char.
+  const char* szTmp = string;
+#endif
+  // 2 - detect and fix chatset
+  return from_unknown_charset(szTmp);
+}

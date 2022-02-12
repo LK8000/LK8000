@@ -95,6 +95,8 @@ class DevLX : public DevBase
       Wide2LxAscii(input, size, output);
     }
 
+    static tstring FixCharset(const TCHAR (&string)[MAX_NMEA_LEN]);
+
 }; // DevLX
 
 //______________________________________________________________________________
