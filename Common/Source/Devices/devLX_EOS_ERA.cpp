@@ -47,7 +47,6 @@ extern bool UpdateQNH(const double newqnh);
 
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;
-BOOL DevLX_EOS_ERA::m_bDeclare = false;
 BOOL DevLX_EOS_ERA::m_bRadioEnabled = true;
 BOOL DevLX_EOS_ERA::m_bTriggered = false;
 

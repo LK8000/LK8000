@@ -133,12 +133,9 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static void ShowValues(BOOL bShow) {m_bShowValues = bShow;};
    static BOOL IGCDownload(void) {return bIGC_Download;};
    static void IGCDownload(BOOL bDL) {bIGC_Download = bDL;};
-   static BOOL Declare(void) {return m_bDeclare;};
-   static void Declare(BOOL bDL) {m_bDeclare = bDL;};
 
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
-   static BOOL m_bDeclare;
    static BOOL m_bRadioEnabled;
    static BOOL m_bTriggered;
 
