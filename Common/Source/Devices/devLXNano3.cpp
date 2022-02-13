@@ -78,34 +78,6 @@ BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs);
 Mutex  CritSec_LXDebugStr;
 TCHAR LxValueStr[_LAST][ MAX_VAL_STR_LEN];
 
-BOOL IsDirInput( DataBiIoDir IODir)
-{
-  switch(IODir)
-  {
-    case BiDirOff  : return false; break;  // OFF    no data exchange with this data (ignore data)
-    case BiDirIn   : return true;  break;  // IN     only reading of this data from external device
-    case BiDirOut  : return false; break;  // OUT    only sending this data to external device
-    case BiDirInOut: return true;  break;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
-  }
-  return false;
-}
-
-BOOL IsDirOutput( DataBiIoDir IODir)
-{
-
-  switch(IODir)
-  {
-    case BiDirOff  : return false; break;  // OFF    no data exchange with this data (ignore data)
-    case BiDirIn   : return false; break;  // IN     only reading of this data from external device
-    case BiDirOut  : return true ; break;  // OUT    only sending this data to external device
-    case BiDirInOut: return true ; break;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
-  }
-  return false;
-}
-
-
-
-
 //____________________________________________________________class_definitions_
 
 // #############################################################################

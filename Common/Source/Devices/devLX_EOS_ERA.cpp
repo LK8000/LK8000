@@ -56,8 +56,6 @@ BOOL DevLX_EOS_ERA::m_bTriggered = false;
 
 BOOL LX_EOS_ERA_bValid = false;
 
-extern BOOL IsDirInput( DataBiIoDir IODir);
-extern BOOL IsDirOutput( DataBiIoDir IODir);
 extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 
 

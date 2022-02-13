@@ -65,28 +65,24 @@ typedef struct Declaration {
 } Declaration_t;
 
 
-
-
 // Filter switches for different Data directions coming sending from/to external devices
-typedef enum
-{
+enum DataBiIoDir {
   BiDirOff   =0,	 // OFF    no data exchange with this data (ignore data)
   BiDirIn    =1,	 // IN     only reading of this data from external device
   BiDirOut   =2,	 // OUT    only sending this data to external device
   BiDirInOut =3		 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
-}DataBiIoDir;
+};
 
 
 // Filter switches for different Data directions data protocol sentences using for TARGET information transfer
-typedef enum
-{
+enum DataTP_Type {
   TP_Off  ,  // OFF    no TARGET data exchange
   TP_VTARG,  // IN    $PLXVTARG
   TP_GPRMB,  // OUT   $GPRMB
-}DataTP_Type;
+};
 
 
-typedef struct{
+struct DeviceIO {
   DataBiIoDir MCDir;     // Mac Cready
   DataBiIoDir BUGDir;    // BUG aka efficency
   DataBiIoDir BALDir;    // Ballast
@@ -108,7 +104,10 @@ typedef struct{
   DataBiIoDir DirLink  ; // Direct Link
   DataTP_Type T_TRGTDir; // Send Navigation Target information protocol sentence
   DataBiIoDir QNHDir   ; // QNH data exchange
-} DeviceIO;
+};
+
+BOOL IsDirInput(DataBiIoDir IODir);
+BOOL IsDirOutput(DataBiIoDir IODir);
 
 struct DeviceDescriptor_t {
   

@@ -24,9 +24,6 @@ extern bool UpdateQNH(const double newqnh);
 
 #define MAX_VAL_STR_LEN    60
 
-extern BOOL IsDirOutput( DataBiIoDir IODir);
-
-
 //____________________________________________________________class_definitions_
 
 // #############################################################################
