@@ -115,67 +115,19 @@ namespace {
 //static
 BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
 
-  if (Declare()) {
-    auto ack_ptr = wait_ack_weak_ptr.lock();
-    if (ack_ptr) {
-      return ack_ptr->check(sentence); // do not configure during declaration
-    }
+  auto ack_ptr = wait_ack_weak_ptr.lock();
+  if (ack_ptr && ack_ptr->check(sentence)) {
+    return TRUE;
   }
-
-  static char lastSec =0;
-  if(info->Second != lastSec) {
-    // execute every second only if no task is declaring
-    lastSec = info->Second;
-    if((info->Second % 10) ==0) {
-    // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
-      SetupFenix_Sentence(d);
-    }
-
-    static int old_overindex = -1;    // call every 10s or on change
-    static int old_overmode = -1;
-    if( ( ((info->Second+5) %10) ==0) || (OvertargetMode != old_overmode) || (GetOvertargetIndex() != old_overindex)) {
-      PutTarget(d);
-      old_overindex = GetOvertargetIndex();;
-      old_overmode  = OvertargetMode;
-    }
-    if( ((info->Second+2) %4) ==0) {
-      SendNmea(d, TEXT("RCDT,GET,SENS"));
-    }
-    if( ((info->Second+4) %4) ==0) {
-      SendNmea(d, TEXT("RCDT,GET,NAVIGATE,0"));
-    }
-
-    static double oldQNH= -1.0;
-
-    if(IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
-      if(fabs( oldQNH - QNH) > 0.9) { 
-        TCHAR szTmp[MAX_NMEA_LEN];
-        _stprintf(szTmp,  TEXT("RCDT,SET,MC_BAL,,,,,,,%4u"),(int) (QNH) );
-        SendNmea(d, szTmp);
-        oldQNH = QNH;
-      }
-    }
-  }
-
-  if (IsDirOutput(PortIO[d->PortNumber].STFDir)) {
-
-    bool circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
-    static  int   Thermalmode = -1; 
-    if((circling != (bool)Thermalmode) || (Thermalmode <0)) {
-      if(circling) {
-        SendNmea(d, TEXT("RCDT,SET,SC_VAR,0")); 
-        Thermalmode = 1;
-      }
-      else {
-        SendNmea(d, TEXT("RCDT,SET,SC_VAR,1"));
-        Thermalmode = 0;
-      }
-    }
-  }
-
-  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+ 
+  if (!info) {
     return FALSE;
   }
+
+  if (!NMEAParser::NMEAChecksum(sentence)){
+    return FALSE;
+  }
+
   if (_tcsncmp(_T("$RCDT"), sentence, 5) == 0) {
     return LXDT(d, sentence + 6, info);
   }
@@ -194,7 +146,60 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
   if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0) {
     return LXWP1(d, sentence + 7, info);
   }
-  return false;
+
+  // do not configure during declaration
+  if (Declare()) {
+    return FALSE;
+  }
+
+  static char lastSec =0;
+  if (info->Second != lastSec) {
+    // execute every second only if no task is declaring
+    lastSec = info->Second;
+    if ((info->Second % 10) == 0) {
+      // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
+      SetupFenix_Sentence(d);
+    }
+
+    static int old_overindex = -1;    // call every 10s or on change
+    static int old_overmode = -1;
+    if ((((info->Second+5) %10) ==0) || (OvertargetMode != old_overmode) || (GetOvertargetIndex() != old_overindex)) {
+      PutTarget(d);
+      old_overindex = GetOvertargetIndex();;
+      old_overmode  = OvertargetMode;
+    }
+    if (((info->Second + 2) % 4) == 0) {
+      SendNmea(d, TEXT("RCDT,GET,SENS"));
+    }
+    if (((info->Second + 4) % 4) == 0) {
+      SendNmea(d, TEXT("RCDT,GET,NAVIGATE,0"));
+    }
+
+    if (IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
+      static double oldQNH = -1.0;
+      if (fabs(oldQNH - QNH) > 0.9) { 
+        TCHAR szTmp[MAX_NMEA_LEN];
+        _stprintf(szTmp,  TEXT("RCDT,SET,MC_BAL,,,,,,,%4u"), (int) (QNH) );
+        SendNmea(d, szTmp);
+        oldQNH = QNH;
+      }
+    }
+  }
+
+  if (IsDirOutput(PortIO[d->PortNumber].STFDir)) {
+    bool circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
+    static bool Thermalmode = !circling;
+    if (circling != Thermalmode) {
+      if (circling) {
+        SendNmea(d, TEXT("RCDT,SET,SC_VAR,0")); 
+      }
+      else {
+        SendNmea(d, TEXT("RCDT,SET,SC_VAR,1"));
+      }
+      Thermalmode = circling;
+    }
+  }
+  return FALSE;
 } // ParseNMEA()
 
 BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d) {
