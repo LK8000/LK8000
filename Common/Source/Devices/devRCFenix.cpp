@@ -24,12 +24,6 @@ extern bool UpdateQNH(const double newqnh);
 
 #define MAX_VAL_STR_LEN    60
 
-
-BOOL RCFenix_bValid = false;
-
-
-
-
 extern BOOL IsDirOutput( DataBiIoDir IODir);
 
 
@@ -169,10 +163,10 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
       old_overmode  = OvertargetMode;
     }
     if (((info->Second + 2) % 4) == 0) {
-      SendNmea(d, TEXT("RCDT,GET,SENS"));
+      SendNmea(d, _T("RCDT,GET,SENS"));
     }
     if (((info->Second + 4) % 4) == 0) {
-      SendNmea(d, TEXT("RCDT,GET,NAVIGATE,0"));
+      SendNmea(d, _T("RCDT,GET,NAVIGATE,0"));
     }
 
     if (IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
@@ -191,10 +185,10 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
     static bool Thermalmode = !circling;
     if (circling != Thermalmode) {
       if (circling) {
-        SendNmea(d, TEXT("RCDT,SET,SC_VAR,0")); 
+        SendNmea(d, _T("RCDT,SET,SC_VAR,0")); 
       }
       else {
-        SendNmea(d, TEXT("RCDT,SET,SC_VAR,1"));
+        SendNmea(d, _T("RCDT,SET,SC_VAR,1"));
       }
       Thermalmode = circling;
     }
@@ -203,19 +197,15 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
 } // ParseNMEA()
 
 BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d) {
-
-  if (Declare()) return false ;  // do not configure during declaration
-	
   static int i=0;
   if((i++%10)==0) {
-    SendNmea(d, TEXT("PFLX0,LXWP0,1,LXWP1,1,LXWP2,1,LXWP3,1,GPRMB,5"));
-    SendNmea( d, _T("RCDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));      
+    SendNmea(d, _T("PFLX0,LXWP0,1,LXWP1,1,LXWP2,1,LXWP3,1,GPRMB,5"));
+    SendNmea(d, _T("RCDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));      
   }
   else {
-    SendNmea(d, TEXT("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
-    SendNmea(d,_T("RCDT,GET,MC_BAL"));
-    SendNmea(d,_T("LXDT,GET,MC_BAL"));
-    StartupStore(TEXT("Config: RCDT"));      
+    SendNmea(d, _T("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
+    SendNmea(d, _T("RCDT,GET,MC_BAL"));
+    SendNmea(d, _T("LXDT,GET,MC_BAL"));
   }
   return true;
 }
@@ -259,17 +249,17 @@ extern int DeviceASCIIConvert(TCHAR *pDest,const TCHAR *pSrc, int size=11);
 static
 BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
   if(DeclStrings) {
-    int  lat = 0; 
-    int  lon = 0; 
+    int  lat = 0;
+    int  lon = 0;
     TCHAR Name[60] =_T("");
     if(wp) {
-      lat = ( int)(wp->Latitude*60000.0);
-      lon = (int) (wp->Longitude*60000.0);  
-      DeviceASCIIConvert(Name, wp->Name,20) ;  
+      lat = (int)(wp->Latitude*60000.0);
+      lon = (int)(wp->Longitude*60000.0);
+      DeviceASCIIConvert(Name, wp->Name,20);
     }
-    _stprintf(DeclStrings, 
+    _stprintf(DeclStrings,
               TEXT("RCDT,SET,TP,%i,%i,%i,%i,%s"),
-              num, total+2, lat, lon, Name );
+              num, total+2, lat, lon, Name);
     return true;
   }
   return false;
@@ -291,8 +281,8 @@ BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
 BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
 
-  if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
-    return(false);
+  if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)) {
+    return false;
   }
   ShowProgress(decl_enable);
   ShowProgress(decl_send);
@@ -301,15 +291,16 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   TCHAR Pilot[64];
   _tcscpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
 
-  TCHAR PilotName[12]=_T("");
-  TCHAR PilotSurName[12]=_T("");;
-  TCHAR* NamePtr= _tcstok (Pilot, _T(" ,.-:_"));
-  if(NamePtr !=NULL)
-      DeviceASCIIConvert(PilotName,  NamePtr ,11  );
-
-  TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));
-  if(SurNamePtr !=NULL)
-      DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
+  TCHAR PilotName[12] = _T("");
+  TCHAR PilotSurName[12] = _T("");;
+  TCHAR* NamePtr= _tcstok(Pilot, _T(" ,.-:_"));
+  if (NamePtr) {
+    DeviceASCIIConvert(PilotName, NamePtr ,11);
+  }
+  TCHAR* SurNamePtr = _tcstok (nullptr, _T(" ,.-:_"));
+  if (SurNamePtr) {
+    DeviceASCIIConvert(PilotSurName, SurNamePtr ,11);
+  }
 
   TCHAR AircraftType[12];   DeviceASCIIConvert(AircraftType,  lkDecl->AircraftType    ,11);
   TCHAR AircraftReg[12];    DeviceASCIIConvert(AircraftReg,   lkDecl->AircraftRego    ,11);
@@ -317,20 +308,24 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   TCHAR AircraftClass[12];  DeviceASCIIConvert(AircraftClass, lkDecl->CompetitionClass,11);
 
   int wpCount = lkDecl->num_waypoints;
-  int totalLines =  wpCount*2 + 2 + 4; // N * w(p + zone) + takeoff + landing + header
+  int totalLines = (wpCount * 2) + 2 + 4; // N * w(p + zone) + takeoff + landing + header
   TCHAR DeclStrings[totalLines][256];
   INT i = 0;
 
   double SecRadius;
   int Type;
 
-  _stprintf(DeclStrings[i++], TEXT("RCDT,SET,PILOT,%s,%s"),(PilotName), (PilotSurName));
-  _stprintf(DeclStrings[i++], TEXT("RCDT,SET,GLIDER,%s,%s,%s,%s"), AircraftType, AircraftReg, AircraftCompID, AircraftClass);
+  _stprintf(DeclStrings[i++], _T("RCDT,SET,PILOT,%s,%s"), PilotName, PilotSurName);
+  _stprintf(DeclStrings[i++], _T("RCDT,SET,GLIDER,%s,%s,%s,%s"), 
+                              AircraftType, AircraftReg, AircraftCompID, AircraftClass);
 
-  if(UseAATTarget())
-    _stprintf(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,%02i:%02i"), (int)AATTaskLength/60,  (int)(AATTaskLength-((int)(AATTaskLength/60)*60)));
-  else
+  if (UseAATTarget()) {
+    _stprintf(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,%02i:%02i"), 
+                (int)(AATTaskLength / 60),  (int)(AATTaskLength-((int)(AATTaskLength/60)*60)));
+  }
+  else {
     _stprintf(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,00:00"));
+  }
   int num=0;
 
   int dir=0,autonxt=1,isline=0,a1=45,a2=45,a21=5000,r1=5000,r2=500, elev = WayPointList[HomeWaypoint].Altitude;
@@ -356,8 +351,9 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     }
 
     elev = WayPointList[HomeWaypoint].Altitude;
-    r1=(int)SecRadius;
-    _stprintf(DeclStrings[i++], TEXT("RCDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
+    r1 = SecRadius;
+    _stprintf(DeclStrings[i++], _T("RCDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),
+                num, dir, autonxt, isline, a1, a2, a21, r1, r2, elev);
     num++;
   }
 
@@ -366,6 +362,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   bool success  = false;
 
   std::shared_ptr<wait_ack> ptr = std::make_shared<wait_ack>(_T("$RCDT,ANS,OK*59\n"));
+  
   assert(wait_ack_weak_ptr.expired());
   wait_ack_weak_ptr = ptr;
 
@@ -375,7 +372,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
 
     success =  SendNmea(d, DeclStrings[ii]);
     if (success) {
-      ScopeUnlock unlock(CritSec_Comm);
+      ScopeUnlock unlock(CritSec_Comm); // required to unlock RxThread
       success = ptr->wait(20000);
     }
 
@@ -393,134 +390,147 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   return success;
 } // DeclareTask()
 
-BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready) {
+  if (!d) {
+    return false;
+  }
+
+  if (!IsDirOutput(PortIO[d->PortNumber].MCDir)) {
+    return false;
+  }
+
   TCHAR  szTmp[MAX_NMEA_LEN];
-
-  if(!d)  return false;
-
-  if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
-
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
-  StartupStore(TEXT("Send: %s"), szTmp);
-  SendNmea(d,szTmp);
 
-  return true;
+  TestLog(_T("Send: %s"), szTmp);
+
+  SendNmea(d,szTmp);
+  return TRUE;
 }
 
 
-BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast){
-  TCHAR  szTmp[MAX_NMEA_LEN];
+BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast) {
+  if (!d) {
+    return false;
+  }
 
-  if(!d)  return false;
-  if(RCFenix_bValid == false) return false; // ??  always true !!!
+  if (!IsDirOutput(PortIO[d->PortNumber].BALDir)) {
+    return false;
+  }
 
-  if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
-  
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
-  StartupStore(TEXT("Send: %s"), szTmp);
-  SendNmea(d,szTmp);
+  TCHAR szTmp[MAX_NMEA_LEN];
+  _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,SET,MC_BAL,,%.0f,,,,,"), GlidePolar::BallastLitres);
 
-  return(TRUE);
+  TestLog(_T("Send: %s"), szTmp);
+
+  SendNmea(d, szTmp);
+
+  return TRUE;
 }
 
 
-BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs){
-  TCHAR  szTmp[MAX_NMEA_LEN];
+BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
+  if (!d) {
+    return false;
+  }
+  if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) {
+    return false;
+  }
+  TCHAR szTmp[MAX_NMEA_LEN];
 
-  if(!d)  return false;
+  double fLXBugs = CalculateLXBugs(Bugs);
+  _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,SET,MC_BAL,,,%.0f,,,,"), fLXBugs);
 
-  if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) return false;
-  double fLXBugs = CalculateLXBugs( Bugs);
+  TestLog(_T("Send: %s"), szTmp);
 
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
-  StartupStore(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
-  
-  return(TRUE);
+  return TRUE;
 }
 
 
-BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d)
-{
+BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d) {
   if(PortIO[d->PortNumber].T_TRGTDir == TP_Off) {
     return false;
   }
 
-  int overindex = GetOvertargetIndex();
+  int overindex = -1; 
 
-  if(overindex < 0)               /* valid waypoint ?*/
-    return -1;
+  if(ValidTaskPoint(ActiveTaskPoint)) {
+    // active task turnpoint
+    overindex = Task[ActiveTaskPoint].Index;
+  }
 
+  if(overindex < 0) {
+    // if no task configured, use overtarget
+    overindex = GetOvertargetIndex();
+  }
 
-  bool bTaskpresent = false; //ValidTaskPoint(0);
-  if(bTaskpresent)
-    if(ValidTaskPoint(ActiveTaskPoint))
-      overindex = Task[ActiveTaskPoint].Index;
+  if (!ValidWayPoint(overindex)) {
+    // no target ...
+    return TRUE;
+  }
+
+  const WAYPOINT& curr_tp = WayPointList[overindex];
 
   TCHAR  szTmp[MAX_NMEA_LEN];
 
-
-  int DegLat, DegLon;
-  double MinLat, MinLon;
-  char NoS, EoW;
-
-  if (!ValidWayPoint(overindex)) return TRUE;
-
-  DegLat = (int)WayPointList[overindex].Latitude;
-  MinLat = WayPointList[overindex].Latitude - DegLat;
-  NoS = 'N';
-  if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0))) {
+  int DegLat = curr_tp.Latitude;
+  double MinLat = curr_tp.Latitude - DegLat;
+  char NoS = 'N';
+  if ((MinLat < 0) || (((MinLat - DegLat) == 0) && (DegLat < 0))) {
     NoS = 'S';
-    DegLat *= -1; MinLat *= -1;
+    DegLat *= -1; 
+    MinLat *= -1;
   }
   MinLat *= 60;
 
-  DegLon = (int)WayPointList[overindex].Longitude ;
-  MinLon = WayPointList[overindex].Longitude  - DegLon;
-  EoW = 'E';
-  if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0))) {
+  int DegLon = curr_tp.Longitude ;
+  double MinLon = curr_tp.Longitude - DegLon;
+  char EoW = 'E';
+  if ((MinLon < 0) || (((MinLon - DegLon) == 0) && (DegLon < 0))) {
     EoW = 'W';
-    DegLon *= -1; MinLon *= -1;
+    DegLon *= -1;
+    MinLon *= -1;
   }
   MinLon *=60;
 
   TCHAR szName[MAX_VAL_STR_LEN];
-  _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
+  _sntprintf(szName, MAX_VAL_STR_LEN, _T("%s%s"),
+                        GetOvertargetHeader(),  // LKTOKEN _@M1323_ "T>"
+                        curr_tp.Name);
 
-  if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG) {                                  
+  if (PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG) {                                  
     int rwdir = 0; 
     int landable =0;
 
-    if((WayPointList[overindex].Flags & LANDPOINT)> 0) {
+    if ((curr_tp.Flags & LANDPOINT) > 0) {
       landable = 1;
-      rwdir    = WayPointList[overindex].RunwayDir;
+      rwdir    = curr_tp.RunwayDir;
     }
 
-    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
-                1, szName, 
-                (int) (WayPointList[overindex].Latitude * 60000.0), 
-                (int) (WayPointList[overindex].Longitude* 60000.0),
-                (int) (WayPointList[overindex].Altitude +0.5),
-                landable, WayPointList[overindex].Freq , rwdir);
+    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,NAVIGATE,1,%s,%i,%i,%i,%i,%s,%i"),
+                szName, 
+                (int) (curr_tp.Latitude * 60000.0), 
+                (int) (curr_tp.Longitude * 60000.0),
+                (int) (curr_tp.Altitude + 0.5),
+                landable, curr_tp.Freq, rwdir);
     
     //   $RCDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
-    _tcsncat (szName, _T(" ($RCDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
-    TestLog(TEXT("Send navigation Target Fenix: %s"), szName);
+    _tcsncat(szName, _T(" ($RCDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
   }
-  else {
-    if( PortIO[d->PortNumber].T_TRGTDir  == TP_GPRMB) {
-      // GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
-      _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
-                  szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
-      _tcsncat (szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
-    }
-    TestLog(TEXT("Send navigation Target Fenix: %s"), szName);
+  else if (PortIO[d->PortNumber].T_TRGTDir  == TP_GPRMB) {
+    // GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
+    _sntprintf(szTmp, MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
+                                    szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
+    _tcsncat(szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
   }
 
-  if(Values(d)) {
-    SetDataText( d, _T_TRGT,  szName);
-  }
-  SendNmea(d,szTmp);
+  TestLog(TEXT("Send navigation Target Fenix: %s"), szName);
 
-  return(true);
+  if (Values(d)) {
+    SetDataText(d, _T_TRGT,  szName);
+  }
+  SendNmea(d, szTmp);
+
+  return TRUE;
 }
