@@ -15,6 +15,8 @@
 #include "resource.h"
 #include "LKInterface.h"
 #include "McReady.h"
+#include "Thread/Cond.hpp"
+#include "Thread/Mutex.hpp"
 
 extern bool UpdateQNH(const double newqnh);
 
@@ -64,6 +66,43 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->Config       = Config;
 } // Install()
 
+namespace {
+
+  class wait_ack final {
+  public:
+    wait_ack(const TCHAR* str) : wait_str(str) {}
+
+    bool check(const TCHAR* str) {
+      bool signal = WithLock(mutex, [&]() {
+        if (wait_str == str) {
+          ready = true;
+        }
+        return ready;
+      });
+      if (signal) {
+        condition.Signal();
+      }
+      return signal;
+    }
+
+    bool wait(unsigned timeout_ms) {
+      ScopeLock lock(mutex);
+      condition.Wait(mutex, timeout_ms);
+      return std::exchange(ready, false);
+    }
+
+  private:
+    tstring_view wait_str;
+
+    Mutex mutex;
+    Cond condition;
+    bool ready = false;
+  };
+
+  std::weak_ptr<wait_ack> wait_ack_weak_ptr;
+}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
@@ -74,12 +113,15 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
 /// @retval true if the sentence has been parsed
 ///
 //static
+BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
 
+  if (Declare()) {
+    auto ack_ptr = wait_ack_weak_ptr.lock();
+    if (ack_ptr) {
+      return ack_ptr->check(sentence); // do not configure during declaration
+    }
+  }
 
-BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
-{
-  if (Declare()) return false ;  // do not configure during declaration
- 
   static char lastSec =0;
   if(info->Second != lastSec) {
     // execute every second only if no task is declaring
@@ -146,7 +188,7 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
   if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0) {
     return LXWP0(d, sentence + 7, info);
   }
-  if(_tcsncmp(_T("$GPRMB"), sentence, 6) == 0) {
+  if (_tcsncmp(_T("$GPRMB"), sentence, 6) == 0) {
     return GPRMB(d, sentence + 7, info);
   }
   if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0) {
@@ -244,8 +286,6 @@ BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
 BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
 
-  bool Good  = true;
-
   if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
     return(false);
   }
@@ -318,41 +358,34 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
 
   FormatTP(DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
 
-  bool status= false;
-  if ( StopRxThread(d, errBufSize, errBuf)) {
-    // Send complete declaration to logger
-    int orgRxTimeout;
-    StartupStore(_T(". RC Fenix SetRxTimeout%s "), NEWLINE);
-    status = SetRxTimeout(d, 500, orgRxTimeout, errBufSize, errBuf);
-    int attemps = 0;
-    char RecBuf[4096] = "";
+  bool success  = false;
 
-    do {
-      Good = true;
-      for (int ii = 0; ii < i; ii++) {
-        StartupStore(_T(". RC Fenix Decl: %s %s "), DeclStrings[ii], NEWLINE);
-        if (Good)
-          Good = SendNmea(d, DeclStrings[ii]);
+  std::shared_ptr<wait_ack> ptr = std::make_shared<wait_ack>(_T("$RCDT,ANS,OK*59\n"));
+  assert(wait_ack_weak_ptr.expired());
+  wait_ack_weak_ptr = ptr;
 
+  for (int ii = 0; ii < i; ii++) {
 
-        if (Good)
-          Good = ComExpect(d, "$RCDT,ANS,OK*59", 4095, RecBuf, errBufSize, errBuf);
+    TestLog(_T(". RC Fenix Decl: > %s"), DeclStrings[ii]);
 
-      }
-      attemps++;
-      if (!Good)
-        Poco::Thread::sleep(500);
-    } while ((!Good) && (attemps < 3));
+    success =  SendNmea(d, DeclStrings[ii]);
+    if (success) {
+      ScopeUnlock unlock(CritSec_Comm);
+      success = ptr->wait(20000);
+    }
 
-    // restore Rx timeout
-    status = status && SetRxTimeout(d, orgRxTimeout, orgRxTimeout, status ? errBufSize : 0, errBuf);
+    TestLog(_T(". RC Fenix Decl: < %s"), success ? _T("$RCDT,ANS,OK*59"): _T("failed"));
+
+    if (!success) {
+      break; // failed ...
+    }
   }
-  // restart RX thread
-  StartRxThread(d, status ? errBufSize : 0, errBuf);
+
+  ptr = nullptr;
 
   Declare(false);
   ShowProgress(decl_disable);
-  return(Good);
+  return success;
 } // DeclareTask()
 
 BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready){
