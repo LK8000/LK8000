@@ -341,7 +341,7 @@ tstring DevLX::FixCharset(const TCHAR (&string)[MAX_NMEA_LEN]) {
 #ifdef UNICODE  
   // 1 - copy back TCHAR to char
   char  szTmp[MAX_NMEA_LEN];
-  for (size_t i = 0; string[0]; ++i) {
+  for (size_t i = 0; string[i]; ++i) {
     szTmp[i] = string[i];
   }
 #else
