@@ -54,14 +54,18 @@ protected:
   const TCHAR* GetName() {
     return _T("RC Fenix");  
   }
+
+  /// to send data at connection start
+  static BOOL Open(PDeviceDescriptor_t d);
+
   /// Writes declaration into the logger.
   static BOOL DeclareTask(PDeviceDescriptor_t d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
+
   static BOOL Config(PDeviceDescriptor_t d);
 
-  static BOOL SetupFenix_Sentence(PDeviceDescriptor_t d);
   static BOOL PutTarget(PDeviceDescriptor_t d);
 
   static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);

@@ -47,6 +47,7 @@ extern bool UpdateQNH(const double newqnh);
 ///
 void DevRCFenix::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
+  d->Open = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = FenixPutMacCready;
   d->PutBugs      = FenixPutBugs;
@@ -91,6 +92,46 @@ namespace {
   };
 
   std::weak_ptr<wait_ack> wait_ack_weak_ptr;
+}
+
+//static 
+BOOL DevRCFenix::Open(PDeviceDescriptor_t d) {
+  if (!d) {
+    return false;
+  }
+
+  tstring setMcBal = _T("RCDT,SET,MC_BAL,");
+  
+  // mc (float)
+  if (IsDirOutput(PortIO[d->PortNumber].MCDir)) {
+    setMcBal += to_tstring(static_cast<float>(MACCREADY));
+  }
+  setMcBal += _T(",");
+  
+  // ballast (uint16_t kg)
+  if (IsDirOutput(PortIO[d->PortNumber].BALDir)) {
+    setMcBal += to_tstring(static_cast<uint16_t>(GlidePolar::BallastLitres));
+  }
+  setMcBal += _T(",");
+  
+  // bugs (uint8_t %)
+  if (IsDirOutput(PortIO[d->PortNumber].BUGDir)) {
+    setMcBal += to_tstring(static_cast<uint8_t>(CalculateLXBugs(BUGS)));
+  }
+  // brightness,vario_vol,sc_vol
+  setMcBal += _T(",,,,");
+  
+  // qnh (uint16_t mbar)
+  if (IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
+    uint16_t mb_qnh = QNH;
+    setMcBal += to_tstring(mb_qnh);
+  }
+
+  SendNmea(d, setMcBal.c_str());
+  SendNmea(d, _T("RCDT,GET,MC_BAL"));
+  SendNmea(d, _T("PFLX0,LXWP0,1,LXWP1,1,LXWP2,1,LXWP3,1,GPRMB,5"));
+
+  return TRUE;
 }
 
 
@@ -147,10 +188,6 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
   if (info->Second != lastSec) {
     // execute every second only if no task is declaring
     lastSec = info->Second;
-    if ((info->Second % 10) == 0) {
-      // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
-      SetupFenix_Sentence(d);
-    }
 
     static int old_overindex = -1;    // call every 10s or on change
     static int old_overmode = -1;
@@ -192,20 +229,6 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
   }
   return FALSE;
 } // ParseNMEA()
-
-BOOL DevRCFenix::SetupFenix_Sentence(PDeviceDescriptor_t d) {
-  static int i=0;
-  if((i++%10)==0) {
-    SendNmea(d, _T("PFLX0,LXWP0,1,LXWP1,1,LXWP2,1,LXWP3,1,GPRMB,5"));
-    SendNmea(d, _T("RCDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));      
-  }
-  else {
-    SendNmea(d, _T("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
-    SendNmea(d, _T("RCDT,GET,MC_BAL"));
-    SendNmea(d, _T("LXDT,GET,MC_BAL"));
-  }
-  return true;
-}
 
 BOOL DevRCFenix::Config(PDeviceDescriptor_t d) {
 
