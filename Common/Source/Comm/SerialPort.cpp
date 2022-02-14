@@ -395,15 +395,15 @@ unsigned SerialPort::RxThread() {
         {
             // Loop to wait for the data.
             do {
-                ScopeLock Lock(CritSec_Comm);
-                // Read the data from the serial port.
-                dwBytesTransferred = ReadData(szString);
-                if (dwBytesTransferred > 0) {
-                    std::for_each(std::begin(szString), std::begin(szString) + dwBytesTransferred, std::bind(&SerialPort::ProcessChar, this, _1));
-                } else {
-                    dwBytesTransferred = 0;
-                }
-
+                WithLock(CritSec_Comm, [&](){
+                    // Read the data from the serial port.
+                    dwBytesTransferred = ReadData(szString);
+                    if (dwBytesTransferred > 0) {
+                        std::for_each(std::begin(szString), std::begin(szString) + dwBytesTransferred, std::bind(&SerialPort::ProcessChar, this, _1));
+                    } else {
+                        dwBytesTransferred = 0;
+                    }
+                });
                 Poco::Thread::sleep(1); // JMW20070515: give port some time to
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
