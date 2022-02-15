@@ -2068,7 +2068,7 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
 #ifdef UNICODE  
   // 1 - copy back TCHAR to char
   char  szName[MAX_NMEA_LEN];
-  for (size_t i = 0; szTmp[0]; ++i) {
+  for (size_t i = 0; szTmp[i]; ++i) {
     szName[i] = szTmp[i];
   }
 #else
