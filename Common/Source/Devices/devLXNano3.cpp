@@ -951,9 +951,9 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned e
 
 
 bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[]){
-TCHAR errBuf[10]= _T("");
-TCHAR errBufSize=10;
-  DevLXNanoIII::SendNmea(d,  buf,errBufSize,errBuf);
+  TCHAR errBuf[100] = _T("");
+
+  DevLXNanoIII::SendNmea(d, buf, std::size(errBuf), errBuf);
   if(_tcslen (errBuf) > 1)
   {
     DoStatusMessage(errBuf);
