@@ -11,7 +11,9 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "devLX.h"
+#include "utils/stringext.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
 
 //____________________________________________________________class_definitions_
 
@@ -257,3 +259,95 @@ bool DevLX::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
   // nothing to do
   return(true);
 } // LXWP3()
+
+
+
+
+bool DevLX::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+
+  TCHAR  szTmp[MAX_NMEA_LEN];
+  double fTmp;
+
+  ParToDouble(sentence, 5, &fTmp);
+  double DegLat = (double)((int) (fTmp/100.0));
+  double MinLat =  fTmp- (100.0*DegLat);
+  double Latitude = DegLat+MinLat/60.0;
+
+  NMEAParser::ExtractParameter(sentence,szTmp,6);
+  if (szTmp[0]==_T('S')) {
+    Latitude *= -1;
+  }
+
+  ParToDouble(sentence, 7, &fTmp);
+  double DegLon =  (double) ((int) (fTmp/100.0));
+  double MinLon =  fTmp- (100.0*DegLon);
+  double Longitude = DegLon+MinLon/60.0;
+
+  NMEAParser::ExtractParameter(sentence,szTmp,8);
+  if (szTmp[0]==_T('W')) {
+    Longitude *= -1;
+  }
+	
+  NMEAParser::ExtractParameter(sentence,szTmp,4);
+  tstring tname = FixCharset(szTmp);
+
+  LockTaskData();
+  {
+  	lk::snprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), tname.c_str());
+    WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
+    WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
+    WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information
+    Alternate2 = RESWP_EXT_TARGET;
+  }
+  UnlockTaskData();
+
+  return false;
+}
+
+/**
+ * Converts TCHAR[] string into US-ASCII string with characters safe for
+ * writing to LX devices.
+ *
+ * Characters are converted into their most similar representation
+ * in ASCII. Nonconvertable characters are replaced by '?'.
+ *
+ * Output string will always be terminated by '\0'.
+ *
+ * @param input    input string (must be terminated with '\0')
+ * @param outSize  output buffer size
+ * @param output   output buffer
+ */
+void DevLX::Wide2LxAscii(const TCHAR* input, int outSize, char* output) {
+  assert(output && (outSize > 0));
+
+  if (output && (outSize > 0)) {
+
+    to_usascii(input, output, outSize);
+
+    // replace all non-ascii characters with '?' - LX Colibri is very sensitive
+    // on non-ascii chars - the electronic seal can be broken
+    // (to_usascii() should be enough, but to be sure that someone has not
+    // incorrectly changed to_usascii())
+    for (; *output != '\0'; ++output) {
+      if (*output < 32 || *output > 126) {
+        *output = '?';
+      }
+    }
+  }
+} // Wide2LxAscii()
+
+tstring DevLX::FixCharset(const TCHAR (&string)[MAX_NMEA_LEN]) {
+#ifdef UNICODE  
+  // 1 - copy back TCHAR to char
+  char  szTmp[MAX_NMEA_LEN];
+  for (size_t i = 0; string[i]; ++i) {
+    szTmp[i] = string[i];
+  }
+#else
+  // TCHAR is alias to char, no need copy back to char.
+  const char* szTmp = string;
+#endif
+  // 2 - detect and fix chatset
+  return from_unknown_charset(szTmp);
+}

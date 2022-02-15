@@ -62,10 +62,6 @@ static const char PKT_CCWRITE   = '\xD0';
 /// read Lx class (char LxClass[9] + CRC)
 //static const char PKT_CCREAD    = '\xCF';
 
-#ifdef UNIT_TESTS
-static bool test = Wide2LxAsciiTest();
-#endif
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
@@ -374,45 +370,6 @@ bool DevLXNano::WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBu
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts TCHAR[] string into US-ASCII string with characters safe for
-/// writing to LX devices.
-///
-/// Characters are converted into their most similar representation
-/// in ASCII. Nonconvertable characters are replaced by '?'.
-///
-/// Output string will always be terminated by '\0'.
-///
-/// @param input    input string (must be terminated with '\0')
-/// @param outSize  output buffer size
-/// @param output   output buffer
-///
-/// @retval true  all characters copied
-/// @retval false some characters could not be copied due to buffer size
-///
-//static
-bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
-{
-  if (outSize == 0)
-    return(false);
-
-  int res = to_usascii(input, output, outSize);
-
-  // replace all non-ascii characters with '?' - LX Colibri is very sensitive
-  // on non-ascii chars - the electronic seal can be broken
-  // (to_usascii() should be enough, but to be sure that someone has not
-  // incorrectly changed to_usascii())
-  output--;
-  while (*++output != '\0')
-  {
-    if (*output < 32 || *output > 126)
-      *output = '?';
-  }
-
-  return(res >= 0);
-} // Wide2LxAscii()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Calculate LX CRC value for the given data.
 ///
 /// @param length  data length
@@ -437,59 +394,6 @@ byte DevLXNano::CalcCrc(int length, const void* data) {
   return(crcVal);
 } // CalcCrc()
 
-
-#ifdef UNIT_TESTS
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Test suite for Wide2LxAscii().
-///
-//static
-void DevLXNano::LogTestResult(const TCHAR* suite, const TCHAR* test, bool result)
-{
-  StartupStore(_T("UnitTest: %s :%s [%s]%s"),
-    result ? _T("ok") : _T("ER"), suite, test, NEWLINE);
-} // LogTestResult()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Test suite for Wide2LxAscii().
-///
-//static
-bool DevLXNano::Wide2LxAsciiTest()
-{
-  static const TCHAR* suite = _T("Wide2LxAscii");
-
-  static const TCHAR uc0[] = {0};
-
-  static const TCHAR uc1[] = {0x0001, 0x001F, 0x0020, 0x0041, 0x007E, 0x007F, 0x00A5, 0x00D9, 0x010E, 0x024F, 0x0250, 0};
-  static const char* ch1a  = "?? A~?YUDy?";
-  static const char* ch1b  = "?? A";
-
-  static const TCHAR uc2[] = {0xD800, 0xDC00, 0xDBFF, 0xDFFF, 0xE000, 0x007A, 0};
-  static const char* ch2   = "???z";
-
-  char tmp[200] = { 'x' };
-
-  LogTestResult(suite, _T("0 output"), Wide2LxAscii(uc1, 0, NULL) == false);
-
-  LogTestResult(suite, _T("0 input"), Wide2LxAscii(uc0, 1, tmp) == true);
-  LogTestResult(suite, _T("0 input/chk"), tmp[0] == '\0');
-
-  LogTestResult(suite, _T("1 output"), Wide2LxAscii(uc1, 1, tmp) == false);
-  LogTestResult(suite, _T("1 output/chk"), tmp[0] == '\0');
-
-  LogTestResult(suite, _T("5 output"), Wide2LxAscii(uc1, 5, tmp) == false);
-  LogTestResult(suite, _T("5 output/chk"), strcmp(tmp, ch1b) == 0);
-
-  LogTestResult(suite, _T("uc1"), Wide2LxAscii(uc1, sizeof(tmp), tmp) == true);
-  LogTestResult(suite, _T("uc1/chk"), strcmp(tmp, ch1a) == 0);
-
-  LogTestResult(suite, _T("uc2"), Wide2LxAscii(uc2, sizeof(tmp), tmp) == true);
-  LogTestResult(suite, _T("uc2/chk"), strcmp(tmp, ch2) == 0);
-
-} // Wide2LxAsciiTest()
-
-#endif
 
 
 // #############################################################################
@@ -518,39 +422,41 @@ DevLXNano::Decl::Decl()
 ///
 void DevLXNano::Decl::SetString(StrId str_id, const TCHAR* text)
 {
-  char *output;
-  int outSize;
-
   if (str_id >= 0 && (int) str_id < (int) max_wp_count)
   {
-    output = task.name[str_id]; outSize = sizeof(task.name[0]);
+    Wide2LxAscii(text, task.name[str_id]);
   }
   else switch(str_id)
   {
     case fl_pilot:
-      output = flight.pilot; outSize = sizeof(flight.pilot); break;
+      Wide2LxAscii(text, flight.pilot);
+      break;
 
     case fl_glider:
-      output = flight.glider; outSize = sizeof(flight.glider); break;
+      Wide2LxAscii(text, flight.glider);
+      break;
 
     case fl_reg_num:
-      output = flight.reg_num; outSize = sizeof(flight.reg_num); break;
+      Wide2LxAscii(text, flight.reg_num);
+      break;
 
     case fl_cmp_num:
-      output = flight.cmp_num; outSize = sizeof(flight.cmp_num); break;
+      Wide2LxAscii(text, flight.cmp_num);
+      break;
 
     case fl_observer:
-      output = flight.observer; outSize = sizeof(flight.observer); break;
+      Wide2LxAscii(text, flight.observer);
+      break;
 
     case fl_gps:
-      output = flight.gps; outSize = sizeof(flight.gps); break;
+      Wide2LxAscii(text, flight.gps);
+      break;
 
     default:
       // invalid id
       return;
   }
 
-  Wide2LxAscii(text, outSize, output);
 } // SetString()
 
 
@@ -686,7 +592,7 @@ DevLXNano::Class::Class()
 ///
 void DevLXNano::Class::SetName(const TCHAR* text)
 {
-  Wide2LxAscii(text, sizeof(name), name);
+  Wide2LxAscii(text, name);
 } // SetName()
 
 

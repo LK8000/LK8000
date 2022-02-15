@@ -764,16 +764,19 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 }
 
 
-BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode)
-{
-
-  d->m_bAdvancedMode = bAdvMode;
-  return true;
+BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode) {
+  if(d) {
+    d->m_bAdvancedMode = bAdvMode;
+    return true;
+  }
+  return false;
 }
 
-BOOL devGetAdvancedMode(PDeviceDescriptor_t d)
-{
-  return d->m_bAdvancedMode;
+BOOL devGetAdvancedMode(PDeviceDescriptor_t d) {
+  if(d) {
+    return d->m_bAdvancedMode;
+  }
+  return false;
 }
 
 
@@ -1160,4 +1163,24 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl)
   Poco::Thread::sleep(100);
 }
  return false; // no success
+}
+
+BOOL IsDirInput(DataBiIoDir IODir) {
+  switch(IODir) {
+    case BiDirOff  : return false; // OFF    no data exchange with this data (ignore data)
+    case BiDirIn   : return true;  // IN     only reading of this data from external device
+    case BiDirOut  : return false; // OUT    only sending this data to external device
+    case BiDirInOut: return true;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
+  }
+  return false;
+}
+
+BOOL IsDirOutput(DataBiIoDir IODir) {
+  switch(IODir) {
+    case BiDirOff  : return false;  // OFF    no data exchange with this data (ignore data)
+    case BiDirIn   : return false;  // IN     only reading of this data from external device
+    case BiDirOut  : return true ;  // OUT    only sending this data to external device
+    case BiDirInOut: return true ;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
+  }
+  return false;
 }

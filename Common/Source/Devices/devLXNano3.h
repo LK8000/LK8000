@@ -88,8 +88,6 @@ class DevLXNanoIII : public DevLX
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-    /// Converts TCHAR[] string into US-ASCII string.
-    static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);
 
     /// Send one line of ceclaration to logger
     static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
@@ -102,8 +100,6 @@ class DevLXNanoIII : public DevLX
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL Open( PDeviceDescriptor_t d);
-   static BOOL Close( PDeviceDescriptor_t d);
    static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
@@ -121,7 +117,8 @@ class DevLXNanoIII : public DevLX
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
    static BOOL PutTarget(PDeviceDescriptor_t d);
    static BOOL Values(PDeviceDescriptor_t d);
-   static BOOL SetDataText( ValueStringIndex Idx,  const TCHAR ValueText[]);
+   static BOOL ClearDataText( ValueStringIndex Idx );
+   static BOOL SetDataText(PDeviceDescriptor_t d, ValueStringIndex Idx,  const TCHAR ValueText[]);
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
    static void GetDirections(WndButton* pWnd);
    static BOOL ShowValues(void) {return m_bShowValues;};
@@ -133,7 +130,7 @@ class DevLXNanoIII : public DevLX
    static int Port(void) { if(m_pDevice) return m_pDevice->PortNumber; else return -1;};
 
    static PDeviceDescriptor_t Device(void) {return m_pDevice;};
-   static void Device(PDeviceDescriptor_t d) {m_pDevice = d;};
+   static void Device(PDeviceDescriptor_t d);
 
    static CallBackTableEntry_t CallBackTable[];
    static PDeviceDescriptor_t m_pDevice;
@@ -212,12 +209,8 @@ class DevLXNanoIII::Decl
 
     //..........................................................................
 
-    /// Constructor - sets all data to 0.
-    Decl();
-
     // Format waypoint
     void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type);
-
 
 }; // DevLXNanoIII::Decl
 
@@ -241,16 +234,15 @@ class DevLXNanoIII::Class
   public:
 
     /// competition class name
-    char  name[9];
+    char  name[9] = {};
 
     //..........................................................................
 
     /// Constructor - sets all data to 0.
-    Class();
+    Class() = default;
 
     /// Sets the value of @c name member.
     void SetName(const TCHAR* text);
-
 
 }; // DevLXNanoIII::Class
 

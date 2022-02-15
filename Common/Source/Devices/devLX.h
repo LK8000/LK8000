@@ -17,6 +17,7 @@
 
 //___________________________________________________________class_declarations_
 
+#define MAX_NMEA_PAR_LEN    30
 
 typedef enum {
   _MC   =0,
@@ -83,6 +84,18 @@ class DevLX : public DevBase
 
     /// Parses LXWP3 sentence.
     static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+    static bool GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+    /// Converts TCHAR[] string into US-ASCII string.
+    static void Wide2LxAscii(const TCHAR* input, int outSize, char* output);
+
+    template<size_t size>
+    static void Wide2LxAscii(const TCHAR* input, char (&output)[size]) {
+      Wide2LxAscii(input, size, output);
+    }
+
+    static tstring FixCharset(const TCHAR (&string)[MAX_NMEA_LEN]);
 
 }; // DevLX
 
