@@ -858,7 +858,7 @@ bool CTaskFileHelper::SaveTimeGate(xml_node* node) {
     SetAttribute(node, "open-time", open);
 
     char* close = AllocFormat(doc, "%02d:%02d", PGCloseTimeH, PGCloseTimeM);
-    SetAttribute(node, "open-time", close);
+    SetAttribute(node, "close-time", close);
     
     SetAttribute(node, "interval-time", PGGateIntervalTime);
 
