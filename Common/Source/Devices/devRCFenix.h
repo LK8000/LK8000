@@ -71,6 +71,7 @@ protected:
   static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
   static BOOL FenixPutBallast(PDeviceDescriptor_t d, double Ballast);
   static BOOL FenixPutBugs(PDeviceDescriptor_t d, double Bugs);
+  static BOOL PutQNH(PDeviceDescriptor_t d, double qnh);
 
 }; // DevRCFenix
 

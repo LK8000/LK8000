@@ -52,6 +52,7 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->PutMacCready = FenixPutMacCready;
   d->PutBugs      = FenixPutBugs;
   d->PutBallast   = FenixPutBallast;
+  d->PutQNH       = PutQNH;
   d->Declare      = DeclareTask;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
@@ -201,16 +202,6 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
     }
     if (((info->Second + 4) % 4) == 0) {
       SendNmea(d, _T("RCDT,GET,NAVIGATE,0"));
-    }
-
-    if (IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
-      static double oldQNH = -1.0;
-      if (fabs(oldQNH - QNH) > 0.9) { 
-        TCHAR szTmp[MAX_NMEA_LEN];
-        _stprintf(szTmp,  TEXT("RCDT,SET,MC_BAL,,,,,,,%4u"), (int) (QNH) );
-        SendNmea(d, szTmp);
-        oldQNH = QNH;
-      }
     }
   }
 
@@ -465,6 +456,24 @@ BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
 
   SendNmea(d,szTmp);
   return TRUE;
+}
+
+
+BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
+  if (!d) {
+    return false;
+  }
+  if (!IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
+    return false;
+  } 
+  TCHAR szTmp[MAX_NMEA_LEN];
+  _stprintf(szTmp,  TEXT("RCDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
+
+  TestLog(_T("Send: %s"), szTmp);
+
+  SendNmea(d, szTmp);
+
+  return true;
 }
 
 
