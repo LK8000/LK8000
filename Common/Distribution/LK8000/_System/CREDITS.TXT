@@ -1,4 +1,4 @@
-#BF;
+#C0;
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
 Join our free support forum at www.postfrontal.com/forum
@@ -9,6 +9,17 @@ Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
+
+[version 7.3.10]
+. new device driver "RC Fenix"
+. fix segfault with invalid terrain file
+. OpenAir Parser : altitude begning by "UNL" are set to "unlimited"
+. improved keyboard support on linux and android platform.
+. Android : add USB device support 
+   "SoftRF Academy" 
+   "SoftRF ES"
+   "WCH CH9102 USB to UART bridge
+. fixed NmeaOut driver : EOL must be <cr><lf>
 
 [version 7.3.9]
 . allowed task start radius greater than 100km
