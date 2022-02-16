@@ -106,13 +106,14 @@ static bool wasWriting=false;
 	snmea[l-1]=0;
   }
 
-  if( logfpall != NULL)
+  if (logfpall) {
     fprintf(logfpall,"%s",snmea);
+    fflush(logfpall);
+  }
 
-
-  if(logfsingle[PortNum] != NULL)
+  if(logfsingle[PortNum]) {
     fprintf(logfsingle[PortNum],"%s",snmea);
-
-
+    fflush(logfsingle[PortNum]);
+  }
 }
 
