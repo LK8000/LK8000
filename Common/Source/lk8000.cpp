@@ -584,7 +584,7 @@ int main(int argc, char *argv[]) {
     }
   } catch (Poco::Exception& e) {
     const tstring error = to_tstring(e.what());
-    const tstring message = to_tstring(e.message().c_str());
+    const tstring message = to_tstring(e.message());
     StartupStore(_T("[%s] %s\n"), error.c_str(), message.c_str());
   }
 #endif

@@ -7,6 +7,17 @@
 #include <iterator>
 #include "Util/CharUtil.hpp"
 
+
+inline
+std::string to_string(const char* sz) {
+  return sz;
+}
+
+inline
+std::string to_string(std::string str) {
+  return str;
+}
+
 #ifdef _UNICODE
 #include <tchar.h>
 typedef std::wstring tstring;
@@ -15,25 +26,38 @@ typedef std::wstring_view tstring_view;
 #ifdef _GLIBCXX_HAVE_BROKEN_VSWPRINTF
 // workarround for mingw32ce
 template<typename T, size_t size> 
-std::wstring format_string(const wchar_t* fmt, int v) {
+inline std::wstring format_string(const wchar_t* fmt, int v) {
   TCHAR out[size] = {};
   swprintf(out, fmt, v);
   return out;
 }
 
-inline tstring to_wstring(int v) {
-  return format_string<int, 16>(L"%d", v);
+/**
+ * integral type only ( implicit cast to int)
+ */
+template<typename T, typename std::enable_if_t<std::is_integral_v<T>>* = nullptr>
+inline std::wstring to_wstring(T v) {
+  return format_string<int, 16>(L"%d", static_cast<int>(v));
+}
+
+/**
+ * floating point type only ( implicit cast to double)
+ */
+template<typename T, typename std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
+inline std::wstring to_wstring(T v) {
+  constexpr size_t size = std::numeric_limits<T>::max_exponent10 + 20;
+  return format_string<int, size>(L"%f", static_cast<double>(v));
 }
 
 #endif
+
+std::wstring to_wstring( const char* sz);
 
 template<typename T>
 inline tstring to_tstring(T v) {
   using namespace std;
   return to_wstring(v);
 }
-
-tstring to_tstring( const char* sz);
 
 inline
 tstring to_tstring(const std::string& str) {
@@ -56,19 +80,9 @@ typedef std::string_view tstring_view;
 
 template<typename T>
 inline tstring to_tstring(T v) {
-  return std::to_string(v);
+  using namespace std;
+  return to_string(v);
 }
-
-inline
-tstring to_tstring( const char* sz) {
-  return sz;
-}
-
-inline
-const std::string& to_tstring(const std::string& str) {
-  return str;
-}
-
 
 inline
 tstring utf8_to_tstring(const char* sz) {

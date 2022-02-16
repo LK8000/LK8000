@@ -21,7 +21,7 @@ trim_inplace(tstring &s)
 }
 
 #ifdef _UNICODE
-tstring to_tstring(const char* sz) {
+std::wstring to_wstring(const char* sz) {
   tstring tsz;
   const ACPToWideConverter converter(sz);
   if(converter.IsValid()) {
