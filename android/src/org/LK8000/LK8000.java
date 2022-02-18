@@ -385,6 +385,10 @@ public class LK8000 extends Activity {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.FOREGROUND_SERVICE);
     }
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+    }
   }
 
 
