@@ -1579,12 +1579,6 @@ static void setVariables( WndForm *pOwner) {
 
   UpdateButtons(pOwner);
 
-
-  const TCHAR *tSpeed[] = {TEXT("1200"),TEXT("2400"),TEXT("4800"),TEXT("9600"),
-                           TEXT("19200"),TEXT("38400"),TEXT("57600"),
-                           TEXT("115200"),TEXT("230400"),TEXT("460800"),
-                           TEXT("500000"),TEXT("1000000")};
-
   const auto& Port = PortConfig[SelectedDevice];
 
   UpdateComPortList((WndProperty*)pOwner->FindByName(TEXT("prpComPort1")), Port.GetPort());
@@ -1593,7 +1587,9 @@ static void setVariables( WndForm *pOwner) {
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1, nullptr));
+    std::for_each(std::begin(baudrate_string), 
+                  std::end(baudrate_string), 
+                  std::bind(&DataField::addEnumText, dfe, _1, nullptr));
     
     dfe->Set(Port.dwSpeedIndex);
     wp->SetReadOnly(false);

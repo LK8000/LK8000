@@ -69,9 +69,6 @@ Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 #endif
 COMMPort_t COMMPort;
 
-static  const unsigned   dwSpeed[] = {1200,2400,4800,9600,19200,38400,57600,115200,
-                                      230400,460800,500000,1000000};
-
 DeviceDescriptor_t DeviceList[NUMDEV];
 
 DeviceDescriptor_t *pDevPrimaryBaroSource=NULL;
@@ -500,7 +497,9 @@ namespace {
   }
 
 
-  ComPort* make_ComPort(int idx, const TCHAR* Port, size_t SpeedIndex, BitIndex_t BitIndex) {
+  ComPort* make_ComPort(int idx, const PortConfig_t& Config) {
+
+    const TCHAR* Port = Config.GetPort();
 
     if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
       if(BluetoothStart()) {
@@ -533,18 +532,18 @@ namespace {
     }
     else if(_tcsncmp(Port, _T("IOIOUart_"), 9) == 0) {
 #ifdef ANDROID
-      return new IOIOUartPort(idx, Port, dwSpeed[SpeedIndex]);
+      return new IOIOUartPort(idx, Port, Config.GetBaudrate());
 #endif
     }
     else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
 #ifdef ANDROID
-      return new UsbSerialPort(idx, &Port[4], dwSpeed[SpeedIndex], BitIndex);
+      return new UsbSerialPort(idx, &Port[4], Config.GetBaudrate(), Config.dwBitIndex);
 #endif
     }
     else if (_tcscmp(Port, NMEA_REPLAY) == 0) {
       return new FilePort(idx, Port);
     } else {
-      return new SerialPort(idx, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
+      return new SerialPort(idx, Port, Config.GetBaudrate(), Config.dwBitIndex, PollingMode);
     }
 
     return nullptr; // unknown port type...
@@ -611,7 +610,8 @@ BOOL devInit() {
         }
 
         StartupStore(_T(". Device %c is <%s> Port=%s"), (_T('A') + i), Config.szDeviceName, Port);
-        ComPort* Com = make_ComPort(i, Port, Config.dwSpeedIndex, Config.dwBitIndex);
+
+        ComPort* Com = make_ComPort(i, Config);
         if (Com && Com->Initialize()) {
             pDev->Installer(&dev);
             /*

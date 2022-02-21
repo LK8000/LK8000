@@ -53,6 +53,18 @@ enum BitIndex_t {
   bit7E1,
 };
 
+static constexpr unsigned baudrate[] = {
+      1200,   2400,   4800,    9600,
+     19200,  38400,  57600,  115200,
+    230400, 460800, 500000, 1000000
+};
+
+static constexpr const TCHAR* baudrate_string[] = {
+    _T("1200"),   _T("2400"),   _T("4800"),    _T("9600"),
+   _T("19200"),  _T("38400"),  _T("57600"),  _T("115200"),
+  _T("230400"), _T("460800"), _T("500000"), _T("1000000")
+};
+
 #define DEVNAMESIZE  32
 // max URL length
 #define MAX_URL_LEN  50
@@ -80,6 +92,13 @@ public:
 
   void SetPort(const TCHAR* port) {
     _tcscpy(szPort, port);
+  }
+
+  unsigned GetBaudrate() const {
+    if (dwSpeedIndex < std::size(baudrate)) {
+      return baudrate[dwSpeedIndex];
+    }
+    return baudrate[2];
   }
 
   // device driver name.
