@@ -423,7 +423,7 @@ void RestartCommPorts() {
 
 // Only called from devInit() above which
 // is in turn called with LockComm
-static BOOL devOpen(PDeviceDescriptor_t d){
+BOOL devOpen(PDeviceDescriptor_t d) {
   if (d && d->Open) {
     return d->Open(d);
   }

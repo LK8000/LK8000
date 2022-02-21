@@ -217,6 +217,7 @@ unsigned AndroidPort::RxThread() {
             switch(active_bridge->getState(Java::GetEnv())) {
                 case STATE_READY :
                     d->Status = CPS_OPENOK;
+                    devOpen(d);
                     break;
                 case STATE_FAILED:
                     d->Status = CPS_OPENKO;

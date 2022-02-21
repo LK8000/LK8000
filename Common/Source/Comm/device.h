@@ -153,7 +153,7 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 
 // return true if all device are disabled 
 bool devIsDisabled();
-
+BOOL devOpen(PDeviceDescriptor_t d);
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
 BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
