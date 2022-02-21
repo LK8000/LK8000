@@ -15,12 +15,6 @@
 
 using namespace std::placeholders;
 
-enum PortState {
-    STATE_READY = 0,
-    STATE_FAILED = 1,
-    STATE_LIMBO = 2,
-};
-
 AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName),
                                                           timeout(RXTIMEOUT), running(), closing(), bridge() {
 
@@ -35,21 +29,9 @@ bool AndroidPort::Initialize() {
             bridge->setInputListener(env, this);
             bridge->setListener(env, this);
 
-            constexpr unsigned connect_timeout = 20000; // 20s
-            PeriodClock clock_timeout;
-            clock_timeout.Update();
-            ScopeLock lock(mutex);
-            while (bridge->getState(Java::GetEnv()) != STATE_READY) {
-                if(clock_timeout.Check(connect_timeout)) { // timeout 2Top_250
-                    // 0s
-                    throw std::runtime_error("connection timeout");
-                }
-                newstate.Wait(mutex, connect_timeout);
-            }
             return true;
         }
     } catch (const std::exception& e) {
-        delete bridge;
         const tstring what = to_tstring(e.what());
         StartupStore(_T("FAILED! <%s>" NEWLINE), what.c_str());
     }
@@ -210,6 +192,12 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
         newdata.Broadcast();
     }
 }
+
+enum PortState {
+    STATE_READY = 0,
+    STATE_FAILED = 1,
+    STATE_LIMBO = 2,
+};
 
 void AndroidPort::PortStateChanged() {
     newstate.Signal();
