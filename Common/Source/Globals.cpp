@@ -591,22 +591,9 @@ void Globals_Init(void) {
   LastFlarmCommandTime=0; // last time we got a PFLAU
   DevIsCondor = false; // we are using condor simulator
   SelectedDevice = 0;
-  for(int i=0 ; i< NUMDEV; i++)
-  {
-    dwDeviceName[i][0]=_T('\0');
-    szPort      [i][0]=_T('\0');
-    szIpAddress [i][0]=_T('\0');
-    Replay_FileName [i][0]=_T('\0');
-    ReplaySpeed[i]   = 1;
-    RawByteData [i]   = true;  // byte by byte
-    ReplaySync  [i]   = 0;      // Timer Sync
-    dwSpeedIndex[i]   = 2;
-    dwBitIndex  [i]   = (BitIndex_t)bit8N1;
-    dwIpPort    [i]   = 23;
-    UseExtSound [i]   = false;
-  }
+
 #ifdef ANDROID
-  _tcscpy(dwDeviceName[0], _T("Internal"));
+  _tcscpy(PortConfig[0].szDeviceName, _T("Internal"));
 #endif
 
   // Units

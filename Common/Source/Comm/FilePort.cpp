@@ -26,19 +26,20 @@ FilePort::~FilePort() {
 }
 
 bool FilePort::Initialize() {
-TCHAR szReplayFileName [MAX_PATH];
+  const TCHAR* file_name = PortConfig[GetPortIndex()].Replay_FileName;
 
-  LocalPath(szReplayFileName,TEXT(LKD_LOGS),Replay_FileName[GetPortIndex()]);
+  TCHAR szReplayFileName [MAX_PATH];
+  LocalPath(szReplayFileName,TEXT(LKD_LOGS), file_name);
 	FileStream = _tfopen(szReplayFileName, TEXT("rt"));
 
 	if((!FileStream) || (!ComPort::Initialize()))
 	{
-		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s> %s"), (unsigned)GetPortIndex() + 1, Replay_FileName[GetPortIndex()], GetPortName(), NEWLINE);
+		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s>"), (unsigned)GetPortIndex() + 1, file_name, GetPortName());
 		 StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(762), GetPortName());
 		 return false;
 	}
 
-	StartupStore(_T(". FilePort  %u open file %s Port <%s> OK%s"), (unsigned)GetPortIndex() + 1, Replay_FileName[GetPortIndex()], GetPortName(), NEWLINE);
+	StartupStore(_T(". FilePort  %u open file %s Port <%s> OK"), (unsigned)GetPortIndex() + 1, file_name, GetPortName());
 	m_dwWaitTime =0;
 	return true;
 }
@@ -106,12 +107,13 @@ int  nRecv =0;
 int32_t LastTimeSeconds=0;
 int32_t TimeInSeconds=0;
 
+  auto& Port = PortConfig[GetPortIndex()];
 
 int32_t i_skip = 1;
   int32_t ms =0;
   while (!StopEvt.tryWait(5) /*&& FileStream*/ ) 
   {
-    int32_t speed = ReplaySpeed[GetPortIndex()];
+    int32_t speed = Port.ReplaySpeed;
 #define THRESHOLD 10 // max 10Hz GPS Map refresh
 
     nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
@@ -121,7 +123,7 @@ int32_t i_skip = 1;
     else
       m_dwWaitTime = 1000/speed; // default factor as Hz
 
-    if(ReplaySync[GetPortIndex()] == 0) // Timer only?
+    if(Port.ReplaySync == 0) // Timer only?
     {
       ms = m_dwWaitTime - Timer.ElapsedUpdate();
       if((ms > 0)&&(ms < 10000))
@@ -133,7 +135,7 @@ int32_t i_skip = 1;
     }
     else
     {
-      if( strncmp (szString,szRef[ReplaySync[GetPortIndex()]], 6) ==0)
+      if( strncmp (szString,szRef[Port.ReplaySync], 6) ==0)
       {
         TimeInSeconds = GGA_RMC_seconds(&szString[7]);
 
@@ -160,7 +162,7 @@ int32_t i_skip = 1;
         {
           nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
           LineCnt++;
-          if( strncmp (szString,szRef[ReplaySync[GetPortIndex()]], 6) ==0)
+          if( strncmp (szString,szRef[Port.ReplaySync], 6) ==0)
           {
             LineCnt =0;
             TimeInSeconds = GGA_RMC_seconds(&szString[7]);
@@ -180,7 +182,7 @@ int32_t i_skip = 1;
 
     if (nRecv > 0)
     {
-      if( RawByteData[GetPortIndex()])
+      if (Port.RawByteData)
       {
         std::for_each(std::begin(szString), std::next(szString, nRecv), std::bind(&FilePort::ProcessChar, this, _1));
       }

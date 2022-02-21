@@ -33,21 +33,18 @@ using namespace std::placeholders;
 #endif
 
 static LPCTSTR GetAddress(unsigned idx) {
- if(idx < NUMDEV) {
-   return szIpAddress[idx];
- }
- return _T("");
+  if (idx < std::size(PortConfig)) {
+    return PortConfig[idx].szIpAddress;
+  }
+  return _T("");
 }
 
 static uint16_t GetPort(unsigned idx) {
- if(idx < NUMDEV) {
-   return dwIpPort[idx];
- }
- return 0U;
+  if (idx < std::size(PortConfig)) {
+    return PortConfig[idx].dwIpPort;
+  }
+  return 0U;
 }
-
-
-
 
 int hostname_to_ip(const char * hostname , char* ip)
 {

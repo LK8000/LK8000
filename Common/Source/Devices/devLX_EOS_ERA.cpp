@@ -260,6 +260,8 @@ BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO*
   if (Declare()) return false ;  // do not configure during declaration
   if( IsEOSInBinaryMode()) return false;
 
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
   static char lastSec =0;
   if( /*!Declare() &&*/ (info->Second != lastSec))  // execute every second only if no task is declaring
   {
@@ -284,7 +286,7 @@ BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO*
 
     static double oldQNH= -1.0;
 
-    if(IsDirOutput(PortIO[d->PortNumber].QNHDir))
+    if(IsDirOutput(PortIO.QNHDir))
     {      
       if(fabs( oldQNH - QNH) > 0.9)   
       { TCHAR szTmp[MAX_NMEA_LEN];
@@ -295,7 +297,7 @@ BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO*
     }
   }
 
-  if(IsDirOutput(PortIO[d->PortNumber].STFDir))
+  if(IsDirOutput(PortIO.STFDir))
   {
 
     bool circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
@@ -368,9 +370,12 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
 
 BOOL DevLX_EOS_ERA::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
 {
-WndProperty *wp;
-if(!wf) return false;
-int PortNum = d->PortNumber;
+  WndProperty *wp;
+  if(!wf) return false;
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+//  int PortNum = d->PortNumber;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
   if (wp) {
@@ -379,7 +384,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].QNHDir);
+    dfe->Set((uint) PortIO.QNHDir);
     wp->RefreshDisplay();
   }
   
@@ -390,7 +395,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].MCDir);
+    dfe->Set((uint) PortIO.MCDir);
     wp->RefreshDisplay();
   }
 
@@ -401,7 +406,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].BUGDir);
+    dfe->Set((uint) PortIO.BUGDir);
     wp->RefreshDisplay();
   }
 
@@ -412,7 +417,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].BALDir);
+    dfe->Set((uint) PortIO.BALDir);
     wp->RefreshDisplay();
   }
 
@@ -423,7 +428,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
     dfe->addEnumText(MsgToken(2454)); // LKTOKEN  _@M2454_ "IN & OUT"
-    dfe->Set((uint) PortIO[PortNum].STFDir);
+    dfe->Set((uint) PortIO.STFDir);
     wp->RefreshDisplay();
   }
 
@@ -433,7 +438,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
     dfe->addEnumText(MsgToken(2453)); // LKTOKEN  _@M2453_ "OUT"
-    dfe->Set((uint) PortIO[PortNum].WINDDir);
+    dfe->Set((uint) PortIO.WINDDir);
     wp->RefreshDisplay();
   }
 
@@ -442,7 +447,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].BARODir);
+    dfe->Set((uint) PortIO.BARODir);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
@@ -450,7 +455,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].SPEEDDir);
+    dfe->Set((uint) PortIO.SPEEDDir);
     wp->RefreshDisplay();
   }
 
@@ -460,7 +465,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
 
-    dfe->Set((uint) PortIO[PortNum].VARIODir);
+    dfe->Set((uint) PortIO.VARIODir);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
@@ -469,7 +474,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(_T("$xxDT,GET,NAVIGATE")); // "IN" 
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
-    dfe->Set((uint) PortIO[PortNum].R_TRGTDir);
+    dfe->Set((uint) PortIO.R_TRGTDir);
     wp->RefreshDisplay();
   }
 
@@ -479,7 +484,7 @@ int PortNum = d->PortNumber;
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(_T("$xxDT,SET,NAVIGATE")); // "IN"
     dfe->addEnumText(_T("$GPRMB")); //  "OUT" = $GPRMB
-    dfe->Set((uint) PortIO[PortNum].T_TRGTDir);
+    dfe->Set((uint) PortIO.T_TRGTDir);
     wp->RefreshDisplay();
   }
 
@@ -488,7 +493,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].GFORCEDir);
+    dfe->Set((uint) PortIO.GFORCEDir);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
@@ -496,7 +501,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].OATDir);
+    dfe->Set((uint) PortIO.OATDir);
     wp->RefreshDisplay();
   }
 
@@ -505,7 +510,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].BAT1Dir);
+    dfe->Set((uint) PortIO.BAT1Dir);
     wp->RefreshDisplay();
   }
 
@@ -514,7 +519,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].BAT2Dir);
+    dfe->Set((uint) PortIO.BAT2Dir);
     wp->RefreshDisplay();
   }
 
@@ -523,7 +528,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(2452)); // LKTOKEN  _@M2452_ "IN"
-    dfe->Set((uint) PortIO[PortNum].POLARDir);
+    dfe->Set((uint) PortIO.POLARDir);
     wp->RefreshDisplay();
   }
 
@@ -532,7 +537,7 @@ int PortNum = d->PortNumber;
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken(491)); // LKTOKEN  _@M491_ "OFF"
     dfe->addEnumText(MsgToken(894)); // LKTOKEN  _@M894_": "ON"
-    dfe->Set((uint) PortIO[PortNum].DirLink);
+    dfe->Set((uint) PortIO.DirLink);
     wp->RefreshDisplay();
   }
   
@@ -805,98 +810,103 @@ bool DevLX_EOS_ERA::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_row
 
 
 void DevLX_EOS_ERA::GetDirections(WndButton* pWnd){
+  unsigned PortNum = Port();
+  if (PortNum >= std::size(PortConfig)) {
+    return;
+  }
+  auto& PortIO = PortConfig[PortNum].PortIO;
+
   if(pWnd) {
     WndForm * wf = pWnd->GetParentWndForm();
     if(wf) {
-    int PortNum = Port();
 
       WndProperty *wp;
       
       wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].QNHDir = (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.QNHDir = (DataBiIoDir) dfe->GetAsInteger();
       }     
       wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].MCDir = (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.MCDir = (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].BUGDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.BUGDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
 
       wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].BALDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.BALDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].STFDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.STFDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].WINDDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.WINDDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].BARODir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.BARODir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].VARIODir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.VARIODir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].SPEEDDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.SPEEDDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].R_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
+        PortIO.R_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].GFORCEDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.GFORCEDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].OATDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.OATDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].BAT1Dir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.BAT1Dir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].BAT2Dir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.BAT2Dir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].DirLink =  (DataBiIoDir) dfe->GetAsInteger();
+        PortIO.DirLink =  (DataBiIoDir) dfe->GetAsInteger();
       }
       wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
-        PortIO[PortNum].T_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
+        PortIO.T_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
       }
     }
   }
@@ -1007,6 +1017,8 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 
   double fDir,fTmp,airspeed=0;
 
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
  // if( !devGetAdvancedMode(d))
   {
     if( ParToDouble(sentence, 1, &fTmp))
@@ -1018,7 +1030,7 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
         _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"),fTmp);
         SetDataText( d,_SPEED,   szTmp);
       }
-      if(IsDirInput(PortIO[d->PortNumber].SPEEDDir  ))
+      if(IsDirInput(PortIO.SPEEDDir  ))
       {
         airspeed = fTmp/TOKPH;
         info->TrueAirspeed = airspeed;
@@ -1033,7 +1045,7 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
         _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp);
         SetDataText( d, _BARO,   szTmp);
       }
-      if(IsDirInput(PortIO[d->PortNumber].BARODir  ))
+      if(IsDirInput(PortIO.BARODir  ))
       {
         if (airspeed > 0) {
           info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
@@ -1049,7 +1061,7 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
         _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp/TOKPH);
         SetDataText( d, _VARIO,   szTmp);
       }
-      if(IsDirInput(PortIO[d->PortNumber].VARIODir  ))
+      if(IsDirInput(PortIO.VARIODir  ))
       {
         UpdateVarioSource(*info, *d, fTmp);
       }
@@ -1065,7 +1077,7 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
       _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
       SetDataText( d, _WIND,   szTmp);
     }
-    if(IsDirInput(PortIO[d->PortNumber].WINDDir  ))
+    if(IsDirInput(PortIO.WINDDir  ))
     {
       info->ExternalWindDirection = fDir;
       info->ExternalWindSpeed =  fTmp/TOKPH;
@@ -1091,7 +1103,10 @@ BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info
     _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s %s"),fTmp,info);
     SetDataText( d, _MC,   szTmp);
   }
-  if(IsDirInput(PortIO[d->PortNumber].MCDir))
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(IsDirInput(PortIO.MCDir))
   {
     if(fabs(MACCREADY - fTmp)> 0.001)
     {
@@ -1119,7 +1134,10 @@ BOOL DevLX_EOS_ERA::EOSSetSTF(PDeviceDescriptor_t d,int  iTmp, const TCHAR *info
       _sntprintf(szTmp,MAX_NMEA_LEN,  _T("VARIO %s"), info);      
     SetDataText( d,_STF,  szTmp);
   }
-  if(IsDirInput(PortIO[d->PortNumber].STFDir  ))
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(IsDirInput(PortIO.STFDir  ))
   {
     static int  iOldVarioSwitch=-1;
     if(iTmp != iOldVarioSwitch)
@@ -1156,7 +1174,10 @@ BOOL DevLX_EOS_ERA::EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *inf
       SetDataText( d,_BAL,  szTmp);
     }
   }
-  if(IsDirInput(PortIO[d->PortNumber].BALDir  ))
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+ 
+  if(IsDirInput(PortIO.BALDir  ))
   {
     if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[2] > 0))
     {
@@ -1179,7 +1200,10 @@ BOOL DevLX_EOS_ERA::EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *in
     _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% %s"),fTmp, info);
     SetDataText( d,_BUGS,  szTmp);
   }
-  if(IsDirInput(PortIO[d->PortNumber].BUGDir ))
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+ 
+  if(IsDirInput(PortIO.BUGDir ))
   {
     if(  fabs(fTmp -BUGS) >= 0.01)
     {
@@ -1244,7 +1268,9 @@ BOOL DevLX_EOS_ERA::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
             SetDataText( d, _POLAR,  szTmp);
         }
 
-        if(IsDirInput(PortIO[d->PortNumber].POLARDir ))
+        const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+        if(IsDirInput(PortIO.POLARDir ))
         {
           for (int i=0; i < 3; i++)
           {
@@ -1296,8 +1322,10 @@ BOOL DevLX_EOS_ERA::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
       }
     }
 
+    const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
     static int  iOldVarioSwitch=0;
-    if(IsDirInput(PortIO[d->PortNumber].STFDir))
+    if(IsDirInput(PortIO.STFDir))
     {
       EnableExternalTriggerCruise = true;
       if(iTmp != iOldVarioSwitch)
@@ -1357,6 +1385,8 @@ BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   if(_tcsncmp(szTmp, _T("ANS"), 3) != 0)  // really an Answer?
     return 0;
 
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
   NMEAParser::ExtractParameter(sentence, szTmp, 1);  // Command?
   if(_tcsncmp(szTmp, _T("RADIO"), 5) == 0)
   {
@@ -1377,7 +1407,7 @@ BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     if(ParToDouble(sentence, 7, &fTmp)) {}  // SC volume in percent
     if(ParToDouble(sentence, 8, &fTmp))   // QNH in hPa (NEW)
     {
-      if(IsDirInput(PortIO[d->PortNumber].QNHDir))
+      if(IsDirInput(PortIO.QNHDir))
       { 
         TCHAR szQNH[MAX_NMEA_LEN];
         _stprintf( szQNH, _T("%6.1fhPa ($LXDT)"),fTmp);
@@ -1481,12 +1511,14 @@ BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INF
   TCHAR szTmp[MAX_NMEA_LEN];
   double fTmp;
 
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
     _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
     if(Values(d)) {
       SetDataText( d,_OAT,  szTmp);
     }
-    if(IsDirInput(PortIO[d->PortNumber].OATDir)) {
+    if(IsDirInput(PortIO.OATDir)) {
       info->OutsideAirTemperature = fTmp;
       info->TemperatureAvailable  = TRUE;
     }
@@ -1496,7 +1528,7 @@ BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INF
     if(Values(d)) {
       SetDataText( d,_BAT1,  szTmp);
     }
-    if(IsDirInput(PortIO[d->PortNumber].BAT1Dir)) {
+    if(IsDirInput(PortIO.BAT1Dir)) {
       info->ExtBatt1_Voltage = fTmp;	
     }
   }
@@ -1505,7 +1537,7 @@ BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INF
     if(Values(d)) {
       SetDataText( d,_BAT2,  szTmp);
     }
-    if(IsDirInput(PortIO[d->PortNumber].BAT2Dir)) {
+    if(IsDirInput(PortIO.BAT2Dir)) {
       info->ExtBatt2_Voltage = fTmp;	
     }
   }
@@ -1532,9 +1564,11 @@ BOOL DevLX_EOS_ERA::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     SENS(d,  sentence,  info,1);
   }
 
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
   if(_tcsncmp(sentence, _T("AHRS"), 4) == 0)
   {
-    if(IsDirInput(PortIO[d->PortNumber].GFORCEDir)) { 
+    if(IsDirInput(PortIO.GFORCEDir)) { 
       double fX,fY,fZ, fPitch, fRoll, fYaw, fSlip;
       
       bool bAHRS = ParToDouble(sentence, 1, &fPitch); // pitch
@@ -1554,7 +1588,7 @@ BOOL DevLX_EOS_ERA::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
             _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($LXDT)"),fX,fY,fZ);
           SetDataText( d, _GFORCE,  szTmp);
         }
-        if(IsDirInput(PortIO[d->PortNumber].GFORCEDir))
+        if(IsDirInput(PortIO.GFORCEDir))
         {
           info->AccelX  = fX;
           info->AccelY  = fY;
@@ -1579,7 +1613,9 @@ BOOL DevLX_EOS_ERA::EOSPutMacCready(PDeviceDescriptor_t d, double MacCready){
 
   if(!d)  return false;
 
-  if(!IsDirOutput(PortIO[d->PortNumber].MCDir)) return false;
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(!IsDirOutput(PortIO.MCDir)) return false;
 
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
   StartupStore(TEXT("Send: %s"), szTmp);
@@ -1594,7 +1630,10 @@ BOOL DevLX_EOS_ERA::EOSPutBallast(PDeviceDescriptor_t d, double Ballast){
 
   if(!d)  return false;
   if(LX_EOS_ERA_bValid == false) return false;
-  if(!IsDirOutput(PortIO[d->PortNumber].BALDir)) return false;
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(!IsDirOutput(PortIO.BALDir)) return false;
   
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
   StartupStore(TEXT("Send: %s"), szTmp);
@@ -1609,7 +1648,9 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
 
   if(!d)  return false;
 
-  if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) return false;
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(!IsDirOutput(PortIO.BUGDir)) return false;
   double fLXBugs = CalculateLXBugs( Bugs);
 
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
@@ -1622,7 +1663,9 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
 
 BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d)
 {
-  if(PortIO[d->PortNumber].T_TRGTDir == TP_Off) {
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(PortIO.T_TRGTDir == TP_Off) {
     return false;
   }
 
@@ -1674,7 +1717,7 @@ BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d)
     _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
   }
 
-  if( PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG)
+  if( PortIO.T_TRGTDir  == TP_VTARG)
   {                                  
     int rwdir = 0; 
     int landable =0;
@@ -1701,7 +1744,7 @@ BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d)
   }
   else
   {
-    if( PortIO[d->PortNumber].T_TRGTDir  == TP_GPRMB)
+    if( PortIO.T_TRGTDir  == TP_GPRMB)
     {               //                      GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
       _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
                         szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
@@ -1720,7 +1763,9 @@ BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d)
 
 
 BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
-  if (PortIO[d->PortNumber].R_TRGTDir != TP_VTARG) {
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if (PortIO.R_TRGTDir != TP_VTARG) {
     return false;
   }
 

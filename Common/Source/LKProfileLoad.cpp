@@ -22,8 +22,6 @@ extern bool CommandResolution;
 
 namespace {
 
-void LKParseProfileString(const char *sname, const char *svalue);
-
 constexpr int nMaxValueValueSize = MAX_PATH * 2 + 6;    // max regkey name is 256 chars + " = "
 bool isDefaultProfile = false; // needed to avoid screensize changes from custom profiles on PC
 
@@ -34,6 +32,8 @@ unique_file_ptr make_unique_file(const TCHAR* filename, const TCHAR * flags) {
 }
 
 }
+
+void LKParseProfileString(const char *sname, const char *svalue);
 
 
 //
@@ -92,7 +92,6 @@ bool LKProfileLoad(const TCHAR *szFile) {
 }
 
 
-namespace {
 
 #define IO_PARAM_SIZE 160
 
@@ -427,7 +426,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
       RefreshComPortList();
     }
     if (dwIdxPort < COMMPort.size()) {
-      _tcscpy(szPort[0], COMMPort[dwIdxPort].GetName());
+      PortConfig[0].SetPort(COMMPort[dwIdxPort].GetName());
     }
     return;
   }
@@ -442,27 +441,30 @@ void LKParseProfileString(const char *sname, const char *svalue) {
       RefreshComPortList();
     }
     if (dwIdxPort < COMMPort.size()) {
-      _tcscpy(szPort[1], COMMPort[dwIdxPort].GetName());
+      PortConfig[1].SetPort(COMMPort[dwIdxPort].GetName());
     }
     return;
   }
   /***************************************************/
 
   for (int n = 0; n < NUMDEV; n++) {
+    auto& Port = PortConfig[n];
 
-    if (settings::read(sname, svalue, szRegistryDevice[n], dwDeviceName[n])) return;
-    if (settings::read(sname, svalue, szRegistryPortName[n], szPort[n])) return;
-    if (settings::read(sname, svalue, szRegistrySpeedIndex[n], dwSpeedIndex[n])) return;
-    if (settings::read(sname, svalue, szRegistryBitIndex[n], dwBitIndex[n])) return;
-    if (settings::read(sname, svalue, szRegistryIpAddress[n], szIpAddress[n])) return;
-    if (settings::read(sname, svalue, szRegistryIpPort[n], dwIpPort[n])) return;
+    if (settings::read(sname, svalue, szRegistryDevice[n], Port.szDeviceName)) return;
+    if (settings::read(sname, svalue, szRegistryPortName[n], Port.szPort)) return;
+
+    if (settings::read(sname, svalue, szRegistrySpeedIndex[n], Port.dwSpeedIndex)) return;
+    if (settings::read(sname, svalue, szRegistryBitIndex[n], Port.dwBitIndex)) return;
+
+    if (settings::read(sname, svalue, szRegistryIpAddress[n], Port.szIpAddress)) return;
+    if (settings::read(sname, svalue, szRegistryIpPort[n], Port.dwIpPort)) return;
     
-    if (settings::read(sname, svalue, szRegistryUseExtSound[n], UseExtSound[n])) return;
+    if (settings::read(sname, svalue, szRegistryUseExtSound[n], Port.UseExtSound)) return;
 
-    if (settings::read(sname, svalue, szRegistryReplayFile[n], Replay_FileName[n])) return;
-    if (settings::read(sname, svalue, szRegistryReplaySpeed[n], ReplaySpeed[n])) return;
-    if (settings::read(sname, svalue, szRegistryReplayRaw[n], RawByteData[n])) return;
-    if (settings::read(sname, svalue, szRegistryReplaySync[n], ReplaySync[n])) return;
+    if (settings::read(sname, svalue, szRegistryReplayFile[n], Port.Replay_FileName)) return;
+    if (settings::read(sname, svalue, szRegistryReplaySpeed[n], Port.ReplaySpeed)) return;
+    if (settings::read(sname, svalue, szRegistryReplayRaw[n], Port.RawByteData)) return;
+    if (settings::read(sname, svalue, szRegistryReplaySync[n], Port.ReplaySync)) return;
 
     int i = 0;
 
@@ -474,50 +476,50 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     if (settings::read(sname, svalue, szKey, szTmp) && (_tcslen(szTmp) > 0)) {
 //      StartupStore(TEXT(" Load : szRegistryIOValues[%u] (%s) %s  %s"), n, szKey, szTmp, NEWLINE);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].MCDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.MCDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].BUGDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10); // (String, nullptr, 0)
+      Port.PortIO.BUGDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10); // (String, nullptr, 0)
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].BALDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.BALDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
 
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].STFDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.STFDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].WINDDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.WINDDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].BARODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.BARODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
 
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].VARIODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.VARIODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].SPEEDDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.SPEEDDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].R_TRGTDir = (DataTP_Type) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.R_TRGTDir = (DataTP_Type) _tcstoul(szItem, nullptr, 10);
 
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].RADIODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.RADIODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].TRAFDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.TRAFDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].GYRODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.GYRODir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
 
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].GFORCEDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.GFORCEDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].OATDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.OATDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].BAT1Dir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.BAT1Dir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
 
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].BAT2Dir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.BAT2Dir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp, szItem, i++);
-      PortIO[n].POLARDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.POLARDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp,szItem,i++);
-      PortIO[n].DirLink  = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.DirLink  = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp,szItem,i++);
-      PortIO[n].T_TRGTDir = (DataTP_Type) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.T_TRGTDir = (DataTP_Type) _tcstoul(szItem, nullptr, 10);
       NMEAParser::ExtractParameter(szTmp,szItem,i++);
-      PortIO[n].QNHDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
+      Port.PortIO.QNHDir = (DataBiIoDir) _tcstoul(szItem, nullptr, 10);
     }
   }
 
@@ -793,27 +795,3 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 #endif
 }
 
-} // namespace
-
-void ReadDeviceSettings(const int devIdx, TCHAR *Name) {
-  Name[0] = '\0';
-  if (devIdx >= 0 && devIdx < NUMDEV) {
-    _tcscpy(Name, dwDeviceName[devIdx]);
-  }
-  if (_tcslen(Name) == 0) {
-    _tcscpy(Name, _T(DEV_DISABLED_NAME));
-  }
-}
-
-void ReadPortSettings(int devIdx, LPTSTR szPort_n, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-  devIdx = Clamp(devIdx, 0, NUMDEV - 1);
-  if (szPort_n) {
-    _tcscpy(szPort_n, &szPort[devIdx][0]);
-  }
-  if (SpeedIndex) {
-    *SpeedIndex = dwSpeedIndex[devIdx];
-  }
-  if (Bit1Index) {
-    *Bit1Index = static_cast<BitIndex_t>(dwBitIndex[devIdx]);
-  }
-}

@@ -217,7 +217,7 @@ const char* szRegistryReplayFile[] = {
         "NMEA_Replay_FileF"
 };
 
-static_assert(std::size(Replay_FileName) == std::size(szRegistryReplayFile),
+static_assert(std::size(PortConfig) == std::size(szRegistryReplayFile),
               "invalid array size");
 
 const char* szRegistryReplaySpeed[] = {
@@ -229,7 +229,7 @@ const char* szRegistryReplaySpeed[] = {
         "NMEA_Replay_SpeedF"
 };
 
-static_assert(std::size(ReplaySpeed) == std::size(szRegistryReplaySpeed), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryReplaySpeed), "invalid array size");
 
 const char* szRegistryReplayRaw[] = {
         "NMEA_Replay_RawA",
@@ -240,7 +240,7 @@ const char* szRegistryReplayRaw[] = {
         "NMEA_Replay_RawF"
 };
 
-static_assert(std::size(RawByteData) == std::size(szRegistryReplayRaw), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryReplayRaw), "invalid array size");
 
 const char* szRegistryReplaySync[] = {
         "NMEA_Replay_SyncA",
@@ -251,7 +251,7 @@ const char* szRegistryReplaySync[] = {
         "NMEA_Replay_SyncF"
 };
 
-static_assert(std::size(ReplaySync) == std::size(szRegistryReplaySync), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryReplaySync), "invalid array size");
 
 const char szRegistryDisableAutoLogger[] = "DisableAutoLogger";
 const char szRegistryDisplayText[] = "DisplayText2";
@@ -338,7 +338,7 @@ const char* szRegistryDevice[] = {
         "DeviceF"
 };
 
-static_assert(std::size(dwDeviceName) == std::size(szRegistryDevice), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryDevice), "invalid array size");
 
 const char* szRegistryPortName[] = {
         "Port1Name",
@@ -349,7 +349,7 @@ const char* szRegistryPortName[] = {
         "Port6Name"
 };
 
-static_assert(std::size(szPort) == std::size(szRegistryPortName), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryPortName), "invalid array size");
 
 const char* szRegistrySpeedIndex[] = {
         "SpeedIndex",
@@ -360,7 +360,7 @@ const char* szRegistrySpeedIndex[] = {
         "Speed6Index"
 };
 
-static_assert(std::size(dwSpeedIndex) == std::size(szRegistrySpeedIndex), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistrySpeedIndex), "invalid array size");
 
 const char* szRegistryBitIndex[] = {
         "Bit1Index",
@@ -371,7 +371,7 @@ const char* szRegistryBitIndex[] = {
         "Bit6Index"
 };
 
-static_assert(std::size(dwBitIndex) == std::size(szRegistryBitIndex), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryBitIndex), "invalid array size");
 
 const char* szRegistryIpAddress[] = {
         "IpAddress1",
@@ -382,7 +382,7 @@ const char* szRegistryIpAddress[] = {
         "IpAddress6"
 };
 
-static_assert(std::size(szIpAddress) == std::size(szRegistryIpAddress), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryIpAddress), "invalid array size");
 
 const char* szRegistryIpPort[] = {
         "IpPort1",
@@ -393,7 +393,7 @@ const char* szRegistryIpPort[] = {
         "IpPort6"
 };
 
-static_assert(std::size(dwIpPort) == std::size(szRegistryIpPort), "invalid array size");
+static_assert(std::size(PortConfig) == std::size(szRegistryIpPort), "invalid array size");
 
 const char szRegistryIOValues[] = "Val_IO_Dir";
 const char szRegistryPressureHg[] = "PressureHg";
@@ -441,7 +441,7 @@ const char* szRegistryUseExtSound[] = {
         "UseExtSound6"
 };
 
-static_assert(std::size(UseExtSound) == std::size(szRegistryUseExtSound),
+static_assert(std::size(PortConfig) == std::size(szRegistryUseExtSound),
               "invalid array size");
 
 const char szRegistryUseUngestures[] = "UseUngestures";

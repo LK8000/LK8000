@@ -58,11 +58,6 @@ typedef struct{
 }FontHeightInfo_t;
 
 typedef enum{
-  bit8N1=0,
-  bit7E1,
-}BitIndex_t;
-
-typedef enum{
 	umGlider=0,
 	umParaglider,
 	umCar,

@@ -405,50 +405,12 @@ void LKProfileResetDefault() {
   _tcscpy(szMapFile,_T("DEMO.LKM"));
 
   // Ports and device settings
-  for(int i=0 ; i< NUMDEV; i++)
-  {
-    dwDeviceName[i][0]=_T('\0');
-    szPort      [i][0]=_T('\0');
-    szIpAddress [i][0]=_T('\0');
-    Replay_FileName[i][0]=_T('\0');
-    RawByteData [i]   = true;  // process raw data
-    ReplaySync  [i]   = 0;  // Timer Sync
-    ReplaySpeed [i]   = 1;
-    dwSpeedIndex[i]   = 2;
-    dwBitIndex  [i]   = (BitIndex_t)bit8N1;
-    dwIpPort    [i]   = 23;
-    UseExtSound [i]   = false;
-
-    PortIO[i].MCDir    = BiDirInOut;
-    PortIO[i].BUGDir   = BiDirInOut;
-    PortIO[i].BALDir   = BiDirInOut;
-
-    PortIO[i].STFDir   = BiDirIn;
-    PortIO[i].WINDDir  = BiDirIn;
-    PortIO[i].BARODir  = BiDirIn;
-
-    PortIO[i].VARIODir = BiDirOff;
-    PortIO[i].SPEEDDir = BiDirIn;
-    PortIO[i].R_TRGTDir= TP_VTARG;
-
-    PortIO[i].RADIODir  = BiDirInOut;
-    PortIO[i].TRAFDir   = BiDirIn;
-    PortIO[i].GYRODir   = BiDirIn;
-
-    PortIO[i].GFORCEDir = BiDirIn;
-    PortIO[i].OATDir    = BiDirIn;
-    PortIO[i].BAT1Dir   = BiDirIn;
-
-    PortIO[i].BAT2Dir   = BiDirIn;
-    PortIO[i].POLARDir  = BiDirOff;
-    PortIO[i].DirLink   = BiDirOff;
-    PortIO[i].T_TRGTDir = TP_VTARG;
-    PortIO[i].QNHDir    = BiDirInOut;
+  for (auto& Port : PortConfig) {
+    Port = PortConfig_t();
   }
 
-
-  #ifdef ANDROID
-  _tcscpy(dwDeviceName[0], _T("Internal"));
+#ifdef ANDROID
+  _tcscpy(PortConfig[0].szDeviceName, _T("Internal"));
 #endif
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));

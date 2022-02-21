@@ -276,51 +276,54 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
     return;
   WndProperty* wp;
 
+  auto& Port = PortConfig[SelectedDevice];
+
+
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComPort1"));
   if (wp) {
-      if (_tcscmp(szPort[SelectedDevice], wp->GetDataField()->GetAsString()) != 0)
+      if (_tcscmp(Port.GetPort(), wp->GetDataField()->GetAsString()) != 0)
       {
-          _tcscpy(szPort[SelectedDevice], wp->GetDataField()->GetAsString());
+          Port.SetPort(wp->GetDataField()->GetAsString());
           COMPORTCHANGED = true;
       }
   }
 
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpExtSound1"));
   if (wp) {
-        if (UseExtSound[SelectedDevice] != (wp->GetDataField()->GetAsBoolean())) {
-                UseExtSound[SelectedDevice] = (wp->GetDataField()->GetAsBoolean());
+        if (Port.UseExtSound != (wp->GetDataField()->GetAsBoolean())) {
+                Port.UseExtSound = (wp->GetDataField()->GetAsBoolean());
         }
   }
 
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
-    if ((int)dwSpeedIndex[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
-      dwSpeedIndex[SelectedDevice] = wp->GetDataField()->GetAsInteger();
+    if ((int)Port.dwSpeedIndex != wp->GetDataField()->GetAsInteger()) {
+      Port.dwSpeedIndex = wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
     }
   }
 
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComBit1"));
   if (wp) {
-    if ((int)dwBitIndex[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
-      dwBitIndex[SelectedDevice] = wp->GetDataField()->GetAsInteger();
+    if ((int)Port.dwBitIndex != wp->GetDataField()->GetAsInteger()) {
+      Port.dwBitIndex = static_cast<BitIndex_t>(wp->GetDataField()->GetAsInteger());
       COMPORTCHANGED = true;
     }
   }
 
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
-    if (_tcscmp(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString()) != 0) {
-      _tcsncpy(szIpAddress[SelectedDevice], wp->GetDataField()->GetAsString(), std::size(szIpAddress[SelectedDevice]));
-      szIpAddress[SelectedDevice][std::size(szIpAddress[SelectedDevice])-1] = _T('\0');
+    if (_tcscmp(Port.szIpAddress, wp->GetDataField()->GetAsString()) != 0) {
+      _tcsncpy(Port.szIpAddress, wp->GetDataField()->GetAsString(), std::size(Port.szIpAddress));
+      Port.szIpAddress[std::size(Port.szIpAddress)-1] = _T('\0');
       COMPORTCHANGED = true;
     }
   }
 
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComIpPort1"));
   if (wp) {
-    if ((int)dwIpPort[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
-      dwIpPort[SelectedDevice] = wp->GetDataField()->GetAsInteger();
+    if ((int)Port.dwIpPort != wp->GetDataField()->GetAsInteger()) {
+      Port.dwIpPort = wp->GetDataField()->GetAsInteger();
       COMPORTCHANGED = true;
     }
   }
@@ -330,15 +333,15 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
 
     DataField* df = wp->GetDataField();
     const TCHAR* Name = df->GetAsString();
-    if (tstring_view(Name) != dwDeviceName[SelectedDevice]) {
+    if (tstring_view(Name) != Port.szDeviceName) {
       COMPORTCHANGED = true;
-      WriteDeviceSettings(SelectedDevice, Name);
+      _tcscpy(Port.szDeviceName, Name);
     }
   }
 
   /************************************************************************/
 
-    UpdateComPortSetting(pOwner, idx, szPort[SelectedDevice]);
+    UpdateComPortSetting(pOwner, idx, Port.GetPort());
 }
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -1047,12 +1050,8 @@ static void OnBthDevice(WndButton* pWnd) {
 #ifndef NO_BLUETOOTH
     DlgBluetooth::Show();
     
-    TCHAR szPort[MAX_PATH];
-    ReadPortSettings(SelectedDevice,szPort, NULL, NULL);
-    UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort1")), szPort);
-
-    // ReadPort2Settings(szPort, NULL, NULL);
-    // UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort2")), szPort);
+    const auto& Port = PortConfig[SelectedDevice];
+    UpdateComPortList((WndProperty*) wf->FindByName(TEXT("prpComPort1")), Port.GetPort());
 #endif
 }
 
@@ -1480,62 +1479,52 @@ void UpdateDeviceEntries(WndForm *wf, int DeviceIdx)
 
   LKASSERT(wf);
 
+  const auto& Port = PortConfig[DeviceIdx];
 
-TCHAR szPort[MAX_PATH];
-
-ReadPortSettings(DeviceIdx,szPort,NULL, NULL);
-UpdateComPortSetting(wf,DeviceIdx,szPort);
-UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
-
+  UpdateComPortSetting(wf,DeviceIdx, Port.GetPort());
+  UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), Port.GetPort());
 
 wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
 if (wp) {
   DataField* dfe = wp->GetDataField();
-  dfe->Set(dwSpeedIndex[DeviceIdx]);
+  dfe->Set(Port.dwSpeedIndex);
   wp->SetReadOnly(false);
   wp->RefreshDisplay();
 }
 wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
 if (wp) {
   DataField* dfe = wp->GetDataField();
-  dfe->Set(dwBitIndex[DeviceIdx]);
+  dfe->Set(Port.dwBitIndex);
   wp->RefreshDisplay();
 }
 wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
 if (wp) {
-  wp->GetDataField()->Set(UseExtSound[DeviceIdx]);
+  wp->GetDataField()->Set(Port.UseExtSound);
   wp->RefreshDisplay();
 }
 
 wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
 if (wp) {
-  wp->GetDataField()->Set(szIpAddress[DeviceIdx]);
+  wp->GetDataField()->Set(Port.szIpAddress);
   wp->RefreshDisplay();
 }
 
 wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
 if (wp) {
-  wp->GetDataField()->Set((int)dwIpPort[DeviceIdx]);
+  wp->GetDataField()->Set((int)Port.dwIpPort);
   wp->RefreshDisplay();
 }
-
-TCHAR deviceName1[MAX_PATH];
-//  TCHAR deviceName2[MAX_PATH];
-ReadDeviceSettings(DeviceIdx, deviceName1);
-
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->Set(deviceName1);
+    dfe->Set(Port.szDeviceName);
     wp->RefreshDisplay();
     UpdateButtons(wf);
   }
 
-UpdateComPortSetting(wf, DeviceIdx,szPort);
-UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), szPort);
-  
-  UpdateComPortSetting(wf, DeviceIdx, szPort);
+  UpdateComPortSetting(wf, DeviceIdx, Port.GetPort());
+  UpdateComPortList((WndProperty*)wf->FindByName(TEXT("prpComPort1")), Port.GetPort());
 }
 
 static void setVariables( WndForm *pOwner) {
@@ -1596,17 +1585,17 @@ static void setVariables( WndForm *pOwner) {
                            TEXT("115200"),TEXT("230400"),TEXT("460800"),
                            TEXT("500000"),TEXT("1000000")};
 
-  TCHAR szPort[MAX_PATH];
-  
-  ReadPortSettings(SelectedDevice,szPort,NULL, NULL);
-  UpdateComPortList((WndProperty*)pOwner->FindByName(TEXT("prpComPort1")), szPort);
+  const auto& Port = PortConfig[SelectedDevice];
+
+  UpdateComPortList((WndProperty*)pOwner->FindByName(TEXT("prpComPort1")), Port.GetPort());
+
 
   wp = (WndProperty*)pOwner->FindByName(TEXT("prpComSpeed1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     std::for_each(std::begin(tSpeed), std::end(tSpeed), std::bind(&DataField::addEnumText, dfe, _1, nullptr));
     
-    dfe->Set(dwSpeedIndex[SelectedDevice]);
+    dfe->Set(Port.dwSpeedIndex);
     wp->SetReadOnly(false);
     wp->RefreshDisplay();
   }
@@ -1615,29 +1604,27 @@ static void setVariables( WndForm *pOwner) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("8bit"));
     dfe->addEnumText(TEXT("7bit"));
-    dfe->Set(dwBitIndex[SelectedDevice]);
+    dfe->Set(Port.dwBitIndex);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpExtSound1"));
   if (wp) {
-    wp->GetDataField()->Set(UseExtSound[SelectedDevice]);
+    wp->GetDataField()->Set(Port.UseExtSound);
     wp->RefreshDisplay();
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpComIpAddr1"));
   if (wp) {
-    wp->GetDataField()->Set(szIpAddress[SelectedDevice]);
+    wp->GetDataField()->Set(Port.szIpAddress);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComIpPort1"));
   if (wp) {
-    wp->GetDataField()->Set((int)dwIpPort[SelectedDevice]);
+    wp->GetDataField()->Set((int)Port.dwIpPort);
     wp->RefreshDisplay();
   }
 
-  TCHAR deviceName1[MAX_PATH];
-  ReadDeviceSettings(SelectedDevice, deviceName1);
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -1647,27 +1634,8 @@ static void setVariables( WndForm *pOwner) {
     }
 
     dfe->Sort(3);
-    dfe->Set(dwDeviceName[SelectedDevice]);
+    dfe->Set(Port.szDeviceName);
     wp->RefreshDisplay();
-  }
-
-  
-  if (configMode==CONFIGMODE_DEVICE) for(int devIdx=0; devIdx < NUMDEV; devIdx++)
-  {
-      ReadDeviceSettings(devIdx, deviceName1);
-      {
-#ifdef TESTBENCH
-        ReadPortSettings(devIdx,szPort,NULL, NULL);
-        StartupStore(_T("====================================================")); // 091105
-        StartupStore(_T("........... SetVariable Device #%i %s"),devIdx, deviceName1); // 091105
-        StartupStore(_T("........... SetVariable Port   #%i %s"),devIdx, szPort); // 091105
-        StartupStore(_T("........... SetVariable SppedIdx   #%i %i"),devIdx,  dwSpeedIndex[devIdx]); // 091105
-        StartupStore(_T("........... SetVariable Bit        #%i %i"),devIdx,  dwBitIndex[devIdx]); // 091105
-        StartupStore(_T("........... SetVariable IP-Adr     #%i %s"),devIdx,  szIpAddress[devIdx]); // 091105
-        StartupStore(_T("........... SetVariable Port       #%i %i"),devIdx,  dwIpPort[devIdx]); // 091105
-        StartupStore(_T("........... SetVariable Sound      #%i %i"),devIdx,  UseExtSound[devIdx]); // 091105
-#endif
-      }
   }
 
   UpdateButtons(wf);
@@ -3419,11 +3387,7 @@ void dlgConfigurationShowModal(short mode){
   setVariables(wf);
 
   if (configMode==CONFIGMODE_DEVICE) {
-	TCHAR deviceName1[MAX_PATH];
-//      TCHAR deviceName2[MAX_PATH];
-	ReadDeviceSettings(SelectedDevice, deviceName1);
-//      ReadDeviceSettings(1, deviceName2);
-	UpdateDeviceSetupButton(wf, SelectedDevice);
+  	UpdateDeviceSetupButton(wf, SelectedDevice);
 //      UpdateDeviceSetupButton(1, deviceName2);
 // Don't show external sound config if not compiled for this device or not used
 #ifdef DISABLEEXTAUDIO

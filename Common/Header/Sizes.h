@@ -33,9 +33,6 @@
 // Do not change, it is fixed in AddSnailPoint.
 #define NUMSNAILCOLORS 15
 
-// max URL length
-#define MAX_URL_LEN  50
-
 // arbitrary, for setting a limit
 #define MAX_NMEA_LEN		160
 #define MAX_NMEA_PARAMS		40

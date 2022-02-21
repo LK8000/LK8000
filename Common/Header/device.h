@@ -4,12 +4,12 @@
 
 #include "MapWindow.h"
 #include "ComPort.h"
+#include "Comm/PortConfig.h"
 #include "BtHandler.h"
 #include <vector>
 #include "Util/tstring.hpp"
 #include "utils/stl_utils.h"
 
-#define DEVNAMESIZE  32
 #define	NUMDEV		 6
 
 #define	devA()	    (&DeviceList[0])
@@ -65,49 +65,6 @@ typedef struct Declaration {
 } Declaration_t;
 
 
-// Filter switches for different Data directions coming sending from/to external devices
-enum DataBiIoDir {
-  BiDirOff   =0,	 // OFF    no data exchange with this data (ignore data)
-  BiDirIn    =1,	 // IN     only reading of this data from external device
-  BiDirOut   =2,	 // OUT    only sending this data to external device
-  BiDirInOut =3		 // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
-};
-
-
-// Filter switches for different Data directions data protocol sentences using for TARGET information transfer
-enum DataTP_Type {
-  TP_Off  ,  // OFF    no TARGET data exchange
-  TP_VTARG,  // IN    $PLXVTARG
-  TP_GPRMB,  // OUT   $GPRMB
-};
-
-
-struct DeviceIO {
-  DataBiIoDir MCDir;     // Mac Cready
-  DataBiIoDir BUGDir;    // BUG aka efficency
-  DataBiIoDir BALDir;    // Ballast
-  DataBiIoDir STFDir;    // Speed to fly switch Vario/Sollfahrt
-  DataBiIoDir WINDDir;   // Wind
-  DataBiIoDir BARODir;   // barometric heigt
-  DataBiIoDir VARIODir;  // Variometer
-  DataBiIoDir SPEEDDir;  // IAS indicated airspeed
-  DataTP_Type R_TRGTDir; // Receive Navigation Target information protocol sentence
-
-  DataBiIoDir RADIODir ; // Radio Informations Frequency etc.
-  DataBiIoDir TRAFDir  ; // Traffix Information (FLARM)
-  DataBiIoDir GYRODir  ; // Gyroskop information
-  DataBiIoDir GFORCEDir; // G-Force values
-  DataBiIoDir OATDir   ; // Outside air temperature
-  DataBiIoDir BAT1Dir  ; // Battery 1 voltage
-  DataBiIoDir BAT2Dir  ; // Battery 2 voltage
-  DataBiIoDir POLARDir ; // Polar 2 voltage
-  DataBiIoDir DirLink  ; // Direct Link
-  DataTP_Type T_TRGTDir; // Send Navigation Target information protocol sentence
-  DataBiIoDir QNHDir   ; // QNH data exchange
-};
-
-BOOL IsDirInput(DataBiIoDir IODir);
-BOOL IsDirOutput(DataBiIoDir IODir);
 
 struct DeviceDescriptor_t {
   

@@ -16,6 +16,7 @@
 
 #include "Poco/Event.h"
 #include "Time/PeriodClock.hpp"
+#include "Comm/PortConfig.h"
 
 
   #undef  GEXTERN
@@ -842,20 +843,10 @@ GEXTERN TCHAR szMapFile[MAX_PATH];
 
 // Ports and devices
 GEXTERN unsigned  SelectedDevice;
-GEXTERN TCHAR szPort[NUMDEV][MAX_PATH];
-GEXTERN unsigned dwSpeedIndex[NUMDEV];
-GEXTERN unsigned dwBitIndex[NUMDEV];
-GEXTERN TCHAR szIpAddress[NUMDEV][MAX_URL_LEN];
-GEXTERN unsigned dwIpPort[NUMDEV];
-GEXTERN TCHAR dwDeviceName[NUMDEV][DEVNAMESIZE+1];
-GEXTERN TCHAR Replay_FileName[NUMDEV][LKSIZEBUFFERPATH+1];
-GEXTERN int ReplaySpeed[NUMDEV];
-GEXTERN bool RawByteData[NUMDEV];
-GEXTERN int ReplaySync[NUMDEV];
-GEXTERN bool UseExtSound[NUMDEV];
+GEXTERN PortConfig_t PortConfig[NUMDEV];
+
 GEXTERN double LastFlarmCommandTime;
 GEXTERN bool  DevIsCondor;
-GEXTERN DeviceIO PortIO[NUMDEV];
 // Units , configurable only in system config
 
 GEXTERN unsigned SpeedUnit_Config;

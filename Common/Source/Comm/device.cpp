@@ -410,18 +410,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
 #endif
 }
 
-
-bool GetPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index) {
-    if (idx >= 0)
-      if (idx < NUMDEV)
-      {
-          ReadPortSettings(idx, szPort, SpeedIndex, Bit1Index);
-        return true;
-      }
-    return false;
-
-}
-
 void RestartCommPorts() {
 
     StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);
@@ -447,48 +435,48 @@ static BOOL devOpen(PDeviceDescriptor_t d){
 
 
 static bool IsIdenticalPort(int i, int j) {
+  const auto& ConfigA = PortConfig[i];
+  const auto& ConfigB = PortConfig[j];
+
+  tstring_view PortA = ConfigA.GetPort();
+  tstring_view PortB = ConfigB.GetPort();
 
   // internal can't be shared
-  if (_tcscmp(dwDeviceName[i], _T("Internal")) == 0) {
+  if (PortA == _T("Internal")) {
     return false;
   }
+
   // internal can't be shared
-  if (_tcscmp(dwDeviceName[j], _T("Internal")) == 0) {
+  if (PortB == _T("Internal")) {
     return false;
   }
 
-  if (_tcscmp(szPort[i], _T("UDPServer")) == 0) {
-    // two udp port on same port.
-    return ((_tcscmp(szPort[j], _T("UDPServer")) == 0)
-                && (dwIpPort[i] == dwIpPort[j]));
-  }
-
-  if (_tcscmp(szPort[i], _T("TCPServer")) == 0) {
-    // two tcp server port on same port.
-    return ((_tcscmp(szPort[j], _T("TCPServer")) == 0)
-                && (dwIpPort[i] == dwIpPort[j]));
-  }
-
-  if (_tcscmp(szPort[i], _T("TCPClient")) == 0) {
-    // two tcp client port on same adress/port.
-    return ((_tcscmp(szPort[j], _T("TCPClient")) == 0)
-                && (dwIpPort[i] == dwIpPort[j])
-                && (_tcscmp(szIpAddress[i], szIpAddress[j]) == 0));
-  }
-  
   // same port name.
-  return ( _tcscmp(szPort[i] , szPort[j])==0);
+  if (PortA == PortB) {
+    return false;
+  }
+
+  if (PortA == _T("UDPServer")) {
+    // two udp port on same port.
+    return (ConfigA.dwIpPort == ConfigB.dwIpPort);
+  }
+
+  if (PortA == _T("TCPServer")) {
+    // two tcp server port on same port.
+    return (ConfigA.dwIpPort == ConfigB.dwIpPort);
+  }
+
+  if (PortA == _T("TCPClient")) {
+    // two tcp client port on same adress/port.
+    return (ConfigA.dwIpPort == ConfigB.dwIpPort)
+        && (_tcscmp(ConfigA.szIpAddress, ConfigB.szIpAddress) == 0);
+  }
+
+  return false;
 }
 
 BOOL devInit() {
     ScopeLock Lock(CritSec_Comm);
-
-    TCHAR DeviceName[DEVNAMESIZE + 1];
-
-
-    TCHAR Port[MAX_PATH] = {_T('\0')};
-    unsigned SpeedIndex = 2U;
-    BitIndex_t BitIndex = bit8N1;
 
     RadioPara.Enabled = (SIMMODE);
 
@@ -498,57 +486,53 @@ BOOL devInit() {
     ResetVarioAvailable(GPS_INFO);
 
     for (unsigned i = 0; i < NUMDEV; i++) {
-        DeviceList[i].InitStruct(i);
+        const auto& Config = PortConfig[i];
+        auto& dev = DeviceList[i];
+        
+        dev.InitStruct(i);
 
         if (SIMMODE){
             continue;
         }
 
-        ReadDeviceSettings(i, DeviceName);
-        DeviceList[i].Disabled = (_tcscmp(DeviceName, _T(DEV_DISABLED_NAME)) == 0);
-        if (DeviceList[i].Disabled) {
+        dev.Disabled = Config.IsDisabled();
+        if (dev.Disabled) {
             StartupStore(_T(". Device %c is DISABLED.%s"), (_T('A') + i), NEWLINE);
             continue;
         }
 
-        const DeviceRegister_t* pDev = GetRegisteredDevice(DeviceName);
+        const DeviceRegister_t* pDev = GetRegisteredDevice(Config.szDeviceName);
         if (!pDev) {
-            DeviceList[i].Disabled = true;
-            StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), DeviceName, NEWLINE);
+            dev.Disabled = true;
+            StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), Config.szDeviceName, NEWLINE);
             continue;
         }
-        if(_tcscmp(pDev->Name,TEXT("Internal")) == 0) {
-            _tcscpy(Port, _T("internal"));
-        } else { 
-            Port[0] = _T('\0');
-            SpeedIndex = 2U;
-            BitIndex = bit8N1;
-            ReadPortSettings(i, Port, &SpeedIndex, &BitIndex);
-        }
 
-        DeviceList[i].iSharedPort =-1;
+        const TCHAR* Port = Config.GetPort();
+
+        dev.iSharedPort =-1;
         for(uint j = 0; j < i ; j++) {
-            if( (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) != 0)
+            if( (_tcscmp(Port, NMEA_REPLAY) != 0)
                  && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
 
-                DeviceList[i].iSharedPort =j;
+                dev.iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
-                DeviceList[i].Com = DeviceList[j].Com ;
-                DeviceList[i].Status = CPS_OPENOK;
-                pDev->Installer(&DeviceList[i]);
+                dev.Com = DeviceList[j].Com ;
+                dev.Status = CPS_OPENOK;
+                pDev->Installer(&dev);
 
-                if(devIsRadio(&DeviceList[i])) {
+                if(devIsRadio(&dev)) {
                     RadioPara.Enabled = true;
                     StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
                 }
             }
         }
 
-        if(DeviceList[i].iSharedPort >=0) { // skip making new device on shared ports
+        if(dev.iSharedPort >=0) { // skip making new device on shared ports
             continue;
         }
 
-        StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), DeviceName, Port, NEWLINE);
+        StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), Config.szDeviceName, Port, NEWLINE);
         ComPort *Com = nullptr;
         if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
 #ifdef NO_BLUETOOTH
@@ -600,43 +584,44 @@ BOOL devInit() {
         } else if(_tcsncmp(Port, _T("IOIOUart_"), 9) == 0) {
 #ifdef ANDROID
             unsigned ID = _tcstoul(Port+9, nullptr, 10);
-            Com = new IOIOUartPort(i, Port, ID, dwSpeed[SpeedIndex]);
+            Com = new IOIOUartPort(i, Port, ID, dwSpeed[Config.dwSpeedIndex]);
 #endif
         } else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
 #ifdef ANDROID
-            Com = new UsbSerialPort(i, &Port[4], dwSpeed[SpeedIndex], BitIndex);
+            Com = new UsbSerialPort(i, &Port[4], dwSpeed[Config.dwSpeedIndex], Config.dwBitIndex);
 #endif
         } else  if (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) == 0) {
         	Com = new FilePort(i, NMEA_REPLAY);
         } else {
-            Com = new SerialPort(i, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
+            Com = new SerialPort(i, Port, dwSpeed[Config.dwSpeedIndex], Config.dwBitIndex, PollingMode);
         }
 
         if (Com && Com->Initialize()) {
             /*
              * Need to be done before anny #DeviceDescriptor_t::Callback call.
              */
-            DeviceList[i].Com = Com;
-            DeviceList[i].Status = CPS_OPENOK;
-            pDev->Installer(&DeviceList[i]);
+            dev.Com = Com;
+            dev.Status = CPS_OPENOK;
+            
+            pDev->Installer(&dev);
 
-            devOpen(&DeviceList[i]);
+            devOpen(&dev);
 
-            if (devIsBaroSource(&DeviceList[i])) {
+            if (devIsBaroSource(&dev)) {
                 if (pDevPrimaryBaroSource == NULL) {
-                    pDevPrimaryBaroSource = &DeviceList[i];
+                    pDevPrimaryBaroSource = &dev;
                 } else if (pDevSecondaryBaroSource == NULL) {
-                    pDevSecondaryBaroSource = &DeviceList[i];
+                    pDevSecondaryBaroSource = &dev;
                 }
             }
 
             Com->StartRxThread();
         } else {
             delete Com;
-            DeviceList[i].Status = CPS_OPENKO;
+            dev.Status = CPS_OPENKO;
         }
 
-       if(devIsRadio(&DeviceList[i])) {
+       if(devIsRadio(&dev)) {
           RadioPara.Enabled = true;
           StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
        }
@@ -943,9 +928,9 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 }
 
 bool devDriverActivated(const TCHAR *DeviceName) {
-  for(int i=0; i <NUMDEV; i++) {
-    if ((_tcscmp(dwDeviceName[i], DeviceName) == 0)) {
-            return true;        
+  for (auto& Port : PortConfig) {
+    if ((_tcscmp(Port.szDeviceName, DeviceName) == 0)) {
+      return true;
     }
   }
   return false;

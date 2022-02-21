@@ -406,12 +406,6 @@ void LKProfileSave(const TCHAR *szFile) {
   }
 }
 
-void WriteDeviceSettings(const int devIdx, const TCHAR *Name) {
-  if (devIdx >= 0 && devIdx < NUMDEV) {
-    _tcscpy(dwDeviceName[devIdx], Name);
-  }
-}
-
 //
 // Save only Aircraft related parameters
 //
@@ -486,30 +480,34 @@ void LKDeviceSave(const TCHAR *szFile) {
   }
 
   for (int n = 0; n < NUMDEV; n++) {
+    auto& Port = PortConfig[n];
 
-    write_settings(szRegistryDevice[n], dwDeviceName[n]);
-    write_settings(szRegistryPortName[n], szPort[n]);
-    write_settings(szRegistrySpeedIndex[n], dwSpeedIndex[n]);
-    write_settings(szRegistryBitIndex[n], dwBitIndex[n]);
-    write_settings(szRegistryIpAddress[n], szIpAddress[n]);
-    write_settings(szRegistryIpPort[n], dwIpPort[n]);
+    write_settings(szRegistryDevice[n], Port.szDeviceName);
+    write_settings(szRegistryPortName[n], Port.szPort);
+    write_settings(szRegistrySpeedIndex[n], Port.dwSpeedIndex);
+    write_settings(szRegistryBitIndex[n], Port.dwBitIndex);
+    write_settings(szRegistryIpAddress[n], Port.szIpAddress);
+    write_settings(szRegistryIpPort[n], Port.dwIpPort);
 
-    write_settings(szRegistryUseExtSound[n], UseExtSound[n]);
+    write_settings(szRegistryUseExtSound[n], Port.UseExtSound);
 
-    write_settings(szRegistryReplayFile[n], Replay_FileName[n]);
-    write_settings(szRegistryReplaySpeed[n], ReplaySpeed[n]);
-    write_settings(szRegistryReplayRaw[n], RawByteData[n]);  
-    write_settings(szRegistryReplaySync[n], ReplaySync[n]);
+    write_settings(szRegistryReplayFile[n], Port.Replay_FileName);
+    write_settings(szRegistryReplaySpeed[n], Port.ReplaySpeed);
+    write_settings(szRegistryReplayRaw[n], Port.RawByteData);  
+    write_settings(szRegistryReplaySync[n], Port.ReplaySync);
+
+
+    auto& PortIO = Port.PortIO;
 
     TCHAR szTmp[IO_PARAM_SIZE];
     _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
-	       (uint)PortIO[n].MCDir    ,(uint)PortIO[n].BUGDir  ,(uint)PortIO[n].BALDir   ,
-	       (uint)PortIO[n].STFDir   ,(uint)PortIO[n].WINDDir ,(uint)PortIO[n].BARODir  ,
-	       (uint)PortIO[n].VARIODir ,(uint)PortIO[n].SPEEDDir,(uint)PortIO[n].R_TRGTDir,
-	       (uint)PortIO[n].RADIODir ,(uint)PortIO[n].TRAFDir ,(uint)PortIO[n].GYRODir  ,
-	       (uint)PortIO[n].GFORCEDir,(uint)PortIO[n].OATDir  ,(uint)PortIO[n].BAT1Dir  ,
-	       (uint)PortIO[n].BAT2Dir  ,(uint)PortIO[n].POLARDir,(uint)PortIO[n].DirLink  ,
-	       (uint)PortIO[n].T_TRGTDir,(uint)PortIO[n].QNHDir
+	       (uint)PortIO.MCDir    ,(uint)PortIO.BUGDir  ,(uint)PortIO.BALDir   ,
+	       (uint)PortIO.STFDir   ,(uint)PortIO.WINDDir ,(uint)PortIO.BARODir  ,
+	       (uint)PortIO.VARIODir ,(uint)PortIO.SPEEDDir,(uint)PortIO.R_TRGTDir,
+	       (uint)PortIO.RADIODir ,(uint)PortIO.TRAFDir ,(uint)PortIO.GYRODir  ,
+	       (uint)PortIO.GFORCEDir,(uint)PortIO.OATDir  ,(uint)PortIO.BAT1Dir  ,
+	       (uint)PortIO.BAT2Dir  ,(uint)PortIO.POLARDir,(uint)PortIO.DirLink  ,
+	       (uint)PortIO.T_TRGTDir,(uint)PortIO.QNHDir
 	     );
 
     char szKey[20];

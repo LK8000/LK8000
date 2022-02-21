@@ -29,9 +29,6 @@ void StoreType(int Index,int InfoType);
 void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
 void ConvertFlightLevels(void);
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc);
-void ReadPortSettings(int idx, LPTSTR szPort, unsigned *SpeedIndex, BitIndex_t *Bit1Index);
-
-//void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index);
 
 
 void ReadAssetNumber(void);
@@ -50,20 +47,11 @@ void PExtractParameter(TCHAR *Source, TCHAR (&Destination)[dest_size], int Desir
 	PExtractParameter(Source, Destination, dest_size, DesiredFieldNumber);
 }
 
-void SaveWindToRegistry();
-void LoadWindFromRegistry();
-void SaveSoundSettings();
-void ReadDeviceSettings(const int devIdx, TCHAR *Name);
-void WriteDeviceSettings(const int devIdx, const TCHAR *Name);
-
 WORD crcCalc(void *Buffer, size_t size);
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source);
 unsigned DoSunEphemeris(double lon, double lat);
 
 void TrimRight(TCHAR* str);
-
-void SaveRegistryToFile(const TCHAR* szFile);
-void LoadRegistryFromFile(const TCHAR* szFile);
 
 /* =====================================================
    Interface Files !

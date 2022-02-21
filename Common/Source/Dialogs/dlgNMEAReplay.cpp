@@ -15,37 +15,39 @@
 static WndForm *wf=NULL;
 
 static void OnStopClicked(WndButton* pWnd) {
-    ReplaySpeed[SelectedDevice] = 0;
-	if(wf)
-	{
+    
+  auto& Port = PortConfig[SelectedDevice];
+  Port.ReplaySpeed = 0;
+
+	if(wf) {
 	  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
-	  if(wp)
-	  {
-	    wp->GetDataField()->Set(ReplaySpeed[SelectedDevice]);
+	  if(wp) {
+	    wp->GetDataField()->Set(Port.ReplaySpeed);
 	    wp->RefreshDisplay();
 	  }
 	}
-
 }
 
 static void OnStartClicked(WndButton* pWnd) {
-  WndProperty* wp;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
+
+  auto& Port = PortConfig[SelectedDevice];
+
+  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(Replay_FileName[SelectedDevice],dfe->GetPathFile());
+    _tcscpy(Port.Replay_FileName,dfe->GetPathFile());
 
   }
-  if( ReplaySpeed[SelectedDevice] ==0)
+  if( Port.ReplaySpeed ==0)
   {
-    ReplaySpeed[SelectedDevice] = 1;
+    Port.ReplaySpeed = 1;
     if(wf)
     {
       WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
       if(wp)
       {
-        wp->GetDataField()->Set(ReplaySpeed[SelectedDevice]);
+        wp->GetDataField()->Set(Port.ReplaySpeed);
         wp->RefreshDisplay();
       }
     }
@@ -54,6 +56,7 @@ static void OnStartClicked(WndButton* pWnd) {
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
+  auto& Port = PortConfig[SelectedDevice];
 
   if(pWnd) {
     WndProperty* wp;
@@ -62,7 +65,7 @@ static void OnCloseClicked(WndButton* pWnd) {
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
 
-      _tcscpy(Replay_FileName[SelectedDevice],dfe->GetPathFile());
+      _tcscpy(Port.Replay_FileName,dfe->GetPathFile());
 
     }
     wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
@@ -70,7 +73,7 @@ static void OnCloseClicked(WndButton* pWnd) {
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
 
-      ReplaySpeed[SelectedDevice] = dfe->GetAsFloat();
+      Port.ReplaySpeed = dfe->GetAsFloat();
 
     }
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -82,14 +85,15 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 
 static void OnRateData(DataField *Sender, DataField::DataAccessKind_t Mode){
+  auto& Port = PortConfig[SelectedDevice];
 
   switch(Mode){
     case DataField::daGet:
-      Sender->Set(ReplaySpeed[SelectedDevice]);
+      Sender->Set(Port.ReplaySpeed);
     break;
     case DataField::daPut:
     case DataField::daChange:
-    	ReplaySpeed[SelectedDevice] = (int) Sender->GetAsFloat();
+    	Port.ReplaySpeed = (int) Sender->GetAsFloat();
     break;
   case DataField::daInc:
   case DataField::daDec:
@@ -113,6 +117,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void dlgNMEAReplayShowModal(){
+  auto& Port = PortConfig[SelectedDevice];
 
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_NMEAREPLAY);
 
@@ -122,7 +127,7 @@ void dlgNMEAReplayShowModal(){
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
     if (wp) {
-      wp->GetDataField()->SetAsFloat(ReplaySpeed[SelectedDevice]);
+      wp->GetDataField()->SetAsFloat(Port.ReplaySpeed);
       wp->RefreshDisplay();
     }
 
@@ -131,13 +136,13 @@ void dlgNMEAReplayShowModal(){
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
         dfe->ScanDirectoryTop(_T(LKD_LOGS),TEXT(LKS_TXT));
-        dfe->Lookup(Replay_FileName[SelectedDevice]);
+        dfe->Lookup(Port.Replay_FileName);
       }
       wp->RefreshDisplay();
     }
     wp = (WndProperty*)wf->FindByName(TEXT("prpRaw"));
     if (wp) {      
-      wp->GetDataField()->Set(  RawByteData[SelectedDevice] );
+      wp->GetDataField()->Set(  Port.RawByteData );
       wp->RefreshDisplay();
     }      
 
@@ -148,7 +153,7 @@ void dlgNMEAReplayShowModal(){
       dfe->addEnumText(_T("$PGRMC")); // 
       dfe->addEnumText(_T("$GPGGA")); // 
      
-      dfe->Set( ReplaySync[SelectedDevice]);
+      dfe->Set( Port.ReplaySync);
       wp->RefreshDisplay();
   }
       
@@ -157,15 +162,15 @@ void dlgNMEAReplayShowModal(){
     
     wp = (WndProperty*)wf->FindByName(TEXT("prpRaw"));
     if (wp) {
-      if (RawByteData[SelectedDevice] != wp->GetDataField()->GetAsBoolean()) {
-        RawByteData[SelectedDevice] = (int) wp->GetDataField()->GetAsBoolean();
+      if (Port.RawByteData != wp->GetDataField()->GetAsBoolean()) {
+        Port.RawByteData = (int) wp->GetDataField()->GetAsBoolean();
       }
     }
     
     wp = (WndProperty*)wf->FindByName(TEXT("prpSyncNMEA"));
     if (wp) {
-      if (ReplaySync[SelectedDevice] != wp->GetDataField()->GetAsInteger()) {
-        ReplaySync[SelectedDevice] = wp->GetDataField()->GetAsInteger();
+      if (Port.ReplaySync != wp->GetDataField()->GetAsInteger()) {
+        Port.ReplaySync = wp->GetDataField()->GetAsInteger();
       }
     }
         

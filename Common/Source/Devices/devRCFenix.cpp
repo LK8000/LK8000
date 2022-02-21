@@ -101,29 +101,32 @@ BOOL DevRCFenix::Open(PDeviceDescriptor_t d) {
     return false;
   }
 
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
   tstring setMcBal = _T("RCDT,SET,MC_BAL,");
   
+
   // mc (float)
-  if (IsDirOutput(PortIO[d->PortNumber].MCDir)) {
+  if (IsDirOutput(PortIO.MCDir)) {
     setMcBal += to_tstring(static_cast<float>(MACCREADY));
   }
   setMcBal += _T(",");
   
   // ballast (uint16_t kg)
-  if (IsDirOutput(PortIO[d->PortNumber].BALDir)) {
+  if (IsDirOutput(PortIO.BALDir)) {
     setMcBal += to_tstring(static_cast<uint16_t>(GlidePolar::BallastLitres));
   }
   setMcBal += _T(",");
   
   // bugs (uint8_t %)
-  if (IsDirOutput(PortIO[d->PortNumber].BUGDir)) {
+  if (IsDirOutput(PortIO.BUGDir)) {
     setMcBal += to_tstring(static_cast<uint8_t>(CalculateLXBugs(BUGS)));
   }
   // brightness,vario_vol,sc_vol
   setMcBal += _T(",,,,");
   
   // qnh (uint16_t mbar)
-  if (IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
+  if (IsDirOutput(PortIO.QNHDir)) {
     uint16_t mb_qnh = QNH;
     setMcBal += to_tstring(mb_qnh);
   }
@@ -205,7 +208,9 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
     }
   }
 
-  if (IsDirOutput(PortIO[d->PortNumber].STFDir)) {
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if (IsDirOutput(PortIO.STFDir)) {
     bool circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
     static bool Thermalmode = !circling;
     if (circling != Thermalmode) {
@@ -406,7 +411,9 @@ BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready) {
     return false;
   }
 
-  if (!IsDirOutput(PortIO[d->PortNumber].MCDir)) {
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if (!IsDirOutput(PortIO.MCDir)) {
     return false;
   }
 
@@ -425,7 +432,9 @@ BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast) {
     return false;
   }
 
-  if (!IsDirOutput(PortIO[d->PortNumber].BALDir)) {
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if (!IsDirOutput(PortIO.BALDir)) {
     return false;
   }
 
@@ -444,7 +453,10 @@ BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
   if (!d) {
     return false;
   }
-  if(!IsDirOutput(PortIO[d->PortNumber].BUGDir)) {
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(!IsDirOutput(PortIO.BUGDir)) {
     return false;
   }
   TCHAR szTmp[MAX_NMEA_LEN];
@@ -463,7 +475,10 @@ BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
   if (!d) {
     return false;
   }
-  if (!IsDirOutput(PortIO[d->PortNumber].QNHDir)) {
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if (!IsDirOutput(PortIO.QNHDir)) {
     return false;
   } 
   TCHAR szTmp[MAX_NMEA_LEN];
@@ -478,7 +493,9 @@ BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
 
 
 BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d) {
-  if(PortIO[d->PortNumber].T_TRGTDir == TP_Off) {
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+
+  if(PortIO.T_TRGTDir == TP_Off) {
     return false;
   }
 
@@ -528,7 +545,7 @@ BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d) {
                         GetOvertargetHeader(),  // LKTOKEN _@M1323_ "T>"
                         curr_tp.Name);
 
-  if (PortIO[d->PortNumber].T_TRGTDir  == TP_VTARG) {                                  
+  if (PortIO.T_TRGTDir  == TP_VTARG) {                                  
     int rwdir = 0; 
     int landable =0;
 
@@ -547,7 +564,7 @@ BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d) {
     //   $RCDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
     _tcsncat(szName, _T(" ($RCDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
   }
-  else if (PortIO[d->PortNumber].T_TRGTDir  == TP_GPRMB) {
+  else if (PortIO.T_TRGTDir  == TP_GPRMB) {
     // GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
     _sntprintf(szTmp, MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
                                     szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);

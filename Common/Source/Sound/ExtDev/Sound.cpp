@@ -49,16 +49,16 @@ bool SetSoundVolume() {
   
 static
 bool ExtSound(const TCHAR *lpName) {
-  if(!lpName || !bSoundInit || !EnableSoundModes) {
-      return false;
-  }    
-  
-  for (int i=0 ; i < NUMDEV; i++) {
-    if(UseExtSound[i]) {
-        return true;
+    if(!lpName || !bSoundInit || !EnableSoundModes) {
+        return false;
+    }    
+
+    for (auto& Config : PortConfig) {
+        if (Config.UseExtSound) {
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 static
@@ -66,11 +66,7 @@ void PlayExtSound(sound_code_t sound_code) {
     const tstring& nmeaStr = _sound_table.getNmeaStr(sound_code);
     if (!nmeaStr.empty()) {
         for(unsigned i = 0; i < NUMDEV; ++i) {
-            
-            static_assert(std::size(UseExtSound) == NUMDEV, "invalid array size");
-            static_assert(std::size(DeviceList) == NUMDEV, "invalid array size");
-            
-            if (UseExtSound[i]) {
+            if (PortConfig[i].UseExtSound) {
                 devWriteNMEAString(&DeviceList[i], nmeaStr.c_str());
             }
         }
