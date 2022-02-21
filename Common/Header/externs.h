@@ -44,7 +44,6 @@
 #include "MapWindow.h"
 #include "Utils.h"
 #include "ContestMgr.h"
-#include "ComPort.h"
 #include "Task.h"
 #include "Comm/device.h"
 #include "Globals.h"
