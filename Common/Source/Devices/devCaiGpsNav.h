@@ -25,7 +25,7 @@ class CDevCAIGpsNav : public DevBase
     return _T("CAI GPS-NAV");
   }
 
-  static BOOL Init(DeviceDescriptor_t *d);
+  static BOOL Open(DeviceDescriptor_t *d);
   static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
   static void Install(PDeviceDescriptor_t d);
 

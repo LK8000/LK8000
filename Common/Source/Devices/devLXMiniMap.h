@@ -61,8 +61,6 @@ class DevLXMiniMap : public DevLXNano
     static double CalculateBalast(double Factor);
 
     static BOOL Open(PDeviceDescriptor_t d);
-    static BOOL Init(PDeviceDescriptor_t d);
-
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr

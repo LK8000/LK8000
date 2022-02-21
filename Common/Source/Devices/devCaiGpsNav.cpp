@@ -311,7 +311,7 @@ namespace {
 
 }
 
-BOOL CDevCAIGpsNav::Init(DeviceDescriptor_t *d)
+BOOL CDevCAIGpsNav::Open(DeviceDescriptor_t *d)
 {
   if(!SIMMODE) {
     d->Com->WriteString(TEXT("\x03"));
@@ -414,7 +414,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl
 void CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
-  d->Init         = Init;
+  d->Open         = Open;
   d->Declare      = DeclareTask;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;

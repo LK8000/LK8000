@@ -135,7 +135,6 @@ struct DeviceDescriptor_t {
   BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	double Standby, const TCHAR* StationName);
   BOOL (*Open)(DeviceDescriptor_t *d);
   BOOL (*Close)(DeviceDescriptor_t *d);
-  BOOL (*Init)(DeviceDescriptor_t	*d);
   BOOL (*LinkTimeout)(DeviceDescriptor_t *d);
   BOOL (*Declare)(DeviceDescriptor_t *d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
   BOOL (*IsGPSSource)(DeviceDescriptor_t *d);

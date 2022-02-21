@@ -383,7 +383,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     PutFreqStandby = nullptr;
     Open = nullptr;
     Close = nullptr;
-    Init = nullptr;
     LinkTimeout = nullptr;
     Declare = nullptr;
     IsGPSSource = nullptr;
@@ -444,15 +443,6 @@ static BOOL devOpen(PDeviceDescriptor_t d){
     return d->Open(d);
   }
   return TRUE;
-}
-
-// Only called from devInit() above which
-// is in turn called with LockComm
-static BOOL devInit(PDeviceDescriptor_t d){
-  if (d != NULL && d->Init != NULL)
-    return ((d->Init)(d));
-  else
-    return(TRUE);
 }
 
 
@@ -540,7 +530,7 @@ BOOL devInit() {
         for(uint j = 0; j < i ; j++) {
             if( (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) != 0)
                  && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
-                devInit(&DeviceList[i]);
+
                 DeviceList[i].iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
                 DeviceList[i].Com = DeviceList[j].Com ;
@@ -630,7 +620,6 @@ BOOL devInit() {
             DeviceList[i].Status = CPS_OPENOK;
             pDev->Installer(&DeviceList[i]);
 
-            devInit(&DeviceList[i]);
             devOpen(&DeviceList[i]);
 
             if (devIsBaroSource(&DeviceList[i])) {

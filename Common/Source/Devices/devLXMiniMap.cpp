@@ -71,7 +71,6 @@ void DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->PutBugs      = LXMiniMapPutBugs;
   d->PutBallast   = LXMiniMapPutBallast;
   d->Open         = Open;
-  d->Init         = Init;
   d->Declare      = DeclareTaskMinimap;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
@@ -203,12 +202,6 @@ BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d){
   devWriteNMEAString(d, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,3"));
 
   return(TRUE);
-}
-
-BOOL DevLXMiniMap::Init(PDeviceDescriptor_t d)
-{
-
-	  return(TRUE);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
