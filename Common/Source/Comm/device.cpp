@@ -439,12 +439,12 @@ static bool IsIdenticalPort(int i, int j) {
   tstring_view PortB = ConfigB.GetPort();
 
   // internal can't be shared
-  if (PortA == _T("Internal")) {
+  if (PortA == DEV_INTERNAL_NAME) {
     return false;
   }
 
   // internal can't be shared
-  if (PortB == _T("Internal")) {
+  if (PortB == DEV_INTERNAL_NAME) {
     return false;
   }
 
@@ -506,7 +506,7 @@ namespace {
         return new BthPort(idx, &Port[3]);
       }
     }
-    else if (_tcscmp(Port, _T("internal")) == 0) {
+    else if (_tcscmp(Port, DEV_INTERNAL_NAME) == 0) {
 #ifdef ANDROID
       return new InternalPort(idx, Port);
 #else

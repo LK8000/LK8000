@@ -70,7 +70,8 @@ static constexpr const TCHAR* baudrate_string[] = {
 #define MAX_URL_LEN  50
 
 // Fixed text for a disabled device. Cannot be used for translations.
-#define DEV_DISABLED_NAME	"DISABLED"
+#define DEV_DISABLED_NAME	_T("DISABLED")
+#define DEV_INTERNAL_NAME	_T("Internal")
 
 class PortConfig_t final {
 public:
@@ -78,14 +79,14 @@ public:
 
   bool IsDisabled() const {
     if(szDeviceName[0]) {
-      return (_tcscmp(szDeviceName, _T(DEV_DISABLED_NAME)) == 0);
+      return (_tcscmp(szDeviceName, DEV_DISABLED_NAME) == 0);
     }
     return true;
   }
 
   const TCHAR* GetPort() const {
-    if(_tcscmp(szDeviceName, TEXT("Internal")) == 0) {
-      return _T("internal");
+    if(_tcscmp(szDeviceName, DEV_INTERNAL_NAME) == 0) {
+      return DEV_INTERNAL_NAME;
     }
     return szPort;
   }
@@ -102,7 +103,7 @@ public:
   }
 
   // device driver name.
-  TCHAR szDeviceName[DEVNAMESIZE+1] = { _T(DEV_DISABLED_NAME) };
+  TCHAR szDeviceName[DEVNAMESIZE+1] = { DEV_DISABLED_NAME };
 
   // serial Port Parameters
   unsigned dwSpeedIndex = 2;

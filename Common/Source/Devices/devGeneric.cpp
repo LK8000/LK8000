@@ -22,6 +22,6 @@ void genInstall(PDeviceDescriptor_t d){
 }
 
 void internalInstall(PDeviceDescriptor_t d){
-  _tcscpy(d->Name, TEXT("Internal"));
+  _tcscpy(d->Name, DEV_INTERNAL_NAME);
   d->IsGPSSource = &IsGPSSource;
 }

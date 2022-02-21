@@ -410,7 +410,7 @@ void LKProfileResetDefault() {
   }
 
 #ifdef ANDROID
-  _tcscpy(PortConfig[0].szDeviceName, _T("Internal"));
+  _tcscpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
 #endif
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));

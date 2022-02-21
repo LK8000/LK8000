@@ -593,7 +593,7 @@ void Globals_Init(void) {
   SelectedDevice = 0;
 
 #ifdef ANDROID
-  _tcscpy(PortConfig[0].szDeviceName, _T("Internal"));
+  _tcscpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
 #endif
 
   // Units

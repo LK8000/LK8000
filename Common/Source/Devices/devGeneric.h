@@ -22,7 +22,7 @@ void internalInstall(PDeviceDescriptor_t d);
 
 inline constexpr
 DeviceRegister_t InternalRegister() {
-  return devRegister( _T("Internal"), internalInstall);
+  return devRegister(DEV_INTERNAL_NAME, internalInstall);
 }
 
 #endif

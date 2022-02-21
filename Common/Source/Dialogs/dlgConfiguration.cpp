@@ -1169,7 +1169,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
       if(wp->GetDataField()->GetAsString())
       {
         {
-          if(_tcscmp(wp->GetDataField()->GetAsString(), _T(DEV_DISABLED_NAME)) == 0)
+          if(_tcscmp(wp->GetDataField()->GetAsString(), DEV_DISABLED_NAME) == 0)
           {
             DeviceList[idx].Disabled = true;
             bHide = true;
@@ -1177,7 +1177,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
           else
             DeviceList[idx].Disabled = false;
 
-          if (_tcscmp(wp->GetDataField()->GetAsString(), _T("Internal")) == 0)
+          if (_tcscmp(wp->GetDataField()->GetAsString(), DEV_INTERNAL_NAME) == 0)
           {
             bHide = true;
           }
