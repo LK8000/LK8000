@@ -19,7 +19,7 @@
 #ifndef VLA_SUPPORT
 #define VLA_SUPPORT
 
-#include "device.h" // XCSoar
+#include "Comm/device.h" // XCSoar
 
 #include "vlapityp.h"
 #include "vlapierr.h"

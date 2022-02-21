@@ -11,7 +11,7 @@
 
 
 #include "externs.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "Android/LeScanCallback.hpp"
 #include <functional>
 

@@ -46,7 +46,7 @@
 #include "ContestMgr.h"
 #include "ComPort.h"
 #include "Task.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "Globals.h"
 #include "LKLanguage.h"
 #include "Window/WndMain.h"

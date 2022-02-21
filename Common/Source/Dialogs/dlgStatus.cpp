@@ -13,7 +13,7 @@
 #include "LKProcess.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "dlgTools.h"
 #include "Event/Event.h"
 #include "resource.h"

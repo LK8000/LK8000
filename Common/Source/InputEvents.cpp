@@ -2158,7 +2158,7 @@ void InputEvents::eventChangeBack(const TCHAR *misc) { // 100114
 }
 
 
-#include "device.h"
+#include "Comm/device.h"
 #include "McReady.h"
 
 // Bugs

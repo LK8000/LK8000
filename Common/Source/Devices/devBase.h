@@ -10,7 +10,7 @@
 #ifndef __DEVBASE_H_
 #define __DEVBASE_H_
 
-#include "device.h"
+#include "Comm/device.h"
 #include "Compiler.h"
 
 //_____________________________________________________________________includes_

@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "Globals.h"
 #include "devATR833.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "Radio.h"
 
 namespace {

@@ -21,7 +21,7 @@ Copyright_License {
 }
 */
 #include "externs.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "Globals.h"
 #include "Geoid.h"
 #include "Devices/devBase.h"

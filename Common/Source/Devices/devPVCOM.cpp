@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "Globals.h"
 #include "devPVCOM.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "devBase.h"
 #include "utils/printf.h"
 

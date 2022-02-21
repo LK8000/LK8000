@@ -11,7 +11,7 @@
 #include "Compiler.h"
 #include "options.h"
 #include "types.h"
-#include "device.h"
+#include "Comm/device.h"
 #include <cassert>
 
 #include "devDisabled.h"

@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "Globals.h"
 #include "devKRT2.h"
-#include "device.h"
+#include "Comm/device.h"
 #include "utils/stringext.h"
 #include "Radio.h"
 
