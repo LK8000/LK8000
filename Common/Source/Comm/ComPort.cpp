@@ -28,10 +28,6 @@ ComPort::~ComPort() {
     assert(!ReadThread.isRunning());
 }
 
-bool ComPort::Initialize() {
-    return true;
-}
-
 bool ComPort::Close() {
     StopRxThread();
     return true;

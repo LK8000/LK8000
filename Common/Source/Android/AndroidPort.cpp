@@ -46,7 +46,7 @@ bool AndroidPort::Initialize() {
                 }
                 newstate.Wait(mutex, connect_timeout);
             }
-            return ComPort::Initialize();
+            return true;
         }
     } catch (const std::exception& e) {
         delete bridge;

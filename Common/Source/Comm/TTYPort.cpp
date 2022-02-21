@@ -111,7 +111,7 @@ bool TTYPort::Initialize() {
 
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
 
-    return ComPort::Initialize();
+    return true;
 
 failed:
     if (_tty >= 0) {

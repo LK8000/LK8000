@@ -133,11 +133,6 @@ bool SerialPort::Initialize() {
     EscapeCommFunction(hPort, SETDTR);
     EscapeCommFunction(hPort, SETRTS);
 
-    if(!ComPort::Initialize()) {
-        // no need to log failed of StartRxThread it's already made in ComPort::Initialize();
-        goto failed;
-    }
-
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), GetPortIndex() + 1, GetPortName(), NEWLINE);
     return true;
 

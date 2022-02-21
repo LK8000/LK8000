@@ -15,7 +15,12 @@
 
 class IOIOUartPort : public AndroidPort {
 public:
-    IOIOUartPort(int idx, const tstring& sName, unsigned ID, unsigned baud) : AndroidPort(idx, sName), _ID(ID), _baud(baud) { }
+    IOIOUartPort(int idx, const tstring& sName, unsigned baud) :
+          AndroidPort(idx, sName),
+          _ID(_tcstoul(&sName[9], nullptr, 10)),
+          _baud(baud)
+    {
+    }
 
     bool CreateBridge() override;
 

@@ -475,6 +475,84 @@ static bool IsIdenticalPort(int i, int j) {
   return false;
 }
 
+namespace {
+
+  bool BluetoothStart() {
+#ifdef NO_BLUETOOTH
+      return true;
+#else
+      CBtHandler* pBtHandler = CBtHandler::Get();
+      if (pBtHandler && pBtHandler->IsOk()) {
+        if (pBtHandler->StartHW()) {
+          return true;
+        }
+      }
+      return false;
+#endif
+  }
+
+  void StartWifi() {
+#ifdef KOBO
+    if(!IsKoboWifiOn()) {
+      KoboWifiOn();
+    }
+#endif
+  }
+
+
+  ComPort* make_ComPort(int idx, const TCHAR* Port, size_t SpeedIndex, BitIndex_t BitIndex) {
+
+    if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
+      if(BluetoothStart()) {
+        return new BthPort(idx, &Port[3]);
+      }
+    }
+    else if (_tcscmp(Port, _T("internal")) == 0) {
+#ifdef ANDROID
+      return new InternalPort(idx, Port);
+#else
+      return new GpsIdPort(idx, Port);
+#endif
+    }
+    else if (_tcscmp(Port, _T("TCPClient")) == 0) {
+      StartWifi();
+      return new TCPClientPort(idx, Port);
+    }
+    else if (_tcscmp(Port, _T("TCPServer")) == 0) {
+      StartWifi();
+      return new TCPServerPort(idx, Port);
+    }
+    else if (_tcscmp(Port, _T("UDPServer")) == 0) {
+      StartWifi();
+      return new UDPServerPort(idx, Port);
+    }
+    else if (_tcscmp(Port, _T("Bluetooth Server")) == 0) {
+#ifdef ANDROID
+      return new BluetoothServerPort(idx, Port);
+#endif
+    }
+    else if(_tcsncmp(Port, _T("IOIOUart_"), 9) == 0) {
+#ifdef ANDROID
+      return new IOIOUartPort(idx, Port, dwSpeed[SpeedIndex]);
+#endif
+    }
+    else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
+#ifdef ANDROID
+      return new UsbSerialPort(idx, &Port[4], dwSpeed[SpeedIndex], BitIndex);
+#endif
+    }
+    else if (_tcscmp(Port, NMEA_REPLAY) == 0) {
+      return new FilePort(idx, Port);
+    } else {
+      return new SerialPort(idx, Port, dwSpeed[SpeedIndex], BitIndex, PollingMode);
+    }
+
+    return nullptr; // unknown port type...
+  }
+
+}
+
+
 BOOL devInit() {
     ScopeLock Lock(CritSec_Comm);
 
@@ -532,78 +610,15 @@ BOOL devInit() {
             continue;
         }
 
-        StartupStore(_T(". Device %c is <%s> Port=%s%s"), (_T('A') + i), Config.szDeviceName, Port, NEWLINE);
-        ComPort *Com = nullptr;
-        if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
-#ifdef NO_BLUETOOTH
-            bool bStartOk = true;
-#else
-            bool bStartOk = false;
-            CBtHandler* pBtHandler = CBtHandler::Get();
-            StartupStore(_T(".. Initialise Bluetooth Device %s%s"), Port, NEWLINE);
-            if (pBtHandler && pBtHandler->IsOk()) {
-                if (pBtHandler->StartHW()) {
-                    bStartOk = true;
-                }
-            }
-#endif
-            if(bStartOk) {
-                Com = new BthPort(i, &Port[3]);
-            }
-        } else if (_tcscmp(Port, _T("internal")) == 0) {
-#ifdef ANDROID
-            Com = new InternalPort(i, Port);
-#else
-            Com = new GpsIdPort(i, Port);
-#endif
-        } else if (_tcscmp(Port, _T("TCPClient")) == 0) {
-#ifdef KOBO
-            if(!IsKoboWifiOn()) {
-              KoboWifiOn();
-            }
-#endif
-            Com = new TCPClientPort(i, Port);
-        } else if (_tcscmp(Port, _T("TCPServer")) == 0) {
-#ifdef KOBO
-            if(!IsKoboWifiOn()) {
-              KoboWifiOn();
-            }
-#endif
-            Com = new TCPServerPort(i, Port);
-        } else if (_tcscmp(Port, _T("UDPServer")) == 0) {
-#ifdef KOBO
-            if(!IsKoboWifiOn()) {
-              KoboWifiOn();
-            }
-#endif
-            Com = new UDPServerPort(i, Port);
-        } else if (_tcscmp(Port, _T("Bluetooth Server")) == 0) {
-#ifdef ANDROID
-            Com = new BluetoothServerPort(i, Port);
-#endif
-        } else if(_tcsncmp(Port, _T("IOIOUart_"), 9) == 0) {
-#ifdef ANDROID
-            unsigned ID = _tcstoul(Port+9, nullptr, 10);
-            Com = new IOIOUartPort(i, Port, ID, dwSpeed[Config.dwSpeedIndex]);
-#endif
-        } else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
-#ifdef ANDROID
-            Com = new UsbSerialPort(i, &Port[4], dwSpeed[Config.dwSpeedIndex], Config.dwBitIndex);
-#endif
-        } else  if (_tcsncmp(Port,NMEA_REPLAY, _tcslen(NMEA_REPLAY)) == 0) {
-        	Com = new FilePort(i, NMEA_REPLAY);
-        } else {
-            Com = new SerialPort(i, Port, dwSpeed[Config.dwSpeedIndex], Config.dwBitIndex, PollingMode);
-        }
-
+        StartupStore(_T(". Device %c is <%s> Port=%s"), (_T('A') + i), Config.szDeviceName, Port);
+        ComPort* Com = make_ComPort(i, Port, Config.dwSpeedIndex, Config.dwBitIndex);
         if (Com && Com->Initialize()) {
+            pDev->Installer(&dev);
             /*
              * Need to be done before anny #DeviceDescriptor_t::Callback call.
              */
             dev.Com = Com;
             dev.Status = CPS_OPENOK;
-            
-            pDev->Installer(&dev);
 
             devOpen(&dev);
 

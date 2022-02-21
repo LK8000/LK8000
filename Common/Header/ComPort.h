@@ -40,7 +40,7 @@ public:
         return devIdx;
     }
 
-    virtual bool Initialize();
+    virtual bool Initialize() = 0;
     virtual bool Close();
 
     virtual void Flush() = 0;

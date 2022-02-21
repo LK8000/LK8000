@@ -32,8 +32,7 @@ bool FilePort::Initialize() {
   LocalPath(szReplayFileName,TEXT(LKD_LOGS), file_name);
 	FileStream = _tfopen(szReplayFileName, TEXT("rt"));
 
-	if((!FileStream) || (!ComPort::Initialize()))
-	{
+	if (!FileStream) {
 		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s>"), (unsigned)GetPortIndex() + 1, file_name, GetPortName());
 		 StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(762), GetPortName());
 		 return false;
