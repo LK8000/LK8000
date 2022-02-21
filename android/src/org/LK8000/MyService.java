@@ -77,8 +77,13 @@ public class MyService extends Service {
     Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), getApplicationInfo().icon);
 
     Intent notificationIntent = new Intent(this, LK8000.class);
+
+    int intent_flags = PendingIntent.FLAG_UPDATE_CURRENT;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      intent_flags |= PendingIntent.FLAG_IMMUTABLE;
+    }
     PendingIntent contentIntent =
-            PendingIntent.getActivity(this, 0, notificationIntent, 0);
+            PendingIntent.getActivity(this, 0, notificationIntent, intent_flags);
 
     Notification notification =
             new NotificationCompat.Builder(this, CHANNEL_ID)
