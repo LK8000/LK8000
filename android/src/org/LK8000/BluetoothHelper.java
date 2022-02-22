@@ -141,6 +141,12 @@ final class BluetoothHelper {
       adapter.stopLeScan(cb);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+  static boolean isUnknownType(BluetoothDevice device) {
+    int type = device.getType();
+    return (BluetoothDevice.DEVICE_TYPE_UNKNOWN == type || BluetoothDevice.DEVICE_TYPE_DUAL == type);
+  }
+
   public static AndroidPort connect(Context context, String address)
     throws IOException {
     if (adapter == null)
@@ -150,42 +156,51 @@ final class BluetoothHelper {
     if (device == null)
       return null;
 
+    if (hasLe && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      if (isUnknownType(device)) {
 
-    if (hasLe && BluetoothDevice.DEVICE_TYPE_UNKNOWN == device.getType()) {
+        BluetoothAdapter.LeScanCallback callback = (device1, rssi, scanRecord) -> {
+          Log.d(TAG, String.format(
+                  "Bluetooth device \"%s\" (%s)",
+                  device1.getName(), device1.getAddress()));
+        };
 
-      BluetoothAdapter.LeScanCallback callback = (device1, rssi, scanRecord) -> {};
-      BluetoothHelper.startLeScan(callback);
+        BluetoothHelper.startLeScan(callback);
 
-      int run = 0;
-      while( (run++ < 10) && BluetoothDevice.DEVICE_TYPE_UNKNOWN == device.getType()) {
-        Log.d(TAG, String.format(
-                "Bluetooth device \"%s\" (%s) is a UNKNOW device,wait scan ...",
-                device.getName(), device.getAddress()));
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-          break;
+        int run = 0;
+        while( (run++ < 50) && isUnknownType(device)) {
+          Log.d(TAG, String.format(
+                  "Bluetooth device \"%s\" (%s) is a UNKNOWN device,wait scan ...",
+                  device.getName(), device.getAddress()));
+
+          try {
+            Thread.sleep(200);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+            break;
+          }
         }
+
+        BluetoothHelper.stopLeScan(callback);
       }
 
-      BluetoothHelper.stopLeScan(callback);
+      if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
+
+        Log.d(TAG, String.format(
+                "Bluetooth device \"%s\" (%s) is a LE device, trying to connect using GATT...",
+                device.getName(), device.getAddress()));
+
+        BluetoothGattClientPort gattClientPort
+                = new BluetoothGattClientPort(device);
+        gattClientPort.startConnect(context);
+        return gattClientPort;
+      }
     }
 
-
-    if (hasLe && BluetoothDevice.DEVICE_TYPE_LE == device.getType()) {
-      Log.d(TAG, String.format(
-                               "Bluetooth device \"%s\" (%s) is a LE device, trying to connect using GATT...",
-                               device.getName(), device.getAddress()));
-      BluetoothGattClientPort gattClientPort
-        = new BluetoothGattClientPort(device);
-      gattClientPort.startConnect(context);
-      return gattClientPort;
-    } else {
-      BluetoothSocket socket =
-        device.createRfcommSocketToServiceRecord(THE_UUID);
-      return new BluetoothClientPort(socket);
-    }
+    // Bluetooth device type, Classic - BR/EDR devices
+    BluetoothSocket socket =
+      device.createRfcommSocketToServiceRecord(THE_UUID);
+    return new BluetoothClientPort(socket);
   }
 
   public static AndroidPort createServer() throws IOException {
