@@ -28,6 +28,8 @@ public:
     void Purge() override;
     void CancelWaitEvent() override;
 
+    bool IsReady() override;
+
     int SetRxTimeout(int) override;
     unsigned long SetBaudrate(unsigned long) override;
     unsigned long GetBaudrate() const override;

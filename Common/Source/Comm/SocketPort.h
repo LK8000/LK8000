@@ -57,6 +57,10 @@ public:
     void Purge() override {};
     void CancelWaitEvent() override {};
 
+    bool IsReady() override { 
+        return mSocket != INVALID_SOCKET;
+    }
+
     int SetRxTimeout(int TimeOut) override;
     unsigned long SetBaudrate(unsigned long) override { return 0U; }
     unsigned long GetBaudrate() const override {  return 0U; }

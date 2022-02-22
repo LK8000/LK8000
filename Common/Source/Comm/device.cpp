@@ -618,9 +618,9 @@ BOOL devInit() {
              * Need to be done before anny #DeviceDescriptor_t::Callback call.
              */
             dev.Com = Com;
-            dev.Status = CPS_OPENOK;
-
-            devOpen(&dev);
+            if (Com->IsReady()) {
+                devOpen(&dev);
+            }
 
             if (devIsBaroSource(&dev)) {
                 if (pDevPrimaryBaroSource == NULL) {

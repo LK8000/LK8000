@@ -33,6 +33,9 @@ public:
     void Purge() override;
     void Flush() override;
     void CancelWaitEvent() override;
+
+    bool IsReady() override;
+
     int SetRxTimeout(int TimeOut) override;
 
     void UpdateStatus() override {}

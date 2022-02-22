@@ -52,6 +52,7 @@ public:
     virtual unsigned long GetBaudrate() const = 0;
 
     virtual void UpdateStatus() = 0;
+    virtual bool IsReady() = 0;
 
     virtual bool Write(const void *data, size_t size) = 0;
 

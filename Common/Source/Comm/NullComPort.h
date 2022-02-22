@@ -22,6 +22,8 @@ public:
     bool Initialize() override { return true; }
     bool Close() override { return true; }
 
+    bool IsReady() override { return true; }
+
     void Flush() override { }
     void Purge() override { }
     void CancelWaitEvent() override { }

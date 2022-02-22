@@ -199,6 +199,14 @@ enum PortState {
     STATE_LIMBO = 2,
 };
 
+bool AndroidPort::IsReady() {
+    ScopeLock lock(mutex);
+    if (bridge) {
+        return bridge->getState(Java::GetEnv()) == STATE_READY;
+    }
+    return false;
+}
+
 void AndroidPort::PortStateChanged() {
     newstate.Signal();
 }

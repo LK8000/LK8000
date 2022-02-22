@@ -43,6 +43,10 @@ public:
     void Purge() override {};
     void CancelWaitEvent() override {};
 
+    bool IsReady() override {
+        return FileStream != nullptr;
+    }
+
     int SetRxTimeout(int TimeOut) override;
     unsigned long SetBaudrate(unsigned long) override { return 0U; }
     unsigned long GetBaudrate() const override {  return 0U; }

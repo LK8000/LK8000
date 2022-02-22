@@ -117,6 +117,7 @@ failed:
     if (_tty >= 0) {
         tcsetattr(_tty, TCSANOW, &_oldtio);
         close(_tty);
+        _tty = -1;
     }
     return false;
 }
@@ -179,6 +180,10 @@ void TTYPort::CancelWaitEvent() {
 
 void TTYPort::UpdateStatus() {
 
+}
+
+bool TTYPort::IsReady() {
+    return (_tty >= 0 && isatty(_tty));
 }
 
 size_t TTYPort::Read(void *szString, size_t size) {

@@ -123,6 +123,11 @@ void GpsIdPort::Purge() {
 void GpsIdPort::CancelWaitEvent() {
 }
 
+bool GpsIdPort::IsReady() {
+    return _hGPS;
+}
+
+
 int GpsIdPort::SetRxTimeout(int TimeOut) {
     LKASSERT(FALSE);
     return 0;
