@@ -10,6 +10,10 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.11]
+. Support Android 12
+. Fix freeze on device restart
+
 [version 7.3.10]
 . new device driver "RC Fenix"
 . fix segfault with invalid terrain file
