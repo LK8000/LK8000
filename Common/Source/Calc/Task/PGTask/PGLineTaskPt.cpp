@@ -86,7 +86,11 @@ void PGLineTaskPt::OptimizeRegular(const ProjPt& prev, const ProjPt& next) {
     }
 
     //  (3) Discover the position of the intersection point along line A-B.
-    LKASSERT(D.y - C.y);
+    assert(D.y - C.y);
+    if ((D.y - C.y) == 0.) {
+        m_Optimized = m_Center;
+        return;
+    }
     ABpos = D.x + (C.x - D.x) * D.y / (D.y - C.y);
 
     //  if segment C-D crosses line A-B outside of segment A-B return nearest endpoint
