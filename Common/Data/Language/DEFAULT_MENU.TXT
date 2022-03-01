@@ -205,26 +205,118 @@ label=
 event=Null
 location=12
 
-###### pan mode ##########
+##### pan fullscreen #####
+mode=fullscreenpan
+type=key
+data=1
+label= 
+event=Null
+location=0
+
+mode=fullscreenpan
+type=key
+data=2
+label= 
+event=Null
+location=1
+
+mode=fullscreenpan
+type=key
+data=3
+label= 
+event=Null
+location=2
+
+mode=fullscreenpan
+type=key
+data=4
+label= 
+event=Null
+location=3
+
+mode=fullscreenpan
+type=key
+data=5
+label= 
+event=Null
+location=4
+
+mode=fullscreenpan
+type=key
+data=6
+label= 
+event=Null
+location=5
+
+mode=fullscreenpan
+type=key
+data=7
+label= 
+event=Null
+location=6
+
+mode=fullscreenpan
+type=key
+data=8
+label= 
+event=Null
+location=7
+
+mode=fullscreenpan
+type=key
+data=9
+label= 
+event=Null
+location=8
+
+mode=fullscreenpan
+type=key
+data=10
+label= 
+event=Null
+location=9
+
+mode=fullscreenpan
+type=key
+data=11
+label= 
+event=Null
+location=10
+
+mode=fullscreenpan
+type=key
+data=12
+label= 
+event=Null
+location=11
+
+mode=fullscreenpan
+type=key
+data=13
+label= 
+event=Null
+location=12
+
+######## pan mode ########
 
 ### Hardware keys first
 
-mode=pan
+mode=pan fullscreenpan
 type=key
 data=DOWN
-event=Pan down
+event=Pan movedown
 
-mode=pan
+mode=pan fullscreenpan
 type=key
 data=UP
-event=Pan up
+event=Pan moveup
 
-mode=pan
+mode=pan fullscreenpan
 type=key
 data=LEFT
 event=Pan left
 
-mode=pan
+mode=pan fullscreenpan
 type=key
 data=RIGHT
 event=Pan right
@@ -270,7 +362,7 @@ location=8
 mode=pan
 type=key
 data=0
-event=Mode default
+event=Mode fullscreenpan
 label=_@M2005_
 location=9
 

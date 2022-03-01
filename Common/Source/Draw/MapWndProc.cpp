@@ -905,7 +905,11 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         case KEY_F1:
             PlayResource(TEXT("IDR_WAV_CLICK"));
             // Toggle Menu
-            InputEvents::setMode(ButtonLabel::IsVisible() ? _T("default") : _T("Menu")); 
+            if (ButtonLabel::IsVisible()) {
+                InputEvents::setMode(_T("default")); 
+            } else {
+                ShowMenu();
+            }
             MenuTimeOut = 0;
             return;
         case KEY_ESCAPE:

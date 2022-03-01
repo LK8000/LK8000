@@ -3007,7 +3007,7 @@ void HideMenu() {
 
 void ShowMenu() {
   PlayResource(TEXT("IDR_WAV_CLICK"));
-  if (MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) {
+  if (MapWindow::mode.AnyPan()) {
     InputEvents::setMode(_T("pan"));
   } else {
     InputEvents::setMode(_T("Menu"));
