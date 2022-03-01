@@ -192,30 +192,32 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
 }
 
 
-
+/**
+ * @vswitch
+ *   -1 : toggle
+ *   -2 : supertoggle
+ *    1 : on
+ *    0 : off
+ */
 void MapWindow::Event_Pan(int vswitch) {
-  //  static bool oldfullscreen = 0;  never assigned!
   bool oldPan = mode.AnyPan();
-  if(vswitch !=1)
-  {
-	if(ValidTaskPoint(PanTaskEdit))
-	{
-	  Task[PanTaskEdit].Index = RealActiveWaypoint;
-	  RefreshTask();
-	  PanTaskEdit = -1;
-	  RealActiveWaypoint = -1;
-	  WayPointList[RESWP_PANPOS].Longitude = RESWP_INVALIDNUMBER;
-	  WayPointList[RESWP_PANPOS].Latitude  = RESWP_INVALIDNUMBER;
-	}
+
+  if (vswitch != 1) {
+    if(ValidTaskPoint(PanTaskEdit)) {
+      Task[PanTaskEdit].Index = RealActiveWaypoint;
+      RefreshTask();
+      PanTaskEdit = -1;
+      RealActiveWaypoint = -1;
+      WayPointList[RESWP_PANPOS].Longitude = RESWP_INVALIDNUMBER;
+      WayPointList[RESWP_PANPOS].Latitude  = RESWP_INVALIDNUMBER;
+    }
   }
-
-
 
   if (vswitch == -2) { // superpan, toggles fullscreen also
     // new mode
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
-  } else if (vswitch == -1) {
-    mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
+  } else if (vswitch == -1) { 
+    mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan); // toggle
   } else {
     mode.Special(Mode::MODE_SPECIAL_PAN, vswitch != 0); // 0 off, 1 on
   }
@@ -229,7 +231,6 @@ void MapWindow::Event_Pan(int vswitch) {
       InputEvents::setMode(TEXT("default"));
       MapWindow::ForceVisibilityScan=true;
     }
-
   }
   RefreshMap();
 }
