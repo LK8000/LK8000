@@ -30,7 +30,6 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (AutoMcMode == amcEquivalent) {
         if ((!Calculated->Circling) && (!Calculated->OnGround)) {
             if (Calculated->EqMc >= 0) {
-                // MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8);
                 CheckSetMACCREADY(Calculated->EqMc);
             } else {
                 // -1.0 is used as an invalid flag. Normally flying at -1 MC means almost flying

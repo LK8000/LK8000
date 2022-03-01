@@ -1343,6 +1343,56 @@ void InputEvents::eventPlaySound(const TCHAR *misc) {
   PlayResource(misc);
 }
 
+static
+void MacCreadyProcessing(int UpDown) {
+
+  if (UpDown == 1) {
+    CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
+    CheckSetMACCREADY(MACCREADY + 0.1 / LIFTMODIFY); // BUGFIX 100102
+  }
+  else if(UpDown == -1) {
+    CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
+    CheckSetMACCREADY(MACCREADY - 0.1 / LIFTMODIFY); // 100102
+  }
+  else if (UpDown == 0) {
+    CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready;
+    // JMW toggle automacready
+	}
+  else if (UpDown == -2) {
+    CALCULATED_INFO.AutoMacCready = false;  // SDP on auto maccready
+  }
+  else if (UpDown == +2) {
+    CALCULATED_INFO.AutoMacCready = true;	// SDP off auto maccready
+  }
+  else if (UpDown == 3) {
+    CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
+    CheckSetMACCREADY(MACCREADY + 0.5 / LIFTMODIFY); // 100102
+  }
+  else if (UpDown == -3) {
+    CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
+    CheckSetMACCREADY(MACCREADY - 0.5 / LIFTMODIFY); // 100102
+  }
+  else if (UpDown == -5) {
+    CALCULATED_INFO.AutoMacCready = true;
+    AutoMcMode = amcFinalGlide;
+  }
+  else if (UpDown == -6) {
+    CALCULATED_INFO.AutoMacCready = true;
+    AutoMcMode = amcAverageClimb;
+  }
+  else if (UpDown == -7) {
+    CALCULATED_INFO.AutoMacCready = true;
+    AutoMcMode = amcEquivalent;
+  }
+  else if (UpDown == -8) {
+    CALCULATED_INFO.AutoMacCready = true;
+    AutoMcMode = amcFinalAndClimb;
+  }
+
+  // required to speedup overlay redraw
+  MapWindow::RefreshMap();
+}
+
 // MacCready
 // Adjusts MacCready settings
 // up, down, auto on, auto off, auto toggle, auto show
@@ -3076,79 +3126,6 @@ void	WindSpeedProcessing(int UpDown)
 	return;
 }
 #endif
-
-void	MacCreadyProcessing(int UpDown)
-{
-
-  if(UpDown==1) {
-	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
-    MACCREADY += (double)0.1/LIFTMODIFY; // BUGFIX 100102
-
-    if (MACCREADY>12.0) MACCREADY=12.0;
-  }
-  else if(UpDown==-1)
-    {
-	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
-      MACCREADY -= (double)0.1/LIFTMODIFY; // 100102
-      if(MACCREADY < 0)
-	{
-	  MACCREADY = 0;
-	}
-
-  } else if (UpDown==0)
-    {
-      CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready;
-      // JMW toggle automacready
-	}
-  else if (UpDown==-2)
-    {
-      CALCULATED_INFO.AutoMacCready = false;  // SDP on auto maccready
-
-    }
-  else if (UpDown==+2)
-    {
-      CALCULATED_INFO.AutoMacCready = true;	// SDP off auto maccready
-
-    }
-  else if (UpDown==3)
-    {
-	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
-	MACCREADY += (double)0.5/LIFTMODIFY; // 100102
-	if (MACCREADY>12.0) MACCREADY=12.0;
-
-    }
-  else if (UpDown==-3)
-    {
-	CALCULATED_INFO.AutoMacCready=false;  // 091214 disable AutoMacCready when changing MC values
-	MACCREADY -= (double)0.5/LIFTMODIFY; // 100102
-	if (MACCREADY<0) MACCREADY=0;
-
-    }
-  else if (UpDown==-5)
-    {
-      CALCULATED_INFO.AutoMacCready = true;
-      AutoMcMode=amcFinalGlide;
-    }
-  else if (UpDown==-6)
-    {
-      CALCULATED_INFO.AutoMacCready = true;
-      AutoMcMode=amcAverageClimb;
-    }
-  else if (UpDown==-7)
-    {
-      CALCULATED_INFO.AutoMacCready = true;
-      AutoMcMode=amcEquivalent;
-    }
-  else if (UpDown==-8)
-    {
-      CALCULATED_INFO.AutoMacCready = true;
-      AutoMcMode=amcFinalAndClimb;
-    }
-  
-  devPutMacCready(MACCREADY);
-  
-  return;
-}
 
 /*
 	1	Next waypoint

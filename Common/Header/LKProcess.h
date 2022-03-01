@@ -11,7 +11,7 @@
 
 void	WindSpeedProcessing(int UpDown);
 void	WindDirectionProcessing(int UpDown);
-void	MacCreadyProcessing(int UpDown);
+
 void	NextUpDown(int UpDown);
 
 int LocalTime();

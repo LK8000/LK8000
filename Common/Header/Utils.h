@@ -174,7 +174,7 @@ void	LKRunStartEnd(bool);
 
 bool	LockMode(short lmode);
 double	GetMacCready(int wpindex, short wpmode);
-void CheckSetMACCREADY(const double value);
+void CheckSetMACCREADY(double value);
 
 double CheckSetBugs(double val);
 double CheckSetBallast(double val);

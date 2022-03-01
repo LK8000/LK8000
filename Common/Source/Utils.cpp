@@ -12,6 +12,7 @@
 #include "Modeltype.h"
 #include "Dialogs.h"
 #include "TraceThread.h"
+#include "Util/Clamp.hpp"
 
 int GetUTCOffset() {
     return UTCOffset;
@@ -120,14 +121,11 @@ double GetMacCready(int wpindex, short wpmode) {
 //
 // This is not used on startup by profiles
 //
-void CheckSetMACCREADY(const double value) {
-    if (value<0)
-        MACCREADY=0;
-    else
-        if (value>12)
-            MACCREADY=12;
-        else
-            MACCREADY=value;
+void CheckSetMACCREADY(double value) {
+    double old_value = std::exchange(MACCREADY, Clamp(value, 0.0, 12.0));
+    if (old_value == MACCREADY) {
+        devPutMacCready(MACCREADY);
+    }
 }
 
 void SetOverColorRef() {

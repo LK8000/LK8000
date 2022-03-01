@@ -172,7 +172,7 @@ static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   TCHAR ctemp[80];
 
   NMEAParser::ExtractParameter(String,ctemp,0);
-  MACCREADY = StrToDouble(ctemp,NULL);
+  CheckSetMACCREADY(StrToDouble(ctemp, nullptr));
 
 
   return true;
