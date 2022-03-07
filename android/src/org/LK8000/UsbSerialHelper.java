@@ -211,8 +211,11 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
                 } else {
                     _PendingConnection.put(device, port);
-
-                    PendingIntent pi = PendingIntent.getBroadcast(_Context, 0, new Intent(UsbSerialHelper.ACTION_USB_PERMISSION), 0);
+                    int intent_flags = 0;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        intent_flags |= PendingIntent.FLAG_IMMUTABLE;
+                    }
+                    PendingIntent pi = PendingIntent.getBroadcast(_Context, 0, new Intent(UsbSerialHelper.ACTION_USB_PERMISSION), intent_flags);
 
                     usbmanager.requestPermission(device, pi);
 
