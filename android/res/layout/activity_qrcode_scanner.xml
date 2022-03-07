@@ -35,6 +35,8 @@
         app:backgroundTint="@android:color/black"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:layout_alignParentEnd="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
