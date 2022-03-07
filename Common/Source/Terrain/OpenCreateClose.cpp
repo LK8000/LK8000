@@ -10,6 +10,7 @@
 #include "RasterTerrain.h"
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
+#include "Message.h"
 
 RasterMap* RasterTerrain::TerrainMap = nullptr;
 Mutex  RasterTerrain::mutex;
@@ -29,6 +30,7 @@ void RasterTerrain::OpenTerrain(void)
       // If no terrain will be found, the registry will be invalid on next run
       _tcscpy(szTerrainFile,_T(""));
       StartupStore(_T("... INVALID TERRAIN file <%s>%s"),szFile,NEWLINE);
+      Message::AddMessage(12000, MSG_UNKNOWN, _T("Failed to load terrain, invalid dem file."));
 	}
   } else {
     StartupStore(_T(". NO TERRAIN file available.%s"),NEWLINE);
