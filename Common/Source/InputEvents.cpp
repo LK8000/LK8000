@@ -118,10 +118,6 @@ static PeriodClock myPeriodClock;
 
 // Read the data files
 void InputEvents::readFile() {
-  #if TESTBENCH
-  StartupStore(TEXT("... Loading input events file%s"),NEWLINE);
-  #endif
-
   WithLock(CritSec_EventQueue, [&]() {
     // clear the GCE and NMEA queues
     gce_queue.clear();
@@ -137,59 +133,58 @@ void InputEvents::readFile() {
 #ifndef TEST_MENU_LAYOUT
   // Read in user defined configuration file
 
-  TCHAR szFile1[MAX_PATH] = TEXT("\0");
+  TCHAR xcifilepath[MAX_PATH];
   zzip_stream stream;
 
   //
   // ENGINEERING MODE: SELECTED XCI HAS PRIORITY
   //
   if (_tcslen(szInputFile)>0) {
-    LocalPath(szFile1, _T(LKD_CONF), szInputFile);
-    stream.open(szFile1, "rb");
+    LocalPath(xcifilepath, _T(LKD_CONF), szInputFile);
+    stream.open(xcifilepath, "rb");
   }
 
-  const TCHAR * xcifile = nullptr;
   if (!stream) {
-
-    // invalide ENGINEERING MODE: SELECTED XCI, reset config.
+    // invalid ENGINEERING MODE: SELECTED XCI, reset config.
     _tcscpy(szInputFile, _T(""));
 
-	// No special XCI in engineering, or nonexistent file.. go ahead with language check
-	// Remember: DEFAULT_MENU existance is already been checked upon startup.
-
-	switch(AircraftCategory) {
-		case umGlider:
-			xcifile = _T("MENU_GLIDER.TXT");
-			break;
-		case umParaglider:
-            xcifile = _T("MENU_PARAGLIDER.TXT");
-			break;
-		case umCar:
-            xcifile = _T("MENU_CAR.TXT");
-			break;
-		case umGAaircraft:
-            xcifile = _T("MENU_GA.TXT");
-			break;
-		default:
-            xcifile = _T("MENU_OTHER.TXT");
-			break;
-	}
-
-    TCHAR xcifilepath[MAX_PATH];
+    const TCHAR * xcifile = nullptr;
+    // No special XCI in engineering, or nonexistent file.. go ahead with language check
+    // Remember: DEFAULT_MENU existance is already been checked upon startup.
+    switch(AircraftCategory) {
+      case umGlider:
+        xcifile = _T("MENU_GLIDER.TXT");
+        break;
+      case umParaglider:
+        xcifile = _T("MENU_PARAGLIDER.TXT");
+        break;
+      case umCar:
+        xcifile = _T("MENU_CAR.TXT");
+        break;
+      case umGAaircraft:
+        xcifile = _T("MENU_GA.TXT");
+        break;
+      default:
+        xcifile = _T("MENU_OTHER.TXT");
+        break;
+    }
 
     SystemPath(xcifilepath,_T(LKD_SYSTEM), xcifile);
-
-    if (!stream.open(xcifilepath, "rt")) {
-      SystemPath(xcifilepath,_T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
-      if (!stream.open(xcifilepath, "rt")) {
-        // This cannot happen
-        StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifilepath);
-        return;
-      }
-    } else {
-      StartupStore(_T(". Loaded menu <%s>\n"),xcifilepath);
-    }
+    stream.open(xcifilepath, "rb");
   }
+
+  if (!stream) {
+    SystemPath(xcifilepath,_T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
+    stream.open(xcifilepath, "rb");
+  }
+
+  if (!stream) {
+    // This cannot happen
+    StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!"), xcifilepath);
+    return;
+  }
+
+  StartupStore(_T(". Loaded menu <%s>"), xcifilepath);
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
   TCHAR buffer[2049];	// Buffer for all
