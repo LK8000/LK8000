@@ -1752,7 +1752,9 @@ int WndForm::ShowModal(void) {
     mModalResult = 0;
 
     Window* oldFocus = main_window->GetFocusedWindow();
-    FocusNext(NULL);
+    if(!GetFocusedWindow()) {
+      FocusNext(NULL);
+    }
 
     Redraw();
 
