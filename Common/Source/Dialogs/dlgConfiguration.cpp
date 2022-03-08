@@ -3425,6 +3425,8 @@ void dlgConfigurationShowModal(short mode){
 
   StopHourglassCursor();
   wf->ShowModal();
+  
+  bool notify_units_change = false;
 
 #ifdef ANDROID
     // stop LE Scanner first dialog close
@@ -3929,7 +3931,7 @@ int ival;
   if (wp) {
     if ((int)SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
-      Units::NotifyUnitChanged();
+      notify_units_change = true;
     }
   }
 
@@ -3937,6 +3939,7 @@ int ival;
   if (wp) {
     if ((int)Units::CoordinateFormat != wp->GetDataField()->GetAsInteger()) {
       Units::CoordinateFormat = (CoordinateFormats_t)wp->GetDataField()->GetAsInteger();
+      notify_units_change = true;
     }
   }
 
@@ -3944,7 +3947,7 @@ int ival;
   if (wp) {
     if ((int)TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
-      Units::NotifyUnitChanged();
+      notify_units_change = true;
     }
   }
 
@@ -3952,7 +3955,7 @@ int ival;
   if (wp) {
     if ((int)DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
       DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
-      Units::NotifyUnitChanged();
+      notify_units_change = true;
     }
   }
 
@@ -3960,7 +3963,7 @@ int ival;
   if (wp) {
     if ((int)LiftUnit_Config != wp->GetDataField()->GetAsInteger()) {
       LiftUnit_Config = wp->GetDataField()->GetAsInteger();
-      Units::NotifyUnitChanged();
+      notify_units_change = true;
     }
   }
 
@@ -3968,7 +3971,7 @@ int ival;
   if (wp) {
     if ((int)AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
       AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
-      Units::NotifyUnitChanged();
+      notify_units_change = true;
     }
   }
 
@@ -4499,6 +4502,11 @@ int ival;
     for (j=0; j<8; j++) {
       GetInfoBoxSelector(j, i);
     }
+  }
+  
+  
+  if(notify_units_change) {
+    Units::NotifyUnitChanged();
   }
 
   if (waypointneedsave) {
