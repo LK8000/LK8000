@@ -1,50 +1,34 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ */
 
-   $Id$
-*/
-
-#include "externs.h"
-
-#define STATIC_DOINITS
+#include <array>
+#include "MessageLog.h"
 #include "DoInits.h"
 
+namespace {
 
-bool Valid_DoInit_Position(int position) {
-  if (position<0||position>MDI_LAST_DOINIT)
-	return false;
-  else
-	return true;
+template <std::size_t ... Is>
+std::array<bool, sizeof...(Is)>
+Init_DoInit(std::index_sequence<Is...>) {
+  return {{(void(Is), true)...}};
 }
 
-
-//
-// This is a master reset
-//
-void Reset_All_DoInits(void) {
-  #if TESTBENCH
-  StartupStore(_T(".... Reset_All_DoInits\n"));
-  #endif
-
-  for (int i=MDI_FIRST_DOINIT; i<=MDI_LAST_DOINIT; i++) {
-	DoInit[i]=true;
-  }
-
+DoInit_t Init_DoInit() {
+  return Init_DoInit(std::make_index_sequence<MDI_LAST_DOINIT>());
 }
 
+} // namespace
 
+DoInit_t DoInit = Init_DoInit();
 
-void Reset_Single_DoInits(int position) {
-
-  if (!Valid_DoInit_Position(position)) {
-	#if TESTBENCH
-	StartupStore(_T("... invalid reset single DoInits position=%d\n"),position);
-	#endif
-	return;
+void Reset_Single_DoInits(MDI_t position) {
+  if (position < DoInit.size()) {
+    DoInit[position] = true;
   }
-
- DoInit[position]=true;
-
+  else {
+    TestLog(_T("... invalid reset single DoInits position=%u"), position);
+  }
 }

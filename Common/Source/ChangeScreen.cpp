@@ -126,10 +126,7 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_DRAWTARGET);
   Reset_Single_DoInits(MDI_DRAWVARIO);
   Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
-  Reset_Single_DoInits(MDI_LOOKABLEND);
   Reset_Single_DoInits(MDI_MAPWPVECTORS);
-  Reset_Single_DoInits(MDI_MAPASP);
-  Reset_Single_DoInits(MDI_MAPRADAR); // doing nothing reallt
   Reset_Single_DoInits(MDI_FLARMRADAR);
   Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
   Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);

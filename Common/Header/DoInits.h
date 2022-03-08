@@ -16,8 +16,7 @@
 
 
  // Master of Do Inits
- typedef enum {
-	MDI_MASTER,			// #1
+ enum MDI_t : unsigned {
 	MDI_FIRST_DOINIT,
 	MDI_DORANGEWAYPOINTLIST,	// wp file change
 	MDI_DOCALCULATIONSSLOW,		// force recalc bestalt, optimizer, validFix check
@@ -31,7 +30,6 @@
 	MDI_BATTERYMANAGER,		// Reset warnings on battery power
 	MDI_EVENTINVERTCOLOR,		// OutlinedTp  , to be checked TODO
 	MDI_GETLOCALPATH,		// system path change!
-	MDI_LKSOUND,			// localpath changed
 	MDI_DRAWTRI,			// screen change
 	MDI_DRAWFLARMTRAFFIC,		// screen change
 	MDI_DRAWINFOPAGE,		// screen change
@@ -42,11 +40,8 @@
 	MDI_DRAWVARIO,			// screen change
 	MDI_GETOVERTARGETHEADER,	// language change
 	MDI_PROCESSVIRTUALKEY,		// screen change
-	MDI_LOOKABLEND,			// screen change, drawlook ablend
 	MDI_MAPWPVECTORS,		// screen change
 	MDI_FLARMRADAR,			// screen change
-	MDI_MAPASP,			// screen change?
-	MDI_MAPRADAR,			// screen change?
 	MDI_MAPTEST,			// testing purposes
 	MDI_DRAWBOTTOMBAR,		// screen change
 	MDI_DRAWFLIGHTMODE,		// screen change
@@ -55,27 +50,12 @@
 	MDI_DRAWHSI,			// screen change
 	MDI_DRAWFANETDATA,			// FanetData init
 	MDI_LAST_DOINIT,
- } MDI_t;
+ };
 
-#if defined(STATIC_DOINITS)
-  // Careful, we MUST initialize here. Check that MDIs fit in this array.
-  bool DoInit[100]={
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-	1,1,1,1,1,1,1,1,1,1,
-  };
-#else
-  extern void Init_DoInits(void);
-  extern void Reset_All_DoInits(void);
-  extern void Reset_Single_DoInits(int position);
-  extern bool DoInit[100];
-#endif
+void Reset_Single_DoInits(MDI_t position);
+
+using DoInit_t = std::array<bool, MDI_LAST_DOINIT>;
+
+extern DoInit_t DoInit;
 
 #endif // DOINITS_H

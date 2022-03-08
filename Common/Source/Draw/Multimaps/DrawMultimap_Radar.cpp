@@ -13,12 +13,6 @@
 #include "DoInits.h"
 
 void MapWindow::LKDrawMultimap_Radar(LKSurface& Surface, const RECT& rc) {
-
-    if (DoInit[MDI_MAPRADAR]) {
-        // init statics here and then clear init to false
-        DoInit[MDI_MAPRADAR] = false;
-    }
-
     RECT frc = rc;
     frc.bottom = frc.bottom - BottomSize - NIBLSCALE(2);
     LKDrawFlarmRadar(Surface, frc);

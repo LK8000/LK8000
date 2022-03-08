@@ -22,12 +22,6 @@ extern long VKtime;
 
 void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 {
-
-  if (DoInit[MDI_MAPASP]) {
-	// init statics here and then clear init to false
-	DoInit[MDI_MAPASP]=false;
-  }
-
   //
   // X,Y coordinates of last clicked point on screen
   // These coordinates are related to any point clicked, even for a page flip, for bottom bar etc.

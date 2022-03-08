@@ -29,12 +29,6 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
   RECT rci = rc;
   rci.bottom -= BottomSize;
 
-  #if 0
-  if (DoInit[MDI_MAPASP]) {
-	DoInit[MDI_MAPASP]=false;
-  }
-  #endif
-
   switch(LKevent) {
 	//
 	// USABLE EVENTS
