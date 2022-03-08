@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
   <WndForm Name="frmRadioSettingRegular" Type="Dialog" X="5" Y="5" Width="230" Height="220" Caption="_@M2307_" Popup="1" Font="2" >  
-    <WndButton Caption="_@M186_" X="10" Y="160" Width="210"  Height="32" Font="2" OnClickNotify="OnCancelClicked"/>
     <WndButton Name="cmdAutoActive" Caption="_@M1324_" X="10" Y="5" Width="25"  Height="32" Font="2" OnClickNotify="OnRadioActiveAutoClicked"/>
     <WndButton Name="cmdActive" Caption="*" X="32" Y="5" Width="135"  Height="32" Font="2" OnClickNotify="OnActiveButton"/>
     <WndButton Name="cmdActiveFreq" Caption="*" X="160" Y="5" Width="60"  Height="32" Font="2" OnClickNotify="OnActiveFreq"/>
@@ -13,5 +12,6 @@
     <WndButton Name="cmdVolDown" Caption="-" X="30" Y="125" Width="50"  Height="32" Font="2" OnClickNotify="OnVolDownButton"/>
     <WndButton Name="cmdVol" Caption="" X="90" Y="125" Width="50"  Height="32" Font="2" OnClickNotify="OnMuteButton"/>
     <WndButton Name="cmdVolUp" Caption="+" X="150" Y="125" Width="50"  Height="32" Font="2" OnClickNotify="OnVolUpButton"/>
+    <WndButton Name="cmdClose" Caption="_@M186_" X="10" Y="160" Width="210"  Height="32" Font="2" OnClickNotify="OnCancelClicked"/>
   </WndForm>
 </PMML>

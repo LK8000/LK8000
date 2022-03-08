@@ -494,6 +494,8 @@ void dlgRadioSettingsShowModal(void){
 
   VolMode = VOL; // start with volume
 
+  wf->FindByName(_T("cmdClose"))->SetFocus();
+
   wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
   LKASSERT( wpnewActive !=NULL);
 
