@@ -152,7 +152,7 @@ static
 bool checkFilter(const TCHAR* filename,  const TCHAR **suffix_filters, size_t filter_count) {
   size_t filename_size = _tcslen(filename);
   
-  for (const TCHAR* suffix : array_adaptor(suffix_filters, filter_count)) {
+  for (const TCHAR* suffix : make_array(suffix_filters, filter_count)) {
 
     if(!suffix || !suffix[0]) {
       return true;

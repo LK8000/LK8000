@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2020, Bruno de Lacheisserie
+/* Copyright (c) 2018-2022, Bruno de Lacheisserie
  * All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without
@@ -32,25 +32,19 @@
 template <typename T>
 class array_adaptor {
 public:
-    typedef T value_type;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* iterator;
-    typedef const value_type* const_iterator;
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef std::reverse_iterator<iterator>	      reverse_iterator;
-    typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
-
-    template<std::size_t size>
-    array_adaptor(T(&array)[size]) : _begin(array), _end(array+size) { }
-
-    array_adaptor(const iterator array, size_type size) : _begin(array), _end(array+size) { }
+    using value_type = T;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using iterator = value_type*;
+    using const_iterator = const value_type*;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     array_adaptor(const iterator begin, const iterator end) : _begin(begin), _end(end) { }
-
 
     iterator begin() {
         return _begin;
@@ -123,12 +117,12 @@ protected:
 
 template <typename T>
 array_adaptor<T> make_array(T* array, size_t size) {
-    return array_adaptor<T>(array, size);
+    return array_adaptor<T>(array, std::next(array, size));
 }
 
 template <typename T, std::size_t size>
 array_adaptor<T> make_array(T(&array)[size]) {
-    return array_adaptor<T>(array, size);
+    return make_array<T>(array, size);
 }
 
 template <typename T>
