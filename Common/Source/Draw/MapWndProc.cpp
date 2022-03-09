@@ -1647,6 +1647,11 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 break;
         }
     }
+
+    if (KeyCode == KEY_ESCAPE) {
+        SetModeType(LKMODE_MAP, MP_MOVING);
+		MapWindow::RefreshMap();
+    }
 }
 
 static bool isListPage(void) {
