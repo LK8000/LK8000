@@ -144,9 +144,9 @@ static void OnPaintWpCommentListItem(WndOwnerDrawFrame * Sender, LKSurface& Surf
     Surface.DrawText(DLGSCALE(2), DLGSCALE(2), szText);
 
     size_t pos, len;
-    double Freq = ExtractFrequencyPos(szText, &pos, &len); 
+    unsigned khz = ExtractFrequency(szText, &pos, &len); 
 
-    if((Freq > 0) && ((pos + len) < 255)) {
+    if ((khz > 0) && ((pos + len) < 255)) {
       TCHAR sTmp[255];
       // copy text until end of substring
       TCHAR* end = std::copy_n(aCommentTextLine[CommentDrawListIndex], pos + len, sTmp);
@@ -351,15 +351,12 @@ static void OnMultiSelectEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
   int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
-  if(ItemIndex >=0)
-  {
-   if(RadioPara.Enabled)
-   {
-     double ASFrequency = ExtractFrequency(aCommentTextLine[ItemIndex]); 
-      if( ValidFrequency(ASFrequency))
-      {
+  if(ItemIndex >=0) {
+    if(RadioPara.Enabled) {
+      unsigned khz = ExtractFrequency(aCommentTextLine[ItemIndex]);
+      if (ValidFrequency(khz)) {
         LKSound(TEXT("LK_TICK.WAV"));
-        dlgRadioPriSecSelShowModal(aCommentTextLine[ItemIndex], ASFrequency);
+        dlgRadioPriSecSelShowModal(aCommentTextLine[ItemIndex], khz);
       }
     }
   }

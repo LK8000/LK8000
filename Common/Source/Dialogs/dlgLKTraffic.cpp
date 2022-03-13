@@ -168,44 +168,24 @@ static void OnRenameClicked(WndButton* pWnd){
 
 
 static void OnFlarmFreqSelectEnter(WndButton*  Sender) {
-  TCHAR Tmp[255];
-  if(flarmId != NULL)
-  {
-   if(RadioPara.Enabled)
-   {
-      double ASFrequency = ExtractFrequency(flarmId->freq);
-      if(ValidFrequency(ASFrequency))
-      {
-        LKSound(TEXT("LK_TICK.WAV"));
-        if(_tcslen(flarmId->cn) > 0)
-          _tcscpy(Tmp,(TCHAR*)flarmId->cn);
-        else
-          _tcscpy(Tmp,(TCHAR*)flarmId->reg );
-        devPutFreqActive( ASFrequency, Tmp);
-      }
-    }
-  }
+	if(flarmId && RadioPara.Enabled) {
+		unsigned khz = ExtractFrequency(flarmId->freq);
+		const TCHAR* name = (flarmId->cn[0]) ? flarmId->cn : flarmId->reg;
+		if (devPutFreqActive( khz, name)) {
+			LKSound(TEXT("LK_TICK.WAV"));
+		}
+	}
 }
 
 
 static void OnFlarmSecFreqSelectEnter(WndButton*  Sender) {
-  TCHAR Tmp[255];
-  if(flarmId != NULL)
-  {
-   if(RadioPara.Enabled)
-   {
-      double ASFrequency = ExtractFrequency(flarmId->freq);
-      if(ValidFrequency(ASFrequency))
-      {
-        LKSound(TEXT("LK_TICK.WAV"));
-        if(_tcslen(flarmId->cn) > 0)
-          _tcscpy(Tmp,(TCHAR*)flarmId->cn);
-        else
-          _tcscpy(Tmp,(TCHAR*)flarmId->reg );
-        devPutFreqStandby( ASFrequency, Tmp);
-      }
-    }
-  }
+	if(flarmId && RadioPara.Enabled) {
+		unsigned khz = ExtractFrequency(flarmId->freq);
+		const TCHAR* name = (flarmId->cn[0]) ? flarmId->cn : flarmId->reg;
+		if (devPutFreqStandby( khz, name)) {
+			LKSound(TEXT("LK_TICK.WAV"));
+		}
+	}
 }
 
 static void OnCloseClicked(WndButton * pWnd) {
@@ -366,15 +346,13 @@ static void SetValues(int indexid) {
 
 	
 	WindowControl* wFreq = wf->FindByName(TEXT("cmdFreq"));
-	double ASFrequency = ExtractFrequency(flarmId->freq);
-	bool bValidFreq = false;
-	if((RadioPara.Enabled) && ValidFrequency(ASFrequency) )
-		bValidFreq = true;
+	unsigned khz = ExtractFrequency(flarmId->freq);
+	bool bValidFreq = (RadioPara.Enabled) && ValidFrequency(khz);
 	if(wFreq)
 	{
 		if(bValidFreq )
 		{
-			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), ASFrequency);	
+			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
@@ -391,7 +369,7 @@ static void SetValues(int indexid) {
 	{
 		if(bValidFreq )
 		{
-			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), ASFrequency);
+			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
 			wSecFreq->SetCaption(buffer);
 			wSecFreq->SetVisible(true) ;
 		}
@@ -402,7 +380,7 @@ static void SetValues(int indexid) {
 		}
 		wSecFreq->Redraw();
 	}
-}
+  }
 }
 
 

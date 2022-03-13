@@ -1391,11 +1391,21 @@ BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   if(_tcsncmp(szTmp, _T("RADIO"), 5) == 0)
   {
     m_bRadioEnabled = true;
-    if(ParToDouble(sentence, 2, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.ActiveFrequency  = fTmp;
-    if(ParToDouble(sentence, 3, &fTmp)) if(ValidFrequency(fTmp)) RadioPara.PassiveFrequency = fTmp;
-    if(ParToDouble(sentence, 4, &fTmp)) RadioPara.Volume  = (int) fTmp;
-    if(ParToDouble(sentence, 5, &fTmp)) RadioPara.Squelch = (int) fTmp;
-    if(ParToDouble(sentence, 6, &fTmp)) RadioPara.Vox     = (int) fTmp;
+    NMEAParser::ExtractParameter(sentence, szTmp, 2);  // Active frequency
+    RadioPara.ActiveKhz = ExtractFrequency(szTmp);
+
+    NMEAParser::ExtractParameter(sentence, szTmp, 3);  // Standby frequency
+    RadioPara.PassiveKhz = ExtractFrequency(szTmp);
+
+    if(ParToDouble(sentence, 4, &fTmp)) {
+      RadioPara.Volume  = (int) fTmp;
+    }
+    if(ParToDouble(sentence, 5, &fTmp)) {
+      RadioPara.Squelch = (int) fTmp;
+    }
+    if(ParToDouble(sentence, 6, &fTmp)) {
+      RadioPara.Vox     = (int) fTmp;
+    }
   }
   else if(_tcsncmp(szTmp, _T("MC_BAL"), 6) == 0)
   {
@@ -1846,31 +1856,34 @@ BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
+BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"),Freq)  ;
+  _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"), khz / 1000.);
   SendNmea(d,szTmp);
   EOSRequestRadioInfo(d);
-  RadioPara.ActiveFrequency=  Freq;
-  if(StationName != NULL)
+  RadioPara.ActiveKhz = khz;
+  if(StationName) {
     _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+  }
+  if(uiEOSDebugLevel) {
+    StartupStore(_T(". EOS Active Station %7.3fMHz %s"), khz / 1000., StationName);
+  } 
 
   return(TRUE);
 }
 
 
-BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
+BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"),Freq)  ;
+  _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"), khz / 1000.);
   SendNmea(d,szTmp);
   EOSRequestRadioInfo(d);
-  RadioPara.PassiveFrequency =  Freq;
+  RadioPara.PassiveKhz = khz;
   if(StationName != NULL)
     _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+  if(uiEOSDebugLevel) StartupStore(_T(". EOS Standby Station %7.3fMHz %s%s"), khz / 1000., StationName,NEWLINE);
 
   return(TRUE);
 }

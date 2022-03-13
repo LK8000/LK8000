@@ -146,8 +146,8 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static BOOL EOSRequestRadioInfo(PDeviceDescriptor_t d);
    static BOOL EOSPutVolume(PDeviceDescriptor_t d, int Volume) ;
    static BOOL EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
-   static BOOL EOSPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) ;
-   static BOOL EOSPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) ;
+   static BOOL EOSPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName);
+   static BOOL EOSPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName);
    static BOOL EOSStationSwap(PDeviceDescriptor_t d) ;
    static BOOL EOSRadioMode(PDeviceDescriptor_t d, int mode) ;
 

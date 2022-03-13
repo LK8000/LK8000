@@ -1828,16 +1828,17 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
                         //OpenAir non standard field - AF - define a fly zone
                     case _T('F'): // AF - Fly zone, no parameter
-						if ((parsing_state == 10) &&  (  ExtractFrequency(p) > 100.0))
-						{
-							if(((int)(ExtractFrequency(p)*1000+0.5))  != ((int)(ExtractFrequency(Name)*1000+0.5)))
-							{
+						if (parsing_state == 10) {
+                            unsigned khz = ExtractFrequency(p);
+                            unsigned name_khz = ExtractFrequency(Name);
+                            if (khz != name_khz) {
 							  _sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
 							  LK_tcsncpy(Name, sTmp, NAME_SIZE);
 							}
 						}
-						else
+						else {
                           flyzone = true;
+                        }
                         continue;
 
                     case _T('T'): // AT

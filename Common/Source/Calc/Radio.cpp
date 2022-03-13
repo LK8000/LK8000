@@ -1,95 +1,86 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: Radio.h,v 1.1 2020/22/12 
+ */
 
-   $Id: Radio.h,v 1.1 2020/22/12 
-*/
-
+#include "options.h"
 #include "externs.h"
 #include "Radio.h"
 #include "Util/TruncateString.hpp"
 
 
-BOOL ValidFrequency(double Freq) {
-	BOOL Valid = FALSE;
+bool ValidFrequency(unsigned khz) {
 
-	if(Freq >= 118.0 && Freq <= 137.0) {
-		Freq *= 10;
-		int Frac = (Freq - static_cast<int>(Freq)) * 100;
+	static constexpr unsigned _25_[] = {
+		 0, 25, 50, 75
+	};
 
-		switch(Frac) {
-			case 0:
-			case 25:
-			case 50:
-			case 75:
-				Valid = TRUE;
-			break;
+	static constexpr unsigned _8_33_[] = { 
+		 5, 10, 15, 30, 35, 40,
+		55, 60, 65, 80, 85, 90
+	};
 
-			case 5:
-			case 10:
-			case 15:
-			case 30:
-			case 35:
-			case 40:
-			case 55:
-			case 60:
-			case 65:
-			case 80:
-			case 85:
-			case 90:
-				if(RadioPara.Enabled8_33)
-					Valid = TRUE;
-			break;
+	if (khz >= 118000 && khz <= 137000) {
 
-			default:
-			break;
+		unsigned sub = khz - ((khz / 100) * 100);
+
+		for (auto d : _25_) {
+			if (d == sub) {
+				return true;
+			}
+		}
+
+		if (RadioPara.Enabled8_33) {
+			for (auto d : _8_33_) {
+				if (d == sub) {
+					return true;
+				}
+			}
 		}
 	}
-
-	return Valid;
+	return false;
 }
 
-double  ExtractFrequencyPos(const TCHAR *text, size_t *start, size_t *len) {
-	if(start) *start = 0;
-	if(len) *len = 0;
-	if(text == nullptr) return 0.0;
+unsigned ExtractFrequency(const TCHAR *text, size_t* start, size_t* len) {
+	if (text == nullptr) {
+		return 0;
+	}
 
 	for (const TCHAR* c = text; *c; ++c) {
 		if (*c == '1') {
 			TCHAR* dot = nullptr;
-			double Mhz = _tcstol(c, &dot, 10);
-			if(Mhz >= 118 && Mhz <= 138) {
-				if((*dot == _T('.')) || (*dot == _T(','))) {
-
-					TCHAR * sz = nullptr;
-					double kHz = _tcstol(++dot, &sz, 10);
-					for (ptrdiff_t d = 0; d < std::distance(dot, sz); ++d) {
-						kHz /= 10.;
-					}
-					
-					double fFreq = Mhz + kHz;
-
-					if(ValidFrequency(fFreq)) {
-						if(start) {
-							*start = std::distance<const TCHAR*>(text, c);
-						}
-						if(len) {
-							*len = std::distance<const TCHAR*>(c, sz);
-						}
-						return fFreq;
+			unsigned khz = _tcstol(c, &dot, 10);
+			if (khz >= 118 && khz <= 138) {
+				if ((*dot == _T('.')) || (*dot == _T(','))) {
+					++dot;
+					while (khz < 100000 && isdigit((*dot))) {
+						khz = (khz * 10) + (*dot) - '0';
+						++dot;
 					}
 				}
+			}
+
+			while (khz < 100000) {
+				khz *= 10;
+			}
+
+			if(ValidFrequency(khz)) {
+				if (start) {
+					*start = std::distance<const TCHAR*>(text, c);
+				}
+				if (len) {
+					*len = std::distance<const TCHAR*>(c, dot);
+				}
+				return khz;
 			}
 			c = dot;
 		}
 	}
 
-	return 0.;
-}
-
-double  ExtractFrequency(const TCHAR *text) {
-	return  ExtractFrequencyPos(text, nullptr, nullptr);
+	return 0;
 }
 
 /**
@@ -109,12 +100,12 @@ static double LatLonDistance(GeoPoint a, GeoPoint b)
 }
 
 
-bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], double Frequency) {
+bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], unsigned khz) {
 
 	double minDist = 9999999;
 	int idx = -1;
 	
-	if(!ValidFrequency(Frequency))
+	if(!ValidFrequency(khz))
 		return 0;
 
 	LockFlightData();
@@ -122,21 +113,19 @@ bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], double Frequency) {
 	UnlockFlightData();
 
 	LockTaskData();
-	for (size_t i = NUMRESWP; i < WayPointList.size(); ++i)
-	{
+	for (size_t i = NUMRESWP; i < WayPointList.size(); ++i) {
 		const WAYPOINT& wpt = WayPointList[i];
 
 		assert(wpt.Latitude != RESWP_INVALIDNUMBER);
 
-		if(wpt.Freq[0]) { // ignore TP with empty frequency
-			double fWpFreq = StrToDouble(wpt.Freq, nullptr);
-			if(fabs(Frequency - fWpFreq ) < 0.001)
-			{
+		if (wpt.Freq[0]) { // ignore TP with empty frequency
+
+			unsigned WpFreq = ExtractFrequency(wpt.Freq);
+			if (khz  == WpFreq) {
 				double fDist = LatLonDistance(cur_pos, GeoPoint(wpt.Latitude, wpt.Longitude));
-				if(fDist < minDist)
-				{
+				if(fDist < minDist) {
 					minDist = fDist;
-					idx =i;
+					idx = i;
 				}
 			}
 		}
@@ -185,39 +174,122 @@ static int SearchNearestStation()
 }
 
 
-int SearchBestStation()
-{
+int SearchBestStation() {
 	int Idx = BestAlternate;    // begin with Best alternate
-	double fFreq=0.0;
+	unsigned khz = 0;
 
 	LockTaskData();
-	if(ValidWayPointFast(Idx)) 
-	{
-		fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
+	if(ValidWayPointFast(Idx)) {
+		khz = ExtractFrequency(WayPointList[Idx].Freq);
 	}
 	UnlockTaskData();
 
-	if(!ValidFrequency(fFreq))	// best alternate does not have a radio?
-	{
+	if(!ValidFrequency(khz)) { // best alternate does not have a radio?
 		Idx = SearchNearestStation(); // OK, then search for the nearest with radio!
 	}
 	return Idx;
 }
 
-
-const TCHAR* GetActiveStationSymbol(bool utf8_symbol) 
-{
-	if(utf8_symbol)
-		return(ACTIVE_SYMBOL_UTF8) ;
-	else
-		return(ACTIVE_SYMBOL);
+const TCHAR* GetActiveStationSymbol(bool unicode_symbol) {
+	if (!unicode_symbol) {
+		return _T("X");
+	}
+	// Up Down Arrow "↕"
+#ifdef UNICODE
+	return L"\u2195"; // utf-16 (WIN32)
+#else
+	return "\xE2\x86\x95"; // utf-8
+#endif
 }
 
-const TCHAR* GetStandyStationSymbol(bool utf8_symbol) 
-{
-	if(utf8_symbol)
-		return(STANDBY_SYMBOL_UTF8) ;
-	else
-		return(STANDBY_SYMBOL);
+const TCHAR* GetStandyStationSymbol(bool unicode_symbol) {
+	if (!unicode_symbol) {
+		return _T("v");
+	}
+	// Downwards Arrow "↓"
+#ifdef UNICODE
+	return L"\u2193"; // utf-16 (WIN32)
+#else
+	return "\xE2\x86\x93"; // utf-8
+#endif
 }
-//#define SEL_STANDBY_SYMBOL(a) (a)?(STANDBY_SYMBOL_UTF8 ) :(STANDBY_SYMBOL)
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_SUITE("Radio") {
+
+	TEST_CASE("ValidFrequency") {
+
+		SUBCASE("25kHz radio") {
+			RadioPara.Enabled8_33 = false;
+
+			CHECK_FALSE(ValidFrequency(110000));
+			CHECK_FALSE(ValidFrequency(140000));
+			CHECK_FALSE(ValidFrequency(118005));
+			CHECK_FALSE(ValidFrequency(118004));
+			CHECK_FALSE(ValidFrequency(140000));
+
+			for (unsigned f = 118000; f < 137000; f += 25) {
+				CAPTURE(f);
+				CHECK(ValidFrequency(f));
+			}
+		}
+
+		SUBCASE("8.33kHz radio") {
+			RadioPara.Enabled8_33 = true;
+			for (unsigned f = 118000; f < 137000; f += 100) {
+				CAPTURE(f);
+
+				CHECK(ValidFrequency(f + 05));
+				CHECK(ValidFrequency(f + 10));
+				CHECK(ValidFrequency(f + 15));
+
+				CHECK(ValidFrequency(f + 30));
+				CHECK(ValidFrequency(f + 35));
+				CHECK(ValidFrequency(f + 40));
+
+				CHECK(ValidFrequency(f + 55));
+				CHECK(ValidFrequency(f + 60));
+				CHECK(ValidFrequency(f + 65));
+
+				CHECK(ValidFrequency(f + 80));
+				CHECK(ValidFrequency(f + 85));
+				CHECK(ValidFrequency(f + 90));
+			}
+		}
+	}
+
+	TEST_CASE("ExtractFrequency") {
+
+		CHECK_EQ(ExtractFrequency(_T("118")), 118000U);
+		CHECK_EQ(ExtractFrequency(_T("118025")), 118025U);
+		CHECK_EQ(ExtractFrequency(_T("118.025")), 118025U);
+		CHECK_EQ(ExtractFrequency(_T("118,025")), 118025U);
+		CHECK_EQ(ExtractFrequency(_T("1185")), 118500U);
+		CHECK_EQ(ExtractFrequency(_T("11850")), 118500U);
+		CHECK_EQ(ExtractFrequency(_T("118500")), 118500U);
+		CHECK_EQ(ExtractFrequency(_T("118.5")), 118500U);
+		CHECK_EQ(ExtractFrequency(_T("118.50")), 118500U);
+
+		size_t start, len;
+
+		CHECK_EQ(ExtractFrequency(_T("118.500"), &start, &len), 118500U);
+		CHECK_EQ(start, 0);
+		CHECK_EQ(len, 7);
+
+		CHECK_EQ(ExtractFrequency(_T("azazaz 118025 azazaz "), &start, &len), 118025U);
+		CHECK_EQ(start, 7);
+		CHECK_EQ(len, 6);
+
+		CHECK_EQ(ExtractFrequency(_T("azazaz 118.025 azazaz "), &start, &len), 118025U);
+		CHECK_EQ(start, 7);
+		CHECK_EQ(len, 7);
+
+		CHECK_EQ(ExtractFrequency(_T("azazaz 118,025 azazaz "), &start, &len), 118025U);
+		CHECK_EQ(start, 7);
+		CHECK_EQ(len, 7);
+	}
+}
+
+#endif

@@ -581,20 +581,20 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		AlertBestAlternate(1);
 	}
 
-	if(bAutoActive || bAutoPassiv) // auto frequency selection?
-	{
+	if (bAutoActive || bAutoPassiv) {
+		// auto frequency selection?
 		int Idx = SearchBestStation();
-		if(ValidWayPoint(Idx)) {
-
-			double fFreq = StrToDouble(WayPointList[Idx].Freq,NULL);
-			if(bAutoActive)	{
-				if(devPutFreqActive(fFreq, WayPointList[Idx].Name))
+		if (ValidWayPoint(Idx)) {
+			unsigned khz = ExtractFrequency(WayPointList[Idx].Freq);
+			if (bAutoActive)	{
+				if (devPutFreqActive(khz, WayPointList[Idx].Name)) {
 					RadioPara.Changed = true;
+				}
 			}
-
-			if(bAutoPassiv) {
-				if(devPutFreqStandby(fFreq, WayPointList[Idx].Name))
+			if (bAutoPassiv) {
+				if (devPutFreqStandby(khz, WayPointList[Idx].Name)) {
 					RadioPara.Changed = true;
+				}
 			}
 		}
 	}

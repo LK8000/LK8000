@@ -15,8 +15,6 @@
 
 namespace {
 
-#define RoundFreq(a) ((int)((a)*1000.0+0.5)/1000.0)
-#define Freq2Idx(a)  (int)(((a)-118.0) * 3040/(137.00-118.0)+0.5)
 #define BIT(n) (1 << (n))
 
 #define ACTIVE_STATION  1
@@ -76,38 +74,37 @@ int SendCommand(PDeviceDescriptor_t d, uint8_t szTmp[], uint16_t len)
 
 double Idx2Freq(uint16_t uFreqIdx)
 {
-double fFreq= 118.000 + (uFreqIdx& 0xFFF0) * (137.000-118.000)/3040.0;
-switch(uFreqIdx & 0xF)
-{
-    case 0:  fFreq += 0.000; break;
-    case 1:  fFreq += 0.005; break;
-    case 2:  fFreq += 0.010; break;
-    case 3:  fFreq += 0.015; break;
-    case 4:  fFreq += 0.025; break;
-    case 5:  fFreq += 0.030; break;
-    case 6:  fFreq += 0.035; break;
-    case 7:  fFreq += 0.040; break;
-    case 8:  fFreq += 0.050; break;
-    case 9:  fFreq += 0.055; break;
-    case 10: fFreq += 0.060; break;
-    case 11: fFreq += 0.065; break;
-    case 12: fFreq += 0.075; break;
-    case 13: fFreq += 0.080; break;
-    case 14: fFreq += 0.085; break;
-    case 15: fFreq += 0.090; break;   
-}
-return (fFreq);
+  unsigned khz = (118.000 + (uFreqIdx& 0xFFF0) * (137.000-118.000)/3040.0) * 1000.;
+  switch(uFreqIdx & 0xF) {
+      case 0:  khz += 00; break;
+      case 1:  khz += 05; break;
+      case 2:  khz += 10; break;
+      case 3:  khz += 15; break;
+      case 4:  khz += 25; break;
+      case 5:  khz += 30; break;
+      case 6:  khz += 35; break;
+      case 7:  khz += 40; break;
+      case 8:  khz += 50; break;
+      case 9:  khz += 55; break;
+      case 10: khz += 60; break;
+      case 11: khz += 65; break;
+      case 12: khz += 75; break;
+      case 13: khz += 80; break;
+      case 14: khz += 85; break;
+      case 15: khz += 90; break;   
+  }
+  return khz;
 }
 
+unsigned Freq2Idx( unsigned khz) {
+  double Mhz = khz / 1000.;
+  return ((Mhz - 118.0) * 3040. / (137.00 - 118.0) + 0.5);
+}
 
-uint16_t Frq2Idx(double fFreq)
-{
-uint16_t  uFreIdx= Freq2Idx(fFreq);
-uFreIdx &= 0xFFF0;
-uint8_t uiFrac = ((int)(fFreq*1000.0+0.5)) - (((int)(fFreq *10.0))*100);
-    
-  switch(uiFrac )
-  {
+uint16_t Frq2Idx(unsigned khz) {
+  uint16_t  uFreIdx = Freq2Idx(khz) & 0xFFF0;
+  uint8_t uiFrac = khz - ((khz / 100) * 100);
+  switch(uiFrac) {
     case 0:   uFreIdx += 0;  break;
     case 5:   uFreIdx += 1;  break;
     case 10:  uFreIdx += 2;  break;
@@ -125,10 +122,11 @@ uint8_t uiFrac = ((int)(fFreq*1000.0+0.5)) - (((int)(fFreq *10.0))*100);
     case 85:  uFreIdx += 14; break;
     case 90:  uFreIdx += 15; break;
     case 100: uFreIdx += 0;  break;
-    default:   StartupStore(_T("undefined Frequency!  %u -> %u %s"),uiFrac, uFreIdx,NEWLINE);     break;
+    default:
+      StartupStore(_T("undefined Frequency!  %u -> %u"),uiFrac, uFreIdx);
+      break;
   }
-
-return (uFreIdx);
+  return uFreIdx;
 }
 
 
@@ -162,7 +160,7 @@ static uint16_t CRCBitwise(uint8_t *data, size_t len)
  * Station        station Name string
  *
  *****************************************************************************/
-static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequency, const TCHAR* Station)
+static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, unsigned khz, const TCHAR* Station)
 {
   unsigned int len = 0;
   LKASSERT(Station !=NULL)
@@ -171,8 +169,8 @@ static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequ
     return false;
   }
 
-  IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveFrequency );
-  IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
+  IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveKhz );
+  IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveKhz);
   Command [len++] = HEADER_ID ;
   Command [len++] = PROTOKOL_ID ;
   Command [len++] = 5;
@@ -181,14 +179,14 @@ static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, double fFrequ
   {
     case ACTIVE_STATION:
          RadioPara.ActiveValid = false;
-         ActiveFreqIdx.intVal16 = Frq2Idx(fFrequency);
-         if(iAR620DebugLevel) StartupStore(_T(">AF:%u  %7.3f%s"), ActiveFreqIdx.intVal16, fFrequency, NEWLINE);
+         ActiveFreqIdx.intVal16 = Frq2Idx(khz);
+         if(iAR620DebugLevel) StartupStore(_T(">AF:%u  %7.3f"), ActiveFreqIdx.intVal16, (khz / 1000.));
     break;
     default:
     case PASSIVE_STATION:
         RadioPara.PassiveValid = false;
-        PassiveFreqIdx.intVal16 =  Frq2Idx(fFrequency);
-        if(iAR620DebugLevel) StartupStore(_T(">PF:%u  %7.3f%s"), PassiveFreqIdx.intVal16, fFrequency,NEWLINE);
+        PassiveFreqIdx.intVal16 =  Frq2Idx(khz);
+        if(iAR620DebugLevel) StartupStore(_T(">PF:%u  %7.3f"), PassiveFreqIdx.intVal16, (khz / 1000.));
     break;
   }
   Command [len++] = 22;
@@ -267,40 +265,39 @@ uint8_t len;
 }
 
 
-BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
+BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
 int len;
 uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-        if(iAR620DebugLevel) StartupStore(_T(". AR620x Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-        len = SetAR620xStation(szTmp ,ACTIVE_STATION, Freq, StationName);
+        if(iAR620DebugLevel) StartupStore(_T(". AR620x Active Station %7.3fMHz %s%s"), (khz / 1000.), StationName,NEWLINE);
+        len = SetAR620xStation(szTmp ,ACTIVE_STATION, khz, StationName);
         SendCommand(d, szTmp,len);
-        RadioPara.ActiveFrequency=  Freq;
-        if(StationName != NULL)
-          _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
-
-
+        RadioPara.ActiveKhz = khz;
+        if(StationName) {
+          _sntprintf(RadioPara.ActiveName, NAME_SIZE, _T("%s"),StationName);
+        }
       }
   RadioPara.ActiveValid = false;
   return(TRUE);
 }
 
 
-BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
+BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
 int len;
 uint8_t  szTmp[MAX_CMD_LEN];
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
       {
-        len = SetAR620xStation(szTmp ,PASSIVE_STATION, Freq, StationName);
+        len = SetAR620xStation(szTmp ,PASSIVE_STATION, khz, StationName);
         SendCommand(d, szTmp,len);
-        RadioPara.PassiveFrequency =  Freq;
+        RadioPara.PassiveKhz =  khz;
         if(StationName != NULL)
           _sntprintf(RadioPara.PassiveName, NAME_SIZE  ,_T("%s"),StationName) ;
-        if(iAR620DebugLevel) StartupStore(_T(". AR620x Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+        if(iAR620DebugLevel) StartupStore(_T(". AR620x Standby Station %7.3fMHz %s"), (khz / 1000.), StationName);
       }
   RadioPara.PassiveValid = false;
   return(TRUE);
@@ -314,8 +311,8 @@ uint8_t  szTmp[MAX_CMD_LEN];
     if(!d->Disabled)
       if (d->Com)
       {
-        IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveFrequency );
-        IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveFrequency);
+        IntConvertStruct ActiveFreqIdx;  ActiveFreqIdx.intVal16  = Frq2Idx(RadioPara.ActiveKhz );
+        IntConvertStruct PassiveFreqIdx; PassiveFreqIdx.intVal16 = Frq2Idx(RadioPara.PassiveKhz);
         szTmp [len++] = HEADER_ID ;
         szTmp [len++] = PROTOKOL_ID ;
         szTmp [len++] = 5;
@@ -443,18 +440,18 @@ LKASSERT(d !=NULL);
         RadioPara.ActiveValid = true;
         sFrequency.intVal8[1] = szCommand[4] ;
         sFrequency.intVal8[0] = szCommand[5] ;
-        RadioPara.ActiveFrequency =  Idx2Freq(sFrequency.intVal16);
-        UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency);
+        RadioPara.ActiveKhz =  Idx2Freq(sFrequency.intVal16);
+        UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveKhz);
 
-        if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f%s"), sFrequency.intVal16, RadioPara.ActiveFrequency ,NEWLINE);
+        if(iAR620DebugLevel ) StartupStore(_T("AR620x <AF %u  %7.3f"), sFrequency.intVal16, RadioPara.ActiveKhz / 1000.);
 
         sFrequency.intVal8[1] = szCommand[6];
         sFrequency.intVal8[0] = szCommand[7] ;
         RadioPara.PassiveValid = true;
-        RadioPara.PassiveFrequency =  Idx2Freq(sFrequency.intVal16);
-        UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency);
+        RadioPara.PassiveKhz =  Idx2Freq(sFrequency.intVal16);
+        UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveKhz);
 
-        if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f%s"), sFrequency.intVal16, RadioPara.PassiveFrequency ,NEWLINE);
+        if(iAR620DebugLevel ) StartupStore(_T("AR620x <PF: %u %7.3f"), sFrequency.intVal16, RadioPara.PassiveKhz /1000.);
         RadioPara.Changed = true;
       
     break;

@@ -1004,32 +1004,28 @@ BOOL devPutFreqSwap() {
  */
 
 
-BOOL devPutFreqActive(double Freq, const TCHAR* StationName) {
-if( ValidFrequency(Freq))
-{
-  RadioPara.ActiveValid = false;
-  RadioPara.ActiveFrequency=  Freq;
-  CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
-  return for_all_device(&DeviceDescriptor_t::PutFreqActive, Freq, StationName);
-}
-else
-	return false;
+BOOL devPutFreqActive(unsigned khz, const TCHAR* StationName) {
+  if (ValidFrequency(khz)) {
+    RadioPara.ActiveValid = false;
+    RadioPara.ActiveKhz = khz;
+    CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
+    return for_all_device(&DeviceDescriptor_t::PutFreqActive, khz, StationName);
+  }
+  return false;
 }
 
 /**
  * Send FreqStandby cmd to all connected device.
  * @return FALSE if error on one device.
  */
-BOOL devPutFreqStandby(double Freq, const TCHAR* StationName) {
-if( ValidFrequency(Freq))
-{
+BOOL devPutFreqStandby(unsigned khz, const TCHAR* StationName) {
+  if (ValidFrequency(khz)) {
     RadioPara.PassiveValid = false;
-    RadioPara.PassiveFrequency=  Freq;
+    RadioPara.PassiveKhz = khz;
     CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
-    return for_all_device(&DeviceDescriptor_t::PutFreqStandby, Freq, StationName);
-  } else {
-    return false;
+    return for_all_device(&DeviceDescriptor_t::PutFreqStandby, khz, StationName);
   }
+  return false;
 }
 
 

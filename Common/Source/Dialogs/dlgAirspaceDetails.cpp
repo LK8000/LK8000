@@ -113,20 +113,13 @@ static bool OnTimer(WndForm* pWnd){
 
 
 static void OnSetFrequency(WndButton* pWnd){
-
-
- if(RadioPara.Enabled)
- {
-   double ASFrequency = ExtractFrequency(airspace_copy.Name());
-   if(!ValidFrequency(ASFrequency))
-   {
-     ASFrequency = ExtractFrequency(airspace_copy.Comment());
-   }
-   if(ValidFrequency(ASFrequency))
-   {
-     devPutFreqActive(ASFrequency, airspace_copy.Name());
-   }
- }
+  if(RadioPara.Enabled) {
+    unsigned khz = ExtractFrequency(airspace_copy.Name());
+    if (!ValidFrequency(khz)) {
+      khz = ExtractFrequency(airspace_copy.Comment());
+    }
+    devPutFreqActive(khz, airspace_copy.Name());
+  }
 
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -137,20 +130,13 @@ static void OnSetFrequency(WndButton* pWnd){
 } 
 
 static void OnSetSecFrequency(WndButton* pWnd){
-
-
- if(RadioPara.Enabled)
- {
-   double ASFrequency = ExtractFrequency(airspace_copy.Name());
-   if(!ValidFrequency(ASFrequency))
-   {
-     ASFrequency = ExtractFrequency(airspace_copy.Comment());
-   }
-   if(ValidFrequency(ASFrequency))
-   {
-     devPutFreqStandby(ASFrequency, airspace_copy.Name());
-   }
- }
+  if(RadioPara.Enabled) {
+    unsigned khz = ExtractFrequency(airspace_copy.Name());
+    if(!ValidFrequency(khz)) {
+      khz = ExtractFrequency(airspace_copy.Comment());
+    }
+    devPutFreqStandby(khz, airspace_copy.Name());
+  }
 
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -292,13 +278,12 @@ static void SetValues(WndForm* wf) {
 
     if(RadioPara.Enabled) {
 
-      double fASFrequency = ExtractFrequency(airspace_copy.Name());
-      if(!ValidFrequency(fASFrequency))
-      {
-        fASFrequency = ExtractFrequency(airspace_copy.Comment());
+      unsigned khz = ExtractFrequency(airspace_copy.Name());
+      if(!ValidFrequency(khz)) {
+        khz = ExtractFrequency(airspace_copy.Comment());
       }
 
-      if(ValidFrequency(fASFrequency)) {
+      if(ValidFrequency(khz)) {
 
         WindowControl* wClose = wf->FindByName(TEXT("cmdClose"));
         if(wClose) {
@@ -306,11 +291,11 @@ static void SetValues(WndForm* wf) {
           wClose->SetWidth(IBLSCALE(80));
         }
 
-        _stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
+        _stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
         wFreq->SetCaption(buffer2);
         wFreq->Redraw();
 
-        _stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), fASFrequency);
+        _stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
         wSeqFreq->SetCaption(buffer2);
         wSeqFreq->Redraw();
         bRadio = true;
@@ -318,7 +303,7 @@ static void SetValues(WndForm* wf) {
     }
     wFreq->SetVisible(bRadio);
     wSeqFreq->SetVisible(bRadio);
-}
+  }
 
 
 

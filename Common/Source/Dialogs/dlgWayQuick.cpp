@@ -112,48 +112,44 @@ static void OnTaskClicked(WndButton* pWnd){
   }
 }
 
-static void SetRadioFrequency(WndButton* pWnd, bool bActive)
-{
-  double Ferquency;
-  LKASSERT(SelectedWaypoint>=0);
+template<typename devPutFreq_t, size_t size>
+void SetRadioFrequency(WndButton* pWnd, devPutFreq_t&& devPutFreq, const TCHAR (&Type)[size]) {
+  unsigned khz = 0;
+  tstring name;
   LockTaskData();
-  LKASSERT(ValidWayPointFast(SelectedWaypoint));
-  Ferquency = StrToDouble(WayPointList[SelectedWaypoint].Freq,NULL);
-  if(bActive) {
-    devPutFreqActive(Ferquency, WayPointList[SelectedWaypoint].Name);
-  } else {
-    devPutFreqStandby(Ferquency, WayPointList[SelectedWaypoint].Name);
+  if(ValidWayPointFast(SelectedWaypoint)) {
+    khz = ExtractFrequency(WayPointList[SelectedWaypoint].Freq);
+    name = WayPointList[SelectedWaypoint].Name;
   }
+  UnlockTaskData();
+
+  if (khz > 0) {
+    devPutFreq(khz, name.c_str());
 
 #ifdef STATUS_RADIO   // Status Popup not realy needed
-  TCHAR szFreq[60];
-  _stprintf(szFreq,_T("Standby %6.3f ") ,Ferquency);
+    TCHAR szMessage[60] = {0};
+    _stprintf(szMessage,_T("%s \n %s %6.3f ") ,Name, Type, Frequency);
+    DoStatusMessage(_T(""), szMessage);
 
-  DoStatusMessage(_T(""), WayPointList[SelectedWaypoint].Name );
-  DoStatusMessage(_T(""), szFreq );
-
-  retStatus=3;
+    retStatus=3;
 #endif
-
+  }
+  
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
       pForm->SetModalResult(mrOK);
     }
   }
-  UnlockTaskData();
 }
 
-static void OnRadioFrequencyClicked(WndButton* pWnd){
-	SetRadioFrequency(pWnd, true);
+static void OnRadioFrequencyClicked(WndButton* pWnd) {
+	SetRadioFrequency(pWnd, &devPutFreqActive, _T("Active"));
 }
 
-
-
-static void OnRadioFrequencySBClicked(WndButton* pWnd){
-	SetRadioFrequency(pWnd, false);
+static void OnRadioFrequencySBClicked(WndButton* pWnd) {
+	SetRadioFrequency(pWnd, &devPutFreqStandby, _T("Standby"));
 }
-
 
 static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnGotoClicked),

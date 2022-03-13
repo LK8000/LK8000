@@ -20,7 +20,7 @@
 
 #define SHORT_DEVICE_NAME_LEN 12
 
-double Frequency=0.0;
+unsigned frequency_khz = 0.0;
 TCHAR  StationName[SHORT_DEVICE_NAME_LEN] = _T("");
 
 
@@ -37,13 +37,11 @@ static void OnCancelClicked(WndButton* pWnd){
 
 static void OnSelActiveButton(WndButton* pWnd){
 
-  if(!ValidFrequency(Frequency))
-  {
+  if(!ValidFrequency(frequency_khz)) {
     MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //   "_@M002490_": "Invalid radio frequency/channel input!",
   }
-  else
-  {
-    devPutFreqActive(Frequency, StationName);
+  else {
+    devPutFreqActive(frequency_khz, StationName);
     OnCancelClicked(pWnd);
   }
 }
@@ -51,19 +49,14 @@ static void OnSelActiveButton(WndButton* pWnd){
 
 static void OnSelPassiveButton(WndButton* pWnd){
 
-  if(!ValidFrequency(Frequency))
-  {
+  if(!ValidFrequency(frequency_khz)) {
     MessageBoxX(MsgToken(2490), MsgToken(2491), mbOk); //    "_@M002490_": "Invalid radio frequency/channel input!",
   }
-  else
-  {
-    devPutFreqStandby(Frequency, StationName);
+  else {
+    devPutFreqStandby(frequency_khz, StationName);
     OnCancelClicked(pWnd);
   }
 }
-
-
-
 
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -77,14 +70,13 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void dlgRadioPriSecSelShowModal(const TCHAR*  pName, double Freq){
-SHOWTHREAD(_T("dlgRadioPriSecSelShowModal"));
-  
-TCHAR Name[SHORT_DEVICE_NAME_LEN+30];
-WndForm *wf=NULL;
+void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
+  SHOWTHREAD(_T("dlgRadioPriSecSelShowModal"));
+    
+  TCHAR Name[SHORT_DEVICE_NAME_LEN+30];
+  WndForm *wf=NULL;
 
-
-  Frequency = Freq;
+  frequency_khz = khz;
   CopyTruncateString(StationName, SHORT_DEVICE_NAME_LEN, pName);		
 
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOPRISECSEL );
@@ -96,8 +88,7 @@ WndForm *wf=NULL;
   if(frm) frm->SetCaption(StationName);	
 
   WndOwnerDrawFrame* frmFreq  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationFreq"));
-  _stprintf(Name,_T("%7.3f"),  Freq);
-  LKASSERT( frmFreq !=NULL)
+  _stprintf(Name,_T("%7.3f"),  frequency_khz / 1000.);
   if(frmFreq) frmFreq->SetCaption(Name);
 
 

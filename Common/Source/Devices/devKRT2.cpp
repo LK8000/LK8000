@@ -50,30 +50,28 @@ BOOL OpenClose(PDeviceDescriptor_t d) {
  * Station        station Name string
  *
  *****************************************************************************/
-int SetKRT2Station(uint8_t *Command, uint8_t slot, double fFrequency, const TCHAR* Station)
+int SetKRT2Station(uint8_t *Command, uint8_t slot, unsigned khz, const TCHAR* Station)
 {
-  auto MHz = static_cast<uint8_t>(fFrequency);
-  auto kHz = static_cast<uint32_t>(fFrequency *1000.0 - MHz *1000  + 0.5);
-  auto Chan = static_cast<uint8_t>(kHz/5);
-
-  char Airfield[10]={"         "};
-
   LKASSERT(Command !=NULL)
   if(Command == NULL )
     return false;
 
+  auto MHz = static_cast<uint8_t>(khz / 1000U);
+  auto Chan = static_cast<uint8_t>((khz - (MHz * 1000U)) / 5U);
 
-  if(Station != NULL) {
+  char Airfield[10];
+
+  if(Station) {
     to_usascii(Station, Airfield);
   }
 
-  for (int i = 0 ; i < 10; i++)
-  {
+  // airfield : remove ctrl char and pad with space
+  for (int i = 0 ; i < 10; i++) {
     if((Airfield[i] < 32) || (Airfield[i] > 126))
    	  Airfield[i] = ' ';
   }
 
-  unsigned len =0;
+  unsigned len = 0;
   Command[len++] = STX;
   Command[len++] = slot;
   Command[len++] = MHz;
@@ -158,34 +156,27 @@ BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
 }
 
 
-
-BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* StationName) {
-
-  if(d && !d->Disabled && d->Com)
-  {
+BOOL KRT2PutFreq(PDeviceDescriptor_t d, char ur, unsigned khz, const TCHAR* StationName) {
+  if(d && !d->Disabled && d->Com) {
     uint8_t szTmp[25];
 
-    int len =SetKRT2Station(szTmp, 'U', Freq, StationName);
+    int len = SetKRT2Station(szTmp, ur, khz, StationName);
     d->Com->Write(szTmp, len);
 
-    if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Active Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
+    if(uiKRT2DebugLevel) {
+      StartupStore(_T(". KRT2 Active Station %7.3fMHz %s"), khz / 1000., StationName);
+    }
   }
   return(TRUE);
 }
 
+BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
+  return KRT2PutFreq(d, 'U', khz, StationName);
+}
 
-BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* StationName) {
 
-  if(d && !d->Disabled && d->Com)
-  {
-    uint8_t szTmp[25];
-
-    int len = SetKRT2Station(szTmp, 'R', Freq, StationName);
-    d->Com->Write(szTmp, len);
-
-    if(uiKRT2DebugLevel) StartupStore(_T(". KRT2 Standby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-  }
-  return(TRUE);
+BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
+  return KRT2PutFreq(d, 'R', khz, StationName);
 }
 
 
@@ -285,57 +276,58 @@ static int counter =0;
         {
           case 'U':
             RadioPara.ActiveValid = false;
-            if(len >= 13)
-            {
-              if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
+            if (len >= 13) {
+              if (szCommand[12] != (szCommand[2] ^ szCommand[3])) {
                 DoStatusMessage(_T("Checksum Fail"));
-              else
-              {
+              }
+              else {
                 RadioPara.ActiveValid = true;
-                RadioPara.ActiveFrequency=  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
-                for(unsigned i=0; i < 8; i++)
-                  RadioPara.ActiveName[i] =   szCommand[4+i];
-                RadioPara.ActiveName[8] =0;
+                RadioPara.ActiveKhz = static_cast<unsigned>(szCommand[2]) + static_cast<unsigned>(szCommand[3]) * 5U;
+                for (unsigned i=0; i < 8; i++) {
+                  RadioPara.ActiveName[i] = szCommand[4+i];
+                }
+                RadioPara.ActiveName[8] = 0;
                 TrimRight(RadioPara.ActiveName);
-                if( _tcslen(RadioPara.ActiveName) == 0)
-                {
-                  if (UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveFrequency)) 
-                  {
-                    devPutFreqActive(RadioPara.ActiveFrequency, RadioPara.ActiveName);
+                if (_tcslen(RadioPara.ActiveName) == 0) {
+                  if (UpdateStationName(RadioPara.ActiveName, RadioPara.ActiveKhz)) {
+                    devPutFreqActive(RadioPara.ActiveKhz, RadioPara.ActiveName);
                   }
                 }
-                _stprintf(szTempStr,_T("Active: %s %7.3fMHz"),  RadioPara.ActiveName,RadioPara.ActiveFrequency );
+                _stprintf(szTempStr, _T("Active: %s %7.3fMHz"),  RadioPara.ActiveName, RadioPara.ActiveKhz / 1000.);
                 processed = 13;
               }
-            } else processed=0;
+            }
+            else {
+              processed = 0;
+            }
           break;
 
           case 'R':
             RadioPara.PassiveValid = false;
-            if(len >= 13)
-            {
-              if(szCommand[12] != (szCommand[2] ^ szCommand[3]))
+            if (len >= 13) {
+              if (szCommand[12] != (szCommand[2] ^ szCommand[3])) {
                 DoStatusMessage(_T("Checksum Fail"));
-              else
-              {
+              }
+              else {
                 RadioPara.PassiveValid = true;
-                RadioPara.PassiveFrequency =  ((double)(unsigned char)szCommand[2]) + ((double)(unsigned char)szCommand[3])/ 200.0;
-                for(unsigned i=0; i < 8; i++)
-                  RadioPara.PassiveName[i] =   szCommand[4+i];
-                RadioPara.PassiveName[8] =0;
+                RadioPara.PassiveKhz=  static_cast<unsigned>(szCommand[2]) + static_cast<unsigned>(szCommand[3]) * 5U;
+                for (unsigned i = 0; i < 8; i++) {
+                  RadioPara.PassiveName[i] = szCommand[4+i];
+                }
+                RadioPara.PassiveName[8] = 0;
                 TrimRight(RadioPara.PassiveName);
-                if( _tcslen(RadioPara.PassiveName) == 0)
-                {
-                  if (UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveFrequency)) 
-                  {
-                    devPutFreqStandby(RadioPara.ActiveFrequency, RadioPara.PassiveName);
+                if (_tcslen(RadioPara.PassiveName) == 0) {
+                  if (UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveKhz)) {
+                    devPutFreqStandby(RadioPara.ActiveKhz, RadioPara.PassiveName);
                   }
                 }
-
-                _stprintf(szTempStr,_T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName,RadioPara.PassiveFrequency );
+                _stprintf(szTempStr, _T("Passive: %s %7.3fMHz"),  RadioPara.PassiveName, RadioPara.PassiveKhz / 1000.);
                 processed = 13;
               }
-            } else processed=0;
+            }
+            else {
+              processed = 0;
+            }
           break;
 
           case 'A':
@@ -375,7 +367,7 @@ static int counter =0;
             RadioPara.PassiveValid = false;
             if(len >= 2)
             {
-              std::swap(RadioPara.ActiveFrequency, RadioPara.PassiveFrequency);
+              std::swap(RadioPara.ActiveKhz, RadioPara.PassiveKhz);
               std::swap(RadioPara.ActiveName, RadioPara.PassiveName);
               _stprintf(szTempStr,_T("Swap "));
             }

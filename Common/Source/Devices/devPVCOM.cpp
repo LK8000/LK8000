@@ -13,6 +13,7 @@
 #include "Comm/device.h"
 #include "devBase.h"
 #include "utils/printf.h"
+#include "Radio.h"
 
 namespace {
 
@@ -136,42 +137,45 @@ BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, double Freq, const TCHAR* Station) {
+BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, unsigned Freq, const TCHAR* Station) {
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
-  if(Station != NULL)
+  if(Station != NULL) {
      _stprintf(StationName, TEXT("%s"), Station);
+  }
   ReplaceNMEAControlChars(StationName);
 
-  lk::snprintf(szTmp, TEXT("$PVCOM,S,AF,%7.3f,%s"), Freq,StationName);
-#ifdef TESTBENCH
-  StartupStore(_T(". RADIO Active Station  %7.3f %s%s"), Freq,StationName,NEWLINE);
-#endif
+  double Mhz = (Freq / 1000.);
+
+  lk::snprintf(szTmp, TEXT("$PVCOM,S,AF,%7.3f,%s"), Mhz, StationName);
+  TestLog(_T(". RADIO Active Station  %7.3f %s"), Mhz, StationName);
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
      if(!d->Disabled)
       if (d->Com)
         d->Com->WriteString(szTmp);
+
   return(TRUE);
 }
 
 
-BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, double Freq,  const TCHAR* Station) {
+BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, unsigned Freq,  const TCHAR* Station) {
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL)
      _stprintf(StationName, TEXT("%s"), Station);
   ReplaceNMEAControlChars(StationName);
 
-  lk::snprintf(szTmp, TEXT("$PVCOM,S,PF,%7.3f,%s"), Freq,StationName);
-#ifdef TESTBENCH
-    StartupStore(_T(". RADIO Stanby Station %7.3fMHz %s%s"), Freq, StationName,NEWLINE);
-#endif
+  double Mhz = (Freq / 1000.);
+
+  lk::snprintf(szTmp, TEXT("$PVCOM,S,PF,%7.3f,%s"), Mhz, StationName);
+  TestLog(_T(". RADIO Stanby Station %7.3fMHz %s"), Mhz, StationName);
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
         d->Com->WriteString(szTmp);
+
   return(TRUE);
 }
 
@@ -333,17 +337,19 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
       NMEAParser::ExtractParameter(String,cmd,2);
       if(_tcscmp(_T("AF"), cmd) == 0)
       {
-	NMEAParser::ExtractParameter(String,para1,3);
-	NMEAParser::ExtractParameter(String,para2,4);
-	RadioPara.ActiveFrequency = StrToDouble(para1,NULL);
-	lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
+        NMEAParser::ExtractParameter(String,para1,3);
+        RadioPara.ActiveKhz = ExtractFrequency(para1);
+
+        NMEAParser::ExtractParameter(String,para2,4);
+        lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
       } else
       if(_tcscmp(_T("PF"), cmd) == 0)
       {
-	NMEAParser::ExtractParameter(String,para1,3);
-	NMEAParser::ExtractParameter(String,para2,4);
-	RadioPara.PassiveFrequency = StrToDouble(para1,NULL);
-	lk::snprintf(RadioPara.PassiveName, _T("%s"),para2);
+        NMEAParser::ExtractParameter(String,para1,3);
+        RadioPara.PassiveKhz = ExtractFrequency(para1);
+
+        NMEAParser::ExtractParameter(String,para2,4);
+        lk::snprintf(RadioPara.PassiveName, _T("%s"),para2);
       }  else
       if(_tcscmp(_T("VOL"), cmd) == 0)
       {
@@ -357,16 +363,17 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 	  }  else
 	  if(_tcscmp(_T("CHG"), cmd) == 0)
 	  {
+      NMEAParser::ExtractParameter(String,para1,3);
+      RadioPara.ActiveKhz = ExtractFrequency(para1);
 
-		NMEAParser::ExtractParameter(String,para1,3);
-		NMEAParser::ExtractParameter(String,para2,4);
-	RadioPara.ActiveFrequency = StrToDouble(para1,NULL);
-    lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
+      NMEAParser::ExtractParameter(String,para2,4);
+      lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
 
-		NMEAParser::ExtractParameter(String,para1,5);
-		NMEAParser::ExtractParameter(String,para2,6);
-	RadioPara.PassiveFrequency = StrToDouble(para1,NULL);
-    lk::snprintf(RadioPara.PassiveName,_T("%s"),para2);
+      NMEAParser::ExtractParameter(String,para1,5);
+      RadioPara.PassiveKhz = ExtractFrequency(para1);
+
+      NMEAParser::ExtractParameter(String,para2,6);
+      lk::snprintf(RadioPara.PassiveName,_T("%s"),para2);
 
 	  } else
       if(_tcscmp(_T("STA"), cmd) == 0)

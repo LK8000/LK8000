@@ -43,12 +43,13 @@
   extern void Globals_Init(void);
 #endif
 
-typedef struct _Radio_t
-{
-	double ActiveFrequency;    //active station frequency
-	double PassiveFrequency;   // passive (or standby) station frequency
-	TCHAR PassiveName[NAME_SIZE + 1] ;    // passive (or standby) station name
+struct Radio_t {
+	unsigned ActiveKhz;    //active station frequency
 	TCHAR ActiveName[NAME_SIZE + 1] ;     //active station name
+
+	unsigned PassiveKhz;   // passive (or standby) station frequency
+	TCHAR PassiveName[NAME_SIZE + 1] ;    // passive (or standby) station name
+
 	int Volume ;               // Radio Volume
 	int Squelch ;              // Radio Squelch
 	int Vox ;                  // Radio Intercom Volume
@@ -66,9 +67,8 @@ typedef struct _Radio_t
 	BOOL PassiveValid;         // standy Frequency received flag
 	BOOL VolValid;             // Volume received flag
 	BOOL SqValid;              // Squelch received flag
-	BOOL DualValid;            // Dual received flag
-        
-}Radio_t;
+	BOOL DualValid;            // Dual received flag       
+};
 
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN Poco::Event dataTriggerEvent;
