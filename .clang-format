@@ -1,0 +1,25 @@
+---
+Language:        Cpp
+BasedOnStyle:  Chromium
+
+Standard: Cpp11
+
+ColumnLimit: 120
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+
+BinPackArguments: true
+BinPackParameters : true
+
+SortIncludes: false
+
+SpaceBeforeParens: ControlStatements
+AllowShortIfStatementsOnASingleLine: false
+
+# InsertBraces: true
+
+...
