@@ -23,8 +23,7 @@ double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
 class NMEAParser {
  public:
   NMEAParser();
-  static BOOL devParseStream(int portnum,
-			      char *String,int len, NMEA_INFO *GPS_INFO);
+
   void Reset();
 
   BOOL ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *GPS_INFO);
