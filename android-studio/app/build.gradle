@@ -1,13 +1,13 @@
 apply plugin: "com.android.application"
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
-    ndkVersion "23.1.7779620"
+    compileSdkVersion 32
+    buildToolsVersion "32.0.0"
+    ndkVersion "24.0.8215888"
 
     defaultConfig {
         applicationId "org.lk8000"
-        minSdkVersion 16
+        minSdkVersion 19 // KitKat
         targetSdkVersion 31
         versionCode 83
         versionName "7.3.11"

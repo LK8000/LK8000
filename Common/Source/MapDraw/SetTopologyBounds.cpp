@@ -141,7 +141,6 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
     // we will make sure we update at least one cache per call
     // to make sure eventually everything gets refreshed
 
-    int total_shapes_visible = 0;
     for (int z = 0; z < MAXTOPOLOGY; z++) {
         if (TopoStore[z]) {
             rta = MapWindow::RenderTimeAvailable() || force || !sneaked;
@@ -149,10 +148,6 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj, const bo
                 sneaked = true;
             }
             TopoStore[z]->updateCache(bounds_active, !rta);
-            total_shapes_visible += TopoStore[z]->shapes_visible_count;
         }
     }
-#ifdef DEBUG_GRAPHICS
-    DebugStore("%d # shapes\n", total_shapes_visible);
-#endif
 }

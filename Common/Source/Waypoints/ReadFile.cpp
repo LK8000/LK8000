@@ -121,9 +121,6 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 	return -1;
   }
 
-  // SetFilePointer(hFile,0,NULL,FILE_BEGIN);
-  size_t fPos = 0;
-
   // a real shame, too lazy to change into do while loop
   // Skip already read lines containing header, unless we are using DAT, which has no header
   if ( fileformat==LKW_DAT) goto goto_inloop;
@@ -136,7 +133,6 @@ goto_inloop:
 	nTemp2String[READLINE_LENGTH]=_T('\0');
 	nTemp2String[READLINE_LENGTH-1]=_T('\n');
 	nTemp2String[READLINE_LENGTH-2]=_T('\r');
-	fPos += _tcslen(nTemp2String);
 
 	if (_tcsstr(nTemp2String, TEXT("**")) == nTemp2String) // Look For Comment
 		continue;

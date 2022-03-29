@@ -186,10 +186,6 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
   double lat_c, lon_c;
   double lat_p = GPS_INFO.Latitude;
   double lon_p = GPS_INFO.Longitude;
-#define DRAWPERCENT
-#ifdef DRAWPERCENT
-  double fTotalPercent = 1.0;
-#endif
 
   ResetScale();
   static FAI_Sector ContestFAISector[4];
@@ -305,11 +301,9 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
 
       int style = STYLE_BLUETHIN;
       DistanceBearing(lat1, lon1, lat2, lon2, &fDist, &fAngle);
-#ifdef DRAWPERCENT
       if ((result.Distance() > 5000) && bFAITri) {
         TCHAR text[180];
         SIZE tsize;
-        fTotalPercent -= fDist / result.Distance();
         _stprintf(text, TEXT("%3.1f%%"), (fDist / result.Distance() * 100.0));
         Surface.GetTextSize(text, &tsize);
         if (!IsDithered()) {
@@ -319,7 +313,6 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
         }
         Surface.DrawText(ScaleX(rc, x1 + (x2 - x1) / 2) - tsize.cx / 2, ScaleY(rc, y1 + (y2 - y1) / 2), text);
       }
-#endif
       DrawLine(Surface, rc, x1, y1, x2, y2, style);
     }
 
