@@ -10,6 +10,13 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.12]
+. Android : whitelist SoftRF lego usb device
+. Display error to user when terrain file is invalid
+. improve keyboard navigation
+. fix regression in Radio Frequency input
+. fix usb device connection on Android 12
+
 [version 7.3.11]
 . Support Android 12
 . Fix freeze on device restart
