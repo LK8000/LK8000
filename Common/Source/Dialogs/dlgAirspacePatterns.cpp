@@ -7,120 +7,41 @@
 */
 
 #include "externs.h"
-#include "WindowControls.h"
-#include "dlgTools.h"
-#include "Dialogs.h"
-#include "LKObjects.h"
-#include "resource.h"
+#include "dlgSelectItem.h"
 
 #ifdef HAVE_HATCHED_BRUSH
 
-static int ItemIndex = -1;
+namespace {
 
+class dlgAirspacePatterns : public dlgSelectItem {
+public:
+  dlgAirspacePatterns() = default;
 
-static void UpdateList(WndListFrame* pWnd){
-  if(pWnd) {
-    pWnd->ResetList();
-    pWnd->Redraw();
+protected:
+  void DrawItem(LKSurface& Surface, const PixelRect& DrawRect, size_t ItemIndex) const override {
+    Surface.SelectObject(LK_BLACK_PEN);
+    Surface.SelectObject(LKBrush_White);
+    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+    Surface.SetTextColor(LKColor(0x00, 0x00, 0x00));
+    Surface.SelectObject(MapWindow::GetAirspaceBrush(ItemIndex));
+
+    Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
   }
-}
 
-static int DrawListIndex=0;
-
-static void OnAirspacePatternsPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
-
-    if ((DrawListIndex < NUMAIRSPACEBRUSHES) &&(DrawListIndex >= 0)) {
-        Surface.SelectObject(LKBrush_White);
-        Surface.SelectObject(LK_BLACK_PEN);
-        Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-
-        Surface.SelectObject(MapWindow::GetAirspaceBrush(DrawListIndex));
-        Surface.SetTextColor(LKColor(0x00, 0x00, 0x00));
-        const PixelRect rcClient(Sender->GetClientRect());
-        Surface.Rectangle(rcClient.left + DLGSCALE(2), 
-                          rcClient.top + DLGSCALE(2), 
-                          rcClient.right - DLGSCALE(2), 
-                          rcClient.bottom - DLGSCALE(2));
-    }
-}
-
-static void OnAirspacePatternsListEnter(WindowControl * Sender,
-				WndListFrame::ListInfo_t *ListInfo) {
-  (void)Sender;
-  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  if (ItemIndex>=NUMAIRSPACEBRUSHES) {
-    ItemIndex = NUMAIRSPACEBRUSHES-1;
+  int GetItemCount() const override {
+    return NUMAIRSPACEBRUSHES;
   }
-  if (ItemIndex>=0) {
-    if(Sender) {
-      WndForm * pForm = Sender->GetParentWndForm();
-      if(pForm) {
-        pForm->SetModalResult(mrOK);
-      }
-    }
+
+  const TCHAR* GetTitle() const override {
+    return MsgToken(594);
   }
-}
 
-
-static void OnAirspacePatternsListInfo(WndListFrame * Sender,
-			       WndListFrame::ListInfo_t *ListInfo){
-
-  if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = NUMAIRSPACEBRUSHES;
-  } else {
-    DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
-    ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
-  }
-}
-
-static void OnCloseClicked(WndButton* pWnd){
-  ItemIndex = -1;
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
-}
-
-
-static CallBackTableEntry_t CallBackTable[]={
-#ifdef HAVE_HATCHED_BRUSH
-  OnPaintCallbackEntry(OnAirspacePatternsPaintListItem),
-#endif
-  OnListCallbackEntry(OnAirspacePatternsListInfo),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
 };
 
+}  // namespace
 
-int dlgAirspacePatternsShowModal(void){
-
-  ItemIndex = -1;
-
-  WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACEPATTERNS_L : IDR_XML_AIRSPACEPATTERNS_P);
-
-  if (!wf) return -1;
-
-  //ASSERT(wf!=NULL);
-
-  WndListFrame* wAirspacePatternsList = (WndListFrame*)wf->FindByName(TEXT("frmAirspacePatternsList"));
-  if(wAirspacePatternsList) {
-    wAirspacePatternsList->SetBorderKind(BORDERLEFT);
-    wAirspacePatternsList->SetEnterCallback(OnAirspacePatternsListEnter);
-    UpdateList(wAirspacePatternsList);
-  }
-
-  WndOwnerDrawFrame* wAirspacePatternsListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspacePatternsListEntry"));
-  if(wAirspacePatternsListEntry) {
-    wAirspacePatternsListEntry->SetCanFocus(true);
-  }
-  wf->ShowModal();
-
-  // now retrieve back the properties...
-
-  delete wf;
-  return ItemIndex;
+int dlgAirspacePatternsShowModal() {
+  return dlgAirspacePatterns().DoModal();
 }
 
 #endif

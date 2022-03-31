@@ -7,96 +7,37 @@
 */
 
 #include "externs.h"
-#include "dlgTools.h"
-#include "WindowControls.h"
-#include "LKObjects.h"
-#include "resource.h"
+#include "dlgSelectItem.h"
 
 namespace {
 
-void OnAirspaceColoursPaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
-  auto pWndList = dynamic_cast<WndListFrame*>(Sender->GetParent());
-  if (pWndList) {
-    int DrawListIndex = pWndList->GetDrawIndex();
+class dlgAirspaceColors : public dlgSelectItem {
+public:
+  dlgAirspaceColors() = default;
 
-    if ((DrawListIndex < NUMAIRSPACECOLORS) && (DrawListIndex >= 0)) {
-      Surface.SelectObject(LK_BLACK_PEN);
-      Surface.SelectObject(MapWindow::GetAirspaceSldBrush(DrawListIndex));  // this is the solid brush
+protected:
+  void DrawItem(LKSurface& Surface, const PixelRect& DrawRect, size_t ItemIndex) const override {
+    Surface.SelectObject(LK_BLACK_PEN);
+    Surface.SelectObject(MapWindow::GetAirspaceSldBrush(ItemIndex));  // this is the solid brush
 
-      Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-      Surface.SetTextColor(MapWindow::GetAirspaceColour(DrawListIndex));
+    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+    Surface.SetTextColor(MapWindow::GetAirspaceColour(ItemIndex));
 
-      PixelRect rcClient(Sender->GetClientRect());
-      rcClient.Grow(DLGSCALE(-2));
-
-      Surface.Rectangle(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
-    }
-  }
-}
-
-void OnAirspaceColoursListEnter(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
-  int ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  if (ItemIndex >= ListInfo->ItemCount) {
-    ItemIndex = ListInfo->ItemCount - 1;
+    Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
   }
 
-  if (ItemIndex >= 0) {
-    if (Sender) {
-      WndForm* pForm = Sender->GetParentWndForm();
-      if (pForm) {
-        pForm->SetModalResult(mrOK);
-      }
-    }
+  int GetItemCount() const override {
+    return NUMAIRSPACECOLORS;
   }
-}
 
-void OnAirspaceColoursListInfo(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
-  if (ListInfo->DrawIndex == -1) {
-    ListInfo->ItemCount = NUMAIRSPACECOLORS;
+  const TCHAR* GetTitle() const override {
+    return MsgToken(593);
   }
-}
 
-void OnCloseClicked(WndButton* pWnd) {
-  if (pWnd) {
-    WndForm* pForm = pWnd->GetParentWndForm();
-    if (pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
-}
-
-CallBackTableEntry_t CallBackTable[] = {
-  OnPaintCallbackEntry(OnAirspaceColoursPaintListItem),
-  OnListCallbackEntry(OnAirspaceColoursListInfo),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
 };
 
 }  // namespace
 
 int dlgAirspaceColoursShowModal() {
-  std::unique_ptr<WndForm> pForm(
-      dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P));
-  if (!pForm) {
-    return -1;
-  }
-
-  auto wListEntry = dynamic_cast<WndOwnerDrawFrame*>(pForm->FindByName(TEXT("frmAirspaceColoursListEntry")));
-  if (wListEntry) {
-    wListEntry->SetCanFocus(true);
-  }
-
-  auto pWndList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmAirspaceColoursList")));
-  if (pWndList) {
-    pWndList->SetEnterCallback(OnAirspaceColoursListEnter);
-    pWndList->ResetList();
-    pWndList->Redraw();
-  }
-
-  pForm->ShowModal();
-
-  if (pWndList && pForm->GetModalResult() == mrOK) {
-    return pWndList->GetItemIndex();
-  }
-  return -1;
+  return dlgAirspaceColors().DoModal();
 }

@@ -48,11 +48,8 @@
     binfile IDR_XML_AIRSPACE_L, Common/Data/Dialogs/dlgAirspace_L.xml
     binfile IDR_XML_AIRSPACE_P, Common/Data/Dialogs/dlgAirspace_P.xml
 
-    binfile IDR_XML_AIRSPACECOLOURS_L, Common/Data/Dialogs/dlgAirspaceColours_L.xml
-    binfile IDR_XML_AIRSPACECOLOURS_P, Common/Data/Dialogs/dlgAirspaceColours_P.xml
-
-    binfile IDR_XML_AIRSPACEPATTERNS_L, Common/Data/Dialogs/dlgAirspacePatterns_L.xml
-    binfile IDR_XML_AIRSPACEPATTERNS_P, Common/Data/Dialogs/dlgAirspacePatterns_P.xml
+    binfile IDR_XML_SELECTITEM_L, Common/Data/Dialogs/dlgSelectItem_L.xml
+    binfile IDR_XML_SELECTITEM_P, Common/Data/Dialogs/dlgSelectItem_P.xml
 
     binfile IDR_XML_ANALYSIS_L, Common/Data/Dialogs/dlgAnalysis_L.xml
     binfile IDR_XML_ANALYSIS_P, Common/Data/Dialogs/dlgAnalysis_P.xml

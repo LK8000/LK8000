@@ -20,6 +20,8 @@
 #include <functional>
 #include <list>
 
+#include "Time/PeriodClock.hpp"
+
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
 #define MAXSETCAPTION 254	// max chars in SetCaption, autolimited

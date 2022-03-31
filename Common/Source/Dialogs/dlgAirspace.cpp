@@ -98,14 +98,14 @@ static void OnAirspaceListEnter(WindowControl * Sender,
     if (colormode) {
       int c = dlgAirspaceColoursShowModal();
       if (c>=0) {
-	MapWindow::iAirspaceColour[ItemIndex] = c;
-	changed = true;
+        MapWindow::iAirspaceColour[ItemIndex] = c;
+        changed = true;
       }
 #ifdef HAVE_HATCHED_BRUSH
       int p = dlgAirspacePatternsShowModal();
       if (p>=0) {
-	MapWindow::iAirspaceBrush[ItemIndex] = p;
-	changed = true;
+        MapWindow::iAirspaceBrush[ItemIndex] = p;
+        changed = true;
       }
 #endif
     } else {
