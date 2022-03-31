@@ -755,9 +755,15 @@ class WndListFrame:public WndFrame{
     void RedrawScrolled(bool all);
     bool RecalculateIndices(bool bigscroll);
     void Redraw(void);
-    int GetItemIndex(void) { 
+
+    int GetItemIndex() { 
       return (mListInfo.ScrollIndex + mListInfo.ItemIndex);
     }
+
+    int GetDrawIndex() { 
+      return (mListInfo.ScrollIndex + mListInfo.DrawIndex);
+    }
+
     void SetItemIndexPos(int iValue);
     void CenterScrollCursor(void);
 

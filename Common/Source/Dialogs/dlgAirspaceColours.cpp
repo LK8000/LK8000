@@ -12,107 +12,91 @@
 #include "LKObjects.h"
 #include "resource.h"
 
-static int ItemIndex = -1;
+namespace {
 
+void OnAirspaceColoursPaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+  auto pWndList = dynamic_cast<WndListFrame*>(Sender->GetParent());
+  if (pWndList) {
+    int DrawListIndex = pWndList->GetDrawIndex();
 
-static void UpdateList(WndListFrame* pWnd){
-  if(pWnd) {
-    pWnd->ResetList();
-    pWnd->Redraw();
+    if ((DrawListIndex < NUMAIRSPACECOLORS) && (DrawListIndex >= 0)) {
+      Surface.SelectObject(LK_BLACK_PEN);
+      Surface.SelectObject(MapWindow::GetAirspaceSldBrush(DrawListIndex));  // this is the solid brush
+
+      Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+      Surface.SetTextColor(MapWindow::GetAirspaceColour(DrawListIndex));
+
+      PixelRect rcClient(Sender->GetClientRect());
+      rcClient.Grow(DLGSCALE(-2));
+
+      Surface.Rectangle(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
+    }
   }
 }
 
-static int DrawListIndex=0;
-
-static void OnAirspaceColoursPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
-
-  if ((DrawListIndex < NUMAIRSPACECOLORS) &&(DrawListIndex>=0)) {
-    Surface.SelectObject(LKBrush_White);
-    Surface.SelectObject(LK_BLACK_PEN);
-    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-    Surface.SelectObject(MapWindow::GetAirspaceSldBrush(DrawListIndex)); // this is the solid brush
-    Surface.SetTextColor(MapWindow::GetAirspaceColour(DrawListIndex));
-    
-    const PixelRect rcClient(Sender->GetClientRect());
-    Surface.Rectangle(rcClient.left + DLGSCALE(2), 
-                      rcClient.top + DLGSCALE(2), 
-                      rcClient.right - DLGSCALE(2), 
-                      rcClient.bottom - DLGSCALE(2));
+void OnAirspaceColoursListEnter(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
+  int ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  if (ItemIndex >= ListInfo->ItemCount) {
+    ItemIndex = ListInfo->ItemCount - 1;
   }
-}
 
-
-static void OnAirspaceColoursListEnter(WindowControl * Sender,
-				WndListFrame::ListInfo_t *ListInfo) {
-
-  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  if (ItemIndex>=NUMAIRSPACECOLORS) {
-    ItemIndex = NUMAIRSPACECOLORS-1;
-  }
-  if (ItemIndex>=0) {
-    if(Sender) {
-      WndForm * pForm = Sender->GetParentWndForm();
-      if(pForm) {
+  if (ItemIndex >= 0) {
+    if (Sender) {
+      WndForm* pForm = Sender->GetParentWndForm();
+      if (pForm) {
         pForm->SetModalResult(mrOK);
       }
     }
   }
 }
 
-
-static void OnAirspaceColoursListInfo(WndListFrame * Sender,
-			       WndListFrame::ListInfo_t *ListInfo){
-
-  if (ListInfo->DrawIndex == -1){
+void OnAirspaceColoursListInfo(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
+  if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = NUMAIRSPACECOLORS;
-  } else {
-    DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
-    ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
   }
 }
 
-static void OnCloseClicked(WndButton* pWnd){
-  ItemIndex = -1;
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
+void OnCloseClicked(WndButton* pWnd) {
+  if (pWnd) {
+    WndForm* pForm = pWnd->GetParentWndForm();
+    if (pForm) {
       pForm->SetModalResult(mrOK);
     }
   }
 }
 
-
-static CallBackTableEntry_t CallBackTable[]={
+CallBackTableEntry_t CallBackTable[] = {
   OnPaintCallbackEntry(OnAirspaceColoursPaintListItem),
   OnListCallbackEntry(OnAirspaceColoursListInfo),
   ClickNotifyCallbackEntry(OnCloseClicked),
   EndCallBackEntry()
 };
 
+}  // namespace
 
-int dlgAirspaceColoursShowModal(void){
-
-  ItemIndex = -1;
-
-  WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P);
-
-  if (!wf) return -1;
-
-  WndListFrame *wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
-  if(wAirspaceColoursList) {
-    wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
+int dlgAirspaceColoursShowModal() {
+  std::unique_ptr<WndForm> pForm(
+      dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACECOLOURS_L : IDR_XML_AIRSPACECOLOURS_P));
+  if (!pForm) {
+    return -1;
   }
 
-  WndOwnerDrawFrame *wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceColoursListEntry"));
-  if(wAirspaceColoursListEntry) {
-    wAirspaceColoursListEntry->SetCanFocus(true);
+  auto wListEntry = dynamic_cast<WndOwnerDrawFrame*>(pForm->FindByName(TEXT("frmAirspaceColoursListEntry")));
+  if (wListEntry) {
+    wListEntry->SetCanFocus(true);
   }
 
-  UpdateList(wAirspaceColoursList);
+  auto pWndList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmAirspaceColoursList")));
+  if (pWndList) {
+    pWndList->SetEnterCallback(OnAirspaceColoursListEnter);
+    pWndList->ResetList();
+    pWndList->Redraw();
+  }
 
-  wf->ShowModal();
+  pForm->ShowModal();
 
-  delete wf;
-
-  return ItemIndex;
+  if (pWndList && pForm->GetModalResult() == mrOK) {
+    return pWndList->GetItemIndex();
+  }
+  return -1;
 }
