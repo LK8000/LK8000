@@ -182,15 +182,17 @@ task syncAssetDistribtionPolars(type: Sync) {
     include "Example.*"
 }
 
-preBuild.dependsOn(syncAsset)
-preBuild.dependsOn(syncAssetLanguages)
-preBuild.dependsOn(syncAssetPolars)
-preBuild.dependsOn(syncAssetSounds)
-preBuild.dependsOn(syncAssetFonts)
-preBuild.dependsOn(syncAssetDistribtionMaps)
-preBuild.dependsOn(syncAssetDistribtionWaypoints)
-preBuild.dependsOn(syncAssetDistribtionAirspaces)
-preBuild.dependsOn(syncAssetDistribtionTasks)
-preBuild.dependsOn(syncAssetDistribtionLogger)
-preBuild.dependsOn(syncAssetDistribtionConfiguration)
-preBuild.dependsOn(syncAssetDistribtionPolars)
+preBuild.dependsOn(
+        syncAsset,
+        syncAssetLanguages,
+        syncAssetPolars,
+        syncAssetSounds,
+        syncAssetFonts,
+        syncAssetDistribtionMaps,
+        syncAssetDistribtionWaypoints,
+        syncAssetDistribtionAirspaces,
+        syncAssetDistribtionTasks,
+        syncAssetDistribtionLogger,
+        syncAssetDistribtionConfiguration,
+        syncAssetDistribtionPolars
+    )
