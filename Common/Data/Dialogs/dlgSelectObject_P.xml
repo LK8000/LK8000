@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd" >
-  <WndForm Type="Dialog" X="0" Y="0" Width="240" Height="320" Font="2" >
+  <WndForm Type="Dialog" X="0" Y="0" Width="240" Height="320" Font="2" Caption="Select Object">
 
     <WndButton Name="cmdSelect" Caption="_@M595_" X="4" Y="2" Width="114"  Height="28" Font="2" Tag="3" OnClickNotify="OnSelectClicked" />
     <WndButton Name="cmdClose" Caption="_@M186_" X="118" Y="2" Width="114"  Height="28" Font="2" Tag="3" OnClickNotify="OnCloseClicked" />
