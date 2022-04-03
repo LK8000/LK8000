@@ -98,7 +98,7 @@ double FindQNH(double alt_raw, double alt_known) {
   // step 1, find static pressure from device assuming it's QNH adjusted
   double psraw = QNHAltitudeToStaticPressure(alt_raw);
   // step 2, calculate QNH so that reported alt will be known alt  
-  return AltitudeToStaticPressure(psraw, alt_known);
+  return AltitudeToStaticPressure(psraw / 100., -alt_known) / 100.;
 
   // example, QNH=1014, ps=100203
   // alt= 100
@@ -163,6 +163,8 @@ TEST_CASE("pressure") {
     return doctest::Approx(value).epsilon(0.01);
   };
 
+  double old_QNH = std::exchange(QNH, 1013.25);
+
   SUBCASE("pressure to QNE") {
     CHECK(Approx(   0.0) == StaticPressureToQNEAltitude(101325.));
     CHECK(Approx( 540.1) == StaticPressureToQNEAltitude( 95000.));
@@ -178,7 +180,7 @@ TEST_CASE("pressure") {
     CHECK(Approx( 70108.54) == QNEAltitudeToStaticPressure(3000.));
   }
 
-  double old_QNH = std::exchange(QNH, 996.);
+  QNH = 996.;
 
   SUBCASE("pressure to QNH") {
     CHECK(Approx(-144.829) == StaticPressureToQNHAltitude(101325.));
@@ -208,6 +210,14 @@ TEST_CASE("pressure") {
     CHECK(doctest::Approx(2000.) == QNHAltitudeToQNEAltitude(2000.));
     CHECK(doctest::Approx(3000.) == QNHAltitudeToQNEAltitude(3000.));
   }
+
+  SUBCASE("FindQNH") {
+    CHECK(doctest::Approx(1013.25) == FindQNH(0., 0.));
+    CHECK(doctest::Approx(1013.25) == FindQNH(100., 100.));
+    CHECK(doctest::Approx(1015.65) == FindQNH(100., 120.));
+    CHECK(doctest::Approx(1010.85) == FindQNH(120., 100.));
+  }
+
 
   QNH = old_QNH;
 }
