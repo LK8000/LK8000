@@ -19,21 +19,14 @@
 //
 // Notice> this function is not really thread safe
 //
-bool UpdateQNH( const double newqnh )
-{
-
-    static double oldqnh=0;
-
+bool UpdateQNH(double newqnh ) {
     // minimal check for acceptable qnh value, on planet Earth
     if (newqnh>100 && newqnh<1500) {
-        QNH = newqnh; // we force it just in case
-        if (oldqnh!=newqnh) {
-            CAirspaceManager::Instance().QnhChangeNotify(QNH);
-            oldqnh=newqnh;
+        if (QNH != newqnh) {
+            QNH = newqnh;
+            CAirspaceManager::Instance().QnhChangeNotify();
             return true;
         }
     }
-
     return false;
 }
-

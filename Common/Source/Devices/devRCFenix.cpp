@@ -18,10 +18,6 @@
 #include "Thread/Cond.hpp"
 #include "Thread/Mutex.hpp"
 
-extern bool UpdateQNH(const double newqnh);
-
-
-
 #define MAX_VAL_STR_LEN    60
 
 //____________________________________________________________class_definitions_

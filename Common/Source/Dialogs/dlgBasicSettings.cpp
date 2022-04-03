@@ -41,79 +41,62 @@ static void OnBallastDump(WndButton* pWnd) {
   }
 }
 
-
-static double INHg=0;
-
-static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-
-  double newqnh=0;
-  switch(Mode){
-	case DataField::daGet:
-		if (PressureHg) {
-			INHg=QNH/TOHPA;
-			Sender->Set(INHg);
-		} else {
-			Sender->Set(QNH);
-		}
-		break;
-	case DataField::daPut:
-	case DataField::daChange:
-
-
-		if (PressureHg) {
-			INHg = Sender->GetAsFloat();
-			newqnh=INHg*TOHPA;
-		} else {
-			newqnh = Sender->GetAsFloat();
-		}
-		if ( UpdateQNH(newqnh) ) {
-			devPutQNH(newqnh);
-		}
-
-		wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
-		if (wp) {
-			wp->GetDataField()->
-			SetAsFloat(Units::ToUserAltitude(GPS_INFO.BaroAltitude));
-			wp->RefreshDisplay();
-		}
-		break;
-	default:
-		break;
-  }
-
-}
-
-
-static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  static double newalt=0;
-  WndProperty* wp;
-  switch(Mode){
-	case DataField::daGet:
-	break;
-  case DataField::daPut:
-  case DataField::daChange:
-	newalt = Sender->GetAsFloat();
-        QNH=FindQNH(GPS_INFO.BaroAltitude,Units::ToSysAltitude(newalt));  // 100411
-	wp = (WndProperty*)wf->FindByName(TEXT("prpQNH"));
-	if (wp) {
-		if (PressureHg) {
-			INHg=QNH/TOHPA;
-			wp->GetDataField()-> SetAsFloat(INHg);
-		} else {
-			wp->GetDataField()-> SetAsFloat(QNH);
-		}
-		wp->RefreshDisplay();
-	}
-    UpdateQNH(QNH);
-	break;
-  case DataField::daInc:
-  case DataField::daDec:
-  case DataField::daSpecial:
-    break;
+static void OnQnhData(DataField* Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      if (PressureHg) {
+        Sender->Set(QNH / TOHPA);
+      } else {
+        Sender->Set(QNH);
+      }
+      break;
+    case DataField::daPut:
+    case DataField::daChange: {
+      double newqnh = Sender->GetAsFloat();
+      if (PressureHg) {
+        newqnh *= TOHPA;
+      }
+      if (UpdateQNH(newqnh)) {
+        devPutQNH(newqnh);
+      }
+      auto wp = dynamic_cast<WndProperty*>(wf->FindByName(TEXT("prpAltitude")));
+      if (wp) {
+        wp->GetDataField()->SetAsFloat(Units::ToUserAltitude(GPS_INFO.BaroAltitude));
+        wp->RefreshDisplay();
+      }
+    } break;
+    default:
+      break;
   }
 }
 
+static void OnAltitudeData(DataField* Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      break;
+    case DataField::daPut:
+    case DataField::daChange: {
+      double newalt = Sender->GetAsFloat();
+      double newqnh = FindQNH(GPS_INFO.BaroAltitude, Units::ToSysAltitude(newalt));  // 100411
+      auto wp = dynamic_cast<WndProperty*>(wf->FindByName(TEXT("prpQNH")));
+      if (wp) {
+        if (PressureHg) {
+          wp->GetDataField()->SetAsFloat(newqnh / TOHPA);
+        } else {
+          wp->GetDataField()->SetAsFloat(newqnh);
+        }
+        wp->RefreshDisplay();
+      }
+      if (UpdateQNH(newqnh)) {
+        devPutQNH(newqnh);  
+      }
+    } break;
+    case DataField::daInc:
+    case DataField::daDec:
+    case DataField::daSpecial:
+      break;
+  }
+}
 
 static void SetBallast(bool updateDevices) {
   WndProperty* wp;
@@ -352,29 +335,29 @@ void dlgBasicSettingsShowModal(void){
     wp = (WndProperty*)wf->FindByName(TEXT("prpWingLoading"));
     if (wp) {
       if (GlidePolar::WingLoading>0.1) {
-	if (ISPARAGLIDER) {
-		wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
-		wp->GetDataField()->SetEditFormat(_T("%1.1f"));
-		wp->GetDataField()->SetMin(1.0);
-		wp->GetDataField()->SetStep(0.1);
-	}
-	if (ISGLIDER) {
-		wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
-		wp->GetDataField()->SetEditFormat(_T("%1.1f"));
-		wp->GetDataField()->SetMin(5.0);
-		wp->GetDataField()->SetStep(0.5);
-	}
-	wp->GetDataField()-> SetAsFloat(GlidePolar::WingLoading);
+        if (ISPARAGLIDER) {
+          wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
+          wp->GetDataField()->SetEditFormat(_T("%1.1f"));
+          wp->GetDataField()->SetMin(1.0);
+          wp->GetDataField()->SetStep(0.1);
+        }
+        if (ISGLIDER) {
+          wp->GetDataField()->SetDisplayFormat(_T("%.1f kg/m2"));
+          wp->GetDataField()->SetEditFormat(_T("%1.1f"));
+          wp->GetDataField()->SetMin(5.0);
+          wp->GetDataField()->SetStep(0.5);
+        }
+        wp->GetDataField()->SetAsFloat(GlidePolar::WingLoading);
       } else {
-	wp->SetVisible(false);
+        wp->SetVisible(false);
       }
       wp->RefreshDisplay();
     }
     if (CALCULATED_INFO.Flying) {
-	wp = (WndProperty*)wf->FindByName(TEXT("prpQNH"));
-	if (wp) {
-		wp->GetDataField()->SetDisplayFormat(_T("%.0f"));
-	}
+        wp = (WndProperty*)wf->FindByName(_T("prpQNH"));
+        if (wp) {
+          wp->GetDataField()->SetDisplayFormat(_T("%.0f"));
+        }
     }
 
     wf->ShowModal();

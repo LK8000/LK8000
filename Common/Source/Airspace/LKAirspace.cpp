@@ -2497,7 +2497,7 @@ void CAirspaceManager::CloseAirspaces() {
     StartupStore(TEXT(". CloseLKAirspace%s"), NEWLINE);
 }
 
-void CAirspaceManager::QnhChangeNotify(const double &newQNH) {
+void CAirspaceManager::QnhChangeNotify() {
     ScopeLock guard(_csairspaces);
     for (CAirspace* pAsp : _airspaces) {
         pAsp->QnhChangeNotify();

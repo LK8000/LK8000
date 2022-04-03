@@ -453,7 +453,7 @@ public:
   #if ASPWAVEOFF
   void AirspaceDisableWaveSectors();
   #endif
-  void QnhChangeNotify(const double &newQNH);
+  void QnhChangeNotify();
 
   int ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmBasicSettingRegular" Type="Dialog" X="5" Y="5" Width="310" Height="230" Caption="_@M129_" Popup="1" Font="2" >
-    <WndButton   Name="buttonClose" Caption="_@M583_"    X="165" Y="167" Width="143"  Height="42" Font="2" OnClickNotify="OnCloseClicked"/>
-    <WndButton   Name="buttonDumpBallast" Caption="_@M212_"    X="2" Y="-999" Width="165"  Height="42" Font="2" OnClickNotify="OnBallastDump"/>
-    <WndButton   Name="buttonStopDump" Caption="_@M573_" X="2" Y="-999" Width="165"  Height="42" Font="2" OnClickNotify="OnBallastDump"/>
-    <WndProperty Name="prpBallastPercent" Caption="_@M125_"  X="2" Y="2"  Width="165" Height="42" CaptionWidth="78" Font="2" Help="_@H300_">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="0" Max="100" Step="5"  OnDataAccess="OnBallastData" />
+    <WndButton Name="buttonClose" Caption="_@M583_" X="165" Y="167" Width="143" Height="42" Font="2" OnClickNotify="OnCloseClicked"/>
+    <WndButton Name="buttonDumpBallast" Caption="_@M212_" X="2" Y="-999" Width="165" Height="42" Font="2" OnClickNotify="OnBallastDump"/>
+    <WndButton Name="buttonStopDump" Caption="_@M573_" X="2" Y="-999" Width="165" Height="42" Font="2" OnClickNotify="OnBallastDump"/>
+    <WndProperty Name="prpBallastPercent" Caption="_@M125_" X="2" Y="2" Width="165" Height="42" CaptionWidth="78" Font="2" Help="_@H300_">
+      <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="0" Max="100" Step="5" OnDataAccess="OnBallastData" />
     </WndProperty>
-    <WndProperty Name="prpBallastLitres" Caption="_@M788_" X="165" Y="-999"  Width="143" Height="42" CaptionWidth="78" Font="2" ReadOnly="1">
+    <WndProperty Name="prpBallastLitres" Caption="_@M788_" X="165" Y="-999" Width="143" Height="42" CaptionWidth="78" Font="2" ReadOnly="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f L" EditFormat="%.0f" ReadOnly="1" />
     </WndProperty>
-    <WndProperty Name="prpWingLoading" Caption="_@M821_" X="2" Y="-997"  Width="165" Height="42" CaptionWidth="78" Font="2" Help="_@H301_">
+    <WndProperty Name="prpWingLoading" Caption="_@M821_" X="2" Y="-997" Width="165" Height="42" CaptionWidth="78" Font="2" Help="_@H301_">
       <DataField Name="" DataType="double" DisplayFormat="%.0f kg/m2" EditFormat="%1.0f" Min="5" Max="100" Step="1.0" OnDataAccess="OnWingLoadingData" />
     </WndProperty>
-    <WndProperty  Name="prpBugs" Caption="_@M253_"     X="165" Y="-999"  Width="143" Height="42" CaptionWidth="78" Font="2" Help="_@H302_">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="50" Max="100" Step="1"  OnDataAccess="OnBugsData"/>
+    <WndProperty Name="prpBugs" Caption="_@M253_" X="165" Y="-999" Width="143" Height="42" CaptionWidth="78" Font="2" Help="_@H302_">
+      <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="50" Max="100" Step="1" OnDataAccess="OnBugsData"/>
     </WndProperty>
-    <WndProperty Name="prpQNH" Caption="QNH "  X="2" Y="-997"   Width="165" Height="42" CaptionWidth="78" Font="2" Help="_@H303_" Keyboard="1">
-      <DataField Name="" DataType="double" DisplayFormat="%.2f" EditFormat="%.2f" Min="1" Max="1300" Step="0.01" OnDataAccess="OnQnhData"/>
+    <WndProperty Name="prpQNH" Caption="QNH " X="2" Y="-997" Width="165" Height="42" CaptionWidth="78" Font="2" Help="_@H303_" Keyboard="1">
+      <DataField Name="" DataType="double" DisplayFormat="%.2f" EditFormat="%.2f" Min="700" Max="1300" Step="0.01" OnDataAccess="OnQnhData"/>
     </WndProperty>
-    <WndProperty Name="prpAltitude" Caption="_@M88_" X="165" Y="-999"  Width="143" Height="42" CaptionWidth="78" Font="2" Help="_@H304_" Keyboard="1">
+    <WndProperty Name="prpAltitude" Caption="_@M88_" X="165" Y="-999" Width="143" Height="42" CaptionWidth="78" Font="2" Help="_@H304_" Keyboard="1">
       <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" OnDataAccess="OnAltitudeData" />
     </WndProperty>
-    <WndProperty Caption="_@M428_"     X="2" Y="-997"  Width="165" Height="22" CaptionWidth="78" Font="2" Help="_@H305_">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="50" Step="1"  OnDataAccess="OnTempData"/>
+    <WndProperty Caption="_@M428_" X="2" Y="-997" Width="165" Height="22" CaptionWidth="78" Font="2" Help="_@H305_">
+      <DataField Name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="50" Step="1" OnDataAccess="OnTempData"/>
     </WndProperty>
   </WndForm>
 </PMML>
