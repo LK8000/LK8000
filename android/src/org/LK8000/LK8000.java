@@ -93,14 +93,12 @@ public class LK8000 extends Activity {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      AudioManager myAudioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-      final String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-      final int sampleRate = Integer.parseInt(sampleRateStr);
-      final String framesPerBurstStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-      final int framesPerBurst = Integer.parseInt(framesPerBurstStr);
-      setDefaultStreamValues(sampleRate, framesPerBurst);
-    }
+    AudioManager myAudioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    final String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+    final int sampleRate = Integer.parseInt(sampleRateStr);
+    final String framesPerBurstStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+    final int framesPerBurst = Integer.parseInt(framesPerBurstStr);
+    setDefaultStreamValues(sampleRate, framesPerBurst);
 
     initialiseNative();
 
@@ -126,12 +124,10 @@ public class LK8000 extends Activity {
     /* Workaround for layout problems in Android KitKat with immersive full
        screen mode: Sometimes the content view was not initialized with the
        correct size, which caused graphics artifacts. */
-    if (android.os.Build.VERSION.SDK_INT >= 19) {
-      getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN|
-                           WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS|
-                           WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR|
-                           WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-    }
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN|
+                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS|
+                         WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR|
+                         WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
     enableImmersiveModeIfSupported();
 
@@ -257,8 +253,7 @@ public class LK8000 extends Activity {
 
   private void enableImmersiveModeIfSupported() {
     // Set / Reset the System UI visibility flags for Immersive Full Screen Mode, if supported
-    if (android.os.Build.VERSION.SDK_INT >= 19)
-      ImmersiveFullScreenMode.enable(getWindow().getDecorView());
+    ImmersiveFullScreenMode.enable(getWindow().getDecorView());
   }
 
   @Override protected void onResume() {

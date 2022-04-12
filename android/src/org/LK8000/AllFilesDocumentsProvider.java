@@ -42,7 +42,6 @@ import android.provider.DocumentsContract.Root;
 import android.provider.DocumentsProvider;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,7 +50,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 
-@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class AllFilesDocumentsProvider extends DocumentsProvider {
     private final static String AUTHORITY = BuildConfig.APPLICATION_ID + ".allfiles";
 

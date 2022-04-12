@@ -3,7 +3,6 @@ package org.LK8000;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.DocumentsContract;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -138,11 +137,7 @@ public class FileUtils {
 
     public static String getDocumentType(final File file) throws FileNotFoundException {
         if (file.isDirectory()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                return DocumentsContract.Document.MIME_TYPE_DIR;
-            } else {
-                return "vnd.android.document/directory";
-            }
+            return DocumentsContract.Document.MIME_TYPE_DIR;
         }
         if (file.getName().equalsIgnoreCase("runtime.log")) {
             return "text/plain";

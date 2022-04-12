@@ -88,11 +88,7 @@ public class SoundUtil {
                 soundPool = createSoundPoolCompat();
             }
 
-            soundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
-                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                    soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
-                }
-            });
+            soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f));
 
         } catch (Exception e) {
             Log.e(TAG, e.toString());

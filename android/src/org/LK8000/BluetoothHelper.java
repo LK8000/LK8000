@@ -65,7 +65,7 @@ final class BluetoothHelper {
   }
 
   public static void Initialize(Context context) {
-    hasLe = adapter != null && android.os.Build.VERSION.SDK_INT >= 18 &&
+    hasLe = adapter != null &&
       context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
   }
 
@@ -156,7 +156,7 @@ final class BluetoothHelper {
     if (device == null)
       return null;
 
-    if (hasLe && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (hasLe) {
       if (isUnknownType(device)) {
 
         BluetoothAdapter.LeScanCallback callback = (device1, rssi, scanRecord) -> {

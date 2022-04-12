@@ -58,10 +58,10 @@ void
 NativeLeScanCallback::Initialise(JNIEnv *env)
 {
 
-  if (android_get_device_api_level()  < __ANDROID_API_J_MR2__ ||
-      !cls.FindOptional(env, "org/LK8000/NativeLeScanCallback"))
+  if (!cls.FindOptional(env, "org/LK8000/NativeLeScanCallback")) {
     /* Bluetooth LE not supported on this Android version */
     return;
+  }
 
   ctor = env->GetMethodID(cls, "<init>", "(J)V");
   ptr_field = env->GetFieldID(cls, "ptr", "J");
