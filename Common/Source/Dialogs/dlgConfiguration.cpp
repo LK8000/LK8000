@@ -3427,6 +3427,7 @@ void dlgConfigurationShowModal(short mode){
   wf->ShowModal();
   
   bool notify_units_change = false;
+  bool notify_reset_zoom = false;
 
 #ifdef ANDROID
     // stop LE Scanner first dialog close
@@ -3956,6 +3957,7 @@ int ival;
     if ((int)DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
       DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
+      notify_reset_zoom = true;
     }
   }
 
@@ -4507,6 +4509,14 @@ int ival;
   
   if(notify_units_change) {
     Units::NotifyUnitChanged();
+  }
+  
+  // ! important ! need to be done after #Units::NotifyUnitChanged()
+  if(notify_reset_zoom) {
+      MapWindow::zoom.Reset();
+      MapWindow::zoom.ModifyMapScale();
+      MapWindow::FillScaleListForEngineeringUnits();
+      MapWindow::RefreshMap();
   }
 
   if (waypointneedsave) {
