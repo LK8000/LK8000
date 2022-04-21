@@ -102,9 +102,9 @@ struct waypoint_helper : public WAYPOINT {
   }
 
   void set_description(const char* utf8_string) {
-    size_t len = strlen(utf8_string) + 1;
-    Comment = (TCHAR*) malloc(len * sizeof(TCHAR));
-    from_utf8(utf8_string, Comment, len);
+    size_t size = from_utf8(utf8_string, Comment, 0) + 1;
+    Comment = (TCHAR*) malloc(size * sizeof(TCHAR));
+    from_utf8(utf8_string, Comment, size);
   }
 
 };

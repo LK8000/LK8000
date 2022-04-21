@@ -16,7 +16,6 @@
 #include "utils/openzip.h"
 #include "Util/ScopeExit.hxx"
 #include "Library/rapidxml/rapidxml.hpp"
-// #define TASK_DETAILS
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
@@ -109,21 +108,17 @@ bool LoadGpxTask(LPCTSTR szFileName) {
 
                 xml_node* comment = WPnode->first_node("cmt");
                 if(comment && comment->value()) {
-                    size_t len = strlen(comment->value())+1;
-                    newPoint.Comment = (TCHAR*) malloc(len * sizeof(TCHAR));
-                    from_utf8(comment->value(), newPoint.Comment, len);
+                    size_t size = from_utf8(comment->value(), newPoint.Comment, 0);
+                    newPoint.Comment = (TCHAR*) malloc(size * sizeof(TCHAR));
+                    from_utf8(comment->value(), newPoint.Comment, size);
                 }
 
-#ifdef TASK_DETAILS
                 xml_node* detail = WPnode->first_node("desc");
                 if(detail && detail->value()) {
-                    size_t len = strlen(detail->value())+1;
-                    newPoint.Details = (TCHAR*) malloc(len * sizeof(TCHAR));
-                    from_utf8(detail->value(), newPoint.Details, len);
+                    size_t size = from_utf8(detail->value(), newPoint.Details, 0);
+                    newPoint.Details = (TCHAR*) malloc(size * sizeof(TCHAR));
+                    from_utf8(detail->value(), newPoint.Details, size);
                 }
-#else
-                newPoint.Details = nullptr;
-#endif
 
                 WPnode = WPnode->next_sibling("rtept");
 
@@ -143,15 +138,16 @@ bool LoadGpxTask(LPCTSTR szFileName) {
                     Task[idx++].Index=ix;
                 }
 
-#ifdef TASK_DETAILS
                 if (newPoint.Details) {
                     free(newPoint.Details);
+                    newPoint.Details = nullptr;
                 }
-#endif
 
                 if (newPoint.Comment) {
                     free(newPoint.Comment);
+                    newPoint.Comment = nullptr;
                 }
+
             } while(WPnode); //for(each node in rtept)
         } //if(rootNode)
     } //if(stream)

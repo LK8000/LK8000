@@ -53,13 +53,8 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         memcpy(&new_waypoint, read_waypoint, sizeof(WAYPOINT));
         // this is  needed for avoid freeing twice ...
         // ownership of allocated memory is transferred from "read_waypoint" to "new_waypoint"
-        read_waypoint->Comment = NULL;
-
-        #if TASK_DETAILS
-        read_waypoint->Details = NULL;
-        #else
-        new_waypoint.Details = NULL;
-        #endif
+        read_waypoint->Comment = nullptr;
+        read_waypoint->Details = nullptr;
 
         new_waypoint.FileNum=-1; // HERE WE SET THE FLAG FOR "DO NOT SAVE TO WAYPOINT FILE"
         if(AddWaypoint(new_waypoint)) {

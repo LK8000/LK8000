@@ -629,10 +629,9 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
     const char* comment = GetAttribute(node, "comment");
     SetWaypointComment(newPoint, utf8_to_tstring(comment).c_str());
 
-#if TASK_DETAILS
-    GetAttribute(node, "details", szAttr);
-    SetWaypointDetails(newPoint, szAttr);
-#endif
+    const char* details = GetAttribute(node, "details");
+    SetWaypointDetails(newPoint, utf8_to_tstring(details).c_str());
+
     GetAttribute(node, "format", newPoint.Format);
     GetAttribute(node, "freq", newPoint.Freq);
     GetAttribute(node, "runwayLen", newPoint.RunwayLen);
@@ -647,13 +646,15 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
         return;
     }
     mWayPointLoaded[newPoint.Name] = ix;
-#if TASK_DETAILS
+
     if (newPoint.Details) {
         free(newPoint.Details);
+        newPoint.Details = nullptr;
     }
-#endif
+
     if (newPoint.Comment) {
         free(newPoint.Comment);
+        newPoint.Comment = nullptr;
     }
 }
 
@@ -1022,11 +1023,9 @@ bool CTaskFileHelper::SaveWayPoint(xml_node* node, const WAYPOINT& WayPoint) {
     if (WayPoint.Comment && _tcslen(WayPoint.Comment) > 0) {
         SetAttribute(node, "comment", WayPoint.Comment);
     }
-#if TASK_DETAILS
     if (WayPoint.Details && _tcslen(WayPoint.Details) > 0) {
         SetAttribute(node, "details", WayPoint.Details);
     }
-#endif
     SetAttribute(node, "format", WayPoint.Format);
     if (_tcslen(WayPoint.Freq) > 0) {
         SetAttribute(node, "freq", WayPoint.Freq);
