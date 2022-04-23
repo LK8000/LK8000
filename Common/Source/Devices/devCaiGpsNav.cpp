@@ -416,6 +416,5 @@ void CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
   _tcscpy(d->Name, GetName());
   d->Open         = Open;
   d->Declare      = DeclareTask;
-  d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 }

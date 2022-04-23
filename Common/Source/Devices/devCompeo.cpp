@@ -32,12 +32,6 @@ static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 }
 
 
-static BOOL CompeoIsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 static BOOL CompeoIsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
@@ -50,7 +44,6 @@ void CompeoInstall(PDeviceDescriptor_t d) {
 
   _tcscpy(d->Name, TEXT("Brauniger/Compeo 5030"));
   d->ParseNMEA = CompeoParseNMEA;
-  d->IsGPSSource = CompeoIsGPSSource;
   d->IsBaroSource = CompeoIsBaroSource;
 }
 

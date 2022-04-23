@@ -85,12 +85,11 @@ struct gps_fix {
 };
 
 /**
- * Predicate : connected gps without valid fix
+ * Predicate : connected gps receving data
  */
-struct gps_no_fix {
+struct gps_with_data {
   bool operator()(DeviceDescriptor_t& dev) {
-    return !dev.Disabled && devIsGPSSource(dev) 
-              && ((LKHearthBeats - dev.HB) < 10);
+    return !dev.Disabled && ((LKHearthBeats - dev.HB) < 10);
   }
 };
 
@@ -143,7 +142,7 @@ bool UpdateMonitor() {
     // No valid fix on any port. We use the first port with at least some data going through!
     // This will keep probably at least the time updated since the gps may still be receiving a 
     // valid time, good for us.
-    active = find_device(gps_no_fix());
+    active = find_device(gps_with_data());
   }
 
   if (!active) {

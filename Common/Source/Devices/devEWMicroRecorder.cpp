@@ -253,6 +253,5 @@ void ewMicroRecorderInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("EW MicroRecorder"));
   d->ParseNMEA = EWMicroRecorderParseNMEA;
   d->Declare = EWMicroRecorderDeclare;
-  d->IsGPSSource = EWMicroRecorderIsTrue;
   d->IsBaroSource = EWMicroRecorderIsTrue;
 }

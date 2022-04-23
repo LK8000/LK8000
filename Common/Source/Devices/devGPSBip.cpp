@@ -60,6 +60,5 @@ void GPSBipInstall(PDeviceDescriptor_t d) {
 
   _tcscpy(d->Name, szDeviceName);
   d->ParseNMEA = ParseNMEA;
-  d->IsGPSSource = GetTrue;
   d->IsBaroSource = GetTrue;
 }

@@ -34,12 +34,6 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 }
 
 
-BOOL B50IsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE); // ? is this true
-}
-
-
 BOOL B50IsBaroSource(PDeviceDescriptor_t d){
   (void)d;
   return(bBaroAvailable); // ? is this true
@@ -49,7 +43,6 @@ void b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
-  d->IsGPSSource = B50IsGPSSource;
   d->IsBaroSource = B50IsBaroSource;
 }
 

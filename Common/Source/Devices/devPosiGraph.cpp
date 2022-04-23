@@ -57,7 +57,6 @@ void pgInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
-  d->IsGPSSource = PGIsGPSSource;
   d->IsBaroSource = PGIsBaroSource;
 }
 

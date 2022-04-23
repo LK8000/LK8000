@@ -132,7 +132,6 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutBugs      = EOSPutBugs;
   d->PutBallast   = EOSPutBallast;
   d->Declare      = DeclareTask;
-  d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
 

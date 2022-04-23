@@ -462,11 +462,6 @@ BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
 }
 
-BOOL cai302IsGPSSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
 BOOL cai302IsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
@@ -482,7 +477,6 @@ void cai302Install(PDeviceDescriptor_t d){
   d->Open = cai302Open;
   d->Close = cai302Close;
   d->Declare = cai302Declare;
-  d->IsGPSSource = cai302IsGPSSource;
   d->IsBaroSource = cai302IsBaroSource;
 }
 

@@ -54,12 +54,6 @@ static BOOL ZanderIsLogger(PDeviceDescriptor_t d){
 */
 
 
-static BOOL ZanderIsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 static BOOL ZanderIsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
@@ -69,7 +63,6 @@ static BOOL ZanderIsBaroSource(PDeviceDescriptor_t d){
 void zanderInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Zander"));
   d->ParseNMEA = ZanderParseNMEA;
-  d->IsGPSSource = ZanderIsGPSSource;
   d->IsBaroSource = ZanderIsBaroSource;
 }
 

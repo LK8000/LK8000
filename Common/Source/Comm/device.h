@@ -94,7 +94,6 @@ struct DeviceDescriptor_t {
   BOOL (*Close)(DeviceDescriptor_t *d);
   BOOL (*LinkTimeout)(DeviceDescriptor_t *d);
   BOOL (*Declare)(DeviceDescriptor_t *d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
-  BOOL (*IsGPSSource)(DeviceDescriptor_t *d);
   BOOL (*IsBaroSource)(DeviceDescriptor_t *d);
   BOOL (*IsRadio)(DeviceDescriptor_t *d);
   BOOL (*PutQNH)(DeviceDescriptor_t *d, double NewQNH);
@@ -170,7 +169,6 @@ BOOL devPutFreqStandby(unsigned Freq, const TCHAR* StationName);
 BOOL devLinkTimeout();
 BOOL devDeclare(PDeviceDescriptor_t	d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(DeviceDescriptor_t& d);
-BOOL devIsGPSSource(DeviceDescriptor_t& dev);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 

@@ -47,12 +47,6 @@ static BOOL DigiflyIsLogger(PDeviceDescriptor_t d){
 }
 */
 
-static BOOL DigiflyIsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 static BOOL DigiflyIsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
@@ -64,7 +58,6 @@ void DigiflyInstall(PDeviceDescriptor_t d) {
 
   _tcscpy(d->Name, TEXT("Digifly"));
   d->ParseNMEA = DigiflyParseNMEA;
-  d->IsGPSSource = DigiflyIsGPSSource;
   d->IsBaroSource = DigiflyIsBaroSource;
 }
 

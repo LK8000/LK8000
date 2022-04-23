@@ -249,6 +249,5 @@ void XCTracerInstall(PDeviceDescriptor_t d) {
 
     _tcscpy(d->Name, _T("XCTracer"));
     d->ParseNMEA = XCTracerParseNMEA;
-    d->IsGPSSource = XCTracerTrue;
     d->IsBaroSource = XCTracerTrue;
 }

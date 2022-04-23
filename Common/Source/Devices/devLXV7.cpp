@@ -51,7 +51,6 @@ void DevLXV7::Install(PDeviceDescriptor_t d)
   d->PutMacCready = LXV7PutMacCready;
   d->PutBugs      = LXV7PutBugs; // removed to prevent cirvular updates
   d->PutBallast   = LXV7PutBallast;
-  d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
   d->DirectLink   = LXV7DirectLink;
 } // Install()

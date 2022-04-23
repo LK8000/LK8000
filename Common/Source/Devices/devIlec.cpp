@@ -33,13 +33,6 @@ static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 
 }
 
-
-static BOOL IlecIsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 static BOOL IlecIsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
@@ -49,7 +42,6 @@ static BOOL IlecIsBaroSource(PDeviceDescriptor_t d){
 void IlecInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Ilec SN10"));
   d->ParseNMEA = IlecParseNMEA;
-  d->IsGPSSource = IlecIsGPSSource;
   d->IsBaroSource = IlecIsBaroSource;
 }
 

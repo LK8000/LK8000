@@ -30,7 +30,6 @@ void DevLX::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
-  d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 } // Install()
 

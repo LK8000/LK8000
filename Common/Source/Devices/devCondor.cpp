@@ -42,12 +42,6 @@ static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 }
 
 
-static BOOL CondorIsGPSSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 static BOOL CondorIsBaroSource(PDeviceDescriptor_t d){
 	(void)d;
   return(TRUE);
@@ -59,7 +53,6 @@ void condorInstall(PDeviceDescriptor_t d) {
   StartupStore(_T(". Condor device installed%s"),NEWLINE);
   _tcscpy(d->Name, TEXT("Condor"));
   d->ParseNMEA = CondorParseNMEA;
-  d->IsGPSSource = CondorIsGPSSource;
   d->IsBaroSource = CondorIsBaroSource;
   DevIsCondor = true;
 }

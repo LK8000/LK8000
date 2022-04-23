@@ -382,7 +382,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Close = nullptr;
     LinkTimeout = nullptr;
     Declare = nullptr;
-    IsGPSSource = nullptr;
     IsBaroSource = nullptr;
     IsRadio = nullptr;
     PutQNH = nullptr;
@@ -875,13 +874,6 @@ BOOL devDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBu
 BOOL devIsLogger(DeviceDescriptor_t& d) {
   ScopeLock Lock(CritSec_Comm);
   return d.Declare || d.nmeaParser.isFlarm;
-}
-
-/**
- * used only in UpdateMonitor() : already under LockComm ...
- */
-BOOL devIsGPSSource(DeviceDescriptor_t& dev) {
-  return dev.IsGPSSource && dev.IsGPSSource(&dev);
 }
 
 /**
