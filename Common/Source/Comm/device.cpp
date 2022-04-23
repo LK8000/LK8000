@@ -450,23 +450,24 @@ static bool IsIdenticalPort(int i, int j) {
 
   // same port name.
   if (PortA == PortB) {
-    return false;
-  }
 
-  if (PortA == _T("UDPServer")) {
-    // two udp port on same port.
-    return (ConfigA.dwIpPort == ConfigB.dwIpPort);
-  }
+    if (PortA == _T("UDPServer")) {
+      // two udp port on same port.
+      return (ConfigA.dwIpPort == ConfigB.dwIpPort);
+    }
 
-  if (PortA == _T("TCPServer")) {
-    // two tcp server port on same port.
-    return (ConfigA.dwIpPort == ConfigB.dwIpPort);
-  }
+    if (PortA == _T("TCPServer")) {
+      // two tcp server port on same port.
+      return (ConfigA.dwIpPort == ConfigB.dwIpPort);
+    }
 
-  if (PortA == _T("TCPClient")) {
-    // two tcp client port on same adress/port.
-    return (ConfigA.dwIpPort == ConfigB.dwIpPort)
-        && (_tcscmp(ConfigA.szIpAddress, ConfigB.szIpAddress) == 0);
+    if (PortA == _T("TCPClient")) {
+      // two tcp client port on same adress/port.
+      return (ConfigA.dwIpPort == ConfigB.dwIpPort)
+          && (_tcscmp(ConfigA.szIpAddress, ConfigB.szIpAddress) == 0);
+    }
+
+    return true;
   }
 
   return false;
