@@ -15,43 +15,46 @@
 #include <array>
 #include "DeviceRegister.h"
 
-using std::placeholders::_1;
 
-static const
-TCHAR szDeviceName[] = TEXT("GPSBip");
+namespace {
 
-static const TCHAR* DeviceNameList[] = {
-  TEXT("LK8EX1"),
-  TEXT("C-Probe"),
-};
+  const TCHAR szDeviceName[] = _T("GPSBip");
 
-static
-std::array<DeviceDescriptor_t, std::size(DeviceNameList)> DeviceDesciptorList;
+  const TCHAR* DeviceNameList[] = {
+    _T("LK8EX1"),
+    _T("C-Probe"),
+  };
 
+  std::array<DeviceDescriptor_t, std::size(DeviceNameList)> DeviceDesciptorList;
 
-static
-BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO) {
-  for(auto& Dev : DeviceDesciptorList) {
-    if(Dev.ParseNMEA && Dev.ParseNMEA(d, String, GPS_INFO)) {
-      return TRUE;
+  BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO) {
+    for(auto& Dev : DeviceDesciptorList) {
+      if(Dev.ParseNMEA && Dev.ParseNMEA(d, String, GPS_INFO)) {
+        return TRUE;
+      }
     }
+    return FALSE;
   }
-  return FALSE;
-}
 
-static
-BOOL GetTrue(DeviceDescriptor_t *d) {
-  return TRUE;
-}
+  BOOL GetTrue(DeviceDescriptor_t *d) {
+    return TRUE;
+  }
+
+} // namespace
+
 
 void GPSBipInstall(PDeviceDescriptor_t d) {
 
-  LKASSERT(DeviceDesciptorList.size() == std::size(DeviceNameList));
+  static_assert(DeviceDesciptorList.size() == std::size(DeviceNameList));
+
   auto ItOut = std::begin(DeviceDesciptorList);
   for(auto DevName : DeviceNameList) {
+    auto& descriptor = *(ItOut++);
+    descriptor.InitStruct(d->PortNumber);
+
     const DeviceRegister_t* pDev = GetRegisteredDevice(DevName);
     if (pDev) {
-      pDev->Installer(ItOut++);
+      pDev->Installer(&descriptor);
     }
   }
 
