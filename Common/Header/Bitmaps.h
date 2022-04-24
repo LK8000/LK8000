@@ -148,4 +148,8 @@ BEXTMODE LKIcon hClimb;
 BEXTMODE LKBitmap hFinalGlide;
 
 BEXTMODE LKIcon hMcVario;
+
+BEXTMODE LKIcon hXCFF;
+BEXTMODE LKIcon hXCFT;
+BEXTMODE LKIcon hXCFAI;
 #endif

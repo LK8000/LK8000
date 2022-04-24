@@ -327,11 +327,12 @@ void FillDataOptions() {
 	SetDataOption(LK_XC_CLOSURE_PERC, ugDistance, TEXT("_@M2264_"), TEXT("_@M2275_"));		// AdditionalContest combined closure %
 	SetDataOption(LK_XC_PREDICTED_DIST, ugDistance, TEXT("_@M2265_"), TEXT("_@M2276_"));		   // Additional Contest combined distance
 	SetDataOption(LK_XC_MEAN_SPEED, ugDistance, TEXT("_@M2277_"), TEXT("_@M2278_"));		   // Additional Contest combined distance
-	SetDataOption(LK_TIMETASK, ugDistance, TEXT("_@M2427_"), TEXT("_@M2488_"));		   // Elapsed task time (time since start
+	SetDataOption(LK_XC_TYPE, ugDistance, TEXT("_@M002495_"), TEXT("_@M002495_"));		   // Type of result in XC
+	SetDataOption(LK_TIMETASK, ugNone, TEXT("_@M2427_"), TEXT("_@M2488_"));		   // Elapsed task time (time since start
 
 
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-	static_assert(LK_ALTERN1_QNH_ARRIV < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
+	static_assert(LK_XC_TYPE < NUMDATAOPTIONS_MAX, "NUMDATAOPTIONS_MAX are too small");
 
 
 	// Fill all null string pointer with empty string, avoid to check all time is used.

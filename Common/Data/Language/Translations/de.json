@@ -2198,5 +2198,12 @@
     "_@M002453_": "Außerhalb",
     "_@M002454_": "Innerhalb & Außerhalb",
     "_@H001291_": "Konischer ESS Basis Radius",
-    "_@M000003_": "VG"
+    "_@M000003_": "VG",
+
+    "_@M002495_": "XC TYPE",
+    "_@H000956_": "[XC TYPE]\nXC TYPE bei maximaler Punktzahl (FAI Dreieck, FREIES DREIECK oder FREIER Flug).\nWert wird als Icon dargestellt\nDieser Wert ist nur verfügbar, wenn das XC Modul auf Seite 22 der Systemkonfiguration aktiviert ist",
+    "_@M002496_": "FF",
+    "_@M002497_": "FD",
+    "_@M002498_": "FAI"
+
 }

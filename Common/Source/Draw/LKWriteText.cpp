@@ -9,6 +9,7 @@
 #include "utils/lookup_table.h"
 #include "externs.h"
 #include "RGB.h"
+#include "Bitmaps.h"
 
 // TextColor -> Inverted TextColor
 constexpr auto ColorInvert = lookup_table<LKColor, LKColor>({
@@ -42,6 +43,17 @@ constexpr auto ColorOutLine = lookup_table<LKColor, std::pair<LKColor, bool>>({
 
 LKColor MapWindow::GetOutlineColor(LKColor color) {
     return ColorOutLine.get(color, {RGB_BLACK, true}).first;
+}
+
+const LKIcon* MapWindow::GetDrawBmpIcon(DrawBmp_t bmp) {
+    switch (bmp) {
+        case BmpNone: return nullptr;
+        case BmpFF: return &hXCFF;
+        case BmpFT: return &hXCFT;
+        case BmpFAI: return &hXCFAI;
+        default : return nullptr;
+    }
+    // unreachable ...
 }
 
 //

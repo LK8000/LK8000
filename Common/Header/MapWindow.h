@@ -24,6 +24,7 @@
 #include <array>
 #include "RGB.h"
 #include "Thread/Mutex.hpp"
+#include "Enums.h"
 
 #ifndef ENABLE_OPENGL
 #include "Poco/ThreadTarget.h"
@@ -515,11 +516,12 @@ class MapWindow {
   static void ResumeDrawingThread(void);
 
   static LKColor GetOutlineColor(LKColor color);
+  static const LKIcon* GetDrawBmpIcon(DrawBmp_t bmp);
 
   static void LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool mode, const short align, const LKColor& rgb_tex, bool invertable, RECT* ClipRect = nullptr);
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
-  static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
+  static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,DrawBmp_t *BmpValue = NULL,DrawBmp_t *BmpTitle = NULL);
   static void LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
 
   static bool IsMapFullScreen();
@@ -597,6 +599,7 @@ class MapWindow {
   static void DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft);
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawLook8000(LKSurface& Surface, const RECT& rc);
+  static void DrawTextOrBitmap(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool lwmode, const short align, const LKColor& rgb_text, bool invertable, SIZE txtSize, DrawBmp_t bmp);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawMapSpace(LKSurface& Surface, const RECT& rc);
   static void DrawNearest(LKSurface& Surface, const RECT& rc);
@@ -610,7 +613,7 @@ class MapWindow {
   static void DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT& rc, const bool headUpLine = false);
   static void DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool& approach, bool& landing);
   static void WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
-                                short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
+                                short *columnvalue, short *columntitle, short *row1, short *row2, short *row3,DrawBmp_t *BmpValue = NULL);
   // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
   // static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);

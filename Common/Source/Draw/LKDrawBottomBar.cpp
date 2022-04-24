@@ -17,6 +17,10 @@
 #include "Util/UTF8.hpp"
 #include "Asset.hpp"
 #include "OS/CpuLoad.h"
+#include "Bitmaps.h"
+
+
+
 
 extern void VDrawLine(LKSurface& Surface, const RECT& rc, int x1, int y1, int x2, int y2, const LKColor& col);
 
@@ -49,6 +53,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
   TCHAR BufferUnit[LKSIZEBUFFERUNIT];
   TCHAR BufferTitle[LKSIZEBUFFERTITLE];
+  DrawBmp_t bmpValue = BmpNone;
 
   int index=-1;
   double Value;
@@ -216,6 +221,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
    */
 
   showunit=true; // normally we do have a unit to show
+  bmpValue = BmpNone;
   int cpusummary=INVALID_VALUE;
 
 
@@ -274,7 +280,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(1);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -284,17 +290,19 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   }
 
   rcx=rc.left+(splitoffset/2);
+  
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SECOND VALUE
    */
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -357,7 +365,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(2);
-		showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -372,12 +380,11 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   THIRD VALUE
    */
-
   if (bbsplitter<3) {
       if (ScreenLandscape) goto EndOfNavboxes;
       userow2++;
@@ -387,6 +394,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -466,7 +474,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(3);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -479,7 +487,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FOURTH VALUE
@@ -495,6 +503,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   }
   if (ScreenLandscape && (bbsplitter<4)) goto EndOfNavboxes;
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -556,7 +565,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(4);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -570,7 +579,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(7), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   FIFTH VALUE
@@ -584,6 +593,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -673,7 +683,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(5);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -688,7 +698,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       #include "LKMW3include_navbox2.cpp"
   }
 
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   SIXTH VALUE
@@ -702,6 +712,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -752,7 +763,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(6);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -766,7 +777,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
 
   /*
@@ -781,6 +792,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(7,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -824,7 +836,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(7);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -838,7 +850,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
 
   /*
@@ -853,6 +865,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   switch(BottomMode) {
 	case BM_TRM:
 		index=GetInfoboxIndex(8,MapWindow::Mode::MODE_FLY_CIRCLING);
@@ -893,7 +906,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(8);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle,&bmpValue);
 		CropString(BufferTitle, 7);
 		break;
 
@@ -907,7 +920,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   NINTH VALUE
@@ -921,13 +934,14 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   showunit=LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
   if (ScreenLandscape|| userow2) {
       #include "LKMW3include_navbox1.cpp"
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *   TENTH VALUE
@@ -941,13 +955,15 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
       rcx+=splitoffset;
   }
   showunit=true;
+  bmpValue = BmpNone;
   showunit=LKFormatValue(LK_SPEED_MC, true, BufferValue, BufferUnit, BufferTitle);
   if (ScreenLandscape|| userow2) {
       #include "LKMW3include_navbox1.cpp"
+
   } else {
       #include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(Surface, BufferTitle, rcx+NIBLSCALE(3), rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
+  LKWriteText(Surface, BufferTitle, rcx, rcy, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
    *    CLEAN UP
