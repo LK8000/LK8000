@@ -25,6 +25,7 @@
 #include "RGB.h"
 #include "Thread/Mutex.hpp"
 #include "Enums.h"
+#include "ContestMgr.h"
 
 #ifndef ENABLE_OPENGL
 #include "Poco/ThreadTarget.h"
@@ -522,6 +523,7 @@ class MapWindow {
   static void LKWriteBoxedText(LKSurface& Surface, const RECT& clipRect, const TCHAR* wText, int x, int y, const short align, const LKColor& rgb_dir, const LKColor& rgb_inv );
 
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,DrawBmp_t *BmpValue = NULL,DrawBmp_t *BmpTitle = NULL);
+  static void LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *BmpValue,TCHAR *BufferValue = NULL);
   static void LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
 
   static bool IsMapFullScreen();
