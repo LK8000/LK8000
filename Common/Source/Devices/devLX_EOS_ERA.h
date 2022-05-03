@@ -143,6 +143,7 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static BOOL EOSPutMacCready(PDeviceDescriptor_t d, double MacCready);
    static BOOL EOSPutBallast(PDeviceDescriptor_t d, double Ballast);
    static BOOL EOSPutBugs(PDeviceDescriptor_t d, double Bugs);
+   static BOOL PutQNH(PDeviceDescriptor_t d, double qnh_mb);
    static BOOL EOSRequestRadioInfo(PDeviceDescriptor_t d);
    static BOOL EOSPutVolume(PDeviceDescriptor_t d, int Volume) ;
    static BOOL EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) ;

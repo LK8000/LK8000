@@ -131,6 +131,7 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutMacCready = EOSPutMacCready;
   d->PutBugs      = EOSPutBugs;
   d->PutBallast   = EOSPutBallast;
+  d->PutQNH       = PutQNH;
   d->Declare      = DeclareTask;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
@@ -282,18 +283,6 @@ BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO*
       SendNmea(d, TEXT("LXDT,GET,SENS"));
     if( ((info->Second+4) %4) ==0) 
       SendNmea(d, TEXT("LXDT,GET,NAVIGATE,0"));
-
-    static double oldQNH= -1.0;
-
-    if(IsDirOutput(PortIO.QNHDir))
-    {      
-      if(fabs( oldQNH - QNH) > 0.9)   
-      { TCHAR szTmp[MAX_NMEA_LEN];
-        _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%4u"),(int) (QNH) );
-        SendNmea(d, szTmp);
-        oldQNH = QNH;
-      }
-    }
   }
 
   if(IsDirOutput(PortIO.STFDir))
@@ -1669,6 +1658,22 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
   return(TRUE);
 }
 
+BOOL DevLX_EOS_ERA::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
+  if (!d) {
+    return false;
+  }
+
+  const auto& PortIO = PortConfig[d->PortNumber].PortIO;
+  if (!IsDirOutput(PortIO.QNHDir)) {
+    return false;
+  } 
+
+  TCHAR szTmp[MAX_NMEA_LEN];
+  _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
+  SendNmea(d, szTmp);
+
+  return TRUE;
+}
 
 BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d)
 {
