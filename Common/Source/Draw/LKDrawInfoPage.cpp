@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
+#include "Bitmaps.h"
 
 #define AMBERCOLOR (IsDithered() ? RGB_WHITE : RGB_AMBER)
 
@@ -40,6 +41,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
   TCHAR BufferUnit[LKSIZEBUFFERUNIT];
   TCHAR Empty[2]; // 100407
+  DrawBmp_t BmpValue = BmpNone;
   int index=-1;
 
   static short	column[PANELCOLUMNS+1], hcolumn[(PANELCOLUMNS*2)+1], qcolumn[(PANELCOLUMNS*4)+1];
@@ -327,6 +329,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R1 C1
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
@@ -339,8 +342,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(1);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4], &qrow[3],&qrow[4],&qrow[2]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4], &qrow[3],&qrow[4],&qrow[2],&BmpValue);
 			break;
 		case IM_CONTEST:
 		    if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
@@ -361,6 +364,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R1 C2
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_BRG, true, BufferValue, BufferUnit, BufferTitle);
@@ -380,8 +384,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(2);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8],&qcolumn[8], &qrow[3],&qrow[4],&qrow[2]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8],&qcolumn[8], &qrow[3],&qrow[4],&qrow[2],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_TO, true, BufferValue, BufferUnit, BufferTitle);
@@ -396,6 +400,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R1 C3
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -415,8 +420,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(3);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12], &qrow[3],&qrow[4],&qrow[2]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12], &qrow[3],&qrow[4],&qrow[2],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -430,6 +435,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R1 C4
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -453,10 +459,10 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(4);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			_tcscpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16],
-											&qrow[3],&qrow[4],&qrow[2]);
+											&qrow[3],&qrow[4],&qrow[2],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_ALTARRIV, false, BufferValue, BufferUnit, BufferTitle);
@@ -474,6 +480,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R2  C1
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle);
@@ -490,7 +497,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(5);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -499,10 +506,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4],&qcolumn[4], &qrow[6],&qrow[7],&qrow[5]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4],&qcolumn[4], &qrow[6],&qrow[7],&qrow[5],&BmpValue);
 
 	// R2  C2
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
@@ -522,8 +530,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(6);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8], &qrow[6],&qrow[7],&qrow[5]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8], &qrow[6],&qrow[7],&qrow[5],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_BEARING, true , BufferValue, BufferUnit, BufferTitle);
@@ -537,6 +545,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R2  C3
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
@@ -555,7 +564,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(7);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_EMPTY, true , BufferValue, BufferUnit, BufferTitle);
@@ -564,10 +573,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[6],&qrow[7],&qrow[5]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[6],&qrow[7],&qrow[5],&BmpValue);
 
 	// R2  C4
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_FL, false, BufferValue, BufferUnit, BufferTitle);
@@ -585,7 +595,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(8);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
@@ -596,10 +606,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_tcscpy(BufferUnit,_T(""));
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5],&BmpValue);
 
 	// R3  C1
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_TC_GAIN, false, BufferValue, BufferUnit, BufferTitle);
@@ -619,7 +630,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(9);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_ALT, false, BufferValue, BufferUnit, BufferTitle);
@@ -628,10 +639,11 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[9],&qrow[10],&qrow[8]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[9],&qrow[10],&qrow[8],&BmpValue);
 
 	// R3  C2
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
@@ -655,8 +667,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(10);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_SPEED, false, BufferValue, BufferUnit, BufferTitle);
@@ -670,6 +682,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R3  C3
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_TC_AVG, false, BufferValue, BufferUnit, BufferTitle);
@@ -689,7 +702,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(11);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_VARIO, false, BufferValue, BufferUnit, BufferTitle);
@@ -698,11 +711,12 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[9],&qrow[10],&qrow[8]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[9],&qrow[10],&qrow[8],&BmpValue);
 
 
 	// R3  C4
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_TC_ALL, false, BufferValue, BufferUnit, BufferTitle);
@@ -724,7 +738,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(12);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
@@ -736,11 +750,12 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_tcscpy(BufferUnit,_T(""));
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8],&BmpValue);
 
 
 	// R4  C1
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_WIND, false, BufferValue, BufferUnit, BufferTitle);
@@ -763,8 +778,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(13);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
@@ -778,6 +793,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R4  C2
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
@@ -800,8 +816,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(14);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[12],&qrow[13],&qrow[11]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[12],&qrow[13],&qrow[11],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_EIAS, false, BufferValue, BufferUnit, BufferTitle);
@@ -815,6 +831,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R4  C3
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
@@ -837,8 +854,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(15);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[12],&qrow[13],&qrow[11]);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
+			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[12],&qrow[13],&qrow[11],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
@@ -852,6 +869,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 	// R4  C4
 	showunit=false;
+	BmpValue = BmpNone;
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
@@ -871,7 +889,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(16);
-			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
 			_tcscpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
@@ -882,7 +900,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			_tcscpy(BufferUnit,_T(""));
 			break;
 	}
-	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
+	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11],&BmpValue);
 	goto label_End;
 
 	// This is the TRI page
@@ -1120,8 +1138,10 @@ label_End:
 
 
 void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
-				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3) {
+				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3,DrawBmp_t *BmpValue) {
 
+  DrawBmp_t lBmpValue = BmpNone;
+  if (BmpValue != NULL) lBmpValue = *BmpValue;
   static short unitrowoffset=0;
   if (DoInit[MDI_WRITEINFO]) {
 	switch(ScreenSize) {
@@ -1186,20 +1206,31 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
 	DoInit[MDI_WRITEINFO]=false;
   }
 
-  Surface.SelectObject(LK8PanelBigFont);
-  if (*showunit)
-	LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
-  else
-	LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
-
-  if (*showunit==true && !HideUnits) {
-	Surface.SelectObject(LK8PanelUnitFont); // 091230
-        LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
-  }
-  Surface.SelectObject(LK8PanelSmallFont);
+	Surface.SelectObject(LK8PanelBigFont);
+	const LKIcon* pBmpTemp = GetDrawBmpIcon(lBmpValue);
+	if (pBmpTemp) {
+		//draw image horizonal centered
+		SIZE TextSize;
+		Surface.GetTextSize(BufferValue, &TextSize);
+		pBmpTemp->Draw(Surface, *columnvalue - TextSize.cy - NIBLSCALE(2), *row1 + NIBLSCALE(2) , TextSize.cy - NIBLSCALE(4), TextSize.cy - NIBLSCALE(4));
+	}
+	else {  
+		if (*showunit) {
+			LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
+			if (!HideUnits) {
+				Surface.SelectObject(LK8PanelUnitFont); // 091230
+				LKWriteText(Surface, BufferUnit, *columnvalue,*row2+unitrowoffset, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
+			}
+		}
+		else {
+			LKWriteText(Surface, BufferValue, *columnvalue,*row1, WTMODE_NORMAL,WTALIGN_RIGHT, AMBERCOLOR, false);
+		}
+	}
+	Surface.SelectObject(LK8PanelSmallFont);
 	if (!IsDithered()) {
 		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
-	} else {
+	} 
+	else {
 		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	}
 

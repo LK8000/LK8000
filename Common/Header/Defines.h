@@ -732,6 +732,7 @@
 #define LK_HOME_GR             153 // required efficency to home 
 #define LK_HOME_DISTNM         154 // distance to home nm 
 #define LK_HOME_BRG            155 // bearing to home 
+#define LK_XC_TYPE            156 // type of best result in XC 
 
 // The following values are not available for custom configuration
 

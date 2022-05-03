@@ -182,6 +182,16 @@ void LKLoadFixedBitmaps(void) {
   hLKPictori=LKLoadBitmap(_T("PICTORI"), UseHiresBitmap);
   
   hMcVario=LKLoadBitmap(_T("MC_VARIO_TICK"), UseHiresBitmap);
+
+  if (!IsDithered()||IsEinkColored()) {
+    hXCFF=LKLoadBitmap(_T("FREE_FLIGHT"), UseHiresBitmap);
+    hXCFT=LKLoadBitmap(_T("FLAT_TRIANGLE"), UseHiresBitmap);
+    hXCFAI=LKLoadBitmap(_T("FAI_TRIANGLE"), UseHiresBitmap);
+  }else{
+    hXCFF=LKLoadBitmap(_T("FREE_FLIGHTB"), UseHiresBitmap);
+    hXCFT=LKLoadBitmap(_T("FLAT_TRIANGLEB"), UseHiresBitmap);
+    hXCFAI=LKLoadBitmap(_T("FAI_TRIANGLEB"), UseHiresBitmap);
+  }
 }
 
 
@@ -289,6 +299,11 @@ void LKUnloadFixedBitmaps(void) {
     hLKPictori.Release();
 
     hMcVario.Release();
+
+    hXCFF.Release();
+    hXCFT.Release();
+    hXCFAI.Release();
+
 }
 
 

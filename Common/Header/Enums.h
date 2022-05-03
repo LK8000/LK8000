@@ -196,4 +196,11 @@ typedef enum {
     IdIgnore
 } MsgReturn_t;
 
+enum DrawBmp_t : uint8_t {
+    BmpNone = 0,
+    BmpFF,
+    BmpFT,
+    BmpFAI
+};
+
 #endif

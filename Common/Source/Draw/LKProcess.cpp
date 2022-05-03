@@ -16,6 +16,7 @@
 #include "CriticalSection.h"
 #include "Calc/Vario.h"
 #include "LKInterface.h"
+#include "ContestMgr.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -82,6 +83,23 @@ static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR *BufferValue, 
 	return valid;
 }
 
+void MapWindow::LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *Bmp,TCHAR *BufferValue){
+	switch(Type){
+		case CContestMgr::TYPE_XC_FREE_TRIANGLE:
+			if (BufferValue != NULL) _tcscpy(BufferValue, MsgToken(2497)); //_@M002497_ "FT"
+			if (Bmp != NULL) *Bmp = BmpFT;
+			break;
+		case CContestMgr::TYPE_XC_FAI_TRIANGLE:
+			if (BufferValue != NULL) _tcscpy(BufferValue, MsgToken(2498)); //_@M002498_ "FAI"
+			if (Bmp != NULL) *Bmp = BmpFAI;
+			break;
+		default:
+			if (BufferValue != NULL) _tcscpy(BufferValue, MsgToken(2496)); //_@M002496_ "FF"
+			if (Bmp != NULL) *Bmp = BmpFF;
+			break;
+	}
+}
+
 //
 // CAREFUL CAREFUL CAREFUL here:
 // lkindex can be much over the DataOption size, because some values here are not
@@ -98,7 +116,7 @@ static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR *BufferValue, 
 //
 // Keep this list sorted, so that the compiler can use a jump (branch) table 
 //
-bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle) {
+bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,DrawBmp_t *BmpValue,DrawBmp_t *BmpTitle) {
 
   int	index=-1;
   double value;
@@ -111,6 +129,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
+  if (BmpValue != NULL) *BmpValue = BmpNone;
+  if (BmpTitle != NULL) *BmpTitle = BmpNone;
 
   const TCHAR* varformat = (LIFTMODIFY==TOFEETPERMINUTE) ? TEXT("%+.0f") : TEXT("%+0.1f");
 
@@ -2694,7 +2714,13 @@ olc_score:
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          value = DISTANCEMODIFY * OlcResults[ivalue].Distance();
+          if (value >= 100){
+            _stprintf(BufferValue, TEXT("%.0f"), value);
+          }else{
+            _stprintf(BufferValue, TEXT("%.1f"), value);
+          }
+          LKgetOLCBmp(OlcResults[ivalue].Type(),BmpTitle);
           valid = true;
         }
         break;
@@ -2706,9 +2732,23 @@ olc_score:
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          _stprintf(BufferValue, TEXT("%5.0f"),  OlcResults[ivalue].Score());
+          value = OlcResults[ivalue].Score();
+          if (value >= 100){
+            _stprintf(BufferValue, TEXT("%.0f"), value);
+          }else{
+            _stprintf(BufferValue, TEXT("%.1f"), value);
+          }
+          LKgetOLCBmp(OlcResults[ivalue].Type(),BmpTitle);
           valid = true;
         }
+        break;
+
+      case LK_XC_TYPE:
+        ivalue = CContestMgr::TYPE_XC;
+        _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title);
+        _tcscpy(BufferUnit, _T(""));
+        LKgetOLCBmp(OlcResults[ivalue].Type(),BmpValue,BufferValue);
+        valid = true;    
         break;
 
       case LK_XC_CLOSURE_DIST:
