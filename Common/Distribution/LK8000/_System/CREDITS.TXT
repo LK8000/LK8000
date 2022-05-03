@@ -10,6 +10,11 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.14]
+. FIX : Freeze when connected to LX-EOS/LX-ERA/LX-Nano3/RC-Fenix device.
+. FIX : Zoom level scale after distance unit change
+. Added : XC Type Infobox Icon 
+
 [version 7.3.13]
 . Fix regression broken QNH settings 
 . Send QNH to external device when is set manually
