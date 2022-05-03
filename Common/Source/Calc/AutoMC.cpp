@@ -21,27 +21,30 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     double ConeSlope = 0.0;
 
-    //  LockFlightData();
-    LockTaskData();
-
     double mc_new = MACCREADY;
     static bool first_mc = true;
 
     if (AutoMcMode == amcEquivalent) {
+        LockTaskData();
         if ((!Calculated->Circling) && (!Calculated->OnGround)) {
             if (Calculated->EqMc >= 0) {
-                CheckSetMACCREADY(Calculated->EqMc);
+                mc_new = Calculated->EqMc;
             } else {
                 // -1.0 is used as an invalid flag. Normally flying at -1 MC means almost flying
                 // at stall speed, which is pretty unusual. Maybe in wave conditions?
                 if (Calculated->EqMc >-1) {
-                    CheckSetMACCREADY(Calculated->EqMc*-1);
+                    mc_new = Calculated->EqMc * -1;
                 }
             }
         }
         UnlockTaskData();
+
+        CheckSetMACCREADY(mc_new);
+
         return;
     }
+
+    LockTaskData();
 
     // otherwise, if AutoMc for finalglide or "both", return if no goto
     if (ValidTaskPoint(ActiveTaskPoint)) {
@@ -146,9 +149,10 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
     }
 
+    UnlockTaskData();
+
     CheckSetMACCREADY(LowPassFilter(MACCREADY, mc_new, 0.6));
 
-    UnlockTaskData();
     //  UnlockFlightData();
 
 }

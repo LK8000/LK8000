@@ -123,7 +123,7 @@ double GetMacCready(int wpindex, short wpmode) {
 //
 void CheckSetMACCREADY(double value) {
     double old_value = std::exchange(MACCREADY, Clamp(value, 0.0, 12.0));
-    if (old_value == MACCREADY) {
+    if (old_value != MACCREADY) {
         devPutMacCready(MACCREADY);
     }
 }
