@@ -188,7 +188,7 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len,
       SendNmea(d, _T("PFLX0,LXWP0,1,LXWP1,5,LXWP2,1,LXWP3,1,GPRMB,5"));
 
       SendNmea(d, _T("LXDT,SET,BC_INT,AHRS,0.5,SENS,2.0"));
-      StartupStore(TEXT("NMEA SLOWDOWN OFF!!"));      
+      TestLog(TEXT("NMEA SLOWDOWN OFF!!"));      
       slowdown = false;
     }       
     return FALSE;      
@@ -198,7 +198,7 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len,
      SendNmea(d, _T("PFLX0,LXWP0,100,LXWP1,100,LXWP2,100,LXWP3,100,GPRMB,100"));      
      SendNmea(d, _T("LXDT,SET,BC_INT,ALL,0.0"));
 
-     StartupStore(_T("NMEA SLOWDOWN"));
+     TestLog(_T("NMEA SLOWDOWN"));
      slowdown = true;
   }
 
@@ -346,7 +346,7 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
     if(!LX_EOS_ERA_bValid)
     {
      SendNmea(d,_T("LXDT,GET,MC_BAL"));
-     StartupStore(TEXT("Config: LXDT"));      
+     TestLog(TEXT("Config: LXDT"));
     }
 #endif
 
@@ -731,7 +731,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
   if ( StopRxThread(d, errBufSize, errBuf)) {
     // Send complete declaration to logger
     int orgRxTimeout;
-    StartupStore(_T(". EOS/ERA SetRxTimeout%s "), NEWLINE);
+    TestLog(_T(". EOS/ERA SetRxTimeout"));
     status = SetRxTimeout(d, 2000, orgRxTimeout, errBufSize, errBuf);
     int attemps = 0;
     char RecBuf[4096] = "";
@@ -739,7 +739,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
     do {
       Good = true;
       for (int ii = 0; ii < i; ii++) {
-        StartupStore(_T(". EOS/ERA Decl: %s %s "), DeclStrings[ii], NEWLINE);
+        TestLog(_T(". EOS/ERA Decl: %s"), DeclStrings[ii]);
         if (Good)
           Good = SendNmea(d, DeclStrings[ii]);
 
@@ -1434,7 +1434,7 @@ BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   else if(_tcsncmp(szTmp, _T("FLIGHT_INFO"), 11) == 0)
   { 
     TCHAR FileName[50]= _T("FileName"), Pilot[20]= _T(""),Surname[20]= _T(""), Takeoff[30]= _T(""),Date[20]= _T(""),Landing[30]= _T(""),Type[20]= _T(""), Reg[20]= _T("");
-    StartupStore(TEXT("FLIGHT_INFO %s"), sentence);
+    TestLog(TEXT("FLIGHT_INFO %s"), sentence);
 
     NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = (int) StrToDouble(Date,nullptr);
     NMEAParser::ExtractParameter(sentence, FileName ,3);
@@ -1616,7 +1616,7 @@ BOOL DevLX_EOS_ERA::EOSPutMacCready(PDeviceDescriptor_t d, double MacCready){
   if(!IsDirOutput(PortIO.MCDir)) return false;
 
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
-  StartupStore(TEXT("Send: %s"), szTmp);
+  TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
   return true;
@@ -1634,7 +1634,7 @@ BOOL DevLX_EOS_ERA::EOSPutBallast(PDeviceDescriptor_t d, double Ballast){
   if(!IsDirOutput(PortIO.BALDir)) return false;
   
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
-  StartupStore(TEXT("Send: %s"), szTmp);
+  TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
   
   return(TRUE);
@@ -1652,7 +1652,7 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
   double fLXBugs = CalculateLXBugs( Bugs);
 
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
-  StartupStore(TEXT("Send: %s"), szTmp);
+  TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
   return(TRUE);
@@ -1670,6 +1670,7 @@ BOOL DevLX_EOS_ERA::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
 
   TCHAR szTmp[MAX_NMEA_LEN];
   _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
+  TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d, szTmp);
 
   return TRUE;
