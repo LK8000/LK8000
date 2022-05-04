@@ -134,6 +134,8 @@ BOOL DevRCFenix::Open(PDeviceDescriptor_t d) {
 }
 
 
+extern BOOL LX_EOS_ERA_bValid;
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
@@ -166,6 +168,7 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
     return LXBC(d, sentence + 6, info);
   }
   if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
+    LX_EOS_ERA_bValid = false; // workaround to have bidirectional MC/BAL/BUG ...
     return LXWP2(d, sentence + 7, info);
   }
   if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0) {
