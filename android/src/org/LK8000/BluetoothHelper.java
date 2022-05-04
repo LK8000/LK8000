@@ -190,10 +190,7 @@ final class BluetoothHelper {
                 "Bluetooth device \"%s\" (%s) is a LE device, trying to connect using GATT...",
                 device.getName(), device.getAddress()));
 
-        BluetoothGattClientPort gattClientPort
-                = new BluetoothGattClientPort(device);
-        gattClientPort.startConnect(context);
-        return gattClientPort;
+        return new BluetoothGattClientPort(context, device);
       }
     }
 

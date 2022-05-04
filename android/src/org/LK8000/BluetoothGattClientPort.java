@@ -69,7 +69,6 @@ public class BluetoothGattClientPort
   private PortListener portListener;
   private volatile InputListener listener;
 
-  private BluetoothDevice device;
   private BluetoothGatt gatt;
   private BluetoothGattCharacteristic dataCharacteristic;
   private BluetoothGattCharacteristic deviceNameCharacteristic;
@@ -85,15 +84,18 @@ public class BluetoothGattClientPort
   private final Object gattStateSync = new Object();
   private int gattState = BluetoothGatt.STATE_DISCONNECTED;
 
-  public BluetoothGattClientPort(BluetoothDevice _device) {
-    device = _device;
-  }
-
-  public void startConnect(Context context) throws IOException {
-    shutdown = false;
-    gatt = device.connectGatt(context, false, this);
-    if (gatt == null)
+  public BluetoothGattClientPort(Context context, BluetoothDevice device)
+          throws IOException
+  {
+    if (Build.VERSION.SDK_INT >= 23) {
+      gatt = device.connectGatt(context, false, this, BluetoothDevice.TRANSPORT_LE);
+    }
+    else {
+      gatt = device.connectGatt(context, false, this);
+    }
+    if (gatt == null) {
       throw new IOException("Bluetooth GATT connect failed");
+    }
   }
 
   private boolean findCharacteristics() {
@@ -137,18 +139,26 @@ public class BluetoothGattClientPort
   private boolean beginWriteNextChunk() {
     synchronized (writeChunksSync) {
       if ((pendingWriteChunks == null)
-          || (nextWriteChunkIdx < 0)
-          || (pendingWriteChunks.length <= nextWriteChunkIdx)) return false;
+          || (pendingWriteChunks.length <= nextWriteChunkIdx)) {
+        return false;
+      }
+
       dataCharacteristic.setValue(pendingWriteChunks[nextWriteChunkIdx]);
-      ++nextWriteChunkIdx;
-      if (gatt.writeCharacteristic(dataCharacteristic)) {
-        return true;
-      } else {
+
+      if (!gatt.writeCharacteristic(dataCharacteristic)) {
         Log.e(TAG, "GATT characteristic write request failed");
         lastChunkWriteError = true;
+        pendingWriteChunks = null;
         writeChunksSync.notifyAll();
         return false;
       }
+      ++nextWriteChunkIdx;
+      if (nextWriteChunkIdx >= pendingWriteChunks.length) {
+        /* writing is done */
+        pendingWriteChunks = null;
+        writeChunksSync.notifyAll();
+      }
+      return true;
     }
   }
 
@@ -218,11 +228,7 @@ public class BluetoothGattClientPort
   public void onCharacteristicRead(BluetoothGatt gatt,
       BluetoothGattCharacteristic characteristic, int status) {
     Log.e(TAG, "GATT characteristic read");
-    synchronized (writeChunksSync) {
-      if ((pendingWriteChunks != null) && !beginWriteNextChunk()) {
-        pendingWriteChunks = null;
-      }
-    }
+    beginWriteNextChunk();
   }
 
   @Override
@@ -230,9 +236,7 @@ public class BluetoothGattClientPort
       BluetoothGattCharacteristic characteristic, int status) {
     synchronized (writeChunksSync) {
       if (BluetoothGatt.GATT_SUCCESS == status) {
-        if (!beginWriteNextChunk()) {
-          pendingWriteChunks = null;
-        }
+        beginWriteNextChunk();
       } else {
         Log.e(TAG, "GATT characteristic write failed");
         lastChunkWriteError = true;
@@ -277,13 +281,13 @@ public class BluetoothGattClientPort
       while (gattState != BluetoothGatt.STATE_DISCONNECTED) {
         long timeToWait = waitUntil - System.currentTimeMillis();
         if (timeToWait <= 0) {
-          Log.e(TAG, "GATT disconect timeout");
+          Log.e(TAG, "GATT disconnect timeout");
           break;
         }
         try {
           gattStateSync.wait(timeToWait);
         } catch (InterruptedException e) {
-          Log.e(TAG, "GATT disconect timeout", e);
+          Log.e(TAG, "GATT disconnect timeout", e);
           break;
         }
       }
@@ -299,10 +303,17 @@ public class BluetoothGattClientPort
 
   @Override
   public boolean drain() {
+    final long TIMEOUT = 5000;
+    final long waitUntil = System.currentTimeMillis() + TIMEOUT;
+
     synchronized (writeChunksSync) {
       while (pendingWriteChunks != null) {
+        final long timeToWait = waitUntil - System.currentTimeMillis();
+        if (timeToWait <= 0) {
+          return false;
+        }
         try {
-          writeChunksSync.wait();
+          writeChunksSync.wait(timeToWait);
         } catch (InterruptedException e) {
           return false;
         }
@@ -323,9 +334,11 @@ public class BluetoothGattClientPort
 
   @Override
   public int write(byte[] data, int length) {
+    final long TIMEOUT = 5000;
+    if (0 == length) {
+      return 0;
+    }
     synchronized (writeChunksSync) {
-      if (0 == length)
-        return 0;
       if ((dataCharacteristic == null) || (deviceNameCharacteristic == null))
         return 0;
       if ((pendingWriteChunks != null) && !drain())
@@ -355,8 +368,16 @@ public class BluetoothGattClientPort
       }
 
       try {
-        writeChunksSync.wait();
+        writeChunksSync.wait(TIMEOUT);
       } catch (InterruptedException e) {
+        /* cancel the write on interruption */
+        pendingWriteChunks = null;
+        return 0;
+      }
+
+      if (pendingWriteChunks != null && nextWriteChunkIdx == 0) {
+        /* timeout */
+        pendingWriteChunks = null;
         return 0;
       }
 
