@@ -85,7 +85,10 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		}
 	}
 	if (fixaltitude!=0) {
-		UpdateQNH(FindQNH(Basic->BaroAltitude, fixaltitude));
+		double new_qnh= FindQNH(Basic->BaroAltitude, fixaltitude);
+		if (UpdateQNH(new_qnh)) {
+			devPutQNH(new_qnh);
+		}
 		TCHAR qmes[80];
 		if (PressureHg) 
 			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH/TOHPA,fixaltitude*ALTITUDEMODIFY,
