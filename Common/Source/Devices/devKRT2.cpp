@@ -491,7 +491,7 @@ BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GP
     }
     LKASSERT(Recbuflen < REC_BUFSIZE);
 
-    TestLog(_T(". KRT2   Raw Input: Recbuflen:%u 0x%02X %c"),Recbuflen, (uint8_t)String[cnt], String[cnt]);
+    DebugLog(_T(". KRT2   Raw Input: Recbuflen:%u 0x%02X %c"),Recbuflen, (uint8_t)String[cnt], String[cnt]);
     Command[Recbuflen++] =(char) String[cnt++];
     if (Recbuflen == 1) {
       switch (Command[0]) {
