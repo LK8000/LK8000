@@ -33,15 +33,6 @@ void UnlockFlightData() {
   CritSec_FlightData.unlock();
 }
 
-void CheckAndLockFlightData() {
-    LockFlightData();
-}
-void CheckAndUnlockFlightData() {
-    UnlockFlightData();
-}
-
-
-
 void LockTerrainDataGraphics() {
   CritSec_TerrainDataGraphics.lock();
 }
