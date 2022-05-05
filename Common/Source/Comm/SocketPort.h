@@ -67,7 +67,6 @@ public:
 
     void UpdateStatus() override {};
 
-    bool Write(const void *data, size_t size) override;
     size_t Read(void *data, size_t size) override;
 
 protected:
@@ -75,7 +74,10 @@ protected:
     unsigned RxThread() override;
 
     SOCKET mSocket;
-    unsigned mTimeout;    
+    unsigned mTimeout;
+
+private:
+    bool Write_Impl(const void *data, size_t size) override;
 };
 
 #endif /* SOCKETPORT_H */

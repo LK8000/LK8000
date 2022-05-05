@@ -1131,6 +1131,8 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
 
 class IGCReadThread : public Poco::Runnable {
 public:
+  IGCReadThread() : Thread("IGCReadThread") { }
+
   void Start() {
 
 

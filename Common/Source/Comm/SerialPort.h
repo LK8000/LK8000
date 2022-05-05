@@ -36,7 +36,6 @@ public:
     void UpdateStatus() override;
 
     size_t Read(void *data, size_t size) override;
-    bool Write(const void *data, size_t size) override;
 
 protected:
     unsigned RxThread() override;
@@ -52,6 +51,8 @@ private:
 
     bool _PollingMode;
     DWORD _dwMask;
+
+    bool Write_Impl(const void *data, size_t size) override;
 };
 #elif __linux__
     #include "TTYPort.h"

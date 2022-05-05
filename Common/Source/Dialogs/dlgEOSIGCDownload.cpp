@@ -588,6 +588,8 @@ ConvUnion BlkNo;
 
 class EOS_IGCReadThread : public Poco::Runnable {
 public:
+  EOS_IGCReadThread() : Thread("EOS_IGCReadThread") { }
+
   void Start() {
     if (!Thread.isRunning()) {
       bStop = false;
@@ -605,7 +607,7 @@ public:
   }
 
 protected:
-  bool bStop;
+  bool bStop = false;
   Poco::Thread Thread;
 
   void run() {

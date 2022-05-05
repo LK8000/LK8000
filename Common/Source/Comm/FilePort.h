@@ -53,7 +53,6 @@ public:
 
     void UpdateStatus() override {return;};
 
-    bool Write(const void *data, size_t length) override;
     size_t Read(void *data, size_t size) override {  return 0; };
 
     Poco::Event FileStopEvt;
@@ -68,6 +67,7 @@ protected:
 
 private:
 
+    bool Write_Impl(const void *data, size_t length) override { return true; };
 };
 
 #endif /* FilePort_H */

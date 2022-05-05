@@ -36,7 +36,6 @@ public:
 
     void UpdateStatus() override;
 
-    bool Write(const void *data, size_t size) override;
     size_t Read(void *szString, size_t size) override;
 
 protected:
@@ -46,6 +45,8 @@ protected:
     HANDLE _hLoc;  // signals GPS locaton arrival
     HANDLE _hState;// signals GPS state arrival
 
+private:
+    bool Write_Impl(const void *data, size_t size) override;
 };
 #else
 #include "NullComPort.h"

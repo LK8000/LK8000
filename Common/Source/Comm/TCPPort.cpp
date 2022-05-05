@@ -312,7 +312,7 @@ unsigned UDPServerPort::RxThread() {
 	return 0U;
 }
 
-bool UDPServerPort::Write(const void *data, size_t size) {
+bool UDPServerPort::Write_Impl(const void *data, size_t size) {
 
 	if (mSocket == INVALID_SOCKET) {
 	        unsigned dwError = WSAGetLastError();

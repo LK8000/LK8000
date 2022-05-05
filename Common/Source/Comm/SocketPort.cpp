@@ -114,7 +114,7 @@ bool SocketPort::Close() {
     return true;
 }
 
-bool SocketPort::Write(const void *data, size_t size) {
+bool SocketPort::Write_Impl(const void *data, size_t size) {
     if(mSocket == INVALID_SOCKET) {
         return false; // socket not connect,that can happen with TCPServer Port.
     }

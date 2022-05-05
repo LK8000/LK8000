@@ -221,6 +221,8 @@ void DoSonar(void) {
 class SonarThread : public Poco::Runnable
 {
 public:
+	SonarThread() : Thread("SonarThread") { }
+
     void Start() {
 		bStop = false;
         Thread.start(*this);

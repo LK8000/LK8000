@@ -55,10 +55,11 @@ protected:
     bool Connect() override;
 
     unsigned RxThread() override;
-    bool Write(const void *data, size_t size) override;
 
 	SOCKADDR_IN mSAddressClient;
 
+private:
+    bool Write_Impl(const void *data, size_t size) override;
 };
 
 #endif /* TCPPORT_H */

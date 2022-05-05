@@ -239,7 +239,7 @@ bool TTYPort::Close() {
     return true;
 }
 
-bool TTYPort::Write(const void *data, size_t size) {
+bool TTYPort::Write_Impl(const void *data, size_t size) {
     struct timeval timeout;
     fd_set writefs;
     timeout.tv_sec = _Timeout / 1000;

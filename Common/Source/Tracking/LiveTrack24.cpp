@@ -113,8 +113,8 @@ static int createSID();
 static std::string passwordToken(const std::string& plainTextPassword,
 		const std::string& sessionID);
 
-Poco::Thread _ThreadTracker;             //worker thread for Tracker
-Poco::Thread _ThreadRadar;        //worker thread for Radar
+Poco::Thread _ThreadTracker("ThreadTracker"); //worker thread for Tracker
+Poco::Thread _ThreadRadar("ThreadRadar");     //worker thread for Radar
 Poco::ThreadTarget _ThreadTargetTracker(LiveTrackerThread);
 Poco::ThreadTarget _ThreadTargetTracker2(LiveTrackerThread2);
 Poco::ThreadTarget _ThreadTargetRadar(LiveTrackRadarThread2);

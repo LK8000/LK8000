@@ -323,7 +323,7 @@ _dontbitblt:
 }
 
 Poco::ThreadTarget MapWindow::MapWindowThreadRun(MapWindow::DrawThread);
-Poco::Thread MapWindowThread;
+Poco::Thread MapWindowThread("MapWindow");
 #endif
 
 void MapWindow::CreateDrawingThread(void)

@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
+#include <sstream>
 
 ComPort::ComPort(int idx, const tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
@@ -31,6 +32,36 @@ ComPort::~ComPort() {
 bool ComPort::Close() {
     StopRxThread();
     return true;
+}
+
+namespace {
+
+    tstring thread_name() {
+        Poco::Thread* pThread = Poco::Thread::current();
+        if (pThread) {
+            return to_tstring(pThread->getName());
+        }
+        std::ostringstream name;
+    	name << '#' << Poco::Thread::currentTid();
+	    return to_tstring(name.str());
+    }
+
+    tstring data_string(const void *data, size_t size) {
+        return to_tstring(std::string(static_cast<const char*>(data), size));
+    }
+
+}
+
+// this is used by all functions to send data out
+bool ComPort::Write(const void *data, size_t size) {
+    bool success = Write_Impl(data, size);
+
+    DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),
+                success ? _T("success"): _T("failed"),
+                thread_name().c_str(),
+                data_string(data, size).c_str());
+
+    return success;
 }
 
 #ifdef  _UNICODE
@@ -86,6 +117,9 @@ bool ComPort::StartRxThread() {
   try {
       StopEvt.reset();
 
+      std::ostringstream ss;
+      ss << "ComPort " << 'A' + GetPortIndex();
+      ReadThread.setName(ss.str());
 
       // Create a read thread for reading data from the communication port.
       ReadThread.start(*this);

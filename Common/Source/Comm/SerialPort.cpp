@@ -334,7 +334,7 @@ void SerialPort::UpdateStatus() {
     }
 }
 
-bool SerialPort::Write(const void *data, size_t size) {
+bool SerialPort::Write_Impl(const void *data, size_t size) {
     DWORD written;
 
     if (hPort == INVALID_HANDLE_VALUE) {

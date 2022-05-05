@@ -56,7 +56,7 @@ public:
     virtual void UpdateStatus() = 0;
     virtual bool IsReady() = 0;
 
-    virtual bool Write(const void *data, size_t size) = 0;
+    bool Write(const void *data, size_t size);
 
     inline void Write(uint8_t b) {
         Write(&b, sizeof(b));
@@ -113,6 +113,8 @@ private:
 
     _NmeaString_t _NmeaString;
     TCHAR * pLastNmea;
+
+    virtual bool Write_Impl(const void *data, size_t size) = 0;
 };
 
 #endif	/* COMPORT_H */

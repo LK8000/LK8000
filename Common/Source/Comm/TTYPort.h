@@ -37,7 +37,6 @@ public:
     void UpdateStatus() override;
 
     size_t Read(void *szString, size_t size) override;
-    bool Write(const void *data, size_t size) override;
 
 protected:
     unsigned RxThread() override;
@@ -51,6 +50,7 @@ private:
     struct termios _oldtio;
     int _Timeout;
 
+    bool Write_Impl(const void *data, size_t size) override;
 };
 #endif
 #endif	/* TTYPORT_H */

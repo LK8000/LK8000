@@ -159,7 +159,7 @@ private:
 
 
 CalculationThread _CalculationThreadRun;
-Poco::Thread _CalculationThread;
+Poco::Thread _CalculationThread("Calculation");
 
 // Since the calling function want to be sure that threads are created, they now flag a go status
 // and we save 500ms at startup.

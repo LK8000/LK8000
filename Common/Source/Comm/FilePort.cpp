@@ -70,12 +70,6 @@ bool FilePort::Close() {
 	return true;
 }
 
-bool FilePort::Write(const void *data, size_t length) {
-  return true;
-}
-
-
-
 int32_t GGA_RMC_seconds(const char *StrTime) {
   int32_t Hour=0, Minute=0, Second=0;
 

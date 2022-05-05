@@ -141,7 +141,7 @@ class Topology final {
  */
 class WhereAmI : public Poco::Runnable {
 public:
-    WhereAmI() {
+    WhereAmI() : Thread("WhereAmI") {
         toracle[0] = _T('\0');
     }
 

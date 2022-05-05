@@ -114,7 +114,7 @@ unsigned long AndroidPort::GetBaudrate() const {
     return 0;
 }
 
-bool AndroidPort::Write(const void *data, size_t size) {
+bool AndroidPort::Write_Impl(const void *data, size_t size) {
     if(bridge) {
         const char *p = (const char *)data;
         const char *end = p + size;
