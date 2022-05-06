@@ -35,7 +35,7 @@ public:
 
     void UpdateStatus() override;
 
-    size_t Read(void *szString, size_t size) override;
+    size_t Read(void *data, size_t size) override;
     bool Write(const void *data, size_t size) override;
 
 protected:

@@ -58,9 +58,9 @@ protected:
     Cond newdata;
     Cond newstate;
 
-    int timeout;
-    bool running;
-    bool closing;
+    int timeout = RXTIMEOUT;
+    bool running = false;
+    bool closing = false;
 
     boost::container::static_vector<uint8_t, 16*1024> buffer;
 

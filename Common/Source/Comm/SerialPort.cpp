@@ -243,10 +243,10 @@ unsigned long SerialPort::GetBaudrate() const {
     return PortDCB.BaudRate;
 }
 
-size_t SerialPort::Read(void *szString, size_t size) {
+size_t SerialPort::Read(void *data, size_t size) {
     if (hPort != INVALID_HANDLE_VALUE) {
         DWORD dwBytesTransferred = 0U;
-        if (ReadFile(hPort, szString, size, &dwBytesTransferred, (OVERLAPPED *) NULL)) {
+        if (ReadFile(hPort, data, size, &dwBytesTransferred, (OVERLAPPED *) NULL)) {
             AddStatRx(dwBytesTransferred);
             return dwBytesTransferred;
         }
@@ -354,7 +354,7 @@ bool SerialPort::Write(const void *data, size_t size) {
 
 unsigned SerialPort::RxThread() {
     DWORD dwBytesTransferred = 0; // 091117 initialized variables
-    _Buff_t szString;
+    char szString[1024];
 
     Purge();
 
@@ -396,9 +396,9 @@ unsigned SerialPort::RxThread() {
             do {
                 WithLock(CritSec_Comm, [&](){
                     // Read the data from the serial port.
-                    dwBytesTransferred = ReadData(szString);
+                    dwBytesTransferred = ComPort::Read(szString);
                     if (dwBytesTransferred > 0) {
-                        std::for_each(std::begin(szString), std::begin(szString) + dwBytesTransferred, std::bind(&SerialPort::ProcessChar, this, _1));
+                        std::for_each(std::begin(szString), std::next(szString, dwBytesTransferred), GetProcessCharHandler());
                     } else {
                         dwBytesTransferred = 0;
                     }

@@ -54,7 +54,7 @@ public:
     void UpdateStatus() override {return;};
 
     bool Write(const void *data, size_t length) override;
-    size_t Read(void *szString, size_t size) override {  return 0; };
+    size_t Read(void *data, size_t size) override {  return 0; };
 
     Poco::Event FileStopEvt;
 protected:

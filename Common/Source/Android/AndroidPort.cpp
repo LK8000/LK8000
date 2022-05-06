@@ -15,8 +15,7 @@
 
 using namespace std::placeholders;
 
-AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName),
-                                                          timeout(RXTIMEOUT), running(), closing(), bridge() {
+AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName) {
 
 }
 
@@ -171,7 +170,7 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
         ScopeLock Lock(CritSec_Comm);
         std::for_each(string_data,
                       string_data + length,
-                      std::bind(&AndroidPort::ProcessChar, this, _1));
+                      GetProcessCharHandler());
 
         AddStatRx(length);
 

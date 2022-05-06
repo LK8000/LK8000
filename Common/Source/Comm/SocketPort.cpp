@@ -63,7 +63,7 @@ int SocketPort::SetRxTimeout(int TimeOut) {
     return dwTimeout;
 }
 
-size_t SocketPort::Read(void *szString, size_t size) {
+size_t SocketPort::Read(void *data, size_t size) {
 
     if(mSocket == INVALID_SOCKET) {
         return false; // socket not connect,that can happen with TCPServer Port.
@@ -85,7 +85,7 @@ size_t SocketPort::Read(void *szString, size_t size) {
     
     if ((iResult != SOCKET_ERROR) && FD_ISSET(mSocket, &readfs)) {
         // Data ready to read 
-        iResult = recv(mSocket, (char*) szString, size, 0);
+        iResult = recv(mSocket, static_cast<char*>(data), size, 0);
         if (iResult > 0) {
             AddStatRx(iResult);
             return iResult;
@@ -164,7 +164,7 @@ bool SocketPort::Write(const void *data, size_t size) {
 }
 
 unsigned SocketPort::RxThread() {
-    _Buff_t szString;
+    char szString[1024];
     Purge();
     
         
@@ -186,9 +186,9 @@ unsigned SocketPort::RxThread() {
 
         ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
-        int nRecv = ReadData(szString);
+        int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {
-            std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&SocketPort::ProcessChar, this, _1));
+            std::for_each(std::begin(szString), std::next(szString, nRecv), GetProcessCharHandler());
         }
     }
 

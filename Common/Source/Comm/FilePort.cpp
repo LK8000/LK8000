@@ -183,7 +183,7 @@ int32_t i_skip = 1;
     {
       if (Port.RawByteData)
       {
-        std::for_each(std::begin(szString), std::next(szString, nRecv), std::bind(&FilePort::ProcessChar, this, _1));
+        std::for_each(std::begin(szString), std::next(szString, nRecv), GetProcessCharHandler());
       }
       else
       {

@@ -23,6 +23,8 @@ public:
     ComPort(int idx, const tstring& sName);
     virtual ~ComPort();
 
+    ComPort() = delete;
+
     ComPort( const ComPort& ) = delete;
     ComPort& operator=( const ComPort& ) = delete;
 
@@ -61,21 +63,20 @@ public:
     }
 
 #ifdef UNICODE
-    void WriteString(const TCHAR* Text) gcc_nonnull_all;
+    void WriteString(const wchar_t* Text) gcc_nonnull_all;
 #endif
     void WriteString(const char* Text) gcc_nonnull_all;
 
+    virtual size_t Read(void* data, size_t size) = 0;
 
-    virtual size_t Read(void *szString, size_t size) = 0;
+    template<typename T, size_t size>
+    size_t Read(T (&data)[size]) {
+        return Read(data, size * sizeof(T));
+    }
 
     int GetChar();
 
 protected:
-    typedef char _Buff_t[1024];
-
-    inline size_t ReadData(_Buff_t& szString) {
-        return Read(szString, sizeof (szString));
-    }
 
     static
     void StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...)
@@ -92,11 +93,18 @@ protected:
 
     void ProcessChar(char c);
 
+    auto GetProcessCharHandler() {
+        return [&](char c) {
+            ProcessChar(c);
+        };
+    }
+
     Poco::Event StopEvt;
     Poco::Thread ReadThread;
 
 private:
-    typedef TCHAR _NmeaString_t[MAX_NMEA_LEN];
+
+    using _NmeaString_t = TCHAR[MAX_NMEA_LEN];
 
     void run();
 

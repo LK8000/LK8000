@@ -34,27 +34,13 @@ bool ComPort::Close() {
 }
 
 #ifdef  _UNICODE
-// this is used by all functions to send data out
-// it is called internally from thread for each device
-void ComPort::WriteString(const TCHAR * Text) {
-#if TESTBENCH && (WINDOWSPC>0) && COM_DISCARD
-StartupStore(_T("... ComPort write discarded: <%s>\n"),Text);
-return;
-#else
-    int len = _tcslen(Text);
-    int size_needed = WideCharToMultiByte(CP_ACP, 0, Text, len+1, NULL, 0, NULL, NULL);
-    char* szTmp = new char[size_needed];
-    len = WideCharToMultiByte(CP_ACP, 0, Text, len+1, szTmp, size_needed, NULL, NULL);
-    if(len>0) {
-        // WideCharToMultiByte return size off Buffer, so trailling '\0' included...
-        --len;
+// this should be deprecated
+void ComPort::WriteString(const wchar_t* Text) {
+    const std::string data = to_utf8(Text);
+    if (!data.empty()) {
+        // don't write trailing '\0' to device
+        Write(data.data(), data.size());
     }
-    // don't write trailing '\0' to device
-    if (len > 0) {
-        Write(szTmp, len);
-    }
-    delete[] szTmp;
-#endif
 }
 #endif
 

@@ -276,15 +276,15 @@ bool TTYPort::Write(const void *data, size_t size) {
 }
 
 unsigned TTYPort::RxThread() {
-    _Buff_t szString;
+    char szString[1024];
     Purge();
 
     while ((_tty != -1) && !StopEvt.tryWait(5)) {
         ScopeLock Lock(CritSec_Comm);
         UpdateStatus();
-        int nRecv = ReadData(szString);
+        int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {
-            std::for_each(std::begin(szString), std::begin(szString) + nRecv, std::bind(&TTYPort::ProcessChar, this, _1));
+            std::for_each(std::begin(szString), std::next(szString, nRecv), GetProcessCharHandler());
         }
     }
 
