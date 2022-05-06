@@ -89,7 +89,6 @@ void AndroidPort::Flush() {
 
 void AndroidPort::CancelWaitEvent() {
     newdata.Broadcast();
-    newstate.Broadcast();
 }
 
 int AndroidPort::SetRxTimeout(int TimeOut) {
@@ -154,7 +153,6 @@ size_t AndroidPort::Read(void *szString, size_t size) {
 
     uint8_t *dst_data = static_cast<uint8_t*>(szString);
 
-
     std::copy(src_begin, src_end, dst_data);
 
     buffer.erase(src_begin, src_end);
@@ -165,31 +163,20 @@ size_t AndroidPort::Read(void *szString, size_t size) {
 
 void AndroidPort::DataReceived(const void *data, size_t length) {
 
-    if(running) {
-        const char *string_data = static_cast<const char *>(data);
-        ScopeLock Lock(CritSec_Comm);
-        std::for_each(string_data,
-                      string_data + length,
-                      GetProcessCharHandler());
+    ScopeLock lock(mutex);
+    const auto *src_data = static_cast<const uint8_t *>(data);
 
-        AddStatRx(length);
+    const size_t available_size =  buffer.capacity() - buffer.size();
+    const size_t insert_size = std::min(available_size, length);
 
-    } else {
-        ScopeLock lock(mutex);
-        const uint8_t *src_data = static_cast<const uint8_t *>(data);
+    buffer.insert(buffer.cend(), src_data,  std::next(src_data, insert_size));
 
-        const size_t available_size =  buffer.capacity() - buffer.size();
-        const size_t insert_size = std::min(available_size, length);
-
-        buffer.insert(buffer.cend(), src_data,  std::next(src_data,insert_size));
-
-        AddStatRx(insert_size);
-        if(insert_size < length) {
-            AddStatErrRx(length - insert_size);
-        }
-
-        newdata.Broadcast();
+    AddStatRx(insert_size);
+    if(insert_size < length) {
+        AddStatErrRx(length - insert_size);
     }
+
+    newdata.Broadcast();
 }
 
 enum PortState {
@@ -207,7 +194,7 @@ bool AndroidPort::IsReady() {
 }
 
 void AndroidPort::PortStateChanged() {
-    newstate.Signal();
+    newdata.Signal();
 }
 
 unsigned AndroidPort::RxThread() {
@@ -217,33 +204,39 @@ unsigned AndroidPort::RxThread() {
     PortBridge * active_bridge = bridge;
     while( running ) {
 
-        newstate.Wait(mutex);
-
-        PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-        if (d) {
-            switch(active_bridge->getState(Java::GetEnv())) {
-                case STATE_READY :
-                    d->Status = CPS_OPENOK;
-                    devOpen(d);
-                    break;
-                case STATE_FAILED:
-                    d->Status = CPS_OPENKO;
-                    break;
-                case STATE_LIMBO:
-                    d->Status = CPS_OPENWAIT;
-                    break;
-                default:
-                    d->Status = CPS_OPENKO;
-                    break;
+        newdata.Wait(mutex);
+        if (buffer.empty()) {
+            PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
+            if (d) {
+                switch (active_bridge->getState(Java::GetEnv())) {
+                    case STATE_READY :
+                        d->Status = CPS_OPENOK;
+                        devOpen(d);
+                        break;
+                    case STATE_FAILED:
+                        d->Status = CPS_OPENKO;
+                        break;
+                    case STATE_LIMBO:
+                        d->Status = CPS_OPENWAIT;
+                        break;
+                    default:
+                        d->Status = CPS_OPENKO;
+                        break;
+                }
             }
-        }
-
-        if(!bridge) {
-            if(d) {
-                d->Status = CPS_OPENKO;
+            if (!bridge) {
+                if (d) {
+                    d->Status = CPS_OPENKO;
+                }
+                // port is Closed.
+                running = false;
             }
-            // port is Closed.
-            break;
+        } else {
+            WithLock(CritSec_Comm, [&]() {
+                std::for_each(std::begin(buffer), std::end(buffer), GetProcessCharHandler());
+                AddStatRx(buffer.size());
+            });
+            buffer.clear();
         }
     }
 

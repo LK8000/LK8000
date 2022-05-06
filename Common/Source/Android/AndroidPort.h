@@ -54,9 +54,8 @@ protected:
 
     /* protect fifo and flags*/
     Mutex mutex;
-    /* singal new data available */
+    /* signal new data available or state change */
     Cond newdata;
-    Cond newstate;
 
     int timeout = RXTIMEOUT;
     bool running = false;
@@ -68,19 +67,12 @@ public:
     /* override Datahandler */
     void DataReceived(const void *data, size_t length) override;
 
-public:
     /* override PortListner */
     void PortStateChanged() override;
-
 
 protected:
 
     PortBridge *bridge;
-
-
-
-
 };
-
 
 #endif //ANDROID_ANDROIDPORT_H
