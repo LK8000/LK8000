@@ -348,7 +348,7 @@ public class BluetoothGattClientPort
          at the same time, we place a read request for the device name
          characteristic here. This way, we can place the actual write
          operation in the read callback so that the write operation is performed
-         int the GATT event handling thread. */
+         in the GATT event handling thread. */
       if (!gatt.readCharacteristic(deviceNameCharacteristic)) {
         Log.e(TAG, "GATT characteristic read request failed");
         return 0;
