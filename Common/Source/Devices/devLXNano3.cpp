@@ -174,31 +174,7 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
 
 
 long  StrTol(const  TCHAR *buff) {
-  errno = 0;
-
-#if 0
-  const long sl = _ttol(buff);
-#else
-  TCHAR *end;
-   const long sl = _tcstol(buff, &end, 10);
-//#define TCSTOL_DEBUG
-#ifdef TCSTOL_DEBUG
-  if (end == buff) {
-      StartupStore(TEXT("StrTol: %s: not a decimal number\n"), buff);
-  } else if ('\0' != *end) {
-      StartupStore(TEXT("StrTol: %s: extra characters at end of input: %s\n"), buff, end);
-  } else if ((LONG_MIN == sl || LONG_MAX == sl) && ERANGE == errno) {
-      StartupStore(TEXT("StrTol:%s out of range of type long\n"), buff);
-  } else if (sl > INT_MAX) {
-      StartupStore(TEXT("StrTol:%ld greater than INT_MAX\n"), sl);
-  } else if (sl < INT_MIN) {
-      StartupStore(TEXT("StrTol:%ld less than INT_MIN\n"), sl);
-  } else {
-  //    StartupStore(TEXT("StrTol: OK %s: = %ld\n"), buff, sl);
-  }
-#endif
-#endif
-  return sl;
+   return _tcstol(buff, nullptr, 10);
 }
 
 
@@ -928,30 +904,20 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned e
     return false;
   }
 
-  char asciibuf[256];
-  Wide2LxAscii(buf, asciibuf);
+  char ascii_str[256] = "$";
+  Wide2LxAscii(buf, std::size(ascii_str) - 1, ascii_str+1);
   unsigned char chksum = 0;
 
-  if (!ComWrite(d, '$', errBufSize, errBuf)) {
+  auto pChar = (ascii_str + 1);
+  for(; *pChar; ++pChar) {
+    chksum ^= (*pChar);
+  }
+  sprintf(pChar, "*%02X\r\n",chksum);
+  pChar += 5; 
+
+  if (!ComWrite(d, ascii_str, std::distance(ascii_str, pChar), errBufSize, errBuf)) {
     return (false);
   }
-
-  for(size_t i = 0; i < strlen(asciibuf); i++) {
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
-      return (false);
-    }
-    chksum ^= asciibuf[i];
-  }
-
-  sprintf(asciibuf, "*%02X\r\n",chksum);
-  for(size_t i = 0; i < strlen(asciibuf); i++) {
-    if (!ComWrite(d, asciibuf[i], errBufSize, errBuf)) {
-      return (false);
-    }
-  }
-
-//  StartupStore(_T("request: $%s*%02X %s "),   buf,chksum, NEWLINE);
-
   return (true);
 } // SendNmea()
 
