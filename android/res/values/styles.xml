@@ -10,4 +10,6 @@
 
     <style name="QrCodeTheme" parent="Theme.AppCompat">
     </style>
+    <style name="LKMAPTheme" parent="Theme.AppCompat">
+    </style>
 </resources>

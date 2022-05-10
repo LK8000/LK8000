@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">lk8000.it</domain>
+        <domain includeSubdomains="true">bware.it</domain>
+    </domain-config>
+</network-security-config>

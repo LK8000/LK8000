@@ -26,7 +26,7 @@
       <WndProperty Name="prpLanguageCode" Caption="_@M387_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="130" Font="2" Help="_@H223_">
         <DataField Name="" DataType="enum"/>
       </WndProperty>
-      <WndButton Name="cmdLKMapOpen"  Caption="_@M2328_" X="1" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnLKMapOpenClicked" />
+      <WndButton Name="cmdLKMapOpen"  Caption="_@M2329_" X="1" Y="-1" Width="-1"  Height="22" Font="2" OnClickNotify="OnLKMapOpenClicked" />
     </WndFrame>
     <WndFrame Name="frmAirspace" X="70" Y="0" Width="-1" Height="222" Font="2">
       <WndButton Name="cmdAirspaceWarningParams"  Caption="_@M1274_" X="30" Y="2" Width="70"  Height="22" Font="2" OnClickNotify="OnAirspaceWarningParamsClicked" />

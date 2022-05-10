@@ -10,4 +10,6 @@
 \nPlease wait, the migration can take a few minutes.</string>
     <string name="close">Close</string>
     <string name="warning">Warning !</string>
+    <string name="overwrite_download">"File already exist. Do you want to download it again ?"</string>
+    <string name="download_title">LK8000 download"</string>
 </resources>
