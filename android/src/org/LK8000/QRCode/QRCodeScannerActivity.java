@@ -6,9 +6,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -39,6 +41,12 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         binding = ActivityQrcodeScannerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //To have the back button!!
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
         binding.switchCamera.setOnClickListener((view) -> {
@@ -49,6 +57,15 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         });
 
         requestCamera();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void requestCamera() {
