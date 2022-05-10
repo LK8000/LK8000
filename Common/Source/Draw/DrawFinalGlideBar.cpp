@@ -93,15 +93,8 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
 #if 110609
         if (ValidTaskPoint(1) && OvertargetMode == OVT_TASK && GlideBarMode == (GlideBarMode_t) gbFinish) {
             // Before the start, there is no task altitude available!
-            if (DerivedDrawInfo.ValidStart) {
-                Offset = ((int) DerivedDrawInfo.TaskAltitudeDifference) / 8;
-                Offset0 = ((int) DerivedDrawInfo.TaskAltitudeDifference0) / 8;
-            } else {
-                // In this case, print an invalid bar
-                invalidbar = true;
-                Offset = 0;
-                Offset0 = 0;
-            }
+            Offset = ((int) DerivedDrawInfo.TaskAltitudeDifference) / 8;
+            Offset0 = ((int) DerivedDrawInfo.TaskAltitudeDifference0) / 8;
         } else {
             Offset = (int) WayPointCalc[barindex].AltArriv[AltArrivMode];
             Offset0 = Offset;

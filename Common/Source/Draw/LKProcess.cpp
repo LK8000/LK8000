@@ -481,7 +481,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             LockTaskData();
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if (ValidTaskPointFast(ActiveTaskPoint)) {
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
@@ -509,7 +509,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
             LockTaskData();
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if (ValidTaskPoint(ActiveTaskPoint)) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeRequired;
@@ -997,20 +997,22 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if (ISCAR || ISGAAIRCRAFT) {
-			    if ( ValidTaskPoint(ActiveTaskPoint) && DerivedDrawInfo.ValidStart ) {
-				if (DerivedDrawInfo.LKTaskETE > 0) {
-					valid=true;
-					Units::TimeToText(BufferValue, DerivedDrawInfo.LKTaskETE + LocalTime(DrawInfo.Time));
-				} else
-					_stprintf(BufferValue, TEXT(NULLTIME));
+			    if (ValidTaskPoint(ActiveTaskPoint)) {
+					if (DerivedDrawInfo.LKTaskETE > 0) {
+						valid=true;
+						Units::TimeToText(BufferValue, DerivedDrawInfo.LKTaskETE + LocalTime(DrawInfo.Time));
+					} else {
+						_stprintf(BufferValue, TEXT(NULLTIME));
+					}
 			    }
 			} else {
-			    if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
-				if (DerivedDrawInfo.TaskTimeToGo > 0) {
-					valid=true;
-					Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime(DrawInfo.Time));
-				} else
-					_stprintf(BufferValue, TEXT(NULLTIME));
+			    if (ValidTaskPoint(ActiveTaskPoint) && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
+					if (DerivedDrawInfo.TaskTimeToGo > 0) {
+						valid=true;
+						Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime(DrawInfo.Time));
+					} else {
+						_stprintf(BufferValue, TEXT(NULLTIME));
+					}
 			    }
 			}
 			_stprintf(BufferUnit, TEXT("h"));
@@ -2839,7 +2841,7 @@ olc_score:
 			else
 				// LKTOKEN  _@M1191_ = "TskArr0"
 				_tcscpy(BufferTitle, MsgToken(1191));
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if (ValidTaskPoint(ActiveTaskPoint)) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference0;
@@ -2891,7 +2893,7 @@ lkfin_ete:
 			}
 
             LockTaskData();
-			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && DerivedDrawInfo.ValidStart ) {
+			if (ValidTaskPointFast(ActiveTaskPoint)) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) { 
 					valid=true;
 					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo)) {
