@@ -49,14 +49,22 @@ public class BluetoothGattClientPort
     implements AndroidPort  {
   private static final String TAG = "LK8000";
 
+  private static final UUID GENERIC_ACCESS_SERVICE =
+          UUID.fromString("00001800-0000-1000-8000-00805F9B34FB");
+
+  private static final UUID DEVICE_NAME_CHARACTERISTIC_UUID =
+          UUID.fromString("00002A00-0000-1000-8000-00805F9B34FB");
+
   /**
    * The HM-10 and compatible bluetooth modules use a GATT characteristic
    * with this UUID for sending and receiving data.
    */
+  private static final UUID HM10_SERVICE =
+          UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB");
+
   private static final UUID RX_TX_CHARACTERISTIC_UUID =
       UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
-  private static final UUID DEVICE_NAME_CHARACTERISTIC_UUID =
-      UUID.fromString("00002A00-0000-1000-8000-00805F9B34FB");
+
   private static final UUID RX_TX_DESCRIPTOR_UUID =
       UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
@@ -87,7 +95,7 @@ public class BluetoothGattClientPort
   public BluetoothGattClientPort(Context context, BluetoothDevice device)
           throws IOException
   {
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       gatt = device.connectGatt(context, false, this, BluetoothDevice.TRANSPORT_LE);
     }
     else {
@@ -103,20 +111,14 @@ public class BluetoothGattClientPort
       dataCharacteristic = null;
       deviceNameCharacteristic = null;
 
-      List<BluetoothGattService> services = gatt.getServices();
-      if (services != null) {
-        for (BluetoothGattService gattService : services) {
-          for (BluetoothGattCharacteristic characteristic :
-              gattService.getCharacteristics()) {
-            if (RX_TX_CHARACTERISTIC_UUID.equals(
-                characteristic.getUuid())) {
-              dataCharacteristic = characteristic;
-            } else if (DEVICE_NAME_CHARACTERISTIC_UUID.equals(
-                characteristic.getUuid())) {
-              deviceNameCharacteristic = characteristic;
-            }
-          }
-        }
+      BluetoothGattService service = gatt.getService(HM10_SERVICE);
+      if (service != null) {
+        dataCharacteristic = service.getCharacteristic(RX_TX_CHARACTERISTIC_UUID);
+      }
+
+      service = gatt.getService(GENERIC_ACCESS_SERVICE);
+      if (service != null) {
+        deviceNameCharacteristic = service.getCharacteristic(DEVICE_NAME_CHARACTERISTIC_UUID);
       }
 
       if (dataCharacteristic == null) {
