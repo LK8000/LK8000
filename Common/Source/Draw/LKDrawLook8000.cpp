@@ -78,7 +78,7 @@ void MapWindow::DrawTextOrBitmap(LKSurface& Surface, const TCHAR* wText, int x, 
         pBmpTemp->Draw(Surface, x-iconSize.cx, y,iconSize.cx , iconSize.cy);
     }
     else {
-        LKWriteText(Surface, wText, x, y, WTMODE_OUTLINED, WTALIGN_RIGHT, rgb_text, true);
+        LKWriteText(Surface, wText, x, y, lwmode, align, rgb_text, true);
     }
 }
 
