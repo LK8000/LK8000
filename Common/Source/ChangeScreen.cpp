@@ -64,6 +64,23 @@ bool ScreenHasChanged(void) {
   return true;
 }
 
+namespace {
+
+class scope_backup_input_event_mode {
+ public:
+  scope_backup_input_event_mode() = default;
+  scope_backup_input_event_mode(const scope_backup_input_event_mode&) = delete;
+  scope_backup_input_event_mode(scope_backup_input_event_mode&&) = delete;
+
+  ~scope_backup_input_event_mode() {
+    InputEvents::setMode(mode.c_str());
+  }
+
+ private:
+  const tstring mode = InputEvents::getMode();
+};
+
+}  // namespace
 
 //
 // Reinit screen upon resolution/orientation change detected
@@ -72,6 +89,8 @@ bool ScreenHasChanged(void) {
 // In this case, enable a testbench development option.
 //
 void ReinitScreen(void) {
+
+  scope_backup_input_event_mode backup; // to restore menu state on scope exist
 
   // This is needed to hide any menu currently on, as first thing.
   InputEvents::setMode(TEXT("default"));
@@ -136,14 +155,10 @@ void ReinitScreen(void) {
   // relative DoInit is accomplished. This is a mistake of course.
   TopSize=0; // requires a DrawNearest. 0 is Ok on startup.
 
-  #if TESTBENCH
-  StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
-  #endif
+  TestLog(_T("... ChangeScreen resuming Draw Thread\n"));
 
 
   MapWindow::Initialize();
   MapWindow::ResumeDrawingThread();
   main_window->SetToForeground();
-
-  return;
 }
