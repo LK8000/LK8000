@@ -24,7 +24,7 @@
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
 #include "InfoBoxLayout.h"
-
+#include "utils/lookup_table.h"
 #ifndef ENABLE_OPENGL
 #include "Screen/LKBitmapSurface.h"
 #endif
@@ -894,7 +894,13 @@ static bool GetShiftKeyState() {
 #endif
 }
 
-
+static
+bool isNearestPage() {
+  return MapSpaceMode == MSM_LANDABLE || MapSpaceMode == MSM_AIRPORTS || 
+         MapSpaceMode == MSM_NEARTPS || MapSpaceMode == MSM_COMMON || 
+         MapSpaceMode == MSM_RECENT || MapSpaceMode == MSM_AIRSPACES ||
+         MapSpaceMode == MSM_THERMALS || MapSpaceMode == MSM_TRAFFIC;
+}
 
 void MapWindow::_OnKeyDown(unsigned KeyCode) {
 
@@ -1057,6 +1063,23 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         return;
     }
 
+
+
+    if (isNearestPage()) {
+
+        static constexpr auto table = lookup_table<uint32_t, uint32_t>({
+            { KEY_DOWN , LKEVENT_DOWN },
+            { KEY_UP, LKEVENT_UP },
+            { KEY_RETURN, LKEVENT_ENTER },
+            { KEY_PRIOR, LKEVENT_PAGEUP },
+            { KEY_NEXT, LKEVENT_PAGEDOWN } });
+
+        LKevent = table.get(KeyCode, LKEVENT_NONE);
+        if (LKevent != LKEVENT_NONE) {
+            RefreshMap();
+            return;
+        }
+    }
 
 #ifndef LXMINIMAP
     //
@@ -1791,7 +1814,7 @@ void MapWindow::key_up() {
     //
     // UP
     //
-    if (!MapWindow::mode.AnyPan() && MapSpaceMode != 1) { // dontdrawthemap
+    if (!MapWindow::mode.AnyPan() && MapSpaceMode != MSM_MAP) { // dontdrawthemap
         if (MapSpaceMode <= MSM_MAP) {
             ;
         } else {

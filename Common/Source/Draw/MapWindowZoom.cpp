@@ -193,7 +193,7 @@ void MapWindow::Zoom::EventSetZoom(double value)
  */
 void MapWindow::Zoom::EventScaleZoom(int vswitch)
 {
-  if (IsMultiMapNoMain() && !INPAN) {
+  if (MapSpaceMode != MSM_MAP && !INPAN) {
     LKevent = (vswitch > 0) ? LKEVENT_UP : LKEVENT_DOWN;
     RefreshMap();
     return;

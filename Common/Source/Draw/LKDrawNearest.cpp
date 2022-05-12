@@ -676,13 +676,32 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             return;
             break;
         case LKEVENT_DOWN:
-            if (++SelectedRaw[curmapspace] >= numraws) SelectedRaw[curmapspace] = 0;
+            if (++SelectedRaw[curmapspace] >= numraws) {
+                SelectedRaw[curmapspace] = 0;
+                if (++SelectedPage[curmapspace] >= Numpages) {
+                    SelectedPage[curmapspace] = 0;
+                }
+                curpage = SelectedPage[curmapspace];
+            }
+
+            if (curpage * numraws + SelectedRaw[curmapspace] >= MAXNEAREST) {
+                SelectedRaw[curmapspace] = 0;
+                curpage = SelectedPage[curmapspace] = 0;
+            }
+
             if (MSMCOMMONS) *pLastDoNearest = DrawInfo.Time + PAGINGTIMEOUT - 1.0;
             if (MSMTHERMALS) *pLastDoNearest = DrawInfo.Time + PAGINGTIMEOUT - 1.0;
             if (MSMTRAFFIC) *pLastDoNearest = DrawInfo.Time + PAGINGTIMEOUT - 1.0;
             break;
         case LKEVENT_UP:
-            if (--SelectedRaw[curmapspace] < 0) SelectedRaw[curmapspace] = numraws - 1;
+            if (--SelectedRaw[curmapspace] < 0) {
+                SelectedRaw[curmapspace] = numraws - 1;
+                if (--SelectedPage[curmapspace] < 0) {
+                    SelectedPage[curmapspace] = (Numpages - 1);
+                }
+                curpage = SelectedPage[curmapspace];
+            }
+
             if (MSMCOMMONS) *pLastDoNearest = DrawInfo.Time + PAGINGTIMEOUT - 1.0;
             if (MSMTHERMALS) *pLastDoNearest = DrawInfo.Time + PAGINGTIMEOUT - 1.0;
             if (MSMTRAFFIC) *pLastDoNearest = DrawInfo.Time + PAGINGTIMEOUT - 1.0;
@@ -797,7 +816,9 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         } else {
             curraw += i;
         }
-        if (curraw >= MAXNEAREST) break;
+        if (curraw >= MAXNEAREST) {
+            break;
+        }
 
         rli = pSortedIndex?pSortedIndex[curraw]:curraw;
 
@@ -1246,9 +1267,13 @@ _KeepOldAirspacesValues:
         // selectedraw starts from 0, drawnitems from 1...
         // In this case we set the first one, or last one, assuming we are rotating forward or backward
         if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
-            if (LKevent == LKEVENT_DOWN) SelectedRaw[curmapspace] = 0;
-            else
-                if (LKevent == LKEVENT_UP) SelectedRaw[curmapspace] = drawn_items_onpage - 1;
+            if (LKevent == LKEVENT_DOWN) {
+                SelectedRaw[curmapspace] = 0;
+                SelectedPage[curmapspace] = 0;
+            }
+            else if (LKevent == LKEVENT_UP) {
+                SelectedRaw[curmapspace] = drawn_items_onpage - 1;
+            }
             else {
                 // Here we are recovering a selection problem caused by a delay while switching.
                 // DoStatusMessage(_T("Cant find valid raw")); // not needed anymore
