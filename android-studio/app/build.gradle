@@ -80,7 +80,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.1.0-rc01"
     implementation "androidx.camera:camera-view:1.1.0-rc01"
 
-    implementation "com.google.zxing:core:3.4.1"
+    implementation 'com.google.zxing:core:3.5.0'
 
     implementation "com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07"
     implementation "com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07"
