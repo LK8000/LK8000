@@ -28,20 +28,20 @@ typedef struct _COLORRAMP
 } COLORRAMP;
 
 const COLORRAMP terrain_shadow[] = {
-    {63, {60, 10, 10}},
-    {63, {60, 10, 10}},
-    {63, {0, 0, 64}},
-    {63, {0, 0, 64}},
-    {63, {0, 0, 64}},
-    {63, {0, 0, 64}},
-    {63, {0, 0, 64}},
-    {63, {16, 32, 32}},
-    {63, {16, 32, 32}},
-    {63, {16, 32, 32}},
-    {63, {16, 32, 32}},
-    {63, {16, 32, 32}},
-    {63, {60, 60, 60}},
-    {63, {60, 60, 60}},
+    {63, {60, 10, 10}}, // Low lands
+    {63, {60, 10, 10}}, // LK Mountain 101016
+    {63, {0, 0, 64}}, // Imhof Type 7, geomteric 1.35 9
+    {63, {0, 0, 64}}, // Imhof Type 4, geomteric 1.5 8
+    {63, {0, 0, 64}}, // Imhof Type 12, geomteric  1.5 8
+    {63, {0, 0, 64}}, // Imhof Atlas der Schweiz
+    {63, {0, 0, 64}}, // ICAO
+    {63, {16, 32, 32}}, // LKoogle lowlands
+    {63, {16, 32, 32}}, // LKoogle mountains
+    {63, {16, 32, 32}}, // Low Alps
+    {63, {16, 32, 32}}, // Alps
+    {63, {16, 32, 32}}, // YouSee
+    {63, {60, 60, 60}}, // HighContrast
+    {63, {60, 60, 60}}, // GA Relative
     {63, {60, 10, 10}}, // LiteAlps
     {63, {60, 10, 10}}, // Low Hills
     {63, {16, 32, 32}}, // Low Alps color e-ink
@@ -51,44 +51,44 @@ const COLORRAMP terrain_shadow[] = {
 static_assert(std::size(terrain_shadow) == NUMRAMPS, "invalid terrain_shadow");
 
 const COLORRAMP terrain_highlight[] = {
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {63, {250, 250, 250}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
-    {255, {0, 0, 0}},
+    {255, {0, 0, 0}}, // Low lands
+    {255, {0, 0, 0}}, // LK Mountain 101016
+    {255, {0, 0, 0}}, // Imhof Type 7, geomteric 1.35 9
+    {255, {0, 0, 0}}, // Imhof Type 4, geomteric 1.5 8
+    {255, {0, 0, 0}}, // Imhof Type 12, geomteric  1.5 8
+    {255, {0, 0, 0}}, // Imhof Atlas der Schweiz
+    {255, {0, 0, 0}}, // ICAO
+    {255, {0, 0, 0}}, // LKoogle lowlands
+    {255, {0, 0, 0}}, // LKoogle mountains
+    {255, {0, 0, 0}}, // Low Alps
+    {255, {0, 0, 0}}, // Alps
+    {255, {0, 0, 0}}, // YouSee
+    {63, {250, 250, 250}}, // HighContrast
+    {255, {0, 0, 0}}, // GA Relative
+    {255, {0, 0, 0}}, // LiteAlps
+    {255, {0, 0, 0}}, // Low Hills
     {255, {0, 0, 0}}, // Low Alps color e-ink
     {255, {0, 0, 0}}  // Low Alps gray e-ink
-    };
+};
 
 static_assert(std::size(terrain_highlight) == NUMRAMPS, "invalid terrain_highlight");
 
 // LK Use shading for terrain modes
 const bool terrain_doshading[] = {
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1, // YouSee Shaded
-    1, // YouSee HiContrast
-    0, // Obstacles
+    1, // Low lands
+    1, // Mountain
+    1, // Imhof Type 7, geomteric 1.35 9
+    1, // Imhof Type 4, geomteric 1.5 8
+    1, // Imhof Type 12, geomteric  1.5 8
+    1, // Imhof Atlas der Schweiz
+    1, // ICAO
+    1, // LKoogle lowlands
+    1, // LKoogle mountains
+    1, // Low Alps
+    1, // Alps
+    1, // YouSee
+    1, // HighContrast
+    0, // GA Relative
     1, // LiteAlps
     1,  // Low Hills
     1, // Low Alps color e-ink
@@ -99,20 +99,20 @@ static_assert(std::size(terrain_doshading) == NUMRAMPS, "invalid terrain_doshadi
 
 // LK Use minimal altitude normalizer for terrain modes
 const bool terrain_minalt[NUMRAMPS] = {
-    1,
-    1,
+    1, // Low lands
+    1, // LK Mountain 101016
     1, // Imhof 7
     1, // IMhof 4
     1, // Imhof 12
     1, // Atlas
     1, // ICAO
-    1,
-    1,
-    1,
-    1,
-    0, // YouSee Default
-    1, // YouSee HiContrast
-    1, // Obstacles
+    1, // LKoogle lowlands
+    1, // LKoogle mountains
+    1, // Low Alps
+    1, // Alps
+    0, // YouSee
+    1, // HighContrast
+    1, // GA Relative
     1, // Lite Alps
     1, // Low Hills
     1, // Low Alps color e-ink
@@ -123,6 +123,7 @@ static_assert(std::size(terrain_minalt) == NUMRAMPS, "invalid terrain_minalt");
 
 const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
     {
+        // Low lands
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {250, {0xff, 0xff, 0xff}},
@@ -143,7 +144,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {6000, {0xb7, 0xb9, 0xff}},
     },
     {
-// LK Mountain 101016
+        // LK Mountain 101016
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {350, {0xff, 0xff, 0xff}},
@@ -244,7 +245,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {2500, {255, 255, 255}},
     },
     {
-// LKoogle lowlands
+        // LKoogle lowlands
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {250, {0xff, 0xff, 0xff}},
@@ -265,7 +266,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {4000, {240, 240, 240}},
     },
     {
-// LKoogle mountains
+        // LKoogle mountains
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {500, {0xff, 0xff, 0xff}},
@@ -286,7 +287,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {7000, {240, 240, 240}},
     },
     {
-// Low Alps
+        // Low Alps
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {250, {0xff, 0xff, 0xff}},
@@ -307,7 +308,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {4000, {240, 240, 240}},
     },
     {
-// Alps
+        // Alps
 #ifdef DITHER
         {150, {0xff, 0xff, 0xff}},
         {350, {0xff, 0xff, 0xff}},
@@ -329,7 +330,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {4000, {255, 255, 255}},
     },
     {
-// YouSee
+        // YouSee
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
 #else
@@ -348,25 +349,8 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {6000, {255, 255, 255}},
         {6000, {255, 255, 255}},
     },
-    /*
     {
-        // YouSee High Contrast
-        {0, {204, 223, 191}},
-        {300, {102, 175, 96}},
-        {500, {2, 127, 0}},
-        {1000, {255, 254, 0}},
-        {1200, {225, 192, 0}},
-        {1800, {124, 3, 0}},
-        {3100, {255, 255, 253}},
-        {4900, {160, 191, 237}},
-        {6000, {255, 255, 255}},
-        {6000, {255, 255, 255}},
-        {6000, {255, 255, 255}},
-        {6000, {255, 255, 255}},
-        {6000, {255, 255, 255}},
-    },
-    */
-    {
+        // HighContrast
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
 #else
@@ -386,7 +370,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {4900, {160, 191, 237}},
     },
     {
-// Obstacles
+        // GA Relative
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
 #else
@@ -406,7 +390,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {3500, {100, 0, 0}},
     },
     {
-// LiteAlps
+        // LiteAlps
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {250, {0xff, 0xff, 0xff}},
@@ -427,7 +411,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {6000, {0xef, 0xef, 0xff}},
     },
     {
-// Low Hills
+        // Low Hills
 #ifdef DITHER
         {0, {0xff, 0xff, 0xff}},
         {50, {0xff, 0xff, 0xff}},
@@ -448,7 +432,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {1000, {0xe3, 0xe4, 0xe9}}, // light ice
     },
     {
-// Low Alps color e-ink
+        // Low Alps color e-ink
         {0, {0xff, 0xff, 0xff}},
         {250, {0xff, 0xff, 0xff}},
         {500, {0x70, 0xc0, 0xa7}},
@@ -464,7 +448,7 @@ const COLORRAMP terrain_colors[][NUM_COLOR_RAMP_LEVELS] = {
         {4000, {240, 240, 240}},
     },
     {
-// Low Alps gray e-ink
+        // Low Alps gray e-ink
         {0, {0xff, 0xff, 0xff}},
         {250, {0xff, 0xff, 0xff}},
         {500, {0xf4, 0xea, 0xaf}},
