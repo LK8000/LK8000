@@ -57,7 +57,7 @@ const COLORRAMP terrain_highlight[] = {
     {255, {0, 0, 0}}, // Imhof Type 4, geomteric 1.5 8
     {255, {0, 0, 0}}, // Imhof Type 12, geomteric  1.5 8
     {255, {0, 0, 0}}, // Imhof Atlas der Schweiz
-    {255, {0, 0, 0}}, // ICAO
+    {32, {255, 255, 16}}, // ICAO
     {255, {0, 0, 0}}, // LKoogle lowlands
     {255, {0, 0, 0}}, // LKoogle mountains
     {255, {0, 0, 0}}, // Low Alps
@@ -105,7 +105,7 @@ const bool terrain_minalt[NUMRAMPS] = {
     1, // IMhof 4
     1, // Imhof 12
     1, // Atlas
-    1, // ICAO
+    0, // ICAO
     1, // LKoogle lowlands
     1, // LKoogle mountains
     1, // Low Alps
