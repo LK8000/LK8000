@@ -114,20 +114,6 @@ static Luminosity8 linear_interpolation(const Luminosity8& a, const Luminosity8&
   return  linear_interpolation<level>(a.GetLuminosity(), b.GetLuminosity(), f);
 }
 
-#if !defined(NDEBUG) || TESTBENCH
-static bool IsValidColorRamp(const COLORRAMP(&ramp_colors)[NUM_COLOR_RAMP_LEVELS]) {
-
-  const auto begin = std::begin(ramp_colors);
-  const auto end = std::end(ramp_colors);
-  
-  bool is_sorted = std::is_sorted(begin, end, [](const COLORRAMP& a, const COLORRAMP& b) {
-    return a.height < b.height; 
-  } );
-  
-  return is_sorted;
-}
-#endif
-
 static TerrainColor ColorRampLookup(const int16_t h, const COLORRAMP(&ramp_colors)[NUM_COLOR_RAMP_LEVELS]) {
 
   constexpr uint32_t interp_level = 1<<16;
@@ -202,20 +188,8 @@ class TerrainRenderer {
 public:
 
     explicit TerrainRenderer(const RECT& rc) {
+        TestLog(_T(".... Init TerrainRenderer area LTRB (%d,%d,%d,%d)"), (int)rc.left, (int)rc.top, (int)rc.right, (int)rc.bottom);
 
-#if !defined(NDEBUG) || TESTBENCH
-      // check if all colors_ramps are valid.
-      for( const auto& ramp : terrain_colors) {
-        if(!IsValidColorRamp(ramp)) {
-          StartupStore(_T(".... Invalid Color Ramp : %u"), (unsigned)std::distance(terrain_colors, &ramp) );
-          assert(false);
-        }
-      }
-#endif
-
-#if TESTBENCH
-        StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"), (int)rc.left, (int)rc.top, (int)rc.right, (int)rc.bottom);
-#endif
         static bool error = false;
         // This will not disable terrain! So we shall get calling here again, but no problem.
         if (rc.right < 1 || rc.bottom < 1) {
@@ -276,9 +250,7 @@ public:
     }
 
     ~TerrainRenderer() {
-#if TESTBENCH
-        StartupStore(_T(".... Deinit TerrainRenderer\n"));
-#endif
+        TestLog(_T(".... Deinit TerrainRenderer"));
     }
 
     void SetDirty() {
@@ -1213,3 +1185,32 @@ bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Pr
 void CloseTerrainRenderer() {
     trenderer = nullptr;
 }
+
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+// check if ramp_colors is valid (height sorted).
+static
+bool IsValidColorRamp(const COLORRAMP(&ramp_colors)[NUM_COLOR_RAMP_LEVELS]) {
+
+    const auto begin = std::begin(ramp_colors);
+    const auto end = std::end(ramp_colors);
+
+    return std::is_sorted(begin, end, [](const COLORRAMP& a, const COLORRAMP& b) {
+        return a.height < b.height;
+    });
+}
+
+TEST_SUITE("Terrain renderer") {
+	TEST_CASE("color ramp") {
+        SUBCASE("ramp height sorted") {
+
+            for (const auto& ramp : terrain_colors) {
+                CHECK(IsValidColorRamp(ramp));
+            }
+        }
+    }
+}
+
+#endif
