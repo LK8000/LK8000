@@ -17,7 +17,7 @@ CSTHeightBuffer::CSTHeightBuffer(size_t w, size_t h)
 }
 
 void CSTHeightBuffer::Resize(size_t w, size_t h) {
-    if((w * h) < allocated) {
+    if((w * h) > allocated) {
         data = std::make_unique<int16_t[]>(w * h);
         allocated = w * h;
     }
