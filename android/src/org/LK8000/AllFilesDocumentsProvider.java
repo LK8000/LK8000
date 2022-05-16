@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -165,8 +166,9 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     }
 
     private File getFileForDocId(String documentId) throws FileNotFoundException {
-        final int splitIndex = documentId.indexOf(':', 1);
-        final String path = documentId.substring(splitIndex + 1);
+        String decoded = Uri.decode(documentId);
+        final int splitIndex = decoded.indexOf(':', 1);
+        final String path = decoded.substring(splitIndex + 1);
         final File rootFile = getContext().getExternalFilesDir(null);
         File file = new File(rootFile, path);
         if (file.exists()) {
