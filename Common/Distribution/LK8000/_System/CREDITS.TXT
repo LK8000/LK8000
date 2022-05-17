@@ -1,4 +1,4 @@
-#C0;
+#C1;
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
 Join our free support forum at www.postfrontal.com/forum
@@ -9,6 +9,18 @@ Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
+
+[version 7.3.15]
+. updated ICAO terrain colors
+. allow to use keybaord to navigate in infopage
+. fix Zoom in/out in multimap using keyboard
+. don't hide menu on screen rotate
+. Android : add "Download Manager" as LKMap replacement
+. Android : fix document provider error if file contains space characters.
+. TskArr/TskETE/TskETA/TskAltR/TskArr0 : always display value even without valid task start
+. fix app freeze when connected to LX Nano III on BLE port (#1583)
+. Auto QNH : send calculated QNH to external device
+. RC Fenix driver : workaround for bidirectional MC/BUG/BALLAST
 
 [version 7.3.14]
 . FIX : Freeze when connected to LX-EOS/LX-ERA/LX-Nano3/RC-Fenix device.
