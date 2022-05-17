@@ -157,10 +157,4 @@ public class LKMAPActivity extends AppCompatActivity {
 
         dlg.show();
     }
-
-    private boolean fileExist(String folder, String filename) {
-        File d = new File(getExternalFilesDir(null), folder);
-        File f = new File(d, filename);
-        return f.exists();
-    }
 }
