@@ -42,6 +42,7 @@ import android.provider.DocumentsContract.Document;
 import android.provider.DocumentsContract.Root;
 import android.provider.DocumentsProvider;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
@@ -130,7 +131,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
         MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
         try {
             File filesDir = getFileForDocId(parentDocumentId);
-            for (File file : Objects.requireNonNull(filesDir).listFiles()) {
+            for (File file : Objects.requireNonNull(filesDir.listFiles())) {
                 // Don't show hidden files/folders
                 if (!file.getName().startsWith(".")) {
                     addDocumentRow(result, file);
@@ -160,7 +161,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
         return FileUtils.getDocumentType(getFileForDocId(documentId));
     }
 
-    private String getDocIdForFile(File file) {
+    private String getDocIdForFile(@NonNull File file) {
         File rootFile = getContext().getExternalFilesDir(null);
         return "root:" + rootFile.toURI().relativize(file.toURI()).toString();
     }
@@ -211,9 +212,12 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     @Override
     public void deleteDocument(final String documentId) throws FileNotFoundException {
         File file = getFileForDocId(documentId);
-        String parentDocumentId = getDocIdForFile(file.getParentFile());
         if (file.delete()) {
-            notifyChildDocumentsChange(parentDocumentId);
+            File parentFile = file.getParentFile();
+            if (parentFile != null) {
+                String parentDocumentId = getDocIdForFile(file.getParentFile());
+                notifyChildDocumentsChange(parentDocumentId);
+            }
         } else {
             throw new FileNotFoundException("Failed to delete document id : " + documentId);
         }
@@ -223,7 +227,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     public Cursor querySearchDocuments(String rootId, String query, String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
         final File parent = getContext().getExternalFilesDir(null);
-        final LinkedList<File> pending = new LinkedList<File>();
+        final LinkedList<File> pending = new LinkedList<>();
         final String lowerQuery = query.toLowerCase();
 
         // Start by adding the parent to the list of files to be processed
@@ -279,12 +283,14 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     public String renameDocument(String documentId, String displayName) throws FileNotFoundException {
         File srcFile = getFileForDocId(documentId);
         File parentFile = srcFile.getParentFile();
-        File dstFile = new File(srcFile.getParentFile(), displayName);
+        File dstFile = new File(parentFile, displayName);
         if (!srcFile.renameTo(dstFile)) {
             throw new FileNotFoundException("Failed to rename document with name " +
                     displayName + " and documentId " + documentId);
         }
-        notifyChildDocumentsChange(getDocIdForFile(parentFile));
+        if (parentFile != null) {
+            notifyChildDocumentsChange(getDocIdForFile(parentFile));
+        }
         return getDocIdForFile(dstFile);
     }
 
