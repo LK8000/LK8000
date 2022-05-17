@@ -39,7 +39,7 @@ void ScreenProjection::Screen2LonLat(const POINT& pt, double &Lon, double &Lat) 
     const scalar_type sx = pt.x - screen_origin.x;
     const scalar_type sy = pt.y - screen_origin.y;
 
-    Lat = geo_origin.latitude - ((sy * _CosAngle + sx * _SinAngle + 512) / 1024. / _Zoom);
+    Lat = geo_origin.latitude - ((sy * _CosAngle + sx * _SinAngle + 512) / 1024.) / _Zoom;
     Lon = geo_origin.longitude + ((sx * _CosAngle - sy * _SinAngle + 512) / 1024.) * invfastcosine(Lat) / _Zoom;
 }
 
