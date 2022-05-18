@@ -10,6 +10,9 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.16]
+. Android Download manager : fix missing files
+
 [version 7.3.15]
 . updated ICAO terrain colors
 . allow to use keybaord to navigate in infopage
