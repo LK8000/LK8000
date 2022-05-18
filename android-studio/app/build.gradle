@@ -118,6 +118,7 @@ task syncAsset(type: Sync) {
             "CREDITS.TXT"
     preserve {
         include "bitmaps/**"
+        include "lkmap/**"
     }
     duplicatesStrategy "WARN"
 }
