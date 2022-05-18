@@ -153,6 +153,9 @@ public class LKMAPActivity extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                     downloadFile(url, dest, filename, dstFile);
+                })
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                    // nothing to do...
                 });
 
         dlg.show();
