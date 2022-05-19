@@ -2398,7 +2398,8 @@
     "_@M002325_": "Small Glider",
     "_@M002326_": "Gem",
     "_@M002327_": "Bitmap",
-    "_@M002329_": "Download Manager…",
+    "_@M002328_": "[deprecated]",
+    "_@M002329_": "[deprecated]",
     "_@M002330_": "Screen Orientation",
     "_@M002331_": "Glider Black",
     "_@M002332_": "Big Glider Black",
@@ -2605,5 +2606,8 @@
     "_@H000956_": "[XC TYPE]\nXC TYPE of the best scored contest ( FAI Triangle,FREE Triangle, FREE Flight).\nwill be displayed as icon\nThis data is available only if an additional XC Contest Engine is activate in System menu n 22",
     "_@M002496_": "FF",
     "_@M002497_": "FT",
-    "_@M002498_": "FAI"
+    "_@M002498_": "FAI",
+
+    "_@M002499_": "Download Manager…"
 }
+

@@ -2,6 +2,6 @@
 - Translation sub directory only contains language json files
 
 - never remove unsed token, mark them deprecated by changing there contents
-- never reuse deprecated token for avoid translation mistake.
+- never reuse deprecated token to avoid translation mistake.
 - if string is not translated, remove them from translation files.
 
