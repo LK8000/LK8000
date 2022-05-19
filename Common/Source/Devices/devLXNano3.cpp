@@ -1212,8 +1212,8 @@ if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
     if (_tcsncmp(_T("LOGBOOK"), Par[1],7) == 0)  // PLXVC but not declaration = IGC File transfer
     {
       TCHAR Line[2][MAX_NMEA_LEN];
-      _sntprintf( Line[0],MAX_NMEA_LEN, _T("%s"),Par[5]);
-      _sntprintf( Line[1],MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), Par[6] ,Par[7] ,Par[8], (uint)(StrTol(Par[9]))/1024);
+      lk::snprintf(Line[0], _T("%s"), Par[5]);
+      lk::snprintf(Line[1], _T("%s (%s-%s) %ukB"), Par[6], Par[7], Par[8], (uint)(StrTol(Par[9]))/1024);
       AddElement(Line[0], Line[1]);
     }
     else
