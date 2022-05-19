@@ -1190,7 +1190,7 @@ if (!bCRCok){
 
 if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
 {
-  TCHAR Par[10][MAX_NMEA_PAR_LEN];
+  TCHAR Par[10][MAX_NMEA_LEN];
   TCHAR szCommand[MAX_NMEA_LEN];
   for(uint i=0; i < 10 ; i++)
   {
