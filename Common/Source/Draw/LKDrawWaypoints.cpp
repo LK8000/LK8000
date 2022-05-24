@@ -570,7 +570,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 		if (dowrite) {
 			RasterPoint LabelPos =  _Proj.ToRasterPoint(tp.Latitude, tp.Longitude);
-			LabelPos.x += 5;
+			LabelPos.x += NIBLSCALE(5);
 
 			if (PtInRect(&ClipRect, LabelPos)) {
 
