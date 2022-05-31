@@ -71,7 +71,7 @@ public:
 
 protected:
 
-    PortBridge *bridge;
+    PortBridge *bridge = nullptr;
 
 private:
 
