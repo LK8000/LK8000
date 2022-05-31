@@ -595,7 +595,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		if(E->isLandable) {
 			continue; // don't draw icon, already done in previous loop...
 		}
-		// If we are at low zoom, use a dot for icons, so we dont clutter the screen
+		// If we are at low zoom, use a dot for icons, so we don't clutter the screen
 		if(!Appearance.UTF8Pictorials) {
 			const LKIcon* pWptBmp = nullptr;
 			if(MapWindow::zoom.RealScale() > 4) {
