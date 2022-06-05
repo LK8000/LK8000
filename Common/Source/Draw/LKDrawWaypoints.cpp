@@ -302,28 +302,28 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 	switch(DeclutterMode) {
 	case dmDisabled:
-		//inrange=(MapWindow::zoom.RealScale() <=18); // 17.85, 25km scale
-		inrange=(MapWindow::zoom.RealScale() <=15); // 14.28, 20km scale
+		//inrange=(zoom.RealScale() <= 18); // 17.85, 25km scale
+		inrange=(zoom.RealScale() <= 15); // 14.28, 20km scale
 		decluttericons=false;
 		break;
 	case dmLow:
-		inrange=(MapWindow::zoom.RealScale() <=11); // 10.71, 15km scale
-		decluttericons=(MapWindow::zoom.RealScale() >=14);
+		inrange=(zoom.RealScale() <= 11); // 10.71, 15km scale
+		decluttericons=(zoom.RealScale() >= 14);
 		minrunway=200;
 		break;
 	case dmMedium:
-		inrange=(MapWindow::zoom.RealScale() <=10);
-		decluttericons=(MapWindow::zoom.RealScale() >=10);
+		inrange=(zoom.RealScale() <= 10);
+		decluttericons=(zoom.RealScale() >= 10);
 		minrunway=400;
 		break;
 	case dmHigh:
-		inrange=(MapWindow::zoom.RealScale() <=10);
-		decluttericons=(MapWindow::zoom.RealScale() >=10);
+		inrange=(zoom.RealScale() <= 10);
+		decluttericons=(zoom.RealScale() >= 10);
 		minrunway=800;
 		break;
 	case dmVeryHigh:
-		inrange=(MapWindow::zoom.RealScale() <=10);
-		decluttericons=(MapWindow::zoom.RealScale() >=10);
+		inrange=(zoom.RealScale() <= 10);
+		decluttericons=(zoom.RealScale() >= 10);
 		minrunway=1600;
 		break;
 	default:
@@ -332,7 +332,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 	}
 
 	// Draw Runaway
-	if (MapWindow::zoom.RealScale() <= 20) {
+	if (zoom.RealScale() <= 20) {
 		for(size_t idx = 0;idx < WayPointList.size(); ++idx) {
 			const WAYPOINT& tp = WayPointList[idx];
 			const WPCALC& tpc = WayPointCalc[idx];
@@ -423,7 +423,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		// always in range if MapScale <=10
 		bool irange = inrange;
 
-		if(MapWindow::zoom.RealScale() > 20) {
+		if(zoom.RealScale() > 20) {
 			irange=false;
 			goto NiklausWirth; // with compliments
 		}
@@ -507,7 +507,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			}
 
 			dowrite = (GetMultimap_Labels()<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-			if ( (islandable && !isairport) && MapWindow::zoom.RealScale() >=10 ) {
+			if ( (islandable && !isairport) && zoom.RealScale() >= 10 ) {
 				dowrite = false; // FIX then no need to go further
 			}
 
@@ -599,7 +599,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		// If we are at low zoom, use a dot for icons, so we don't clutter the screen
 		if(!Appearance.UTF8Pictorials) {
 			const LKIcon* pWptBmp = nullptr;
-			if(MapWindow::zoom.RealScale() > 4) {
+			if(zoom.RealScale() > 4) {
 				pWptBmp = (BlackScreen) ? &hInvSmall : &hSmall;
 			} else if(E->isThermal) {
 				pWptBmp = (E->AltArivalAGL > 0) ? &hLKThermal : &hLKThermalRed;
