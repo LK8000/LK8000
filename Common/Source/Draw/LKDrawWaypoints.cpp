@@ -152,9 +152,8 @@ namespace {
 		if (!Pict) return;
 
 		const auto OldColor = Surface.SetTextColor(Color);
-		int xtext = Surface.GetTextWidth(Pict);
-		int ytext = Surface.GetTextHeight(Pict);
-		Surface.DrawText(rc.left -xtext/2 , rc.top+ytext/2, Pict);
+		PixelSize textSize = Surface.GetTextSize(Pict) / 2;
+		Surface.DrawText(rc.left - textSize.cx , rc.top + textSize.cy, Pict);
 		Surface.SetTextColor(OldColor);
 	}
 
@@ -167,11 +166,13 @@ namespace {
 
 			const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
 			const auto OldCol = Surface.SetTextColor(NewCol);
-			int xtext = Surface.GetTextWidth(Pict);
-			int ytext = Surface.GetTextHeight(Pict);
-			Surface.DrawText(rc.left +(rc.right-rc.left-xtext)/2 , rc.top+(rc.bottom-rc.top-ytext)/2 , Pict);
-			Surface.SelectObject(OldFont);
+
+			PixelSize textSize = Surface.GetTextSize(Pict);
+			RasterPoint offsetText = PixelRect(rc).GetCenter() - textSize / 2;
+			Surface.DrawText(offsetText.x, offsetText.y, Pict);
+
 			Surface.SetTextColor(OldCol);
+			Surface.SelectObject(OldFont);
 		}
 	}
 
