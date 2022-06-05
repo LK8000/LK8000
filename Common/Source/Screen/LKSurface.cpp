@@ -566,7 +566,7 @@ void LKSurface::AlphaBlendNotWhite(const RECT& dstRect, const LKSurface& Surface
 }
 #endif    
 
-bool LKSurface::GetTextSize(const TCHAR* lpString, SIZE* lpSize) {
+bool LKSurface::GetTextSize(const TCHAR* lpString, SIZE* lpSize) const {
 #ifdef USE_GDI
     return ::GetTextExtentPoint(*this, lpString, _tcslen(lpString), lpSize);
 #else
@@ -575,7 +575,13 @@ bool LKSurface::GetTextSize(const TCHAR* lpString, SIZE* lpSize) {
         return true;
     }
     return false;
-#endif    
+#endif
+}
+
+PixelSize LKSurface::GetTextSize(const TCHAR *text) const {
+    SIZE size = {};
+    GetTextSize(text, &size);
+    return { size.cx, size.cy };
 }
 
 void LKSurface::DrawText(int X, int Y, const TCHAR* lpString, RECT* ClipRect) {
