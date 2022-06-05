@@ -26,6 +26,8 @@ Copyright_License {
 
 #include <windows.h>
 
+struct PixelSize;
+
 typedef LONG PixelScalar;
 typedef ULONG UPixelScalar;
 
@@ -58,7 +60,10 @@ struct RasterPoint : public tagPOINT {
     x -= other.x;
     y -= other.y;
     return *this;
-  }  
+  }
+
+  constexpr RasterPoint operator+(PixelSize size) const;
+  constexpr RasterPoint operator-(PixelSize size) const;
 };
 
 inline bool operator==(const tagPOINT &first, const tagPOINT &second) {
@@ -93,6 +98,14 @@ struct PixelSize : public tagSIZE {
 
   bool operator!=(const PixelSize &other) const {
     return !(*this == other);
+  }
+
+  constexpr PixelSize operator-(PixelSize size) const {
+    return { cx - size.cx, cy - size.cy };
+  }
+
+  constexpr PixelSize operator/(PixelScalar f) const {
+    return { cx / f, cy / f };
   }
 };
 
@@ -171,5 +184,15 @@ struct PixelRect : public tagRECT {
 };
 
 static_assert(sizeof(PixelRect) == sizeof(RECT), "not same size");
+
+inline constexpr RasterPoint
+RasterPoint::operator+(PixelSize size) const {
+  return { x + size.cx, y + size.cy };
+}
+
+inline constexpr RasterPoint
+RasterPoint::operator-(PixelSize size) const {
+  return { x - size.cx, y - size.cy };
+}
 
 #endif
