@@ -178,7 +178,7 @@
     #define _WGS84
     #ifdef __cplusplus
         #include <GeographicLib/Config.h>
-        #if !((GEOGRAPHICLIB_VERSION_MAJOR >= 1) && (GEOGRAPHICLIB_VERSION_MINOR >= 37))
+        #if !(((GEOGRAPHICLIB_VERSION_MAJOR >= 1) && (GEOGRAPHICLIB_VERSION_MINOR >= 37)) || (GEOGRAPHICLIB_VERSION_MAJOR >= 2))
             #error "GeographicLib version >= 1.37 are required"
         #endif
     #endif
