@@ -31,11 +31,12 @@ bool BthPort::Connect() {
         return false;
     }
 
-    SOCKADDR_BTH sa;
-    memset(&sa, 0, sizeof (sa));
-    sa.addressFamily = AF_BTH;
-    sa.serviceClassId = RFCOMM_PROTOCOL_UUID;
-    sa.btAddr = StrToBTAddr(GetPortName());
+    SOCKADDR_BTH sa = {
+        AF_BTH,
+        StrToBTAddr(GetPortName()),
+        SerialPortServiceClass_UUID,
+        0
+    };
 
     iResult = connect(mSocket, (SOCKADDR*) & sa, sizeof (sa));
     if (iResult == SOCKET_ERROR) {

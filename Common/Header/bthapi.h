@@ -13,7 +13,7 @@
 
 #ifdef _WIN32
 
-typedef ULONGLONG bt_addr, *pbt_addr, BT_ADDR, *PBT_ADDR, BTH_ADDR;
+typedef ULONGLONG BT_ADDR;
 
 #define NAP_MASK                ((ULONGLONG) 0xFFFF00000000LL)
 #define SAP_MASK                ((ULONGLONG) 0x0000FFFFFFFFLL)
@@ -35,19 +35,16 @@ typedef ULONGLONG bt_addr, *pbt_addr, BT_ADDR, *PBT_ADDR, BTH_ADDR;
 #ifndef AF_BTH
 #define AF_BTH  32
 #endif
-#ifndef PF_BTH
-#define PF_BTH  AF_BTH
-#endif
 #ifndef NS_BTH
 #define NS_BTH  16
 #endif
 
-typedef struct _SOCKADDR_BTH {
+struct SOCKADDR_BTH {
     USHORT addressFamily; // Always AF_BTH
-    BTH_ADDR btAddr; // Bluetooth device address
+    BT_ADDR btAddr; // Bluetooth device address
     GUID serviceClassId; // [OPTIONAL] system will query SDP for port
     ULONG port; // RFCOMM channel or L2CAP PSM
-} SOCKADDR_BTH, *PSOCKADDR_BTH;
+};
 
 #define HCI_HARDWARE_UNKNOWN							0
 #define HCI_HARDWARE_NOT_PRESENT						1
@@ -56,23 +53,7 @@ typedef struct _SOCKADDR_BTH {
 #define HCI_HARDWARE_SHUTDOWN							4
 #define HCI_HARDWARE_ERROR								5
 
-#define RFCOMM_PORT_FLAGS_REMOTE_DCB    0x00000001
-
 const GUID SerialPortServiceClass_UUID = {0x00001101, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB}};
-const GUID RFCOMM_PROTOCOL_UUID = {0x00000003, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5F, 0x9B, 0x34, 0xFB}};
-
-typedef struct _portemu_port_params {
-    int channel;
-    int flocal;
-    BT_ADDR device;
-    int imtu;
-    int iminmtu;
-    int imaxmtu;
-    int isendquota;
-    int irecvquota;
-    GUID uuidService;
-    unsigned int uiportflags;
-} PORTEMUPortParams;
 
 enum BTH_RADIO_MODE {
   BTH_POWER_OFF,
