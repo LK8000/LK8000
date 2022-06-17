@@ -151,10 +151,10 @@ public class LKMAPActivity extends AppCompatActivity {
         AlertDialog.Builder dlg = new AlertDialog.Builder(this)
                 .setMessage(R.string.overwrite_download)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     downloadFile(url, dest, filename, dstFile);
                 })
-                .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                     // nothing to do...
                 });
 
