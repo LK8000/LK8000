@@ -101,6 +101,10 @@ void BeforeShutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(MsgToken(1219));
 
+  // Stop COM devices first to avoid mutex race condition...
+  StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
+  devCloseAll();
+
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
   // or probably in other menu related screens. However it cannot happen from real PNA or PDA because we don't have
   // that X button.
@@ -143,10 +147,6 @@ void BeforeShutdown(void) {
   DeinitialiseIOThread();
 
   CloseFlightDataRecorder();
-
-  // Stop COM devices
-  StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
-  devCloseAll();
 
   CloseFLARMDetails();
 
