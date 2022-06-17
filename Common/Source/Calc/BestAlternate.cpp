@@ -586,13 +586,17 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		int Idx = SearchBestStation();
 		if (ValidWayPoint(Idx)) {
 			unsigned khz = ExtractFrequency(WayPointList[Idx].Freq);
+			tstring wpt_name = WayPointList[Idx].Name;
+
+			CScopeLock unlock(UnlockTaskData, LockTaskData);
+
 			if (bAutoActive)	{
-				if (devPutFreqActive(khz, WayPointList[Idx].Name)) {
+				if (devPutFreqActive(khz, wpt_name.c_str())) {
 					RadioPara.Changed = true;
 				}
 			}
 			if (bAutoPassiv) {
-				if (devPutFreqStandby(khz, WayPointList[Idx].Name)) {
+				if (devPutFreqStandby(khz, wpt_name.c_str())) { 
 					RadioPara.Changed = true;
 				}
 			}
