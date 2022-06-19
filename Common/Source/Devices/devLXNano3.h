@@ -115,7 +115,7 @@ class DevLXNanoIII : public DevLX
    static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
-   static BOOL PutTarget(PDeviceDescriptor_t d);
+   static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
    static BOOL Values(PDeviceDescriptor_t d);
    static BOOL ClearDataText( ValueStringIndex Idx );
    static BOOL SetDataText(PDeviceDescriptor_t d, ValueStringIndex Idx,  const TCHAR ValueText[]);

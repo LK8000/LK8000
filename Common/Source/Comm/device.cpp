@@ -21,6 +21,7 @@
 #include "Radio.h"
 #include "Devices/DeviceRegister.h"
 #include "utils/printf.h"
+#include "LKInterface.h"
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -80,8 +81,8 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
  *
  * TODO : report witch device failed (useless still return value are never used).
  */
-template<typename ...Args>
-BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, Args...), Args... args) {
+template<typename Callable, typename ...Args>
+BOOL for_all_device(Callable&& func, Args&&... args) {
     if (SIMMODE) {
       return TRUE;
     }
@@ -90,7 +91,7 @@ BOOL for_all_device(BOOL (*(DeviceDescriptor_t::*func))(DeviceDescriptor_t* d, A
     ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
       if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed +=  (d.*func)(&d, args...) ? 0 : 1;
+        nbDeviceFailed += (d.*func)(&d, std::forward<Args>(args)...) ? 0 : 1;
       }
     }
     return (nbDeviceFailed > 0);
@@ -390,7 +391,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Config = nullptr;
     HeartBeat = nullptr;
     NMEAOut = nullptr;
-
+    PutTarget = nullptr;
     Disabled = true;
 
     Status = CPS_UNUSED; // 100210
@@ -646,7 +647,10 @@ BOOL devInit() {
        }
 
     }
-    return (TRUE);
+
+    ResetMultitargetSync();
+
+    return TRUE;
 }
 
 // Tear down methods should always succeed.
@@ -902,6 +906,10 @@ BOOL devIsRadio(PDeviceDescriptor_t d) {
 
 BOOL devPutQNH(double NewQNH) {
   return for_all_device(&DeviceDescriptor_t::PutQNH, NewQNH);
+}
+
+BOOL devPutTarget(const WAYPOINT& wpt) {
+  return for_all_device(&DeviceDescriptor_t::PutTarget, wpt);
 }
 
 static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)

@@ -13,6 +13,7 @@
 #include "TraceThread.h"
 #include "Hardware/CPU.hpp"
 #include "Calc/Vario.h"
+#include "LKInterface.h"
 
 #ifndef ENABLE_OPENGL
 extern bool OnFastPanning;
@@ -150,6 +151,8 @@ public:
 
             UpdateFlightDataRecorder(tmpGPS, tmpCALCULATED);
             CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
+
+            ExternalDeviceSendTarget();
         }
     }
 private:

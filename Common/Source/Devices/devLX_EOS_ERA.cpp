@@ -144,6 +144,7 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->StationSwap    = EOSStationSwap;
   d->PutRadioMode   = EOSRadioMode;
   d->ParseStream    = EOSParseStream;
+  d->PutTarget      = PutTarget;
 } // Install()
 
 
@@ -271,14 +272,6 @@ BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO*
       SetupLX_Sentence(d);
     }
 
-    static int old_overindex = -1;    // call every 10s or on change
-    static int old_overmode = -1;
-    if( ( ((info->Second+5) %10) ==0) || (OvertargetMode != old_overmode) || (GetOvertargetIndex() != old_overindex))
-    {
-      PutTarget(d);
-      old_overindex = GetOvertargetIndex();;
-      old_overmode  = OvertargetMode;
-    }
     if( ((info->Second+2) %4) ==0)
       SendNmea(d, TEXT("LXDT,GET,SENS"));
     if( ((info->Second+4) %4) ==0) 
@@ -1676,102 +1669,72 @@ BOOL DevLX_EOS_ERA::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
   return TRUE;
 }
 
-BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d)
+BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt)
 {
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
-
   if(PortIO.T_TRGTDir == TP_Off) {
     return false;
   }
 
-  int overindex = GetOvertargetIndex();
-
-  if(overindex < 0)               /* valid waypoint ?*/
-    return -1;
-
-
-  bool bTaskpresent = false; //ValidTaskPoint(0);
-  if(bTaskpresent)
-    if(ValidTaskPoint(ActiveTaskPoint))
-      overindex = Task[ActiveTaskPoint].Index;
-
   TCHAR  szTmp[MAX_NMEA_LEN];
 
-
-  int DegLat, DegLon;
-  double MinLat, MinLon;
-  char NoS, EoW;
-
-  if (!ValidWayPoint(overindex)) return TRUE;
-
-  DegLat = (int)WayPointList[overindex].Latitude;
-  MinLat = WayPointList[overindex].Latitude - DegLat;
-  NoS = 'N';
-  if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
-  {
-    NoS = 'S';
-    DegLat *= -1; MinLat *= -1;
-  }
-  MinLat *= 60;
-
-  DegLon = (int)WayPointList[overindex].Longitude ;
-  MinLon = WayPointList[overindex].Longitude  - DegLon;
-  EoW = 'E';
-  if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
-  {
-    EoW = 'W';
-    DegLon *= -1; MinLon *= -1;
-  }
-  MinLon *=60;
-
-
-  TCHAR szName[MAX_VAL_STR_LEN];
-  if( 0 /*bTaskpresent*/)  {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"), MsgToken(1323), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
-  } else {
-    _sntprintf( szName, MAX_VAL_STR_LEN,_T("%s%s"),GetOvertargetHeader(), WayPointList[overindex].Name); // LKTOKEN _@M1323_ "T>"
-  }
-
-  if( PortIO.T_TRGTDir  == TP_VTARG)
-  {                                  
+  if( PortIO.T_TRGTDir  == TP_VTARG) {                                  
     int rwdir = 0; 
     int landable =0;
 
-    if((WayPointList[overindex].Flags & LANDPOINT)> 0) 
+    if((wpt.Flags & LANDPOINT)> 0) 
     {
       landable = 1;
-      rwdir    = WayPointList[overindex].RunwayDir;
+      rwdir    = wpt.RunwayDir;
     }
 
     _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
-            1,
-            szName, 
-            (int) (WayPointList[overindex].Latitude * 60000.0), 
-            (int) (WayPointList[overindex].Longitude* 60000.0),
-            (int) (WayPointList[overindex].Altitude +0.5),
+            1, 
+            wpt.Name, 
+            (int) (wpt.Latitude * 60000.0), 
+            (int) (wpt.Longitude * 60000.0),
+            (int) (wpt.Altitude + 0.5),
             landable,
-            WayPointList[overindex].Freq ,
+            wpt.Freq,
             rwdir);
-    
+
+    DevLX_EOS_ERA::SendNmea(d, szTmp);
  //   $LXDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
-    _tcsncat (szName, _T(" ($LXDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
-     TestLog(TEXT("Send navigation Target LXNav: %s"), szName);
+    TestLog(_T("Send navigation Target LXNav: ($LXDT,SET,NAVIGATE) %s"), wpt.Name);
   }
-  else
-  {
-    if( PortIO.T_TRGTDir  == TP_GPRMB)
-    {               //                      GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
-      _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
-                        szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
+  else if( PortIO.T_TRGTDir  == TP_GPRMB) {
+    // GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
 
-      _tcsncat(szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
+    int DegLat = wpt.Latitude;
+    double MinLat = wpt.Latitude - DegLat;
+    char NoS = 'N';
+    if ((MinLat < 0) || (((MinLat - DegLat) == 0) && (DegLat < 0))) {
+      NoS = 'S';
+      DegLat *= -1; 
+      MinLat *= -1;
     }
-   
-    TestLog(TEXT("Send navigation Target LXNav: %s"), szName);
+    MinLat *= 60;
+
+    int DegLon = wpt.Longitude;
+    double MinLon = wpt.Longitude - DegLon;
+    char EoW = 'E';
+    if ((MinLon < 0) || (((MinLon - DegLon) == 0) && (DegLon < 0))) {
+      EoW = 'W';
+      DegLon *= -1;
+      MinLon *= -1;
+    }
+    MinLon *=60;    
+
+    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
+                      wpt.Name, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
+
+    DevLX_EOS_ERA::SendNmea(d, szTmp);
+    TestLog(_T("Send navigation Target LXNav: ($GPRMB) %s"), wpt.Name);
   }
 
-  if(Values(d)) SetDataText( d, _T_TRGT,  szName);
-  DevLX_EOS_ERA::SendNmea(d,szTmp);
+  if(Values(d)) {
+    SetDataText( d, _T_TRGT, wpt.Name);
+  }
 
   return(true);
 }

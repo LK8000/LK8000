@@ -66,7 +66,7 @@ protected:
 
   static BOOL Config(PDeviceDescriptor_t d);
 
-  static BOOL PutTarget(PDeviceDescriptor_t d);
+  static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
 
   static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
   static BOOL FenixPutBallast(PDeviceDescriptor_t d, double Ballast);

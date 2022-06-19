@@ -10,6 +10,8 @@
 #include "LKInterface.h"
 #include "DoInits.h"
 #include "Sound/Sound.h"
+#include "Geographic/GeoPoint.h"
+#include "utils/printf.h"
 
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex() {
@@ -221,4 +223,78 @@ _tryagain:
 			PlayResource(TEXT("IDR_WAV_OVERTONE5"));
 			break;
 	}
+}
+
+namespace {
+
+class no_target : public std::exception {
+public:
+  no_target() = default;
+
+  const char* what() const throw() override { 
+    return "no_target";
+  }
+};
+
+WAYPOINT GetTargetSyncData() {
+  const TCHAR* name = _T("");
+
+  WAYPOINT curr_tp = WithLock(CritSec_TaskData, [&]() {
+    int overindex = -1;
+
+    if (ValidTaskPointFast(ActiveTaskPoint)) {
+      // active task turnpoint
+      overindex = Task[ActiveTaskPoint].Index;
+      name = MsgToken(1323);
+    }
+
+    if (overindex < 0) {
+      // if no task configured, use overtarget
+      overindex = GetOvertargetIndex();
+      name = GetOvertargetHeader();
+    }
+
+    if (!ValidWayPointFast(overindex)) {
+      // no target ...
+      throw no_target();
+    }
+
+    return WayPointList[overindex];
+  });
+
+  curr_tp.Comment = nullptr;
+  curr_tp.Details = nullptr;
+  lk::snprintf(curr_tp.Name, _T("%s%s"), name, tstring(curr_tp.Name).c_str());
+  return curr_tp;
+}
+
+Mutex last_multitarget_mtx;
+AGeoPoint last_multitarget = {};
+
+}  // namespace
+
+void ExternalDeviceSendTarget() {
+  try {
+    WAYPOINT wpt       = GetTargetSyncData();
+    AGeoPoint position = {{wpt.Latitude, wpt.Longitude}, wpt.Altitude};
+
+    AGeoPoint previous = WithLock(last_multitarget_mtx, [&]() {
+      return std::exchange(last_multitarget, position);
+    });
+
+    if (position != previous) {
+      // target changed : send new target to external device.
+      devPutTarget(wpt);
+    }
+
+  } catch (no_target& e) {
+    // no target to sync...
+    ScopeLock lock(last_multitarget_mtx);
+    last_multitarget = {};
+  }
+}
+
+void ResetMultitargetSync() {
+  ScopeLock lock(last_multitarget_mtx);
+  last_multitarget = {};
 }

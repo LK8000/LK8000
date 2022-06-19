@@ -53,6 +53,7 @@ void DevLXV7_EXP::Install(PDeviceDescriptor_t d)
   d->PutBallast   = LXV7_EXPPutBallast;
   d->IsBaroSource = GetTrue;
   d->DirectLink   = LXV7_EXP_DirectLink;
+  d->PutTarget    = PutTarget;
 } // Install()
 
 
@@ -251,163 +252,37 @@ if(LXV7_EXP_bValid == false)
 }
 
 
-bool  DevLXV7_EXP::PutGPRMB(PDeviceDescriptor_t d)
-{
+BOOL  DevLXV7_EXP::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
 
-//RMB - The recommended minimum navigation sentence is sent whenever a route or a goto is active.
-//      On some systems it is sent all of the time with null data.
-//      The Arrival alarm flag is similar to the arrival alarm inside the unit and can be decoded to
-//      drive an external alarm.
-//      Note: the use of leading zeros in this message to preserve the character spacing.
-//      This is done, I believe, because some autopilots may depend on exact character spacing.
-//
-//     $GPRMB,A,0.66,L,003,004,4917.24,N,12309.57,W,001.3,052.5,000.5,V*20
-//where:
-//           RMB          Recommended minimum navigation information
-//           A            Data status A = OK, V = Void (warning)
-//           0.66,L       Cross-track error (nautical miles, 9.99 max),
-//                                steer Left to correct (or R = right)
-//           003          Origin waypoint ID
-//           004          Destination waypoint ID
-//           4917.24,N    Destination waypoint latitude 49 deg. 17.24 min. N
-//           12309.57,W   Destination waypoint longitude 123 deg. 09.57 min. W
-//           001.3        Range to destination, nautical miles (999.9 max)
-//           052.5        True bearing to destination
-//           000.5        Velocity towards destination, knots
-//           V            Arrival alarm  A = arrived, V = not arrived
-//           *20          checksum
-static int old_overindex = -99;
-static int old_overmode = -99;
-int overindex = GetOvertargetIndex();
-int overmode  = OvertargetMode;
-
-bool bTaskpresent = false; //ValidTaskPoint(0);
-if(bTaskpresent)
-  if(ValidTaskPoint(ActiveTaskPoint))
-    overindex = Task[ActiveTaskPoint].Index;
-
-
-#define SEND_ON_CHANGE_ONLY
-#ifdef SEND_ON_CHANGE_ONLY
-if(overindex < 0)               /* vaslid waypoint */
-  return -1;
-if(overindex == old_overindex)  /* same as before */
-  if(overmode == old_overmode)  /* and same mode  */
-    return 0;
-#endif
-
-old_overindex = overindex;
-old_overmode  = overmode;
-TCHAR  szTmp[512];
-
-
-int DegLat, DegLon;
-double MinLat, MinLon;
-char NoS, EoW;
-
-if (!ValidWayPoint(overindex)) return TRUE;
-
-DegLat = (int)WayPointList[overindex].Latitude;
-MinLat = WayPointList[overindex].Latitude - DegLat;
-NoS = 'N';
-if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
-  {
+  int DegLat = (int)wpt.Latitude;
+  double MinLat = wpt.Latitude - DegLat;
+  char NoS = 'N';
+  if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0))) {
     NoS = 'S';
     DegLat *= -1; MinLat *= -1;
   }
-MinLat *= 60;
+  MinLat *= 60;
 
-DegLon = (int)WayPointList[overindex].Longitude ;
-MinLon = WayPointList[overindex].Longitude  - DegLon;
-EoW = 'E';
-if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
-  {
+  int DegLon = (int)wpt.Longitude;
+  double MinLon = wpt.Longitude - DegLon;
+  char EoW = 'E';
+  if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0))) {
     EoW = 'W';
     DegLon *= -1; MinLon *= -1;
   }
-MinLon *=60;
+  MinLon *=60;
 
-#define SET_VALUES_BY_RMB
-#ifdef SET_VALUES_BY_RMB
-  if(bTaskpresent)
-  {
-#ifdef NO_RMB_BUT_PLXVTARG
-	                     //  $GPRMB,A,0.66,L,003,004 ,4917.24   ,N ,12309.57  ,W ,01.3,52.5,00.5,V*20
-    _stprintf( szTmp,  TEXT("$GPRMB,A,0.00,R,XXX,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.1f,%.1f,%.1f,V"),
-               MsgToken(1323), // LKTOKEN _@M1323_ "T>"
-	           WayPointList[overindex].Name,
-               DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-               WayPointCalc[overindex].Distance * TONAUTICALMILES,
-               WayPointCalc[overindex].Bearing,
-               WayPointCalc[overindex].VGR * TOKNOTS
-             );
-    LXV7_EXPNMEAddCheckSumStrg(szTmp);
-    d->Com->WriteString(szTmp);
-#if TESTBENCH
-    StartupStore(TEXT("V7: %s"),szTmp);
-#endif
-#else
-    _stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i "),
-               MsgToken(1323), // LKTOKEN _@M1323_ "T>"
-	           WayPointList[overindex].Name,
-               DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-               (int) (WayPointList[overindex].Altitude +0.5)
-             );
-    LXV7_EXPNMEAddCheckSumStrg(szTmp);
-    d->Com->WriteString(szTmp);
-#endif
-#if TESTBENCH
-    StartupStore(TEXT("V7: %s"),szTmp);
-#endif
-
-  }
-  else
-  {                          //  $GPRMB,A,0.66,L,003,004 ,4917.24   ,N ,12309.57  ,W ,01.3,52.5,00.5,V*20
-#ifdef NO_RMB_BUT_PLXVTARG
-    _stprintf( szTmp,  TEXT("$GPRMB,A,0.00,R,XXX,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%.1f,%.1f,%.1f,V"),
-	           GetOvertargetHeader(),
-		       WayPointList[overindex].Name,
-	           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-	           WayPointCalc[overindex].Distance * TONAUTICALMILES,
-	           WayPointCalc[overindex].Bearing,
-	           WayPointCalc[overindex].VGR * TOKNOTS
-	         );
-	LXV7_EXPNMEAddCheckSumStrg(szTmp);
-	d->Com->WriteString(szTmp);
-#if TESTBENCH
-	StartupStore(TEXT("V7: %s"),szTmp);
-#endif
-#else
-	_stprintf( szTmp,  TEXT("$PLXVTARG,%s%s,%02d%05.2f,%c,%03d%05.2f,%c,%i "),
-	           GetOvertargetHeader(),
-		       WayPointList[overindex].Name,
-	           DegLat, MinLat, NoS, DegLon, MinLon, EoW,
-	           (int)(WayPointList[overindex].Altitude +0.5)
-	         );
-	LXV7_EXPNMEAddCheckSumStrg(szTmp);
-	d->Com->WriteString(szTmp);
-#endif
-#if TESTBENCH
-	StartupStore(TEXT("V7: %s"),szTmp);
-#endif
-  }
-
-
-
-#else
-  /****************
-   * SYm style
-   ****************/
-  _stprintf( szTmp,  TEXT("$PFLX4,,,,%.f,%.f,,,,0,"),   WayPointCalc[overindex].Distance,  -WayPointCalc[overindex].AltReqd[AltArrivMode]*TOFEET );
+  TCHAR szTmp[MAX_NMEA_LEN];
+  _stprintf(szTmp, _T("$PLXVTARG,%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
+              wpt.Name,
+              DegLat, MinLat, NoS, DegLon, MinLon, EoW,
+              (int)(wpt.Altitude + 0.5));
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-#if TESTBENCH
-  StartupStore(TEXT("V7: %s"),szTmp);
-#endif
 
-#endif
-
-return(true);
+  TestLog(_T("V7: %s"),szTmp);
+  
+  return true;
 }
 
 
@@ -425,109 +300,79 @@ return(true);
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXV7_EXP::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
-{
+BOOL DevLXV7_EXP::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+  static int i = 40;
+  TCHAR szTmp[256];
 
-  static int i=40;
-  TCHAR  szTmp[256];
-
-
-  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
     return FALSE;
   }
 
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-  {
-	if(iLXV7_EXP_RxUpdateTime > 0)
-	{
-		iLXV7_EXP_RxUpdateTime--;
-	}
-	else
-	{
-	  if(fabs(LXV7_EXP_oldMC - MACCREADY)> 0.005f)
-	  {
-//		LXV7_EXPPutMacCready( d,  MACCREADY);
-		LXV7_EXP_oldMC = MACCREADY;
-		LXV7_EXP_MacCreadyUpdateTimeout = 2;
+  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
+    if (iLXV7_EXP_RxUpdateTime > 0) {
+      iLXV7_EXP_RxUpdateTime--;
+    } else {
+      if (fabs(LXV7_EXP_oldMC - MACCREADY) > 0.005f) {
+        LXV7_EXP_oldMC = MACCREADY;
+        LXV7_EXP_MacCreadyUpdateTimeout = 2;
       }
-	}
+    }
   }
 
-  PutGPRMB(d);
-
   /* configure LX after 10 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
-  {
-    if(i++ > 4)
-    {
+  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+    if (i++ > 4) {
       SetupLX_Sentence(d);
-
-	  i=0;
+      i = 0;
     }
 
+    static int oldQFEOff = 0;
+    static int iOldQNH   = 0;
 
-    static int oldQFEOff =0;
-    static int iOldQNH   =0;
-
-
-
-    int iQNH = (int)(QNH*100.0);
-    if(iQNH != iOldQNH)
-    {
-  	  iOldQNH = iQNH;
-      _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"),(int)iQNH);
+    int iQNH = (int)(QNH * 100.0);
+    if (iQNH != iOldQNH) {
+      iOldQNH = iQNH;
+      _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"), (int)iQNH);
       LXV7_EXPNMEAddCheckSumStrg(szTmp);
       d->Com->WriteString(szTmp);
     }
 
-
     int QFE = (int)QFEAltitudeOffset;
-    if(QFE != oldQFEOff)
-    {
-  	  oldQFEOff = QFE;
-      _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
+    if (QFE != oldQFEOff) {
+      oldQFEOff = QFE;
+      _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"), (int)(QFEAltitudeOffset));
       LXV7_EXPNMEAddCheckSumStrg(szTmp);
-  //    d->Com->WriteString(szTmp);
+      //    d->Com->WriteString(szTmp);
     }
   }
-  if(LXV7_EXP_iGPSBaudrate ==0)
-  {
+  if (LXV7_EXP_iGPSBaudrate == 0) {
     _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
     LXV7_EXPNMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
   }
 
-if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
-  return PLXVF(d, sentence + 7, info);
-else
-  if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+  if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+    return PLXVF(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
     return PLXVS(d, sentence + 7, info);
-  else
-	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
-	  return PLXV0(d, sentence + 7, info);
-	else
-      if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-        return LXWP2(d, sentence + 7, info);
-      else
-        if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-          return LXWP1(d, sentence + 7, info);
-	else
-	  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-	    return LXWP0(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+    return PLXV0(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+    return LXWP2(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+    return LXWP1(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+    return LXWP0(d, sentence + 7, info);
 #ifdef OLD_LX_SENTENCES
-      else
-        if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-          return LXWP1(d, sentence + 7, info);
-        else
-          if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
-            return LXWP3(d, sentence + 7, info);
-          else
-            if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
-              return LXWP4(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+    return LXWP1(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+    return LXWP3(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+    return LXWP4(d, sentence + 7, info);
 #endif
-  return(false);
-} // ParseNMEA()
-
+  return (false);
+}  // ParseNMEA()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP0 sentence.

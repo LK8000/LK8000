@@ -34,6 +34,8 @@ int GetOvertargetIndex();
 void GetOvertargetName(TCHAR *overtargetname);
 extern TCHAR * GetOvertargetHeader(void);
 extern void RotateOvertarget(void);
+void ExternalDeviceSendTarget();
+void ResetMultitargetSync();
 
 int ProcessVirtualKey(int x, int y, long keytime, short vkmode);
 

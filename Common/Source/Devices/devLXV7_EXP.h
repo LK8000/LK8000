@@ -33,9 +33,6 @@ class DevLXV7_EXP : public DevBase
       return devRegister(GetName(), Install);
     }
 
-    // Send GPRMB sentence (next waypoint information).
-    static bool PutGPRMB(PDeviceDescriptor_t);
-
     // Send $PFLX2 to request Info from LX.
     static bool SetupLX_Sentence(PDeviceDescriptor_t d);
 
@@ -80,6 +77,9 @@ class DevLXV7_EXP : public DevBase
 
     /// Parses LXWP4 sentence.
     static bool LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+    // Send GPRMB sentence (next waypoint information).
+    static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
 
 }; // DevLX
 

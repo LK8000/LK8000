@@ -52,6 +52,7 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->Declare      = DeclareTask;
   d->IsBaroSource = GetTrue;
   d->Config       = Config;
+  d->PutTarget    = PutTarget;
 } // Install()
 
 namespace {
@@ -191,13 +192,6 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
     // execute every second only if no task is declaring
     lastSec = info->Second;
 
-    static int old_overindex = -1;    // call every 10s or on change
-    static int old_overmode = -1;
-    if ((((info->Second+5) %10) ==0) || (OvertargetMode != old_overmode) || (GetOvertargetIndex() != old_overindex)) {
-      PutTarget(d);
-      old_overindex = GetOvertargetIndex();;
-      old_overmode  = OvertargetMode;
-    }
     if (((info->Second + 2) % 4) == 0) {
       SendNmea(d, _T("RCDT,GET,SENS"));
     }
@@ -490,91 +484,67 @@ BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
 }
 
 
-BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d) {
+BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
   if(PortIO.T_TRGTDir == TP_Off) {
     return false;
   }
 
-  int overindex = -1; 
-
-  if(ValidTaskPoint(ActiveTaskPoint)) {
-    // active task turnpoint
-    overindex = Task[ActiveTaskPoint].Index;
-  }
-
-  if(overindex < 0) {
-    // if no task configured, use overtarget
-    overindex = GetOvertargetIndex();
-  }
-
-  if (!ValidWayPoint(overindex)) {
-    // no target ...
-    return TRUE;
-  }
-
-  const WAYPOINT& curr_tp = WayPointList[overindex];
-
   TCHAR  szTmp[MAX_NMEA_LEN];
-
-  int DegLat = curr_tp.Latitude;
-  double MinLat = curr_tp.Latitude - DegLat;
-  char NoS = 'N';
-  if ((MinLat < 0) || (((MinLat - DegLat) == 0) && (DegLat < 0))) {
-    NoS = 'S';
-    DegLat *= -1; 
-    MinLat *= -1;
-  }
-  MinLat *= 60;
-
-  int DegLon = curr_tp.Longitude ;
-  double MinLon = curr_tp.Longitude - DegLon;
-  char EoW = 'E';
-  if ((MinLon < 0) || (((MinLon - DegLon) == 0) && (DegLon < 0))) {
-    EoW = 'W';
-    DegLon *= -1;
-    MinLon *= -1;
-  }
-  MinLon *=60;
-
-  TCHAR szName[MAX_VAL_STR_LEN];
-  _sntprintf(szName, MAX_VAL_STR_LEN, _T("%s%s"),
-                        GetOvertargetHeader(),  // LKTOKEN _@M1323_ "T>"
-                        curr_tp.Name);
 
   if (PortIO.T_TRGTDir  == TP_VTARG) {                                  
     int rwdir = 0; 
     int landable =0;
 
-    if ((curr_tp.Flags & LANDPOINT) > 0) {
+    if ((wpt.Flags & LANDPOINT) > 0) {
       landable = 1;
-      rwdir    = curr_tp.RunwayDir;
+      rwdir    = wpt.RunwayDir;
     }
 
     _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,NAVIGATE,1,%s,%i,%i,%i,%i,%s,%i"),
-                szName, 
-                (int) (curr_tp.Latitude * 60000.0), 
-                (int) (curr_tp.Longitude * 60000.0),
-                (int) (curr_tp.Altitude + 0.5),
-                landable, curr_tp.Freq, rwdir);
+                wpt.Name, 
+                (int) (wpt.Latitude * 60000.0), 
+                (int) (wpt.Longitude * 60000.0),
+                (int) (wpt.Altitude + 0.5),
+                landable, wpt.Freq, rwdir);
     
-    //   $RCDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
-    _tcsncat(szName, _T(" ($RCDT,SET,NAVIGATE)"), std::size(szName) - _tcslen(szName));
+    // $RCDT,SET,NAVIGATE,0,MARIBOR,2788794,941165,267,1,119.200,14*2A<CR><LF>
+    SendNmea(d, szTmp);
+    TestLog(TEXT("Send navigation Target Fenix: ($RCDT) %s"), wpt.Name);
+    SetDataText(d, _T_TRGT,  wpt.Name);
   }
   else if (PortIO.T_TRGTDir  == TP_GPRMB) {
     // GPRMB,A,,,,H>TAKEOFF,5144.78,N,00616.70,E,,,A
+
+    int DegLat = wpt.Latitude;
+    double MinLat = wpt.Latitude - DegLat;
+    char NoS = 'N';
+    if ((MinLat < 0) || (((MinLat - DegLat) == 0) && (DegLat < 0))) {
+      NoS = 'S';
+      DegLat *= -1; 
+      MinLat *= -1;
+    }
+    MinLat *= 60;
+
+    int DegLon = wpt.Longitude ;
+    double MinLon = wpt.Longitude - DegLon;
+    char EoW = 'E';
+    if ((MinLon < 0) || (((MinLon - DegLon) == 0) && (DegLon < 0))) {
+      EoW = 'W';
+      DegLon *= -1;
+      MinLon *= -1;
+    }
+    MinLon *=60;
+
     _sntprintf(szTmp, MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
-                                    szName, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
-    _tcsncat(szName, _T(" ($GPRMB)"), std::size(szName) - _tcslen(szName));
+                                    wpt.Name, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
+
+    SendNmea(d, szTmp);
+    TestLog(TEXT("Send navigation Target Fenix: ($GPRMB) %s"), wpt.Name);
+    SetDataText(d, _T_TRGT,  wpt.Name);
   }
 
-  TestLog(TEXT("Send navigation Target Fenix: %s"), szName);
-
-  if (Values(d)) {
-    SetDataText(d, _T_TRGT,  szName);
-  }
-  SendNmea(d, szTmp);
 
   return TRUE;
 }

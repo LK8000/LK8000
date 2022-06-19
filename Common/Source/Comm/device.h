@@ -102,6 +102,7 @@ struct DeviceDescriptor_t {
   BOOL (*Config)(DeviceDescriptor_t	*d);
   BOOL (*HeartBeat)(DeviceDescriptor_t *d);
   BOOL (*NMEAOut)(DeviceDescriptor_t *d, const TCHAR* String);
+  BOOL (*PutTarget)(DeviceDescriptor_t *d, const WAYPOINT& wpt);
  
   bool m_bAdvancedMode;
   int iSharedPort;
@@ -174,6 +175,8 @@ BOOL devIsRadio(PDeviceDescriptor_t d);
 
 BOOL devHeartBeat();
 BOOL devPutQNH(double NewQNH);
+
+BOOL devPutTarget(const WAYPOINT& wpt);
 
 BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode);
 BOOL devGetAdvancedMode(PDeviceDescriptor_t d);

@@ -125,7 +125,7 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
    static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
-   static BOOL PutTarget(PDeviceDescriptor_t d);
+   static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
 
    static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
    static void GetDirections(WndButton* pWnd);
