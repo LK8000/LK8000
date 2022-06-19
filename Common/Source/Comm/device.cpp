@@ -649,6 +649,9 @@ BOOL devInit() {
     }
 
     ResetMultitargetSync();
+    devPutQNH(QNH);
+    devPutBugs(BUGS);
+    devPutBallast(BALLAST);
 
     return TRUE;
 }
