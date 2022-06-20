@@ -10,7 +10,7 @@ DerivePointerAlignment: false
 PointerAlignment: Left
 
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 
 BinPackArguments: true
 BinPackParameters : true
