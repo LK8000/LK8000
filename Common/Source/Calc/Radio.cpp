@@ -92,7 +92,7 @@ unsigned ExtractFrequency(const TCHAR *text, size_t* start, size_t* len) {
  * if needed to improve precision dlat calculation can be replaced by
  *   double dlat =  cos(a.latitude * PI/180) * (a.latitude - b.latitude)
  */
-static double LatLonDistance(GeoPoint a, GeoPoint b)
+static double LatLonDistance(const GeoPoint& a, const GeoPoint& b)
 {
 	double dla = a.latitude - b.latitude;
 	double dlo = a.longitude - b.longitude;
@@ -139,16 +139,10 @@ bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], unsigned khz) {
 }
 
 
-static int SearchNearestStation()
-{
+static int SearchNearestStation(GeoPoint cur_pos) {
 	double minDist = 9999999;
 	int minIdx = -1;
-	
-	LockFlightData();
-	GeoPoint cur_pos(GPS_INFO.Latitude, GPS_INFO.Longitude);
-	UnlockFlightData();
 
-	LockTaskData();			
 	for (size_t i = NUMRESWP; i < WayPointList.size(); ++i)
 	{
 		const WAYPOINT& wpt = WayPointList[i];
@@ -168,26 +162,35 @@ static int SearchNearestStation()
 			}
 		}
 	}
-	UnlockTaskData();	
 
 	return minIdx;
 }
 
+std::optional<RadioStation> SearchBestStation(const GeoPoint& cur_pos) {
 
-int SearchBestStation() {
+	ScopeLock lock(CritSec_TaskData);
+
 	int Idx = BestAlternate;    // begin with Best alternate
 	unsigned khz = 0;
 
-	LockTaskData();
 	if(ValidWayPointFast(Idx)) {
 		khz = ExtractFrequency(WayPointList[Idx].Freq);
 	}
-	UnlockTaskData();
 
-	if(!ValidFrequency(khz)) { // best alternate does not have a radio?
-		Idx = SearchNearestStation(); // OK, then search for the nearest with radio!
+	if(!ValidFrequency(khz)) { 
+		// best alternate does not have a radio?
+		Idx = SearchNearestStation(cur_pos); // OK, then search for the nearest with radio!
 	}
-	return Idx;
+
+	if(ValidWayPointFast(Idx)) {
+		// found, return station frequency and name
+		return RadioStation{
+			ExtractFrequency(WayPointList[Idx].Freq),
+			WayPointList[Idx].Name
+		};
+	}
+
+	return {};
 }
 
 const TCHAR* GetActiveStationSymbol(bool unicode_symbol) {
@@ -212,6 +215,34 @@ const TCHAR* GetStandyStationSymbol(bool unicode_symbol) {
 #else
 	return "\xE2\x86\x93"; // utf-8
 #endif
+}
+
+void AutomaticRadioStation(const GeoPoint& cur_pos) {
+
+	if (!RadioPara.Enabled) {
+		return;
+	}
+
+	// auto frequency selection?
+	if (bAutoActive || bAutoPassiv) {
+
+		auto optional = SearchBestStation(cur_pos);
+		if (optional) {
+			auto& station = optional.value();
+
+			if (bAutoActive) {
+				if (devPutFreqActive(station.Khz, station.name.c_str())) {
+					RadioPara.Changed = true;
+				}
+			}
+
+			if (bAutoPassiv) {
+				if (devPutFreqStandby(station.Khz, station.name.c_str())) {
+					RadioPara.Changed = true;
+				}
+			}
+		}
+	}
 }
 
 #ifndef DOCTEST_CONFIG_DISABLE

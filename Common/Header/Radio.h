@@ -10,6 +10,7 @@
 #define __RADIO_H__
 
 #include "Sizes.h"
+#include <optional>
 
 bool ValidFrequency(unsigned khz);
 
@@ -17,9 +18,16 @@ unsigned ExtractFrequency(const TCHAR *text, size_t *start = nullptr, size_t *le
 
 bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], unsigned khz);
 
-int SearchBestStation();
+struct RadioStation {
+    unsigned Khz;
+    tstring name;
+};
+
+std::optional<RadioStation> SearchBestStation(const GeoPoint& cur_pos);
 
 const TCHAR* GetActiveStationSymbol(bool unicode_symbol);
 const TCHAR* GetStandyStationSymbol(bool unicode_symbol);
+
+void AutomaticRadioStation(const GeoPoint& cur_pos);
 
 #endif

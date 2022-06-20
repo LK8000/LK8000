@@ -22,6 +22,7 @@ typedef struct _DATAOPTIONS
 } DATAOPTIONS;
 
 
+extern Mutex  CritSec_FlightData;
 extern void UnlockFlightData();
 extern void LockFlightData();
 

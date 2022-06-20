@@ -36,7 +36,7 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
 bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-void SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
+bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 // void DoNearestTurnpoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 

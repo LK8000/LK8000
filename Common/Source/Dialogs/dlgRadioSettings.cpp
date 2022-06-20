@@ -295,14 +295,18 @@ static void OnPassiveFreq(WndButton* pWnd){
   }
 }
 
+static GeoPoint GetCurrentPos() {
+  ScopeLock lock(CritSec_FlightData);
+  return { GPS_INFO.Latitude, GPS_INFO.Longitude };
+}
 
 static void OnRadioActiveAutoClicked(WndButton* pWnd) {
   bAutoActive = !bAutoActive;
   if(bAutoActive) {
-    int Idx = SearchBestStation();
-    if (ValidWayPoint(Idx)) {
-      unsigned khz = ExtractFrequency(WayPointList[Idx].Freq);
-      devPutFreqActive(khz, WayPointList[Idx].Name);
+    auto optional = SearchBestStation(GetCurrentPos());
+    if (optional) {
+      auto& station = optional.value();
+      devPutFreqActive(station.Khz, station.name.c_str());
     }
   }
   OnUpdate();
@@ -312,10 +316,10 @@ static void OnRadioActiveAutoClicked(WndButton* pWnd) {
 static void OnRadioStandbyAutoClicked(WndButton* pWnd) {
   bAutoPassiv = !bAutoPassiv;
   if(bAutoPassiv) {
-    int Idx = SearchBestStation();
-    if (ValidWayPoint(Idx)) {
-      unsigned khz = ExtractFrequency(WayPointList[Idx].Freq);
-      devPutFreqStandby(khz, WayPointList[Idx].Name);
+    auto optional = SearchBestStation(GetCurrentPos());
+    if (optional) {
+      auto& station = optional.value();
+      devPutFreqStandby(station.Khz, station.name.c_str());
     }
   }
   OnUpdate();

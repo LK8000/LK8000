@@ -35,9 +35,17 @@ extern void InsertCommonList(int newwp);
 #define MAXBEST 10      // max number of reachable landing points searched for, 
 			// among a preliminar list of MAXBEST * 2 - CPU HOGGING ALERT!
 
-void SearchBestAlternate(NMEA_INFO *Basic, 
-			 DERIVED_INFO *Calculated)
-{
+/**
+ * @return true if BestAlternate change
+ */
+bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
+  ScopeLock Lock(CritSec_TaskData);
+
+  if (WayPointList.empty()) {
+	return false;
+  }
+
   int sortedLandableIndex[MAXBEST];
   double sortedArrivalAltitude[MAXBEST];
   int sortApproxDistance[MAXBEST*2];
@@ -51,17 +59,13 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   #ifdef DEBUG_BESTALTERNATE
   TCHAR ventabuffer[200];
   #endif
-
-  if (WayPointList.empty()) return;
-
-  CScopeLock Lock(LockTaskData, UnlockTaskData);
-  
   if( DisableBestAlternate ) {
       if ( HomeWaypoint >= 0 )
           BestAlternate=HomeWaypoint;
       else
           BestAlternate = 0; // RESWP_TAKEOFF
-      return;
+
+      return false;
   }
 
   // We are not considering total energy here, forbidden for safety reasons
@@ -580,30 +584,9 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 	if ( bestalternate >0 && ((safecalc-WayPointList[bestalternate].Altitude) >ALTERNATE_QUIETMARGIN)) {
 		AlertBestAlternate(1);
 	}
-
-	if (bAutoActive || bAutoPassiv) {
-		// auto frequency selection?
-		int Idx = SearchBestStation();
-		if (ValidWayPoint(Idx)) {
-			unsigned khz = ExtractFrequency(WayPointList[Idx].Freq);
-			tstring wpt_name = WayPointList[Idx].Name;
-
-			CScopeLock unlock(UnlockTaskData, LockTaskData);
-
-			if (bAutoActive)	{
-				if (devPutFreqActive(khz, wpt_name.c_str())) {
-					RadioPara.Changed = true;
-				}
-			}
-			if (bAutoPassiv) {
-				if (devPutFreqStandby(khz, wpt_name.c_str())) { 
-					RadioPara.Changed = true;
-				}
-			}
-		}
-	}
-
-	}
+	return true;
+  }
+  return false;
 } // end of search for the holy grail
 
 
