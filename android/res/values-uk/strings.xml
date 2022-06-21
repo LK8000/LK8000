@@ -12,4 +12,6 @@
     <string name="error_external_storage">Зовнішня пам’ять недоступна. Вимкніть USB-накопичувач.</string>
     <string name="quit">Вимикання LK8000…</string>
     <string name="loading">Завантаження LK8000…</string>
+    <string name="overwrite_download">Файл уже існує. Бажаєте завантажити його знову\?</string>
+    <string name="download_title">Завантажити LK8000</string>
 </resources>
