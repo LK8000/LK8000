@@ -174,6 +174,10 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
 } // Install()
 
 BOOL DevLXNanoIII::Open(PDeviceDescriptor_t d) {
+  Nano3_PutMacCready(d, MACCREADY);
+  Nano3_PutBallast(d, BALLAST);
+  Nano3_PutBugs(d, BUGS);
+
   ResetMultitargetSync();
   return TRUE;
 }
