@@ -9,6 +9,10 @@ Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
+[version 7.3.17]
+. Fix freeze with external device (LX, Nano3, Fenix, EOS ...)
+. Android Download manager : allow to cancel overwrite
+. Android : updated thermal Icon
 
 [version 7.3.16]
 . Android Download manager : fix missing files
