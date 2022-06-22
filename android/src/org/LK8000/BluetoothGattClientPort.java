@@ -47,7 +47,7 @@ import android.util.Log;
 public class BluetoothGattClientPort
     extends BluetoothGattCallback
     implements AndroidPort  {
-  private static final String TAG = "LK8000";
+  private static final String TAG = "BluetoothGattClientPort";
 
   private static final UUID GENERIC_ACCESS_SERVICE =
           UUID.fromString("00001800-0000-1000-8000-00805F9B34FB");
@@ -229,7 +229,7 @@ public class BluetoothGattClientPort
   @Override
   public void onCharacteristicRead(BluetoothGatt gatt,
       BluetoothGattCharacteristic characteristic, int status) {
-    Log.e(TAG, "GATT characteristic read");
+    Log.i(TAG, "GATT characteristic read");
     beginWriteNextChunk();
   }
 
