@@ -127,6 +127,7 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 //static
 void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
+  d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = EOSPutMacCready;
   d->PutBugs      = EOSPutBugs;
@@ -147,6 +148,10 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutTarget      = PutTarget;
 } // Install()
 
+BOOL DevLX_EOS_ERA::Open(PDeviceDescriptor_t d) {
+  ResetMultitargetSync();
+  return TRUE;
+}
 
 namespace {
   std::queue<uint8_t> EOSbuffered_data;

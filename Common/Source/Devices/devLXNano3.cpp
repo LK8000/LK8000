@@ -156,6 +156,7 @@ BOOL  DevLXNanoIII::Values( PDeviceDescriptor_t d)
 //static
 void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, GetName());
+  d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = Nano3_PutMacCready;
   d->PutBugs      = Nano3_PutBugs;
@@ -172,7 +173,10 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
     PlatfEndian::To32BE(0x01000000), NEWLINE);
 } // Install()
 
-
+BOOL DevLXNanoIII::Open(PDeviceDescriptor_t d) {
+  ResetMultitargetSync();
+  return TRUE;
+}
 
 long  StrTol(const  TCHAR *buff) {
    return _tcstol(buff, nullptr, 10);

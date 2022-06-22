@@ -648,8 +648,6 @@ BOOL devInit() {
 
     }
 
-    ResetMultitargetSync();
-
     return TRUE;
 }
 

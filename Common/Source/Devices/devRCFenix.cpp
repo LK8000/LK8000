@@ -131,6 +131,8 @@ BOOL DevRCFenix::Open(PDeviceDescriptor_t d) {
   SendNmea(d, _T("RCDT,GET,MC_BAL"));
   SendNmea(d, _T("PFLX0,LXWP0,1,LXWP1,1,LXWP2,1,LXWP3,1,GPRMB,5"));
 
+  ResetMultitargetSync();
+
   return TRUE;
 }
 

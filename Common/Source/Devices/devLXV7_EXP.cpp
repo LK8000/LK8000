@@ -33,6 +33,11 @@ BOOL LXV7_EXPPutMacCready(PDeviceDescriptor_t d, double MacCready);
 BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL LXV7_EXPPutBugs(PDeviceDescriptor_t d, double Bugs);
 
+static
+BOOL Open(PDeviceDescriptor_t d) {
+    ResetMultitargetSync();
+    return TRUE;
+}
 //____________________________________________________________class_definitions_
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,6 +52,7 @@ BOOL LXV7_EXPPutBugs(PDeviceDescriptor_t d, double Bugs);
 void DevLXV7_EXP::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
+  d->Open = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LXV7_EXPPutMacCready;
   d->PutBugs      = LXV7_EXPPutBugs; // removed to prevent cirvular updates

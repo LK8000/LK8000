@@ -85,6 +85,8 @@ class DevLXNanoIII : public DevLX
       return _T("LX Nano 3");
     }
 
+    static BOOL Open(PDeviceDescriptor_t d);
+
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
