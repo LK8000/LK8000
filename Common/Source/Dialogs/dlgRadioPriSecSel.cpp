@@ -85,12 +85,17 @@ void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
 
   WndOwnerDrawFrame* frm  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationText"));
   LKASSERT(  frm  !=NULL)
-  if(frm) frm->SetCaption(StationName);	
+  if (frm) {
+    frm->SetCaptionStyle(DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+    frm->SetCaption(StationName);	
+  }
 
   WndOwnerDrawFrame* frmFreq  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationFreq"));
   _stprintf(Name,_T("%7.3f"),  frequency_khz / 1000.);
-  if(frmFreq) frmFreq->SetCaption(Name);
-
+  if (frmFreq) {
+    frmFreq->SetCaptionStyle(DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+    frmFreq->SetCaption(Name);
+  }
 
   WndButton *wpnewActive = nullptr;
   WndButton *wpnewPassive = nullptr; 
@@ -103,6 +108,12 @@ void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
   LKASSERT(   wpnewPassive   !=NULL)
   if(wpnewPassive) 
     wpnewPassive->SetCaption(GetStandyStationSymbol(Appearance.UTF8Pictorials));
+
+  // center dialog
+  PixelRect main_rect(main_window->GetClientRect());
+  RasterPoint main_center = main_rect.GetCenter();
+  wf->SetTop(main_center.y - wf->GetHeight() / 2);
+  wf->SetLeft(main_center.x - wf->GetWidth() / 2);
 
   wf->ShowModal();
   delete wf;
