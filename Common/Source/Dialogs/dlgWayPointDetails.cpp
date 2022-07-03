@@ -347,7 +347,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-static void OnMultiSelectEnter(WindowControl * Sender,
+static void OnCommentEnter(WindowControl * Sender,
                                        WndListFrame::ListInfo_t *ListInfo) {
   int  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
 
@@ -361,8 +361,6 @@ static void OnMultiSelectEnter(WindowControl * Sender,
     }
   }
 }
-
-static WndListFrame *wMultiSelect = NULL;
 
 void dlgWayPointDetailsShowModal(short mypage){
 
@@ -378,15 +376,17 @@ void dlgWayPointDetailsShowModal(short mypage){
   wCommand = ((WndFrame *)wf->FindByName(TEXT("frmCommands")));
   wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
-
-  wMultiSelect = (WndListFrame*) wf->FindByName(TEXT("frmWpComment"));
-  LKASSERT(wMultiSelect != NULL);
-  wMultiSelect->SetEnterCallback(OnMultiSelectEnter);
+  wComment = (WndListFrame*)wf->FindByName(TEXT("frmWpComment"));
+  wCommentEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWpCommentEntry"));
 
   LKASSERT(wInfo!=NULL);
   LKASSERT(wCommand!=NULL);
   LKASSERT(wSpecial!=NULL);
   LKASSERT(wDetails!=NULL);
+  LKASSERT(wComment!=NULL);
+  LKASSERT(wCommentEntry!=NULL);
+
+  wComment->SetEnterCallback(OnCommentEnter);
 
   // Resize Frames up to real screen size on the right.
   wInfo->SetBorderKind(BORDERLEFT);
@@ -448,18 +448,11 @@ void dlgWayPointDetailsShowModal(short mypage){
   }
   wf->SetCaption(sTmp);
 
-
-  wComment=(WndListFrame *)NULL;
-  wCommentEntry = (WndOwnerDrawFrame *)NULL;
   CommentDrawListIndex=0;
   aCommentTextLine.clear();
 
-  wComment = (WndListFrame*)wf->FindByName(TEXT("frmWpComment"));
-  LKASSERT(wComment!=NULL);
-
   wComment->SetBorderKind(BORDERLEFT);
 
-  wCommentEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWpCommentEntry"));
   LKASSERT(wCommentEntry);
   wCommentEntry->SetCanFocus(true);
 

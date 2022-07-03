@@ -14,16 +14,16 @@
       <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
 
-	<WndListFrame Name="frmWpComment" X="2" Y="-1" Width="-1" Height="64" Font="2" OnListInfo="OnWpCommentListInfo" >
-      <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="-1" Width="-1" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem"/>
-    </WndListFrame>
+      <WndListFrame Name="frmWpComment" X="2" Y="-1" Width="-1" Height="64" Font="2" OnListInfo="OnWpCommentListInfo">
+        <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="-1" Width="-1" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem" />
+      </WndListFrame>
 
-	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="50" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
-    </WndFrame>
-    <WndListFrame Name="frmDetails" X="70" Y="0" Width="-1" Height="222" Font="3"    OnListInfo="OnDetailsListInfo">
-      <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
-    </WndListFrame>
-    <WndFrame Name="frmCommands" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
+      <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="50" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
+      </WndFrame>
+      <WndListFrame Name="frmDetails" X="70" Y="0" Width="-1" Height="222" Font="3"    OnListInfo="OnDetailsListInfo">
+        <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
+      </WndListFrame>
+      <WndFrame Name="frmCommands" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
 
       <WndButton Name="cmdInserInTask" Caption="dynamic" X="4" Y="2" Width="-1"  Height="44" Font="2" />
       <WndButton Name="cmdAppendInTask1" Caption="_@M1827_" X="4" Y="-1" Width="-1"  Height="44" Font="2" />

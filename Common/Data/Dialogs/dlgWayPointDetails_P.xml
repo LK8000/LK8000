@@ -6,9 +6,9 @@
     <WndButton Name="cmdNext"  Caption="_@M460_" X="122" Y="240" Width="114"  Height="60" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
     <WndFrame Name="frmInfos" X="0" Y="0" Width="-1" Height="240" Font="2">
 
-<WndListFrame Name="frmWpComment" X="2" Y="2" Width="-2" Height="80" Font="2" OnListInfo="OnWpCommentListInfo" >
-      <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="2" Width="-2" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem"/>
-    </WndListFrame>
+      <WndListFrame Name="frmWpComment" X="2" Y="2" Width="-2" Height="80" Font="2" OnListInfo="OnWpCommentListInfo">
+        <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="2" Width="-2" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem"/>
+      </WndListFrame>
 
       <WndProperty Name="prpCoordinate"  Caption="_@M919_"  X="2" Y="-1" Width="-2" Height="22" CaptionWidth="53" Font="2" ReadOnly="1" />
       <WndProperty Name="prpAltitude"  Caption="_@M255_"     X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
@@ -17,7 +17,7 @@
       <WndProperty Name="prpBearing"   Caption="_@M138_"       X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="-2" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-	  <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="125" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
+	    <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="125" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
     </WndFrame>
     <WndListFrame Name="frmDetails" X="0" Y="0" Width="-1" Height="220" Font="3" OnListInfo="OnDetailsListInfo">
       <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
