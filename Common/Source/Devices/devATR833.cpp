@@ -157,7 +157,7 @@ uint8_t Val = (int8_t) Squelch;
 BOOL ATR833PutFreq(PDeviceDescriptor_t d, uint8_t cmd, unsigned khz, const TCHAR* StationName) {
   if(d && !d->Disabled && d->Com) {
     auto MHz = static_cast<uint8_t>(khz / 1000U);
-    auto Chan = static_cast<uint8_t>((khz - (MHz * 1000U)) / 5U);
+    auto Chan = static_cast<uint8_t>((khz % 1000U) / 5U);
 
     uint8_t Arg[2] = { MHz, Chan };
     Send_Command( d, cmd , std::size(Arg), Arg);  // Send Activ
@@ -398,7 +398,7 @@ int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len)
     break;
     /*****************************************************************************************/
     case 0x12:               // Standby Frequency
-      RadioPara.PassiveKhz = static_cast<unsigned>(szCommand[1]) + static_cast<unsigned>(szCommand[2]) * 5U;
+      RadioPara.PassiveKhz = (szCommand[1] * 1000U) + (szCommand[2] * 5U);
       UpdateStationName(RadioPara.PassiveName, RadioPara.PassiveKhz);
       if (iATR833DebugLevel) {
         StartupStore(_T("ATR833 Passive: %7.3fMHz %s"), RadioPara.PassiveKhz / 1000., RadioPara.PassiveName);
@@ -409,7 +409,7 @@ int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len)
     break;
     /*****************************************************************************************/
     case 0x13:               // Active Frequency
-      RadioPara.ActiveKhz = static_cast<unsigned>(szCommand[1]) + static_cast<unsigned>(szCommand[2]) * 5U;
+      RadioPara.ActiveKhz = (szCommand[1] * 1000U) + (szCommand[2] * 5U);
       UpdateStationName(RadioPara.PassiveName, RadioPara.ActiveKhz);
       if (iATR833DebugLevel) {
         StartupStore(_T("ATR833 Active: %7.3fMHz %s"), RadioPara.ActiveKhz / 1000., RadioPara.ActiveName);
@@ -480,10 +480,10 @@ int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len)
     break;
     /*****************************************************************************************/
     case 0x42:               // All Data
-      RadioPara.ActiveKhz = static_cast<unsigned>(szCommand[1]) + static_cast<unsigned>(szCommand[2]) * 5U;
-      RadioPara.PassiveKhz = static_cast<unsigned>(szCommand[3]) + static_cast<unsigned>(szCommand[4]) * 5U;
-      RadioPara.Volume  = szCommand[5] ;
-      RadioPara.Squelch = szCommand[6] ;
+      RadioPara.ActiveKhz = (szCommand[1] * 1000U) + (szCommand[2] * 5U);
+      RadioPara.PassiveKhz = (szCommand[3] * 1000U) + (szCommand[4] * 5U);
+      RadioPara.Volume  = szCommand[5];
+      RadioPara.Squelch = szCommand[6];
       RadioPara.Vox = szCommand[7];
 
       if(szCommand[11] == 1)
