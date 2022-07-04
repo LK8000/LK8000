@@ -48,7 +48,7 @@ int SetKRT2Station(uint8_t *Command, uint8_t slot, unsigned khz, const TCHAR* St
   }
 
   auto MHz = static_cast<uint8_t>(khz / 1000U);
-  auto Chan = static_cast<uint8_t>((khz - (MHz * 1000U)) / 5U);
+  auto Chan = static_cast<uint8_t>((khz % 1000U) / 5U);
 
   char Airfield[10];
 
@@ -238,7 +238,7 @@ int KRT2_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len) {
             }
             else {
               RadioPara.ActiveValid = true;
-              RadioPara.ActiveKhz = static_cast<unsigned>(szCommand[2]) + static_cast<unsigned>(szCommand[3]) * 5U;
+              RadioPara.ActiveKhz = (szCommand[2] * 1000U) + (szCommand[3] * 5U);
               for (unsigned i=0; i < 8; i++) {
                 RadioPara.ActiveName[i] = szCommand[4+i];
               }
@@ -266,7 +266,7 @@ int KRT2_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len) {
             }
             else {
               RadioPara.PassiveValid = true;
-              RadioPara.PassiveKhz=  static_cast<unsigned>(szCommand[2]) + static_cast<unsigned>(szCommand[3]) * 5U;
+              RadioPara.PassiveKhz=   (szCommand[2] * 1000U) + (szCommand[3] * 5U);
               for (unsigned i = 0; i < 8; i++) {
                 RadioPara.PassiveName[i] = szCommand[4+i];
               }
