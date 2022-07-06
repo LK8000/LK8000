@@ -225,8 +225,11 @@ bool Message::Render() {
 }
 
 void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
-
-    Lock();
+    ScopeLock lock(CritSec_Messages);
+    if (!startTime.IsDefined()) {
+        // too early ...
+        return;
+    }
 
     auto It = std::find_if(messages.begin(), messages.end(), [&](const Message_t& Item){
       return (Item.type == type && Item.text.compare(Text)==0);
@@ -242,8 +245,6 @@ void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
     } else {
       messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow});
     }
-
-    Unlock();
 }
 
 void Message::Repeat(int type) {
