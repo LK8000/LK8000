@@ -10,8 +10,12 @@
 #define MODELTYPE_H
 
 #include <tuple>
-#include "tchar.h"
+#include "Util/tstring.hpp"
 
+
+namespace settings {
+    class writer;
+}
 
 namespace ModelType {
 
@@ -65,12 +69,36 @@ namespace ModelType {
 
         static iterator begin();
         static iterator end();
+
+        static iterator find(Type_t id);
+        static iterator find(const tstring_view& name);
     };
 
     unsigned get_index(Type_t id);
 
     Type_t get_id(unsigned index);
     const TCHAR* get_name(Type_t id);
+
+    /**
+     * to Set/Get GlobalModelType and GlobalModelName
+     */
+    void Set(Type_t id);
+    Type_t Get();
+    const TCHAR* GetName();
+
+    /**
+     * @param name Model type name
+     * @return true if name is valid model type
+     */
+    bool Set(const TCHAR* name);
+
+
+    /**
+     * to Save/Load GlobalModelType to profile
+     */
+    void ResetSettings();
+    bool LoadSettings(const char *key, const char *value);
+    void SaveSettings(settings::writer& writer_settings);
 };
 
 #ifdef PNA

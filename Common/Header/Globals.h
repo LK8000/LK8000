@@ -82,10 +82,6 @@ GEXTERN StartupState_t ProgramStarted;
 
 GEXTERN int UTCOffset;
 
-GEXTERN ModelType::Type_t GlobalModelType;
-GEXTERN TCHAR	GlobalModelName[MAX_PATH];
-
-
 GEXTERN BYTE RUN_MODE;
 
 // infoboxes

@@ -103,7 +103,7 @@ bool SetSoundVolume() {
 #if defined(PNA) && defined(UNDER_CE)
   if (EnableAutoSoundVolume == false ) return false;
 
-  switch (GlobalModelType) {
+  switch (ModelType::Get()) {
 	case ModelType::FUNTREK:
 		GM130MaxSoundVolume();
 		break;

@@ -690,7 +690,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 	}
 	UrlEncode(txbuf, password, std::size(password));
 #ifdef PNA
-	to_utf8(GlobalModelName, txbuf);
+	to_utf8(ModelType::GetName(), txbuf);
 	UrlEncode(txbuf, phone, std::size(phone));
 #else
 #if (WINDOWSPC>0)

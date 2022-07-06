@@ -1092,7 +1092,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     //    D		button Zoom sel
     //    E		rotary knob Esc
     //
-    if (GlobalModelType == ModelType::LX_MINI_MAP) {
+    if (ModelType::Get() == ModelType::LX_MINI_MAP) {
 
       switch (KeyCode) {
 
@@ -1204,7 +1204,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTK1 is representing the screen in portrait mode. Space is on the right.
     // Keyboard type 1.
     //
-    if (GlobalModelType == ModelType::BTK1) {
+    if (ModelType::Get() == ModelType::BTK1) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1321,7 +1321,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTK2 is representing the screen in portrait mode. Space is on the right.
     // Keyboard type 2.
     //
-    if (GlobalModelType == ModelType::BTK2) {
+    if (ModelType::Get() == ModelType::BTK2) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1436,7 +1436,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTK3 is representing the screen in portrait mode. Space is on the right.
     // Keyboard type 3.
     //
-    if (GlobalModelType == ModelType::BTK3) {
+    if (ModelType::Get() == ModelType::BTK3) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1553,7 +1553,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTKA is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.
     // universal Keyboard type
     //
-    if (GlobalModelType == ModelType::BTKA) {
+    if (ModelType::Get() == ModelType::BTKA) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;
@@ -1599,7 +1599,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     // BTKB is for using 1 2 3 4 5 6 7 8 9 0  assigned to customkeys of customenu.
     // universal Keyboard type
     //
-    if (GlobalModelType == ModelType::BTKB) {
+    if (ModelType::Get() == ModelType::BTKB) {
         #ifndef __linux__
         #if (WINDOWSPC<1)
         if (!Debounce(KEYDEBOUNCE)) return;

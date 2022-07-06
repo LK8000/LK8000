@@ -55,7 +55,6 @@ extern const char szRegistryAlternate2[];
 extern const char szRegistryAltitudeUnitsValue[];
 extern const char szRegistryAppIndLandable[];
 extern const char szRegistryUTF8Symbolsl[];
-extern const char szRegistryAppInfoBoxModel[];
 extern const char szRegistryAppInverseInfoBox[];
 extern const char szRegistryArrivalValue[];
 extern const char szRegistryAutoAdvance[];

@@ -122,9 +122,7 @@ TranscodeKey(unsigned key_code)
 #endif
 
 
-    extern ModelType::Type_t GlobalModelType;
-//  switch (global_model_type) {
-    switch (GlobalModelType) {
+    switch (ModelType::Get()) {
         case ModelType::HP31X:
             return KeyMapLookup(hp31x_key_map, key_code);
         case ModelType::MEDION_P5:

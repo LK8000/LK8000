@@ -146,7 +146,6 @@ const char szRegistryAlternate1[] = "Alternate1b";
 const char szRegistryAlternate2[] = "Alternate2b";
 const char szRegistryAltitudeUnitsValue[] = "AltitudeUnits";
 const char szRegistryAppIndLandable[] = "AppIndLandable1";
-const char szRegistryAppInfoBoxModel[] = "AppInfoBoxModel";
 const char szRegistryUTF8Symbolsl[] = "UTF8Symbolsl";
 const char szRegistryAppInverseInfoBox[] = "AppInverseInfoBox2";
 const char szRegistryArrivalValue[] = "ArrivalValue";

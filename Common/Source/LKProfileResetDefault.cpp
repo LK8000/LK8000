@@ -480,6 +480,8 @@ void LKProfileResetDefault() {
 
   EnableAudioVario = false;
 
+  ModelType::ResetSettings();
+
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }

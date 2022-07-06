@@ -101,49 +101,46 @@ void LKProfileInitRuntime() {
   //
   // ModelType specials for PNAs
   //
+  TestLog(TEXT(". Loading %s settings"), ModelType::GetName());
 
-#if TESTBENCH
-    StartupStore(TEXT(". Loading %s settings"), ModelType::get_name(GlobalModelType));
-#endif
-
-  if (GlobalModelType == ModelType::GENERIC ) {
+  if (ModelType::Get() == ModelType::GENERIC ) {
 
   } 
-  else if (GlobalModelType == ModelType::HP31X ) {
+  else if (ModelType::Get() == ModelType::HP31X ) {
 	  DeviceNeedClipping = true;
     // key transcoding for this one
   }
-  else if (GlobalModelType == ModelType::PN6000 ) {
+  else if (ModelType::Get() == ModelType::PN6000 ) {
 	  // key transcoding for this one
   }
-  else if (GlobalModelType == ModelType::PNA_MIO ) {
+  else if (ModelType::Get() == ModelType::PNA_MIO ) {
   	// currently no special settings from MIO but need to handle hw keys
   }
-  else if (GlobalModelType == ModelType::NOKIA_500 ) {
+  else if (ModelType::Get() == ModelType::NOKIA_500 ) {
   	// key transcoding is made
   }
-  else if (GlobalModelType == ModelType::MEDION_P5 ) {
+  else if (ModelType::Get() == ModelType::MEDION_P5 ) {
   	DeviceNeedClipping=true;
   } 
-  else if (GlobalModelType == ModelType::PNA_NAVIGON ) {
+  else if (ModelType::Get() == ModelType::PNA_NAVIGON ) {
   	DeviceNeedClipping=true;
   }
-  else if (GlobalModelType == ModelType::BTKA ) {
+  else if (ModelType::Get() == ModelType::BTKA ) {
 
   }
-  else if (GlobalModelType == ModelType::BTKB ) {
+  else if (ModelType::Get() == ModelType::BTKB ) {
 
   }
-  else if (GlobalModelType == ModelType::BTKC ) {
+  else if (ModelType::Get() == ModelType::BTKC ) {
 
   }
-  else if (GlobalModelType == ModelType::BTK1 ) {
+  else if (ModelType::Get() == ModelType::BTK1 ) {
 
   }
-  else if (GlobalModelType == ModelType::BTK2 ) {
+  else if (ModelType::Get() == ModelType::BTK2 ) {
 
   }
-  else if (GlobalModelType == ModelType::BTK3 ) {
+  else if (ModelType::Get() == ModelType::BTK3 ) {
 
   }
 

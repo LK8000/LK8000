@@ -238,7 +238,7 @@ bool Startup(const TCHAR* szCmdLine) {
   // it is too early here. So no ModelType .
   //
   // if we found no embedded name, try from registry
-  if (  !SetModelType() ) {
+  if (ModelType::Get() == ModelType::GENERIC) {
       // last chance: try from default profile
       LoadModelFromProfile();
   }
@@ -354,7 +354,7 @@ bool Startup(const TCHAR* szCmdLine) {
 
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
-	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);
+	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), ModelType::GetName(), ModelType::Get());
 	CreateProgressDialog(sTmp);
 
   if ( !datadir ) {

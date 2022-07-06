@@ -29,7 +29,7 @@ bool SetBacklight() // VENTA4
   if (EnableAutoBacklight == false ) return false;
 
 
-  switch (GlobalModelType)
+  switch (ModelType::Get())
   {
 	case ModelType::HP31X:
 

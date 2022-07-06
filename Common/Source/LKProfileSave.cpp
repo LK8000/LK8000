@@ -519,6 +519,5 @@ void LKDeviceSave(const TCHAR *szFile) {
   write_settings(szRegistryPollingMode, PollingMode);
   write_settings(szRegistryCheckSum, CheckSum);
 
-  // We save GlobalModelType, not InfoBoxModel
-  write_settings(szRegistryAppInfoBoxModel, GlobalModelType);
+  ModelType::SaveSettings(write_settings);
 }

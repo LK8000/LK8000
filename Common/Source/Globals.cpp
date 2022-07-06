@@ -144,10 +144,6 @@ void Globals_Init(void) {
 
   GlobalRunning = false;
 
-
-  GlobalModelType = ModelType::GENERIC;
-
-
   SPEEDMODIFY = TOKNOTS;
   LIFTMODIFY  = TOKNOTS;
   DISTANCEMODIFY = TONAUTICALMILES;

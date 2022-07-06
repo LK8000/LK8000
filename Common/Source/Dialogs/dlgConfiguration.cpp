@@ -2498,7 +2498,7 @@ DataField* dfe = wp->GetDataField();
     for (auto& item : ModelType::list()) {
       dfe->addEnumText(std::get<1>(item));
     }
-    dfe->Set(ModelType::get_index(GlobalModelType));
+    dfe->Set(ModelType::get_index(ModelType::Get()));
     wp->RefreshDisplay();
   }
 
@@ -4338,8 +4338,8 @@ int ival;
   if (wp) {
     DataField* dfe = wp->GetDataField();
     ModelType::Type_t selected = ModelType::get_id(dfe->GetAsInteger());
-    if (GlobalModelType != selected) {
-      GlobalModelType = selected;
+    if (ModelType::Get() != selected) {
+      ModelType::Set(selected);
       requirerestart = true;
     }
   }
