@@ -11,6 +11,8 @@
 
 package org.LK8000;
 
+import static android.content.pm.PackageManager.FEATURE_USB_HOST;
+
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -37,12 +39,14 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
     private Context _Context;
 
-    private HashMap<String, UsbDevice> _AvailableDevices = new HashMap<>();
-    private HashMap<UsbDevice, UsbSerialPort> _PendingConnection = new HashMap<>();
+    private final HashMap<String, UsbDevice> _AvailableDevices = new HashMap<>();
+    private final HashMap<UsbDevice, UsbSerialPort> _PendingConnection = new HashMap<>();
 
     static synchronized void Initialise(Context context) {
-        _instance = new UsbSerialHelper();
-        _instance.onCreate(context);
+        if (context.getPackageManager().hasSystemFeature(FEATURE_USB_HOST)) {
+            _instance = new UsbSerialHelper();
+            _instance.onCreate(context);
+        }
     }
 
     static synchronized void Deinitialise(Context context) {
