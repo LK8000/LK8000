@@ -28,8 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-
-@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 public class UsbSerialHelper extends BroadcastReceiver {
 
     private static final String TAG = "UsbSerialHelper";
@@ -129,6 +127,8 @@ public class UsbSerialHelper extends BroadcastReceiver {
                         if (usbmanager != null) {
                             port.open(usbmanager);
                         }
+                    } else {
+                        AddAvailable(device);
                     }
                 }
             }
@@ -141,8 +141,15 @@ public class UsbSerialHelper extends BroadcastReceiver {
             int pid = device.getProductId();
 
             if (exists(supported_ids, vid, pid)) {
-                Log.v(TAG, "UsbDevice Found : " + device);
-                _AvailableDevices.put(device.getDeviceName(), device);
+                try {
+                    Log.v(TAG, "UsbDevice Found : " + device);
+                    _AvailableDevices.put(device.getDeviceName(), device);
+                } catch (SecurityException ignored) {
+                    // Permission may be required to get serial number if app targets SDK >= 29
+                    UsbManager usbmanager = (UsbManager) _Context.getSystemService(Context.USB_SERVICE);
+                    Log.v(TAG, "UsbDevice request permission : " + device);
+                    requestPermission(usbmanager, device);
+                }
             } else {
                 Log.v(TAG, "Unsupported UsbDevice : " + device);
             }
@@ -152,6 +159,13 @@ public class UsbSerialHelper extends BroadcastReceiver {
     private UsbDevice GetAvailable(String name) {
         for (Map.Entry<String, UsbDevice> entry : _AvailableDevices.entrySet()) {
             if(name.contentEquals(getDeviceName(entry.getValue()))) {
+                return entry.getValue();
+            }
+        }
+
+        // for backward compatibility try to find device using it's old name (VID:PID)
+        for (Map.Entry<String, UsbDevice> entry : _AvailableDevices.entrySet()) {
+            if(name.contentEquals(getLegacyDeviceName(entry.getValue()))) {
                 return entry.getValue();
             }
         }
@@ -213,18 +227,21 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
                 } else {
                     _PendingConnection.put(device, port);
-                    int intent_flags = 0;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        intent_flags |= PendingIntent.FLAG_IMMUTABLE;
-                    }
-                    PendingIntent pi = PendingIntent.getBroadcast(_Context, 0, new Intent(UsbSerialHelper.ACTION_USB_PERMISSION), intent_flags);
-
-                    usbmanager.requestPermission(device, pi);
-
+                    requestPermission(usbmanager, device);
                 }
             }
         }
         return port;
+    }
+
+    private void requestPermission(UsbManager usbmanager, UsbDevice device) {
+        int intent_flags = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            intent_flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent pi = PendingIntent.getBroadcast(_Context, 0, new Intent(UsbSerialHelper.ACTION_USB_PERMISSION), intent_flags);
+
+        usbmanager.requestPermission(device, pi);
     }
 
     public String[] listDevices() {
@@ -239,6 +256,15 @@ public class UsbSerialHelper extends BroadcastReceiver {
     }
 
     static String getDeviceName(UsbDevice device) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return String.format("%s_%s_%s", device.getManufacturerName(), device.getProductName(), device.getSerialNumber());
+        } else {
+            return getLegacyDeviceName(device);
+        }
+    }
+
+    static String getLegacyDeviceName(UsbDevice device) {
         return String.format("%04X:%04X", device.getVendorId(), device.getProductId());
     }
+
 }
