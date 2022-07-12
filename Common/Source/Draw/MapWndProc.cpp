@@ -1125,6 +1125,9 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         case KEY_6: // BottomRight (long)
             CustomKeyHandler(CustomMenu6 + 1000);
             break;
+        case KEY_7: // center (double click)
+            CustomKeyHandler(CustomMenu7 + 1000);
+            break;
         default:
             break;
         }
