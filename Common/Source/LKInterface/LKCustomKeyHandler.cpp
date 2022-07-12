@@ -213,6 +213,7 @@ passthrough:
 
 	case ckMultitargetRotate:
 		RotateOvertarget();
+		MapWindow::RefreshMap();
 		return true;
 
 	case ckMultitargetMenu:
