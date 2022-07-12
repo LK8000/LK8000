@@ -24,6 +24,16 @@ void SetModeType(short modeindex, short modetype) {
 
 }
 
+bool IsActiveModeType(short modeindex, short modetype) {
+	if (ModeIndex != modeindex) {
+		return false;
+	}
+	if (CURTYPE != modetype) {
+		return false;
+	}
+	return true;
+}
+
 // Advance through types inside current mode
 //
 void NextModeType() {

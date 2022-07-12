@@ -1081,6 +1081,55 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         }
     }
 
+    if (ModelType::Get() == ModelType::XCREMOTE) {
+        switch (KeyCode) {
+        case KEY_UP: // Up Arrow
+        case KEY_DOWN: // Down Arrow
+        case KEY_RETURN: // Center
+        case KEY_ESCAPE: // BottomRight
+            break;
+
+        case KEY_RIGHT: // Right Arrow
+            key_next_page(); // screen right click
+            break;
+        case KEY_LEFT: // Left Arrow
+            key_previous_page(); // screen left click
+            break;
+
+        case KEY_A: // BottomLeft (long)
+            key_next_mode(); // bottom bar center click
+            break;
+        case KEY_R:
+            // XCREMOTE WILL RESET IN 2 SECONDS
+            DoStatusMessage(MsgToken(1920));
+            break;
+        case KEY_X: // BottomLeft
+            key_bottombar_next(); // bottom bar right click
+            break;
+
+        case KEY_1: // TopLeft
+            CustomKeyHandler(CustomMenu1 + 1000);
+            break;
+        case KEY_2: // TopLeft (long)
+            CustomKeyHandler(CustomMenu2 + 1000);
+            break;
+        case KEY_3: // TopRight
+            CustomKeyHandler(CustomMenu3 + 1000);
+            break;
+        case KEY_4: // TopRight (long)
+            CustomKeyHandler(CustomMenu4 + 1000);
+            break;
+        case KEY_5: // Center (long)
+            CustomKeyHandler(CustomMenu5 + 1000);
+            break;
+        case KEY_6: // BottomRight (long)
+            CustomKeyHandler(CustomMenu6 + 1000);
+            break;
+        default:
+            break;
+        }
+    }
+
 #ifndef LXMINIMAP
     //
     // LX MINIMAP II HARDWARE KEYS
@@ -1672,8 +1721,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
     }
 
     if (KeyCode == KEY_ESCAPE) {
-        SetModeType(LKMODE_MAP, MP_MOVING);
-		MapWindow::RefreshMap();
+        if (IsActiveModeType(LKMODE_MAP, MP_MOVING)) {
+            ShowMenu();
+        } else {
+            SetModeType(LKMODE_MAP, MP_MOVING);
+    		MapWindow::RefreshMap();
+        }
     }
 }
 

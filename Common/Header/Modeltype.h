@@ -45,6 +45,8 @@ namespace ModelType {
         BTK2         = 10022, // generic bt keyboard type 2
         BTK3         = 10023, // generic bt keyboard type 3
 
+        XCREMOTE     = 10024, // XCRemote stick
+
         HP31X        = 10201,	// HP310, 312, 314, 316
 
         PN6000       = 10401,

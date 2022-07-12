@@ -32,6 +32,7 @@ namespace ModelType {
         { BTK1, _T("KeyBoard 1") },
         { BTK2, _T("KeyBoard 2") },
         { BTK3, _T("KeyBoard 3") },
+        { XCREMOTE, _T("XCREMOTE") },
         /*
         * list order is important !
         * add new at the end !

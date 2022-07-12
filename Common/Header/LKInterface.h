@@ -24,6 +24,7 @@ void AddCustomKeyList(DataField* dfe);
 void	BottomBarChange(bool advance);
 void	InfoPageChange(bool advance);
 void	SetModeType(short modeindex, short modetype);
+bool    IsActiveModeType(short modeindex, short modetype);
 void	NextModeType();
 void	PreviousModeType();
 void	NextModeIndex();

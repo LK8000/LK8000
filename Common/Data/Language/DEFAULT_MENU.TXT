@@ -153,56 +153,48 @@ mode=default
 type=key
 data=6
 label= 
-event=Null
 location=5
 
 mode=default
 type=key
 data=7
 label= 
-event=Null
 location=6
 
 mode=default
 type=key
 data=8
 label= 
-event=Null
 location=7
 
 mode=default
 type=key
 data=9
 label= 
-event=Null
 location=8
 
 mode=default
 type=key
 data=0
 label= 
-event=Null
 location=9
 
 mode=default
 type=key
 data=11
 label= 
-event=Null
 location=10
 
 mode=default
 type=key
 data=12
 label= 
-event=Null
 location=11
 
 mode=default
 type=key
 data=13
 label= 
-event=Null
 location=12
 
 ##### pan fullscreen #####
