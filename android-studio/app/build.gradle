@@ -1,7 +1,23 @@
 apply plugin: "com.android.application"
 
+
+// Signing config documentation :
+//    https://developer.android.com/studio/publish/app-signing#secure-shared-keystore
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = "keystore.properties";
+if (rootProject.file(keystorePropertiesFile).exists()) {
+    // Load your keystore.properties file into the keystoreProperties object.
+    keystoreProperties.load(rootProject.file(keystorePropertiesFile).newDataInputStream())
+} else {
+    // define all property to allow to build debug without 'keystore.properties' file.
+    keystoreProperties.put('storeFile',  '-')
+    keystoreProperties.put('storePassword', '-')
+    keystoreProperties.put('keyAlias', '-')
+    keystoreProperties.put('keyPassword', '-')
+}
+
 android {
-    compileSdkVersion 32
+    compileSdkVersion 32    
     buildToolsVersion "32.0.0"
     ndkVersion "24.0.8215888"
 
@@ -34,6 +50,16 @@ android {
                            "../../android/res"]
         }
     }
+
+    signingConfigs {
+        config {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -43,6 +69,7 @@ android {
             applicationIdSuffix ".beta"
 
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.config
         }
         debug {
             applicationIdSuffix ".debug"
