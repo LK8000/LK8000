@@ -18,7 +18,6 @@
 
 
 extern void ResetNearestTopology();
-extern void InitCustomKeys();
 
 
 //
@@ -191,7 +190,6 @@ void InitLK8000()
 
 	InitModeTable();
 	ResetNearestTopology();
-	InitCustomKeys();
 }
 
 

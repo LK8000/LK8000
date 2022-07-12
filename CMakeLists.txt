@@ -654,7 +654,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgSelectItem.cpp
     Common/Source/Dialogs/dlgSelectAirspace.cpp
     Common/Source/Dialogs/dlgSelectWaypoint.cpp
-    Common/Source/Dialogs/AddCustomKeyList.cpp
     Common/Source/Dialogs/dlgAirspace.cpp
     Common/Source/Dialogs/dlgAirspaceFiles.cpp
     Common/Source/Dialogs/dlgWaypointFiles.cpp

@@ -8,6 +8,8 @@
 #if !defined(LK8000_LKINTERFACE_H)
 #define LK8000_LKINTERFACE_H
 
+class DataField;
+
 void    InitLKFonts();
 void    DeInitLKFonts();
 
@@ -15,7 +17,10 @@ void    InitLKScreen();
 void    InitLK8000();
 void    InitModeTable();
 
-bool	CustomKeyHandler(const int key);
+bool	CustomKeyHandler(unsigned key);
+const TCHAR* CustomKeyLabel(unsigned key);
+void AddCustomKeyList(DataField* dfe);
+
 void	BottomBarChange(bool advance);
 void	InfoPageChange(bool advance);
 void	SetModeType(short modeindex, short modetype);

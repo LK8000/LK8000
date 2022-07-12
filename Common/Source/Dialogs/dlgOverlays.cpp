@@ -12,8 +12,6 @@
 #include "WindowControls.h"
 #include "resource.h"
 
-extern void AddCustomKeyList( DataField* dfe);
-
 static WndForm *wf=NULL;
 
 static void OnCloseClicked(WndButton* pWnd) {

@@ -726,7 +726,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       if (--items<=0) goto label_ret;
   }
 
-  extern unsigned int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
@@ -773,15 +772,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		        ckeymode=0;
 		        break;
 	}
-	if (ckeymode==0 || ckeymode>=ckTOP) {
-		invalid=true;			// non selectable
 
-		// _stprintf(OutBuffer,_T("Key\n%d"),i);
-		 _tcscpy(OutBuffer,_T(""));	// make it invisible
+	const TCHAR* label = CustomKeyLabel(ckeymode);
+	if (label) {
+		_tcscpy(OutBuffer, label);
 	} else {
-		_tcscpy(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
+		invalid=true;			// non selectable
+		_tcscpy(OutBuffer, _T(""));	// make it invisible
 	}
-
   } // MM
 
 

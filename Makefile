@@ -1241,7 +1241,6 @@ DLGS	:=\
 	$(DLG)/dlgSelectObject.cpp \
 	$(DLG)/dlgSelectAirspace.cpp \
 	$(DLG)/dlgSelectWaypoint.cpp \
-	$(DLG)/AddCustomKeyList.cpp \
 	$(DLG)/dlgAirspace.cpp \
 	$(DLG)/dlgAirspaceFiles.cpp \
 	$(DLG)/dlgWaypointFiles.cpp \

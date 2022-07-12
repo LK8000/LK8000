@@ -14,17 +14,16 @@
 #include "Dialogs.h"
 #include "Sideview.h"
 #include "Sound/Sound.h"
+#include "WindowControls.h"
 
 extern void ShowMenu();
-
-unsigned int CustomKeyLabel[(CustomKeyMode_t)ckTOP];
 
 // handle custom keys. Input: key pressed (center, left etc.)
 // Returns true if handled successfully, false if not
 //
 // Passthrough mode for keys>=1000 (custom menu keys)
 //
-bool CustomKeyHandler(const int key) {
+bool CustomKeyHandler(unsigned key) {
 
   int ckeymode;
   static bool doinit=true;
@@ -467,81 +466,104 @@ passthrough:
 }
 
 
-void InitCustomKeys(void) {
-
 //
 // Some labels already exist for buttons. Some other are missing.
 // We assign msg tokens in index array, since they are not in order.
 // Order is strictly the one in Enums.h for customkeys
 //
-CustomKeyLabel[0]=2200;		// Disabled  - note: never shown since label not printed at all
-CustomKeyLabel[1]=2201;		// Menu
-CustomKeyLabel[2]=2202;		// Page Back
-CustomKeyLabel[3]=2203;		// Toggle Map<>current page
-CustomKeyLabel[4]=2204;		// Toggle Map<>Landables
-CustomKeyLabel[5]=2205;		// Landables
-CustomKeyLabel[6]=2206;		// Toggle Map<>Commons
-CustomKeyLabel[7]=2207;		// Commons
-CustomKeyLabel[8]=2208;		// Toggle Map<>Traffic
-CustomKeyLabel[9]=2209;		// "Traffic"
-CustomKeyLabel[10]=2036;	// invert text
-CustomKeyLabel[11]=2071;	// truewind calc
-CustomKeyLabel[12]=2079;	// overlays (on/off missing)
-CustomKeyLabel[13]=2210;	// auto zoom
-CustomKeyLabel[14]=982; 	// (reserved) ActiveMap On/Off (UNUSED 2044)
-CustomKeyLabel[15]=2070;	// Location marker
-CustomKeyLabel[16]=2024;	// Time gates
-CustomKeyLabel[17]=2211;	// Thermal booster
-CustomKeyLabel[18]=2212;	// goto home
-CustomKeyLabel[19]=2213;	// zoom out 20  panorama trigger
-CustomKeyLabel[20]=2214;	// multitarget rotate
-CustomKeyLabel[21]=2025;	// multitarget menu
-CustomKeyLabel[22]=2021;	// team code
-CustomKeyLabel[23]=2215;	// use hbar
-CustomKeyLabel[24]=2042;	// basic setup
-CustomKeyLabel[25]=2216;	// SIM MENU
-CustomKeyLabel[26]=2217;	// airspace analysis
-CustomKeyLabel[27]=2218;	// toggle map Airspace
-CustomKeyLabel[28]=2001;	// zoom in
-CustomKeyLabel[29]=2002;	// zoom out
-CustomKeyLabel[30]=2219;	// zoom in more
-CustomKeyLabel[31]=2220;	// zoom out more
-CustomKeyLabel[32]=2221;	// route optimize
-CustomKeyLabel[33]=966;		// LOCK SCREEN
-CustomKeyLabel[34]=2058;	// Oracle
-CustomKeyLabel[35]=2115;	// TEnergy
-CustomKeyLabel[36]=2063;	// Notepad
-CustomKeyLabel[37]=2223;	// Change+ terrain colors
-CustomKeyLabel[38]=2060;	// Nearest airspace
-CustomKeyLabel[39]=2222;	// OLC analysis
-CustomKeyLabel[40]=2224;	// Change- terrain colors
-CustomKeyLabel[41]=2225;	// free flight
-CustomKeyLabel[42]=2131;	// custom menu
-CustomKeyLabel[43]=2013;	// task calc
-CustomKeyLabel[44]=2020;	// task target
-CustomKeyLabel[45]=2226;	// Arm toggle
-CustomKeyLabel[46]=2064;	// Message Repeat
-CustomKeyLabel[47]=2015;	// Waypoint lookup
-CustomKeyLabel[48]=2082;	// PAN
-CustomKeyLabel[49]=2227;	// Toggle windrose
-CustomKeyLabel[50]=2228;	// Flarm radar
-CustomKeyLabel[51]=2143;	// Device A Config
-CustomKeyLabel[52]=2144;	// Device B Config
-CustomKeyLabel[53]=2229;	// Reset Odometer
-CustomKeyLabel[54]=2230;	// Force landing
-CustomKeyLabel[55]=2236;	// ResetTripComputer
-CustomKeyLabel[56]=2237;	// Sonar toggle
-CustomKeyLabel[57]=2246;	// Reset view
-CustomKeyLabel[58]=2038;	// Map Orientation
-CustomKeyLabel[59]=928;		// Restarting Comm Ports
-CustomKeyLabel[60]=2249;	// DspMode
-CustomKeyLabel[61]=2390;	// Toggle Draw XC
-CustomKeyLabel[62]=2337;	// Airspace lookup
-CustomKeyLabel[63]=2393;        // Device C Config
-CustomKeyLabel[64]=2394;        // Device D Config
-CustomKeyLabel[65]=2395;        // Device E Config
-CustomKeyLabel[66]=2396;        // Device F Config
-CustomKeyLabel[67]=2307;        // Radio Settings _@M2307_ "Radio Settings"
 
-static_assert(67 < std::size(CustomKeyLabel), "invalid CustomKeyLabel array size");
+struct KeyLabel {
+	const unsigned Name; // used by Config dialog
+	const unsigned MenuLabel;
+};
+
+// Careful, order must respect the enum list in LKInterface.h CustomKeyMode_t
+
+static const KeyLabel _CustomKeyLabel[] = {
+	{ 239, 2200 },	// { Disabled, ---- }  - note: never shown since label not printed at all
+	{ 435, 2201 },	// { Menu, Menu }
+	{ 517, 2202 },	// { Page Back, Page\nBack }
+	{ 725, 2203 },	// { Toggle Map<>current page, Toggle\nMap }
+	{ 723, 2204 },	// { Toggle Map<>Landables, Toggle\nLandb }
+	{ 385, 2205 },	// { Landables, Landables }
+	{ 722, 2206 },	// { Toggle Map<>Commons, Toggle\nCommon }
+	{ 192, 2207 },	// { Commons, Commons }
+	{ 724, 2208 },	// { Toggle Map<>Traffic, Toggle\nTraffic }
+	{ 738, 2209 },	// { Traffic, Traffic }
+	{ 363, 2036 },	// { Invert colors, invert text }
+	{ 1532, 2071 },	// { TrueWind, TrueWind\nCalc }
+	{ 726, 2079 },	// { Overlays toggle, Overlays }
+	{ 1533, 2210 },	// { AutoZoom On/Off, Auto\nZoom }
+	{ 982, 982 },	// (reserved)
+	{ 426, 2070 },	// { Mark Location, Location\nMarker }
+	{ 513, 2024 },	// { Time Gates, Time\nGates }
+	{ 1535, 2211 },	// { Thermal Booster, Therm\nSound }
+	{ 329, 2212 },	// { Goto Home, Goto\nHome }
+	{ 519, 2213 },	// { Panorama trigger, Zoom\nOut20 }
+	{ 448, 2214 },	// { Multitarget rotate, Multi\nTarg+ } 
+	{ 447, 2025 },	// { Multitarget menu, Multi\nTarget }
+	{ 700, 2021 },	// { Team code, Team\nCode }
+	{ 767, 2215 },	// { Use HBar on/off, Use\nHBAR }
+	{ 130, 2042 },	// { Basic Setup menu, Setup\nBasic } 
+	{ 1536, 2216 },	// { SIMulation menu, SIM\nMENU }
+	{ 1652, 2217 },	// { Airspace Analysis, Airsp\nAnalys }
+	{ 1653, 2218 },	// { Toggle Map<>Airspace infopage, Toggle\nAirsp }
+	{ 1657, 2001 },	// { Zoom In, Zoom\nin }
+	{ 1658, 2002 },	// { Zoom Out, Zoom\nout }
+	{ 1659, 2219 },	// { Zoom In More, Zoom\nin++ }
+	{ 1660, 2220 },	// { Zoom Out More, Zoom\nout++ }
+	{ 1687, 2221 },	// { Optimized route toggle, Route\nOptim }
+	{ 1688, 966 },	// { Screen Lock, LOCK\nSCREEN }
+	{ 1689, 2058 },	// { Oracle, Oracle }
+	{ 1666, 2115 },	// { TotalEnergy toggle, TEnergy }
+	{ 2063, 2063 },	// Notepad
+	{ 1693, 2223 },	// { Change+ Terrain Colors, Color+\nterrain }
+	{ 871, 2060 },	// { Nearest airspace, Nearest\nAirspace }
+	{ 1740, 2222 },	// { OLC analysis, OLC\nAnalys }
+	{ 1774, 2224 },	// { Change- Terrain Colors, Color-\nterrain }
+	{ 1754, 2225 },	// { Free Flight start, Free\nFlight }
+	{ 1787, 2131 },	// { Custom Menu, Custom\nMenu }
+	{ 685, 2013 },	// { Task Calculator, Task\nCalc }
+	{ 684, 2020 },	// { Target, Target }
+	{ 1791, 2226 },	// { Arm toggle advance, Arm toggle }
+	{ 2064, 2064 },	// Message Repeat
+	{ 2015, 2015 },	// Waypoint lookup
+	{ 2082, 2082 },	// PAN
+	{ 2227, 2227 },	// Toggle windrose
+	{ 2228, 2228 },	// Flarm radar
+	{ 2143, 2143 },	// Device A Config
+	{ 2144, 2144 },	// Device B Config
+	{ 2229, 2229 },	// Reset Odometer
+	{ 2230, 2230 },	// Force landing
+	{ 2236, 2236 },	// ResetTripComputer
+	{ 2237, 2237 },	// Sonar toggle
+	{ 2246, 2246 },	// Reset view
+	{ 2038, 2038 },	// Map Orientation
+	{ 928, 928 },	// Restarting Comm Ports
+	{ 2249, 2249 },	// DspMode
+	{ 2390, 2390 },	// Toggle Draw XC
+	{ 2337, 2337 },	// Airspace lookup
+	{ 2393, 2393 },	// Device C Config
+	{ 2394, 2394 },	// Device D Config
+	{ 2395, 2395 },	// Device E Config
+	{ 2396, 2396 },	// Device F Config
+	{ 2307, 2307 },	// Radio Settings
+};
+
+static_assert(ckTOP == std::size(_CustomKeyLabel), "invalid _CustomKeyLabel array size");
+
+
+
+const TCHAR* CustomKeyLabel(unsigned key) {
+	if (key < std::size(_CustomKeyLabel)) {
+		return MsgToken(_CustomKeyLabel[key].MenuLabel);
+	}
+	return nullptr;
+}
+
+void AddCustomKeyList(DataField* dfe) {
+	for (auto& item : _CustomKeyLabel) {
+    	dfe->addEnumText(MsgToken(item.Name));
+	}
+    dfe->Sort();
 }

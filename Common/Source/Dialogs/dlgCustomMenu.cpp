@@ -11,8 +11,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "resource.h"
-
-extern void AddCustomKeyList( DataField* dfe);
+#include "LKInterface.h"
 
 static WndForm *wf=NULL;
 

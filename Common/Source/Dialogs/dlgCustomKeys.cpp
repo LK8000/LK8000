@@ -14,26 +14,12 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "resource.h"
-
-extern void AddCustomKeyList( DataField* dfe);
+#include "LKInterface.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;
 
 
-static void OnCustomKeysActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-    break;
-  case DataField::daInc:
-  case DataField::daDec:
-  case DataField::daSpecial:
-    break;
-  }
-}
 
 static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
@@ -115,7 +101,6 @@ static void setVariables(void) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnCustomKeysActiveData),
   ClickNotifyCallbackEntry(OnCloseClicked),
   EndCallBackEntry()
 };
