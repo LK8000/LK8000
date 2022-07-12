@@ -19,6 +19,7 @@ class LK8000Activity {
   static jmethodID check_permissions_method;
   static jmethodID scan_qrcode_method;
   static jmethodID share_file_method;
+  static jmethodID detect_keyboard_method;
   static LK8000Activity *activity_instance;
 
 
@@ -59,6 +60,8 @@ public:
   void ScanQRCode();
 
   void ShareFile(const char *path);
+
+  void DetectKeyboardModel();
 };
 
 

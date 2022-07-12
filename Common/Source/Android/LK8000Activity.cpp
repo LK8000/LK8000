@@ -18,6 +18,7 @@ Java::TrivialClass LK8000Activity::cls;
 jmethodID LK8000Activity::check_permissions_method;
 jmethodID LK8000Activity::scan_qrcode_method;
 jmethodID LK8000Activity::share_file_method;
+jmethodID LK8000Activity::detect_keyboard_method;
 
 LK8000Activity* LK8000Activity::activity_instance = nullptr;
 
@@ -32,6 +33,9 @@ void LK8000Activity::Initialise(JNIEnv *env, jobject obj) {
 
   share_file_method = env->GetMethodID(cls, "shareFile", "(Ljava/lang/String;)V");
   assert(share_file_method);
+
+  detect_keyboard_method = env->GetMethodID(cls, "detectKeyboardModel", "()V");
+  assert(detect_keyboard_method);
 
   assert(activity_instance == nullptr); // memory leak;
   activity_instance = new LK8000Activity(env, obj);
@@ -92,6 +96,10 @@ void LK8000Activity::ShareFile(const char *path) {
   env->CallVoidMethod(obj, share_file_method, stringPath.Get());
 }
 
+void LK8000Activity::DetectKeyboardModel() {
+  JNIEnv *env = Java::GetEnv();
+  env->CallVoidMethod(obj, detect_keyboard_method);
+}
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -158,4 +166,13 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_LK8000_setHasKeyboard(JNIEnv *env, jobject thiz, jboolean b) {
     has_keyboard = b;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_LK8000_LK8000_setKeyboardModelType(JNIEnv *env, jobject thiz, jstring jname) {
+  std::string name = Java::String::ToString(env, jname);
+  if (ModelType::Set(name.c_str())) {
+    DoStatusMessage((name + " " + MsgToken(199)).c_str()); // "XXXX Connected"
+  }
 }

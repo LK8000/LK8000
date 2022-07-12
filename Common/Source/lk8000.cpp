@@ -87,6 +87,16 @@ extern bool LKProfileLoad(const TCHAR *szFile);
 
 static bool realexitforced=false;
 
+void DetectKeyboardModel() {
+#ifdef ANDROID
+  LK8000Activity *activity = LK8000Activity::Get();
+  if (activity) {
+    activity->DetectKeyboardModel();
+  }
+#endif
+}
+
+
 bool Startup(const TCHAR* szCmdLine) {
 
   #if TRACETHREAD
@@ -495,6 +505,8 @@ bool Startup(const TCHAR* szCmdLine) {
             MessageBoxX(MsgToken(155), TEXT("Warning!"), mbOk);
         }
     }
+
+    DetectKeyboardModel();
 
     return true;
 }

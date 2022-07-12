@@ -31,6 +31,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -42,6 +43,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Window;
@@ -346,16 +348,32 @@ public class LK8000 extends Activity {
   @Override
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    boolean hasKeyboard = hasKeyboard();
-    if (nativeView != null) {
-      nativeView.setHasKeyboard(hasKeyboard);
-    }
-    setHasKeyboard(hasKeyboard);
+    detectKeyboardModel();
   }
 
   private boolean hasKeyboard() {
     return getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
   }
+
+  void detectKeyboardModel() {
+    boolean hasKeyboard = hasKeyboard();
+    if (nativeView != null) {
+      nativeView.setHasKeyboard(hasKeyboard);
+      if (hasKeyboard) {
+        InputManager inputManager = (InputManager) getSystemService(INPUT_SERVICE);
+        int[] inputIds = inputManager.getInputDeviceIds();
+        for (int id : inputIds) {
+          InputDevice device = inputManager.getInputDevice(id);
+          if (device != null) {
+            setKeyboardModelType(device.getName());
+          }
+        }
+      }
+    }
+    setHasKeyboard(hasKeyboard);
+  }
+
+  private native void setKeyboardModelType(String name);
 
   private native void setHasKeyboard(boolean b);
 
