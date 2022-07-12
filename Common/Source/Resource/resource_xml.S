@@ -171,3 +171,4 @@
     binfile IDR_XML_WEATHERSTDETAILS, Common/Data/Dialogs/dlgWeatherSt.xml
     binfile IDR_XML_NMEAREPLAY, Common/Data/Dialogs/dlgNMEAReplay.xml
     binfile IDR_XML_RADIOPRISECSEL, Common/Data/Dialogs/dlgRadioPriSecSel.xml
+    binfile IDR_XML_MACCREADY, Common/Data/Dialogs/dlgMacCready.xml

@@ -1321,6 +1321,7 @@ DLGS	:=\
 	$(DLG)/dlgNMEAReplay.cpp \
 	$(DLG)/dlgRadioPriSecSel.cpp \
 	$(DLG)/dlgSelectItem.cpp \
+	$(DLG)/dlgMacCready.cpp \
 
 TRACKING := \
 	$(SRC_TRACKING)/LiveTrack24.cpp \

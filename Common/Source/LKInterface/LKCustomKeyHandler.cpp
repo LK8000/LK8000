@@ -15,6 +15,7 @@
 #include "Sideview.h"
 #include "Sound/Sound.h"
 #include "WindowControls.h"
+#include "Dialogs/dlgMacCready.h"
 
 extern void ShowMenu();
 
@@ -455,6 +456,10 @@ passthrough:
         PlayResource(TEXT("IDR_WAV_CLICK"));
         dlgRadioSettingsShowModal();
         return true;
+	case ckMCSetting:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
+        dlgMacCready::DoModal();
+        return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
@@ -548,6 +553,7 @@ static const KeyLabel _CustomKeyLabel[] = {
 	{ 2395, 2395 },	// Device E Config
 	{ 2396, 2396 },	// Device F Config
 	{ 2307, 2307 },	// Radio Settings
+	{ 844, 844}, // MacCready setting
 };
 
 static_assert(ckTOP == std::size(_CustomKeyLabel), "invalid _CustomKeyLabel array size");

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0"
+        xmlns="http://www.dmg.org/PMML-3-0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance"
+        xsi:noNamespaceSchemaLocation="Dialog.xsd">
+
+  <WndForm Name="frmMacCready" Type="Dialog" X="0" Y="0" Width="190" Height="120" Caption="_@M844_" Popup="1" Font="2">
+
+    <WndButton Caption="_@M186_" X="15" Y="60" Width="160" Height="35" Font="2" OnClickNotify="OnClose" />
+
+    <WndButton Name="cmdUp"   Caption="▲" X="10" Y="10" Width="50"  Height="35" Font="2" OnClickNotify="OnUpClick" />
+    <WndFrame Name="frmValue" X="65" Y="10" Width="60" Height="40" Font="2" />
+    <WndButton Name="cmdDown" Caption="▼" X="130" Y="10" Width="50"  Height="35" Font="2" OnClickNotify="OnDownClick" />
+
+  </WndForm>
+
+</PMML>
