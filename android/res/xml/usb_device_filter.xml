@@ -20,4 +20,6 @@
   <usb-device vendor-id="6790" product-id="21972" /> <!-- CH9102 -->
 
   <usb-device vendor-id="1659" product-id="8963" /> <!-- PL2303 -->
+
+  <usb-device vendor-id="5446" product-id="423" /> <!-- U-BLOX 7 USB GPS -->
 </resources>
