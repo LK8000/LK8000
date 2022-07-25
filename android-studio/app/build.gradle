@@ -19,7 +19,7 @@ if (rootProject.file(keystorePropertiesFile).exists()) {
 android {
     compileSdkVersion 32    
     buildToolsVersion "32.0.0"
-    ndkVersion "24.0.8215888"
+    ndkVersion "25.0.8775105"
 
     defaultConfig {
         applicationId "org.lk8000"
@@ -85,7 +85,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version "3.18.1"
+            version "3.22.1"
             path "../../CMakeLists.txt"
         }
     }
