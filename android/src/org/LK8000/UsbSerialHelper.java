@@ -13,7 +13,6 @@ package org.LK8000;
 
 import static android.content.pm.PackageManager.FEATURE_USB_HOST;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -149,7 +148,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
             if (exists(supported_ids, vid, pid)) {
                 try {
                     Log.v(TAG, "UsbDevice Found : " + device);
-                    _AvailableDevices.put(device.getDeviceName(), device);
+                    _AvailableDevices.put(getDeviceName(device), device);
                 } catch (SecurityException ignored) {
                     // Permission may be required to get serial number if app targets SDK >= 29
                     UsbManager usbmanager = (UsbManager) _Context.getSystemService(Context.USB_SERVICE);
@@ -242,8 +241,8 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
     private void requestPermission(UsbManager usbmanager, UsbDevice device) {
         int intent_flags = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            intent_flags |= PendingIntent.FLAG_IMMUTABLE;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            intent_flags |= PendingIntent.FLAG_MUTABLE;
         }
         PendingIntent pi = PendingIntent.getBroadcast(_Context, 0, new Intent(UsbSerialHelper.ACTION_USB_PERMISSION), intent_flags);
 
