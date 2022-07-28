@@ -236,8 +236,7 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
         ptmpBitmap = &hClimb;
     } else {
         //short i=Get_Current_Multimap_Type()-1;
-        short i=ModeType[LKMODE_MAP]-1;
-        if (i<0) i=0;
+        short i = std::max(0, ModeType[LKMODE_MAP] - 1);
         if (!IsMultiMap()) {
             switch(i) {
                 case 0:
@@ -313,8 +312,8 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
   }
   else
   {
-   short i=ModeType[LKMODE_MAP]-1;
-   //if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CRUISE)) i = UTF_CROUISE;
+   short i = std::max(0, ModeType[LKMODE_MAP] - 1);
+   //if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CRUISE)) i = UTF_CRUISE;
    if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_CIRCLING)) i = UTF_THERMALING;
    if (!IsMultiMapNoMain() && mode.Is(Mode::MODE_FINAL_GLIDE)) i = UTF_FINALGLIDE;
 
