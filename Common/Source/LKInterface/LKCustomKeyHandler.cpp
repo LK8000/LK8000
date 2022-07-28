@@ -568,9 +568,33 @@ const TCHAR* CustomKeyLabel(unsigned key) {
 	return nullptr;
 }
 
-void AddCustomKeyList(DataField* dfe) {
-	for (auto& item : _CustomKeyLabel) {
-    	dfe->addEnumText(MsgToken(item.Name));
+void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, unsigned value) {
+	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
+	if (pWnd) {
+		DataField* dfe = pWnd->GetDataField();
+		if (dfe->getCount() == 0) {
+			for (auto& item : _CustomKeyLabel) {
+				dfe->addEnumText(MsgToken(item.Name));
+			}
+			dfe->Sort();
+		}
+		dfe->Set(value);
+		pWnd->RefreshDisplay();
 	}
-    dfe->Sort();
+}
+
+template<typename TypeT>
+static void GetCustomKey(WndForm* pForm, const TCHAR* WndName, TypeT& value) {
+	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
+	if (pWnd) {
+		value = pWnd->GetDataField()->GetAsInteger();
+	}
+}
+
+void GetCustomKey(WndForm* pForm, const TCHAR* WndName, unsigned short& value) {
+	GetCustomKey<unsigned short>(pForm, WndName, value);
+}
+
+void GetCustomKey(WndForm* pForm, const TCHAR* WndName, int& value) {
+	GetCustomKey<int>(pForm, WndName, value);
 }

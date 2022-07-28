@@ -16,11 +16,6 @@
 #include "resource.h"
 #include "LKInterface.h"
 
-static bool changed = false;
-static WndForm *wf=NULL;
-
-
-
 static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -31,73 +26,31 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 
-static void setVariables(void) {
-  WndProperty *wp;
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyTime"));
+static void setVariables(WndForm* pForm) {
+  auto wp = static_cast<WndProperty*>(pForm->FindByName(TEXT("prpCustomKeyTime")));
   if (wp) {
-	wp->GetDataField()->SetAsFloat(CustomKeyTime);
-	wp->RefreshDisplay();
+    wp->GetDataField()->SetAsFloat(CustomKeyTime);
+    wp->RefreshDisplay();
   }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeftUpCorner"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeLeftUpCorner);
-	wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeRightUpCorner"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeRightUpCorner);
-	dfe->Set(CustomKeyModeRightUpCorner);
-	// if (ISPARAGLIDER) wp->SetReadOnly(true); 2.3q also PGs can use it
-	wp->RefreshDisplay();
-  }
-
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenter"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeCenter);
-	wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenterScreen"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeCenterScreen);
-	wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeft"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeLeft);
-	wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeRight"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeRight);
-	wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeAircraftIcon"));
-  if (wp) {
-	DataField* dfe = wp->GetDataField();
-	AddCustomKeyList(dfe);
-	dfe->Set(CustomKeyModeAircraftIcon);
-	wp->RefreshDisplay();
-  }
-
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeLeftUpCorner"), CustomKeyModeLeftUpCorner);
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeRightUpCorner"), CustomKeyModeRightUpCorner);
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeCenter"), CustomKeyModeCenter);
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeCenterScreen"), CustomKeyModeCenterScreen);
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeLeft"), CustomKeyModeLeft);
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeRight"), CustomKeyModeRight);
+  AddCustomKeyList(pForm, _T("prpCustomKeyModeAircraftIcon"), CustomKeyModeAircraftIcon);
 }
 
+static void getVariables(WndForm* pForm) {
+  GetCustomKey(pForm, _T("prpCustomKeyModeLeftUpCorner"), CustomKeyModeLeftUpCorner);
+  GetCustomKey(pForm, _T("prpCustomKeyModeRightUpCorner"), CustomKeyModeRightUpCorner);
+  GetCustomKey(pForm, _T("prpCustomKeyModeCenter"), CustomKeyModeCenter);
+  GetCustomKey(pForm, _T("prpCustomKeyModeCenterScreen"), CustomKeyModeCenterScreen);
+  GetCustomKey(pForm, _T("prpCustomKeyTime"), CustomKeyTime);
+  GetCustomKey(pForm, _T("prpCustomKeyModeLeft"), CustomKeyModeLeft);
+  GetCustomKey(pForm, _T("prpCustomKeyModeRight"), CustomKeyModeRight);
+  GetCustomKey(pForm, _T("prpCustomKeyModeAircraftIcon"), CustomKeyModeAircraftIcon);
+}
 
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -108,76 +61,15 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgCustomKeysShowModal(void){
 
-  WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_CUSTOMKEYS);
+  std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, IDR_XML_CUSTOMKEYS));
 
-  if (!wf) return;
-
-  setVariables();
-
-  changed = false;
-
-  wf->ShowModal();
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeftUpCorner"));
-  if (wp) {
-	if (CustomKeyModeLeftUpCorner != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeLeftUpCorner = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeRightUpCorner"));
-  if (wp) {
-	if (CustomKeyModeRightUpCorner != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeRightUpCorner = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenter"));
-  if (wp) {
-	if (CustomKeyModeCenter != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeCenter = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenterScreen"));
-  if (wp) {
-	if (CustomKeyModeCenterScreen != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeCenterScreen = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyTime"));
-  if (wp) {
-	if (CustomKeyTime != wp->GetDataField()->GetAsInteger()) {
-		CustomKeyTime = wp->GetDataField()->GetAsInteger();
-		changed = true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeft"));
-  if (wp) {
-	if (CustomKeyModeLeft != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeLeft = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeRight"));
-  if (wp) {
-	if (CustomKeyModeRight != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeRight = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeAircraftIcon"));
-  if (wp) {
-	if (CustomKeyModeAircraftIcon != (wp->GetDataField()->GetAsInteger())) {
-		CustomKeyModeAircraftIcon = (wp->GetDataField()->GetAsInteger());
-		changed=true;
-	}
+  if (!pForm) {
+    return;
   }
 
+  setVariables(pForm.get());
 
-  delete wf;
-  wf = NULL;
+  pForm->ShowModal();
 
+  getVariables(pForm.get());
 }
