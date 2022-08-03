@@ -9,6 +9,12 @@ Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
+
+[version 7.3.20]
+. Android : whitelist "U-Blox 7 USB GPS"
+. Android : Fix missing Usb permission 
+. fix invalid map mode at startup
+
 [version 7.3.19]
 . Update XCREMOTE key binding
 . fix missing screen redraw after multitarget rotate
