@@ -1644,6 +1644,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     double CenterY = 0;
     double lat = 0, lon = 0;
     bool flyzone = false;
+    bool enabled = true;
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
     bool InsideMap = !(WaypointsOutOfRange > 1); // exclude
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
@@ -1705,6 +1706,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                     // data is not a valid json, put it "as is" in Comment.
                     AppendComment(ASComment, p);
                 }
+            } else if(_tcsstr(p, _T("ASeeNOTAM ")) == p) {
+                //*ASeeNOTAM - Binary indicator 'See NOTAM': 'Yes' specifying that the zone can be activated by NOTAM
+                enabled = (_tcscmp(p+_tcslen(_T("ASeeNOTAM ")), _T("Yes")) != 0);
 #if 0
             } else if(_tcsstr(p, _T("AExSAT ")) == p) {
                 //*AExSAT - A calculated binary indicator 'Except SATurday': 'Yes' specifying that the zone cannot be activated on Saturday
@@ -1718,10 +1722,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                 //*AExHOL - Binary indicator 'Except HOLiday': 'Yes' specifying that the zone cannot be activated on public holidays
                 bool b = (_tcscmp(p+_tcslen(_T("AExHOL ")), _T("Yes")) == 0);
                 // TODO : Ask to User if this day is Holiday
-            } else if(_tcsstr(p, _T("ASeeNOTAM ")) == p) {
-                //*ASeeNOTAM - Binary indicator 'See NOTAM': 'Yes' specifying that the zone can be activated by NOTAM
-                bool b = (_tcscmp(p+_tcslen(_T("ASeeNOTAM ")), _T("Yes")) == 0);
-                // TODO :
 #endif
             }
             continue;
@@ -1761,6 +1761,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             if(newairspace) {
                               if (InsideMap) {
                                 newairspace->Init(Name, Type, Base, Top, flyzone, ASComment.c_str());
+                                newairspace->Enabled(enabled);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
@@ -1782,6 +1783,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             Base.Base = abUndef;
                             Top.Base = abUndef;
                             flyzone = false;
+                            enabled = true;
                             newairspace = NULL;
                             parsing_state = 0;
                             InsideMap = !( WaypointsOutOfRange > 1); // exclude?
@@ -1795,6 +1797,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                                 break;
                             }
                         }
+
+                        if (Type == CLASSNOTAM) {
+                            // notam class disabled by default
+                            enabled = false;
+                        }
+
                         Rotation = +1;
                         parsing_state = 10;
                         break;
@@ -2030,6 +2038,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
         {
           if(newairspace) {
             newairspace->Init(Name, Type, Base, Top, flyzone , ASComment.c_str());
+            newairspace->Enabled(enabled);
             { // Begin Lock
               ScopeLock guard(_csairspaces);
               _airspaces.push_back(newairspace);
