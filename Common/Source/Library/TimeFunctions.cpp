@@ -73,3 +73,30 @@ time_t to_time_t(const NMEA_INFO& info) {
   t += info.Hour * 3600 + info.Minute * 60 + info.Second;
   return t;
 }
+
+// Calculate the ISO 8601 day of the week number 
+//   now - Unix timestamp like that from time(NULL)
+//   Return value: Monday=0, ... Sunday=6, 
+unsigned day_of_week(time_t now, int utc_offset) {
+	// Calculate number of seconds since midnight 1 Jan 1970 local time
+	time_t localtime = now + (utc_offset);
+	// Convert to number of days since 1 Jan 1970
+	unsigned days_since_epoch = localtime / 86400;
+	// 1 Jan 1970 was a Thursday, so add 3 so Monday is day 0, and mod 7
+	return (days_since_epoch + 3) % 7;
+}
+
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("TimeFunctions") {
+  SUBCASE("day_of_week") {
+    CHECK(day_of_week(0, 0) == 3); // 1970-01-01 00:00:00 -> Thursday
+    CHECK(day_of_week(1661194800, 2 * 3600) == 0); // Mon Aug 22 2022 21:00:00 GMT+0200
+    CHECK(day_of_week(1661036400, 2 * 3600) == 6); // Sun Aug 21 2022 01:00:00 GMT+0200
+    CHECK(day_of_week(1661036400, 0) == 5); // Sat Aug 20 2022 23:00:00 GMT+0000
+  }
+}
+
+#endif

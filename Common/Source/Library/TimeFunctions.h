@@ -15,4 +15,6 @@ int LocalTime(int utc_time);
 
 time_t to_time_t(const NMEA_INFO& info);
 
+unsigned day_of_week(time_t now, int utc_offset);
+
 #endif // _LIBRARY_TIMEFUNCTIONS_H_
