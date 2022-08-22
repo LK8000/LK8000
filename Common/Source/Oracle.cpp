@@ -16,6 +16,7 @@
 #include "LKStyle.h"
 #include "NavFunctions.h"
 #include "utils/printf.h"
+#include "Library/TimeFunctions.h"
 
 const TCHAR *DegreesToText(double brg) {
   if (brg<23||brg>=338) { return MsgToken(1703); } // North

@@ -35,6 +35,7 @@
 #include "ContestMgr.h"
 #include "Tracking/Tracking.h"
 #include "Devices/DeviceRegister.h"
+#include "Library/TimeFunctions.h"
 
 #ifdef ANDROID
 #include <jni.h>

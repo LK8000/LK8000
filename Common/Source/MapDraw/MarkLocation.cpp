@@ -11,6 +11,7 @@
 #include "Waypointparser.h"
 #include "utils/stringext.h"
 #include "utils/printf.h"
+#include "Library/TimeFunctions.h"
 
 
 extern int GetVirtualWaypointMarkerSlot(void);

@@ -19,6 +19,7 @@
 #include "resource.h"
 #include "NavFunctions.h"
 #include "Calc/Vario.h"
+#include "Library/TimeFunctions.h"
 
 extern BOOL extGPSCONNECT;
 

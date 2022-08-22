@@ -51,6 +51,7 @@
 #include "md5.h"
 #include "NavFunctions.h"
 #include "utils/base64.h"
+#include "Library/TimeFunctions.h"
 
 #ifdef KOBO
 #include "Kobo/System.hpp"
@@ -126,29 +127,6 @@ std::string toString(const T& value) {
 	return oss.str();
 }
 
-// Unix timestamp calculation helpers
-#define isleap(y) ( !((y) % 400) || (!((y) % 4) && ((y) % 100)) )
-static long monthtoseconds(int isleap, int month) {
-	static const long _secondstomonth[12] = { 0, 24L * 60 * 60 * 31, 24L * 60
-			* 60 * (31 + 28), 24L * 60 * 60 * (31 + 28 + 31), 24L * 60 * 60
-			* (31 + 28 + 31 + 30), 24L * 60 * 60 * (31 + 28 + 31 + 30 + 31), 24L
-			* 60 * 60 * (31 + 28 + 31 + 30 + 31 + 30), 24L * 60 * 60
-			* (31 + 28 + 31 + 30 + 31 + 30 + 31), 24L * 60 * 60
-			* (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31), 24L * 60 * 60
-			* (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30), 24L * 60 * 60
-			* (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31), 24L * 60 * 60
-			* (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30) };
-	long ret;
-	if ((month > 11) || (month < 0)) {
-		return 0;
-	}
-	ret = _secondstomonth[month];
-	if (isleap && (month > 1)) {
-		return ret + 24L * 60 * 60;
-	}
-	return ret;
-}
-
 static std::string random_string( size_t length )
 {
   auto randchar = []() -> char
@@ -165,31 +143,6 @@ static std::string random_string( size_t length )
   return str;
 }
 static std::string  DeviceID =  random_string(10);
-
-
-static unsigned long int yeartoseconds(int y) {
-	unsigned long int ret, ltemp;
-	if (y < 1970) {
-		return 0;
-	}
-	ret = y - 1970;
-	ret *= 365L * 24L * 60L * 60L;
-	ltemp = (y - 1) - 1968;
-	ltemp /= 4;
-	ltemp *= 24L * 60L * 60L;
-	ret += ltemp;
-	return ret;
-}
-
-static unsigned long int mkgmtime(const struct tm *ptmbuf) {
-	unsigned long int t;
-	int year = ptmbuf->tm_year + ptmbuf->tm_mon / 12;
-	t = yeartoseconds(year + 1900);
-	t += monthtoseconds(isleap(year + 1900), ptmbuf->tm_mon % 12);
-	t += (ptmbuf->tm_mday - 1) * 3600L * 24;
-	t += ptmbuf->tm_hour * 3600L + ptmbuf->tm_min * 60L + ptmbuf->tm_sec;
-	return t;
-}
 
 // Encode URLs in a standard form
 static char* UrlEncode(const char *szText, char* szDst, int bufsize) {
@@ -340,16 +293,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	} else
 		return;
 
-	struct tm t;
-	time_t t_of_day;
-	t.tm_year = Basic.Year - 1900;
-	t.tm_mon = Basic.Month - 1; // Month, 0 - jan
-	t.tm_mday = Basic.Day;
-	t.tm_hour = Basic.Hour;
-	t.tm_min = Basic.Minute;
-	t.tm_sec = Basic.Second;
-	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
-	t_of_day = mkgmtime(&t);
+	time_t t_of_day = to_time_t(Basic);
 
 	livetracker_point_t newpoint;
 
@@ -1092,16 +1036,7 @@ static bool LiveTrack24_Radar() {
 	StartupStore(TEXT(".LiveRadar RADAR %s"), NEWLINE);
 #endif
 
-	struct tm t;
-	time_t t_of_day;
-	t.tm_year = GPS_INFO.Year - 1900;
-	t.tm_mon = GPS_INFO.Month - 1; // Month, 0 - jan
-	t.tm_mday = GPS_INFO.Day;
-	t.tm_hour = GPS_INFO.Hour;
-	t.tm_min = GPS_INFO.Minute;
-	t.tm_sec = GPS_INFO.Second;
-	t.tm_isdst = 0; // Is DST on? 1 = yes, 0 = no, -1 = unknown
-	t_of_day = mkgmtime(&t);
+	time_t t_of_day = to_time_t(GPS_INFO);
 
 	std::ostringstream strsCommand;
 	strsCommand << "liveList";

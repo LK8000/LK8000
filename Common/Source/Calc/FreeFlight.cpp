@@ -14,6 +14,7 @@
 #include "CriticalSection.h"
 #include "NavFunctions.h"
 #include "Waypointparser.h"
+#include "Library/TimeFunctions.h"
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.

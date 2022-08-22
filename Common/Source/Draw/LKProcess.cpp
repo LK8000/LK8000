@@ -17,6 +17,7 @@
 #include "Calc/Vario.h"
 #include "LKInterface.h"
 #include "ContestMgr.h"
+#include "Library/TimeFunctions.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"

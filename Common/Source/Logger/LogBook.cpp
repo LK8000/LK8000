@@ -11,6 +11,7 @@
 #include "Logger.h"
 #include "utils/fileext.h"
 #include "utils/printf.h"
+#include "Library/TimeFunctions.h"
 
 //
 // Called by Calculations at landing detection (not flying anymore)

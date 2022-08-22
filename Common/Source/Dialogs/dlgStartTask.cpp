@@ -13,6 +13,7 @@
 #include "dlgTools.h"
 #include "WindowControls.h"
 #include "resource.h"
+#include "Library/TimeFunctions.h"
 
 
 static WndForm *wf=NULL;

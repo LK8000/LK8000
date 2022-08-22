@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "LKProcess.h"
-
+#include "Library/TimeFunctions.h"
 
 
 double GetAzimuth(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {

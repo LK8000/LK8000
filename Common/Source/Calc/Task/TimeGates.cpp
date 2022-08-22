@@ -10,6 +10,7 @@
 #include "LKProcess.h"
 #include "utils/stl_utils.h"
 #include "Sound/Sound.h"
+#include "Library/TimeFunctions.h"
 
 // ALL TIME VALUES ARE IN SECONDS! 
 bool UseGates() {

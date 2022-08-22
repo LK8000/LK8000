@@ -14,7 +14,4 @@ void	WindDirectionProcessing(int UpDown);
 
 void	NextUpDown(int UpDown);
 
-int LocalTime();
-int LocalTime(int utc_time);
-
 #endif

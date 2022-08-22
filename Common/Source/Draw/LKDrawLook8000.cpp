@@ -21,6 +21,7 @@
 #include "Screen/FontReference.h"
 #include "Bitmaps.h"
 #include "Asset.hpp"
+#include "Library/TimeFunctions.h"
 #ifndef UNICODE
 #include "Util/UTF8.hpp"
 #endif

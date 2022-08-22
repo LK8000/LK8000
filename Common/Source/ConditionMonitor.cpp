@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "LKProcess.h"
 #include "InputEvents.h"
-
+#include "Library/TimeFunctions.h"
 
 class ConditionMonitor {
 public:

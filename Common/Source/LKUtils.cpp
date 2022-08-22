@@ -13,7 +13,7 @@
 #endif
 #include "utils/stringext.h"
 #include "Dialogs.h"
-
+#include "Library/TimeFunctions.h"
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 
