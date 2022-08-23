@@ -31,6 +31,7 @@
 #include "Library/rapidxml/rapidxml.hpp"
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
+#include "Library/TimeFunctions.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
@@ -1645,6 +1646,10 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     double lat = 0, lon = 0;
     bool flyzone = false;
     bool enabled = true;
+
+    bool except_saturday = false;
+    bool except_sunday = false;
+
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
     bool InsideMap = !(WaypointsOutOfRange > 1); // exclude
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
@@ -1709,15 +1714,15 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
             } else if(_tcsstr(p, _T("ASeeNOTAM ")) == p) {
                 //*ASeeNOTAM - Binary indicator 'See NOTAM': 'Yes' specifying that the zone can be activated by NOTAM
                 enabled = (_tcscmp(p+_tcslen(_T("ASeeNOTAM ")), _T("Yes")) != 0);
-#if 0
             } else if(_tcsstr(p, _T("AExSAT ")) == p) {
                 //*AExSAT - A calculated binary indicator 'Except SATurday': 'Yes' specifying that the zone cannot be activated on Saturday
-                bool b = (_tcscmp(p+_tcslen(_T("AExSAT ")), _T("Yes")) == 0);
+                except_saturday = (_tcscmp(p+_tcslen(_T("AExSAT ")), _T("Yes")) == 0);
                 // TODO : disable automaticaly after valid GPS fix received ?
             } else if(_tcsstr(p, _T("AExSUN ")) == p) {
                 //*AExSUN - Binary indicator 'Except SUNday': 'Yes' specifying that the zone cannot be activated on Sunday
-                bool b = (_tcscmp(p+_tcslen(_T("AExSUN ")), _T("Yes")) == 0);
+                except_sunday = (_tcscmp(p+_tcslen(_T("AExSUN ")), _T("Yes")) == 0);
                 // TODO : disable automaticaly after valid GPS fix received ?
+#if 0
             } else if(_tcsstr(p, _T("AExHOL ")) == p) {
                 //*AExHOL - Binary indicator 'Except HOLiday': 'Yes' specifying that the zone cannot be activated on public holidays
                 bool b = (_tcscmp(p+_tcslen(_T("AExHOL ")), _T("Yes")) == 0);
@@ -1762,6 +1767,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                               if (InsideMap) {
                                 newairspace->Init(Name, Type, Base, Top, flyzone, ASComment.c_str());
                                 newairspace->Enabled(enabled);
+                                newairspace->ExceptSaturday(except_saturday);
+                                newairspace->ExceptSunday(except_sunday);
 
                                 { // Begin Lock
                                     ScopeLock guard(_csairspaces);
@@ -1784,6 +1791,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             Top.Base = abUndef;
                             flyzone = false;
                             enabled = true;
+                            except_saturday = false;
+                            except_sunday = false;
                             newairspace = NULL;
                             parsing_state = 0;
                             InsideMap = !( WaypointsOutOfRange > 1); // exclude?
@@ -2039,6 +2048,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
           if(newairspace) {
             newairspace->Init(Name, Type, Base, Top, flyzone , ASComment.c_str());
             newairspace->Enabled(enabled);
+            newairspace->ExceptSaturday(except_saturday);
+            newairspace->ExceptSunday(except_sunday);
             { // Begin Lock
               ScopeLock guard(_csairspaces);
               _airspaces.push_back(newairspace);
@@ -2456,6 +2467,7 @@ void CAirspaceManager::ReadAirspaces() {
     unsigned airspaces_count = 0;
     { // Begin Lock
         ScopeLock guard(_csairspaces);
+        last_day_of_week = ~0;
         airspaces_count = _airspaces.size();
     } //
 
@@ -2790,6 +2802,8 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     if (_airspaces.empty()) {
         return; // no airspaces no nothing to do
     }
+
+    AutoDisable(*Basic);
 
     CAirspaceList::iterator it;
 
@@ -3639,6 +3653,27 @@ void CAirspaceManager::ProcessAirspaceDetailQueue() {
     _detail_current = nullptr;
 }
 
+void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
+    if (info.NAVWarning) {
+        // no valid date without valid gps fix
+        last_day_of_week = ~0;
+        return;
+    }
+
+    unsigned current = day_of_week(to_time_t(info), GetUTCOffset());
+    if (last_day_of_week != current) {
+        last_day_of_week = current;
+
+        for (auto asp : _airspaces) {
+            if (asp->ExceptSaturday()) {
+                asp->Enabled(current != 5); // Saturday
+            }
+            if (asp->ExceptSunday()) {
+                asp->Enabled(current != 6); // Sunday
+            }
+        }
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

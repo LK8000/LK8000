@@ -167,6 +167,22 @@ public:
   int Enabled() const { return _enabled; }
   void Enabled(bool enabled) { _enabled = enabled; }
 
+  void ExceptSaturday(bool b) {
+    _except_saturday = b;
+  }
+  
+  bool ExceptSaturday() {
+    return _except_saturday;
+  }
+  
+  void ExceptSunday(bool b) {
+    _except_sunday = b;
+  }
+  
+  bool ExceptSunday() {
+    return _except_sunday;
+  }
+
   int Selected() const { return _selected; }
   void Selected(bool selected) { _selected = selected; }
 
@@ -224,6 +240,10 @@ protected:
   bool _hwarninglabel_hide;     // Hide horizontal warning label
   bool _enabled;                // Airspace enabled for operations
   bool _selected;               // Airspace selected (for distance calc infoboxes)
+
+  bool _except_saturday = false; // airspace disabled saturday
+  bool _except_sunday = false; // airspace disabled sunday
+
 
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const;
@@ -513,6 +533,9 @@ public:
 
   CAirspace* GetAirspacesForDetails() { return _detail_current; } // call this only inside Mutex Guard section !
 
+  /// to Enable/disable aispace depending of day num (SAT/SUN)
+  void AutoDisable(const NMEA_INFO& info);
+
 private:
   static CAirspaceManager _instance;
   CAirspaceManager() { _selected_airspace = NULL; _sideview_nearest = NULL; }
@@ -527,6 +550,8 @@ private:
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page
   CAirspace *_selected_airspace;         // Selected airspace
   CAirspace *_sideview_nearest;         // Neasrest asp instance for sideview
+
+  unsigned last_day_of_week = ~0; // used for auto disable airspace SAT/SUN
 
   // Warning system data
   // User warning message queue
