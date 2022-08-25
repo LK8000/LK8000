@@ -289,8 +289,7 @@ void ExternalDeviceSendTarget() {
 
   } catch (no_target& e) {
     // no target to sync...
-    ScopeLock lock(last_multitarget_mtx);
-    last_multitarget = {};
+	ResetMultitargetSync();
   }
 }
 
