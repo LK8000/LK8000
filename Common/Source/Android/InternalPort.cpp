@@ -24,9 +24,7 @@ bool InternalPort::Initialize() {
         // TODO: Allow user to specify whether they want certain sensors.
         internal_sensors->subscribeToSensor(InternalSensors::TYPE_PRESSURE);
 
-        thread_status = std::thread([&] {
-            thread_run();
-        });
+        thread_status = std::thread(&InternalPort::thread_run, this);
 
         return NullComPort::Initialize();
     }
@@ -34,16 +32,20 @@ bool InternalPort::Initialize() {
 }
 
 bool InternalPort::Close() {
-    InternalSensors* p = internal_sensors;
-
-    WithLock(mutex_status, [&]() {
-        internal_sensors = nullptr;
+    InternalSensors* p = WithLock(mutex_status, [&]() {
+        /* set "internal_sensors" to nullptr and notify "cv_status" to ask
+         * to stop "thread_status" before delete internal_sensors
+         */
+        auto p = std::exchange(internal_sensors, nullptr);
         cv_status.notify_all();
+        return p;
     });
 
     delete p;
 
-    thread_status.join();
+    if(thread_status.joinable()) {
+        thread_status.join();
+    }
 
     return NullComPort::Close();
 }
