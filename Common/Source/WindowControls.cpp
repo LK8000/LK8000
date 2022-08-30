@@ -2060,6 +2060,12 @@ bool WndButton::OnLButtonDblClick(const POINT& Pos) {
     return true;
 }
 
+void WndButton::DrawPushButton(LKSurface& Surface){
+  PixelRect rc(GetClientRect());
+  rc.Grow(-2); // todo border width
+  Surface.DrawPushButton(rc, mDown);
+}
+
 void WndButton::Paint(LKSurface& Surface){
 
   if (!IsVisible()) return;
@@ -2067,13 +2073,14 @@ void WndButton::Paint(LKSurface& Surface){
   WindowControl::Paint(Surface);
 
   const PixelRect rcClient(GetClientRect());
-  PixelRect rc = rcClient;
-  InflateRect(&rc, -2, -2); // todo border width
 
-  Surface.DrawPushButton(rc, mDown);
+  DrawPushButton(Surface);
 
 
   if (mLedMode) {
+    PixelRect rc = rcClient;
+    InflateRect(&rc, -2, -2); // todo border width
+
      RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+DLGSCALE(mLedSize)),
                rc.right-LEDBUTTONBORDER,rc.bottom-LEDBUTTONBORDER};
      unsigned short lcol=0;
@@ -2129,7 +2136,7 @@ void WndButton::Paint(LKSurface& Surface){
     Surface.SetBackgroundTransparent();
 
     const auto oldFont = Surface.SelectObject(GetFont());
-    rc = rcClient;
+    PixelRect rc = rcClient;
     InflateRect(&rc, -2, -2); // todo border width
 
     if (mDown)

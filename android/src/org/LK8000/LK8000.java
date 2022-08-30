@@ -24,6 +24,8 @@ package org.LK8000;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -516,5 +518,19 @@ public class LK8000 extends Activity {
       // Todo: display user friendly error
       e.printStackTrace();
     }
+  }
+
+  String getClipboardText() {
+    // Gets a handle to the Clipboard Manager
+    final ClipboardManager clipboard = (ClipboardManager)
+            getSystemService(Context.CLIPBOARD_SERVICE);
+    // Gets the clipboard data from the clipboard
+    ClipData clip = clipboard.getPrimaryClip();
+    if (clip != null) {
+      // Gets the first item from the clipboard data
+      ClipData.Item item = clip.getItemAt(0);
+      return item.coerceToText(this).toString();
+    }
+    return null;
   }
 }

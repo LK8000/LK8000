@@ -19,6 +19,7 @@
 #include "Asset.hpp"
 #include "Library/rapidxml/rapidxml.hpp"
 #include "Library/rapidxml/rapidxml_iterators.hpp"
+#include "Form/WndButtonImage.h"
 
 #include <stdio.h>
 
@@ -481,7 +482,14 @@ void LoadChildsFromXML(WindowControl *Parent,
 
       LoadChildsFromXML(WC, LookUpTable, *child, ParentFont);  // recursivly create dialog
 
-    } else {
+    } else if (strcmp(child->name(), "WndButtonImage") == 0) {
+
+      const char* ClickCallback = AttributeToString(*child, "OnClickNotify", "");
+
+      WC = new WndButtonImage(Parent, Name, Caption, X, Y, Width, Height,
+                      CallBackLookup<WndButton::ClickNotifyCallback_t>(LookUpTable, ClickCallback));
+    }
+    else {
         LKASSERT(false); // unknow control.
     }
 

@@ -34,8 +34,9 @@ Copyright_License {
 #include "WStringUtil.hpp"
 #endif
 
+template<typename CharT>
 static inline bool
-StringIsEmpty(const char *string)
+StringIsEmpty(const CharT *string)
 {
   return *string == 0;
 }

@@ -28,7 +28,7 @@ static std::set<tstring> setMissingBitmap;
     #define IMG_EXT "PNG"
 #endif
 
-LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires = false) {
+LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires) {
     LKBitmap hBmp;
 
     TCHAR srcfile[MAX_PATH];

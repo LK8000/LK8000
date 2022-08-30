@@ -3,12 +3,13 @@
   xmlns="http://www.dmg.org/PMML-3-0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M251_" Font="2">
-    <WndProperty Name="prpText" Caption="_@M711_" X="2" Y="2" Width="218" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
+    <WndProperty Name="prpText" Caption="_@M711_" X="2" Y="2" Width="190" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
     <WndProperty Name="prpMatch" Caption="Match:" X="0" Y="265" Width="120" Height="35" CaptionWidth="120" Font="2" ReadOnly="1" />
 
     <WndButton Name="prpShift" Caption="Shift" X="0" Y="265" Width="50" Height="35" Font="2" OnClickNotify="OnShift"/>
 
-    <WndButton Caption="_@M228_" X="200" Y="2" Width="40" Height="22" Font="2" OnClickNotify="OnDel"/>
+    <WndButton Caption="⌫" X="190" Y="2" Width="30" Height="22" Font="2" OnClickNotify="OnDel"/>
+    <WndButtonImage Name="prp_past" Caption="Clipboard" X="220" Y="2" Width="20" Height="22" Font="2" OnClickNotify="OnPaste"/>
 
     <WndButton Name="prp_upper_A" Caption="A" X="0" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>
     <WndButton Name="prp_upper_B" Caption="B" X="40" Y="25" Width="40" Height="35" Font="2" OnClickNotify="OnKey"/>

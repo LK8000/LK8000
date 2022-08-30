@@ -14,7 +14,9 @@
 #include "Event/Event.h"
 #include "Sound/Sound.h"
 #include "resource.h"
-
+#include "utils/printf.h"
+#include <regex>
+#include "Form/Clipboard.h"
 
 static bool first= false;
 static WndForm *wf=NULL;
@@ -40,7 +42,7 @@ void HideKey(WindowControl* pWnd) {
   }
   else if (_tcsstr(Name, _T("prp_upper_")) == Name) {
     pWnd->SetVisible(KeyboardLayout == UPPERCASE);
-  } 
+  }
 
   if (key_filter) {
     const TCHAR* Text = pWnd->GetWndText();
@@ -59,6 +61,11 @@ void UpdateKeyLayout(WndForm* pForm) {
 
   if (key_filter) {
     key_filter->Update(edittext);
+  }
+
+  auto wpPast = pForm->FindByName(_T("prp_past"));
+  if (wpPast) {
+    wpPast->SetVisible(ClipboardAvailable());
   }
 
   auto wpText = dynamic_cast<WndProperty*>(pForm->FindByName(_T("prpText")));
@@ -234,6 +241,31 @@ static void OnHelpClicked(WindowControl* Sender) {
   }
 }
 
+static void OnPaste(WindowControl* Sender) {
+  PlayResource(TEXT("IDR_WAV_CLICK"));
+  if(!Sender) return;
+
+  tstring clipboard_text = GetClipboardData();
+  if (clipboard_text.empty()) {
+    return;
+  }
+
+  WndForm* pForm = Sender->GetParentWndForm();
+  if (first) {
+    ClearText(pForm);
+    first = false;
+  }
+
+  size_t available = std::size(edittext) - cursor;
+  if (available > 0) {
+    clipboard_text = std::regex_replace(clipboard_text, std::basic_regex<TCHAR>(_T("[\r\n]")), _T(" "));
+
+    lk::snprintf(&edittext[cursor], available, _T("%s"), clipboard_text.c_str());
+    cursor = _tcslen(edittext);
+  }
+  UpdateKeyLayout(pForm);
+}
+
 static CallBackTableEntry_t CallBackTable[] = {
   ClickNotifyCallbackEntry(OnKey),
   ClickNotifyCallbackEntry(OnClear),
@@ -244,6 +276,7 @@ static CallBackTableEntry_t CallBackTable[] = {
   ClickNotifyCallbackEntry(OnDate),
   ClickNotifyCallbackEntry(OnTime),
   ClickNotifyCallbackEntry(OnHelpClicked),
+  ClickNotifyCallbackEntry(OnPaste),
   EndCallBackEntry()
 };
 

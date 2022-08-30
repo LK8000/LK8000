@@ -20,6 +20,7 @@ class LK8000Activity {
   static jmethodID scan_qrcode_method;
   static jmethodID share_file_method;
   static jmethodID detect_keyboard_method;
+  static jmethodID get_clipboard_text_method;
   static LK8000Activity *activity_instance;
 
 
@@ -62,6 +63,8 @@ public:
   void ShareFile(const char *path);
 
   void DetectKeyboardModel();
+
+  std::string GetClipboardText();
 };
 
 

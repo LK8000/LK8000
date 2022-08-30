@@ -136,6 +136,14 @@ public:
     void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
 
+    void DrawBitmap(const RasterPoint& origin, const PixelSize& size, const LKBitmap& Bitmap) {
+        DrawBitmap(origin.x, origin.y, size.cx, size.cy, Bitmap);
+    }
+
+    void DrawBitmap(const PixelRect& rect, const LKBitmap& Bitmap) {
+        DrawBitmap(rect.GetOrigin(), rect.GetSize(), Bitmap);
+    }
+
     void Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect);
     void Polygon(const POINT *apt, int cpt);
 

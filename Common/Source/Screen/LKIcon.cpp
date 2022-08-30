@@ -26,10 +26,12 @@
 
 LKIcon& LKIcon::operator=(LKBitmap&& orig) { 
     _bitmap = std::forward<LKBitmap>(orig);
-    _size = _bitmap.GetSize();
+    if (_bitmap.IsDefined()) {
+        _size = _bitmap.GetSize();
 #ifndef ENABLE_OPENGL
-    _size.cx /= 2;
+        _size.cx /= 2;
 #endif
+    }
     return (*this); 
 }
 

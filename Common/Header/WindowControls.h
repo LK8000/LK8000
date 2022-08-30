@@ -992,6 +992,9 @@ class WndButton:public WindowControl{
   public:
     using ClickNotifyCallback_t = std::function<void(WndButton*)>;
 
+  protected:
+    void DrawPushButton(LKSurface& Surface);
+
   private:
 
     void Paint(LKSurface& Surface) override;

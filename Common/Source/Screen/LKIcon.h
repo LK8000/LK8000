@@ -35,6 +35,14 @@ public:
     }
     
     void Draw(LKSurface& Surface, const int x, const int y, const int cx, const int cy) const;
+
+    void Draw(LKSurface& Surface, const RasterPoint& origin, const PixelSize& size) const {
+        Draw(Surface, origin.x, origin.y, size.cx, size.cy);
+    }
+
+    void Draw(LKSurface& Surface, const PixelRect& rect) const {
+        Draw(Surface, rect.GetOrigin(), rect.GetSize());
+    }
     
     inline
     PixelSize GetSize() const { 

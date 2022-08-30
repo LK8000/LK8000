@@ -19,6 +19,7 @@ jmethodID LK8000Activity::check_permissions_method;
 jmethodID LK8000Activity::scan_qrcode_method;
 jmethodID LK8000Activity::share_file_method;
 jmethodID LK8000Activity::detect_keyboard_method;
+jmethodID LK8000Activity::get_clipboard_text_method;
 
 LK8000Activity* LK8000Activity::activity_instance = nullptr;
 
@@ -36,6 +37,9 @@ void LK8000Activity::Initialise(JNIEnv *env, jobject obj) {
 
   detect_keyboard_method = env->GetMethodID(cls, "detectKeyboardModel", "()V");
   assert(detect_keyboard_method);
+
+  get_clipboard_text_method = env->GetMethodID(cls, "getClipboardText", "()Ljava/lang/String;");
+  assert(get_clipboard_text_method);
 
   assert(activity_instance == nullptr); // memory leak;
   activity_instance = new LK8000Activity(env, obj);
@@ -100,6 +104,17 @@ void LK8000Activity::DetectKeyboardModel() {
   JNIEnv *env = Java::GetEnv();
   env->CallVoidMethod(obj, detect_keyboard_method);
 }
+
+std::string LK8000Activity::GetClipboardText() {
+  std::string clipbaord_text;
+  JNIEnv *env = Java::GetEnv();
+  auto str = static_cast<jstring>(env->CallObjectMethod(obj, get_clipboard_text_method));
+  if (str) {
+    clipbaord_text = Java::String::ToString(env, str);
+  }
+  return clipbaord_text;
+}
+
 
 extern "C"
 JNIEXPORT void JNICALL

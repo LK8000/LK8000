@@ -9,7 +9,8 @@
 #if !defined(BITMAPS_H)
 #define BITMAPS_H
 
-#include "Screen/LKBitmap.h"
+#include "Screen/LKIcon.h"
+#include "Sizes.h"
 
 #if defined(STATIC_BITMAPS)
 #define BEXTMODE
@@ -24,6 +25,8 @@ extern void LKLoadProfileBitmaps(void);
 extern void LKUnloadFixedBitmaps(void);
 extern void LKUnloadProfileBitmaps(void);
 #endif
+
+LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires = false);
 
 //
 // FIXED BITMAPS

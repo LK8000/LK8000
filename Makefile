@@ -1419,6 +1419,8 @@ SRC_FILES :=\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
 	$(SRC)/WindowControls.cpp \
+	$(SRC)/Form/WndButtonImage.cpp \
+	$(SRC)/Form/Clipboard.cpp \
 	$(SRC)/Geographic/GeoPoint.cpp \
 	$(SRC)/Geographic/TransverseMercator.cpp \
 	\
