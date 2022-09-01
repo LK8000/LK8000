@@ -42,7 +42,7 @@ unsigned monthtoseconds(bool isleap, unsigned month) {
       24 * 60 * 60 * (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30)
   };
 
-  if ((month > 11) || (month < 0)) {
+  if (month > 11) {
     return 0;
   }
   unsigned sec = _secondstomonth[month];
