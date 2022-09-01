@@ -433,8 +433,6 @@ void Globals_Init(void) {
   LKForceComPortReset=false;
   LKDoNotResetComms=false;
 
-  Experimental1=0, Experimental2=0;
-
   NearestAirspaceHDist=-1;
   NearestAirspaceVDist=0;
   _tcscpy(NearestAirspaceName,_T(""));

@@ -476,11 +476,6 @@ GEXTERN double	NearestAirspaceVDist;
 GEXTERN TCHAR    NearestAirspaceName[NAME_SIZE+1];
 GEXTERN TCHAR    NearestAirspaceVName[NAME_SIZE+1];
 
-// Ready to use for experiments
-GEXTERN double Experimental1;
-GEXTERN double Experimental2;
-
-
 #if defined(STATIC_GLOBALS)
 // task data
 Start_t StartPoints;

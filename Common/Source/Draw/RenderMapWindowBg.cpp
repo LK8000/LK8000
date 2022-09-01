@@ -137,9 +137,7 @@ QuickRedraw:
 
     bool terrainpainted = false;
 
-    if ((IsMultimapTerrain() && (DerivedDrawInfo.TerrainValid)
-            && RasterTerrain::isTerrainLoaded())
-            ) {
+    if ((IsMultimapTerrain() && (DerivedDrawInfo.TerrainValid) && RasterTerrain::isTerrainLoaded())) {
         // sunelevation is never used, it is still a todo in Terrain
         double sunelevation = 40.0;
         double sunazimuth = GetAzimuth(DrawInfo, DerivedDrawInfo);
@@ -187,14 +185,10 @@ QuickRedraw:
         DrawTopology(Surface, DrawRect, _Proj);
     } else {
         // If no topology wanted, but terrain painted, we paint only water stuff
-        if (terrainpainted) DrawTopology(Surface, DrawRect, _Proj, true);
+        if (terrainpainted) {
+            DrawTopology(Surface, DrawRect, _Proj, true);
+        }
     }
-#if 0
-    StartupStore(_T("... Experimental1=%.0f\n"), Experimental1);
-    StartupStore(_T("... Experimental2=%.0f\n"), Experimental2);
-    Experimental1 = 0.0;
-    Experimental2 = 0.0;
-#endif
 
     // Topology labels are printed first, using OLD wps positions from previous run!
     // Reset for topology labels decluttering engine occurs also in another place here!
