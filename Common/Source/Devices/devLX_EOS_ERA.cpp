@@ -1302,9 +1302,15 @@ BOOL DevLX_EOS_ERA::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
     {
       switch(iTmp)
       {
-        case 0:  SetDataText( d,_STF, _T("MANUAL ($LXWP3)"));
-        case 1:  SetDataText( d,_STF, _T("VARIO ($LXWP3)"));
-        case 2:  SetDataText( d,_STF, _T("SPEED ($LXWP3)"));
+        case 0:  
+          SetDataText( d,_STF, _T("MANUAL ($LXWP3)"));
+          break;
+        case 1:
+          SetDataText( d,_STF, _T("VARIO ($LXWP3)"));
+          break;
+        case 2:
+          SetDataText( d,_STF, _T("SPEED ($LXWP3)"));
+          break;
       }
     }
 
