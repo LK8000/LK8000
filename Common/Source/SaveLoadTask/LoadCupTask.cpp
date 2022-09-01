@@ -565,9 +565,12 @@ TCHAR szString[READLINE_LENGTH + 1];
       bClosedTask = true;
     }
 
-    NoPts-=1;
-    if(NoPts > 7) NoPts =7;
-    if(NoPts < 0) NoPts =0;
+    if (NoPts > 0) {
+        NoPts -= 1;
+    }
+    if(NoPts > 7) {
+        NoPts = 7;
+    }
     if(  szTaskStrings[ iNO_Tasks] != NULL)
     {
       if(bClosedTask)
