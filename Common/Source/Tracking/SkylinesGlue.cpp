@@ -26,14 +26,7 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
 
     const SkyLinesTracking::Data& data = GetSkyLinesData();
 
-    tstring pilote_name;
-
-    WithLock(data.mutex, [&]() {
-        auto it = data.user_names.find(pilot_id);
-        if (it != data.user_names.end()) {
-            pilote_name = it->second;
-        }
-    });
+    tstring pilote_name = WithLock(data.mutex, &SkyLinesTracking::Data::GetUserName, data, pilot_id);
 
     const ScopeLock protect(CritSec_FlightData);
 

@@ -90,6 +90,16 @@ struct Data {
   bool IsUserKnown(uint32_t id) const {
     return user_names.find(id) != user_names.end();
   }
+
+  gcc_pure
+  tstring GetUserName(uint32_t id) const {
+    tstring name;
+    auto it = user_names.find(id);
+    if (it != user_names.end()) {
+      name = it->second;
+    }
+    return name;
+  }
 };
 
 } /* namespace SkyLinesTracking */
