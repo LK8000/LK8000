@@ -37,18 +37,6 @@
  #endif
 #endif
 
-//
-// Choose the scale threshold for disabling shading. This happens at low zoom levels.
-// Values are in RealScale. Imperial and nautical distance units are using it too.
-// For CE it is also a matter of CPU, reducing calculations for low zoom.
-// For the rest of platforms, if using AUTOCONTRAST this value may be rised up to 18 or more.
-// 
-#ifdef UNDER_CE
-#define NOSHADING_REALSCALE  5.4  // After 7.5Km zoom
-#else
-#define NOSHADING_REALSCALE  14.3 // After 20Km  zoom 14.3
-#endif
-
 extern bool FastZoom;
 
 extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float light);
@@ -304,18 +292,12 @@ public:
         const size_t ixs = height_buffer->GetWidth();
         const size_t iys = height_buffer->GetHeight();
 
-        if (epx > min(ixs, iys) / 4) {
+        if (epx > min(ixs, iys) / 4U) {
             return false;
-        } else {
-            if (AutoContrast) {
-                if (MapWindow::zoom.RealScale() > 18) {
-                    return false;
-                }
-            } else {
-                if (MapWindow::zoom.RealScale() > NOSHADING_REALSCALE) {
-                    return false;
-                }
-            }
+        }
+
+        if (MapWindow::zoom.RealScale() > NoShadingScale()) {
+            return false;
         }
 
         return (Shading && terrain_doshading[TerrainRamp]);
@@ -968,6 +950,24 @@ public:
     }
 
 private:
+
+    inline
+    double NoShadingScale() const {
+        //
+        // Choose the scale threshold for disabling shading. This happens at low zoom levels.
+        // Values are in RealScale. Imperial and nautical distance units are using it too.
+        // For CE it is also a matter of CPU, reducing calculations for low zoom.
+        // For the rest of platforms, if using AUTOCONTRAST this value may be rised up to 18 or more.
+        // 
+#ifdef UNDER_CE
+        // After 7.5Km zoom
+        constexpr double NOSHADING_REALSCALE = 5.4;
+#else
+        // After 20Km  zoom 14.3
+        constexpr double NOSHADING_REALSCALE = 14.3;
+#endif
+        return AutoContrast ? 18.0 : NOSHADING_REALSCALE;
+    }
 
     inline 
     const BGRColor& GetColor(int16_t height, int mag = 0) const {
