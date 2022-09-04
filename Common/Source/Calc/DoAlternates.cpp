@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "CriticalSection.h"
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "Util/UTF8.hpp"
@@ -17,7 +16,7 @@
  * Colors VGR are used by DrawNearest &c.
  */
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
-   CScopeLock(LockTaskData, UnlockTaskData);
+  ScopeLock lock(CritSec_TaskData);
    
   // If flying an AAT and working on the RESWP_OPTIMIZED waypoint, then use
   // this "optimized" waypoint to store data for the AAT virtual waypoint.

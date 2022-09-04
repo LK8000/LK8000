@@ -13,7 +13,6 @@ $Id$
 #include "RGB.h"
 #include "LKObjects.h"
 #include "utils/2dpclip.h"
-#include "CriticalSection.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
 #include "Task/TaskRendererCircle.h"
@@ -442,11 +441,13 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
 
 void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
+  ScopeLock lock(CritSec_TaskData);
+
+
 int Active = ActiveTaskPoint;
 if(ValidTaskPoint(PanTaskEdit))
 Active = PanTaskEdit;
 static FAI_Sector FAI_TaskSectorCache[2];
-CScopeLock LockTask(LockTaskData, UnlockTaskData);
 
     /*******************************************************************************************************/
 int TaskPoints =0;

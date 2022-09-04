@@ -11,7 +11,6 @@
 #include "LKProcess.h"
 #include "DoInits.h"
 #include "Sound/Sound.h"
-#include "CriticalSection.h"
 #include "NavFunctions.h"
 #include "Waypointparser.h"
 #include "Library/TimeFunctions.h"
@@ -346,9 +345,8 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Calculated->FreeFlightStartQNH=Basic->Altitude;
   Calculated->FreeFlightStartQFE=gndAltitude;
 
-    { // all "WayPointList" change need to be protected by "LockTaskData"
-        CScopeLock Lock(LockTaskData, UnlockTaskData);
-
+  WithLock(CritSec_TaskData, [&]() {
+    // all "WayPointList" change need to be protected by "LockTaskData"
         WayPointList[RESWP_FREEFLY].Latitude = Basic->Latitude;
         WayPointList[RESWP_FREEFLY].Longitude = Basic->Longitude;
         WayPointList[RESWP_FREEFLY].Altitude = Basic->Altitude;
@@ -372,7 +370,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             Comment[99] = _T('\0'); // for safety
             SetWaypointComment(WayPointList[RESWP_FREEFLY], Comment);
         }
-    }
+  });
 
   ResetFreeFlightStats(Calculated);
   return true;

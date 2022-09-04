@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "McReady.h"
-#include "CriticalSection.h"
 #include "NavFunctions.h"
 
 void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
@@ -25,7 +24,7 @@ void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
 // This is also called by DoNearest and it is overwriting AltitudeRequired 
 double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
 
-  CScopeLock Lock(LockTaskData, UnlockTaskData);
+  ScopeLock lock(CritSec_TaskData);
     
   double altReqd;
   double wDistance, wBearing;

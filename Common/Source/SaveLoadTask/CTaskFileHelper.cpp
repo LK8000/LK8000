@@ -18,7 +18,6 @@
 #include "utils/stringext.h"
 #include "Waypointparser.h"
 #include "Util/UTF8.hpp"
-#include "CriticalSection.h"
 #include "utils/openzip.h"
 
 #include <fstream>
@@ -205,9 +204,10 @@ bool getLastTaskWayPointName(const xml_node* node, TCHAR (&lastWPname)[size]) {
 
 
 bool CTaskFileHelper::Load(const TCHAR* szFileName) {
-    CScopeLock LockTask(LockTaskData, UnlockTaskData);
     StartupStore(_T(". LoadTask : <%s>%s"), szFileName, NEWLINE);
     TCHAR taskFileName[MAX_PATH];
+
+    ScopeLock lock(CritSec_TaskData);
 
     ClearTask();
     if (FullResetAsked) {
@@ -659,9 +659,9 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
+    ScopeLock lock(CritSec_TaskData);
     if (WayPointList.empty()) return false; // this should never happen, but just to be safe...
 
-    CScopeLock LockTask(LockTaskData, UnlockTaskData);
     StartupStore(_T(". SaveTask : saving <%s>%s"), szFileName, NEWLINE);
     
     try {

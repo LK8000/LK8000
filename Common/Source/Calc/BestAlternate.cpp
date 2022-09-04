@@ -12,7 +12,6 @@
 #include "Calculations2.h"
 #include "Message.h"
 #include "Sound/Sound.h"
-#include "CriticalSection.h"
 #include "NavFunctions.h"
 #include "Radio.h"
 
