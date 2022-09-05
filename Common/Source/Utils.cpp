@@ -241,7 +241,7 @@ bool LockMode(const short lmode) {
 // Rotate flags: ALL ON, TASK, FAI, ALLOFF
 //
 
-void ToggleDrawTaskFAI(void) {
+void ToggleDrawTaskFAI() {
 
     // AllOn -> Task
     if (Flags_DrawTask && Flags_DrawFAI) {

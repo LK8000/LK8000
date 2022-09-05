@@ -866,7 +866,6 @@ SCREEN += \
 endif
 
 LIBRARY	:=\
-	$(LIB)/Crc.cpp\
 	$(LIB)/ColorFunctions.cpp \
 	$(LIB)/DirectoryFunctions.cpp \
 	$(LIB)/DrawFunctions.cpp \

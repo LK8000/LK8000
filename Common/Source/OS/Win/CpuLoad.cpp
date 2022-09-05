@@ -9,50 +9,6 @@
 #include "externs.h"
 #include "../CpuLoad.h"
 
-#if (WINDOWSPC>0)
-//typedef DWORD (_stdcall *GetIdleTimeProc) (void);
-//GetIdleTimeProc GetIdleTime;
-#endif
-
-#if DEBUG_MEM
-int MeasureCPULoad() {
-#if (WINDOWSPC>0) && !defined(__MINGW32__)
-  static bool init=false;
-  if (!init) {
-    // get the pointer to the function
-    GetIdleTime = (GetIdleTimeProc)
-      GetProcAddress(LoadLibrary(_T("coredll.dll")),
-		     _T("GetIdleTime"));
-    init=true;
-  }
-  if (!GetIdleTime) return 0;
-#endif
-
-  static int pi;
-  static int PercentIdle;
-  static int PercentLoad;
-  static bool start=true;
-  static DWORD dwStartTick;
-  static DWORD dwIdleSt;
-  static DWORD dwStopTick;
-  static DWORD dwIdleEd;
-  if (start) {
-    dwStartTick = GetTickCount();
-    dwIdleSt = GetIdleTime();
-  }
-  if (!start) {
-    dwStopTick = GetTickCount();
-    dwIdleEd = GetIdleTime();
-    LKASSERT((dwStopTick-dwStartTick)!=0);
-    pi = ((100 * (dwIdleEd - dwIdleSt))/(dwStopTick - dwStartTick));
-    PercentIdle = (PercentIdle+pi)/2;
-  }
-  start = !start;
-  PercentLoad = 100-PercentIdle;
-  return PercentLoad;
-}
-#endif
-
 #if !(WINDOWSPC>0)
 class GetCpuLoad_Singleton {
 public:

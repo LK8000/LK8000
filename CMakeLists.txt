@@ -311,7 +311,6 @@ add_library( LK8000 SHARED
     Common/Source/LKInterface/VirtualKeys.cpp
     Common/Source/LKInterface/CScreenOrientation.cpp
 
-    Common/Source/Library/Crc.cpp
     Common/Source/Library/ColorFunctions.cpp
     Common/Source/Library/DirectoryFunctions.cpp
     Common/Source/Library/DrawFunctions.cpp

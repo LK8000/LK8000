@@ -326,7 +326,7 @@ int GetVirtualWaypointMarkerSlot(void) {
 }
 
 
-void TaskStartMessage(void) {
+void TaskStartMessage() {
 
   TCHAR TempTime[40];
   TCHAR TempAlt[40];
@@ -352,7 +352,7 @@ void TaskStartMessage(void) {
   DoStatusMessage(MsgToken(692), TempAll);
 }
 
-void TaskFinishMessage(void) {
+void TaskFinishMessage() {
 
   TCHAR TempTime[40];
   TCHAR TempAlt[40];
