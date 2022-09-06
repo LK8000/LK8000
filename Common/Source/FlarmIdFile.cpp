@@ -30,6 +30,17 @@ std::string::const_iterator GetAsString(std::string::const_iterator it, size_t s
 
 } // namespace
 
+FlarmId::FlarmId(void)
+{
+	 id[0]       = _T('\0');
+   name[0]     = _T('\0');
+   airfield[0] = _T('\0');
+   type[0]     = _T('\0');
+   reg[0]      = _T('\0');
+   cn[0]       = _T('\0');
+   freq[0]     = _T('\0');
+}
+
 FlarmId::FlarmId(const std::string& string) {
   if(string.length() != 172) {
     throw std::runtime_error("invalid flarmnet record");
@@ -56,6 +67,135 @@ FlarmId::FlarmId(const std::string& string) {
     }
   }
 }
+
+
+
+
+
+
+
+void FlarmIdFile::ExtractParameter(const TCHAR *Source, 
+				  TCHAR *Destination, 
+				  int DesiredFieldNumber)
+{
+  int dest_index = 0;
+  int CurrentFieldNumber = 0;
+  int StringLength = _tcslen(Source);
+  const TCHAR *sptr = Source;
+  const TCHAR *eptr = Source+StringLength;
+
+  if (!Destination) return;
+
+  while( (CurrentFieldNumber < DesiredFieldNumber) && (sptr<eptr) )
+    {
+      if (*sptr == ','  )
+        {
+          CurrentFieldNumber++;
+        }
+      ++sptr;
+    }
+
+  Destination[0] = '\0'; // set to blank in case it's not found..
+
+  if ( CurrentFieldNumber == DesiredFieldNumber )
+    {
+      while( (sptr < eptr)    &&
+             (*sptr != ',') &&
+             (*sptr != '\0') )
+        {
+          Destination[dest_index] = *sptr;
+          ++sptr; 
+					if(Destination[dest_index] != '\'') // remove '
+	          ++dest_index;
+        }
+      Destination[dest_index] = '\0';
+    }
+}
+
+
+void FlarmIdFile::OGNIdFile(void) {
+
+  TCHAR OGNIdFileName[MAX_PATH] = _T("");
+  LocalPath(OGNIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
+
+  /*
+   * we can't use std::ifstream due to lack of unicode file name in mingw32
+   */
+  zzip_stream file(OGNIdFileName, "rt");
+  if (!file) {
+    LocalPath(OGNIdFileName, _T(LKD_CONF), _T("data.ogn"));
+    file.open(OGNIdFileName, "rt");
+  }
+  if (!file) {
+    return;
+  }
+
+
+  std::string src_line;
+  src_line.reserve(512);
+	unsigned int Doublicates= 0;
+	unsigned int InvalidIDs = 0;
+  std::istream stream(&file);
+  std::getline(stream, src_line); // skip first line
+  while (std::getline(stream, src_line)) {
+    try {
+
+      TCHAR *t_line = new TCHAR[src_line.size() + 1];
+
+      std::copy(src_line.begin(), src_line.end(), t_line);
+      t_line[src_line.size()] = '\0';
+      FlarmId *flarmId = new FlarmId();
+
+			ExtractParameter(t_line, flarmId->id, 1);
+		  ExtractParameter(t_line, flarmId->reg, 3);
+
+			uint32_t RadioId = flarmId->GetId();
+
+			if(_tcslen(flarmId->reg)==0) // valid registration?
+			{
+				_stprintf(flarmId->reg,_T("%X"),RadioId);
+				InvalidIDs++;
+			}
+
+			{
+			auto search = flarmIds.find(RadioId); 
+      if (search == flarmIds.end()) // already exists?
+			{
+				ExtractParameter(t_line, flarmId->type, 2);
+	      _stprintf(flarmId->name,_T("OGN: %X"),RadioId);
+				ExtractParameter(t_line, flarmId->cn, 4);
+/*
+
+		 	  StartupStore(_T("==== %s"),NEWLINE);
+ 		    StartupStore(_T("OGN %s%s"),t_line,NEWLINE);
+ 		    StartupStore(_T("OGN ID=%s%s"),flarmId->id,NEWLINE);
+ 		    StartupStore(_T("OGN Type=%s%s"),flarmId->type,NEWLINE);
+ 		    StartupStore(_T("OGN Name=%s%s"),flarmId->name,NEWLINE);
+ 		    StartupStore(_T("OGN CN=%s%s"),flarmId->cn,NEWLINE);
+
+*/
+        auto ib = flarmIds.insert(std::make_pair(RadioId, flarmId));     
+		    if (!ib.second) {
+          assert(false); // duplicated id ! invalid file ?
+          delete flarmId;
+        } 
+      }
+			else
+				Doublicates++;
+			}
+
+    } catch (std::runtime_error& e) {
+      StartupStore(_T("%s"), to_tstring(e.what()).c_str());
+    }
+  }
+	if (InvalidIDs > 0)
+	  StartupStore(_T(". found %u invalid IDs in OGN database %s"),InvalidIDs,NEWLINE);	
+	if (Doublicates > 0)
+	  StartupStore(_T(". found %u IDs also in OGN database -> ignored %s"),Doublicates,NEWLINE);
+}
+
+
+
 
 
 
@@ -94,6 +234,13 @@ FlarmIdFile::FlarmIdFile() {
       StartupStore(_T("%s"), to_tstring(e.what()).c_str());
     }
   }
+
+	unsigned int FlamnetCnt = (unsigned)flarmIds.size();
+	StartupStore(_T(". FLARMNET database, found %u IDs"), FlamnetCnt);
+  OGNIdFile();
+	StartupStore(_T(". OGN database, found additinal %u IDs"), flarmIds.size() - FlamnetCnt);
+
+	StartupStore(_T(". total %u Flarm device IDs found!"), flarmIds.size());
 }
 
 FlarmIdFile::~FlarmIdFile() {
