@@ -29,15 +29,16 @@ std::string::const_iterator GetAsString(std::string::const_iterator it, size_t s
   return it;
 }
 
-void ExtractParameter(const TCHAR* Source, TCHAR* Destination, int DesiredFieldNumber) {
+void ExtractOgnField(const tstring& Source, TCHAR* Destination, int DesiredFieldNumber) {
   int dest_index = 0;
   int CurrentFieldNumber = 0;
-  int StringLength = _tcslen(Source);
-  const TCHAR* sptr = Source;
-  const TCHAR* eptr = Source + StringLength;
 
-  if (!Destination)
+  auto sptr = Source.begin();
+  auto eptr = Source.end();
+
+  if (!Destination) {
     return;
+  }
 
   while ((CurrentFieldNumber < DesiredFieldNumber) && (sptr < eptr)) {
     if (*sptr == ',') {
@@ -118,7 +119,7 @@ void FlarmIdFile::LoadOgnDb() {
       tstring t_line = from_unknown_charset(src_line.c_str());
 
       TCHAR id[7] = {};
-      ExtractParameter(t_line.c_str(), id, 1);
+      ExtractOgnField(t_line, id, 1);
       uint32_t RadioId = _tcstoul(id, nullptr, 16);
 
       auto ib = flarmIds.emplace(RadioId, nullptr);
@@ -127,16 +128,16 @@ void FlarmIdFile::LoadOgnDb() {
         auto flarmId = std::make_unique<FlarmId>();
 
         _tcscpy(flarmId->id, id);
-        ExtractParameter(t_line.c_str(), flarmId->reg, 3);
+        ExtractOgnField(t_line, flarmId->reg, 3);
         if (_tcslen(flarmId->reg) == 0) {
           // reg empty use id...
           _stprintf(flarmId->reg, _T("%X"), RadioId);
           InvalidIDs++;
         }
 
-        ExtractParameter(t_line.c_str(), flarmId->type, 2);
+        ExtractOgnField(t_line, flarmId->type, 2);
         _stprintf(flarmId->name, _T("OGN: %X"), RadioId);
-        ExtractParameter(t_line.c_str(), flarmId->cn, 4);
+        ExtractOgnField(t_line, flarmId->cn, 4);
 
         DebugLog(_T("===="));
         DebugLog(_T("OGN %s"), t_line.c_str());
