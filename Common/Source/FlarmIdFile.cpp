@@ -216,7 +216,7 @@ const FlarmId* FlarmIdFile::GetFlarmIdItem(uint32_t id) const {
 
 const FlarmId* FlarmIdFile::GetFlarmIdItem(const TCHAR *cn) const {
   auto it = std::find_if(std::begin(flarmIds), std::end(flarmIds), [&](auto& item) {
-    return (_tcscmp(item.second->cn, cn) == 0);
+    return (item.second && _tcscmp(item.second->cn, cn) == 0);
   });
 
   if (it != flarmIds.end()) {
