@@ -30,17 +30,6 @@ std::string::const_iterator GetAsString(std::string::const_iterator it, size_t s
 
 } // namespace
 
-FlarmId::FlarmId(void)
-{
-	 id[0]       = _T('\0');
-   name[0]     = _T('\0');
-   airfield[0] = _T('\0');
-   type[0]     = _T('\0');
-   reg[0]      = _T('\0');
-   cn[0]       = _T('\0');
-   freq[0]     = _T('\0');
-}
-
 FlarmId::FlarmId(const std::string& string) {
   if(string.length() != 172) {
     throw std::runtime_error("invalid flarmnet record");

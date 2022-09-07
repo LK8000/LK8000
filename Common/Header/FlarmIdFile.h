@@ -15,8 +15,9 @@ constexpr size_t FLARMID_SIZE_FREQ = 8;
 
 
 struct FlarmId {
+  FlarmId() = default;
+
   explicit FlarmId(const std::string& string);
-  explicit FlarmId(void);
 
   TCHAR id[FLARMID_SIZE_ID] = _T("");
   TCHAR name[FLARMID_SIZE_NAME] = _T("");
