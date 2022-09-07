@@ -105,8 +105,8 @@ void FlarmIdFile::LoadOgnDb() {
 
   std::string src_line;
   src_line.reserve(512);
-	unsigned int Doublicates= 0;
-	unsigned int InvalidIDs = 0;
+  unsigned int Doublicates = 0;
+  unsigned int InvalidIDs = 0;
   std::istream stream(&file);
   std::getline(stream, src_line); // skip first line
   while (std::getline(stream, src_line)) {
@@ -117,7 +117,7 @@ void FlarmIdFile::LoadOgnDb() {
       ExtractParameter(t_line.c_str(), id, 1);
       uint32_t RadioId = _tcstoul(id, nullptr, 16);
 
-      auto ib = flarmIds.emplace(RadioId, nullptr); 
+      auto ib = flarmIds.emplace(RadioId, nullptr);
       if (ib.second) {
         // new item instead ?
         auto flarmId = std::make_unique<FlarmId>();
@@ -131,30 +131,29 @@ void FlarmIdFile::LoadOgnDb() {
         }
 
         ExtractParameter(t_line.c_str(), flarmId->type, 2);
-        _stprintf(flarmId->name,_T("OGN: %X"),RadioId);
+        _stprintf(flarmId->name, _T("OGN: %X"), RadioId);
         ExtractParameter(t_line.c_str(), flarmId->cn, 4);
 
         DebugLog(_T("===="));
         DebugLog(_T("OGN %s"), t_line.c_str());
-        DebugLog(_T("OGN ID=%s"),flarmId->id);
-        DebugLog(_T("OGN Type=%s"),flarmId->type);
-        DebugLog(_T("OGN Name=%s"),flarmId->name);
-        DebugLog(_T("OGN CN=%s"),flarmId->cn);
+        DebugLog(_T("OGN ID=%s"), flarmId->id);
+        DebugLog(_T("OGN Type=%s"), flarmId->type);
+        DebugLog(_T("OGN Name=%s"), flarmId->name);
+        DebugLog(_T("OGN CN=%s"), flarmId->cn);
 
-        ib.first->second = std::move(flarmId); // transfert flarmId ownership to 'flarmIds' map.
+        ib.first->second = std::move(flarmId);  // transfert flarmId ownership to 'flarmIds' map.
+      } else {
+        Doublicates++;
       }
-			else {
-				Doublicates++;
-			}
 
     } catch (std::exception& e) {
       StartupStore(_T("%s"), to_tstring(e.what()).c_str());
     }
   }
-	if (InvalidIDs > 0)
-	  StartupStore(_T(". found %u invalid IDs in OGN database %s"),InvalidIDs,NEWLINE);	
-	if (Doublicates > 0)
-	  StartupStore(_T(". found %u IDs also in OGN database -> ignored %s"),Doublicates,NEWLINE);
+  if (InvalidIDs > 0)
+    StartupStore(_T(". found %u invalid IDs in OGN database"),InvalidIDs);	
+  if (Doublicates > 0)
+    StartupStore(_T(". found %u IDs also in OGN database -> ignored"),Doublicates);
 }
 
 
