@@ -127,25 +127,25 @@ void FlarmIdFile::OGNIdFile(void) {
     try {
       tstring t_line = from_unknown_charset(src_line.c_str());
 
-      auto flarmId = std::make_unique<FlarmId>();
+      TCHAR id[7] = {};
+      ExtractParameter(t_line.c_str(), id, 1);
+      uint32_t RadioId = _tcstoul(id, nullptr, 16);
 
-      ExtractParameter(t_line.c_str(), flarmId->id, 1);
-      ExtractParameter(t_line.c_str(), flarmId->reg, 3);
+      auto ib = flarmIds.emplace(RadioId, nullptr); 
+      if (ib.second) {
+        // new item instead ?
+        auto flarmId = std::make_unique<FlarmId>();
 
-			uint32_t RadioId = flarmId->GetId();
+        _tcscpy(flarmId->id, id);
+        ExtractParameter(t_line.c_str(), flarmId->reg, 3);
+        if (_tcslen(flarmId->reg) == 0) {
+          // reg empty use id...
+          _stprintf(flarmId->reg, _T("%X"), RadioId);
+          InvalidIDs++;
+        }
 
-			if(_tcslen(flarmId->reg)==0) // valid registration?
-			{
-				_stprintf(flarmId->reg,_T("%X"),RadioId);
-				InvalidIDs++;
-			}
-
-			{
-			auto search = flarmIds.find(RadioId); 
-      if (search == flarmIds.end()) // already exists?
-			{
         ExtractParameter(t_line.c_str(), flarmId->type, 2);
-	      _stprintf(flarmId->name,_T("OGN: %X"),RadioId);
+        _stprintf(flarmId->name,_T("OGN: %X"),RadioId);
         ExtractParameter(t_line.c_str(), flarmId->cn, 4);
 
         DebugLog(_T("===="));
@@ -155,10 +155,9 @@ void FlarmIdFile::OGNIdFile(void) {
         DebugLog(_T("OGN Name=%s"),flarmId->name);
         DebugLog(_T("OGN CN=%s"),flarmId->cn);
 
-        auto ib = flarmIds.emplace(RadioId, std::move(flarmId));
-		    assert(ib.second); // duplicated id ! invalid file ?
+        ib.first->second = std::move(flarmId); // transfert flarmId ownership to 'flarmIds' map.
       }
-			else
+			else {
 				Doublicates++;
 			}
 
