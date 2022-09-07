@@ -139,13 +139,6 @@ void FlarmIdFile::LoadOgnDb() {
         _stprintf(flarmId->name, _T("OGN: %X"), RadioId);
         ExtractOgnField(t_line, flarmId->cn, 4);
 
-        DebugLog(_T("===="));
-        DebugLog(_T("OGN %s"), t_line.c_str());
-        DebugLog(_T("OGN ID=%s"), flarmId->id);
-        DebugLog(_T("OGN Type=%s"), flarmId->type);
-        DebugLog(_T("OGN Name=%s"), flarmId->name);
-        DebugLog(_T("OGN CN=%s"), flarmId->cn);
-
         ib.first->second = std::move(flarmId);  // transfert flarmId ownership to 'flarmIds' map.
       } else {
         Doublicates++;
