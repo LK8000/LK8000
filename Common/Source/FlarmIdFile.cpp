@@ -105,16 +105,12 @@ void FlarmIdFile::ExtractParameter(const TCHAR *Source,
 void FlarmIdFile::OGNIdFile(void) {
 
   TCHAR OGNIdFileName[MAX_PATH] = _T("");
-  LocalPath(OGNIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
+  LocalPath(OGNIdFileName, _T(LKD_CONF), _T("data.ogn"));
 
   /*
    * we can't use std::ifstream due to lack of unicode file name in mingw32
    */
   zzip_stream file(OGNIdFileName, "rt");
-  if (!file) {
-    LocalPath(OGNIdFileName, _T(LKD_CONF), _T("data.ogn"));
-    file.open(OGNIdFileName, "rt");
-  }
   if (!file) {
     return;
   }
