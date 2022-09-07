@@ -108,9 +108,13 @@ void FlarmIdFile::LoadOgnDb() {
   unsigned int Doublicates = 0;
   unsigned int InvalidIDs = 0;
   std::istream stream(&file);
-  std::getline(stream, src_line); // skip first line
   while (std::getline(stream, src_line)) {
     try {
+
+      if (src_line.empty() || src_line.front() == '#') {
+        continue; // skip empty line and comments
+      }
+
       tstring t_line = from_unknown_charset(src_line.c_str());
 
       TCHAR id[7] = {};
