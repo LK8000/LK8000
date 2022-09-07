@@ -8,6 +8,7 @@
 #include "FlarmIdFile.h"
 #include "utils/array_back_insert_iterator.h"
 #include "utils/zzip_stream.h"
+#include "utils/charset_helper.h"
 #include <iostream>
 
 namespace {
@@ -124,16 +125,12 @@ void FlarmIdFile::OGNIdFile(void) {
   std::getline(stream, src_line); // skip first line
   while (std::getline(stream, src_line)) {
     try {
-
-      TCHAR *t_line = new TCHAR[src_line.size() + 1];
-
-      std::copy(src_line.begin(), src_line.end(), t_line);
-      t_line[src_line.size()] = '\0';
+      tstring t_line = from_unknown_charset(src_line.c_str());
 
       auto flarmId = std::make_unique<FlarmId>();
 
-			ExtractParameter(t_line, flarmId->id, 1);
-		  ExtractParameter(t_line, flarmId->reg, 3);
+      ExtractParameter(t_line.c_str(), flarmId->id, 1);
+      ExtractParameter(t_line.c_str(), flarmId->reg, 3);
 
 			uint32_t RadioId = flarmId->GetId();
 
@@ -147,19 +144,17 @@ void FlarmIdFile::OGNIdFile(void) {
 			auto search = flarmIds.find(RadioId); 
       if (search == flarmIds.end()) // already exists?
 			{
-				ExtractParameter(t_line, flarmId->type, 2);
+        ExtractParameter(t_line.c_str(), flarmId->type, 2);
 	      _stprintf(flarmId->name,_T("OGN: %X"),RadioId);
-				ExtractParameter(t_line, flarmId->cn, 4);
-/*
+        ExtractParameter(t_line.c_str(), flarmId->cn, 4);
 
-		 	  StartupStore(_T("==== %s"),NEWLINE);
- 		    StartupStore(_T("OGN %s%s"),t_line,NEWLINE);
- 		    StartupStore(_T("OGN ID=%s%s"),flarmId->id,NEWLINE);
- 		    StartupStore(_T("OGN Type=%s%s"),flarmId->type,NEWLINE);
- 		    StartupStore(_T("OGN Name=%s%s"),flarmId->name,NEWLINE);
- 		    StartupStore(_T("OGN CN=%s%s"),flarmId->cn,NEWLINE);
+        DebugLog(_T("===="));
+        DebugLog(_T("OGN %s"), t_line.c_str());
+        DebugLog(_T("OGN ID=%s"),flarmId->id);
+        DebugLog(_T("OGN Type=%s"),flarmId->type);
+        DebugLog(_T("OGN Name=%s"),flarmId->name);
+        DebugLog(_T("OGN CN=%s"),flarmId->cn);
 
-*/
         auto ib = flarmIds.emplace(RadioId, std::move(flarmId));
 		    assert(ib.second); // duplicated id ! invalid file ?
       }
