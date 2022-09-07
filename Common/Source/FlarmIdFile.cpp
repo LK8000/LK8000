@@ -89,7 +89,7 @@ FlarmId::FlarmId(const std::string& string) {
 }
 
 
-void FlarmIdFile::OGNIdFile(void) {
+void FlarmIdFile::LoadOgnDb() {
 
   TCHAR OGNIdFileName[MAX_PATH] = _T("");
   LocalPath(OGNIdFileName, _T(LKD_CONF), _T("data.ogn"));
@@ -194,7 +194,7 @@ FlarmIdFile::FlarmIdFile() {
 
 	unsigned int FlamnetCnt = (unsigned)flarmIds.size();
 	StartupStore(_T(". FLARMNET database, found %u IDs"), FlamnetCnt);
-  OGNIdFile();
+  LoadOgnDb();
 	StartupStore(_T(". OGN database, found additinal %u IDs"), flarmIds.size() - FlamnetCnt);
 
 	StartupStore(_T(". total %u Flarm device IDs found!"), flarmIds.size());

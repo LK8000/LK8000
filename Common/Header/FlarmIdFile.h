@@ -39,12 +39,11 @@ class FlarmIdFile
 private:
   FlarmIdMap flarmIds;
 
+  void LoadOgnDb();
+
 public:
   FlarmIdFile();
   ~FlarmIdFile();
-
-  void OGNIdFile(void);
-
 
   size_t Count() const {
     return flarmIds.size();
