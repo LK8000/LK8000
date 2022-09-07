@@ -29,6 +29,36 @@ std::string::const_iterator GetAsString(std::string::const_iterator it, size_t s
   return it;
 }
 
+void ExtractParameter(const TCHAR* Source, TCHAR* Destination, int DesiredFieldNumber) {
+  int dest_index = 0;
+  int CurrentFieldNumber = 0;
+  int StringLength = _tcslen(Source);
+  const TCHAR* sptr = Source;
+  const TCHAR* eptr = Source + StringLength;
+
+  if (!Destination)
+    return;
+
+  while ((CurrentFieldNumber < DesiredFieldNumber) && (sptr < eptr)) {
+    if (*sptr == ',') {
+      CurrentFieldNumber++;
+    }
+    ++sptr;
+  }
+
+  Destination[0] = '\0';  // set to blank in case it's not found..
+
+  if (CurrentFieldNumber == DesiredFieldNumber) {
+    while ((sptr < eptr) && (*sptr != ',') && (*sptr != '\0')) {
+      Destination[dest_index] = *sptr;
+      ++sptr;
+      if (Destination[dest_index] != '\'')  // remove '
+        ++dest_index;
+    }
+    Destination[dest_index] = '\0';
+  }
+}
+
 } // namespace
 
 FlarmId::FlarmId(const std::string& string) {
@@ -56,50 +86,6 @@ FlarmId::FlarmId(const std::string& string) {
       cn[3] = _T('\0');
     }
   }
-}
-
-
-
-
-
-
-
-void FlarmIdFile::ExtractParameter(const TCHAR *Source, 
-				  TCHAR *Destination, 
-				  int DesiredFieldNumber)
-{
-  int dest_index = 0;
-  int CurrentFieldNumber = 0;
-  int StringLength = _tcslen(Source);
-  const TCHAR *sptr = Source;
-  const TCHAR *eptr = Source+StringLength;
-
-  if (!Destination) return;
-
-  while( (CurrentFieldNumber < DesiredFieldNumber) && (sptr<eptr) )
-    {
-      if (*sptr == ','  )
-        {
-          CurrentFieldNumber++;
-        }
-      ++sptr;
-    }
-
-  Destination[0] = '\0'; // set to blank in case it's not found..
-
-  if ( CurrentFieldNumber == DesiredFieldNumber )
-    {
-      while( (sptr < eptr)    &&
-             (*sptr != ',') &&
-             (*sptr != '\0') )
-        {
-          Destination[dest_index] = *sptr;
-          ++sptr; 
-					if(Destination[dest_index] != '\'') // remove '
-	          ++dest_index;
-        }
-      Destination[dest_index] = '\0';
-    }
 }
 
 

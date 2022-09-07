@@ -43,10 +43,6 @@ public:
   FlarmIdFile();
   ~FlarmIdFile();
 
-    void ExtractParameter(const TCHAR *Source, 
-				  TCHAR *Destination, 
-				  int DesiredFieldNumber);
-
   void OGNIdFile(void);
 
 
