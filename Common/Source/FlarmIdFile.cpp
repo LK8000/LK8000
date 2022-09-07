@@ -8,6 +8,7 @@
 #include "FlarmIdFile.h"
 #include "utils/array_back_insert_iterator.h"
 #include "utils/zzip_stream.h"
+#include "utils/charset_helper.h"
 #include <iostream>
 
 namespace {
@@ -26,6 +27,37 @@ std::string::const_iterator GetAsString(std::string::const_iterator it, size_t s
     *end = _T('\0');
   }
   return it;
+}
+
+void ExtractOgnField(const tstring& Source, TCHAR* Destination, int DesiredFieldNumber) {
+  int dest_index = 0;
+  int CurrentFieldNumber = 0;
+
+  auto sptr = Source.begin();
+  auto eptr = Source.end();
+
+  if (!Destination) {
+    return;
+  }
+
+  while ((CurrentFieldNumber < DesiredFieldNumber) && (sptr < eptr)) {
+    if (*sptr == ',') {
+      CurrentFieldNumber++;
+    }
+    ++sptr;
+  }
+
+  Destination[0] = '\0';  // set to blank in case it's not found..
+
+  if (CurrentFieldNumber == DesiredFieldNumber) {
+    while ((sptr < eptr) && (*sptr != ',') && (*sptr != '\0')) {
+      Destination[dest_index] = *sptr;
+      ++sptr;
+      if (Destination[dest_index] != '\'')  // remove '
+        ++dest_index;
+    }
+    Destination[dest_index] = '\0';
+  }
 }
 
 } // namespace
@@ -58,8 +90,72 @@ FlarmId::FlarmId(const std::string& string) {
 }
 
 
+void FlarmIdFile::LoadOgnDb() {
 
-FlarmIdFile::FlarmIdFile() {
+  TCHAR OGNIdFileName[MAX_PATH] = _T("");
+  LocalPath(OGNIdFileName, _T(LKD_CONF), _T("data.ogn"));
+
+  /*
+   * we can't use std::ifstream due to lack of unicode file name in mingw32
+   */
+  zzip_stream file(OGNIdFileName, "rt");
+  if (!file) {
+    return;
+  }
+
+
+  std::string src_line;
+  src_line.reserve(512);
+  unsigned int Doublicates = 0;
+  unsigned int InvalidIDs = 0;
+  std::istream stream(&file);
+  while (std::getline(stream, src_line)) {
+    try {
+
+      if (src_line.empty() || src_line.front() == '#') {
+        continue; // skip empty line and comments
+      }
+
+      tstring t_line = from_unknown_charset(src_line.c_str());
+
+      TCHAR id[7] = {};
+      ExtractOgnField(t_line, id, 1);
+      uint32_t RadioId = _tcstoul(id, nullptr, 16);
+
+      auto ib = flarmIds.emplace(RadioId, nullptr);
+      if (ib.second) {
+        // new item instead ?
+        auto flarmId = std::make_unique<FlarmId>();
+
+        _tcscpy(flarmId->id, id);
+        ExtractOgnField(t_line, flarmId->reg, 3);
+        if (_tcslen(flarmId->reg) == 0) {
+          // reg empty use id...
+          _stprintf(flarmId->reg, _T("%X"), RadioId);
+          InvalidIDs++;
+        }
+
+        ExtractOgnField(t_line, flarmId->type, 2);
+        _stprintf(flarmId->name, _T("OGN: %X"), RadioId);
+        ExtractOgnField(t_line, flarmId->cn, 4);
+
+        ib.first->second = std::move(flarmId);  // transfert flarmId ownership to 'flarmIds' map.
+      } else {
+        Doublicates++;
+      }
+
+    } catch (std::exception& e) {
+      StartupStore(_T("%s"), to_tstring(e.what()).c_str());
+    }
+  }
+  if (InvalidIDs > 0)
+    StartupStore(_T(". found %u invalid IDs in OGN database"),InvalidIDs);	
+  if (Doublicates > 0)
+    StartupStore(_T(". found %u IDs also in OGN database -> ignored"),Doublicates);
+}
+
+
+void FlarmIdFile::LoadFlarmnetDb() {
 
   TCHAR flarmIdFileName[MAX_PATH] = _T("");
   LocalPath(flarmIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
@@ -72,28 +168,35 @@ FlarmIdFile::FlarmIdFile() {
     LocalPath(flarmIdFileName, _T(LKD_CONF), _T("data.fln"));
     file.open(flarmIdFileName, "rt");
   }
-  if (!file) {
-    return;
-  }
+  if (file) {
+    std::string src_line;
+    src_line.reserve(173);
 
-
-  std::string src_line;
-  src_line.reserve(173);
-
-  std::istream stream(&file);
-  std::getline(stream, src_line); // skip first line
-  while (std::getline(stream, src_line)) {
-    try {
-      FlarmId *flarmId = new FlarmId(src_line);
-      auto ib = flarmIds.insert(std::make_pair(flarmId->GetId(), flarmId));
-      if (!ib.second) {
-        assert(false); // duplicated id ! invalid file ?
-        delete flarmId;
+    std::istream stream(&file);
+    std::getline(stream, src_line); // skip first line
+    while (std::getline(stream, src_line)) {
+      try {
+        auto flarmId = std::make_unique<FlarmId>(src_line);
+        auto ib = flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
+        assert(ib.second); // duplicated id ! invalid file ?
+      } catch (std::exception& e) {
+        StartupStore(_T("%s"), to_tstring(e.what()).c_str());
       }
-    } catch (std::runtime_error& e) {
-      StartupStore(_T("%s"), to_tstring(e.what()).c_str());
     }
   }
+}
+
+FlarmIdFile::FlarmIdFile() {
+
+  LoadFlarmnetDb();
+  auto FlamnetCnt = static_cast<unsigned>(flarmIds.size());
+  StartupStore(_T(". FLARMNET database, found %u IDs"), FlamnetCnt);
+
+  LoadOgnDb();
+  auto OgnCnt = static_cast<unsigned>(flarmIds.size() - FlamnetCnt);
+  StartupStore(_T(". OGN database, found additinal %u IDs"), OgnCnt);
+
+  StartupStore(_T(". total %u Flarm device IDs found!"), static_cast<unsigned>(flarmIds.size()));
 }
 
 FlarmIdFile::~FlarmIdFile() {
@@ -110,7 +213,7 @@ const FlarmId* FlarmIdFile::GetFlarmIdItem(uint32_t id) const {
 
 const FlarmId* FlarmIdFile::GetFlarmIdItem(const TCHAR *cn) const {
   auto it = std::find_if(std::begin(flarmIds), std::end(flarmIds), [&](auto& item) {
-    return (_tcscmp(item.second->cn, cn) == 0);
+    return (item.second && _tcscmp(item.second->cn, cn) == 0);
   });
 
   if (it != flarmIds.end()) {

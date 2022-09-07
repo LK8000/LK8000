@@ -47,7 +47,7 @@ void OpenFLARMDetails() {
 
   flarmnet_database = std::make_unique<FlarmIdFile>();
 
-  StartupStore(_T(". FLARMNET database, found %u IDs"), (unsigned)flarmnet_database->Count());
+
 
   TCHAR filename[MAX_PATH];
   LocalPath(filename,TEXT(LKD_CONF),_T(LKF_FLARMIDS));

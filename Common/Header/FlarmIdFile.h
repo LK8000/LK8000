@@ -15,6 +15,8 @@ constexpr size_t FLARMID_SIZE_FREQ = 8;
 
 
 struct FlarmId {
+  FlarmId() = default;
+
   explicit FlarmId(const std::string& string);
 
   TCHAR id[FLARMID_SIZE_ID] = _T("");
@@ -36,6 +38,9 @@ class FlarmIdFile
 {
 private:
   FlarmIdMap flarmIds;
+
+  void LoadFlarmnetDb();
+  void LoadOgnDb();
 
 public:
   FlarmIdFile();
