@@ -190,13 +190,16 @@ void FlarmIdFile::LoadFlarmnetDb() {
 }
 
 FlarmIdFile::FlarmIdFile() {
-  LoadFlarmnetDb();
-	unsigned int FlamnetCnt = (unsigned)flarmIds.size();
-	StartupStore(_T(". FLARMNET database, found %u IDs"), FlamnetCnt);
-  LoadOgnDb();
-	StartupStore(_T(". OGN database, found additinal %u IDs"), flarmIds.size() - FlamnetCnt);
 
-	StartupStore(_T(". total %u Flarm device IDs found!"), flarmIds.size());
+  LoadFlarmnetDb();
+  auto FlamnetCnt = static_cast<unsigned>(flarmIds.size());
+  StartupStore(_T(". FLARMNET database, found %u IDs"), FlamnetCnt);
+
+  LoadOgnDb();
+  auto OgnCnt = static_cast<unsigned>(flarmIds.size() - FlamnetCnt);
+  StartupStore(_T(". OGN database, found additinal %u IDs"), OgnCnt);
+
+  StartupStore(_T(". total %u Flarm device IDs found!"), static_cast<unsigned>(flarmIds.size()));
 }
 
 FlarmIdFile::~FlarmIdFile() {
