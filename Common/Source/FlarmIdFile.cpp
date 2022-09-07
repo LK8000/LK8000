@@ -190,23 +190,20 @@ FlarmIdFile::FlarmIdFile() {
     LocalPath(flarmIdFileName, _T(LKD_CONF), _T("data.fln"));
     file.open(flarmIdFileName, "rt");
   }
-  if (!file) {
-    return;
-  }
+  if (file) {
+    std::string src_line;
+    src_line.reserve(173);
 
-
-  std::string src_line;
-  src_line.reserve(173);
-
-  std::istream stream(&file);
-  std::getline(stream, src_line); // skip first line
-  while (std::getline(stream, src_line)) {
-    try {
-      auto flarmId = std::make_unique<FlarmId>(src_line);
-      auto ib = flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
-      assert(ib.second); // duplicated id ! invalid file ?
-    } catch (std::exception& e) {
-      StartupStore(_T("%s"), to_tstring(e.what()).c_str());
+    std::istream stream(&file);
+    std::getline(stream, src_line); // skip first line
+    while (std::getline(stream, src_line)) {
+      try {
+        auto flarmId = std::make_unique<FlarmId>(src_line);
+        auto ib = flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
+        assert(ib.second); // duplicated id ! invalid file ?
+      } catch (std::exception& e) {
+        StartupStore(_T("%s"), to_tstring(e.what()).c_str());
+      }
     }
   }
 
