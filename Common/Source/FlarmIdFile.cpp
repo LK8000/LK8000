@@ -158,11 +158,7 @@ void FlarmIdFile::LoadOgnDb() {
 }
 
 
-
-
-
-
-FlarmIdFile::FlarmIdFile() {
+void FlarmIdFile::LoadFlarmnetDb() {
 
   TCHAR flarmIdFileName[MAX_PATH] = _T("");
   LocalPath(flarmIdFileName, _T(LKD_CONF), _T(LKF_FLARMNET));
@@ -191,7 +187,10 @@ FlarmIdFile::FlarmIdFile() {
       }
     }
   }
+}
 
+FlarmIdFile::FlarmIdFile() {
+  LoadFlarmnetDb();
 	unsigned int FlamnetCnt = (unsigned)flarmIds.size();
 	StartupStore(_T(". FLARMNET database, found %u IDs"), FlamnetCnt);
   LoadOgnDb();

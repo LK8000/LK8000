@@ -39,6 +39,7 @@ class FlarmIdFile
 private:
   FlarmIdMap flarmIds;
 
+  void LoadFlarmnetDb();
   void LoadOgnDb();
 
 public:
