@@ -133,7 +133,8 @@ void FlarmIdFile::OGNIdFile(void) {
 
       std::copy(src_line.begin(), src_line.end(), t_line);
       t_line[src_line.size()] = '\0';
-      FlarmId *flarmId = new FlarmId();
+
+      auto flarmId = std::make_unique<FlarmId>();
 
 			ExtractParameter(t_line, flarmId->id, 1);
 		  ExtractParameter(t_line, flarmId->reg, 3);
@@ -163,17 +164,14 @@ void FlarmIdFile::OGNIdFile(void) {
  		    StartupStore(_T("OGN CN=%s%s"),flarmId->cn,NEWLINE);
 
 */
-        auto ib = flarmIds.insert(std::make_pair(RadioId, flarmId));     
-		    if (!ib.second) {
-          assert(false); // duplicated id ! invalid file ?
-          delete flarmId;
-        } 
+        auto ib = flarmIds.emplace(RadioId, std::move(flarmId));
+		    assert(ib.second); // duplicated id ! invalid file ?
       }
 			else
 				Doublicates++;
 			}
 
-    } catch (std::runtime_error& e) {
+    } catch (std::exception& e) {
       StartupStore(_T("%s"), to_tstring(e.what()).c_str());
     }
   }
@@ -213,13 +211,10 @@ FlarmIdFile::FlarmIdFile() {
   std::getline(stream, src_line); // skip first line
   while (std::getline(stream, src_line)) {
     try {
-      FlarmId *flarmId = new FlarmId(src_line);
-      auto ib = flarmIds.insert(std::make_pair(flarmId->GetId(), flarmId));
-      if (!ib.second) {
-        assert(false); // duplicated id ! invalid file ?
-        delete flarmId;
-      }
-    } catch (std::runtime_error& e) {
+      auto flarmId = std::make_unique<FlarmId>(src_line);
+      auto ib = flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
+      assert(ib.second); // duplicated id ! invalid file ?
+    } catch (std::exception& e) {
       StartupStore(_T("%s"), to_tstring(e.what()).c_str());
     }
   }
