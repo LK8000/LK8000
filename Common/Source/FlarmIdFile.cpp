@@ -177,8 +177,7 @@ void FlarmIdFile::LoadFlarmnetDb() {
     while (std::getline(stream, src_line)) {
       try {
         auto flarmId = std::make_unique<FlarmId>(src_line);
-        auto ib = flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
-        assert(ib.second); // duplicated id ! invalid file ?
+        flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
       } catch (std::exception& e) {
         StartupStore(_T("%s"), to_tstring(e.what()).c_str());
       }
