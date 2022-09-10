@@ -26,11 +26,11 @@ Copyright_License {
 #ifdef HAVE_CPU_FREQUENCY
 
 #include "OS/FileUtil.hpp"
+#include "Thread/Mutex.hpp"
 
-#include <atomic>
+namespace {
 
-static bool
-SetCPUFrequencyGovernor(const char *governor)
+bool SetCPUFrequencyGovernor(const char *governor)
 {
 #ifdef __linux__
   return File::WriteExisting("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
@@ -40,18 +40,24 @@ SetCPUFrequencyGovernor(const char *governor)
 #endif
 }
 
-static std::atomic_uint cpu_lock;
+Mutex mtx; 
+unsigned cpu_lock;
+
+}
 
 void
 LockCPU()
 {
-  if (cpu_lock++ == 0)
+  ScopeLock lock(mtx);
+  if (cpu_lock++ == 0) {
     SetCPUFrequencyGovernor("performance");
+  }
 }
 
 void
 UnlockCPU()
 {
+  ScopeLock lock(mtx);
   if (cpu_lock-- == 1)
     SetCPUFrequencyGovernor("powersave");
 }
