@@ -200,15 +200,8 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
 
   const json::value& sss = task_json.get("sss");
   if (sss.is<json::object>()) {
-    const json::value& direction = sss.get("direction"); // string - one of "ENTER" / "EXIT", required
-    const std::string direction_str = direction.get<std::string>();
-    if (direction_str == "ENTER") {
-      Task[0].OutCircle = false;
-      PGStartOut = true;
-    } else if (direction_str == "EXIT") {
-      Task[0].OutCircle = true;
-      PGStartOut = false;
-    }
+    Task[0].OutCircle = false;
+    PGStartOut = true;
 
     const json::value& type = sss.get("type"); // string - one of "RACE" / "ELAPSED-TIME", required
     bool elapsed_time = (type.is<std::string>() && type.get<std::string>() == "ELAPSED-TIME");
@@ -302,18 +295,8 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
 
   const json::value& sss = task_json.get("s");
   if (sss.is<json::object>()) {
-    const json::value& direction = sss.get("d"); // number, required, one of 1 (ENTRY), 2 (EXIT)
-    switch(static_cast<int>(direction.get<double>())) {
-      default:
-      case 1:
-        Task[0].OutCircle = false;
-        PGStartOut = true;
-        break;
-      case 2:
-        Task[0].OutCircle = true;
-        PGStartOut = false;
-        break;
-    }
+    Task[0].OutCircle = false;
+    PGStartOut = true;
 
     const json::value& type = sss.get("t"); // number, required, one of 1 (RACE), 2 (ELAPSED-TIME)
     bool elapsed_time = (type.is<double>() && static_cast<int>(type.get<double>()) == 2);
