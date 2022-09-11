@@ -158,10 +158,6 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
   for (const auto& tp : turnpoints.get<picojson::array>()) {
 
     waypoint_helper newPoint(tp.get("waypoint"));
-    task_it->Index = FindOrAddWaypoint(&newPoint, false);
-
-    task_it->AATType = CIRCLE;
-    task_it->AATCircleRadius = tp.get("radius").get<double>();
 
     const json::value& type = tp.get("type"); // TAKEOFF / SSS / ESS
     if (type.is<std::string>()) {
@@ -175,7 +171,7 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
         assert(std::distance(task_it, std::next(std::begin(Task))) <= 1);
 
         StartLine = 0; // CIRCLE
-        StartRadius = task_it->AATCircleRadius;
+        StartRadius = tp.get("radius").get<double>();
 
         task_it = std::begin(Task); // always start task with Start of Speed Turnpoint
         task_it->AATType = CIRCLE;
@@ -183,8 +179,15 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
       }
       else if (type_str == "ESS") {
         task_it->AATType = 3; // ESS_CIRCLE;
+      } else {
+        task_it->AATType = CIRCLE;
       }
+    } else {
+      task_it->AATType = CIRCLE;
     }
+  
+    task_it->Index = FindOrAddWaypoint(&newPoint, false);
+    task_it->AATCircleRadius = tp.get("radius").get<double>();
 
     ++task_it;
   }
@@ -308,7 +311,7 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
   if(task_it != std::begin(Task)) { // Empty task ??
     auto goal_tp = std::prev(task_it);
     FinishRadius = goal_tp->AATCircleRadius;
-    FinishLine = 0;
+    FinishLine = 0; // CIRCLE
 
     const json::value& goal = task_json.get("g");
     if (goal.is<json::object>()) {
