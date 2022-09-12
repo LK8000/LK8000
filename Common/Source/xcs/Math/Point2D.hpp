@@ -155,4 +155,16 @@ P operator/(P point, V value)
   return { point.x / value, point.y / value };
 }
 
+/**
+ * rotate point by 90° counter clockwise around oringin 
+ */
+template<typename P,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_arithmetic_v<decltype(P::y)>>>
+inline 
+P Rotate90(P p)
+{
+  return { -p.y, p.x };
+}
+
 #endif
