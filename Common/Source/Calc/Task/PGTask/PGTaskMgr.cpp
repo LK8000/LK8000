@@ -146,7 +146,8 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
     }
 
     // Calc Cross Dir Vector
-    ProjPt InB, OutB;
+    ProjPt InB = { 0, 0 };
+    ProjPt OutB = { 0, 0 };
     if (ValidTaskPointFast(NextIdx)) {
         OutB = m_Projection->Forward(GetTurnpointPosition(TskIdx));
         OutB = OutB - pTskPt->m_Center;
@@ -182,10 +183,10 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
     ProjPt::scalar_type d = Length(pTskPt->m_DirVector);
     if (d > 0) {
         // rotate vector 90°
-        ProjPt u;
-        u.x = pTskPt->m_DirVector.x * cos(PI / 2) - pTskPt->m_DirVector.y * sin(PI / 2);
-        u.y = pTskPt->m_DirVector.x * sin(PI / 2) + pTskPt->m_DirVector.y * cos(PI / 2);
-
+        ProjPt u = {
+            pTskPt->m_DirVector.x * cos(PI / 2) - pTskPt->m_DirVector.y * sin(PI / 2),
+            pTskPt->m_DirVector.x * sin(PI / 2) + pTskPt->m_DirVector.y * cos(PI / 2)
+        };
         u = u * Radius;
 
         pTskPt->m_LineBegin = pTskPt->m_Center + u; // begin of line
