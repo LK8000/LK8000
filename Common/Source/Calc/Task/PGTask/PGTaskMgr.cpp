@@ -182,13 +182,7 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
     // Calc begin and end off line.
     ProjPt::scalar_type d = Length(pTskPt->m_DirVector);
     if (d > 0) {
-        // rotate vector 90°
-        ProjPt u = {
-            pTskPt->m_DirVector.x * cos(PI / 2) - pTskPt->m_DirVector.y * sin(PI / 2),
-            pTskPt->m_DirVector.x * sin(PI / 2) + pTskPt->m_DirVector.y * cos(PI / 2)
-        };
-        u = u * Radius;
-
+        ProjPt u = Rotate90(pTskPt->m_DirVector) * Radius;
         pTskPt->m_LineBegin = pTskPt->m_Center + u; // begin of line
         pTskPt->m_LineEnd = pTskPt->m_Center - u; // end of line
     }
