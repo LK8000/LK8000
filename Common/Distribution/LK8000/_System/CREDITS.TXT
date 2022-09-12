@@ -10,6 +10,12 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.21]
+. PG Task fix line turnpoint optimization
+. Add ogn database support
+. disable airspace activated by notam by default 
+. automaticaly disable airspaces for Sat/Sun if info is available
+
 [version 7.3.20]
 . Android : whitelist "U-Blox 7 USB GPS"
 . Android : Fix missing Usb permission 
