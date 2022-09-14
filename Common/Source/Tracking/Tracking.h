@@ -31,7 +31,7 @@ namespace tracking {
 
     extern int  interval; // sending position interval (sec)
     extern bool radar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
-    extern int  start_config;  // Livetracking only in flight or always
+    extern bool always_config;  // Livetracking only in flight or always
 
     extern TCHAR    server_config[100]; // server name or ip address
     extern uint16_t port_config; // tcp port

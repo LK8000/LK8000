@@ -590,14 +590,9 @@ WndProperty* wp;
 if(wf)
 {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
-  if (wp)
-  {
-    if (tracking::start_config != wp->GetDataField()->GetAsInteger())
-    {
-        tracking::start_config = wp->GetDataField()->GetAsInteger();
-      requirerestart = true;
-
-    }
+  if (wp) {
+    bool old_value = std::exchange(tracking::always_config, wp->GetDataField()->GetAsBoolean());
+    requirerestart = (tracking::always_config != old_value);
   }
 }
 }
@@ -2300,7 +2295,7 @@ DataField* dfe = wp->GetDataField();
 	DataField* dfe = wp->GetDataField();
 	dfe->addEnumText(MsgToken(2334));	// LKTOKEN   _@M2334_ "In flight only (default)"
 	dfe->addEnumText(MsgToken(2335));	// LKTOKEN  _@M2335_ "permanent (test purpose)"
-    dfe->Set(tracking::start_config);
+    dfe->Set(tracking::always_config);
     wp->RefreshDisplay();
   }
 

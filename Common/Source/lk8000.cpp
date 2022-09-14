@@ -28,7 +28,6 @@
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
-#include "Tracking/LiveTrack24.h"
 
 #include "LKObjects.h"
 #include "Bitmaps.h"

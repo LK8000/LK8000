@@ -27,7 +27,7 @@ namespace tracking {
 
     int  interval; // sending position interval (sec)
     bool radar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
-    int  start_config;  // Livetracking only in flight or always
+    bool always_config;  // Livetracking only in flight or always
 
     TCHAR    server_config[100]; // server name or ip address
     uint16_t port_config; // tcp port
@@ -112,7 +112,9 @@ namespace tracking {
                 break;
             case platform::skylines_aero:
                 if (skylines_glue) {
-                    skylines_glue->OnTimer(Basic, Calculated);
+	                if(always_config || Calculated.Flying) {
+                        skylines_glue->OnTimer(Basic, Calculated);
+                    }
                 }
                 break;
             default:
@@ -131,7 +133,7 @@ namespace tracking {
     void ResetSettings() {
         interval = 0;
         radar_config = false;
-        start_config = 0;
+        always_config = false;
 
         _tcscpy(server_config,_T("www.livetrack24.com"));
         port_config = 80;
@@ -143,7 +145,7 @@ namespace tracking {
     bool LoadSettings(const char *key, const char *value) {
         return settings::read(key, value, registry_interval, interval)
             || settings::read(key, value, registry_radar_config, radar_config)
-            || settings::read(key, value, registry_start_config, start_config)
+            || settings::read(key, value, registry_start_config, always_config)
             || settings::read(key, value, registry_srv, server_config)
             || settings::read(key, value, registry_port, port_config)
             || settings::read(key, value, registry_usr, usr_config)
@@ -153,7 +155,7 @@ namespace tracking {
     void SaveSettings(settings::writer& writer_settings) {
         writer_settings(registry_interval, interval);
         writer_settings(registry_radar_config, radar_config);
-        writer_settings(registry_start_config, start_config);
+        writer_settings(registry_start_config, always_config);
         writer_settings(registry_srv, server_config);
         writer_settings(registry_port, port_config);
         writer_settings(registry_usr, usr_config);
