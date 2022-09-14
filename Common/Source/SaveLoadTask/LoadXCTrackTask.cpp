@@ -338,10 +338,10 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
   return true;
 }
 
-/**
- * require valid json object
- */
 bool LoadXctrackTask(const json::value& task_json) {
+  if(!task_json.is<json::object>()) {
+    return false;
+  }
 
   ScopeLock lock(CritSec_TaskData);
 
@@ -361,23 +361,24 @@ bool LoadXctrackTask(const json::value& task_json) {
   return false;
 }
 
+template<typename ..._Args>
+json::value parse_json(_Args&& ...args) {
+  json::value task_json;
+  std::string error = json::parse(task_json, args...);
+  if (!error.empty()) {
+    throw std::runtime_error(error);
+  }
+  return task_json;
+}
+
 } // namespace
 
 bool LoadXctrackTaskFile(const TCHAR* szFilePath) {
-    StartupStore(_T(". Load XCTrack Task : <%s>"), szFilePath);
-
     try {
       // check file contents
       zzip_stream file(szFilePath, "rb");
       if (file) {
-        std::istream stream(&file);
-        json::value task_json;
-        std::string error = json::parse(task_json, stream);
-        if(error.empty()) {
-          if(task_json.is<json::object>()) {
-              return LoadXctrackTask(task_json);
-          }
-        }
+        return LoadXctrackTask(parse_json(std::istream(&file)));
       }
     } catch (std::exception& e) {
       StartupStore(_T(".... Invalid XCTrack task : %s"), to_tstring(e.what()).c_str());
@@ -387,13 +388,7 @@ bool LoadXctrackTaskFile(const TCHAR* szFilePath) {
 
 bool LoadXctrackTaskString(const char* begin, const char* end) {
   try {
-    json::value task_json;
-    std::string error = json::parse(task_json, begin, end);
-    if(error.empty()) {
-      if(task_json.is<json::object>()) {
-        return LoadXctrackTask(task_json);
-      }
-    }
+    return LoadXctrackTask(parse_json(begin, end));
   } catch (std::exception& e) {
     StartupStore(_T(".... Invalid XCTrack task : %s"), to_tstring(e.what()).c_str());
   }
