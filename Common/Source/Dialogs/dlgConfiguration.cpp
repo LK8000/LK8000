@@ -586,15 +586,30 @@ static void OnPilotNameClicked(WndButton* pWnd) {
 
 
 static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKind_t Mode){
-WndProperty* wp;
-if(wf)
-{
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
-  if (wp) {
-    bool old_value = std::exchange(tracking::always_config, wp->GetDataField()->GetAsBoolean());
-    requirerestart = (tracking::always_config != old_value);
+  if (Sender) {
+
+    if(Sender->getCount() == 0) {
+      Sender->addEnumList({
+          MsgToken(2334),	// _@M2334_ "In flight only (default)"
+          MsgToken(2335) 	// _@M2335_ "permanent (test purpose)"
+        });
+    }
+
+    switch (Mode) {
+    case DataField::daGet:
+      Sender->Set(tracking::always_config);
+      break;
+    case DataField::daPut:
+    case DataField::daChange:
+      tracking::always_config = Sender->GetAsBoolean();
+      break;
+    case DataField::daInc:
+    case DataField::daDec:
+    case DataField::daSpecial:
+    default:
+      break;
+    }
   }
-}
 }
 
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
@@ -2286,16 +2301,6 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
     wp->GetDataField()->Set(tracking::radar_config);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerStart_config"));
-  if (wp)
-  {
-	DataField* dfe = wp->GetDataField();
-	dfe->addEnumText(MsgToken(2334));	// LKTOKEN   _@M2334_ "In flight only (default)"
-	dfe->addEnumText(MsgToken(2335));	// LKTOKEN  _@M2335_ "permanent (test purpose)"
-    dfe->Set(tracking::always_config);
     wp->RefreshDisplay();
   }
 
