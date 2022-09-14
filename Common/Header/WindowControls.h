@@ -156,6 +156,14 @@ class DataField{
   virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
   virtual void Sort(int startindex=0) { assert(false); }
 	
+
+  void addEnumList(std::initializer_list<const TCHAR*>&& list) {
+    for (auto& item : list) {
+      addEnumText(item);
+    }
+  }
+
+
 	virtual size_t getCount() const { assert(false); return 0; }
 	virtual void removeLastEnum() { assert(false); }
 
