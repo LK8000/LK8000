@@ -33,6 +33,7 @@ namespace ModelType {
         { BTK2, _T("KeyBoard 2") },
         { BTK3, _T("KeyBoard 3") },
         { XCREMOTE, _T("XCREMOTE") },
+        { QWERTY, _T("QWERTY KBRD") },
         /*
         * list order is important !
         * add new at the end !

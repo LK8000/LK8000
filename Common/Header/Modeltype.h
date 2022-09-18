@@ -47,6 +47,8 @@ namespace ModelType {
 
         XCREMOTE     = 10024, // XCRemote stick
 
+        QWERTY		 = 10025, // VR-PC QWERTY Keyboard
+
         HP31X        = 10201,	// HP310, 312, 314, 316
 
         PN6000       = 10401,
