@@ -1722,6 +1722,113 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                 break;
         }
     }
+    //
+    // QWERTY Virtual Reality/PC Keyboard type 1.
+    //
+    if (ModelType::Get() == ModelType::QWERTY) {
+        #ifndef __linux__
+        #if (WINDOWSPC<1)
+        if (!Debounce(KEYDEBOUNCE)) return;
+        #endif
+        #endif
+        switch (KeyCode) {
+                // BOTTOM BAR LEFT
+            case KEY_A:
+				key_bottombar_previous();
+                return;
+
+				// BOTTOM BAR RIGHT
+            case KEY_S:
+                key_bottombar_next();
+                return;
+
+                // PREVIOUS PAGE
+			case KEY_D:
+                key_previous_mode();
+                return;
+
+                // NEXT PAGE
+            case KEY_F:
+                key_next_mode();
+                return;
+
+                // LEFT SCREEN
+            case KEY_LEFT:
+                key_previous_page();
+                return;
+
+                // RIGHT SCREEN
+            case KEY_RIGHT: 
+                key_next_page();
+                return;
+
+                // CENTER-UP/ZOOM IN
+            case KEY_UP:
+                 key_up();
+                return;
+
+                // CENTER-DOWN/ZOOM OUT
+            case KEY_DOWN:
+                key_down();
+                return;
+
+                // THE TOP-LEFT
+			case KEY_G:
+                key_topleft();
+                return;
+
+                // THE TOP-RIGHT
+            case KEY_H:
+                key_topright();
+                return;
+
+                // ENTER
+			case KEY_RETURN:
+                key_enter();
+                return;
+			
+			//UNUSED AT THIS TIME (17/09/2022)
+			//key_overtarget_rotate()
+			//key_topcenter()
+			//key_gesture_down()
+			//key_gesture_up()
+			
+			case KEY_Q: // Custom Key 1
+				CustomKeyHandler(CustomMenu1 + 1000);
+				return;
+			case KEY_W: // Custom Key 2
+				CustomKeyHandler(CustomMenu2 + 1000);
+				return;
+			case KEY_E: // Custom Key 3
+				CustomKeyHandler(CustomMenu3 + 1000);
+				return;
+			case KEY_R: // Custom Key 4
+				CustomKeyHandler(CustomMenu4 + 1000);
+				return;
+			case KEY_T: // Custom Key 5
+				CustomKeyHandler(CustomMenu5 + 1000);
+				return;
+			case KEY_Y: // Custom Key 6
+				CustomKeyHandler(CustomMenu6 + 1000);
+				return;
+			case KEY_U: // Custom Key 7
+				CustomKeyHandler(CustomMenu7 + 1000);
+				return;
+			case KEY_I: // Custom Key 8
+				CustomKeyHandler(CustomMenu8 + 1000);
+				return;
+			case KEY_O: // Custom Key 9
+				CustomKeyHandler(CustomMenu9 + 1000);
+				return;
+			case KEY_P: // Custom Key 10
+				CustomKeyHandler(CustomMenu10 + 1000);
+				return;
+ 
+			default:
+				break;
+        }
+    }
+    //
 
     if (KeyCode == KEY_ESCAPE) {
         if (IsActiveModeType(LKMODE_MAP, MP_MOVING)) {
