@@ -34,7 +34,6 @@
 #include "Library/TimeFunctions.h"
 
 using xml_document = rapidxml::xml_document<char>;
-using xml_node = rapidxml::xml_node<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;
 
 #ifdef _WGS84
@@ -2151,49 +2150,26 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *A
 
 // Reads airspaces from an OpenAIP file
 bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
-    zzip_file_ptr fp(openzip(szFile, "rt"));
-    if(!fp) {
-      StartupStore(TEXT("... Unable to open airspace file : %s\n"), szFile);
-      return false;
-    }
-    StartupStore(TEXT(". Reading OpenAIP airspace file%s"), NEWLINE);
+    
+    StartupStore(TEXT(". Reading OpenAIP airspace file"));
     unsigned int skiped_cnt=0;
     unsigned int accept_cnt=0;
-    // Allocate buffer to read the file
-    zzip_seek(fp, 0, SEEK_END); // seek to end of file
-    long size = zzip_tell(fp); // get current file pointer
-    if (size < 0) {
-        StartupStore(TEXT(". ERROR, FillAirSpaceFromOpenAIP ftell failure%s"), NEWLINE);
-        return false;
-    }
-    zzip_seek(fp, 0, SEEK_SET); // seek back to beginning of file
 
-    std::unique_ptr<char[]> buff(new (std::nothrow) char[size+1]);
-    if(!buff) {
-        StartupStore(TEXT(".. Failed to allocate buffer to read airspace file.%s"), NEWLINE);
-        return false;
-    }
-
-    // Read the file
-    // fread can return -1, and zzip_tell can return -1 as well.
-    // So in case of problems with zzip, here we must consider nread can be same as size but still invalid!
-    zzip_ssize_t nRead = zzip_read(fp, buff.get(), size);
-    if (nRead < 0) {
-        StartupStore(TEXT(". ERROR, FillAirSpaceFromOpenAIP fread failure%s"), NEWLINE);
-        return false;
-    }
-    if(nRead != size) {
-        StartupStore(TEXT(".. Not able to buffer all airspace file.%s"), NEWLINE);
-        return false;
-    }
-    buff[size] = '\0'; // append trailing '\0';
-
+    std::string ss;
     xml_document xmldoc;
     try {
+        zzip_stream file(szFile, "rt");
+        if(!file) {
+            StartupStore(TEXT("... Unable to open airspace file : %s"), szFile);
+            return false;
+        }
+        std::istreambuf_iterator<char> it(&file), end;
+        ss.assign(it, end);
+
         constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
-        xmldoc.parse<Flags>(buff.get());
-    } catch (rapidxml::parse_error& e) {
-        StartupStore(TEXT(".. OPENAIP parse failed : %s"), to_tstring(e.what()).c_str());
+        xmldoc.parse<Flags>(ss.data());
+    } catch (std::exception& e) {
+        StartupStore(TEXT(".. OPENAIP load failed : %s"), to_tstring(e.what()).c_str());
         return false;
     }
 
