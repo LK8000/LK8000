@@ -10,41 +10,48 @@
 #include "AATDistance.h"
 #include "CalcTask.h"
 
-
-
 // This is called from main DoCalculations each time, only when running a real task
-void InSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
-{
+void InSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   static int LastStartSector = -1;
 
-  if (ActiveTaskPoint<0) return;
-  LockTaskData();
+  ScopeLock lock(CritSec_TaskData);
 
-// Paragliders task system
-// Case A: start entering the sector/cylinder
-//		you must be outside sector when gate is open.
-//		you are warned that you are already inside sector before the gate is open, when gate is opening in <10 minutes
-//		task restart is manual
-// Case B: start exiting the sector
+  if (ActiveTaskPoint < 0) {
+    return;
+  }
+
+  if (!ValidTaskPointFast(ActiveTaskPoint)) {
+    return;
+  }
+
+  // only if running a real task (a least 2 task point)
+  if (!ValidTaskPointFast(1) || !ValidTaskPointFast(1)) {
+    return;
+  }
+
+  // Paragliders task system
+  // Case A: start entering the sector/cylinder
+  //    you must be outside sector when gate is open.
+  //    you are warned that you are already inside sector 
+  //    before the gate is open, when gate is opening 
+  //    in <10 minutes task restart is manual
+  // Case B: start exiting the sector
 
   // by default, we are not in the sector
   Calculated->IsInSector = false;
 
-  if(ActiveTaskPoint == 0) {
-	CheckStart(Basic, Calculated, &LastStartSector);
+  if (ActiveTaskPoint == 0) { // before Start
+    CheckStart(Basic, Calculated, &LastStartSector);
   } else {
-	if(IsFinalWaypoint()) {
-		LastStartSector = -1;
-		AddAATPoint(Basic, Calculated, ActiveTaskPoint-1);
-		CheckFinish(Basic, Calculated);
-	} else {
-		if (!UseGates()) CheckRestart(Basic, Calculated, &LastStartSector); // 100507
-		if (ActiveTaskPoint>0) {
-			CheckInSector(Basic, Calculated);
-			LastStartSector = -1;
-		}
-	}
-  }                   
-  UnlockTaskData();
+    LastStartSector = -1;
+    if (IsFinalWaypoint()) { // final glide
+      AddAATPoint(Basic, Calculated, ActiveTaskPoint - 1);
+      CheckFinish(Basic, Calculated);
+    } else { // turpoint in between
+      if (!UseGates()) {
+        CheckRestart(Basic, Calculated, &LastStartSector);  // 100507
+      }
+      CheckInSector(Basic, Calculated);
+    }
+  }
 }
-

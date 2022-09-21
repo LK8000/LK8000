@@ -135,19 +135,10 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   BallastDump();
 
-  // reminder: Paragliders have AAT always on
   CalculateOptimizedTargetPos(Basic,Calculated);
+  InSector(Basic, Calculated);
 
-  if (ValidTaskPoint(ActiveTaskPoint)) {
-	// only if running a real task
-	if (ValidTaskPoint(1)) InSector(Basic, Calculated);
-	DoAutoMacCready(Basic, Calculated);
-	#ifdef DEBUGTASKSPEED
-	DebugTaskCalculations(Basic, Calculated);
-	#endif
-  } else { // 101002
-	DoAutoMacCready(Basic, Calculated); // will set only EqMC 
-  }
+  DoAutoMacCready(Basic, Calculated);
 
   DoAlternates(Basic, Calculated,Alternate1); 
   DoAlternates(Basic, Calculated,Alternate2); 
