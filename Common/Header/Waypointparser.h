@@ -60,7 +60,7 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
 bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(const TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
-bool ParseOpenAIP(zzip_file_ptr& file);
+bool ParseOpenAIP(zzip_stream& stream);
 
 
 

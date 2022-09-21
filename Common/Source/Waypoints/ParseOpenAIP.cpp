@@ -11,7 +11,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "utils/stringext.h"
-#include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 #include <sstream>
 #include "LKStyle.h"
 #include "Util/TruncateString.hpp"
@@ -34,41 +34,16 @@ static bool GetAttribute(const xml_node* parentNode, const char* attributeName, 
 static bool GetValue(const xml_node* parentNode, const char* tagName, double &value);
 static bool GetMeasurement(const xml_node* parentNode, const char* tagName, char expectedUnit, double &value);
 
-bool ParseOpenAIP(zzip_file_ptr& file)
+bool ParseOpenAIP(zzip_stream& stream)
 {
-    // Allocate buffer to read the file
-    zzip_seek(file, 0, SEEK_END); // seek to end of file
-    long size = zzip_tell(file); // get current file pointer
-    if (size < 0) {
-       StartupStore(_T(". ParseOpenAIP, size failure!%s"),NEWLINE);
-       return false;
-    }
-    zzip_seek(file, 0, SEEK_SET); // seek back to beginning of file
-
-    std::unique_ptr<char[]> buff(new (std::nothrow) char[size+1]);
-    if(buff==nullptr) {
-        StartupStore(TEXT(".. Failed to allocate buffer to read OpenAIP waypoints file.%s"), NEWLINE);
-        return false;
-    }
-    memset(buff.get(),0,size+1);
-
-    // Read the file
-    long nRead = zzip_fread(buff.get(), sizeof (char), size, file);
-    // fread can return -1...
-    if (nRead < 0) {
-       StartupStore(_T(". ParseOpenAIP, fread failure!%s"),NEWLINE);
-       return false;
-    }
-    if(nRead != size) {
-        StartupStore(TEXT(".. Not able to buffer all airspace file.%s"), NEWLINE);
-        return false;
-    }
-
+    std::string ss;
     xml_document xmldoc;
     try {
+        std::istreambuf_iterator<char> it(&stream), end;
+        ss.assign(it, end);
         constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
-        xmldoc.parse<Flags>(buff.get());
-    } catch (rapidxml::parse_error& e) {
+        xmldoc.parse<Flags>(ss.data());
+    } catch (std::exception& e) {
         StartupStore(TEXT(".. OPENAIP parse failed : %s"), to_tstring(e.what()).c_str());
         return false;
     }
