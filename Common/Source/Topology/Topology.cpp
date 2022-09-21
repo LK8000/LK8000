@@ -866,11 +866,10 @@ void XShapeLabel::setLabel(const char* src) {
   }
 
   // Any other case : we display shape and its label as well
-  size_t size = strlen(src);
-  if(size) {
-    size = from_unknown_charset(src, label, 0) + 1;
+  size_t size = from_unknown_charset(src, label, 0) + 1;
+  if (size > 0) {
     label = (TCHAR*) malloc(size * sizeof (TCHAR));
-    size = from_unknown_charset(src, label, size);
+    from_unknown_charset(src, label, size);
   }
 
   hide = false;
