@@ -88,8 +88,8 @@ void dlgSelectObject::OnSelectClicked(WndButton* pWnd) {
         return;
       }
     }
+    pForm->SetModalResult(mrCancel);
   }
-  pForm->SetModalResult(mrCancel);
 }
 
 
