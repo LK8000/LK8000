@@ -94,7 +94,9 @@ void guiStopLogger(bool noAsk = false);
 void guiToggleLogger(bool noAsk = false);
 
 bool LoadCupTask(LPCTSTR FileName);
+
 bool LoadGpxTask(LPCTSTR FileName);
+bool LoadGpxTask(std::istream& stream);
 
 bool LoadXctrackTask(const TCHAR* szFilePath);
 bool LoadXctrackTask(std::istream& stream);
