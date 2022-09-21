@@ -8,25 +8,33 @@
 
 #include "externs.h"
 #include "NavFunctions.h"
+#include <optional>
+#include "Geographic/GeoPoint.h"
 
-void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  int home_waypoint = HomeWaypoint;
+namespace {
 
-  if (!ValidWayPoint(home_waypoint)) {
-    Calculated->HomeDistance = 0.0;
-    Calculated->HomeRadial = 0.0; // VENTA3
-    return;
+  std::optional<GeoPoint> GetHomePosition() {
+    ScopeLock lock(CritSec_TaskData);
+    if (ValidWayPointFast(HomeWaypoint)) {
+      return GetWayPointPosition(WayPointList[HomeWaypoint]);
+    }
+    return {};
   }
 
-  double w1lat = WayPointList[home_waypoint].Latitude;
-  double w1lon = WayPointList[home_waypoint].Longitude;
-  double w0lat = Basic->Latitude;
-  double w0lon = Basic->Longitude;
-    
-  DistanceBearing(w1lat, w1lon,
-                  w0lat, w0lon,
-                  &Calculated->HomeDistance, &Calculated->HomeRadial);
+} // namespace
 
+
+void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
+  auto home = GetHomePosition();
+  if(home) {
+    DistanceBearing(home->latitude, home->longitude,
+                    Basic->Latitude, Basic->Longitude,
+                    &Calculated->HomeDistance, &Calculated->HomeRadial);
+  } else {
+    Calculated->HomeDistance = 0.0;
+    Calculated->HomeRadial = 0.0; // VENTA3
+  }
 }
 
 
