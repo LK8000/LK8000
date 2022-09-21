@@ -15,9 +15,9 @@
 #include "CTaskFileHelper.h"
 #include "Util/tstring.hpp"
 #include "utils/fileext.h"
-#include "utils/stringext.h"
+#include "utils/charset_helper.h"
 #include "Waypointparser.h"
-#include "Util/UTF8.hpp"
+#include "Waypoints/SetHome.h"
 #include "utils/zzip_stream.h"
 
 #include <fstream>
@@ -243,6 +243,8 @@ bool CTaskFileHelper::Load(std::istream& stream) {
             return false;
         }
 
+        LoadHome(rootNode);
+
         RefreshTask();
 
         TaskModified = false;
@@ -430,6 +432,18 @@ void CTaskFileHelper::LoadRules(const xml_node* node) {
             }
         }
     }
+}
+
+bool CTaskFileHelper::LoadHome(const xml_node* node) {
+    const xml_node* home = node->first_node("home");
+    if (home) {
+        tstring name = from_utf8(GetAttribute(home, "name"));
+        auto it = mWayPointLoaded.find(name);
+        if (it != mWayPointLoaded.end()) {
+            SetNewHome(it->second);
+        }
+    }
+    return true;
 }
 
 bool CTaskFileHelper::LoadTaskPointList(const xml_node* node) {
@@ -684,7 +698,11 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
             return false;
         }
 
-
+        if (ValidTaskPointFast(1)) {
+            // only if task has at least two points ( Start & finish)
+            // (i.e. ignore simple goto)
+            SaveHome(rootNode);
+        }
 
         if (!SaveTaskPointList(AddNode(rootNode, "taskpoints"))) {
             return false;
@@ -894,6 +912,15 @@ bool CTaskFileHelper::SaveTaskRule(xml_node* node) {
             SetAttribute(StartNode, "height-ref", "ASL");
             break;
     }
+    return true;
+}
+
+bool CTaskFileHelper::SaveHome(xml_node* node) {
+    if (ValidWayPointFast(HomeWaypoint)) {
+        xml_node* home = AddNode(node, "home");
+        SetAttribute(home, "name", (LPCTSTR)(WayPointList[HomeWaypoint].Name));
+    }
+    mWayPointToSave.insert(HomeWaypoint);
     return true;
 }
 

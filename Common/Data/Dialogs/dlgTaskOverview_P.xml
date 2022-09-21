@@ -13,6 +13,11 @@
     <WndButton Name="cmdLoad"      Caption="_@M398_"  X="121" Y="47" Width="60" Height="22" Font="2" OnClickNotify="OnLoadClicked"/>
     <WndButton Name="cmdSave"      Caption="_@M583_"  X="181" Y="47" Width="59" Height="22" Font="2" OnClickNotify="OnSaveClicked"/>
 
+    <!--using ReadOnly, Keyboard allow to use OnHelp ti select HomeWapoint by click on property -->
+    <WndProperty Name="prpHome" Caption="_@M930_" CaptionWidth="60" X="1" Y="-1" Width="-1" Height="22"  ReadOnly="1" OnHelp="OnSelectHomeWaypoint" Keyboard="1">
+      <DataField DataType="string" />
+    </WndProperty>
+
     <WndListFrame Name="frmTaskList" X="1" Y="-1" Width="-1" Height="-1" Font="2" OnListInfo="OnTaskListInfo">
       <WndOwnerDrawFrame Name="frmTaskListEntry" X="2" Y="2" Width="-2" Height="25" Font="2" OnPaint="OnTaskPaintListItem"/>
     </WndListFrame>

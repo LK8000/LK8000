@@ -17,6 +17,7 @@
 #include "Dialogs/dlgProgress.h"
 #include "Dialogs.h"
 #include "ChangeScreen.h"
+#include "Waypoints/SetHome.h"
 
 void SettingsEnter() {
   MenuActive = true;

@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "utils/stl_utils.h"
+#include "Waypoints/SetHome.h"
 
 extern void ResetTaskWpt(TASK_POINT& TaskWpt);
 extern void ResetTaskStat(TASKSTATS_POINT& StatPt);
@@ -40,4 +41,5 @@ void ClearTask(void) {
   std::for_each(std::begin(TaskStats), std::end(TaskStats), ResetTaskStat);
   std::for_each(std::begin(StartPoints), std::end(StartPoints), ResetStartPoint);
 
+  SetNewHome(-1);
 }

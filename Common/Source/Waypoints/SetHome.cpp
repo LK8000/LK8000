@@ -10,124 +10,143 @@
 #include "Waypointparser.h"
 #include "RasterTerrain.h"
 
+namespace {
+  AGeoPoint home_position = {};
+  tstring home_name;
 
-void SetHome(bool reset)
-{
+  AGeoPoint GetWayPointPosition(size_t idx) {
+    return { GetWayPointPosition(WayPointList[idx]), WayPointList[idx].Altitude };
+  }
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... SetHome (current=%d), reset=%d%s"),HomeWaypoint,reset,NEWLINE);
-  #endif
+}
+
+bool SetNewHome(size_t idx) {
+  WithLock(CritSec_TaskData, [&]() {
+    if (ValidWayPointFast(idx)) {
+      HomeWaypoint = idx;
+      home_position = GetWayPointPosition(idx);
+      home_name = WayPointList[HomeWaypoint].Name;
+    }
+    else {
+      // not a valid waypoint, reset home data
+      HomeWaypoint = -1;
+      home_position = {};
+      home_name = {};
+    }
+
+    TestLog(_T("... Home set to wp. %d"),HomeWaypoint);
+  });
+
+  RefreshTask();
+
+  if (home_position != AGeoPoint({0, 0}, 0)) {
+    // SIM mode or no valid fix and before takeoff
+    //   -> set aircraft position to new home position
+    ScopeLock lock(CritSec_FlightData);
+    if (SIMMODE || (GPS_INFO.NAVWarning && !CALCULATED_INFO.Flying)) {
+      GPS_INFO.Latitude = home_position.latitude;
+      GPS_INFO.Longitude = home_position.longitude;
+      GPS_INFO.Altitude = home_position.altitude;
+    }
+
+    return true; // Valid HomeWaypoint
+  }
+
+  return false; // Invalid HomeWaypoint
+}
+
+
+void SetHome(bool reset) {
+  TestLog(TEXT(".... SetHome (current=%d), reset=%d"), HomeWaypoint, reset);
 
   unsigned int i;
-  bool resetalternates=false;
+  bool resetalternates = false;
 
-  if (reset || !ValidWayPoint(NUMRESWP) || !ValidNotResWayPoint(HomeWaypoint) ) { // BUGFIX 100213 see if really we have wps!
-	#if TESTBENCH
-	StartupStore(TEXT(".... Home Reset%s"),NEWLINE);
-	#endif
-	HomeWaypoint = -1;
+  if (reset || !ValidWayPoint(NUMRESWP) ||
+      !ValidNotResWayPoint(HomeWaypoint)) {  // BUGFIX 100213 see if really we have wps!
+    TestLog(TEXT(".... Home Reset"));
+    HomeWaypoint = -1;
   }
 
   // If one of the alternates is no longer valid, we reset both of them
-  if (Alternate1 !=-1 ) {
-	 if (!ValidNotResWayPoint(Alternate1) ) {
-	     resetalternates=true;
-	 }
+  if (Alternate1 != -1) {
+    if (!ValidNotResWayPoint(Alternate1)) {
+      resetalternates = true;
+    }
   }
-  if (Alternate2 !=-1 ) {
-	 if (!ValidNotResWayPoint(Alternate2) ) {
-	     resetalternates=true;
-	 }
+  if (Alternate2 != -1) {
+    if (!ValidNotResWayPoint(Alternate2)) {
+      resetalternates = true;
+    }
   }
   if (reset || resetalternates) {
-      Alternate1= -1; Alternate2= -1;
+    Alternate1 = -1;
+    Alternate2 = -1;
   }
-
 
   // check invalid task ref waypoint or forced reset due to file change
   if (reset || !ValidNotResWayPoint(TeamCodeRefWaypoint)) {
     TeamCodeRefWaypoint = -1;
   }
 
-  if ( ValidNotResWayPoint(AirfieldsHomeWaypoint) ) {
-	HomeWaypoint = AirfieldsHomeWaypoint;
-	#if TESTBENCH
-	StartupStore(TEXT(".... Using AirfieldHomeWaypoint home=%d <%s>%s"),HomeWaypoint,WayPointList[HomeWaypoint].Name,NEWLINE);
-	#endif
+  if (ValidNotResWayPoint(AirfieldsHomeWaypoint)) {
+    HomeWaypoint = AirfieldsHomeWaypoint;
+    TestLog(_T(".... Using AirfieldHomeWaypoint home=%d <%s>"), HomeWaypoint, WayPointList[HomeWaypoint].Name);
   }
+
   if (!ValidNotResWayPoint(HomeWaypoint)) {
     // search for home in waypoint list, if we don't have a home
     HomeWaypoint = -1;
-    for(i=NUMRESWP;i<WayPointList.size();++i) {
-	if( (WayPointList[i].Flags & HOME) == HOME) {
-		if (HomeWaypoint < 0) {
-			HomeWaypoint = i;
-			#if TESTBENCH
-			StartupStore(TEXT(".... Using waypoint file found home=%d <%s>%s"),
-				HomeWaypoint,WayPointList[HomeWaypoint].Name,NEWLINE);
-			#endif
-		}
-	}
+    for (i = NUMRESWP; i < WayPointList.size(); ++i) {
+      if ((WayPointList[i].Flags & HOME) == HOME) {
+        if (HomeWaypoint < 0) {
+          HomeWaypoint = i;
+          TestLog(TEXT(".... Using waypoint file found home=%d <%s>"), HomeWaypoint, WayPointList[HomeWaypoint].Name);
+        }
+      }
     }
   }
 
   // set team code reference waypoint if we don't have one
-  if (TeamCodeRefWaypoint== -1) {
+  if (TeamCodeRefWaypoint == -1) {
     TeamCodeRefWaypoint = HomeWaypoint;
   }
 
   // if we still don't have a valid home , search for match against memory home
   // This will fix a problem reloading waypoints after editing, or changing files with similars
-  if ( (!ValidNotResWayPoint(HomeWaypoint)) && (WpHome_Lat!=0)) {
-	for(i=NUMRESWP;i<WayPointList.size();i++) {
-		if( WayPointList[i].Latitude  ==  WpHome_Lat)
-			if( WayPointList[i].Longitude  == WpHome_Lon)
-				if ( _tcscmp(WayPointList[i].Name,WpHome_Name) == 0 ) {
-					HomeWaypoint=i;
-					#if TESTBENCH
-					StartupStore(TEXT(".... Using matched home lat/lon in waypoints, home=%d <%s>%s"),
-						HomeWaypoint,WayPointList[HomeWaypoint].Name,NEWLINE);
-					#endif
-					break;
-				}
-	}
+  if ((!ValidNotResWayPoint(HomeWaypoint)) && home_position != AGeoPoint({0, 0}, 0)) {
+    for (i = NUMRESWP; i < WayPointList.size(); i++) {
+      if (GetWayPointPosition(WayPointList[i]) != home_position) {
+        continue;
+      }
+
+      if( home_name != WayPointList[i].Name) {
+        continue;
+      }
+
+      HomeWaypoint = i;
+      TestLog(_T(".... Using matched home lat/lon in waypoints, home=%d <%s>"), HomeWaypoint, WayPointList[HomeWaypoint].Name);
+      break;
+    }
   }
 
   // set team code reference waypoint if we don't have one or set it -1
-  if (TeamCodeRefWaypoint== -1) {
+  if (TeamCodeRefWaypoint == -1) {
     TeamCodeRefWaypoint = HomeWaypoint;
   }
 
-  if (ValidNotResWayPoint(HomeWaypoint)) { // 091213
-	StartupStore(_T(". HomeWaypoint set to <%s> wpnum=%d%s"),WayPointList[HomeWaypoint].Name,HomeWaypoint,NEWLINE);
-	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
-	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-	GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-
-	RasterTerrain::Lock();
-    RasterTerrain::SetTerrainRounding(0,0);
-    const short Alt = RasterTerrain::GetTerrainHeight(GPS_INFO.Latitude, GPS_INFO.Longitude);
-	RasterTerrain::Unlock();
-
-    if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
-      CALCULATED_INFO.TerrainValid = true;
-    }
-	// Update memory HomeWaypoint
-	WpHome_Lat=WayPointList[HomeWaypoint].Latitude; // 100213
-	WpHome_Lon=WayPointList[HomeWaypoint].Longitude;
-	_tcscpy(WpHome_Name,WayPointList[HomeWaypoint].Name);
-
-  } else {
-
+  if (!SetNewHome(HomeWaypoint)) {
     // no home at all, so set it from center of terrain if available
     double lon, lat;
     if (RasterTerrain::GetTerrainCenter(&lat, &lon)) {
+      ScopeLock lock(CritSec_FlightData);
       GPS_INFO.Latitude = lat;
-	  GPS_INFO.Longitude = lon;
-	  GPS_INFO.Altitude = 0;
+      GPS_INFO.Longitude = lon;
+      GPS_INFO.Altitude = 0;
       CALCULATED_INFO.TerrainValid = true;
-	  StartupStore(_T("...... No HomeWaypoint, default position set to terrain center%s"),NEWLINE);
-    } else
-	  StartupStore(_T("...... HomeWaypoint NOT SET%s"),NEWLINE);
+      StartupStore(_T("...... No HomeWaypoint, default position set to terrain center"));
+    } else {
+      StartupStore(_T("...... HomeWaypoint NOT SET"));
+    }
   }
 }

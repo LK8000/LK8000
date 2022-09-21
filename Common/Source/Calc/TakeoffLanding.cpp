@@ -87,7 +87,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			SetWaypointComment(WayPointList[RESWP_TAKEOFF], MsgToken(1528));
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
 			WayPointList[RESWP_TAKEOFF].Visible=TRUE;
-			if ( (!ValidWayPoint(HomeWaypoint)) || (ISPARAGLIDER && !SIMMODE) ) {
+			if (!ValidWayPoint(HomeWaypoint)) {
 				HomeWaypoint=RESWP_TAKEOFF;
 				TakeOffWayPoint=true;
 			}

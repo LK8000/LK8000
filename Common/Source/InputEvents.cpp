@@ -39,6 +39,7 @@
 #include "utils/tokenizer.h"
 #include "utils/lookup_table.h"
 #include <type_traits>
+#include "Waypoints/SetHome.h"
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -1624,22 +1625,18 @@ void InputEvents::eventAdjustWaypoint(const TCHAR *misc) {
 void InputEvents::eventAbortTask(const TCHAR *misc) {
 
   if (ValidTaskPoint(ActiveTaskPoint)) {
-	if (MessageBoxX(
-	// LKTOKEN  _@M179_ = "Clear the task?"
-		MsgToken(179),
-	// LKTOKEN  _@M178_ = "Clear task"
-		MsgToken(178),
-		mbYesNo) == IdYes) {
-		// clear task is locking taskdata already
-		ClearTask();
-	}
-  } else {
-	MessageBoxX(
-	// LKTOKEN  _@M468_ = "No Task"
-		MsgToken(468),
-	// LKTOKEN  _@M178_ = "Clear task"
-		MsgToken(178),
-		mbOk);
+    if (MessageBoxX(MsgToken(179), MsgToken(178), mbYesNo) == IdYes) {
+      // LKTOKEN  _@M179_ = "Clear the task?"
+      // LKTOKEN  _@M178_ = "Clear task"
+    
+      // clear task is locking taskdata already
+      ClearTask();
+      SetHome(true);  // force home reload
+    }
+  } else { 
+    MessageBoxX(MsgToken(468), MsgToken(178), mbOk);
+    // LKTOKEN  _@M468_ = "No Task"
+    // LKTOKEN  _@M178_ = "Clear task"
   }
 }
 

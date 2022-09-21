@@ -16,6 +16,7 @@
 #include "CTaskFileHelper.h"
 #include "resource.h"
 #include "utils/printf.h"
+#include "Waypoints/SetHome.h"
 
 #ifdef ANDROID
 #include "Android/LK8000Activity.h"
@@ -197,6 +198,33 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
 }
 
+static 
+tstring GetHomeWaypointName() {
+  ScopeLock lock(CritSec_TaskData);
+  if (ValidWayPointFast(HomeWaypoint)) {
+    return WayPointList[HomeWaypoint].Name;
+  } else {
+    return _T(" ? ");
+  }
+}
+
+static 
+void UpdateHomeWaypoint(WndProperty * pWnd) {
+  if (pWnd) {
+    DataField* df = pWnd->GetDataField();
+    if (df) {
+      df->Set(GetHomeWaypointName().c_str());
+    }
+    pWnd->RefreshDisplay();
+  }
+}
+
+static
+void OnSelectHomeWaypoint(WndProperty * pWnd) {
+  SetNewHome(dlgSelectWaypoint());
+  UpdateHomeWaypoint(pWnd);
+}
+
 
 static void OverviewRefreshTask(WndForm* pWnd) {
   LockTaskData();
@@ -231,6 +259,8 @@ static void OverviewRefreshTask(WndForm* pWnd) {
   }
 #endif
   LowLimit =0;
+
+  UpdateHomeWaypoint(static_cast<WndProperty*>(pWnd->FindByName(_T("prpHome"))));
 
   WndListFrame* wTaskList = (WndListFrame*)pWnd->FindByName(TEXT("frmTaskList"));
   if(wTaskList) {
@@ -392,6 +422,7 @@ static void OnClearClicked(WndButton* pWnd){
                   mbYesNo) == IdYes) {
     if (CheckDeclaration()) {
       ClearTask();
+      SetHome(true);  // force home reload
 
       WndForm* pForm = pWnd->GetParentWndForm();
 
@@ -656,6 +687,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnDeleteClicked),
   ClickNotifyCallbackEntry(OnAnalysisClicked),
   ClickNotifyCallbackEntry(OnTimegatesClicked),
+  OnHelpCallbackEntry(OnSelectHomeWaypoint),
   EndCallBackEntry()
 };
 

@@ -320,9 +320,6 @@ void Globals_Init(void) {
   // Number of asps (items) of existing airspaces updated from DoAirspaces
   LKNumAirspaces=0;
 
-  WpHome_Lat=0;
-  WpHome_Lon=0;
-
   // Name of nearest wp to takeoff and landings
   _tcscpy(TAKEOFFWP_Name,_T(""));
   _tcscpy(LANDINGWP_Name,_T(""));

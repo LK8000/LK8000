@@ -56,6 +56,7 @@
 #include "Calc/Vario.h"
 #include "IO/Async/GlobalIOThread.hpp"
 #include "Tracking/Tracking.h"
+#include "Waypoints/SetHome.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>

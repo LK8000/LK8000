@@ -17,6 +17,7 @@
 #include <string>
 #include <cassert>
 #include "Waypointparser.h"
+#include "Waypoints/SetHome.h"
 
 namespace {
 
@@ -167,8 +168,11 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
       }
       else if (type_str == "SSS") {
 
-        // warning if not the first after takeoff ( unmanaged by LK8000 )
-        assert(std::distance(task_it, std::next(std::begin(Task))) <= 1);
+        // !! warning if not the first after takeoff ( unmanaged by LK8000 )
+        if (std::distance(std::begin(Task), task_it) >= 1) {
+          // set first tp as "HomeWaypoint"
+          SetNewHome(Task[0].Index);
+        }
 
         StartLine = 0; // CIRCLE
         StartRadius = tp.get("radius").get<double>();
@@ -268,8 +272,12 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
     if (type.is<double>()) {
       switch (static_cast<int>(type.get<double>())) {
       case 2: // SSS
-        // warning if not the first after takeoff ( unmanaged by LK8000 )
-        assert(std::distance(task_it, std::next(std::begin(Task))) <= 1);
+
+        // !! warning if not the first after takeoff ( unmanaged by LK8000 )
+        if (std::distance(std::begin(Task), task_it) >= 1) {
+          // set first tp as "HomeWaypoint"
+          SetNewHome(Task[0].Index);
+        }
 
         task_it = std::begin(Task); // always start task with Start of Speed Turnpoint
         task_it->AATType = CIRCLE;

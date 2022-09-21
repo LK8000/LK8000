@@ -43,6 +43,7 @@ protected:
     bool SaveTimeGate(xml_node* node);
     bool SaveTaskRule(xml_node* node);
 
+    bool SaveHome(xml_node* node);
     bool SaveTaskPointList(xml_node* node);
     bool SaveStartPointList(xml_node* node);
     bool SaveWayPointList(xml_node* node);
@@ -59,6 +60,7 @@ protected:
     void LoadTimeGate(const xml_node* node);
     void LoadRules(const xml_node* node);
 
+    bool LoadHome(const xml_node* node);
     bool LoadTaskPointList(const xml_node* node);
     bool LoadStartPointList(const xml_node* node);
     void LoadWayPointList(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname);

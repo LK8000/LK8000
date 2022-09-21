@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
+#include "Waypoints/SetHome.h"
 
 void FlyDirectTo(int index) {
   if (!CheckDeclaration())
@@ -20,6 +21,7 @@ void FlyDirectTo(int index) {
   InsertRecentList(index);
 
   ClearTask();
+  SetHome(true);  // force home reload
   Task[0].Index = index;
   ActiveTaskPoint = 0;
   RefreshTask();

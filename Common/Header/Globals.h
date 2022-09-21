@@ -295,10 +295,6 @@ GEXTERN int LKTime_Real, LKTime_Ghost, LKTime_Zombie;
 // type of file format for waypoints files
 GEXTERN int WpFileType[NO_WP_FILES];
 
-GEXTERN TCHAR WpHome_Name[NAME_SIZE+1];
-GEXTERN double WpHome_Lat;
-GEXTERN double WpHome_Lon;
-
 GEXTERN TCHAR TAKEOFFWP_Name[NAME_SIZE+1];
 GEXTERN TCHAR LANDINGWP_Name[NAME_SIZE+1];
 

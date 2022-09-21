@@ -21,6 +21,7 @@
 #include "LKStyle.h"
 #include "Sound/Sound.h"
 #include "Radio.h"
+#include "Waypoints/SetHome.h"
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -239,29 +240,8 @@ static void OnReplaceClicked(WndButton* pWnd){
 }
 
 static void OnNewHomeClicked(WndButton* pWnd){
-  LockTaskData();
-  HomeWaypoint = SelectedWaypoint;
-  if (SIMMODE) {
-	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
-	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-	GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-  } else {
-	if ( GPS_INFO.NAVWarning ) {
-		GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
-		GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-		GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-	}
-  }
-  // Update HomeWaypoint
-  WpHome_Lat=WayPointList[HomeWaypoint].Latitude; // 100213
-  WpHome_Lon=WayPointList[HomeWaypoint].Longitude;
-  _tcscpy(WpHome_Name,WayPointList[HomeWaypoint].Name);
+  SetNewHome(SelectedWaypoint);
 
-  #if TESTBENCH
-  StartupStore(_T("... Home set to wp.%d by dlgWayPointDetails\n"),HomeWaypoint);
-  #endif
-  RefreshTask();
-  UnlockTaskData();
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {

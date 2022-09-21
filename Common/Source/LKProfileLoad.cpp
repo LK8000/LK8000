@@ -306,7 +306,9 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryGpsAltitudeOffset, GPSAltitudeOffset)) return;
   if (settings::read(sname, svalue, szRegistryHandicap, Handicap)) return;
   if (settings::read(sname, svalue, szRegistryHideUnits, HideUnits)) return;
-  if (settings::read(sname, svalue, szRegistryHomeWaypoint, HomeWaypoint)) return;
+  if (settings::read(sname, svalue, szRegistryHomeWaypoint, HomeWaypoint)) {
+    return;
+  }
   if (settings::read(sname, svalue, szRegistryDeclTakeOffLanding, DeclTakeoffLanding)) return;
 
   // InfoType

@@ -20,7 +20,6 @@ struct TASK_POINT;
 // for extended formats, returns the type of file
 ///int ReadWayPointFile(HANDLE hFile);
 void ReadWayPoints(void);
-void SetHome(bool reset);
 int FindNearestWayPoint(double X, double Y, double MaxRange);
 int FindNearestFarVisibleWayPoint(double X, double Y, double MaxRange, short wpType);
 void CloseWayPoints(void);
