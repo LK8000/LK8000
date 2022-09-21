@@ -261,8 +261,8 @@ static void SetValues(bool first) {
         // LKTOKEN  _@M274_ = "FAI Sector" 
         dfe->addEnumText(MsgToken(274));
       }
+      dfe->Set(FinishLine);
     }
-    dfe->Set(FinishLine);
     wp->RefreshDisplay();
   }
 
