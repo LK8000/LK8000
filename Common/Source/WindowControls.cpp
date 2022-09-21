@@ -407,9 +407,10 @@ void DataField::SetData(void){
     (void) Mode;
   }
 
-DataField::DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t&& OnDataAccess) : mOwnerProperty(Owner) {
+DataField::DataField(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, DataAccessCallback_t&& OnDataAccess) 
+      : mOnDataAccess(std::move(OnDataAccess)), mOwnerProperty(Owner)
+{
   mUsageCounter=0;
-  mOnDataAccess = OnDataAccess;
   
   from_utf8(EditFormat, mEditFormat);
   from_utf8(DisplayFormat, mDisplayFormat);
