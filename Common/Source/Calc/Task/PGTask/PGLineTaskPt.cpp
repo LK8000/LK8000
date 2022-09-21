@@ -11,6 +11,19 @@
 
 #include "PGLineTaskPt.h"
 
+namespace {
+
+double VectorAngle(const ProjPt& v, const ProjPt& w) {
+    ProjPt::scalar_type dot = DotProduct(v, w);
+    ProjPt::scalar_type d2 = Length(v) * Length(w);
+    if (d2 != 0.0) {
+        return acos(dot / d2);
+    }
+    return 0.0;
+}
+
+}
+
 PGLineTaskPt::PGLineTaskPt(ProjPt&& point)
     : PGTaskPt(std::forward<ProjPt>(point)) { }
 

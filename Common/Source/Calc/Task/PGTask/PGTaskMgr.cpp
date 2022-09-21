@@ -39,10 +39,11 @@ namespace {
     /**
      * T must inherit from PGTaskPt
      */
-    template<typename T>
+    template<typename T, typename ...Args>
     std::enable_if_t<std::is_base_of_v<PGTaskPt, T>, std::unique_ptr<T>>
-    getPGTaskPt(const TransverseMercator* pProjection, size_t idx) {
-        return std::make_unique<T>(pProjection->Forward(GetTurnpointPosition(idx)));
+    getPGTaskPt(const TransverseMercator* pProjection, size_t idx, Args&&... args) {
+        assert(pProjection);
+        return std::make_unique<T>(pProjection->Forward(GetTurnpointPosition(idx)), std::forward<Args>(args)...);
     }
 
 } // namespace
@@ -104,29 +105,16 @@ void PGTaskMgr::Initialize() {
 }
 
 void PGTaskMgr::AddCircle(int TskIdx, double Radius) {
-    assert(m_Projection);
-
-    auto pTskPt = getPGTaskPt<PGCicrcleTaskPt>(m_Projection.get(), TskIdx);
-
-    pTskPt->m_Radius = Radius;
+    auto pTskPt = getPGTaskPt<PGCicrcleTaskPt>(m_Projection.get(), TskIdx, Radius);
     m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::AddEssCircle(int TskIdx, double Radius) {
-    assert(m_Projection);
-
-    auto pTskPt = getPGTaskPt<PGEssCicrcleTaskPt>(m_Projection.get(), TskIdx);
-
-    pTskPt->m_Radius = Radius;
+    auto pTskPt = getPGTaskPt<PGEssCicrcleTaskPt>(m_Projection.get(), TskIdx, Radius);
     m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::AddLine(int TskIdx, double Radius) {
-    assert(m_Projection);
-    if(!m_Projection) {
-        return;
-    }
-
     auto pTskPt = getPGTaskPt<PGLineTaskPt>(m_Projection.get(), TskIdx);
 
     // Find prev Tp not same as current.
@@ -137,7 +125,7 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
 
     // Find next Tp not same as current.
     int NextIdx = TskIdx + 1;
-    while (ValidTaskPoint(NextIdx) && Task[NextIdx].Index == Task[TskIdx].Index) {
+    while (ValidTaskPointFast(NextIdx) && Task[NextIdx].Index == Task[TskIdx].Index) {
         ++NextIdx;
     }
 
@@ -187,16 +175,12 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
 }
 
 void PGTaskMgr::AddSector(int TskIdx) {
-    assert(m_Projection);
-
     m_Task.emplace_back(getPGTaskPt<PGSectorTaskPt>(m_Projection.get(), TskIdx));
 
 	//TODO : Handle Sector Turn Point
 }
 
 void PGTaskMgr::AddCone(int TskIdx) {
-    assert(m_Projection);
-
     auto pTskPt = getPGTaskPt<PGConeTaskPt>(m_Projection.get(), TskIdx);
 
     pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
@@ -241,7 +225,7 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         if (next < m_Task.size()) {
             m_Task[i]->Optimize(PrevPos, m_Task[next]->getOptimized(), NextAltitude);
         } else {
-            m_Task[i]->Optimize(PrevPos, ProjPt(0, 0), NextAltitude);
+            m_Task[i]->Optimize(PrevPos, {0., 0.}, NextAltitude);
         }
 
         // Update previous Position for Next Loop

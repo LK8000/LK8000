@@ -21,16 +21,6 @@ bool IsNull(const ProjPt& p) {
     return p == ProjPt(0., 0.);
 }
 
-
-inline double VectorAngle(const ProjPt& v, const ProjPt& w) {
-    ProjPt::scalar_type dot = DotProduct(v, w);
-    ProjPt::scalar_type d2 = Length(v) * Length(w);
-    if (d2 != 0.0) {
-        return acos(dot / d2);
-    }
-    return 0.0;
-}
-
 class PGTaskPt {
     friend class PGTaskMgr;
 public:

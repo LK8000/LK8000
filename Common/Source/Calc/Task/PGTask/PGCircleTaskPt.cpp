@@ -38,8 +38,8 @@ private:
 
 } // namespace
 
-PGCicrcleTaskPt::PGCicrcleTaskPt(ProjPt&& point) 
-    : PGTaskPt(std::forward<ProjPt>(point)) { }
+PGCicrcleTaskPt::PGCicrcleTaskPt(ProjPt&& point, double Radius)
+    : PGTaskPt(std::forward<ProjPt>(point)), m_Radius(Radius) { }
 
 void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     if(m_Radius == 0.0){

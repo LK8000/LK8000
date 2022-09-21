@@ -18,7 +18,7 @@ class PGCicrcleTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
     PGCicrcleTaskPt() = delete;
-    PGCicrcleTaskPt(ProjPt&& point);
+    PGCicrcleTaskPt(ProjPt&& point, double Radius);
 
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 
