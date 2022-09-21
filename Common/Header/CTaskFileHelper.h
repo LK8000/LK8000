@@ -27,9 +27,11 @@ public:
     CTaskFileHelper() = default;
 
     CTaskFileHelper( const CTaskFileHelper& ) = delete;
-    CTaskFileHelper& operator=( const CTaskFileHelper& ) = delete;    
+    CTaskFileHelper& operator=( const CTaskFileHelper& ) = delete;
 
     bool Load(const TCHAR* szFileName);
+    bool Load(std::istream& stream);
+
     bool Save(const TCHAR* szFileName);
 
 protected:

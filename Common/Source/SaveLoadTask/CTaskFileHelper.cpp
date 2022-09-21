@@ -18,7 +18,7 @@
 #include "utils/stringext.h"
 #include "Waypointparser.h"
 #include "Util/UTF8.hpp"
-#include "utils/openzip.h"
+#include "utils/zzip_stream.h"
 
 #include <fstream>
 #include "Library/rapidxml/rapidxml.hpp"
@@ -202,14 +202,63 @@ bool getLastTaskWayPointName(const xml_node* node, TCHAR (&lastWPname)[size]) {
 
 } // namespace
 
+bool CTaskFileHelper::Load(std::istream& stream) {
+    try {
+        std::istreambuf_iterator<char> it(stream), end;
+        std::string ss{it, end};
+
+        constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
+
+        xml_document xmldoc;
+        xmldoc.parse<Flags>(ss.data());
+        const xml_node* rootNode = xmldoc.first_node("lk-task");
+        if (!rootNode) {
+            return false;
+        }
+
+        ScopeLock Lock(CritSec_TaskData);
+
+        ClearTask();
+
+        LoadOptions(rootNode);
+
+        if(ISGAAIRCRAFT) {
+            TCHAR firstWPname[NAME_SIZE+1];
+            TCHAR lastWPname[NAME_SIZE+1];
+
+            const xml_node* taskNode = rootNode->first_node("taskpoints");
+
+            bool gotFirstWPname = getFirstTaskWayPointName(taskNode, firstWPname);
+            bool gotLastWPname = getLastTaskWayPointName(taskNode, lastWPname);
+
+            LoadWayPointList(rootNode->first_node("waypoints"), (gotFirstWPname?firstWPname:nullptr), (gotLastWPname?lastWPname:nullptr));
+        } else {
+            LoadWayPointList(rootNode->first_node("waypoints"), nullptr, nullptr);
+        }
+
+        if (!LoadTaskPointList(rootNode->first_node("taskpoints"))) {
+            return false;
+        }
+        if (!LoadStartPointList(rootNode->first_node("startpoints"))) {
+            return false;
+        }
+
+        RefreshTask();
+
+        TaskModified = false;
+        TargetModified = false;
+
+    } catch (std::exception& e) {
+        StartupStore(_T("LoadTask : %s"), to_tstring(e.what()).c_str());
+        return false;
+    }
+    return true;
+}
 
 bool CTaskFileHelper::Load(const TCHAR* szFileName) {
     StartupStore(_T(". LoadTask : <%s>%s"), szFileName, NEWLINE);
     TCHAR taskFileName[MAX_PATH];
 
-    ScopeLock lock(CritSec_TaskData);
-
-    ClearTask();
     if (FullResetAsked) {
         #if TESTBENCH
         StartupStore(_T("... LoadTask detected FullResetAsked, attempt to load DEMO.lkt\n"));
@@ -224,61 +273,22 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
 
     try {
 
-        zzip_file_ptr stream(openzip(taskFileName, "rt"));
-        if (stream) {
-            zzip_seek(stream, 0, SEEK_END); // seek to end of file
-            long size = zzip_tell(stream); // get current file pointer
-            zzip_seek(stream, 0, SEEK_SET); // seek back to beginning of file
-            auto buff = std::make_unique<char[]>(size + 1);
-            zzip_ssize_t nRead = zzip_read(stream, buff.get(), size);
-            if (nRead != size) {
-                return false;
-            }
-            buff[nRead] = '\0';
-
-            constexpr int Flags = rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace;
-
-            xml_document xmldoc;
-            xmldoc.parse<Flags>(buff.get());
-            const xml_node* rootNode = xmldoc.first_node("lk-task");
-            if (rootNode) {
-                LoadOptions(rootNode);
-
-                if(ISGAAIRCRAFT) {
-                    TCHAR firstWPname[NAME_SIZE+1];
-                    TCHAR lastWPname[NAME_SIZE+1];
-
-                    const xml_node* taskNode = rootNode->first_node("taskpoints");
-
-                    bool gotFirstWPname = getFirstTaskWayPointName(taskNode, firstWPname);
-                    bool gotLastWPname = getLastTaskWayPointName(taskNode, lastWPname);
-
-                    LoadWayPointList(rootNode->first_node("waypoints"), (gotFirstWPname?firstWPname:nullptr), (gotLastWPname?lastWPname:nullptr));
-                } else {
-                    LoadWayPointList(rootNode->first_node("waypoints"), nullptr, nullptr);
-                }
-
-                if (!LoadTaskPointList(rootNode->first_node("taskpoints"))) {
-                    return false;
-                }
-                if (!LoadStartPointList(rootNode->first_node("startpoints"))) {
-                    return false;
-                }
-            }
+        zzip_stream file_stream(taskFileName, "rt");
+        if (!file_stream) {
+            return false;
         }
+        std::istream stream(&file_stream);
+        if (Load(stream)) {
+            // We are not using the DEMO.lkt forced by FULL RESET. We use the original task filename.
+            _tcscpy(LastTaskFileName, szFileName);
+            return true;
+        }
+
     } catch (std::exception& e) {
         StartupStore(_T("LoadTask : %s"), to_tstring(e.what()).c_str());
-        return false;
     }
 
-    RefreshTask();
-
-    TaskModified = false;
-    TargetModified = false;
-    // We are not using the DEMO.lkt forced by FULL RESET. We use the original task filename.
-    _tcscpy(LastTaskFileName, szFileName);
-
-    return true;
+    return false;
 }
 
 void CTaskFileHelper::LoadOptions(const xml_node* node) {
