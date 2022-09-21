@@ -9,8 +9,8 @@
 #include "externs.h"
 #include "NavFunctions.h"
 
-
-bool InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int the_turnpoint) {
+static
+bool InDefaultTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int the_turnpoint) {
 	if(!ValidTaskPoint(the_turnpoint)) return false;
 	switch(SectorType) {
 		case CIRCLE:
@@ -60,4 +60,13 @@ bool InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int the_turn
 			break;
 	}
 	return false;
+}
+
+
+bool InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int tp) {
+	if (UseAATTarget()) {
+		return InAATTurnSector(Basic->Longitude, Basic->Latitude, tp, Basic->Altitude);
+	} else {
+		return InDefaultTurnSector(Basic, Calculated, tp);
+	}
 }

@@ -15,21 +15,15 @@ extern AATDistance aatdistance;
 
 
 void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
-  bool insector = false;
   if (taskwaypoint>0) {
-    if (UseAATTarget()) {
-      insector = InAATTurnSector(Basic->Longitude,
-                                 Basic->Latitude, taskwaypoint, Basic->Altitude);
-    } else {
-      insector = InTurnSector(Basic, Calculated, taskwaypoint);
+    bool insector = InTurnSector(Basic, Calculated, taskwaypoint);
+
+    if (taskwaypoint == ActiveTaskPoint) {
+      Calculated->IsInSector = insector;
     }
+
     if(insector) {
-      if (taskwaypoint == ActiveTaskPoint) {
-        Calculated->IsInSector = true;
-      }
-      aatdistance.AddPoint(Basic->Longitude,
-                           Basic->Latitude,
-                           taskwaypoint);
+      aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, taskwaypoint);
     }
   }
 }
