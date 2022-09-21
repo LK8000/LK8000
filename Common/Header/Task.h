@@ -95,8 +95,11 @@ void guiToggleLogger(bool noAsk = false);
 
 bool LoadCupTask(LPCTSTR FileName);
 bool LoadGpxTask(LPCTSTR FileName);
-bool LoadXctrackTaskFile(const TCHAR* szFilePath);
-bool LoadXctrackTaskString(const char* begin, const char* end);
+
+bool LoadXctrackTask(const TCHAR* szFilePath);
+bool LoadXctrackTask(std::istream& stream);
+bool LoadXctrackTask(const char* begin, const char* end);
+
 void SaveTask(const TCHAR *FileName);
 void DefaultTask(void);
 void ClearTask(void);

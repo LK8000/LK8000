@@ -570,7 +570,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
       } else if (_tcsicmp(wextension,_T(LKS_WP_GPX))==0) {
         bOK = LoadGpxTask(szFilePath);
       } else if (_tcsicmp(wextension,_T(LKS_XCTSK))==0) {
-        bOK = LoadXctrackTaskFile(szFilePath);
+        bOK = LoadXctrackTask(szFilePath);
       }
       if(!bOK) {
         MessageBoxX(MsgToken(467),_T(" "), mbOk);

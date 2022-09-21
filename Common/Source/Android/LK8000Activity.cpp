@@ -146,9 +146,14 @@ Java_org_LK8000_LK8000_setDefaultStreamValues(JNIEnv *env, jclass type,
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_LK8000_loadQRCodeData(JNIEnv *env, jclass clazz, jstring data_string) {
+
   const std::string data = Java::String::ToString(env, data_string);
   if (data.find("XCTSK:") == 0) {
-    if (LoadXctrackTaskString(std::next(std::begin(data), 6).base(), std::end(data).base())) {
+
+    auto begin = std::next(std::begin(data), 6).base();
+    auto end = std::end(data).base();
+
+    if (LoadXctrackTask(begin, end)) {
       if (main_window) {
         WindowControl *pWnd = dynamic_cast<WindowControl*>(main_window->GetFocusedWindow());
         if (pWnd) {

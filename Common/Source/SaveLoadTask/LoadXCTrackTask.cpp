@@ -371,26 +371,40 @@ json::value parse_json(_Args&& ...args) {
   return task_json;
 }
 
-} // namespace
-
-bool LoadXctrackTaskFile(const TCHAR* szFilePath) {
-    try {
-      // check file contents
-      zzip_stream file(szFilePath, "rb");
-      if (file) {
-        return LoadXctrackTask(parse_json(std::istream(&file)));
-      }
-    } catch (std::exception& e) {
-      StartupStore(_T(".... Invalid XCTrack task : %s"), to_tstring(e.what()).c_str());
-    }
-    return false;
+void LogError(std::exception& e) {
+  StartupStore(_T(".... Invalid XCTrack task : %s"), to_tstring(e.what()).c_str());
 }
 
-bool LoadXctrackTaskString(const char* begin, const char* end) {
+} // namespace
+
+
+bool LoadXctrackTask(const TCHAR* szFilePath) {
+  try {
+    zzip_stream file(szFilePath, "rb");
+    if (file) {
+      std::istream stream(&file);
+      return LoadXctrackTask(stream);
+    }
+  } catch (std::exception& e) {
+    LogError(e);
+  }
+  return false;
+}
+
+bool LoadXctrackTask(std::istream& stream) {
+  try {
+    return LoadXctrackTask(parse_json(stream));
+  } catch (std::exception& e) {
+    LogError(e);
+  }
+  return false;
+}
+
+bool LoadXctrackTask(const char* begin, const char* end) {
   try {
     return LoadXctrackTask(parse_json(begin, end));
   } catch (std::exception& e) {
-    StartupStore(_T(".... Invalid XCTrack task : %s"), to_tstring(e.what()).c_str());
+    LogError(e);
   }
   return false;
 }
