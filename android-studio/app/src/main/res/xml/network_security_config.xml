@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">lk8000.it</domain>
         <domain includeSubdomains="true">bware.it</domain>
+        <domain includeSubdomains="no">lotnik.org</domain> <!-- to allow Poland data download -->
     </domain-config>
 </network-security-config>
