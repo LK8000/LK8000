@@ -10,6 +10,13 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.22]
+. skylines.aero tracking : fix ignored "only in flight" parameter
+. Add new "Qwerty" keyboard Model
+. Remove “enter” or “exit” task turnpoint property
+. Allow to set Home turnpoint as takeoff in task definition
+. Android Download Manager : Add Poland Maps / Airspaces / Airfields from "lotnik.org"
+
 [version 7.3.21]
 . PG Task fix line turnpoint optimization
 . Add ogn database support
