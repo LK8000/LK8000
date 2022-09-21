@@ -109,8 +109,6 @@ void PGTaskMgr::AddCircle(int TskIdx, double Radius) {
     auto pTskPt = getPGTaskPt<PGCicrcleTaskPt>(m_Projection.get(), TskIdx);
 
     pTskPt->m_Radius = Radius;
-    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
-
     m_Task.emplace_back(std::move(pTskPt));
 }
 
@@ -120,8 +118,6 @@ void PGTaskMgr::AddEssCircle(int TskIdx, double Radius) {
     auto pTskPt = getPGTaskPt<PGEssCicrcleTaskPt>(m_Projection.get(), TskIdx);
 
     pTskPt->m_Radius = Radius;
-    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
-
     m_Task.emplace_back(std::move(pTskPt));
 }
 
@@ -206,9 +202,6 @@ void PGTaskMgr::AddCone(int TskIdx) {
     pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
     pTskPt->m_AltBase = Task[TskIdx].PGConeBase;
     pTskPt->m_RadiusBase = Task[TskIdx].PGConeBaseRadius;
-
-    pTskPt->m_bExit = false;
-//    pTskPt->m_bExit = ((TskIdx > 0) ? (Task[TskIdx].OutCircle) : !PGStartOut);
 
     m_Task.emplace_back(std::move(pTskPt));
 }

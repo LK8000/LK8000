@@ -90,16 +90,6 @@ static void setVariables(void) {
     wp->GetDataField()->SetAsInteger(PGGateIntervalTime);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGStartOut"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M343_ = "IN (Exit)"
-    dfe->addEnumText(MsgToken(343));
-	// LKTOKEN  _@M498_ = "OUT (Enter)"
-    dfe->addEnumText(MsgToken(498));
-    dfe->Set(PGStartOut);
-    wp->RefreshDisplay();
-  }
 }
 
 
@@ -168,13 +158,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if ( PGGateIntervalTime != wp->GetDataField()->GetAsInteger()) {
       PGGateIntervalTime = wp->GetDataField()->GetAsInteger();
-      changed = true;
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPGStartOut"));
-  if (wp) {
-    if ( PGStartOut != wp->GetDataField()->GetAsInteger()) {
-      PGStartOut = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }

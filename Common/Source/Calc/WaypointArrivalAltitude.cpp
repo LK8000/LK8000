@@ -55,29 +55,17 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 	// then calculate ETE for reaching the cylinder. Also working when we are 
 	// in the wrong side of cylinder
 	if (UseGates() && !DoOptimizeRoute()) {
-		if (ActiveTaskPoint==0 && i==Task[0].Index ) { 
-			if (PGStartOut) {
-				if (CorrectSide()) {
-					// start out,  from outside cylinder
-					wStartDistance=wDistance-StartRadius;
-					wStartBearing=wBearing;
-				} else {
-					// start out,  but inside cylinder
-					wStartDistance=StartRadius-wDistance;
-					wStartBearing=wBearing+180;
-					if (wStartBearing>360) wStartBearing-=360;
-				}
+		if (ActiveTaskPoint==0 && i==Task[0].Index ) {
+			if (Calculated->IsInSector) {
+				// start in, correct side is inside cylinder
+				// or start out,  but inside cylinder
+				wStartDistance = StartRadius - wDistance;
+				wStartBearing = AngleLimit360(wBearing + 180);
 			} else {
-				if (CorrectSide()) {
-					// start in, correct side is inside cylinder
-					wStartDistance=StartRadius-wDistance;
-					wStartBearing=wBearing+180;
-					if (wStartBearing>360) wStartBearing-=360;
-				} else {
-					// start in, and we are still outside
-					wStartDistance=wDistance-StartRadius;
-					wStartBearing=wBearing;
-				}
+				// start out, from outside cylinder
+				// or start in, and we are still outside
+				wStartDistance = wDistance - StartRadius;
+				wStartBearing = wBearing;
 			}
 
 			// we don't use GetMacCready(i,GMC_DEFAULT)

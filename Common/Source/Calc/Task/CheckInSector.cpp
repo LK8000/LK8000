@@ -13,48 +13,61 @@
 
 extern AATDistance aatdistance;
 
+namespace {
 
-void CheckInSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+void AdvanceToNext(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
+  if (ReadyToAdvance(Calculated, true, false)) {
+    AnnounceWayPointSwitch(Calculated, true);
 
-  if (ActiveTaskPoint>0) {
-    AddAATPoint(Basic, Calculated, ActiveTaskPoint-1);
+    Calculated->LegStartTime = Basic->Time;
+    flightstats.LegStartTime[ActiveTaskPoint] = Basic->Time;
+
+    // Update 'IsInSector' is required because ActiveTaskPoint has changed !
+    Calculated->IsInSector = InTurnSector(Basic, Calculated, ActiveTaskPoint);
+  }
+}
+
+bool IsCircle(const size_t& idx) {
+  assert(gTaskType == TSK_GP);
+  ScopeLock lock(CritSec_FlightData);
+  if (idx > 0 && ValidTaskPointFast(idx + 1)) { 
+    // Not Start or Finish
+    switch (Task[idx].AATType) {
+      case CIRCLE:
+      case 2: // CONE
+      case 3: // ESS_CIRCLE
+        return true;
+      default:
+        return false;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+
+void CheckInSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
+  if (ActiveTaskPoint > 0) {
+    AddAATPoint(Basic, Calculated, ActiveTaskPoint - 1);
   }
   AddAATPoint(Basic, Calculated, ActiveTaskPoint);
 
-  if(DoOptimizeRoute()) {
-	  if(ValidTaskPoint(ActiveTaskPoint+1) && Task[ActiveTaskPoint].OutCircle) {
-		  if (aatdistance.HasEntered(ActiveTaskPoint)) {
-
-			  double CenterDist = 0.0;
-			  DistanceBearing( WayPointList[TASKINDEX].Latitude, 
-								WayPointList[TASKINDEX].Longitude,
-								Basic->Latitude,
-								Basic->Longitude,
-								&CenterDist, NULL );
-
-			  if(CenterDist > Task[ActiveTaskPoint].AATCircleRadius) {
-				  if (ReadyToAdvance(Calculated, true, false)) {
-					  AnnounceWayPointSwitch(Calculated, true);
-					  Calculated->LegStartTime = Basic->Time;
-					  flightstats.LegStartTime[ActiveTaskPoint] = Basic->Time;
-				  }
-			  }
-		  }
-		  return;
-	  }
+  if (gTaskType == TSK_GP) {
+    if (IsCircle(ActiveTaskPoint)) {
+      static bool last_isInSector = Calculated->IsInSector;
+      if (last_isInSector != Calculated->IsInSector) {
+        AdvanceToNext(Basic, Calculated);
+        last_isInSector = Calculated->IsInSector;
+      }
+      return;
+    }
   }
-  
-  // JMW Start bug XXX
 
   if (aatdistance.HasEntered(ActiveTaskPoint)) {
-    if (ReadyToAdvance(Calculated, true, false)) {
-      AnnounceWayPointSwitch(Calculated, true);
-      Calculated->LegStartTime = Basic->Time;
-      flightstats.LegStartTime[ActiveTaskPoint] = Basic->Time;
-    }
+    AdvanceToNext(Basic, Calculated);
     if (Calculated->Flying) {
       Calculated->ValidFinish = false;
     }
   }
 }
-

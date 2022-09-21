@@ -164,7 +164,6 @@ PGNumberOfGates=0
 PGOpenTimeH=12
 PGOpenTimeM=0
 PGOptimizeRoute=1
-PGStartOut=0
 PressureHg=0
 SafetyAltitudeArrival1=0
 SafetyAltitudeMode=0

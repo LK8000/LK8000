@@ -385,8 +385,6 @@ void Globals_Init(void) {
   PGGateIntervalTime=0;
   // How many gates, 1-x
   PGNumberOfGates=0;
-  // Start out or start in?
-  PGStartOut=false;
   // Current assigned gate
   ActiveGate=-1;
 

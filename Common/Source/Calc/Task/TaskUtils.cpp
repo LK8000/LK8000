@@ -107,7 +107,6 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.AATCircleRadius = SectorRadius;
     TaskWpt.AATStartRadial = 0;
     TaskWpt.AATFinishRadial = 360;
-    TaskWpt.OutCircle = false;
     TaskWpt.PGConeBase = 0;
     TaskWpt.PGConeSlope = 2.5;
     TaskWpt.PGConeBaseRadius = 0.;

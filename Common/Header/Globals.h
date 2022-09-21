@@ -355,8 +355,6 @@ GEXTERN int PGCloseTime;
 GEXTERN int PGGateIntervalTime;
 // How many gates, 1-x
 GEXTERN int PGNumberOfGates;
-// Start out or start in?
-GEXTERN bool PGStartOut;
 // Current assigned gate
 GEXTERN int ActiveGate;
 

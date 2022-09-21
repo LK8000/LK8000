@@ -48,7 +48,6 @@ struct TASK_POINT
   double AATTargetLon;
   POINT	 Target;
   bool   AATTargetLocked;
-  bool	 OutCircle;
   double AATTargetAltitude;
   double PGConeSlope; // Slope Ratio for PG Cone Turn point
   double PGConeBase; // Base Altitude of Cone Turn Point

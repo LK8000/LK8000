@@ -157,7 +157,6 @@ void LKProfileResetDefault() {
 
   PGNumberOfGates=0;
   PGGateIntervalTime=30;
-  PGStartOut=0;
 
   // These values are used on startup, but on reset change also OpenCloseTopology
   LKTopoZoomCat05=DEFAULT_WATER_LABELS_THRESHOLD;	// coast area share the same label management of cat10

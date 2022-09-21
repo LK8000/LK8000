@@ -103,7 +103,10 @@ int InitActiveGate(void);
 	// is available crossing the start sector..
 bool ValidGate(void);
 	// Are we on the correct side of start cylinder?
-bool CorrectSide(void);
+bool CorrectSide(const DERIVED_INFO& Calculated);
+// Validate STart point from ouside or from inside observation zone
+bool StartOutside(const DERIVED_INFO& Calculated);
+
 void ResetFreeFlightStats(DERIVED_INFO *Calculated);
 
 

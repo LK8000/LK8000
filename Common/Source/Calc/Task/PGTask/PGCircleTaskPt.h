@@ -26,7 +26,6 @@ protected:
     bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);
 
     double m_Radius = 0;
-    bool m_bExit = false;
 };
 
 #endif	/* PGCICRCLETASKPT_H */

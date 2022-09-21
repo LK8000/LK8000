@@ -35,7 +35,6 @@ void ClearTask(void) {
 
   PGNumberOfGates=0;
   PGGateIntervalTime=30;
-  PGStartOut=0;
 
   std::for_each(std::begin(Task), std::end(Task), ResetTaskWpt);
   std::for_each(std::begin(TaskStats), std::end(TaskStats), ResetTaskStat);

@@ -469,7 +469,6 @@ bool CTaskFileHelper::LoadTaskPointList(const xml_node* node) {
                 case CIRCLE:
                     StartRadius = Task[0].AATCircleRadius;
                     StartLine = 0;
-                    PGStartOut = !Task[0].OutCircle;
                     break;
                 case LINE:
                     StartRadius = Task[0].AATCircleRadius;
@@ -557,7 +556,6 @@ bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
             if (strcmp(szType, "circle") == 0) {
                 Task[idx].AATType = CIRCLE;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
-                GetAttribute(node, "Exit", Task[idx].OutCircle);
             } else if (strcmp(szType, "sector") == 0) {
                 Task[idx].AATType = SECTOR;
                 GetAttribute(node, "radius", Task[idx].AATSectorRadius);
@@ -573,11 +571,9 @@ bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
                 GetAttribute(node, "base", Task[idx].PGConeBase);
                 GetAttribute(node, "radius", Task[idx].PGConeBaseRadius);
                 GetAttribute(node, "slope", Task[idx].PGConeSlope);
-                Task[idx].OutCircle = false;
             } else if (strcmp(szType, "ess_circle") == 0) {
                 Task[idx].AATType = ESS_CIRCLE;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
-                GetAttribute(node, "Exit", Task[idx].OutCircle);
             }
         }
         GetAttribute(node, "lock", Task[idx].AATTargetLocked);
@@ -956,13 +952,6 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
             case CIRCLE:
                 SetAttribute(node, "type", "circle");
                 SetAttribute(node, "radius", Radius);
-                if (DoOptimizeRoute()) {
-                    if(idx==0) {
-                        SetAttribute(node, "Exit", PGStartOut?_T("false"):_T("true"));
-                    } else {
-                        SetAttribute(node, "Exit", TaskPt.OutCircle?_T("true"):_T("false"));
-                    }
-                }
                 break;
             case SECTOR:
                 SetAttribute(node, "type", "sector");
@@ -986,13 +975,6 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
             case ESS_CIRCLE:
                 SetAttribute(node, "type", "ess_circle");
                 SetAttribute(node, "radius", Radius);
-                if (DoOptimizeRoute()) {
-                    if(idx==0) {
-                        SetAttribute(node, "Exit", PGStartOut?_T("false"):_T("true"));
-                    } else {
-                        SetAttribute(node, "Exit", TaskPt.OutCircle?_T("true"):_T("false"));
-                    }
-                }    
                 break;
             default:
                 LKASSERT(false);

@@ -299,7 +299,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle,&bmpValue,&bmpTitle);
     if (gateinuse >= -1) {
         // if we are still painting , it means we did not start yet..so we use colors
-        if (!CorrectSide()) distcolor = AMBERCOLOR;
+        if (!CorrectSide(DerivedDrawInfo)) {
+            distcolor = AMBERCOLOR;
+        }
 
     } else {
         if (!Overlay_TopRight) goto _skip_TopRight;
@@ -427,12 +429,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 // LKTOKEN  _@M922_ = "NOT FLYING"
                 _tcscpy(BufferValue, MsgToken(922));
             } else {
+                bool StartOut = StartOutside(DerivedDrawInfo);
                 if (gatechrono > 0) {
                     // IsInSector works reversed!
-                    if (PGStartOut && DerivedDrawInfo.IsInSector) {
+                    if (StartOut && DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M923_ = "WRONG inSIDE"
                         _tcscpy(BufferValue, MsgToken(923));
-                    } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
+                    } else if (!StartOut && !DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M924_ = "WRONG outSIDE"
                         _tcscpy(BufferValue, MsgToken(924));
                     } else {
@@ -454,10 +457,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                             }
                         } else {
                             // IsInSector works reversed!
-                            if (PGStartOut && DerivedDrawInfo.IsInSector) {
+                            if (StartOut && DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M923_ = "WRONG inSIDE"
                                 _tcscpy(BufferValue, MsgToken(923));
-                            } else if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
+                            } else if (!StartOut && !DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M924_ = "WRONG outSIDE"
                                 _tcscpy(BufferValue, MsgToken(924));
                             }

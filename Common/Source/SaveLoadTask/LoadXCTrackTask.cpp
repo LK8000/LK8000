@@ -203,9 +203,6 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
 
   const json::value& sss = task_json.get("sss");
   if (sss.is<json::object>()) {
-    Task[0].OutCircle = false;
-    PGStartOut = true;
-
     const json::value& type = sss.get("type"); // string - one of "RACE" / "ELAPSED-TIME", required
     bool elapsed_time = (type.is<std::string>() && type.get<std::string>() == "ELAPSED-TIME");
     if(!elapsed_time) { // ignore timesgates in case of ELAPSED-TIME ( not managed in LK8000)
@@ -298,9 +295,6 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
 
   const json::value& sss = task_json.get("s");
   if (sss.is<json::object>()) {
-    Task[0].OutCircle = false;
-    PGStartOut = true;
-
     const json::value& type = sss.get("t"); // number, required, one of 1 (RACE), 2 (ELAPSED-TIME)
     bool elapsed_time = (type.is<double>() && static_cast<int>(type.get<double>()) == 2);
     if(!elapsed_time) { // ignore timesgates in case of ELAPSED-TIME ( unmanaged in )

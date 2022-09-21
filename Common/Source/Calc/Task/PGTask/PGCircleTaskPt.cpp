@@ -57,7 +57,7 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
         OptimizedDistance Fmin(a, m_Center, b, m_Radius);
         double x0 = 0;
         double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 0.01 / m_Radius);
-        if (m_bExit) {
+        if (Distance(prev, m_Center) < m_Radius) {
             double x1 = x0 + PI;
             double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin, PI, 0.01 / m_Radius);
 
@@ -107,7 +107,7 @@ bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt&
 
     if (bb4ac > 0) {
         // Two point, 
-        if ((PrevOutside && m_bExit) || (!PrevOutside && NextOutside)) {
+        if (PrevOutside || (!PrevOutside && NextOutside)) {
             LKASSERT(a);
             k = (-b + sqrt(bb4ac)) / (2 * a); // output : prev outside && Exit TP || prev inside && next outside
             bCrossPoint = true;

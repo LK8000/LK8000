@@ -19,7 +19,7 @@ DERIVED_INFO Finish_Derived_Info;
 
 
 
-// this is called only when ActiveTaskPoint is 0, still waiting for start
+// this is called only when ActiveTaskPoint is 0 (or 1 to check for restart), still waiting for start
 void CheckStart(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int *LastStartSector) {
   BOOL StartCrossed= false;
 
@@ -97,35 +97,26 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 
   }
 
-  if ((gTaskType==TSK_GP) && PGStartOut) {
-	// start OUT and go in
-	if (!InStartSector(Basic,Calculated,*LastStartSector, &StartCrossed)) {
-		Calculated->IsInSector = false;
+  bool StartOut = StartOutside(*Calculated);
+  bool IsInSector = InStartSector(Basic, Calculated, *LastStartSector, &StartCrossed);
 
-		if (ReadyToStart(Calculated)) {
-			aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, 0);
-		}
-		if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin)) {
-			ReadyToAdvance(Calculated, false, true);
-		}
-	} else
-		Calculated->IsInSector = true;
+  // start OUT and go in
+  // or Start In and Go Out
+  if (StartOut == IsInSector) {
+
+	Calculated->IsInSector = IsInSector;
+
+    if (ReadyToStart(Calculated)) {
+      aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, 0);
+    }
+    if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin)) {
+      ReadyToAdvance(Calculated, false, true);
+    }
+    // TODO accuracy: monitor start speed throughout time in start sector
   } else {
-	// start IN and go out, OLD CLASSIC MODE
-	if (InStartSector(Basic,Calculated,*LastStartSector, &StartCrossed)) {
-		// InSector check calling this function is resetting IsInSector at each run, so it was false.
-		Calculated->IsInSector = true;
-
-		if (ReadyToStart(Calculated)) {
-			aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, 0);
-		}
-    		// ToLo: we are ready to start even when outside start rules but within margin
-		if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin)) {
-			ReadyToAdvance(Calculated, false, true);
-		}
-    		// TODO accuracy: monitor start speed throughout time in start sector
-  	}
-  } // end start mode
+	// ignore if crossed from wrong side
+	StartCrossed = false;
+  }
 
   if (StartCrossed && ValidGate() ) {  // 100509
 
@@ -163,44 +154,16 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 
     // ToLo: If speed and height are outside the rules they must be within the margin...
     } else {
-    
-      if ((ActiveTaskPoint<=1) 
-          && !IsFinalWaypoint()
-          && (Calculated->ValidStart==false)
-          && (Calculated->Flying)) {
-        
-	#if 0
-	// 101014 This is called from wrong thread, and cause bad crashes
-	// moved to new GCE event inside InputEvents - paolo
-        // need to detect bad starts, just to get the statistics
-        // in case the bad start is the best available, or the user
-        // manually started
+      if ((ActiveTaskPoint <= 1) && !IsFinalWaypoint() && (!Calculated->ValidStart) && (Calculated->Flying)) {
         StartTask(Basic, Calculated, false, false);
-//        Calculated->ValidStart = false;
-        bool startTaskAnyway = false;
         if (ReadyToAdvance(Calculated, true, true)) {
-          dlgStartTaskShowModal(&startTaskAnyway,
-                                Calculated->TaskStartTime,
-                                Calculated->TaskStartSpeed,
-                                Calculated->TaskStartAltitude);
-          if (startTaskAnyway) {
-            ActiveTaskPoint=0; // enforce this since it may be 1
-            StartTask(Basic,Calculated, true, true);
-          }
+          InputEvents::processGlideComputer(GCE_TASK_CONFIRMSTART);
         }
-        Calculated->ValidStart = startTaskAnyway;
-	#else // 101014
-        StartTask(Basic, Calculated, false, false);
-        if (ReadyToAdvance(Calculated, true, true)) {
-		InputEvents::processGlideComputer(GCE_TASK_CONFIRMSTART);
-	}
-	#endif
-        
+
         if (Calculated->Flying) {
-		Calculated->ValidFinish = false;
+          Calculated->ValidFinish = false;
         }
       }
-
     }
   }
 }

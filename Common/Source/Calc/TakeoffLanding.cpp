@@ -18,7 +18,40 @@ extern DERIVED_INFO Finish_Derived_Info;
 extern void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
+namespace {
 
+GeoPoint GetWayPointPosition(size_t idx) {
+	return GetWayPointPosition(WayPointList[idx]);
+}
+
+std::array<GeoPoint, 2> GetTpLegLine(size_t a, size_t b) {
+	ScopeLock lock(CritSec_TaskData);
+	return { 
+		GetWayPointPosition(a), 
+		GetWayPointPosition(b) 
+	};
+}
+
+
+} // namespace
+
+bool StartOutside(const DERIVED_INFO& Calculated) {
+	if (gTaskType != TSK_GP || StartLine) {
+		return false;
+	}
+	static bool prev_flying = false;
+	static bool start_outside = true;
+
+	if (prev_flying != Calculated.Flying) {
+
+		auto line = GetTpLegLine(RESWP_TAKEOFF, Task[0].Index);
+
+		start_outside = (line[0].Distance(line[1]) > StartRadius);
+
+		prev_flying = Calculated.Flying;
+	}
+	return start_outside;
+}
 
 void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static bool getTakeOffPosition=true;

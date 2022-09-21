@@ -101,23 +101,6 @@ static void SetWaypointValues(bool first=false) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-    if (dfe) {
-      if (first) {
-        dfe->Clear();
-        // LKTOKEN  _@M2226_ = "Enter"
-        dfe->addEnumText(MsgToken(2145));
-        // LKTOKEN  _@M2227_ = "Exit"
-        dfe->addEnumText(MsgToken(2146));
-      }
-      dfe->Set(Task[twItemIndex].OutCircle);
-    }
-    wp->SetVisible(DoOptimizeRoute());
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeSlope);
@@ -462,12 +445,6 @@ static void GetWaypointValues(void) {
       CHECK_CHANGED(Task[twItemIndex].AATFinishRadial, 
                     wp->GetDataField()->GetAsInteger());
     }  
-	
-	wp = (WndProperty*)wf->FindByName(TEXT("prpOutCircle"));
-	if (wp) {
-		CHECK_CHANGED(Task[twItemIndex].OutCircle,
-			wp->GetDataField()->GetAsInteger());
-	}
 
    	wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
 	if (wp) {

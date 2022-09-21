@@ -162,22 +162,9 @@ void AlertGateOpen(int gate) {
 }
 
 // Are we on the correct side of start cylinder?
-bool CorrectSide() {
+bool CorrectSide(const DERIVED_INFO& Calculated) {
   // Remember that IsInSector works reversed...
-#if DEBUGTGATES
-StartupStore(_T("CorrectSide: PGstartout=%d InSector=%d\n"),PGStartOut,CALCULATED_INFO.IsInSector);
-#endif
-
-  LockTaskData();
-  bool ExitWpt = ((ActiveTaskPoint > 0) ? (Task[ActiveTaskPoint].OutCircle) : !PGStartOut);
-  UnlockTaskData();
-
-  if (!ExitWpt && CALCULATED_INFO.IsInSector)
-	  return false;
-  if (ExitWpt && !CALCULATED_INFO.IsInSector) 
-	  return false;
-
-  return true;
+  return (StartOutside(Calculated) != Calculated.IsInSector);
 }
 
 // autonomous check for usegates, and current chosen activegate is open, so a valid start

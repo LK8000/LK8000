@@ -23,8 +23,5 @@
     <WndProperty Name="prpPGCloseTimeM" Caption=":"  X="200" Y="128"  Width="38" Height="22" CaptionWidth="5" Font="2" Help="_@H1266_">
       <DataField name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min="0" Max="59" Step="1"/>
     </WndProperty>
-    <WndProperty Name="prpPGStartOut" Caption="_@M635_" X="2" Y="150" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H533_">
-      <DataField Name="" DataType="enum"  Min="0" Max="1" Step="1"/>
-    </WndProperty>
   </WndForm>
 </PMML>

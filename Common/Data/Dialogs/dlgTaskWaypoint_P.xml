@@ -47,9 +47,6 @@
         <WndProperty Name="prpAATCircleRadius" Caption="_@M171_" X="2" Y="2" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H509_" Keyboard="1">
           <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01"/>
         </WndProperty>
-        <WndProperty Name="prpOutCircle" Caption="_@M2147_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@HXXX_">
-          <DataField name="" DataType="enum" />
-        </WndProperty>
       </WndFrame>
       <WndFrame Name="frmSector" X="0" Y="23" Width="240" Height="198">
         <WndProperty Name="prpAATSectorRadius" Caption="_@M587_" X="2" Y="2" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H510_" Keyboard="1">
