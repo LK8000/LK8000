@@ -286,14 +286,6 @@ static void OverviewRefreshTask(WndForm* pWnd) {
 }
 
 
-
-static void UpdateAdvanced(WindowControl* pWnd) {
-  if (pWnd) {
-    pWnd->SetVisible(showAdvanced);
-  }
-}
-
-
 static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo) {
 
   WndForm* pForm = Sender->GetParentWndForm();
@@ -654,13 +646,6 @@ static void OnDeleteClicked(WndButton* pWnd){
 }
 
 
-
-static void OnAdvancedClicked(WndButton* Sender){
-  showAdvanced = !showAdvanced;
-  WndForm* pForm = Sender->GetParentWndForm();
-  UpdateAdvanced(pForm->FindByName(TEXT("frmAdvanced")));
-}
-
 static bool OnUser(WndForm * pWndForm, unsigned id) {
   switch (id) {
     case UM_UPDATE_TASK_OVERVIEW:
@@ -678,10 +663,8 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnDeclareClicked),
   ClickNotifyCallbackEntry(OnCalcClicked),
   ClickNotifyCallbackEntry(OnClearClicked),
-  ClickNotifyCallbackEntry(OnAdvancedClicked),
   ClickNotifyCallbackEntry(OnReverseClicked),
   ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnAdvancedClicked),
   ClickNotifyCallbackEntry(OnSaveClicked),
   ClickNotifyCallbackEntry(OnLoadClicked),
   ClickNotifyCallbackEntry(OnDeleteClicked),
@@ -744,8 +727,6 @@ void dlgTaskOverviewShowModal(int Idx){
 
   // initialise and turn on the display
   OverviewRefreshTask(wf);
-
-  UpdateAdvanced(wf->FindByName(TEXT("frmAdvanced")));
 
   wTaskList->SetItemIndexPos(Idx);
   wTaskList->Redraw();
