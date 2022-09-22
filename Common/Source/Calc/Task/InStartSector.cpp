@@ -65,7 +65,7 @@ bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 }
 
 
-bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int &index, BOOL *CrossedStart)
+bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool StartOut, int &index, BOOL *CrossedStart)
 {
   static std::optional<bool> LastInSector; // unknown at start ( before takeoff ?)
   static int EntryStartSector = index;
@@ -117,10 +117,10 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int &index, BOOL 
   // and within height limits?
   isInSector &= in_height;
 
-  if (gTaskType == TSK_GP && StartLine == 0) {  // 100509
-    // only Valid if Start is Cylindre.
-    // we crossed the start if we were outside sector and now we are in or vice versa.
-    *CrossedStart = LastInSector.value_or(isInSector) != isInSector;
+  // StartOut only Valid if Start is Cylindre.
+  if (gTaskType == TSK_GP && StartLine == 0 && StartOut) {  // 100509
+    // we crossed the start if we were outside sector and now we are in.
+    *CrossedStart = !LastInSector.value_or(true) && isInSector;
   } else {
     // we crossed the start if we were in sector and now we are not.
     *CrossedStart = LastInSector.value_or(false) && !isInSector;
@@ -135,7 +135,7 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int &index, BOOL 
     for (int i=0; i<MAXSTARTPOINTS; i++) {
       if (StartPoints[i].Active && (StartPoints[i].Index>=0)
           && (StartPoints[i].Index != Task[0].Index)) {
-        
+         
         retval = InStartSector_Internal(Basic, Calculated, 
                                         StartPoints[i].Index, 
                                         StartPoints[i].OutBound,

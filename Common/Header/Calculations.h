@@ -104,8 +104,8 @@ int InitActiveGate(void);
 bool ValidGate(void);
 	// Are we on the correct side of start cylinder?
 bool CorrectSide(const DERIVED_INFO& Calculated);
-// Validate STart point from ouside or from inside observation zone
-bool StartOutside(const DERIVED_INFO& Calculated);
+  // return true if Start cylinder must be crossed from inside to outside
+bool ExitStart(const DERIVED_INFO& Calculated);
 
 void ResetFreeFlightStats(DERIVED_INFO *Calculated);
 

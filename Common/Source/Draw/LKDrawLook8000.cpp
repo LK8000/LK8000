@@ -429,13 +429,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 // LKTOKEN  _@M922_ = "NOT FLYING"
                 _tcscpy(BufferValue, MsgToken(922));
             } else {
-                bool StartOut = StartOutside(DerivedDrawInfo);
+                bool from_inside = ExitStart(DerivedDrawInfo);
                 if (gatechrono > 0) {
                     // IsInSector works reversed!
-                    if (StartOut && DerivedDrawInfo.IsInSector) {
+                    if (!from_inside && DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M923_ = "WRONG inSIDE"
                         _tcscpy(BufferValue, MsgToken(923));
-                    } else if (!StartOut && !DerivedDrawInfo.IsInSector) {
+                    } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M924_ = "WRONG outSIDE"
                         _tcscpy(BufferValue, MsgToken(924));
                     } else {
@@ -457,10 +457,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                             }
                         } else {
                             // IsInSector works reversed!
-                            if (StartOut && DerivedDrawInfo.IsInSector) {
+                            if (!from_inside && DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M923_ = "WRONG inSIDE"
                                 _tcscpy(BufferValue, MsgToken(923));
-                            } else if (!StartOut && !DerivedDrawInfo.IsInSector) {
+                            } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M924_ = "WRONG outSIDE"
                                 _tcscpy(BufferValue, MsgToken(924));
                             }

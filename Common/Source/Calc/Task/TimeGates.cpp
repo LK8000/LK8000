@@ -164,7 +164,7 @@ void AlertGateOpen(int gate) {
 // Are we on the correct side of start cylinder?
 bool CorrectSide(const DERIVED_INFO& Calculated) {
   // Remember that IsInSector works reversed...
-  return (StartOutside(Calculated) != Calculated.IsInSector);
+  return (ExitStart(Calculated) == Calculated.IsInSector);
 }
 
 // autonomous check for usegates, and current chosen activegate is open, so a valid start

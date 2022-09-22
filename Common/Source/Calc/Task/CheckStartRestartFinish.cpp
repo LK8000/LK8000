@@ -97,25 +97,19 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 
   }
 
-  bool StartOut = StartOutside(*Calculated);
-  bool IsInSector = InStartSector(Basic, Calculated, *LastStartSector, &StartCrossed);
+  bool start_from_inside = ExitStart(*Calculated);
+  Calculated->IsInSector = InStartSector(Basic, Calculated, !start_from_inside, *LastStartSector, &StartCrossed);
 
-  // start OUT and go in
-  // or Start In and Go Out
-  if (StartOut == IsInSector) {
-
-	Calculated->IsInSector = IsInSector;
-
+  // from inside and we are inside
+  // or 
+  // from outside and we are outside
+  if (start_from_inside == Calculated->IsInSector) {
     if (ReadyToStart(Calculated)) {
       aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, 0);
     }
     if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin)) {
       ReadyToAdvance(Calculated, false, true);
     }
-    // TODO accuracy: monitor start speed throughout time in start sector
-  } else {
-	// ignore if crossed from wrong side
-	StartCrossed = false;
   }
 
   if (StartCrossed && ValidGate() ) {  // 100509

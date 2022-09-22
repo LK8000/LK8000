@@ -24,33 +24,24 @@ GeoPoint GetWayPointPosition(size_t idx) {
 	return GetWayPointPosition(WayPointList[idx]);
 }
 
-std::array<GeoPoint, 2> GetTpLegLine(size_t a, size_t b) {
-	ScopeLock lock(CritSec_TaskData);
-	return { 
-		GetWayPointPosition(a), 
-		GetWayPointPosition(b) 
-	};
-}
-
-
 } // namespace
 
-bool StartOutside(const DERIVED_INFO& Calculated) {
+bool ExitStart(const DERIVED_INFO& Calculated) {
 	if (gTaskType != TSK_GP || StartLine) {
-		return false;
+		return true; // start IN and go out, OLD CLASSIC MODE
 	}
-	static bool prev_flying = false;
-	static bool start_outside = true;
 
-	if (prev_flying != Calculated.Flying) {
+	ScopeLock lock(CritSec_TaskData);
+	if (ValidTaskPointFast(0) && ValidTaskPointFast(1)) {
 
-		auto line = GetTpLegLine(RESWP_TAKEOFF, Task[0].Index);
+		GeoPoint start = GetWayPointPosition(Task[0].Index);
+		GeoPoint next = GetWayPointPosition(Task[1].Index);
 
-		start_outside = (line[0].Distance(line[1]) > StartRadius);
-
-		prev_flying = Calculated.Flying;
+		// start OUT and go IN if next is outside start cylinder
+		return start.Distance(next) > StartRadius;
 	}
-	return start_outside;
+
+	return true; // default is OLD CLASSIC MODE
 }
 
 void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
