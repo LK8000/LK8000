@@ -916,11 +916,11 @@ bool CTaskFileHelper::SaveTaskRule(xml_node* node) {
 }
 
 bool CTaskFileHelper::SaveHome(xml_node* node) {
-    if (ValidWayPointFast(HomeWaypoint)) {
+    if (ValidNotResWayPoint(HomeWaypoint)) {
         xml_node* home = AddNode(node, "home");
         SetAttribute(home, "name", (LPCTSTR)(WayPointList[HomeWaypoint].Name));
+        mWayPointToSave.insert(HomeWaypoint);
     }
-    mWayPointToSave.insert(HomeWaypoint);
     return true;
 }
 
