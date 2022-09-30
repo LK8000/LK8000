@@ -29,11 +29,13 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.content.Context;
 import android.media.SoundPool;
-import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Build;
 import androidx.annotation.Nullable;
+
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class SoundUtil {
@@ -43,7 +45,7 @@ public class SoundUtil {
     private static SoundUtil instance;
 
     private SoundPool soundPool;
-    private HashMap<String, Integer> loadedSound = new HashMap<>();
+    private final HashMap<String, Integer> loadedSound = new HashMap<>();
 
     public static void Initialise() {
         instance = new SoundUtil();
@@ -96,22 +98,42 @@ public class SoundUtil {
         }
     }
 
+    static private final
+    String soundsChild = new File("_System", "_Sounds").toString();
+
     private boolean _play(Context context, String name) {
         if (soundPool == null) {
             return false;
         }
         Integer soundId = loadedSound.get(name);
         if (soundId == null) {
+            // try to load custom file first
             try {
-                AssetFileDescriptor descriptor = context.getAssets().openFd("sounds/" + name);
-                soundId = soundPool.load(descriptor, 0);
-                loadedSound.put(name, soundId);
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
-                return false;
+                File soundDir = new File(context.getExternalFilesDir(null), soundsChild);
+                File f = new File(soundDir, name);
+                ParcelFileDescriptor fd = ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY);
+                if (fd != null) {
+                    soundId = soundPool.load(fd.getFileDescriptor(), 0, f.length(), 1);
+                    fd.close();
+                    loadedSound.put(name, soundId);
+                }
+            } catch (Exception ignore) {
             }
-        } else {
-            soundPool.play(soundId.intValue(), 1.0f, 1.0f, 0, 0, 1.0f);
+
+            if (soundId == null) {
+                // load from asset...
+                try {
+                    AssetFileDescriptor descriptor = context.getAssets().openFd("sounds/" + name);
+                    soundId = soundPool.load(descriptor, 1);
+                    loadedSound.put(name, soundId);
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                    return false;
+                }
+            }
+        }
+        else {
+            soundPool.play(soundId, 1.0f, 1.0f, 1, 0, 1.0f);
         }
         return true;
     }
