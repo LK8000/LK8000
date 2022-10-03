@@ -113,7 +113,6 @@ public class LK8000 extends Activity {
     IOIOHelper.onCreateContext(this);
 
     BluetoothHelper.Initialize(this);
-    DownloadUtil.Initialise(getApplicationContext());
     UsbSerialHelper.Initialise(this);
 
     SoundUtil.Initialise();
@@ -291,7 +290,6 @@ public class LK8000 extends Activity {
       batteryReceiver = null;
     }
 
-    DownloadUtil.Deinitialise(getApplicationContext());
     UsbSerialHelper.Deinitialise(this);
     SoundUtil.Deinitialise();
 
