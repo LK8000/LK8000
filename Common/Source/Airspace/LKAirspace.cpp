@@ -1716,11 +1716,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
             } else if(_tcsstr(p, _T("AExSAT ")) == p) {
                 //*AExSAT - A calculated binary indicator 'Except SATurday': 'Yes' specifying that the zone cannot be activated on Saturday
                 except_saturday = (_tcscmp(p+_tcslen(_T("AExSAT ")), _T("Yes")) == 0);
-                // TODO : disable automaticaly after valid GPS fix received ?
             } else if(_tcsstr(p, _T("AExSUN ")) == p) {
                 //*AExSUN - Binary indicator 'Except SUNday': 'Yes' specifying that the zone cannot be activated on Sunday
                 except_sunday = (_tcscmp(p+_tcslen(_T("AExSUN ")), _T("Yes")) == 0);
-                // TODO : disable automaticaly after valid GPS fix received ?
 #if 0
             } else if(_tcsstr(p, _T("AExHOL ")) == p) {
                 //*AExHOL - Binary indicator 'Except HOLiday': 'Yes' specifying that the zone cannot be activated on public holidays
