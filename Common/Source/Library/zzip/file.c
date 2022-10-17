@@ -26,8 +26,6 @@
 
 #include "utils/stringext.h"
 
-#include "utils/heapcheck.h"
-
 #if defined(__MINGW32__)
 #include <windef.h>
 //(WINDOWSPC>0)&&

@@ -7,8 +7,6 @@
 #define ZLIB_INTERNAL
 #include "zlib.h"
 
-#include "utils/heapcheck.h"
-
 /* ===========================================================================
      Compresses the source buffer into the destination buffer. The level
    parameter has the same meaning as in deflateInit.  sourceLen is the byte

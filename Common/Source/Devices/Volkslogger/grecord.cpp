@@ -22,9 +22,6 @@
 #include "vlapihlp.h"
 #include "vlapityp.h"
 
-#include "utils/heapcheck.h"
-
-
 // base-64 functions
 //
 char *byte_bas64(byte *b) {

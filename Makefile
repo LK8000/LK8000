@@ -50,9 +50,6 @@ endif
 
 BIN=Bin/$(TARGET)
 
-# enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
-DMALLOC=n
-
 OPTIMIZE    := -O2 -g
 PROFILE	    :=
 REMOVE_NS   := n
@@ -648,10 +645,6 @@ ifeq ($(CONFIG_PC),y)
  CPPFLAGS	+= -D__USE_MINGW_ANSI_STDIO=0
 endif
 
-ifeq ($(DMALLOC),y)
- CPPFLAGS += -DHC_DMALLOC
-endif
-
 CPPFLAGS += -DPOCO_STATIC
 
 CXXFLAGS	:= -std=gnu++17 $(OPTIMIZE) $(PROFILE)
@@ -738,12 +731,6 @@ ifeq ($(CONFIG_WIN32),y)
    endif
   endif
  endif
-endif
-
-
-
-ifeq ($(DMALLOC),y)
-  LDLIBS += -L../dmalloc -ldmalloc
 endif
 
 ####### compiler target

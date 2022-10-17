@@ -6,8 +6,6 @@
 #include "zutil.h"
 #include "inftrees.h"
 
-#include "utils/heapcheck.h"
-
 #define MAXBITS 15
 
 const char inflate_copyright[] =

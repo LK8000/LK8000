@@ -85,8 +85,6 @@
 #include "inflate.h"
 #include "inffast.h"
 
-#include "utils/heapcheck.h"
-
 #ifdef MAKEFIXED
 #  ifndef BUILDFIXED
 #    define BUILDFIXED

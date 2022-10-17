@@ -43,8 +43,6 @@
 // redeclaration of itoa()
 #include "utils.h"
 
-#include "utils/heapcheck.h"
-
 // Conversion-Constants
 
 

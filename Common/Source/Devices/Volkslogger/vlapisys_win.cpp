@@ -23,8 +23,6 @@
 #include <time.h>
 #endif
 
-#include "utils/heapcheck.h"
-
 int noninteractive=1;
 
 /***********************************************************************

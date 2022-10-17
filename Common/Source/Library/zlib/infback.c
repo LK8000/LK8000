@@ -15,8 +15,6 @@
 #include "inflate.h"
 #include "inffast.h"
 
-#include "utils/heapcheck.h"
-
 /* function prototypes */
 local void fixedtables OF((struct inflate_state FAR *state));
 

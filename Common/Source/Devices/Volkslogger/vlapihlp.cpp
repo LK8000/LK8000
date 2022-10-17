@@ -25,8 +25,6 @@
 #include "vlapihlp.h"
 #include "utils.h"
 
-#include "utils/heapcheck.h"
-
 /*
 Filtern einer Zeile:
   - Umwandeln von nicht-IGC-Zeichen in Leerzeichen

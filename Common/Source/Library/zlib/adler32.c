@@ -8,8 +8,6 @@
 #define ZLIB_INTERNAL
 #include "zlib.h"
 
-#include "utils/heapcheck.h"
-
 #define BASE 65521UL    /* largest prime smaller than 65536 */
 #define NMAX 5552
 /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */

@@ -19,8 +19,6 @@
 #include <stdio.h>
 #include "utils.h"
 
-#include "utils/heapcheck.h"
-
 char *volkslogger::utoa(unsigned value, char *digits, int base)
 {
     const char *s = "0123456789abcdefghijklmnopqrstuvwxyz";

@@ -16,8 +16,6 @@
 
 #include <zzip/fetch.h>
 
-#include "utils/heapcheck.h"
-
 #if defined ZZIP_WORDS_BIGENDIAN && \
    defined bswap_16 && defined bswap_32 && defined bswap_64
 # define __ZZIP_GET16(__p)                        bswap_16(*(uint16_t*)(__p))

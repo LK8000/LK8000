@@ -13,11 +13,6 @@ size_t FindFreeSpace(const TCHAR *path);
 
 void MyCompactHeaps();
 
-#ifdef HC_DMALLOC
-// check maximum allocatable heap block
-size_t CheckMaxHeapBlock();
-#endif
-
 #ifdef WIN32
 // Unused
 void MemCheckPoint();

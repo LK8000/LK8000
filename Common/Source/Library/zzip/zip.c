@@ -28,8 +28,6 @@
 #include <zzip/__mmap.h>
 #include <zzip/__debug.h>
 
-#include "utils/heapcheck.h"
-
 #define __sizeof(X) ((zzip_ssize_t)(sizeof(X)))
 
 /* per default, we use a little hack to correct bad z_rootseek parts */

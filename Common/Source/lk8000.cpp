@@ -188,9 +188,6 @@ bool Startup(const TCHAR* szCmdLine) {
     #ifdef USE_FULLSCREEN
     StartupStore(_T("    + USE_FULLSCREEN%s"),NEWLINE);
     #endif
-    #ifdef HC_MALLOC
-    StartupStore(_T("    + HC_MALLOC%s"),NEWLINE);
-    #endif
     #ifdef POCO_STATIC
     StartupStore(_T("    + POCO_STATIC%s"),NEWLINE);
     #endif

@@ -25,8 +25,6 @@
 #define ZZIP_USE_INTERNAL
 #include <zzip/info.h>
 
-#include "utils/heapcheck.h"
-
 #if defined(__BORLANDC__)
   #define strcasecmp stricmp
 #endif

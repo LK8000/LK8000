@@ -24,12 +24,7 @@ size_t CheckFreeRam(void) {
 
 // check maximum allocatable heap block
 unsigned long CheckMaxHeapBlock(void) {
-  #if defined(HC_DMALLOC) ||  defined(HC_DUMA)
-    // when using heap checker, do not try allocate maximum size - malloc() can
-    // return NULL which heap checker recognizes as an error and will terminate
-    // program immediately when configured so (can be confusing for developer)
-    return(0xFFFFFFFF);
-  #else
+
     // try allocate maximum block (of course on PC with disk swapping, we will not
     // try maximum block, function just returns something near to initial top value)
     size_t top = 100*1024*1024; // start with 100MB/2
@@ -51,7 +46,6 @@ unsigned long CheckMaxHeapBlock(void) {
     }
 
     return(0);
-  #endif
 }
 
 
