@@ -42,8 +42,8 @@ class NMEAParser {
 			      const GPS_POSITION& loc, NMEA_INFO& GPSData);
   BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);
 #endif
-  bool connected;
-  bool gpsValid;
+  bool connected; // true if GGA or RMC is received.
+  bool gpsValid;  // true if we have Valid GPS fix
   bool dateValid; // true if we got RMC sentence with valid fix.
   int nSatellites;
 
