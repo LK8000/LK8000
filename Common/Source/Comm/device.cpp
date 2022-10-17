@@ -405,6 +405,8 @@ void DeviceDescriptor_t::InitStruct(int i) {
     SerialNumber = 0;
     SoftwareVer = 0;
 #endif
+
+    nmeaParser.Reset();
 }
 
 void RestartCommPorts() {
