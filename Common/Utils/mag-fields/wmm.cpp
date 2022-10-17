@@ -42,7 +42,7 @@ int main()
             std::string line;
 
             if (std::getline(wmm_file, line)) {
-                if (sscanf_s(line.c_str(), "%lf%s", &epoch, model, 20) < 2) {
+                if (sscanf(line.c_str(), "%lf%20s", &epoch, model) < 2) {
                     throw "invalid header";
                 }
             }
@@ -50,7 +50,7 @@ int main()
             while (std::getline(wmm_file, line)) {
                 unsigned n, m;
                 double gnm, hnm, dgnm, dhnm;
-                if (sscanf_s(line.c_str(), "%u%u%lf%lf%lf%lf", &n, &m, &gnm, &hnm, &dgnm, &dhnm) == 6) {
+                if (sscanf(line.c_str(), "%u%u%lf%lf%lf%lf", &n, &m, &gnm, &hnm, &dgnm, &dhnm) == 6) {
                     if (n < 13 && m < 13) {
                         gnm_wmm2020[n][m] = gnm;
                         hnm_wmm2020[n][m] = hnm;
