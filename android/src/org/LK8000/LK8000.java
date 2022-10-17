@@ -385,13 +385,16 @@ public class LK8000 extends Activity {
   static final ArrayList<String> REQUIRED_SDK_PERMISSIONS = new ArrayList<>();
 
   {
-    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH);
-    REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH_ADMIN);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_FINE_LOCATION);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.WAKE_LOCK);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.INTERNET);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.ACCESS_NETWORK_STATE);
     REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.VIBRATE);
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH_SCAN);
+      REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.BLUETOOTH_CONNECT);
+    }
 
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       REQUIRED_SDK_PERMISSIONS.add(Manifest.permission.FOREGROUND_SERVICE);
