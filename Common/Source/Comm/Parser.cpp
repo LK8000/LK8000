@@ -102,6 +102,10 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
         nSatellites = loc.dwSatelliteCount;
     }
 
+    if (gpsValid) {
+        lastGpsValid.Update();
+    }
+
     if(!activeGPS) {
         return TRUE;
     }
@@ -384,6 +388,10 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   gpsValid = !NAVWarn(params[5][0]);
   connected = true;
 
+  if (gpsValid) {
+    lastGpsValid.Update();
+  }
+
   if (!activeGPS) return TRUE;
 
   pGPS->NAVWarning = !gpsValid;
@@ -471,6 +479,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   double speed=0;
 
   gpsValid = !NAVWarn(params[1][0]);
+  if (gpsValid) {
+    lastGpsValid.Update();
+  }
 
   connected = true;
   RMCAvailable=true; // 100409
@@ -693,6 +704,10 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 #endif    
   } else {
 	gpsValid=true;
+  }
+
+  if (gpsValid) {
+    lastGpsValid.Update();
   }
 
   if (!activeGPS) {

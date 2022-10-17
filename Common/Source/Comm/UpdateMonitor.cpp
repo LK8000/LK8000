@@ -94,6 +94,17 @@ struct gps_with_data {
 };
 
 /**
+ * check expired gps fix on all configured port
+ */
+void check_gps_valid() {
+  for_each_device([](auto & dev) {
+    if (!dev.Disabled) {
+      dev.nmeaParser.CheckGpsValid();
+    }
+  });
+};
+
+/**
  * activate "idx" port and desactivate all others
  */
 void set_active_gps(int idx) {
@@ -124,6 +135,9 @@ bool UpdateMonitor() {
 
   // save current active port.
   auto last_active = find_device(port_active());
+
+  // first reset gpsValid if device stop to send GPS data...
+  check_gps_valid();
 
   /**
    * find and activate first valid port.
@@ -165,6 +179,13 @@ bool UpdateMonitor() {
     return active_dev.nmeaParser.connected;
   }
 
+  if (!active_dev.nmeaParser.connected || !active_dev.nmeaParser.gpsValid) {
+    if (!GPS_INFO.NAVWarning) {
+      DebugLog("Active device don't have valid gps fix : Reset 'NAVWarning'");
+      GPS_INFO.NAVWarning = true; // reset wrong Valid Fix
+    }
+  }
+
   /* check if Flarm disappeared after 30 seconds no activity */
   if (GPS_INFO.FLARM_Available && ((GPS_INFO.Time -LastFlarmCommandTime)> (LKTime_Real*2)) ) {
     static unsigned short MessageCnt =0;
@@ -197,7 +218,7 @@ bool UpdateMonitor() {
       if ( (active==dev.PortNumber) && (dev.nmeaParser.gpsValid) ) {
         StartupStore(_T("... GPS Port %d no hearthbeats, but still gpsValid: forced invalid  %s" NEWLINE), dev.PortNumber, WhatTimeIsIt());
       }
-      dev.nmeaParser.gpsValid=false;
+
       invalidGps++;
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.

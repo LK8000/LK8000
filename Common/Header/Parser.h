@@ -6,6 +6,7 @@
 #include "Fanet.h"
 #include "Geographic/GeoPoint.h"
 #include "Util/ScopeExit.hxx"
+#include "Time/PeriodClock.hpp"
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
@@ -37,6 +38,14 @@ class NMEAParser {
       RMZAvailable = false;
   }
 
+  void CheckGpsValid() {
+    // reset gpsValid if last valid fix is older than 6 second
+    if (lastGpsValid.Elapsed() > 6000) {
+      gpsValid = false;
+      lastGpsValid.Reset();
+    }
+  }
+
 #if defined(PNA) && defined(UNDER_CE)
   static BOOL ParseGPS_POSITION(int portnum,
 			      const GPS_POSITION& loc, NMEA_INFO& GPSData);
@@ -49,6 +58,8 @@ class NMEAParser {
 
   bool activeGPS;
   bool isFlarm;
+
+  PeriodClock lastGpsValid; // to check time elapsed since last valid gps fix
 
   static int StartDay;
 
