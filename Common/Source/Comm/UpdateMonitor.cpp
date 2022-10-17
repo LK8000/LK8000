@@ -58,9 +58,9 @@ struct port_enabled {
 };
 
 /**
- * Predicate : port connected
+ * Predicate : connected gps without valid fix
  */
-struct port_connected {
+struct gps_no_fix {
   bool operator()(DeviceDescriptor_t& dev) {
     return !dev.Disabled && dev.nmeaParser.connected;
   }
@@ -130,13 +130,18 @@ bool UpdateMonitor() {
    *   select by priority :
    *      - first GPS with valid fix
    *      - first GPS without valid fix
-   *      - first connected device
+   *      - first receiving data device
    *      - first enabled device
    *      - first device
    */
 
   // get first device with valid gps fix
   auto active = find_device(gps_fix());
+
+  if (!active) {
+    // if no activity on any port, let first connected (no valid fix) port active.
+    active = find_device(gps_no_fix());
+  }
 
   if (!active) {
     // No valid fix on any port. We use the first port with at least some data going through!
@@ -146,16 +151,11 @@ bool UpdateMonitor() {
   }
 
   if (!active) {
-    // if no activity on any port, let first connected port active.
-    active = find_device(port_connected());
-  }
-
-  if (!active) {
-    // if no port connected, use first enabled port.
+    // if no data on any port, use first enabled port.
     active = find_device(port_enabled());
   }
 
-  // if no connected port, let first port active.
+  // if no enabled port, let first port active.
   set_active_gps(active.value_or(0));
 
   DeviceDescriptor_t& active_dev = get_active_gps();
@@ -398,7 +398,8 @@ bool UpdateMonitor() {
       // do not say anything if we never got the first port, on startup essentially
       if (last_active && active_dev.nmeaParser.gpsValid) {
         TCHAR vbuf[100];
-        _stprintf(vbuf,_T("%s %d"), MsgToken(277),active.value_or(0)); // FALLBACK USING GPS ON PORT ..
+
+        _stprintf(vbuf,_T("%s %d\n< %s >"), MsgToken(277), active.value_or(0), active_dev.Name); // FALLBACK USING GPS ON PORT ..
         DoStatusMessage(vbuf);
         PortMonitorMessages++;
       } 
