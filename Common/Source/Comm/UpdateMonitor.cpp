@@ -12,15 +12,14 @@
 #include "InputEvents.h"
 #include "Calc/Vario.h"
 #include <optional>
+#include "Baro.h"
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
-extern unsigned LastRMZHB;	 // common to both devA and devB, updated in Parser
 
 double trackbearingminspeed=0; // minimal speed to use gps bearing
 
 #ifndef NDEBUG
-//#define DEBUGBARO	1	// also needed in UpdateBaroSource
-//#define DEBUGNPM	1
+  #define DEBUGNPM	1
 #endif
 
 namespace {
@@ -114,11 +113,40 @@ void set_active_gps(int idx) {
 }
 
 /**
+ * check expired RMZ on all configured port 
+ */
+void check_rmz() {
+  for_each_device([](auto& dev) {
+    if (!dev.Disabled) {
+      dev.nmeaParser.CheckRMZ();
+    }
+  });
+}
+
+/**
  * @return active GPS DeviceDescriptor
  */
 DeviceDescriptor_t& get_active_gps() {
   auto active = find_device(port_active());
   return DeviceList[active.value_or(0)];
+}
+
+void reset_nmea_info_availability() {
+  ScopeLock lock(CritSec_FlightData);
+
+  ResetBaroAvailable(GPS_INFO);
+  ResetVarioAvailable(GPS_INFO);
+
+  GPS_INFO.AirspeedAvailable = false;
+  GPS_INFO.NettoVarioAvailable = false;
+  GPS_INFO.AccelerationAvailable = false;
+  GPS_INFO.TemperatureAvailable = false;
+  GPS_INFO.HumidityAvailable = false;
+  GPS_INFO.MagneticHeadingAvailable = false;
+  GPS_INFO.GyroscopeAvailable = false;
+  GPS_INFO.ExternalWindAvailable = false;
+
+  EnableExternalTriggerCruise = false;
 }
 
 //
@@ -175,14 +203,22 @@ bool UpdateMonitor() {
   DeviceDescriptor_t& active_dev = get_active_gps();
 
   // wait for 10 seconds before monitoring, after startup
-  if (LKHearthBeats<20) {
+  if (LKHearthBeats < 20) {
     return active_dev.nmeaParser.connected;
   }
 
   if (!active_dev.nmeaParser.connected || !active_dev.nmeaParser.gpsValid) {
-    if (!GPS_INFO.NAVWarning) {
-      DebugLog("Active device don't have valid gps fix : Reset 'NAVWarning'");
-      GPS_INFO.NAVWarning = true; // reset wrong Valid Fix
+
+    bool reseted = WithLock(CritSec_FlightData, []() {
+      if (!GPS_INFO.NAVWarning) {
+        GPS_INFO.NAVWarning = true; // reset wrong Valid Fix
+        return true;
+      }
+      return false;
+    });
+
+    if (reseted) {
+      DebugLog(_T("Active device don't have valid gps fix : Reset 'NAVWarning'"));
     }
   }
 
@@ -203,26 +239,26 @@ bool UpdateMonitor() {
   short invalidBaro = 0;
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
-  for(auto& dev : DeviceList) {
+  for (auto& dev : DeviceList) {
     // ignore disabled port
-    if(dev.Disabled) {
+    if (dev.Disabled) {
       continue;
     }
 
     LKASSERT((unsigned)dev.PortNumber < std::size(wasSilent));
-    if ((LKHearthBeats-dev.HB)>10 ) {
+    if ((LKHearthBeats - dev.HB) > 10) {
 #ifdef DEBUGNPM
-      StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u" NEWLINE), dev.PortNumber, LKHearthBeats, dev.HB);
+      StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u"), dev.PortNumber, LKHearthBeats, dev.HB);
 #endif
       // if this is active and supposed to have a valid fix.., but no HB..
-      if ( (active==dev.PortNumber) && (dev.nmeaParser.gpsValid) ) {
-        StartupStore(_T("... GPS Port %d no hearthbeats, but still gpsValid: forced invalid  %s" NEWLINE), dev.PortNumber, WhatTimeIsIt());
+      if ((active == dev.PortNumber) && dev.nmeaParser.gpsValid) {
+        StartupStore(_T("... GPS Port %d no hearthbeats, but still gpsValid: forced invalid  %s"), dev.PortNumber, WhatTimeIsIt());
       }
 
       invalidGps++;
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.
-      if (GPS_INFO.BaroAltitudeAvailable) {
+      if (BaroAltitudeAvailable(GPS_INFO)) {
         if (devIsBaroSource(&dev)) {
           invalidBaro++;
         }
@@ -232,11 +268,7 @@ bool UpdateMonitor() {
 
       // We reset some flags globally only once in case of device gone silent
       if (!dev.Disabled && !wasSilent[dev.PortNumber]) {
-        GPS_INFO.AirspeedAvailable=false;
-        ResetVarioAvailable(GPS_INFO);
-        GPS_INFO.NettoVarioAvailable=false;
-        GPS_INFO.AccelerationAvailable = false;
-        EnableExternalTriggerCruise = false;
+        reset_nmea_info_availability();
         wasSilent[dev.PortNumber]=true;
       }
     } else {
@@ -250,10 +282,10 @@ bool UpdateMonitor() {
 
 #ifdef DEBUGNPM
   if (invalidGps==std::size(DeviceList)) {
-    StartupStore(_T("... GPS no gpsValid available on any port, active=%d @%s" NEWLINE),active,WhatTimeIsIt());
+    StartupStore(_T("... GPS no gpsValid available on any port, active=%d @%s"), active.value(), WhatTimeIsIt());
   }
   if (invalidBaro>0) {
-    StartupStore(_T("... Baro altitude just lost, current status=%d @%s" NEWLINE),GPS_INFO.BaroAltitudeAvailable,WhatTimeIsIt());
+    StartupStore(_T("... Baro altitude just lost, current status=%d @%s"), BaroAltitudeAvailable(GPS_INFO), WhatTimeIsIt());
   }
 #endif
 
@@ -262,46 +294,37 @@ bool UpdateMonitor() {
   // Assuming here that if no Baro is available, no airdata is available also
   //
   if (validBaro==0) {
-    if ( GPS_INFO.BaroAltitudeAvailable ) {
-      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off  %s"),WhatTimeIsIt());
+    if (BaroAltitudeAvailable(GPS_INFO)) {
+      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off %s"), WhatTimeIsIt());
       if (EnableNavBaroAltitude) {
-        // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE" 
+        // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE"
         DoStatusMessage(MsgToken(122));
         PortMonitorMessages++;
       } else {
-        // LKTOKEN  _@M121_ = "BARO ALTITUDE NOT AVAILABLE" 
+        // LKTOKEN  _@M121_ = "BARO ALTITUDE NOT AVAILABLE"
         DoStatusMessage(MsgToken(121));
       }
-      GPS_INFO.BaroAltitudeAvailable=FALSE;
-      // We alse reset these values, just in case we are through a mux
-      GPS_INFO.AirspeedAvailable=false;
-      ResetVarioAvailable(GPS_INFO);
-      GPS_INFO.NettoVarioAvailable=false;
-      GPS_INFO.AccelerationAvailable = false;
-      EnableExternalTriggerCruise = false;
+
+      // We also reset data availability, just in case we are through a mux
+      reset_nmea_info_availability();
 
       // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
       lastvalidBaro=false;
     }
-  } else if ( lastvalidBaro==false) {
-#if DEBUGBARO
-    const TCHAR* devname = (pDevPrimaryBaroSource) ? pDevPrimaryBaroSource->Name : _T("unknown");
-    StartupStore(_T("... GPS baro source back available from <%s>" NEWLINE),devname);
-#endif
+  } else if (!lastvalidBaro) {
 
     if (GotFirstBaroAltitude) {
-        if (EnableNavBaroAltitude) {
-          DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
-        } else {
-          DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
-        }
-        StartupStore(_T("... GPS baro source back available %s"),WhatTimeIsIt());
-        lastvalidBaro=true;
+      if (EnableNavBaroAltitude) {
+        DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
       } else {
+        DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
+      }
+      StartupStore(_T("... GPS baro source back available %s"),WhatTimeIsIt());
+      lastvalidBaro=true;
+    } else {
       static bool said = false;
       if (!said) {
-        StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s"),
-                     WhatTimeIsIt());
+        StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s"), WhatTimeIsIt());
         said = true;
       }
     }
@@ -313,45 +336,45 @@ bool UpdateMonitor() {
   // there was a real RMZ in the NMEA stream lately.
   // Normally RMZAvailable, RMCAvailable, GGA etc.etc. are reset to false when the com port is silent.
   // But RMZ is special, because it can be sent through the multiplexer from a flarm box.
-  if ((LastRMZHB > 0) && LKHearthBeats > (LastRMZHB+5)) {
-    #if DEBUGBARO
-    StartupStore(_T(".... RMZ not updated recently, resetting HB" NEWLINE));
-    #endif
-    LastRMZHB = 0;
-    for(auto& dev : DeviceList) {
-      dev.nmeaParser.ResetRMZ();
-    }
-  }
+  check_rmz();
 
-  // Check baro altitude problems. This can happen for several reasons: mixed input on baro on same port,
-  // faulty device, etc. The important thing is that we shall not be using baro altitude for navigation in such cases.
-  // So we do this check only for the case we are actually using baro altitude.
-  // A typical case is: mixed devices on same port, baro altitude disappearing because of mechanical switch,
-  // but other traffic still incoming, so hearthbeats are ok. 
-  static double	lastBaroAltitude=-1, lastGPSAltitude=-1;
-  static unsigned int	counterSameBaro=0, counterSameHGPS=0;
-  static unsigned short firstrecovery=0;
-  if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude && !GPS_INFO.NAVWarning) {
-    if (GPS_INFO.BaroAltitude==lastBaroAltitude) {
-      counterSameBaro++;
-    } else {
-      lastBaroAltitude=GPS_INFO.BaroAltitude;
-      counterSameBaro=0;
-    }
-    if (GPS_INFO.Altitude==lastGPSAltitude) {
-      counterSameHGPS++;
-    } else {
-      lastGPSAltitude=GPS_INFO.Altitude;
-      counterSameHGPS=0;
-    }
+  WithLock(CritSec_FlightData, [] {
+    // if device stop to send Baro altitude for more than 6s, reset it's availability 
+    // to allow to switch to device with lower priority
+    CheckBaroAltitudeValidity(GPS_INFO);
 
-    // This is suspicious enough, because the baro altitude is a floating value, should not be the same..
-    // but ok, lets assume it is filtered.
-    // if HBAR is steady for some time ... and HGPS is not steady 
-    unsigned short timethreshold=15; // first three times,  timeout at about 1 minute
-    if (firstrecovery>=3) timethreshold=40; // then about every 3 minutes
-		
-    if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) && !CALCULATED_INFO.OnGround ) {
+    // Check baro altitude problems. This can happen for several reasons: mixed input on baro on same port,
+    // faulty device, etc. The important thing is that we shall not be using baro altitude for navigation in such cases.
+    // So we do this check only for the case we are actually using baro altitude.
+    // A typical case is: mixed devices on same port, baro altitude disappearing because of mechanical switch,
+    // but other traffic still incoming, so hearthbeats are ok. 
+    static double	lastBaroAltitude=-1, lastGPSAltitude=-1;
+    static unsigned int	counterSameBaro=0, counterSameHGPS=0;
+    static unsigned short firstrecovery=0;
+
+    if (EnableNavBaroAltitude && !GPS_INFO.NAVWarning && BaroAltitudeAvailable(GPS_INFO)) {
+      if (GPS_INFO.BaroAltitude==lastBaroAltitude) {
+        counterSameBaro++;
+      } else {
+        lastBaroAltitude=GPS_INFO.BaroAltitude;
+        counterSameBaro=0;
+      }
+      if (GPS_INFO.Altitude==lastGPSAltitude) {
+        counterSameHGPS++;
+      } else {
+        lastGPSAltitude=GPS_INFO.Altitude;
+        counterSameHGPS=0;
+      }
+
+      // This is suspicious enough, because the baro altitude is a floating value, should not be the same..
+      // but ok, lets assume it is filtered.
+      // if HBAR is steady for some time ... and HGPS is not steady 
+      unsigned short timethreshold = 15; // first three times,  timeout at about 1 minute
+      if (firstrecovery >=3 ) {
+        timethreshold = 40; // then about every 3 minutes
+      }
+
+      if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) && !CALCULATED_INFO.OnGround ) {
         DoStatusMessage(MsgToken(122)); // Baro not available, Using GPS ALTITUDE
         EnableNavBaroAltitude=false;
         StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude, GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
@@ -362,15 +385,10 @@ bool UpdateMonitor() {
         // We do only ONE attempt to recover a faulty device, to avoid flipflopping.
         // In case of big problems, we shall have disabled the use of the faulty baro altitude, and keep it
         // incoming sporadically.
-        if (firstrecovery<3) {
-          GPS_INFO.BaroAltitudeAvailable=FALSE;
+        if (firstrecovery < 3) {
           // We alse reset these values, just in case we are through a mux
-          GPS_INFO.AirspeedAvailable=false;
-          ResetVarioAvailable(GPS_INFO);
-          GPS_INFO.NettoVarioAvailable=false;
-          GPS_INFO.AccelerationAvailable = false;
-          EnableExternalTriggerCruise = false;
-          for(auto& dev : DeviceList) {
+          reset_nmea_info_availability();
+          for (auto& dev : DeviceList) {
             dev.nmeaParser.Reset();
           }
           // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
@@ -378,8 +396,9 @@ bool UpdateMonitor() {
           GotFirstBaroAltitude=false;
           firstrecovery++;
         }
+      }
     }
-  }
+  });
 
 
     // Set some fine tuning parameters here, depending on device/situation/mode
@@ -398,21 +417,12 @@ bool UpdateMonitor() {
 
     // we need to reset all data availabilty flags, otherwise some of them 
     // can leave set to "true'" even if new active device don't provide data
-    GPS_INFO.BaroAltitudeAvailable = false;
-    GPS_INFO.AirspeedAvailable = false;
-    ResetVarioAvailable(GPS_INFO);
-    GPS_INFO.NettoVarioAvailable = false;
-    GPS_INFO.AccelerationAvailable = false;
-    GPS_INFO.TemperatureAvailable = false;
-    GPS_INFO.HumidityAvailable = false;
-    GPS_INFO.MagneticHeadingAvailable = false;
-    GPS_INFO.GyroscopeAvailable = false;
-    GPS_INFO.ExternalWindAvailable = false;
+    reset_nmea_info_availability();
 
     if (active)
-      StartupStore(_T(". GPS NMEA source changed to port %d  %s" NEWLINE),active.value(),WhatTimeIsIt());
+      StartupStore(_T(". GPS NMEA source changed to port %d  %s"), active.value(), WhatTimeIsIt());
     else
-      StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s" NEWLINE),WhatTimeIsIt());
+      StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s"), WhatTimeIsIt());
 
 
     if (PortMonitorMessages<15) { // do not overload pilot with messages!
@@ -468,17 +478,18 @@ int ConnectionProcessTimer(int itimeout) {
     extGPSCONNECT = TRUE;
   }
 
-  if ((extGPSCONNECT == FALSE) && (GPS_INFO.NAVWarning!=true)) {
-    // If gps is not connected, set navwarning to true so
-    // calculations flight timers don't get updated
-    LockFlightData();
-    GPS_INFO.NAVWarning = true;
-    UnlockFlightData();
-  }
+  bool navwarning = WithLock(CritSec_FlightData, [&]() {
+    if (!extGPSCONNECT) {
+      if (!GPS_INFO.NAVWarning) {
+        // If gps is not connected, set NAVWarning to true so
+        // calculations flight timers don't get updated
+        GPS_INFO.NAVWarning = true;
+      }
+    }
+    return GPS_INFO.NAVWarning;
+  });
 
   bool DoTriggerUpdate = false;
-
-  bool navwarning = GPS_INFO.NAVWarning;
 
   if((gpsconnect == false) && (s_lastGpsConnect == false)) {
     // re-draw screen every five seconds even if no GPS

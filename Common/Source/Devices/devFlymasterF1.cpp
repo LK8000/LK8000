@@ -98,7 +98,7 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
-  UpdateBaroSource( pGPS, 0,d,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
+  UpdateBaroSource(pGPS, d, StaticPressureToQNHAltitude(ps * 100));
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   double Vario = StrToDouble(ctemp,NULL)/10.0;

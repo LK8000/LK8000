@@ -141,7 +141,7 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INF
         UpdateVarioSource(*pGPS, *d, Vario);
 
         const double abs_press = StrToDouble(params[17], nullptr); // rawpressure
-        UpdateBaroSource(pGPS, 0, d, StaticPressureToQNHAltitude(abs_press * 100));
+        UpdateBaroSource(pGPS, d, StaticPressureToQNHAltitude(abs_press * 100));
 
 
         pGPS->ExtBatt1_Voltage = _tcstol(params[18], nullptr, 10) + 1000; // batteryindication
@@ -195,7 +195,7 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     }
 
     if (ReadChecked(params[3], QneAltitude)) {
-        UpdateBaroSource(pGPS, 0,d,  QNEAltitudeToQNHAltitude(QneAltitude));
+        UpdateBaroSource(pGPS, d, QNEAltitudeToQNHAltitude(QneAltitude));
     } else {
         if (AirspeedAvailable) {
             QneAltitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);

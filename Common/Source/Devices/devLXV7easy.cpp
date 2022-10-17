@@ -158,7 +158,7 @@ bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
     }
 
     if (ParToDouble(sentence, 6, &alt)) {
-	    UpdateBaroSource( info, 0, d, QNEAltitudeToQNHAltitude(alt));
+	    UpdateBaroSource(info, d, QNEAltitudeToQNHAltitude(alt));
         if (airspeed>0) {
             info->TrueAirspeed = TrueAirSpeed(airspeed, alt);
         }

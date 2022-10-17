@@ -144,7 +144,7 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
       case 'P':
         if( value >= 0.0 && value <= 2000.0 ) {
           const double AltQNH = StaticPressureToQNHAltitude(value*100.0);
-          UpdateBaroSource(info, 0, d, AltQNH);
+          UpdateBaroSource(info, d, AltQNH);
           if (OV_DebugLevel > 0) {
             StartupStore(TEXT(" OpenVario QNE %6.1fhPa Altitude QNH :%6.1fm GPS: %6.1fm"), value, AltQNH, info->Altitude);
           }
@@ -171,7 +171,7 @@ BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
         info->TrueAirspeed = value / TOKPH;
         info->AirspeedAvailable = TRUE;
         {
-          const double AltQNH = (info->BaroAltitudeAvailable ? info->BaroAltitude : info->Altitude);
+          const double AltQNH = (BaroAltitudeAvailable(*info) ? info->BaroAltitude : info->Altitude);
           info->IndicatedAirspeed = IndicatedAirSpeed(info->TrueAirspeed, QNHAltitudeToQNEAltitude(AltQNH));
         }
         if (OV_DebugLevel > 0) {

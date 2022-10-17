@@ -225,8 +225,7 @@ bool DevVaulter::PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
   }
   if (ParToDouble(sentence, 3, &tmp))
   {
-    info->BaroAltitude = tmp;
-    info->BaroAltitudeAvailable = true;
+    UpdateBaroSource(info, d, tmp);
   }
   return(true);
 

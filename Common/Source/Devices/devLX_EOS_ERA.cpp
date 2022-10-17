@@ -1036,7 +1036,7 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
         if (airspeed > 0) {
           info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
         }
-        UpdateBaroSource( info, 0, d,fTmp);
+        UpdateBaroSource( info, d, fTmp);
       }
     }
 

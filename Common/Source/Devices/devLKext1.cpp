@@ -87,17 +87,17 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
   if (ps!=999999) {
-	UpdateBaroSource( pGPS, 0,d, StaticPressureToQNHAltitude(ps));
+    UpdateBaroSource( pGPS, d, StaticPressureToQNHAltitude(ps));
     havebaro = true;
   }
 
   // QNE
   if (!havebaro) {
-	NMEAParser::ExtractParameter(String,ctemp,1);
-	double ba = StrToDouble(ctemp,NULL);
-	if (ba!=99999) {
-	    UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(ba));
-	}
+    NMEAParser::ExtractParameter(String,ctemp,1);
+    double ba = StrToDouble(ctemp,NULL);
+    if (ba!=99999) {
+        UpdateBaroSource( pGPS, d, QNEAltitudeToQNHAltitude(ba));
+    }
   }
 
 
@@ -112,15 +112,15 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,3);
   double ta = StrToDouble(ctemp,NULL);
   if (ta != 99) {
-	pGPS->OutsideAirTemperature = ta;
-	pGPS->TemperatureAvailable=TRUE;
+    pGPS->OutsideAirTemperature = ta;
+    pGPS->TemperatureAvailable=TRUE;
   }
 
   // BATTERY PERCENTAGES
   NMEAParser::ExtractParameter(String,ctemp,4);
   double voa = StrToDouble(ctemp,NULL);
   if (voa!=999) {
-	pGPS->ExtBatt1_Voltage = voa;
+    pGPS->ExtBatt1_Voltage = voa;
   }
 
   return TRUE;

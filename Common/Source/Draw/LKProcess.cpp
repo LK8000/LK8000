@@ -17,6 +17,7 @@
 #include "LKInterface.h"
 #include "ContestMgr.h"
 #include "Library/TimeFunctions.h"
+#include "Baro.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -804,7 +805,7 @@ goto_bearing:
 
 		// B33
 		case LK_HBARO:
-			if (DrawInfo.BaroAltitudeAvailable) {
+			if (BaroAltitudeAvailable(DrawInfo)) {
 				value=ALTITUDEMODIFY*DrawInfo.BaroAltitude;
 				valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
@@ -1678,7 +1679,7 @@ goto_bearing:
 			_tcscpy(BufferTitle, MsgToken(1148));
 			// Cant use NavAltitude, because FL should use Baro if available, despite
 			// user settings.
-			if (DrawInfo.BaroAltitudeAvailable)
+			if (BaroAltitudeAvailable(DrawInfo))
 				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
 			else
 				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
@@ -2569,7 +2570,7 @@ olc_score:
 		case LK_QNE:
 			_tcscpy(BufferTitle, MsgToken(2324));
 			value = -1;
-			if (DrawInfo.BaroAltitudeAvailable) {
+			if (BaroAltitudeAvailable(DrawInfo)) {
 				value= QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude);
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 			}

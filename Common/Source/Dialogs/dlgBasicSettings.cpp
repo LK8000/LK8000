@@ -14,6 +14,7 @@
 #include "Dialogs.h"
 #include "TraceThread.h"
 #include "resource.h"
+#include "Baro.h"
 
 static WndForm *wf=NULL;
 
@@ -313,7 +314,9 @@ void dlgBasicSettingsShowModal(void){
       wp->GetDataField()->SetAsFloat(
 	       Units::ToUserAltitude(GPS_INFO.BaroAltitude));
       wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-      if (!GPS_INFO.BaroAltitudeAvailable) wp->SetReadOnly(1);
+      if (!BaroAltitudeAvailable(GPS_INFO)) {
+        wp->SetReadOnly(true);
+      }
       wp->RefreshDisplay();
     }
 

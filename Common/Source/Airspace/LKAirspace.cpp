@@ -32,6 +32,7 @@
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
 #include "Library/TimeFunctions.h"
+#include "Baro.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;
@@ -242,12 +243,8 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _now = (int) Basic->Time;
 
     //Save position for further calculations made by gui threads
-    if (Basic->BaroAltitudeAvailable && EnableNavBaroAltitude) {
-        _lastknownalt = (int) Basic->BaroAltitude;
-    } else {
-        _lastknownalt = (int) Basic->Altitude;
-    }
-    _lastknownagl = (int) Calculated->AltitudeAGL;
+    _lastknownalt = Calculated->NavAltitude;
+    _lastknownagl = Calculated->AltitudeAGL;
     if (_lastknownagl < 0) _lastknownagl = 0; // Limit agl to zero
     CPoint2D position_now(Basic->Latitude, Basic->Longitude);
     _lastknownpos = position_now;
@@ -279,12 +276,8 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     //Check actual position
     _pos_inside_now = false;
-    if (Basic->BaroAltitudeAvailable && EnableNavBaroAltitude) {
-        alt = (int) Basic->BaroAltitude;
-    } else {
-        alt = (int) Basic->Altitude;
-    }
-    agl = (int) Calculated->AltitudeAGL;
+    alt = Calculated->NavAltitude;
+    agl = Calculated->AltitudeAGL;
     if (agl < 0) agl = 0; // Limit actual altitude to surface to not get warnings if close to ground
 
     // Calculate distances
@@ -1195,30 +1188,28 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
         return false;
     }
 
-    double alt;
     double basealt;
     double topalt;
     bool base_is_sfc = false;
 
     LockFlightData();
-    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-        alt = GPS_INFO.BaroAltitude;
-    } else {
-        alt = GPS_INFO.Altitude;
-    }
+    double alt = CALCULATED_INFO.NavAltitude;
+    double alt_agl = CALCULATED_INFO.TerrainAlt;
+    UnlockFlightData();
 
     if (Base.Base != abAGL) {
         basealt = Base.Altitude;
     } else {
-        basealt = Base.AGL + CALCULATED_INFO.TerrainAlt;
-        if (Base.AGL <= 0) base_is_sfc = true;
+        basealt = Base.AGL + alt_agl;
+        if (Base.AGL <= 0) {
+            base_is_sfc = true;
+        }
     }
     if (Top.Base != abAGL) {
         topalt = Top.Altitude;
     } else {
-        topalt = Top.AGL + CALCULATED_INFO.TerrainAlt;
+        topalt = Top.AGL + alt_agl;
     }
-    UnlockFlightData();
 
     switch (AltitudeMode) {
         case ALLON: return true;

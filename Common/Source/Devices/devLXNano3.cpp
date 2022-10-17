@@ -1328,7 +1328,7 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
         if (airspeed>0) {
           info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
         }
-        UpdateBaroSource( info, 0, d,fTmp);
+        UpdateBaroSource(info, d, fTmp);
       }
     }
 
@@ -1708,7 +1708,7 @@ BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     }
     if(IsDirInput(PortIO.BARODir))
     {
-      UpdateBaroSource( info, 0, d, QNEAltitudeToQNHAltitude(alt));
+      UpdateBaroSource( info, d, QNEAltitudeToQNHAltitude(alt));
       if (airspeed>0) {
         info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
       }

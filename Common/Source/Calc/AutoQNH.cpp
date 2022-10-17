@@ -11,6 +11,7 @@
 #include "Logger.h"
 #include "Waypointparser.h"
 #include "NavFunctions.h"
+#include "Baro.h"
 
 extern bool UpdateQNH(const double newqnh);
 
@@ -32,7 +33,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (Basic->NAVWarning) return;
 
   // Reject if no baro altitude
-  if (!Basic->BaroAltitudeAvailable) return;
+  if (!BaroAltitudeAvailable(*Basic)) return;
 
   // Reject if terrain height is invalid
   if (!Calculated->TerrainValid) return;

@@ -7,6 +7,7 @@
 
 #include "externs.h"
 #include "McReady.h"
+#include "Baro.h"
 
 
 
@@ -18,9 +19,8 @@
 //
 void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
-
   // Determine which altitude to use for nav functions
-  if (EnableNavBaroAltitude && Basic->BaroAltitudeAvailable) {
+  if (EnableNavBaroAltitude && BaroAltitudeAvailable(*Basic)) {
     Calculated->NavAltitude = Basic->BaroAltitude;
   } else {
     Calculated->NavAltitude = Basic->Altitude;

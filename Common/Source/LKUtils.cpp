@@ -14,6 +14,8 @@
 #include "utils/stringext.h"
 #include "Dialogs.h"
 #include "Library/TimeFunctions.h"
+#include "Baro.h"
+#include "InputEvents.h"
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 
@@ -114,16 +116,13 @@ void GotoWaypoint(const int wpnum) {
 }
 
 void ToggleBaroAltitude() {
-  if (!GPS_INFO.BaroAltitudeAvailable) {
-	DoStatusMessage(MsgToken(121)); // BARO ALTITUDE NOT AVAILABLE
-	return;
+  if (BaroAltitudeAvailable(GPS_INFO)) {
+		InputEvents::eventBaroAltitude(_T("toggle"));
+		InputEvents::eventBaroAltitude(_T("show"));
   }
-  EnableNavBaroAltitude=!EnableNavBaroAltitude;
-  if (EnableNavBaroAltitude)
-	DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
-   else
-	DoStatusMessage(MsgToken(757)); // USING GPS ALTITUDE
-
+  else {
+    DoStatusMessage(MsgToken(121)); // BARO ALTITUDE NOT AVAILABLE
+  }
 }
 
 void LKRunStartEnd(bool start) {

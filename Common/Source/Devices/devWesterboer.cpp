@@ -252,7 +252,7 @@ if(_tcslen(String) < 180)
 	}
   }
 
-  UpdateBaroSource( pGPS, 0,d,  QNEAltitudeToQNHAltitude(altqne));
+  UpdateBaroSource(pGPS, d, QNEAltitudeToQNHAltitude(altqne));
 
 
   // IAS and TAS

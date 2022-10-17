@@ -862,18 +862,22 @@ void InputEvents::eventSounds(const TCHAR *misc) {
 }
 
 void InputEvents::eventBaroAltitude(const TCHAR *misc) {
-
-  if (_tcscmp(misc, TEXT("toggle")) == 0)
+  if (_tcscmp(misc, TEXT("toggle")) == 0) {
     EnableNavBaroAltitude = !EnableNavBaroAltitude;
-  else if (_tcscmp(misc, TEXT("on")) == 0)
+  }
+  else if (_tcscmp(misc, TEXT("on")) == 0) {
     EnableNavBaroAltitude = true;
-  else if (_tcscmp(misc, TEXT("off")) == 0)
+  }
+  else if (_tcscmp(misc, TEXT("off")) == 0) {
     EnableNavBaroAltitude = false;
+  }
   else if (_tcscmp(misc, TEXT("show")) == 0) {
-    if (EnableNavBaroAltitude)
-	DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
-    else
-	DoStatusMessage(MsgToken(757));	// USING GPS ALTITUDE
+    if (EnableNavBaroAltitude) {
+      DoStatusMessage(MsgToken(1796));  // USING BARO ALTITUDE
+    }
+    else {
+      DoStatusMessage(MsgToken(757));  // USING GPS ALTITUDE
+    }
   }
 }
 

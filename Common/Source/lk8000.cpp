@@ -57,6 +57,7 @@
 #include "IO/Async/GlobalIOThread.hpp"
 #include "Tracking/Tracking.h"
 #include "Waypoints/SetHome.h"
+#include "Baro.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -330,6 +331,7 @@ bool Startup(const TCHAR* szCmdLine) {
   memset( SnailTrail, 0, sizeof(SnailTrail));
   memset( LongSnailTrail, 0, sizeof(LongSnailTrail));
 
+  ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 

@@ -18,7 +18,7 @@
 #include "Asset.hpp"
 #include "OS/CpuLoad.h"
 #include "Bitmaps.h"
-
+#include "Baro.h"
 
 
 
@@ -541,7 +541,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc )
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
 		_tcscpy(BufferTitle, MsgToken(1068));
-		if (DrawInfo.BaroAltitudeAvailable) {
+		if (BaroAltitudeAvailable(DrawInfo)) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
 				_tcscpy(BufferValue,MsgToken(894));

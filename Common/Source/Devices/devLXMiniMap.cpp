@@ -278,17 +278,9 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
     }
 
-    if (d == pDevPrimaryBaroSource)
-    {
+    if (static_cast<unsigned>(d->PortNumber) == info->BaroSourceIdx.device_index) {
       UpdateQNH(CalculateQNH(alt, alt + AltOffset));
-      UpdateBaroSource(info, 0, d, alt + AltOffset);
-
-
-     /* if(FirstCheckBaroAlt)
-      {
-      FirstCheckBaroAlt = false;
-      InputEvents::eventSetup(_T("Basic"));
-      }*/
+      UpdateBaroSource(info, d, alt + AltOffset);
     }
   }
 

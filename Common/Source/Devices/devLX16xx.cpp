@@ -142,7 +142,7 @@ TCHAR  szTmp[254];
 
   static int oldQNH=0;
   int iQNH= (int) QNH *1000;
-  if(GPS_INFO.BaroAltitudeAvailable)
+  if (BaroAltitudeAvailable(GPS_INFO))
   {
     if(iQNH != oldQNH)
     {
@@ -321,7 +321,7 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
       if (airspeed>0) {
         info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
       }
-      UpdateBaroSource( info, 0,d, QNEAltitudeToQNHAltitude(alt));
+      UpdateBaroSource( info, d, QNEAltitudeToQNHAltitude(alt));
     }
 
   double Vario = 0;

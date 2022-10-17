@@ -54,7 +54,7 @@ private:
 private:
 	static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pINFO);
 
-	static BOOL ParseData(tnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseData(DeviceDescriptor_t *d, tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseGyro(tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseFW(tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseName(tnmeastring& wiss, NMEA_INFO *pINFO );

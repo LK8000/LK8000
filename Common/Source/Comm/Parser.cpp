@@ -35,7 +35,6 @@ GeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   return { GPS_INFO.Latitude, GPS_INFO.Longitude };
 }
 
-unsigned LastRMZHB=0;	 // common to both devA and devB.
 int NMEAParser::StartDay = -1;
 
 
@@ -55,7 +54,7 @@ void NMEAParser::Reset() {
   isFlarm = false;
   GGAAvailable = false;
   RMZAvailable = false;
-  RMZAltitude = 0;
+  LastRMZHB = false;
   RMCAvailable = false;
   TASAvailable = false; // 100411
   RMZDelayed = 3; // wait for this to be zero before using RMZ.
@@ -240,9 +239,9 @@ BOOL NMEAParser::ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *St
         }
 
       if(_tcscmp(params[0] + 1,TEXT("PGRMZ"))==0)
-	{
-	  return RMZ(&String[7], params + 1, n_params-1, pGPS);
-	}
+        {
+          return RMZ(d, &String[7], params + 1, n_params-1, pGPS);
+        }
       if(_tcscmp(params[0] + 1,TEXT("PLKAS"))==0)
         {
           return PLKAS(&String[7], params + 1, n_params-1, pGPS);
@@ -284,6 +283,11 @@ BOOL NMEAParser::ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *St
   return FALSE;
 }
 
+void NMEAParser::CheckRMZ() {
+  if ((LastRMZHB > 0) && LKHearthBeats > (LastRMZHB+5)) {
+    RMZAvailable = false;
+  }
+}
 
 //
 // Make time absolute, over 86400seconds when day is changing
@@ -487,47 +491,38 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   RMCAvailable=true; // 100409
 
   #ifdef PNA
+
   if (DeviceIsGM130) {
+    double ps = GM130BarPressure();
+    double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
-	double ps = GM130BarPressure();
-	RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
-	// StartupStore(_T("....... Pressure=%.0f QNH=%.2f Altitude=%.1f\n"),ps,QNH,RMZAltitude);
-
-	RMZAvailable = true;
-
-	UpdateBaroSource(pGPS, BARO__GM130, NULL,   RMZAltitude);
+    UpdateBaroSource(pGPS, nullptr, Altitude);
   }
+
   if (DeviceIsRoyaltek3200) {
-	if (Royaltek3200_ReadBarData()) {
-		double ps = Royaltek3200_GetPressure();
-		RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+    if (Royaltek3200_ReadBarData()) {
+      double ps = Royaltek3200_GetPressure();
+      double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
-		#if 0
-		pGPS->TemperatureAvailable=true;
-		pGPS->OutsideAirTemperature = Royaltek3200_GetTemperature();
-		#endif
-	}
+      UpdateBaroSource(pGPS, nullptr,  Altitude);
 
-	RMZAvailable = true;
-
-	UpdateBaroSource(pGPS, BARO__ROYALTEK3200,  NULL,  RMZAltitude);
-
+      #if 0
+      pGPS->TemperatureAvailable=true;
+      pGPS->OutsideAirTemperature = Royaltek3200_GetTemperature();
+      #endif
+    }
   }
+
   #endif // PNA
 
   if (!activeGPS) {
-	// Before ignoring anything else, commit RMZ altitude otherwise it will be ignored!
-	if(RMZAvailable) {
-		UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
-	}
-	return TRUE;
+    return TRUE;
   }
 
   // if no valid fix, we dont get speed either!
-  if (gpsValid)
-  {
-	// speed is in knots, 2 = 3.7kmh
-	speed = StrToDouble(params[6], NULL);
+  if (gpsValid) {
+    // speed is in knots, 2 = 3.7kmh
+    speed = StrToDouble(params[6], NULL);
   }
   
   pGPS->NAVWarning = !gpsValid;
@@ -635,9 +630,6 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
 #endif
 
-  if(RMZAvailable) {
-	UpdateBaroSource(pGPS, BARO__RMZ, NULL,  RMZAltitude);
-  }
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance
 	if (!gpsValid) { 
@@ -711,11 +703,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   }
 
   if (!activeGPS) {
-	if(RMZAvailable && !RMCAvailable)
-	{
-		UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
-	}
-	return TRUE;
+    return TRUE;
   }
 
   // some device don't send sat in use count, set it to "-1" if fix is valid and sat in use is 0
@@ -778,17 +766,9 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	}
   }
 
-  // GGA is marking now triggering end of data, so OK to use baro
-  // Even with invalid fix we might have valid baro data of course
-
   // any NMEA sentence with time can now trigger gps update: the first to detect new time will make trigger.
   // we assume also that any sentence with no time belongs to current time.
   // note that if no time from gps, no use of vario and baro data, but also no fix available.. so no problems
-
-  if(RMZAvailable)
-  {
-	UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
-  }
 
   // If  no gps fix, at this point we trigger refresh and quit
   if (!gpsValid) { 
@@ -856,7 +836,7 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 }
 
 
-BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMZ(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   (void)pGPS;
 
@@ -868,24 +848,17 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   
   // We want to wait for a couple of run so we are sure we are receiving RMC GGA etc.
   if (RMZDelayed--) {
-	#if DEBUGBARO
-	StartupStore(_T("...RMZ delayed, not processed (%d)\n"),RMZDelayed);
-	#endif
-	return FALSE;
+    return FALSE;
   }
   RMZDelayed=0;
 
-  RMZAltitude = ParseAltitude(params[0], params[1]);
-  RMZAltitude = QNEAltitudeToQNHAltitude(RMZAltitude);
   RMZAvailable = true;
-  LastRMZHB=LKHearthBeats; // this is common to both ports!
+  LastRMZHB = LKHearthBeats;
 
-  // If we have a single RMZ with no gps fix data, we still manage the baro altitude.
-  if (!RMCAvailable && !GGAAvailable) {
-	UpdateBaroSource(pGPS, isFlarm? BARO__RMZ_FLARM:BARO__RMZ, NULL, RMZAltitude);
-  }
+  double Altitude = ParseAltitude(params[0], params[1]);
+  UpdateBaroSource(pGPS, &d, QNEAltitudeToQNHAltitude(Altitude));
+
   return FALSE;
-
 }
 
 
@@ -905,7 +878,7 @@ BOOL NMEAParser::PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **param
 
   if(*params[2] != _T('\0')) {
     double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
-    UpdateBaroSource(pGPS, BARO__TASMAN, NULL,  QNEAltitudeToQNHAltitude(qne_altitude));
+    UpdateBaroSource(pGPS, &d,  QNEAltitudeToQNHAltitude(qne_altitude));
 
     if(*params[3] != _T('\0')) {
       double vtas = StrToDouble(params[3],NULL)/TOKNOTS;

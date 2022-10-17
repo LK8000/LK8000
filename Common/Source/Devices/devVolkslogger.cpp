@@ -41,7 +41,7 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
         QNEAltitudeToQNHAltitude(InternalAltitude);
     // typo corrected 21.04.07
     // Else the altitude is good enough.
-    UpdateBaroSource( pGPS, 0,d,  fBaroAltitude);
+    UpdateBaroSource(pGPS, d, fBaroAltitude);
 
   // ExtractParameter(String,ctemp,3);
   // four characters, hex, constant.  Value 1371 (dec)

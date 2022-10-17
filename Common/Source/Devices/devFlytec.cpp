@@ -158,7 +158,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   // HBAR 1013.25
   NMEAParser::ExtractParameter(String,ctemp,11+offset);
   double qne_altitude = StrToDouble(ctemp,NULL);
-  UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(qne_altitude));
+  UpdateBaroSource(pGPS, d, QNEAltitudeToQNHAltitude(qne_altitude));
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);

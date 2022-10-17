@@ -12,7 +12,7 @@
 #include "Multimap.h"
 #include "Asset.hpp"
 #include "OS/RotateScreen.h"
-
+#include "Baro.h"
 #ifdef KOBO
 #include "Kobo/System.hpp"
 #endif
@@ -179,7 +179,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 10: // TOGGLEHBAR HBARAVAILABLE for Toggle HBAR button
 
-			if (!GPS_INFO.BaroAltitudeAvailable) {
+			if (!BaroAltitudeAvailable(GPS_INFO)) {
 				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2045),MsgToken(1068)); // Nav by HBAR
 				invalid=true;
 			} else {

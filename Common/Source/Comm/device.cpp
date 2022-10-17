@@ -22,6 +22,7 @@
 #include "Devices/DeviceRegister.h"
 #include "utils/printf.h"
 #include "LKInterface.h"
+#include "Baro.h"
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -71,9 +72,6 @@ Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 COMMPort_t COMMPort;
 
 DeviceDescriptor_t DeviceList[NUMDEV];
-
-DeviceDescriptor_t *pDevPrimaryBaroSource=NULL;
-DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 /**
  * Call DeviceDescriptor_t::*func on all connected device.
@@ -560,9 +558,7 @@ BOOL devInit() {
 
     RadioPara.Enabled = (SIMMODE);
 
-    pDevPrimaryBaroSource = NULL;
-    pDevSecondaryBaroSource = NULL;
-
+    ResetBaroAvailable(GPS_INFO);
     ResetVarioAvailable(GPS_INFO);
 
     for (unsigned i = 0; i < NUMDEV; i++) {
@@ -623,14 +619,6 @@ BOOL devInit() {
             dev.Com = Com;
             if (Com->IsReady()) {
                 devOpen(&dev);
-            }
-
-            if (devIsBaroSource(&dev)) {
-                if (pDevPrimaryBaroSource == NULL) {
-                    pDevPrimaryBaroSource = &dev;
-                } else if (pDevSecondaryBaroSource == NULL) {
-                    pDevSecondaryBaroSource = &dev;
-                }
             }
 
             Com->StartRxThread();

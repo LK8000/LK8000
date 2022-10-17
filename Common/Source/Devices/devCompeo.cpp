@@ -76,7 +76,7 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,2);
   double QneAltitude = StrToDouble(ctemp,NULL);
 
-  UpdateBaroSource( pGPS, 0,d, QNEAltitudeToQNHAltitude(QneAltitude));
+  UpdateBaroSource( pGPS, d, QNEAltitudeToQNHAltitude(QneAltitude));
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   UpdateVarioSource(*pGPS, *d, StrToDouble(ctemp,NULL));

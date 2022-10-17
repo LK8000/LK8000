@@ -525,7 +525,7 @@ BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   // We must wait for at least the first run to see if the sequencing pcaid-!w is done, no matter the order.
   if (!have_Qnhaltitude) {
       double ps = StrToDouble(ctemp,NULL);
-      UpdateBaroSource( pGPS ,0, d,  QNEAltitudeToQNHAltitude(ps));
+      UpdateBaroSource( pGPS , d, QNEAltitudeToQNHAltitude(ps));
   }
 
   return TRUE;
@@ -570,7 +570,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   // minimalistic check, to be sure we are not excluding PCAID without a real qnh
   if (qnhalt!=0) {
       have_Qnhaltitude=true;
-      UpdateBaroSource( pGPS , 0, d,   qnhalt);
+      UpdateBaroSource( pGPS , d, qnhalt);
   }
 
   // We DO need to set the QNH altitude as well, if we use the previous baro altitude!

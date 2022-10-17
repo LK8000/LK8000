@@ -106,8 +106,8 @@ BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pIN
 		}
 
   		if (_tcscmp(strToken,TEXT("T"))==0) {
-			BOOL bOk = ParseData(wiss, pINFO);
-			if(!pINFO->BaroAltitudeAvailable) {
+			BOOL bOk = ParseData(d, wiss, pINFO);
+			if(!BaroAltitudeAvailable(*pINFO)) {
 				SetBaroOn(d);
 			}
 			return bOk;
@@ -164,7 +164,7 @@ BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pIN
 // - C: is transmitted only if the C-Probe is being charged. In this case, heat produced by the charging
 //    process is likely to affect the readings of the temperature and humidity sensors.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseData( tnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseData(DeviceDescriptor_t *d, tnmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	double q0 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
 	double q1 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
@@ -209,10 +209,10 @@ BOOL CDevCProbe::ParseData( tnmeastring& wiss, NMEA_INFO *pINFO ) {
     // the highest sea level air pressure ever recorded was 1084 mb (32.01 in.) 
     //  at Siberia associated with an extremely cold air mass.
 	if(abs_press > 0.0 && abs_press < 115000.0) {
-		UpdateBaroSource(pINFO, BARO__CPROBE, NULL, StaticPressureToQNHAltitude(abs_press));
+		UpdateBaroSource(pINFO, d, StaticPressureToQNHAltitude(abs_press));
 	}
 	else {
-		if(pINFO->BaroAltitudeAvailable) {
+		if (BaroAltitudeAvailable(*pINFO)) {
 			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude);
 		}
 		else {

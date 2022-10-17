@@ -34,9 +34,7 @@ class NMEAParser {
       return ( RMZAvailable || TASAvailable);
   }
 
-  void ResetRMZ() {
-      RMZAvailable = false;
-  }
+  void CheckRMZ();
 
   void CheckGpsValid() {
     // reset gpsValid if last valid fix is older than 6 second
@@ -85,9 +83,10 @@ class NMEAParser {
  private:
   bool GGAAvailable;
   bool RMZAvailable;
+  unsigned LastRMZHB;
   bool RMCAvailable;
   bool TASAvailable;
-  double RMZAltitude;
+
   double LastTime;
   short RMZDelayed;
 
@@ -103,7 +102,7 @@ class NMEAParser {
   BOOL RMC(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL VTG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL RMB(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMZ(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMZ(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
   BOOL WP0(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL WP1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);

@@ -741,11 +741,7 @@ DiagrammStruct sDia;
 
   LastDoTraffic=0;
   DoTraffic(&DrawInfo,&DerivedDrawInfo);
-  if (DrawInfo.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;
-  } else {
-	DerivedDrawInfo.NavAltitude = DrawInfo.Altitude;
-  }
+
   GPSalt =  DerivedDrawInfo.NavAltitude;
 
   fMaxHeight = GPSalt;

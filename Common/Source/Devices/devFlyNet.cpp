@@ -12,11 +12,8 @@
 #include "devFlyNet.h"
 
 static BOOL _PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
-	(void)d;
-	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)))){
-
-	}
-	return TRUE;
+	UpdateBaroSource(_INFO, d, StaticPressureToQNHAltitude(HexStrToInt(String)));
+  return TRUE;
 }
 
 static BOOL _BAT(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){

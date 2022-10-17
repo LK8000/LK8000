@@ -20,6 +20,7 @@
 #include "NavFunctions.h"
 #include "Calc/Vario.h"
 #include "Library/TimeFunctions.h"
+#include "Baro.h"
 
 extern BOOL extGPSCONNECT;
 
@@ -439,31 +440,18 @@ static void UpdateValuesFlight(void) {
     _stprintf(sBaroDevice, TEXT("GPS"));
     if(EnableNavBaroAltitude)
     {
-	  if(GPS_INFO.BaroAltitudeAvailable)
-	  {
-		_stprintf(sBaroDevice, TEXT("BARO"));
-
-		if((pDevSecondaryBaroSource != NULL))
-          if((! pDevSecondaryBaroSource->Disabled) &&
-             (pDevSecondaryBaroSource->IsBaroSource))
-          {
-            _stprintf(sBaroDevice, TEXT("%s"), pDevSecondaryBaroSource->Name );
-          }
-
-		if((pDevPrimaryBaroSource != NULL))
-          if((! pDevPrimaryBaroSource->Disabled) &&
-             (pDevPrimaryBaroSource->IsBaroSource))
-          {
-            _stprintf(sBaroDevice, TEXT("%s"), pDevPrimaryBaroSource->Name );
-          }
-		if(GPS_INFO.haveRMZfromFlarm)
-		 _stprintf(sBaroDevice, TEXT("FLARM"));
-	  }
+      if (BaroAltitudeAvailable(GPS_INFO)) {
+        if (GPS_INFO.BaroSourceIdx.device_index < std::size(DeviceList)) {
+          _stprintf(sBaroDevice, TEXT("%s"), DeviceList[GPS_INFO.BaroSourceIdx.device_index].Name);
+        } else {
+          _stprintf(sBaroDevice, TEXT("BARO"));
+        }
+      }
     }
-	_stprintf(Temp, TEXT("%.0f%s (%s)"),
-	                    CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY,
-	                    Units::GetAltitudeName(),
-	                    sBaroDevice);
+    _stprintf(Temp, TEXT("%.0f%s (%s)"),
+                    CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY,
+                    Units::GetAltitudeName(),
+                    sBaroDevice);
     wp->SetText(Temp);
   }
 

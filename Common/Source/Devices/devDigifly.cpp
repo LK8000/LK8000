@@ -106,7 +106,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  UpdateBaroSource( pGPS,0, d,  QNEAltitudeToQNHAltitude(altqne));
+  UpdateBaroSource( pGPS, d, QNEAltitudeToQNHAltitude(altqne));
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);
@@ -172,7 +172,7 @@ static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     NMEAParser::ExtractParameter(String,ctemp,1);
     if (ctemp[0] != '\0') {
         double abs_press = StrToDouble(ctemp,NULL);
-        UpdateBaroSource(pGPS, 0, d, StaticPressureToQNHAltitude(abs_press));
+        UpdateBaroSource(pGPS, d, StaticPressureToQNHAltitude(abs_press));
     }
 
     // Netto Vario

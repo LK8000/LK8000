@@ -22,6 +22,7 @@
 #include "igc_file_writer.h"
 #include <memory>
 #include <deque>
+#include "Baro.h"
 #ifdef ANDROID
   #include "Android/AndroidFileUtils.h"
 #endif
@@ -343,7 +344,7 @@ static void LoggerHeader(const LoggerBuffer_t& point, const asset_id_t& asset) {
 #endif
 
   IGCWriteRecord("HFALGALTGPS:GEO\r\n");
-  if (GPS_INFO.BaroAltitudeAvailable) {
+  if (BaroAltitudeAvailable(GPS_INFO)) {
     IGCWriteRecord("HFALPALTPRESSURE:ISA\r\n");
   }
 
@@ -555,7 +556,7 @@ void LogPoint(const NMEA_INFO& info) {
     info.Latitude, 
     info.Longitude,
     Clamp<int>(((GPSAltitudeOffset == 0) ? info.Altitude : 0) * TOMETER, 0, 99999),
-    Clamp<int>((info.BaroAltitudeAvailable ? QNHAltitudeToQNEAltitude(info.BaroAltitude) : 0)  * TOMETER, -9999, 99999),
+    Clamp<int>((BaroAltitudeAvailable(info) ? QNHAltitudeToQNEAltitude(info.BaroAltitude) : 0)  * TOMETER, -9999, 99999),
     Clamp<int>(info.Speed * TOKPH * 100, 0, 99999),
     static_cast<int>(AngleLimit360(info.TrackBearing)),
     info.Year, info.Month, info.Day,

@@ -137,9 +137,6 @@ extern COMMPort_t COMMPort;
 
 extern DeviceDescriptor_t	DeviceList[NUMDEV];
 
-extern DeviceDescriptor_t *pDevPrimaryBaroSource;
-extern DeviceDescriptor_t *pDevSecondaryBaroSource;
-
 extern Mutex CritSec_Comm;
 
 void RefreshComPortList();

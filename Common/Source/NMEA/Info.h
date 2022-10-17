@@ -12,6 +12,26 @@
 #include "tchar.h"
 #include "Flarm.h"
 #include "Fanet.h"
+#include <type_traits>
+/**
+ * used to manage Baro Altitude Source priority
+ *   - Flarm device First ordered by port index
+ *   - other external device after order by port index too.
+ *   - some old WinCE device handel baro sensor withiut device config, 
+ *     this have the lowest prriority any time (index greater than DeviceList size).
+ */
+struct BaroIndex {
+
+    bool is_flarm;
+    unsigned device_index;
+
+    bool operator <= (BaroIndex& idx) const {
+        if (is_flarm == idx.is_flarm) {
+            return device_index <= idx.device_index;
+        }
+        return is_flarm;
+    }
+};
 
 struct NMEA_INFO {
     double Latitude;
@@ -30,14 +50,15 @@ struct NMEA_INFO {
     bool NAVWarning;
     double IndicatedAirspeed;
     double TrueAirspeed;
-    double BaroAltitude;
     double MacReady;
-    bool BaroAltitudeAvailable;
     bool ExternalWindAvailable;
     double ExternalWindSpeed;
     double ExternalWindDirection;
     bool NettoVarioAvailable;
     bool AirspeedAvailable;
+
+    BaroIndex BaroSourceIdx;
+    double BaroAltitude;
 
     unsigned VarioSourceIdx;
     double Vario;
@@ -64,7 +85,7 @@ struct NMEA_INFO {
     unsigned short FLARM_GPS;
     unsigned short FLARM_AlarmLevel;
     bool FLARM_Available;
-    bool haveRMZfromFlarm;
+
     double FLARM_SW_Version;
     double FLARM_HW_Version;
     FLARM_TRAFFIC FLARM_Traffic[FLARM_MAX_TRAFFIC];
@@ -83,5 +104,7 @@ struct NMEA_INFO {
     double Pitch;
     double Roll;
 };
+
+static_assert(std::is_trivial_v<NMEA_INFO>, "mandatory while memset/memcpy is used to init/copy this struct");
 
 #endif //_NMEA_INFO_H_

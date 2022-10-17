@@ -28,7 +28,7 @@ Copyright_License {
 #include "Calc/Vario.h"
 #include "OS/ByteOrder.hpp"
 #include "Util/CRC.hpp"
-
+#include "Baro.h"
 #include <assert.h>
 #include <cmath>
 
@@ -90,7 +90,7 @@ SkyLinesTracking::ToFix(uint64_t key, const NMEA_INFO &basic)
   } else
     packet.airspeed = 0;
 
-  if (basic.BaroAltitudeAvailable) {
+  if (BaroAltitudeAvailable(basic)) {
     packet.flags |= ToBE32(FixPacket::FLAG_ALTITUDE);
     packet.altitude = ToBE16(int(basic.BaroAltitude));
   } else if (!basic.NAVWarning) {

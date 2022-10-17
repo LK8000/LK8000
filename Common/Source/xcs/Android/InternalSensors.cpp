@@ -329,7 +329,7 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
 
         LockFlightData();
         UpdateVarioSource(GPS_INFO, *pdev, vario);
-        UpdateBaroSource(&GPS_INFO, 0, pdev, qnh_altitude);
+        UpdateBaroSource(&GPS_INFO, pdev, qnh_altitude);
         UnlockFlightData();
 
         return vario;
