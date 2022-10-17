@@ -133,7 +133,7 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
     ProjPt InB = { 0, 0 };
     ProjPt OutB = { 0, 0 };
     if (ValidTaskPointFast(NextIdx)) {
-        OutB = m_Projection->Forward(GetTurnpointPosition(TskIdx));
+        OutB = m_Projection->Forward(GetTurnpointPosition(NextIdx));
         OutB = OutB - pTskPt->m_Center;
 
         ProjPt::scalar_type d = Length(OutB);
