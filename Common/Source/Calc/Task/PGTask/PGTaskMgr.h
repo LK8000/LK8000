@@ -28,10 +28,10 @@ public:
       return m_Task.size();
     }
 
-    void UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const;
+    void UpdateTaskPoint(size_t i, TASK_POINT& TskPt) const;
 
 protected:
-    GeoPoint  getOptimized(const int i) const;
+    GeoPoint  getOptimized(size_t i) const;
 
     void AddCircle(int TpIndex, double Radius);
     void AddLine(int TpIndex, double Radius);

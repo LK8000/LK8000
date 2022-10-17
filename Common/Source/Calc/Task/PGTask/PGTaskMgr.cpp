@@ -219,12 +219,12 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 }
 
-GeoPoint PGTaskMgr::getOptimized(const int i) const {
+GeoPoint PGTaskMgr::getOptimized(size_t i) const {
     assert(m_Projection);
     return m_Projection->Reverse(m_Task[i]->getOptimized());
 }
 
-void PGTaskMgr::UpdateTaskPoint(const int i, TASK_POINT& TskPt ) const {
+void PGTaskMgr::UpdateTaskPoint(size_t i, TASK_POINT& TskPt ) const {
     const GeoPoint position = getOptimized(i);
 
     TskPt.AATTargetLat = position.latitude;
