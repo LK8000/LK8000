@@ -46,7 +46,7 @@ output.map
 /.settings/
 /.cproject
 /.project
-/.vscode/
+/**/.vscode/
 /local.mk
 /Kobo-install.zip
 /Kobo-install-otg.zip
