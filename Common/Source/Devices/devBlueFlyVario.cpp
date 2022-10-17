@@ -471,16 +471,6 @@ BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d) {
     HardwareParameters.Add(_T("BPT"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
     HardwareParameters.Add(_T("BUR"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
 
-    char szFirstString[128] = {0};
-    d->Com->Read(szFirstString, sizeof(szFirstString));
-    if(strncmp(szFirstString, "BFV ", 4) == 0) {
-        char* pChar = &szFirstString[4];
-        tstring sLine;
-        for(;pChar && *pChar != '\n' && *pChar !='\0'; ++pChar);
-        sLine.assign(&szFirstString[4], pChar);
-        HardwareParameters.SetHardwareVersion(sLine.c_str());
-    }
-
     return TRUE;
 }
 
