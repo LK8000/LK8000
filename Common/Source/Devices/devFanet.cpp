@@ -21,6 +21,7 @@
 #include "resource.h"
 #include "OS/ByteOrder.hpp"
 #include "Utils.h"
+#include "devLK8EX1.h"
 
 static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
@@ -281,6 +282,9 @@ BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   if(pGPS && _tcsncmp(TEXT("#FNF"), String, 4) == 0) {
     return FanetParse(d, &String[5], pGPS);
   }
+  if(LK8EX1ParseNMEA(d, String, pGPS)) {
+    return TRUE;
+  }
   return FALSE;
 }
 
@@ -301,6 +305,7 @@ namespace GXAirCom {
 void Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, DeviceName);
   d->ParseNMEA = ParseNMEA;
+  d->IsBaroSource = LK8EX1IsBaroSource;
 }
 
 } // GXAirCom
