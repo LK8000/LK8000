@@ -21,6 +21,8 @@ android {
     buildToolsVersion "33.0.0"
     ndkVersion "25.1.8937393"
 
+    namespace "org.LK8000"
+
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 19 // KitKat
