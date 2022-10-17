@@ -167,4 +167,17 @@ P Rotate90(P p)
   return { -p.y, p.x };
 }
 
+/**
+ * return Normarlized copy of Vector `p`
+ */
+template<typename P,
+        typename=std::enable_if_t<std::is_floating_point_v<decltype(P::x)>>,
+        typename=std::enable_if_t<std::is_floating_point_v<decltype(P::y)>>>
+inline 
+P Normalize(P p)
+{
+  double mag = Length(p);
+  return (mag != 0.) ? p / mag : p;
+}
+
 #endif
