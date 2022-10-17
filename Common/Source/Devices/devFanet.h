@@ -14,11 +14,17 @@
 
 #include "Devices/DeviceRegister.h"
 
-void FanetInstall(PDeviceDescriptor_t d);
+namespace GXAirCom {
+
+constexpr const TCHAR DeviceName[] = _T("GXAirCom");
+
+void Install(DeviceDescriptor_t* d);
 
 inline constexpr
-DeviceRegister_t FanetRegister() {
-  return(devRegister(TEXT("FANET"), FanetInstall));
+DeviceRegister_t Register() {
+  return (devRegister(DeviceName, Install));
 }
 
-#endif	/* DEVFANETH */
+} // GXAirCom
+
+#endif	/* DEVFANET_H */

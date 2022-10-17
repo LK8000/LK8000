@@ -24,12 +24,13 @@
 
 static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
-static int from_hex_digit(char hex) {
+namespace {
+
+int from_hex_digit(char hex) {
   char c = toupper(hex);
   return (c >= 'A' ? (c - 'A' + 10) : (c - '0'));
 }
 
-static
 uint8_t getByteFromHex(const TCHAR *in) {
   int tens = 0;
   int digits = 0;
@@ -46,7 +47,7 @@ uint8_t getByteFromHex(const TCHAR *in) {
   return tens * 16 + digits;
 }
 
-static void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
+void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
   int size = _tcslen(String2);
   if (size < len){
     for (int i = size;i < len;i++){
@@ -56,7 +57,7 @@ static void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
   _tcscat(String,String2);
 }
 
-static void getIdFromMsg(TCHAR *String,TCHAR *cID,uint32_t *id){
+void getIdFromMsg(TCHAR *String,TCHAR *cID,uint32_t *id){
   TCHAR ctemp[10];
   cID[0] = 0; //zero-Termination of String;
   NMEAParser::ExtractParameter(String,ctemp,0);
@@ -70,7 +71,7 @@ static void getIdFromMsg(TCHAR *String,TCHAR *cID,uint32_t *id){
 /*
  * Convert 24bit signed integer to int32_t
  */
-static int32_t to_int32_t(const uint8_t *buf) {
+int32_t to_int32_t(const uint8_t *buf) {
   int32_t value;
   ((uint8_t*)&value)[0] = buf[0];
   ((uint8_t*)&value)[1] = buf[1];
@@ -82,7 +83,7 @@ static int32_t to_int32_t(const uint8_t *buf) {
 /*
  * Convert 6Byte buffer to Latitude/longitude
  */
-static void payload_absolut2coord(double &lat, double &lon, const uint8_t *buf) {
+void payload_absolut2coord(double &lat, double &lon, const uint8_t *buf) {
   if(buf == nullptr)
     return;
   lat = to_int32_t(&buf[0]) / 93206.0;
@@ -90,7 +91,7 @@ static void payload_absolut2coord(double &lat, double &lon, const uint8_t *buf) 
 }
 
 template<typename _Tp, size_t size>
-static int FanetGetIndex(uint32_t ID, _Tp (&array)[size], bool bEmptyIndex){
+int FanetGetIndex(uint32_t ID, _Tp (&array)[size], bool bEmptyIndex){
   int iEmpyIndex = -1;
   for (size_t i = 0;i < size;i++){
     if (array[i].Time_Fix == 0){
@@ -106,7 +107,7 @@ static int FanetGetIndex(uint32_t ID, _Tp (&array)[size], bool bEmptyIndex){
 }
 
 template<typename _Tp, size_t size>
-static bool FanetInsert(const _Tp& item, _Tp (&array)[size], double Time){
+bool FanetInsert(const _Tp& item, _Tp (&array)[size], double Time){
   int index = FanetGetIndex(item.ID, array, true);
   if (index < 0){
     return false;
@@ -116,17 +117,7 @@ static bool FanetInsert(const _Tp& item, _Tp (&array)[size], double Time){
   return true;
 }
 
-bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR* szName, size_t size) {
-  int index = FanetGetIndex(ID, info.FanetName, false);
-  if (index >= 0) {
-    _tcsncpy(szName, info.FanetName[index].Name, size);
-    return true;
-  }
-  szName[0] = _T('\0'); // empty out string if name not found.
-  return false;
-}
-
-static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];  
   FANET_NAME fanetDevice;
   TCHAR HexDevId[7];
@@ -163,7 +154,7 @@ static BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
 
 }
 
-static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
   uint32_t ID; //ID of station (3 Bytes)
   TCHAR MSG[80];
@@ -196,7 +187,7 @@ static BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
   return TRUE;
 }
 
-static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
   TCHAR HexDevId[7];
   FANET_WEATHER weather;
@@ -271,7 +262,7 @@ static BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *
 
 /**************************************************************************************************************************************************************/
 
-static BOOL FanetParse(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL FanetParse(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,4);
   uint8_t type = (uint8_t)StrToDouble(ctemp,NULL);
@@ -286,14 +277,30 @@ static BOOL FanetParse(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   return TRUE;
 }
 
-static BOOL FanetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
-  if(pGPS && _tcsncmp(TEXT("#FNF"), String, 4)==0) {
-    return FanetParse(d, &String[5], pGPS);      
+BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+  if(pGPS && _tcsncmp(TEXT("#FNF"), String, 4) == 0) {
+    return FanetParse(d, &String[5], pGPS);
   }
   return FALSE;
 }
 
-void FanetInstall(PDeviceDescriptor_t d) {
-  _tcscpy(d->Name, TEXT("FANET"));
-  d->ParseNMEA = FanetParseNMEA;
+} // namespace
+
+bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR* szName, size_t size) {
+  int index = FanetGetIndex(ID, info.FanetName, false);
+  if (index >= 0) {
+    _tcsncpy(szName, info.FanetName[index].Name, size);
+    return true;
+  }
+  szName[0] = _T('\0'); // empty out string if name not found.
+  return false;
 }
+
+namespace GXAirCom {
+
+void Install(DeviceDescriptor_t* d) {
+  _tcscpy(d->Name, DeviceName);
+  d->ParseNMEA = ParseNMEA;
+}
+
+} // GXAirCom

@@ -108,7 +108,7 @@ DeviceRegister_t device_list[] = {
     DevVaulter::Register(),
     DevOpenVario::Register(),
     DevLX_EOS_ERA::Register(),
-    FanetRegister(),
+    GXAirCom::Register(),
     DevRCFenix::Register()
 };
 
