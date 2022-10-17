@@ -134,29 +134,14 @@ void PGTaskMgr::AddLine(int TskIdx, double Radius) {
     ProjPt OutB = { 0, 0 };
     if (ValidTaskPointFast(NextIdx)) {
         OutB = m_Projection->Forward(GetTurnpointPosition(NextIdx));
-        OutB = OutB - pTskPt->m_Center;
-
-        ProjPt::scalar_type d = Length(OutB);
-        if (d != 0.0) {
-            OutB = OutB / d;
-        }
+        OutB = Normalize(OutB - pTskPt->m_Center);
     } else if (PrevIdx >= 0) {
         InB = m_Task[PrevIdx]->getCenter();
-
-        InB = pTskPt->m_Center - InB;
-
-        ProjPt::scalar_type d = Length(InB);
-        if (d != 0.0) {
-            InB = InB / d;
-        }
+        InB = Normalize(pTskPt->m_Center - InB);
     }
 
     if (!IsNull(InB) && !IsNull(OutB)) {
-        pTskPt->m_DirVector = InB + OutB;
-        ProjPt::scalar_type d = Length(pTskPt->m_DirVector);
-        if (d != 0.0) {
-            pTskPt->m_DirVector = pTskPt->m_DirVector / d;
-        }
+        pTskPt->m_DirVector = Normalize(InB + OutB);
     } else if (!IsNull(InB)) {
         pTskPt->m_DirVector = InB;
     } else if (!IsNull(OutB)) {
