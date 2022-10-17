@@ -108,6 +108,9 @@ add_library( LK8000 SHARED
     Common/Source/Android/AndroidFileUtils.h
     Common/Source/Android/AndroidFileUtils.cpp
 
+    Common/Source/Android/Air3/PowerManagerUtils.h
+    Common/Source/Android/Air3/PowerManagerUtils.cpp
+
     Common/Source/Window/WndMain.cpp
 
     Common/Source/xcs/Event/Shared/Timer.cpp
