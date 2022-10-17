@@ -27,4 +27,18 @@ DeviceRegister_t Register() {
 
 } // GXAirCom
 
+
+namespace Fanet {
+
+constexpr const TCHAR DeviceName[] = _T("Skytraxx Fanet+");
+
+void Install(DeviceDescriptor_t* d);
+
+inline constexpr
+DeviceRegister_t Register() {
+  return(devRegister(DeviceName, Install));
+}
+
+} // Fanet
+
 #endif	/* DEVFANET_H */

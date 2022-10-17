@@ -581,9 +581,7 @@ void Globals_Init(void) {
   DevIsCondor = false; // we are using condor simulator
   SelectedDevice = 0;
 
-#ifdef ANDROID
-  _tcscpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
-#endif
+  InitDefaultComPort();
 
   // Units
   SpeedUnit_Config = 2;		// default is kmh

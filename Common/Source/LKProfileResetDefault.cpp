@@ -14,6 +14,26 @@
 #include "Asset.hpp"
 #include "Multimap.h"
 #include "Tracking/Tracking.h"
+#include "Devices/devFanet.h"
+#include "Util/StringAPI.hxx"
+#ifdef ANDROID
+  #include "Android/Main.hpp"
+  #include "Android/NativeView.hpp"
+#endif
+
+void InitDefaultComPort() {
+#ifdef ANDROID
+  _tcscpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
+
+  if (StringIsEqual(native_view->GetProduct(), "AIR3")) {
+    // Configure Fanet on Air3 7.3+
+    _tcscpy(PortConfig[1].szDeviceName, Fanet::DeviceName);
+    PortConfig[1].SetPort(_T("/dev/ttyMT2"));
+    PortConfig[1].dwSpeedIndex = std::distance(std::begin(baudrate), std::find(std::begin(baudrate), std::end(baudrate), 115200));
+    PortConfig[1].dwBitIndex = bit8N1;
+  }
+#endif
+}
 
 //
 // Set all default values for configuration.
@@ -408,9 +428,7 @@ void LKProfileResetDefault() {
     Port = PortConfig_t();
   }
 
-#ifdef ANDROID
-  _tcscpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
-#endif
+  InitDefaultComPort();
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
 

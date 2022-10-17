@@ -344,6 +344,8 @@ extern const char szRegistry_earth_model_wgs84[];
 extern const char szRegistrySoundSwitch[];
 extern const char szRegistryEnableAudioVario[];
 
+void InitDefaultComPort();
+
 void LKProfileResetDefault();
 void LKProfileInitRuntime();
 bool LKProfileLoad(const TCHAR *szFile);

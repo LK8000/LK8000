@@ -61,7 +61,9 @@ class NMEAParser {
 
   static int StartDay;
 
- public:
+  void setFlarmAvailable(NMEA_INFO *GPS_INFO);
+
+public:
 
   // these routines can be used by other parsers.
   static double ParseAltitude(TCHAR *, const TCHAR *);
@@ -120,7 +122,6 @@ class NMEAParser {
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
-  void setFlarmAvailable(NMEA_INFO *GPS_INFO);
   void UpdateFlarmScale(NMEA_INFO *pGPS);
 
 private:
