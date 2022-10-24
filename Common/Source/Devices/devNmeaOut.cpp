@@ -7,26 +7,16 @@
 */
 
 #include "externs.h"
+#include <regex>
 
 static 
 BOOL NMEAOut(DeviceDescriptor_t *d, const TCHAR* String) {
   if(d) {
-    while (*String) {
-      // nmea is ASCII characters, a simple cast to char is enought TCHAR string.
-      char c = *String++;
-      if (c == '\n') {
-        // insert missing <lf> before <cr>
-        d->Com->Write('\r');
-      } 
-      else if (c == '\r') {
-        d->Com->Write(c);
-        c = *String++;
-        if (c != '\n') {
-          // insert missing <cr> after <lf>
-          d->Com->Write('\n');
-        }
-      }
-      d->Com->Write(c);
+    try {
+      std::regex re(R"(((?!\r)\n|\r(?!\n)))"); // to fix end of line...
+      d->Com->WriteString(std::regex_replace(to_utf8(String), re, "\r\n").c_str());
+    } catch (std::exception& e) {
+      StartupStore(_T("NMEAOut : %s"), to_tstring(e.what()).c_str());
     }
   }
   return TRUE;
