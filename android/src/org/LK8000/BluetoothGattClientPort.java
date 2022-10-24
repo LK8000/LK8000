@@ -23,10 +23,10 @@
 package org.LK8000;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.io.IOException;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -68,7 +68,6 @@ public class BluetoothGattClientPort
   private static final UUID RX_TX_DESCRIPTOR_UUID =
       UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-  private static final int MAX_WRITE_CHUNK_SIZE = 20;
 
   /* Maximum number of milliseconds to wait for disconnected state after
      calling BluetoothGatt.disconnect() in close() */
@@ -81,6 +80,8 @@ public class BluetoothGattClientPort
   private BluetoothGattCharacteristic dataCharacteristic;
   private BluetoothGattCharacteristic deviceNameCharacteristic;
   private volatile boolean shutdown = false;
+
+  private int maxChunkSize = 20;
 
   private final Object writeChunksSync = new Object();
   private byte[][] pendingWriteChunks = null;
@@ -197,30 +198,51 @@ public class BluetoothGattClientPort
     }
   }
 
+  @SuppressLint("MissingPermission")
   @Override
   public void onServicesDiscovered(BluetoothGatt gatt,
                                    int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
-      if (findCharacteristics()) {
-        if (gatt.setCharacteristicNotification(dataCharacteristic, true)) {
-          BluetoothGattDescriptor descriptor =
-            dataCharacteristic.getDescriptor(RX_TX_DESCRIPTOR_UUID);
-          if(descriptor != null) {
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            gatt.writeDescriptor(descriptor);
-          } else {
-            Log.e(TAG, "Could not get RX_TX_DESCRIPTOR_UUID Descriptor");
-          }
-          portState = STATE_READY;
-        } else {
-          Log.e(TAG, "Could not enable GATT characteristic notification");
-          portState = STATE_FAILED;
-        }
-      } else {
-        portState = STATE_FAILED;
+      maxChunkSize = 20; // default mtu - 3
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        gatt.requestMtu(85); // Max NNEA length is 82 -> mtu = 82 + 3
+      }
+      else {
+        configureCharacteristics(gatt);
       }
     } else {
       Log.e(TAG, "Discovering GATT services failed");
+      portState = STATE_FAILED;
+      stateChanged();
+    }
+  }
+
+  @Override
+  public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+    super.onMtuChanged(gatt, mtu, status);
+    if (BluetoothGatt.GATT_SUCCESS == status) {
+      maxChunkSize = mtu - 3;
+      configureCharacteristics(gatt);
+    }
+  }
+
+  private void configureCharacteristics(BluetoothGatt gatt) {
+    if (findCharacteristics()) {
+      if (gatt.setCharacteristicNotification(dataCharacteristic, true)) {
+        BluetoothGattDescriptor descriptor =
+          dataCharacteristic.getDescriptor(RX_TX_DESCRIPTOR_UUID);
+        if(descriptor != null) {
+          descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+          gatt.writeDescriptor(descriptor);
+        } else {
+          Log.e(TAG, "Could not get RX_TX_DESCRIPTOR_UUID Descriptor");
+        }
+        portState = STATE_READY;
+      } else {
+        Log.e(TAG, "Could not enable GATT characteristic notification");
+        portState = STATE_FAILED;
+      }
+    } else {
       portState = STATE_FAILED;
     }
     stateChanged();
@@ -229,7 +251,6 @@ public class BluetoothGattClientPort
   @Override
   public void onCharacteristicRead(BluetoothGatt gatt,
       BluetoothGattCharacteristic characteristic, int status) {
-    Log.i(TAG, "GATT characteristic read");
     beginWriteNextChunk();
   }
 
@@ -358,14 +379,14 @@ public class BluetoothGattClientPort
 
       /* Write data in 20 byte large chunks at maximun. Most GATT devices do
          not support characteristic values which are larger than 20 bytes. */
-      int writeChunksCount = (length + MAX_WRITE_CHUNK_SIZE - 1)
-          / MAX_WRITE_CHUNK_SIZE;
+      int writeChunksCount = (length + maxChunkSize - 1)
+          / maxChunkSize;
       pendingWriteChunks = new byte[writeChunksCount][];
       nextWriteChunkIdx = 0;
       lastChunkWriteError = false;
       for (int i = 0; i < writeChunksCount; ++i) {
         pendingWriteChunks[i] = Arrays.copyOfRange(data,
-            i * MAX_WRITE_CHUNK_SIZE, Math.min((i + 1) * MAX_WRITE_CHUNK_SIZE,
+            i * maxChunkSize, Math.min((i + 1) * maxChunkSize,
             length));
       }
 
