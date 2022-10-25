@@ -198,88 +198,82 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 }
 #endif
 
-BOOL NMEAParser::ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *pGPS)
-{
+BOOL NMEAParser::ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR* String, NMEA_INFO* pGPS) {
   TCHAR ctemp[MAX_NMEA_LEN];
-  TCHAR *params[MAX_NMEA_PARAMS];
-  size_t n_params;
+  TCHAR* params[MAX_NMEA_PARAMS];
 
-
-  n_params = ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
-  if (n_params < 1 || params[0][0] != '$')
+  if (String[0] !='$') {
     return FALSE;
-//  if (EnableLogNMEA) 091108 removed LogNMEA and place in calling function
-//    LogNMEA(String);
+  }
 
-  if(params[0][1] == 'P')
-    {
-      //Proprietary String
+  size_t n_params = ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
+  if (n_params < 1 || params[0][0] != '$') {
+    return FALSE;
+  }
 
-
-      if(_tcscmp(params[0] + 1,TEXT("PTAS1"))==0)
-        {
-          return PTAS1(d, &String[7], params + 1, n_params-1, pGPS);
-        }
-
-      // FLARM sentences
-
-      if(_tcscmp(params[0] + 1,TEXT("PFLAV"))==0)
-        {
-          return PFLAV(&String[7], params + 1, n_params-1, pGPS);
-        }
-
-      if(_tcscmp(params[0] + 1,TEXT("PFLAA"))==0)
-        {
-          return PFLAA(&String[7], params + 1, n_params-1, pGPS);
-        }
-
-      if(_tcscmp(params[0] + 1,TEXT("PFLAU"))==0)
-        {
-          return PFLAU(&String[7], params + 1, n_params-1, pGPS);
-        }
-
-      if(_tcscmp(params[0] + 1,TEXT("PGRMZ"))==0)
-        {
-          return RMZ(d, &String[7], params + 1, n_params-1, pGPS);
-        }
-      if(_tcscmp(params[0] + 1,TEXT("PLKAS"))==0)
-        {
-          return PLKAS(&String[7], params + 1, n_params-1, pGPS);
-        }
-      return FALSE;
+  if (params[0][1] == 'P') {
+    // Proprietary String
+    if (_tcscmp(params[0] + 1, TEXT("PTAS1")) == 0) {
+      ScopeLock lock(CritSec_FlightData);
+      return PTAS1(d, &String[7], params + 1, n_params - 1, pGPS);
     }
+    if (_tcscmp(params[0] + 1, TEXT("PFLAV")) == 0) {
+      ScopeLock lock(CritSec_FlightData);
+      return PFLAV(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (_tcscmp(params[0] + 1, TEXT("PFLAA")) == 0) {
+      ScopeLock lock(CritSec_FlightData);
+      return PFLAA(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (_tcscmp(params[0] + 1, TEXT("PFLAU")) == 0) {
+      ScopeLock lock(CritSec_FlightData);
+      return PFLAU(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (_tcscmp(params[0] + 1, TEXT("PGRMZ")) == 0) {
+      ScopeLock lock(CritSec_FlightData);
+      return RMZ(d, &String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (_tcscmp(params[0] + 1, TEXT("PLKAS")) == 0) {
+      ScopeLock lock(CritSec_FlightData);
+      return PLKAS(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    return FALSE;
+  }
 
-  if(_tcscmp(params[0] + 3,TEXT("GSA"))==0)
-    {
-      return GSA(&String[7], params + 1, n_params-1, pGPS);
-    }
-  if(_tcscmp(params[0] + 3,TEXT("GLL"))==0)
-    {
-      //    return GLL(&String[7], params + 1, n_params-1, pGPS);
-      return FALSE;
-    }
-  if(_tcscmp(params[0] + 3,TEXT("RMB"))==0)
-    {
-      //return RMB(&String[7], params + 1, n_params-1, pGPS);
-          return FALSE;
-      }
-  if(_tcscmp(params[0] + 3,TEXT("RMC"))==0)
-    {
-      return RMC(&String[7], params + 1, n_params-1, pGPS);
-    }
-  if(_tcscmp(params[0] + 3,TEXT("GGA"))==0)
-    {
-      return GGA(&String[7], params + 1, n_params-1, pGPS);
-    }
-  if(_tcscmp(params[0] + 3,TEXT("VTG"))==0)
-    {
-      return VTG(&String[7], params + 1, n_params-1, pGPS);
-    }
-  if(_tcscmp(params[0] + 1,TEXT("HCHDG"))==0)
-    {
-      return HCHDG(&String[7], params + 1, n_params-1, pGPS);
-    }
-
+  if (_tcscmp(params[0] + 3, TEXT("GSA")) == 0) {
+    ScopeLock lock(CritSec_FlightData);
+    return GSA(&String[7], params + 1, n_params - 1, pGPS);
+  }
+  if (_tcscmp(params[0] + 3, TEXT("GLL")) == 0) {
+    /*
+    ScopeLock lock(CritSec_FlightData);
+    return GLL(&String[7], params + 1, n_params-1, pGPS);
+    */
+    return FALSE;
+  }
+  if (_tcscmp(params[0] + 3, TEXT("RMB")) == 0) {
+    /*
+    ScopeLock lock(CritSec_FlightData);
+    return RMB(&String[7], params + 1, n_params-1, pGPS);
+    */
+    return FALSE;
+  }
+  if (_tcscmp(params[0] + 3, TEXT("RMC")) == 0) {
+    ScopeLock lock(CritSec_FlightData);
+    return RMC(&String[7], params + 1, n_params - 1, pGPS);
+  }
+  if (_tcscmp(params[0] + 3, TEXT("GGA")) == 0) {
+    ScopeLock lock(CritSec_FlightData);
+    return GGA(&String[7], params + 1, n_params - 1, pGPS);
+  }
+  if (_tcscmp(params[0] + 3, TEXT("VTG")) == 0) {
+    ScopeLock lock(CritSec_FlightData);
+    return VTG(&String[7], params + 1, n_params - 1, pGPS);
+  }
+  if (_tcscmp(params[0] + 1, TEXT("HCHDG")) == 0) {
+    ScopeLock lock(CritSec_FlightData);
+    return HCHDG(&String[7], params + 1, n_params - 1, pGPS);
+  }
   return FALSE;
 }
 

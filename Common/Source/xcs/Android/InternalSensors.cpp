@@ -374,7 +374,5 @@ Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnm
     free(nmea);
   };
 
-  LockFlightData();
   devParseNMEA(index, nmea, &GPS_INFO);
-  UnlockFlightData();
 }

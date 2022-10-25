@@ -701,13 +701,12 @@ PDeviceDescriptor_t d = NULL;
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
-BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
-  bool  ret = FALSE;
+void devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if(!d) {
-    return FALSE;
+    return;
   }
 
   d->HB=LKHearthBeats;
@@ -716,17 +715,13 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
     for(DeviceDescriptor_t& d2 : DeviceList) {
 
       if((d2.iSharedPort == portNum) ||  (d2.PortNumber == portNum)) {
-        if ( d2.ParseNMEA && d2.ParseNMEA(d, String, pGPS) ) {
-          //GPSCONNECT  = TRUE; // NO! 121126
-            ret = TRUE;
-        } else if( &d2 == d) {
-          // call ParseNMEAString_Internal only for master port if string are not device specific.
-          if(String[0]=='$') {  // Additional "if" to find GPS strings
-            if(d->nmeaParser.ParseNMEAString_Internal(*d, String, pGPS)) {
-              //GPSCONNECT  = TRUE; // NO! 121126
-              ret = TRUE;
-            }
-          }
+
+        if ( d2.ParseNMEA && WithLock(CritSec_FlightData, d2.ParseNMEA, d, String, pGPS) ) {
+          continue;
+        }
+        // call ParseNMEAString_Internal only for master port if string are not device specific.
+        if( &d2 == d) {
+          d->nmeaParser.ParseNMEAString_Internal(*d, String, pGPS);
         }
       }
     }
@@ -741,7 +736,6 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
           }
       }
     }
-  return(ret);
 }
 
 

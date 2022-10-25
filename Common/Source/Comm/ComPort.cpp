@@ -180,9 +180,7 @@ void ComPort::ProcessChar(char c) {
             *(pLastNmea) = _T('\0'); // terminate string.
             // process only meaningful sentences, avoid processing a single \n \r etc.
             if (std::distance(std::begin(_NmeaString), pLastNmea) > 5) {
-                LockFlightData();
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
-                UnlockFlightData();
             }
         } else {
             *(pLastNmea++) = c;

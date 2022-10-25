@@ -184,9 +184,7 @@ int32_t i_skip = 1;
         TCHAR nmea[MAX_NMEA_LEN];
         from_utf8(szString, nmea);
 
-        LockFlightData();
         devParseNMEA(GetPortIndex(), nmea, &GPS_INFO);
-        UnlockFlightData();
       }
       AddStatTx(nRecv);
       UpdateStatus();
