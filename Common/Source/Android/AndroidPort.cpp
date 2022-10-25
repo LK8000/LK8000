@@ -16,7 +16,8 @@
 using namespace std::placeholders;
 
 AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName) {
-
+    buffer.reserve(512);
+    rxthread_buffer.reserve(512);
 }
 
 bool AndroidPort::Initialize() {
@@ -166,7 +167,7 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
     ScopeLock lock(mutex);
     const auto *src_data = static_cast<const uint8_t *>(data);
 
-    const size_t available_size =  buffer.capacity() - buffer.size();
+    const size_t available_size =  (16*1024) - buffer.size(); // limit vector size to 16 KByte
     const size_t insert_size = std::min(available_size, length);
 
     buffer.insert(buffer.cend(), src_data,  std::next(src_data, insert_size));
@@ -232,11 +233,13 @@ unsigned AndroidPort::RxThread() {
                 running = false;
             }
         } else {
-            WithLock(CritSec_Comm, [&]() {
-                std::for_each(std::begin(buffer), std::end(buffer), GetProcessCharHandler());
-                AddStatRx(buffer.size());
-            });
+            std::swap(rxthread_buffer, buffer);
             buffer.clear();
+            ScopeUnlock unlock(mutex); // workaround to prevent deadlock on shutdown
+
+            WithLock(CritSec_Comm, [&]() {
+                std::for_each(std::begin(rxthread_buffer), std::end(rxthread_buffer), GetProcessCharHandler());
+            });
         }
     }
 

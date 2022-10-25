@@ -15,7 +15,7 @@
 #include "Comm/NullComPort.h"
 #include "IO/DataHandler.hpp"
 #include "Device/Port/Listener.hpp"
-#include <boost/container/static_vector.hpp>
+#include <vector>
 
 class PortBridge;
 
@@ -60,7 +60,10 @@ protected:
     bool running = false;
     bool closing = false;
 
-    boost::container::static_vector<uint8_t, 16*1024> buffer;
+    // use vector to reduce swap overhead
+    //  -> only swap few internal pointer instead of all contents
+    std::vector<uint8_t> buffer;
+    std::vector<uint8_t> rxthread_buffer;
 
 public:
     /* override Datahandler */
