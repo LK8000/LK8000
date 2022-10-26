@@ -1,4 +1,4 @@
-#C1;
+#C2;
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
 Join our free support forum at www.postfrontal.com/forum
@@ -9,6 +9,14 @@ Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
+
+[version 7.3.24]
+. Update "GPSBip" driver to support new "UltraBip" device
+. Add Fanet+ Driver for Air3 7.3+ device
+. Rename "Fanet" Driver to "GXAirCom" and add LK8EX1 sentence support
+. Fix Start Task Line optimization
+. Android >= 12 : fix missing blutooth permission
+. Fix Baro Altitude device fallback
 
 [version 7.3.23]
 . Implement automatic Enter/Exit Start depending of position of next turnpoint
