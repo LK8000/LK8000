@@ -27,8 +27,8 @@ import java.util.UUID;
 import java.util.Set;
 import java.io.IOException;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -40,6 +40,7 @@ import android.content.pm.PackageManager;
  * A library that constructs Bluetooth ports.  It is called by C++
  * code.
  */
+@SuppressLint("MissingPermission")
 final class BluetoothHelper {
   private static final String TAG = "LK8000";
   private static final UUID THE_UUID =
@@ -107,6 +108,27 @@ final class BluetoothHelper {
     }
   }
 
+  public static String getTypeFromAddress(String address) {
+    if (adapter == null)
+      return null;
+
+    try {
+      switch (adapter.getRemoteDevice(address).getType()) {
+        case BluetoothDevice.DEVICE_TYPE_CLASSIC:
+          return "TYPE_CLASSIC";
+        case BluetoothDevice.DEVICE_TYPE_DUAL:
+          return "TYPE_DUAL";
+        case BluetoothDevice.DEVICE_TYPE_LE:
+          return "TYPE_LE";
+        case BluetoothDevice.DEVICE_TYPE_UNKNOWN:
+          return "TYPE_UNKNOWN";
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to look up type of " + address, e);
+    }
+    return null;
+  }
+
   public static String[] list() {
     if (adapter == null)
       return null;
@@ -116,11 +138,18 @@ final class BluetoothHelper {
       if (devices == null)
         return null;
 
-      String[] addresses = new String[devices.size() * 2];
+      String[] addresses = new String[devices.size() * 3];
       int n = 0;
       for (BluetoothDevice device : devices) {
         addresses[n++] = device.getAddress();
         addresses[n++] = device.getName();
+        if (BluetoothDevice.DEVICE_TYPE_LE == device.getType()) {
+          // TODO : check if device as GATT HM10_SERVICE ...
+          addresses[n++] = "HM10";
+        }
+        else {
+          addresses[n++] = "CLASSIC";
+        }
       }
 
       return addresses;
@@ -130,25 +159,17 @@ final class BluetoothHelper {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   public static boolean startLeScan(BluetoothAdapter.LeScanCallback cb) {
     return hasLe && adapter.startLeScan(cb);
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   public static void stopLeScan(BluetoothAdapter.LeScanCallback cb) {
     if (hasLe)
       adapter.stopLeScan(cb);
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-  static boolean isUnknownType(BluetoothDevice device) {
-    int type = device.getType();
-    return (BluetoothDevice.DEVICE_TYPE_UNKNOWN == type || BluetoothDevice.DEVICE_TYPE_DUAL == type);
-  }
-
-  public static AndroidPort connect(Context context, String address)
-    throws IOException {
+  public static AndroidPort connect(Context ignoredContext, String address)
+          throws IOException {
     if (adapter == null)
       return null;
 
@@ -156,48 +177,27 @@ final class BluetoothHelper {
     if (device == null)
       return null;
 
-    if (hasLe) {
-      if (isUnknownType(device)) {
-
-        BluetoothAdapter.LeScanCallback callback = (device1, rssi, scanRecord) -> {
-          Log.d(TAG, String.format(
-                  "Bluetooth device \"%s\" (%s)",
-                  device1.getName(), device1.getAddress()));
-        };
-
-        BluetoothHelper.startLeScan(callback);
-
-        int run = 0;
-        while( (run++ < 50) && isUnknownType(device)) {
-          Log.d(TAG, String.format(
-                  "Bluetooth device \"%s\" (%s) is a UNKNOWN device,wait scan ...",
-                  device.getName(), device.getAddress()));
-
-          try {
-            Thread.sleep(200);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-            break;
-          }
-        }
-
-        BluetoothHelper.stopLeScan(callback);
-      }
-
-      if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
-
-        Log.d(TAG, String.format(
-                "Bluetooth device \"%s\" (%s) is a LE device, trying to connect using GATT...",
-                device.getName(), device.getAddress()));
-
-        return new BluetoothGattClientPort(context, device);
-      }
-    }
-
-    // Bluetooth device type, Classic - BR/EDR devices
     BluetoothSocket socket =
-      device.createRfcommSocketToServiceRecord(THE_UUID);
+            device.createRfcommSocketToServiceRecord(THE_UUID);
     return new BluetoothClientPort(socket);
+  }
+
+  public static AndroidPort connectHM10(Context context, String address)
+          throws IOException {
+    if (adapter == null || !hasLe)
+      return null;
+
+    BluetoothDevice device = adapter.getRemoteDevice(address);
+    if (device == null)
+      return null;
+
+    try {
+      return new BluetoothGattClientPort(context, device);
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   public static AndroidPort createServer() throws IOException {

@@ -1219,7 +1219,11 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     {
     bManageExtAudio &= IsSoundInit();
 
-    bool bBt = ((_tcslen(szPortName) > 3) && ((_tcsncmp(szPortName, _T("BT:"), 3) == 0) || (_tcsncmp(szPortName, _T("Bluetooth Server"), 3) == 0)));
+    bool bBt = ((_tcslen(szPortName) > 3)
+            && ((_tcsncmp(szPortName, _T("BT_SPP:"), 3) == 0)
+                || (_tcsncmp(szPortName, _T("BT_BLE:"), 3) == 0)
+                || (_tcsncmp(szPortName, _T("Bluetooth Server"), 3) == 0)));
+
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
     bool bFileReplay = (_tcscmp(szPortName, NMEA_REPLAY)    == 0);
@@ -3216,11 +3220,20 @@ wp->RefreshDisplay();
 
 #define UPDATE_COM_PORT 1
 
-static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
+static void OnLeScan(WndForm* pWndForm, const char *address, const char *name, const char *type) {
   ScopeLock lock(COMMPort_mutex);
 
+  auto prefix = [&]() {
+    if (std::string_view("HM10") == type) {
+      return "BT_HM10:";
+    }
+    else {
+      return "BT_SPP:";
+    }
+  };
+
   std::stringstream prefixed_address_stream;
-  prefixed_address_stream << "BT:" << address;
+  prefixed_address_stream << prefix() << address;
   std::string prefixed_address = prefixed_address_stream.str();
 
   auto it = std::find_if(COMMPort.begin(), COMMPort.end(), [&](const auto& item) {
@@ -3229,7 +3242,7 @@ static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
 
   if (it == COMMPort.end()) {
     std::stringstream prefixed_name_stream;
-    prefixed_name_stream << "BT:" << ((strlen(name)>0)? name : address);
+    prefixed_name_stream << prefix() << ((strlen(name)>0)? name : address);
 
     COMMPort.emplace_back(std::move(prefixed_address), prefixed_name_stream.str());
   }

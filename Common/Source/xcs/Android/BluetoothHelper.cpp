@@ -38,8 +38,9 @@ namespace BluetoothHelper {
   static Java::TrivialClass cls;
   static jfieldID hasLe_field;
   static jmethodID isEnabled_method;
-  static jmethodID getNameFromAddress_method;
-  static jmethodID list_method, connect_method, createServer_method;
+  static jmethodID getNameFromAddress_method, getTypeFromAddress_method;
+  static jmethodID list_method;
+  static jmethodID connect_method, hm10connect_method, createServer_method;
   static jmethodID startLeScan_method, stopLeScan_method;
 
   static std::map<std::string, std::string> address_to_name;
@@ -59,11 +60,22 @@ BluetoothHelper::Initialise(JNIEnv *env)
   isEnabled_method = env->GetStaticMethodID(cls, "isEnabled", "()Z");
   getNameFromAddress_method = env->GetStaticMethodID(cls, "getNameFromAddress",
                                                      "(Ljava/lang/String;)Ljava/lang/String;");
+
+  getTypeFromAddress_method = env->GetStaticMethodID(cls, "getTypeFromAddress",
+                                                     "(Ljava/lang/String;)Ljava/lang/String;");
+
   list_method = env->GetStaticMethodID(cls, "list", "()[Ljava/lang/String;");
+
   connect_method = env->GetStaticMethodID(cls, "connect",
                                           "(Landroid/content/Context;"
                                           "Ljava/lang/String;)"
                                           "Lorg/LK8000/AndroidPort;");
+
+  hm10connect_method = env->GetStaticMethodID(cls, "connectHM10",
+                                          "(Landroid/content/Context;"
+                                          "Ljava/lang/String;)"
+                                          "Lorg/LK8000/AndroidPort;");
+
   createServer_method = env->GetStaticMethodID(cls, "createServer",
                                                "()Lorg/LK8000/AndroidPort;");
 
@@ -114,6 +126,25 @@ BluetoothHelper::GetNameFromAddress(JNIEnv *env, const char *address)
   auto j = address_to_name.insert(std::make_pair(std::move(x_address),
                                                  std::move(name)));
   return j.first->second.c_str();
+}
+
+std::string
+BluetoothHelper::GetTypeFromAddress(JNIEnv *env, const char *address) {
+  assert(env != nullptr);
+  assert(address != nullptr);
+
+  if (!cls.IsDefined()) {
+    return "TYPE_UNKNOWN";
+  }
+  const Java::String j_address(env, address);
+
+  auto j_type = (jstring)
+          env->CallStaticObjectMethod(cls, getTypeFromAddress_method,
+                                      j_address.Get());
+  if (j_type) {
+    return Java::String(env, j_type).ToString();
+  }
+  return "TYPE_UNKNOWN";
 }
 
 Java::LocalRef<jobjectArray>
@@ -170,6 +201,24 @@ BluetoothHelper::connect(JNIEnv *env, const char *address)
 
   const Java::String address2(env, address);
   Java::LocalObject obj = {env, env->CallStaticObjectMethod(cls, connect_method,
+                                            context->Get(), address2.Get())};
+  Java::RethrowException(env);
+  if (obj == nullptr)
+    return nullptr;
+
+  return new PortBridge(obj);
+}
+
+PortBridge *
+BluetoothHelper::connectHM10(JNIEnv *env, const char *address)
+{
+  if (!cls.IsDefined())
+    throw std::runtime_error("Bluetooth not available");
+
+  /* call BluetoothHelper.connectHM10() */
+
+  const Java::String address2(env, address);
+  Java::LocalObject obj = { env, env->CallStaticObjectMethod(cls, hm10connect_method,
                                             context->Get(), address2.Get())};
   Java::RethrowException(env);
   if (obj == nullptr)

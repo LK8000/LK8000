@@ -38,20 +38,23 @@ namespace NativeLeScanCallback {
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
-                                              jstring _address, jstring _name)
+                                              jstring _address, jstring _name, jstring _type)
 {
   jlong ptr = env->GetLongField(obj, NativeLeScanCallback::ptr_field);
   if (ptr == 0)
     return;
 
-  char address[64]={}, name[256]={};
+  char address[64]={}, name[256]={}, type[64] = {};
   Java::String::CopyTo(env, _address, address, sizeof(address));
   if(_name) {
     Java::String::CopyTo(env, _name, name, sizeof(name));
   }
+  if(_type) {
+    Java::String::CopyTo(env, _type, type, sizeof(type));
+  }
 
   LeScanCallback &cb = *(reinterpret_cast<LeScanCallback*>(ptr));
-  cb.OnLeScan(address, name);
+  cb.OnLeScan(address, name, type);
 }
 
 void

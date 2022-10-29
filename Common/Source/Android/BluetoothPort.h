@@ -25,6 +25,13 @@ public:
     bool CreateBridge() override;
 };
 
+class BleHM10Port : public AndroidPort {
+public:
+    BleHM10Port(int idx, const tstring& sName) : AndroidPort(idx, sName) { }
+
+    bool CreateBridge() override;
+};
+
 class BluetoothServerPort : public AndroidPort {
 public:
     BluetoothServerPort(int idx, const tstring& sName) : AndroidPort(idx, sName) { }

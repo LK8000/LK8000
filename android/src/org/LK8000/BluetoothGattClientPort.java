@@ -97,10 +97,10 @@ public class BluetoothGattClientPort
           throws IOException
   {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      gatt = device.connectGatt(context, false, this, BluetoothDevice.TRANSPORT_LE);
+      gatt = device.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
     }
     else {
-      gatt = device.connectGatt(context, false, this);
+      gatt = device.connectGatt(context, true, this);
     }
     if (gatt == null) {
       throw new IOException("Bluetooth GATT connect failed");

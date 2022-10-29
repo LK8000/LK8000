@@ -21,6 +21,14 @@ bool BluetoothPort::CreateBridge() {
     return (bridge);
 }
 
+bool BleHM10Port::CreateBridge() {
+    JNIEnv *env = Java::GetEnv();
+    if (env && BluetoothHelper::isEnabled(env)) {
+        bridge = BluetoothHelper::connectHM10(env, GetPortName());
+    }
+    return (bridge);
+}
+
 bool BluetoothServerPort::CreateBridge() {
     JNIEnv *env = Java::GetEnv();
     if (env && BluetoothHelper::isEnabled(env)) {

@@ -18,7 +18,7 @@ using namespace std::placeholders;
 
 #ifndef NO_BLUETOOTH
 
-const tstring BTPortPrefix(_T("BT:"));
+const tstring BTPortPrefix(_T("BT_SPP:"));
 
 tstring BTAddrToStr(BT_ADDR ba) {
     TCHAR szAddress[25] = {0};

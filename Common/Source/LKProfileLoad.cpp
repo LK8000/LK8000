@@ -17,6 +17,10 @@
 #include "Util/Clamp.hpp"
 #include "Settings/read.h"
 #include <Tracking/Tracking.h>
+#include "utils/printf.h"
+#ifdef ANDROID
+  #include "Android/BluetoothHelper.hpp"
+#endif
 
 extern bool CommandResolution;
 
@@ -451,10 +455,33 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   /***************************************************/
 
   for (int n = 0; n < NUMDEV; n++) {
-    auto& Port = PortConfig[n];
+    auto &Port = PortConfig[n];
 
     if (settings::read(sname, svalue, szRegistryDevice[n], Port.szDeviceName)) return;
-    if (settings::read(sname, svalue, szRegistryPortName[n], Port.szPort)) return;
+    if (settings::read(sname, svalue, szRegistryPortName[n], Port.szPort)) {
+      if (_tcsncmp(Port.szPort, _T("BT:"), 3) == 0) {
+        tstring address(&Port.szPort[3]);
+#ifdef ANDROID
+        JNIEnv *env = Java::GetEnv();
+        if (env) {
+          std::string type = BluetoothHelper::GetTypeFromAddress(env, address.c_str());
+          if (type == "TYPE_LE") {
+            // "BT:XXXXX" to "BT_HM10:XXXXX"
+            lk::snprintf(Port.szPort, _T("BT_HM10:%s"), address.c_str());
+          } else if (type != "TYPE_UNKNOWN") {
+            // CLASSIC or DUAL
+            // "BT:XXXXX" to "BT_SPP:XXXXX"
+            lk::snprintf(Port.szPort, _T("BT_SPP:%s"), address.c_str());
+          }
+        }
+#else
+        // only SPP Bluetooth is supported...
+        // "BT:XXXXX" to "BT_SPP:XXXXX"
+        lk::snprintf(Port.szPort, _T("BT_SPP:%s"), address.c_str());
+#endif
+      }
+      return;
+    }
 
     if (settings::read(sname, svalue, szRegistrySpeedIndex[n], Port.dwSpeedIndex)) return;
     if (settings::read(sname, svalue, szRegistryBitIndex[n], Port.dwBitIndex)) return;

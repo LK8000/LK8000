@@ -293,13 +293,14 @@ void RefreshComPortList() {
 
       COMMPort.emplace_back(_T("Bluetooth Server"));
 
+      static constexpr jsize BLUETOOTH_LIST_STRIDE = 3;
 
       Java::LocalRef<jobjectArray> bonded = BluetoothHelper::list(env);
       if (bonded) {
 
-        jsize nBT = env->GetArrayLength(bonded) / 2;
+        jsize nBT = env->GetArrayLength(bonded) / BLUETOOTH_LIST_STRIDE;
         for (jsize i = 0; i < nBT; ++i) {
-          Java::String j_address(env, (jstring) env->GetObjectArrayElement(bonded, i * 2));
+          Java::String j_address(env, (jstring) env->GetObjectArrayElement(bonded, i * BLUETOOTH_LIST_STRIDE));
           if (!j_address)
             continue;
 
@@ -307,11 +308,21 @@ void RefreshComPortList() {
           if (address.empty())
             continue;
 
-          Java::String j_name(env, (jstring) env->GetObjectArrayElement(bonded, i * 2 + 1));
-          std::stringstream prefixed_address, name;
+          Java::String j_name(env, (jstring) env->GetObjectArrayElement(bonded, i * BLUETOOTH_LIST_STRIDE + 1));
+          Java::String j_type(env, (jstring) env->GetObjectArrayElement(bonded, i * BLUETOOTH_LIST_STRIDE + 2));
 
-          prefixed_address << "BT:" << address;
-          name << "BT:" << (j_name ? j_name.ToString() : std::string());
+          auto prefix = [&]() {
+            if (j_type.ToString() == "HM10") {
+              return "BT_HM10:";
+            }
+            else {
+              return "BT_SPP:";
+            }
+          };
+
+          std::stringstream prefixed_address, name;
+          prefixed_address << prefix() << address;
+          name << prefix() << (j_name ? j_name.ToString() : std::string());
 
           COMMPort.emplace_back(prefixed_address.str(), name.str());
         }
@@ -502,11 +513,16 @@ namespace {
 
     const TCHAR* Port = Config.GetPort();
 
-    if (_tcsncmp(Port, _T("BT:"), 3) == 0) {
+    if (_tcsncmp(Port, _T("BT_SPP:"), 7) == 0) {
       if(BluetoothStart()) {
         return new BthPort(idx, &Port[3]);
       }
     }
+#ifdef ANDROID
+    if (_tcsncmp(Port, _T("BT_HM10:"), 3) == 0) {
+      return new BleHM10Port(idx, &Port[8]);
+    }
+#endif
     else if (_tcscmp(Port, DEV_INTERNAL_NAME) == 0) {
 #ifdef ANDROID
       return new InternalPort(idx, Port);

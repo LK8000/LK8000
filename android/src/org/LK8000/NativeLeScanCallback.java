@@ -43,10 +43,18 @@ class NativeLeScanCallback implements BluetoothAdapter.LeScanCallback {
     ptr = _ptr;
   }
 
-  public final native void onLeScan(String address, String name);
+  public final native void onLeScan(String address, String name, String type);
 
   @Override
   public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-    onLeScan(device.getAddress(), device.getName());
+    String type;
+    if (BluetoothDevice.DEVICE_TYPE_LE == device.getType()) {
+      // TODO : check if device as GATT HM10_SERVICE ...
+      type = "HM10";
+    }
+    else {
+      type = "CLASSIC";
+    }
+    onLeScan(device.getAddress(), device.getName(), type);
   }
 }

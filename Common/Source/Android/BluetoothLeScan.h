@@ -19,7 +19,7 @@ class WndForm;
 
 class BluetoothLeScan : public LeScanCallback {
 
-    using callback_t = std::function<void(WndForm *, const char *, const char *)>;
+    using callback_t = std::function<void(WndForm *, const char *, const char *, const char*)>;
 
 public:
 
@@ -38,8 +38,8 @@ public:
         }
     }
 
-    void OnLeScan(const char *address, const char *name) override {
-        _callback(_pWndForm, address, name);
+    void OnLeScan(const char *address, const char *name, const char* type) override {
+        _callback(_pWndForm, address, name, type);
     }
 
 protected:

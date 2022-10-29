@@ -50,6 +50,9 @@ namespace BluetoothHelper {
   gcc_pure
   const char *GetNameFromAddress(JNIEnv *env, const char *address);
 
+  gcc_pure
+  std::string GetTypeFromAddress(JNIEnv *env, const char *address);
+
   /**
    * Returns a list of all bonded devices.
    */
@@ -77,6 +80,9 @@ namespace BluetoothHelper {
 
   gcc_malloc
   PortBridge *connect(JNIEnv *env, const char *address);
+
+  gcc_malloc
+  PortBridge *connectHM10(JNIEnv *env, const char *address);
 
   gcc_malloc
   PortBridge *createServer(JNIEnv *env);
