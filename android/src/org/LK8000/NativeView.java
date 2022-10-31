@@ -57,6 +57,7 @@ import android.webkit.MimeTypeMap;
 
 
 class EGLException extends Exception {
+  private static final long serialVersionUID = 750886225L;
   public EGLException(String _msg) {
     super(_msg);
   }
