@@ -125,8 +125,6 @@ bool InternalSensors::subscribedToSensor(int id) const {
 }
 
 void InternalSensors::cancelAllSensorSubscriptions() {
-  ScopeUnlock unlock(CritSec_Comm); // workaround to solve deadlock on restart ComPort.
-
   JNIEnv* env = Java::GetEnv();
   env->CallVoidMethod(obj_NonGPSSensors_.Get(),
                       mid_sensors_cancelAllSensorSubscriptions_);

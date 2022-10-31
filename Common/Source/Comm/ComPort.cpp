@@ -94,18 +94,11 @@ bool ComPort::StopRxThread() {
 
     StopEvt.set();
 
-#ifdef _DEBUG_STOP_RXTHREAD
-    StartupStore(_T("... ComPort %u StopRxThread: Cancel Wait Event !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
-#endif
+    DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), (unsigned)(GetPortIndex() + 1));
     CancelWaitEvent();
 
     if (ReadThread.isRunning()) {
-#ifdef _DEBUG_STOP_RXTHREAD
-        StartupStore(_T("... ComPort %u StopRxThread: Wait End of thread !%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
-#endif
-        // CritSec_Comm is locked by caller and can be waited by RxThread.
-        // to prevent deadlock, CritSec_Comm must be unlocked before waiting end of thread.
-        ScopeUnlock Unlock(CritSec_Comm);
+        DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), (unsigned)(GetPortIndex() + 1));
         ReadThread.join();
     }
     StopEvt.reset();
@@ -165,9 +158,9 @@ void ComPort::ProcessChar(char c) {
         ComCheck_AddChar(c);
     }
 
-    if(/*RadioPara.Enabled && */devParseStream(devIdx, &c, 1, &GPS_INFO)) {
+    if (devParseStream(devIdx, &c, 1, &GPS_INFO)) {
         // if this port is used for stream device, leave immediately.
-  //       don't return mayby more devices on one Port (shared Port)
+        // don't return mayby more devices on one Port (shared Port)
     }
 
     // last char need to be reserved for '\0' for avoid buffer overflow

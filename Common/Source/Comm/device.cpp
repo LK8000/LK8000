@@ -86,8 +86,8 @@ BOOL for_all_device(Callable&& func, Args&&... args) {
     }
     unsigned nbDeviceFailed = 0;
 
-    ScopeLock Lock(CritSec_Comm);
     for( DeviceDescriptor_t& d : DeviceList) {
+      ScopeLock Lock(CritSec_Comm);
       if( !d.Disabled && d.Com && (d.*func) ) {
         nbDeviceFailed += (d.*func)(&d, std::forward<Args>(args)...) ? 0 : 1;
       }
@@ -420,16 +420,13 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
 void RestartCommPorts() {
 
-    StartupStore(TEXT(". RestartCommPorts begin @%s%s"), WhatTimeIsIt(), NEWLINE);
+    StartupStore(_T(". RestartCommPorts begin @%s"), WhatTimeIsIt());
 
     devCloseAll();
 
     devInit();
 
-#if TESTBENCH
-    StartupStore(TEXT(". RestartCommPorts end @%s%s"), WhatTimeIsIt(), NEWLINE);
-#endif
-
+    TestLog(_T(". RestartCommPorts end @%s"), WhatTimeIsIt());
 }
 
 // Only called from devInit() above which
@@ -661,20 +658,26 @@ BOOL devInit() {
 // Called from devInit() above under LockComm
 // Also called when shutting down via devCloseAll()
 static void devClose(DeviceDescriptor_t& d) {
-  ScopeLock Lock(CritSec_Comm);
 
-  if (d.Close) {
-    d.Close(&d);
-  }
-
-  if (d.iSharedPort < 0) { // don't close shared Ports,  these are only copies!
-    if (d.Com) {
-      d.Com->Close();
-      delete d.Com;
+  ComPort* port = WithLock(CritSec_Comm, [&]() {
+    if (d.Close) {
+      d.Close(&d);
     }
+
+    auto port = std::exchange(d.Com, nullptr);
+    d.Status = CPS_CLOSED;
+
+    if (d.iSharedPort >= 0) {
+      // don't close shared Ports, these are only copies!
+      port = nullptr;
+    }
+    return port;
+  });
+
+  if (port) {
+    port->Close();
+    delete port;
   }
-  d.Com = nullptr; // if we do that before Stop RXThread , Crash ....
-  d.Status = CPS_CLOSED;
 }
 
 void devCloseAll() {
@@ -690,29 +693,30 @@ PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
   return nullptr;
 }
 
- // devParseStream(devIdx, c, &GPS_INFO);
-BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS){
-bool  ret = FALSE;
-PDeviceDescriptor_t din = devGetDeviceOnPort(portNum);
-PDeviceDescriptor_t d = NULL;
 
-    for(int dev =0; dev < NUMDEV; dev++)
-    {
-      d = &DeviceList[dev];
-      if (din && d && d->ParseStream)
-      {
-       if((d->iSharedPort == portNum) ||  (d->PortNumber == portNum))
-       {
-         d->HB=LKHearthBeats;
-         if (d->ParseStream(din, stream, length, pGPS)) {
-          
-         }
-         ret =TRUE;
-       }
-     }
-   }
-  return(ret);
-}    
+BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
+  PDeviceDescriptor_t din = devGetDeviceOnPort(portNum);
+  if (!din) {
+    return FALSE;
+  }
+  if (!din->Com) {
+    return FALSE; // Port Closed...
+  }
+
+  bool ret = FALSE;
+  for (auto& d : DeviceList) {
+    if (d.ParseStream) {
+      if ((d.iSharedPort == portNum) || (d.PortNumber == portNum)) {
+        d.HB = LKHearthBeats;
+        if (d.ParseStream(din, stream, length, pGPS)) {
+
+        }
+        ret = TRUE;
+      }
+    }
+  }
+  return ret;
+}
 
 
 
@@ -723,6 +727,9 @@ void devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
   if(!d) {
     return;
+  }
+  if (!d->Com) {
+    return; // Port Closed...
   }
 
   d->HB=LKHearthBeats;
