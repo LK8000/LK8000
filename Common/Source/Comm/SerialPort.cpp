@@ -110,8 +110,8 @@ bool SerialPort::Initialize() {
     if (!SetCommState(hPort, &PortDCB)) {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
-		// @M759 = Unable to Change Settings on Port
-	StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(759), GetPortName());
+        // @M759 = Unable to Change Settings on Port
+        StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(759), GetPortName());
 
         goto failed;
     }
