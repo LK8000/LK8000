@@ -16,8 +16,6 @@
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 
-double trackbearingminspeed=0; // minimal speed to use gps bearing
-
 #ifndef NDEBUG
   #define DEBUGNPM	1
 #endif
@@ -399,13 +397,6 @@ bool UpdateMonitor() {
       }
     }
   });
-
-
-    // Set some fine tuning parameters here, depending on device/situation/mode
-    if (ISCAR)
-      trackbearingminspeed=0; // trekking mode/car mode, min speed >0
-    else
-      trackbearingminspeed=1; // flymode,  min speed >1 knot
 
   //
   // Following is for diagnostics only

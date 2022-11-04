@@ -25,7 +25,19 @@ extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
 extern int NAVWarn(TCHAR c);
 
-extern double trackbearingminspeed; // minimal speed to use gps bearing, init by UpdateMonitor
+namespace {
+
+// minimal speed to use gps bearing
+double GetTrackBearingMinSpeed() {
+  if (ISCAR) {
+    return 0;  // trekking mode/car mode, min speed > 0
+  }
+  else {
+    return 1; // flymode,  min speed >1 knot
+  }
+}
+
+} // namespace
 
 GeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   LockFlightData();
@@ -133,7 +145,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
         GPSData.Speed = KNOTSTOMETRESSECONDS * loc.flSpeed;
     }
     if (loc.dwValidFields & GPS_VALID_HEADING) {
-      	if (GPSData.Speed>trackbearingminspeed) {
+      	if (GPSData.Speed > GetTrackBearingMinSpeed()) {
             GPSData.TrackBearing = AngleLimit360(loc.flHeading);
         }
     }
@@ -442,19 +454,17 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   if (!activeGPS) return TRUE;
 
   if (RMCAvailable) return FALSE;
-  double speed=0;
 
   // if no valid fix, we dont get speed either!
-  if (gpsValid)
-  {
-	speed = StrToDouble(params[4], NULL);
+  if (gpsValid) {
+    double speed = StrToDouble(params[4], NULL);
+    pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
 
-	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
-  
-	if (ISCAR)
-	if (pGPS->Speed>trackbearingminspeed) {
-		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
-	}
+    if (ISCAR) {
+      if (pGPS->Speed > GetTrackBearingMinSpeed()) {
+        pGPS->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
+      }
+    }
   }
 
   // if we are here, no RMC is available but if no GGA also, we are in troubles: to check!
@@ -589,7 +599,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   
 	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (pGPS->Speed>trackbearingminspeed) {
+	if (pGPS->Speed > GetTrackBearingMinSpeed()) {
 		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
