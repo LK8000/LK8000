@@ -9,27 +9,23 @@
 #include "externs.h"
 #include "Logger.h"
 
-
 // Swaps waypoint at current index with next one.
+//  `CritSec_TaskData` must be locked by caller
 void SwapWaypoint(int index) {
-  if (!CheckDeclaration())
+  if (!CheckDeclaration()) {
     return;
+  }
 
-  LockTaskData();
+  if (!ValidTaskPointFast(index)) {
+    return;
+  }
+  if (!ValidTaskPointFast(index + 1)) {
+    return;
+  }
+
   TaskModified = true;
   TargetModified = true;
-  if (index<0) {
-    return;
-  }
-  if (index+1>= MAXTASKPOINTS-1) {
-    return;
-  }
-  if ((Task[index].Index != -1)&&(Task[index+1].Index != -1)) {
-    TASK_POINT tmpPoint;
-    tmpPoint = Task[index];
-    Task[index] = Task[index+1];
-    Task[index+1] = tmpPoint;
-  }
+  std::swap(Task[index], Task[index + 1]);
+
   RefreshTask();
-  UnlockTaskData();
 }
