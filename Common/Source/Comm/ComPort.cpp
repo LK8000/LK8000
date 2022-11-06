@@ -142,15 +142,12 @@ bool ComPort::StartRxThread() {
 
 void ComPort::run() {
 
-    StartupStore(_T(". ComPort %u ReadThread : started%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
+    StartupStore(_T(". ComPort %u ReadThread : started"), (unsigned)(GetPortIndex() + 1));
 
     RxThread();
-    PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-    if(d) {
-        d->Status = CPS_OPENKO;
-    }
+    SetPortStatus(CPS_OPENKO);
 
-    StartupStore(_T(". ComPort %u ReadThread : terminated%s"), (unsigned)(GetPortIndex() + 1), NEWLINE);
+    StartupStore(_T(". ComPort %u ReadThread : terminated"), (unsigned)(GetPortIndex() + 1));
 }
 
 void ComPort::ProcessChar(char c) {

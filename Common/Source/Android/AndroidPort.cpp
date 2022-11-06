@@ -167,7 +167,8 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
     ScopeLock lock(mutex);
     const auto *src_data = static_cast<const uint8_t *>(data);
 
-    const size_t available_size =  (16*1024) - buffer.size(); // limit vector size to 16 KByte
+    // limit vector size to 16 KByte
+    const size_t available_size =  (16U * 1024U) - buffer.size();
     const size_t insert_size = std::min(available_size, length);
 
     buffer.insert(buffer.cend(), src_data,  std::next(src_data, insert_size));
@@ -206,29 +207,26 @@ unsigned AndroidPort::RxThread() {
     while( running ) {
 
         newdata.Wait(mutex);
+
         if (buffer.empty()) {
-            PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-            if (d) {
-                switch (active_bridge->getState(Java::GetEnv())) {
-                    case STATE_READY :
-                        d->Status = CPS_OPENOK;
-                        devOpen(d);
-                        break;
-                    case STATE_FAILED:
-                        d->Status = CPS_OPENKO;
-                        break;
-                    case STATE_LIMBO:
-                        d->Status = CPS_OPENWAIT;
-                        break;
-                    default:
-                        d->Status = CPS_OPENKO;
-                        break;
-                }
+            switch (active_bridge->getState(Java::GetEnv())) {
+                case STATE_READY:
+                    SetPortStatus(CPS_OPENOK);
+                    devOpen(devGetDeviceOnPort(GetPortIndex()));
+                    break;
+                case STATE_FAILED:
+                    SetPortStatus(CPS_OPENKO);
+                    break;
+                case STATE_LIMBO:
+                    SetPortStatus(CPS_OPENWAIT);
+                    break;
+                default:
+                    SetPortStatus(CPS_OPENKO);
+                    break;
             }
+
             if (!bridge) {
-                if (d) {
-                    d->Status = CPS_OPENKO;
-                }
+                SetPortStatus(CPS_OPENKO);
                 // port is Closed.
                 running = false;
             }
