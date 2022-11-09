@@ -14,7 +14,7 @@
 
 #include "PGCircleTaskPt.h"
 
-class PGConeTaskPt : public PGCicrcleTaskPt {
+class PGConeTaskPt : public PGCircleTaskPt {
     friend class PGTaskMgr;
 public:
     PGConeTaskPt() = delete;

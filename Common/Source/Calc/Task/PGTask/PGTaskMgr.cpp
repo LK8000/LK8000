@@ -105,12 +105,12 @@ void PGTaskMgr::Initialize() {
 }
 
 void PGTaskMgr::AddCircle(int TskIdx, double Radius) {
-    auto pTskPt = getPGTaskPt<PGCicrcleTaskPt>(m_Projection.get(), TskIdx, Radius);
+    auto pTskPt = getPGTaskPt<PGCircleTaskPt>(m_Projection.get(), TskIdx, Radius);
     m_Task.emplace_back(std::move(pTskPt));
 }
 
 void PGTaskMgr::AddEssCircle(int TskIdx, double Radius) {
-    auto pTskPt = getPGTaskPt<PGEssCicrcleTaskPt>(m_Projection.get(), TskIdx, Radius);
+    auto pTskPt = getPGTaskPt<PGEssCircleTaskPt>(m_Projection.get(), TskIdx, Radius);
     m_Task.emplace_back(std::move(pTskPt));
 }
 

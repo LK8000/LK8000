@@ -3,7 +3,7 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *  
- * File:   PGCicrcleTaskPt.h
+ * File:   PGSectorTaskPt.h
  * Author: Bruno de Lacheisserie
  *
  * Created on 21 octobre 2012, 16:16

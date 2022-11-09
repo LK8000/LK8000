@@ -3,7 +3,7 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  * 
- * File:   PGCicrcleTaskPt.cpp
+ * File:   PGCircleTaskPt.cpp
  * Author: Bruno de Lacheisserie
  * 
  * Created on 6 octobre 2012, 12:27
@@ -38,10 +38,10 @@ private:
 
 } // namespace
 
-PGCicrcleTaskPt::PGCicrcleTaskPt(ProjPt&& point, double Radius)
+PGCircleTaskPt::PGCircleTaskPt(ProjPt&& point, double Radius)
     : PGTaskPt(std::forward<ProjPt>(point)), m_Radius(Radius) { }
 
-void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
+void PGCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
     if(m_Radius == 0.0){
         return;
     }
@@ -67,7 +67,7 @@ void PGCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Al
     }
 }
 
-bool PGCicrcleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized) {
+bool PGCircleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized) {
     ProjPt A = prev - m_Center;
     ProjPt B = next - m_Center;
     if(A == B) {

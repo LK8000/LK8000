@@ -13,13 +13,13 @@
 #include "Draw/Task/TaskRendererMgr.h"
 
 PGConeTaskPt::PGConeTaskPt(ProjPt&& point) 
-    : PGCicrcleTaskPt(std::forward<ProjPt>(point), 0.) { }
+    : PGCircleTaskPt(std::forward<ProjPt>(point), 0.) { }
 
 void PGConeTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
 
     m_Radius = ConeRadius(Alt, m_AltBase, m_Slope, m_RadiusBase);
     if(m_Radius > 0.0) {
-        PGCicrcleTaskPt::Optimize(prev, {0., 0.}, Alt);
+        PGCircleTaskPt::Optimize(prev, {0., 0.}, Alt);
     }
     else {
         m_Optimized = m_Center;

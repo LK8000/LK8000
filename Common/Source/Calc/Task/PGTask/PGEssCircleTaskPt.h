@@ -14,11 +14,11 @@
 
 #include "PGCircleTaskPt.h"
 
-class PGEssCicrcleTaskPt : public PGCicrcleTaskPt {
+class PGEssCircleTaskPt : public PGCircleTaskPt {
     friend class PGTaskMgr; 
 public:
-    PGEssCicrcleTaskPt() = delete;
-    PGEssCicrcleTaskPt(ProjPt&& point, double Radius);
+    PGEssCircleTaskPt() = delete;
+    PGEssCircleTaskPt(ProjPt&& point, double Radius);
     
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 };

@@ -3,22 +3,22 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *  
- * File:   PGCicrcleTaskPt.h
+ * File:   PGCircleTaskPt.h
  * Author: Bruno de Lacheisserie
  *
  * Created on 6 octobre 2012, 12:27
  */
 
-#ifndef PGCICRCLETASKPT_H
-#define	PGCICRCLETASKPT_H
+#ifndef PGCIRCLETASKPT_H
+#define	PGCIRCLETASKPT_H
 
 #include "PGTaskPt.h"
 
-class PGCicrcleTaskPt : public PGTaskPt {
+class PGCircleTaskPt : public PGTaskPt {
     friend class PGTaskMgr;
 public:
-    PGCicrcleTaskPt() = delete;
-    PGCicrcleTaskPt(ProjPt&& point, double Radius);
+    PGCircleTaskPt() = delete;
+    PGCircleTaskPt(ProjPt&& point, double Radius);
 
     void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
 
@@ -28,4 +28,4 @@ protected:
     double m_Radius = 0;
 };
 
-#endif	/* PGCICRCLETASKPT_H */
+#endif	/* PGCIRCLETASKPT_H */

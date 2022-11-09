@@ -11,9 +11,9 @@
 
 #include "PGEssCircleTaskPt.h"
 
-PGEssCicrcleTaskPt::PGEssCicrcleTaskPt(ProjPt&& point, double Radius)
-    : PGCicrcleTaskPt(std::forward<ProjPt>(point), Radius) { }
+PGEssCircleTaskPt::PGEssCircleTaskPt(ProjPt&& point, double Radius)
+    : PGCircleTaskPt(std::forward<ProjPt>(point), Radius) { }
 
-void PGEssCicrcleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
-    PGCicrcleTaskPt::Optimize(prev, ProjPt(0.,0.), Alt);
+void PGEssCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
+    PGCircleTaskPt::Optimize(prev, ProjPt(0.,0.), Alt);
 }
