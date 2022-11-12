@@ -6,7 +6,6 @@
 */
 
 #include <assert.h>
-#include <iterator>
 #include "stl_utils.h"
 #include "md5.h"
 
@@ -43,21 +42,24 @@ void MD5_Base::Update(const void* input, size_t size)
   md5_process_bytes(input, size, &context);
 }
 
-// MD5 finalization. Ends an MD5 message-digest operation, writing the
-// the message digest and zeroizing the context.
-// Writes to digestRaw
-void MD5::Final()
+// MD5 finalization. Ends an MD5 message-digest operation,
+// zeroizing the context and return the message digest.
+std::string MD5::Final()
 {
-  assert(std::size(digestChars) == (std::size(resbuf) * 2 + 1));
-  static constexpr char Digit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-  
-  md5_finish_ctx(&context, resbuf);
-  
-  char * out_iterator = std::begin(digestChars);
-  for ( char c : resbuf) {
-    *(out_iterator++) = Digit[(c & 0xF0) >> 4];
-    *(out_iterator++) = Digit[(c & 0x0F) >> 0];
-  }
-  *out_iterator = '\0';
-}
+  static constexpr char Digit[] = {
+      '0', '1', '2', '3', '4', '5', '6', '7',
+      '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
 
+  unsigned char resbuf[16];
+  md5_finish_ctx(&context, resbuf);
+
+  std::string out;
+  out.reserve(32);
+  auto out_iterator = std::back_inserter(out);
+  for ( char c : resbuf) {
+    out_iterator = Digit[(c & 0xF0) >> 4];
+    out_iterator = Digit[(c & 0x0F) >> 0];
+  }
+  return out;
+}

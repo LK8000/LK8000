@@ -9,6 +9,7 @@
 #define MD5_H
 
 #include "md5internal.h"
+#include <string>
 
 class MD5_Base {
 protected:
@@ -41,19 +42,13 @@ public:
 
 class MD5 : public MD5_Base
 {
-  unsigned char resbuf[16];
-  
 public:
-  MD5() : MD5_Base() { }
+  MD5() = default;
   explicit MD5(const MD5_Base& md5) : MD5_Base(md5) { }
-
-  // This version of the digest is actually a "printf'd" version of the digest.
-  char digestChars[33];
 
   // MD5 finalization. Ends an MD5 message-digest operation, writing the
   // the message digest and zeroizing the context.
-  // Writes to digestRaw
-  void Final();
+  std::string Final();
 };
 
 #endif

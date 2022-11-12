@@ -810,7 +810,7 @@ void CAirspace_Circle::Dump() const {
 }
 
 // Calculate unique hash code for this airspace
-void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
+std::string CAirspace_Circle::Hash() const {
     MD5 md5;
 
     CAirspace::Hash(md5);
@@ -818,8 +818,7 @@ void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const {
     md5.Update(_center);
     md5.Update(_radius);
 
-    md5.Final();
-    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, std::size(md5.digestChars)));
+    return md5.Final();
 }
 
 // Check if the given coordinate is inside the airspace
@@ -1007,7 +1006,7 @@ void CAirspace_Area::Dump() const {
 }
 
 // Calculate unique hash code for this airspace
-void CAirspace_Area::Hash(char *hashout, int maxbufsize) const {
+std::string CAirspace_Area::Hash() const {
     MD5 md5;
 
     CAirspace::Hash(md5);
@@ -1016,8 +1015,7 @@ void CAirspace_Area::Hash(char *hashout, int maxbufsize) const {
         md5.Update(point);
     }
 
-    md5.Final();
-    memcpy(hashout, md5.digestChars, std::min<size_t>(maxbufsize, std::size(md5.digestChars)));
+    return md5.Final();
 }
 
 ///////////////////////////////////////////////////
@@ -3473,7 +3471,6 @@ void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace) {
 // Save airspace settings
 
 void CAirspaceManager::SaveSettings() const {
-    char hashbuf[33];
     FILE *f;
     TCHAR szFileName[MAX_PATH];
     char buf[MAX_PATH + 1];
@@ -3488,9 +3485,9 @@ void CAirspaceManager::SaveSettings() const {
 
         ScopeLock guard(_csairspaces);
         for (CAirspaceList::const_iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            (*it)->Hash(hashbuf, 33);
+            std::string hash = (*it)->Hash();
             //Asp hash
-            fprintf(f, "%32s ", hashbuf);
+            fprintf(f, "%32s ", hash.c_str());
 
             //Settings chr1 - Flyzone or not
             if ((*it)->Flyzone()) fprintf(f, "F");
@@ -3520,63 +3517,45 @@ void CAirspaceManager::LoadSettings() {
     char linebuf[MAX_PATH + 1];
     char hash[MAX_PATH + 1];
     char flagstr[MAX_PATH + 1];
-    FILE *f;
     TCHAR szFileName[MAX_PATH];
 
-    typedef struct _asp_data_struct {
-        CAirspace* airspace;
-        char hash[33];
-    } asp_data_struct;
-    asp_data_struct *asp_data;
-    unsigned int i, retval;
+    unsigned int retval;
     unsigned int airspaces_restored = 0;
 
     LocalPath(szFileName, TEXT(LKF_AIRSPACE_SETTINGS));
-    f = _tfopen(szFileName, TEXT("r"));
+    FILE *f = _tfopen(szFileName, TEXT("r"));
     if (f != NULL) {
         // Generate hash map on loaded airspaces
         ScopeLock guard(_csairspaces);
-        asp_data = (asp_data_struct*) malloc(sizeof (asp_data_struct) * _airspaces.size());
-        if (asp_data == NULL) {
-            OutOfMemory(_T(__FILE__), __LINE__);
-            fclose(f);
-            return;
-        }
-        i = 0;
-        for (CAirspaceList::iterator it = _airspaces.begin(); it != _airspaces.end(); ++it, ++i) {
-            (*it)->Hash(asp_data[i].hash, 33);
-            asp_data[i].airspace = *it;
+
+        std::map<std::string, CAirspace*> map;
+        for (auto asp : _airspaces) {
+            map.emplace(asp->Hash(), asp);
         }
 
         while (fgets(linebuf, MAX_PATH, f) != NULL) {
             //Parse next line
             retval = sscanf(linebuf, "%32s %3s", hash, flagstr);
             if (retval == 2 && hash[0] != '#') {
-                // Get the airspace pointer associated with the hash
-                for (i = 0; i < _airspaces.size(); ++i) {
-                    if (asp_data[i].airspace == NULL) continue;
-                    if (strcmp(hash, asp_data[i].hash) == 0) {
-                        //Match, restore settings
-                        //chr1 F=Flyzone
-                        asp_data[i].airspace->Flyzone(flagstr[0] == 'F');
-                        //chr2 E=Enabled
-                        asp_data[i].airspace->Enabled(flagstr[1] == 'E');
-                        //chr3 S=Selected
-                        if (flagstr[2] == 'S') AirspaceSetSelect(*(asp_data[i].airspace));
 
-                        // This line is readed, never needed anymore
-                        //StartupStore(TEXT(". Airspace settings loaded for %s%s"),asp_data[i].airspace->Name(),NEWLINE);
-                        asp_data[i].airspace = nullptr;
-                        airspaces_restored++;
+                auto it = map.find(hash);
+                if (it != map.end()) {
+                    it->second->Flyzone(flagstr[0] == 'F');
+                    it->second->Enabled(flagstr[1] == 'E');
+                    if (flagstr[2] == 'S') {
+                        AirspaceSetSelect(*(it->second));
                     }
+                    map.erase(it);
+                    airspaces_restored++;
                 }
             }
         }
-
-        if (asp_data) free(asp_data);
-        StartupStore(TEXT(". Settings for %d of %u airspaces loaded from file <%s>%s"), airspaces_restored, (unsigned)_airspaces.size(), szFileName, NEWLINE);
+        StartupStore(TEXT(". Settings for %d of %u airspaces loaded from file <%s>"), airspaces_restored, (unsigned)_airspaces.size(), szFileName);
         fclose(f);
-    } else StartupStore(TEXT(". Failed to load airspace settings from file <%s>%s"), szFileName, NEWLINE);
+    } 
+    else {
+        StartupStore(TEXT(". Failed to load airspace settings from file <%s>"), szFileName);
+    }
 }
 
 

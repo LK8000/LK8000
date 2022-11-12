@@ -28,12 +28,14 @@ namespace {
   void write_g_record(FILE *stream, const MD5_Base &md5) {
     // we made copy to allow to continue to update hash after Final call.
     MD5 md5_tmp(md5);
-    md5_tmp.Final();
-    fwrite("G", 1, 1, stream);
-    fwrite(md5_tmp.digestChars, 1, 16, stream);
-    fwrite("\r\nG", 1, 3, stream);
-    fwrite(md5_tmp.digestChars + 16, 1, 16, stream);
-    fwrite("\r\n", 1, 2, stream);
+    std::string digest = md5_tmp.Final();
+    if (digest.size() >= 32) {
+      fwrite("G", 1, 1, stream);
+      fwrite(digest.data(), 1, 16, stream);
+      fwrite("\r\nG", 1, 3, stream);
+      fwrite(digest.data() + 16, 1, 16, stream);
+      fwrite("\r\n", 1, 2, stream);
+    }
   }
 } // namespace
 

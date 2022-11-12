@@ -298,7 +298,7 @@ public:
     void Hash(MD5& md5) const;
 
     // Calculate unique hash code for this airspace
-    virtual void Hash(char *hashout, int maxbufsize) const = 0;
+    virtual std::string Hash() const = 0;
 
     // Warning system
     // Step1: At the start of warning calculation, set class attributes to init values
@@ -381,7 +381,7 @@ public:
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
-  void Hash(char *hashout, int maxbufsize) const override;
+  std::string Hash() const override;
 
 private:
 
@@ -416,7 +416,7 @@ public:
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
-  void Hash(char *hashout, int maxbufsize) const override;
+  std::string Hash() const override;
 
 private:
 

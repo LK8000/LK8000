@@ -1274,8 +1274,7 @@ static std::string md5(const std::string& text, bool tolower) {
 		transform(lowText.begin(), lowText.end(), lowText.begin(), ::tolower);
 	MD5 md5;
 	md5.Update(lowText);
-	md5.Final();
-	return std::string(md5.digestChars);
+	return md5.Final();
 }
 
 static std::string passwordToken(const std::string& plainTextPassword,
