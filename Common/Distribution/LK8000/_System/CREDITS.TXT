@@ -10,6 +10,11 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.3.25]
+. Update Android bluetooth port to speedup external device connection
+. Reduce android audio vario latency
+. Fix possible app freeze on ComPort restart or shutdown  
+
 [version 7.3.24]
 . Update "GPSBip" driver to support new "UltraBip" device
 . Add Fanet+ Driver for Air3 7.3+ device
