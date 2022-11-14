@@ -30,15 +30,15 @@
 
 namespace {
 
-    constexpr double ClimbToneOnThreshold = 0.2;
-    constexpr double ClimbToneOffThreshold = 0.15;
+    constexpr double ClimbToneOnThreshold = 0.1;
+    constexpr double ClimbToneOffThreshold = 0.05;
     constexpr double SinkToneOnThreshold = -3;
     constexpr double SinkToneOffThreshold = -3;
 
     struct VarioTone {
-        double Frequency; // (Hz)
-        double CycleTime; // (s)
-        double DutyCycle;
+        float Frequency; // (Hz)
+        float CycleTime; // (s)
+        float DutyCycle;
     };
 
     struct vario_ramp_t {
@@ -61,8 +61,8 @@ namespace {
         {  10.00, { 1800, 0.150, 0.70 } }
     };
 
-    double linear_interpolation(double a, double b, double f) {
-        const double of = 1 - f;
+    float linear_interpolation(float a, float b, float f) {
+        const float of = 1 - f;
         return (f * b + of * a);
     }
 
@@ -80,8 +80,6 @@ namespace {
         const auto begin = std::begin(ramp_tone);
         const auto end = std::end(ramp_tone);
 
-        VarioTone tone;
-
         // find first value with value > v
         auto it = std::upper_bound(begin, end, v, [](double v, const ramp_t &item) {
             return v < item.Vz;
@@ -92,14 +90,12 @@ namespace {
             if (it != end && it->Vz != prev->Vz) {
                 // interpolate color
                 const double f = (v - prev->Vz) / (it->Vz - prev->Vz);
-                tone = linear_interpolation(prev->tone, it->tone, f);
+                return linear_interpolation(prev->tone, it->tone, f);
             } else {
-                tone = prev->tone; // last defined color or no need to interpolate
+                return prev->tone; // last defined color or no need to interpolate
             }
-        } else {
-            tone = begin->tone; // first defined color
         }
-        return tone;
+        return begin->tone; // first defined color
     }
 }
 
@@ -133,22 +129,26 @@ VarioPlayer::~VarioPlayer() {
 
 void VarioPlayer::UpdateTone() {
     const double vz = mVz;
-    const VarioTone tone = ToneLookup(vz, vario_ramp);
-
-    mOscillator.SetFrequency(tone.Frequency);
-
-    mPeriodTotal = tone.CycleTime * mOscillator.GetSampleRate();
-    mPeriodOn = mPeriodTotal * tone.DutyCycle;
 
     // manage dead-band hysteresis
     if (mIsOn) {
         if (vz > SinkToneOffThreshold && vz < ClimbToneOffThreshold) {
             mIsOn = false;
+            mPeriodTotal = 0;
+            mPeriodOn = 0;
         }
     } else {
         if(vz < SinkToneOnThreshold || vz > ClimbToneOnThreshold) {
             mIsOn = true;
         }
+    }
+
+    if (mIsOn) {
+        const VarioTone tone = ToneLookup(vz, vario_ramp);
+        mOscillator.SetFrequency(tone.Frequency);
+
+        mPeriodTotal = tone.CycleTime * mOscillator.GetSampleRate();
+        mPeriodOn = mPeriodTotal * tone.DutyCycle;
     }
 }
 
@@ -157,7 +157,7 @@ oboe::DataCallbackResult VarioPlayer::onAudioReady(oboe::AudioStream *Stream, vo
     auto end = std::next(begin, Frames);
 
     std::for_each(begin, end, [&](float& data) {
-         data = ((mPeriod++) < mPeriodOn && mIsOn) ? mOscillator.Next() : 0;
+        data = ((mPeriod++) < mPeriodOn && mIsOn) ? mOscillator.Next() : 0;
         if (mPeriod >= mPeriodTotal) {
             mPeriod = 0;
             UpdateTone();

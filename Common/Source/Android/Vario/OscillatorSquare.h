@@ -40,6 +40,8 @@ private:
     float mPhase = 0.0f;
 
 public:
+    OscillatorSquare() = default;
+
     void SetSampleRate(float rate) {
         if (rate != mSampleRate) {
             mSampleRate = rate;
