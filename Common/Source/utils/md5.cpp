@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 
 */
-
+#include "options.h"
 #include <assert.h>
 #include "stl_utils.h"
 #include "md5.h"
@@ -63,3 +63,22 @@ std::string MD5::Final()
   }
   return out;
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("ValidFrequency") {
+  MD5_Base hash;
+  CHECK_EQ(MD5(hash).Final(), "d41d8cd98f00b204e9800998ecf8427e");
+
+  hash.Update(std::string("test"));
+  CHECK_EQ(MD5(hash).Final(), "098f6bcd4621d373cade4e832627b4f6");
+
+  hash.Update(std::string("123"));
+  CHECK_EQ(MD5(hash).Final(), "cc03e747a6afbbcbf8be7668acfebee5");
+
+  hash.Update('4');
+  CHECK_EQ(MD5(hash).Final(), "16d7a4fca7442dda3ad93c9a726597e4");
+}
+
+#endif
