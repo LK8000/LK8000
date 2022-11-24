@@ -56,14 +56,19 @@ void PGCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt
     if (!CrossPoint(a, b, m_Optimized)) {
         OptimizedDistance Fmin(a, m_Center, b, m_Radius);
         double x0 = 0;
-        double d1 = min_newuoa<double, OptimizedDistance > (1, &x0, Fmin, PI, 0.01 / m_Radius);
+        double d1 = min_newuoa(1, &x0, Fmin, PI, 0.01 / m_Radius);
         if (Distance(prev, m_Center) < m_Radius) {
             double x1 = x0 + PI;
-            double d2 = min_newuoa<double, OptimizedDistance > (1, &x1, Fmin, PI, 0.01 / m_Radius);
-
-            x0 = (std::min(d1, d2) == d1) ? x0 : x1;
+            double d2 = min_newuoa(1, &x1, Fmin, PI, 0.01 / m_Radius);
+            if (d2 < d1) {
+                x0 = x1;
+            }
         }
-        m_Optimized = ProjPt(m_Center.x + m_Radius * cos(x0), m_Center.y + m_Radius * sin(x0));
+
+        m_Optimized = {
+            m_Center.x + m_Radius * cos(x0), 
+            m_Center.y + m_Radius * sin(x0)
+        };
     }
 }
 
@@ -106,15 +111,13 @@ bool PGCircleTaskPt::CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& 
     }
 
     if (bb4ac > 0) {
+        LKASSERT(a);
+        bCrossPoint = true;
         // Two point, 
         if (PrevOutside || (!PrevOutside && NextOutside)) {
-            LKASSERT(a);
             k = (-b + sqrt(bb4ac)) / (2 * a); // output : prev outside && Exit TP || prev inside && next outside
-            bCrossPoint = true;
         } else {
-            LKASSERT(a);
             k = (-b - sqrt(bb4ac)) / (2 * a); // input : prev outside && Enter TP 
-            bCrossPoint = true;
         }
     }
 
