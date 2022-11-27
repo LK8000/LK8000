@@ -59,6 +59,13 @@ PortBridge::PortBridge(const Java::LocalObject& obj)
   , write_buffer(obj.GetEnv(), obj.GetEnv()->NewByteArray(write_buffer_size)) { }
 
 
+PortBridge::~PortBridge() {
+  JNIEnv *env = Java::GetEnv();
+  close(env);
+  setInputListener(env, nullptr);
+  setListener(env, nullptr);
+}
+
 void
 PortBridge::setListener(JNIEnv *env, PortListener *_listener)
 {

@@ -52,9 +52,7 @@ public:
 
   PortBridge(const Java::LocalObject& obj);
 
-  ~PortBridge() {
-    close(Java::GetEnv());
-  }
+  ~PortBridge();
 
   void close(JNIEnv *env) {
     env->CallVoidMethod(Get(), close_method);
