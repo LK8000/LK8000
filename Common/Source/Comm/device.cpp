@@ -505,59 +505,61 @@ namespace {
 #endif
   }
 
+  bool check_prefix(const tstring_view& Port, tstring_view Prefix) {
+    return (Port.substr(0, Prefix.size()) == Prefix);
+  }
 
   ComPort* make_ComPort(int idx, const PortConfig_t& Config) {
+    const tstring_view Port = Config.GetPort();
 
-    const TCHAR* Port = Config.GetPort();
-
-    if (_tcsncmp(Port, _T("BT_SPP:"), 7) == 0) {
+    if (check_prefix(Port, _T("BT_SPP:"))) {
       if(BluetoothStart()) {
         return new BthPort(idx, &Port[7]);
       }
     }
+    else if (check_prefix(Port, _T("BT_HM10:"))) {
 #ifdef ANDROID
-    if (_tcsncmp(Port, _T("BT_HM10:"), 8) == 0) {
       return new BleHM10Port(idx, &Port[8]);
-    }
 #endif
-    else if (_tcscmp(Port, DEV_INTERNAL_NAME) == 0) {
+    }
+    else if (check_prefix(Port, DEV_INTERNAL_NAME)) {
 #ifdef ANDROID
-      return new InternalPort(idx, Port);
+      return new InternalPort(idx, Port.data());
 #else
-      return new GpsIdPort(idx, Port);
+      return new GpsIdPort(idx, Port.data());
 #endif
     }
-    else if (_tcscmp(Port, _T("TCPClient")) == 0) {
+    else if (check_prefix(Port, _T("TCPClient"))) {
       StartWifi();
-      return new TCPClientPort(idx, Port);
+      return new TCPClientPort(idx, Port.data());
     }
-    else if (_tcscmp(Port, _T("TCPServer")) == 0) {
+    else if (check_prefix(Port, _T("TCPServer"))) {
       StartWifi();
-      return new TCPServerPort(idx, Port);
+      return new TCPServerPort(idx, Port.data());
     }
-    else if (_tcscmp(Port, _T("UDPServer")) == 0) {
+    else if (check_prefix(Port, _T("UDPServer"))) {
       StartWifi();
-      return new UDPServerPort(idx, Port);
+      return new UDPServerPort(idx, Port.data());
     }
-    else if (_tcscmp(Port, _T("Bluetooth Server")) == 0) {
+    else if (check_prefix(Port, _T("Bluetooth Server"))) {
 #ifdef ANDROID
-      return new BluetoothServerPort(idx, Port);
+      return new BluetoothServerPort(idx, Port.data());
 #endif
     }
-    else if(_tcsncmp(Port, _T("IOIOUart_"), 9) == 0) {
+    else if (check_prefix(Port, _T("IOIOUart_"))) {
 #ifdef ANDROID
-      return new IOIOUartPort(idx, Port, Config.GetBaudrate());
+      return new IOIOUartPort(idx, Port.data(), Config.GetBaudrate());
 #endif
     }
-    else if (_tcsncmp(Port, _T("USB:"), 4) == 0) {
+    else if (check_prefix(Port, _T("USB:"))) {
 #ifdef ANDROID
       return new UsbSerialPort(idx, &Port[4], Config.GetBaudrate(), Config.dwBitIndex);
 #endif
     }
-    else if (_tcscmp(Port, NMEA_REPLAY) == 0) {
-      return new FilePort(idx, Port);
+    else if (check_prefix(Port, NMEA_REPLAY)) {
+      return new FilePort(idx, Port.data());
     } else {
-      return new SerialPort(idx, Port, Config.GetBaudrate(), Config.dwBitIndex, PollingMode);
+      return new SerialPort(idx, Port.data(), Config.GetBaudrate(), Config.dwBitIndex, PollingMode);
     }
 
     return nullptr; // unknown port type...
