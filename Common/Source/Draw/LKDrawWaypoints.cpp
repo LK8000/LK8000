@@ -571,7 +571,6 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 		if (dowrite) {
 			RasterPoint LabelPos =  _Proj.ToRasterPoint(tp.Latitude, tp.Longitude);
-			LabelPos.x += NIBLSCALE(5);
 
 			if (PtInRect(&ClipRect, LabelPos)) {
 
@@ -590,7 +589,8 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 	for (MapWaypointLabel_t *E : sorted_array) {
 
-		if (!TextInBox(Surface, &rc, E->Name, E->Pos.x, E->Pos.y+NIBLSCALE(1), &(E->Mode), true)) {
+		RasterPoint TextPos = RasterPoint(E->Pos) + RasterPoint(IBLSCALE(5), IBLSCALE(1));
+		if (!TextInBox(Surface, &rc, E->Name, TextPos.x, TextPos.y, &(E->Mode), true)) {
 			continue;
 		}
 		if(E->isLandable) {
