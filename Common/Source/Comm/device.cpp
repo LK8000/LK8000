@@ -512,11 +512,11 @@ namespace {
 
     if (_tcsncmp(Port, _T("BT_SPP:"), 7) == 0) {
       if(BluetoothStart()) {
-        return new BthPort(idx, &Port[3]);
+        return new BthPort(idx, &Port[7]);
       }
     }
 #ifdef ANDROID
-    if (_tcsncmp(Port, _T("BT_HM10:"), 3) == 0) {
+    if (_tcsncmp(Port, _T("BT_HM10:"), 8) == 0) {
       return new BleHM10Port(idx, &Port[8]);
     }
 #endif
