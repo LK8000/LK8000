@@ -10,7 +10,7 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
-[version 7.4.0]
+[version 7.4.1]
 . Update "GPSBip" driver to support new "UltraBip" device
 . Add Fanet+ Driver for Air3 7.3+ device
 . Rename "Fanet" Driver to "GXAirCom" and add LK8EX1 sentence support
