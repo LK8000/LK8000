@@ -839,25 +839,22 @@ set_source_files_properties (
 
 find_package (geographiclib REQUIRED CONFIG)
 find_package (oboe REQUIRED CONFIG)
-
 find_package (boost_config REQUIRED CONFIG)
 find_package (boost_type_traits REQUIRED CONFIG)
 find_package (boost_preprocessor REQUIRED CONFIG)
 find_package (boost_core REQUIRED CONFIG)
-find_package (boost_io REQUIRED CONFIG)
 find_package (boost_assert REQUIRED CONFIG)
 find_package (boost_tuple REQUIRED CONFIG)
-find_package (boost_exception REQUIRED CONFIG)
-find_package (boost_throw_exception REQUIRED CONFIG)
-find_package (boost_integer REQUIRED CONFIG)
 find_package (boost_container_hash REQUIRED CONFIG)
 find_package (boost_utility REQUIRED CONFIG)
 find_package (boost_detail REQUIRED CONFIG)
 find_package (boost_static_assert REQUIRED CONFIG)
 find_package (boost_move REQUIRED CONFIG)
 find_package (boost_predef REQUIRED CONFIG)
+find_package (boost_mp11 REQUIRED CONFIG)
+find_package (boost_describe REQUIRED CONFIG)
 find_package (boost_intrusive REQUIRED CONFIG)
-find_package (boost_container REQUIRED CONFIG)
+find_package (boost_container REQUIRED)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
@@ -879,18 +876,16 @@ target_link_libraries(LK8000 PRIVATE
 	boost_type_traits::boost_type_traits
 	boost_preprocessor::boost_preprocessor
 	boost_core::boost_core
-	boost_io::boost_io
 	boost_assert::boost_assert
 	boost_tuple::boost_tuple
-	boost_exception::boost_exception
-	boost_throw_exception::boost_throw_exception
-	boost_integer::boost_integer
 	boost_container_hash::boost_container_hash
 	boost_utility::boost_utility
 	boost_detail::boost_detail
 	boost_static_assert::boost_static_assert
 	boost_move::boost_move
 	boost_predef::boost_predef
+    boost_mp11::boost_mp11
+    boost_describe::boost_describe
 	boost_intrusive::boost_intrusive
 	boost_container::boost_container
     android
