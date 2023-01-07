@@ -32,14 +32,8 @@ BOOL FlyNetParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
   return FALSE;
 }
 
-static BOOL FlyNetIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
 void FlyNetInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("FlyNet"));
   d->ParseNMEA = FlyNetParseNMEA;
-  d->IsBaroSource = FlyNetIsBaroSource;
 }

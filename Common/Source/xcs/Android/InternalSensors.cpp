@@ -275,7 +275,6 @@ double ComputeNoncompVario(const double pressure, const double d_pressure) {
   return FACTOR * pow(pressure, EXPONENT) * d_pressure;
 }
 
-static BOOL IsBaroSource(PDeviceDescriptor_t d) { return TRUE; }
 
 extern "C"
 gcc_visibility_default
@@ -310,12 +309,6 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
         }
         pdev->nmeaParser.connected = true;
         pdev->HB = LKHearthBeats;
-        if (!pdev->IsBaroSource) {
-          pdev->IsBaroSource = &IsBaroSource;
-          if (pdev->Com) {
-            pdev->Com->CancelWaitEvent();
-          }
-        }
 
         /* Kalman filter updates are also protected by the CommPort
            mutex. These should not take long; we won't hog the mutex

@@ -134,7 +134,7 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutBallast   = EOSPutBallast;
   d->PutQNH       = PutQNH;
   d->Declare      = DeclareTask;
-  d->IsBaroSource = GetTrue;
+
   d->Config       = Config;
 
   d->IsRadio        = EOSRadioEnabled;

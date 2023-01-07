@@ -257,7 +257,7 @@ bool UpdateMonitor() {
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.
       if (BaroAltitudeAvailable(GPS_INFO)) {
-        if (devIsBaroSource(&dev)) {
+        if (devIsBaroSource(dev)) {
           invalidBaro++;
         }
       }
@@ -272,7 +272,7 @@ bool UpdateMonitor() {
     } else {
       wasSilent[dev.PortNumber]=false;
       // We have hearth beats, is baro available?
-      if (devIsBaroSource(&dev)) { // 100411
+      if (devIsBaroSource(dev)) { // 100411
         validBaro++;
       }
     }

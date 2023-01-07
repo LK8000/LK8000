@@ -47,17 +47,10 @@ BOOL PGIsGPSSource(PDeviceDescriptor_t d){
   return(TRUE);
 }
 
-BOOL PGIsBaroSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void pgInstall(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
-  d->IsBaroSource = PGIsBaroSource;
 }
 
 

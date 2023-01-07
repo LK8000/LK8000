@@ -31,12 +31,6 @@ static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO
 
 }
 
-static BOOL FlymasterF1IsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
-
 
 /*
  * http://luftigduk.mamutweb.com/Resource/File/0/FLYMASTER%20F1%20KOMMANDOER%20V%206.0.PDF
@@ -73,7 +67,6 @@ void flymasterf1Install(PDeviceDescriptor_t d) {
 
   _tcscpy(d->Name, TEXT("FlymasterF1"));
   d->ParseNMEA = FlymasterF1ParseNMEA;
-  d->IsBaroSource = FlymasterF1IsBaroSource;
 }
 
 void flymasterInstall(PDeviceDescriptor_t d) {
@@ -84,7 +77,6 @@ void flymasterInstall(PDeviceDescriptor_t d) {
   d->ParseNMEA = FlymasterF1ParseNMEA;
   d->Open = Open;
   d->Close = Close;
-  d->IsBaroSource = FlymasterF1IsBaroSource;
 }
 
 

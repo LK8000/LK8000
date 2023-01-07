@@ -27,12 +27,7 @@ class NMEAParser {
 
   void Reset();
 
-  BOOL ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *GPS_INFO);
-
-
-  bool IsValidBaroSource() {
-      return ( RMZAvailable || TASAvailable);
-  }
+  BOOL ParseNMEAString_Internal(DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
   void CheckRMZ();
 
@@ -104,14 +99,14 @@ public:
   BOOL RMC(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL VTG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL RMB(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMZ(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMZ(DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
   BOOL WP0(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL WP1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL WP2(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
   // Additional sentences
-  BOOL PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
+  BOOL PTAS1(DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
   // Garmin magnetic compass
   BOOL HCHDG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active

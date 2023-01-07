@@ -64,12 +64,25 @@ bool GotFirstBaroAltitude = false;
  *
  * CAUTION do not use devicedescriptor's pointers to functions without LockComm!!
  */
-void UpdateBaroSource(NMEA_INFO* pGPS, const DeviceDescriptor_t* d, double fAlt) {
+void UpdateBaroSource(NMEA_INFO* pGPS, DeviceDescriptor_t* d, double fAlt) {
+  assert(pGPS);
+  assert(d);
+
+  // if device call this function, it is a baro source until ComPort restart.
+  if (!std::exchange(d->IsBaroSource, true)) {
+    // TODO : notify thread waiting for `IsBaroSource` if change form false to true.
+    // currently, only Android `Internal` wait for this. 
+    // must be refactored if another one is added.
+    if(d->Com) {
+      d->Com->CancelWaitEvent();
+    }
+  }
+
   BaroIndex Index = GetBaroIndex(d);
   if (Index <= pGPS->BaroSourceIdx) {
-    // if 'd' device has a hight priority
+    // if 'd' device has a higher priority
     if (fAlt > 30000 || fAlt < -1000) {
-      // ignore out of range altitude ...
+      // ignore out of range altitude...
       NotifyInvalidAltitude(Index.device_index, fAlt);
     }
     else {

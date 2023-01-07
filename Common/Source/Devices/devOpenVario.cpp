@@ -36,7 +36,6 @@ void DevOpenVario::Install(PDeviceDescriptor_t d) {
   d->PutMacCready = OpenVarioPutMacCready;
   d->PutBugs = OpenVarioPutBugs;
   d->PutBallast = OpenVarioPutBallast;
-  d->IsBaroSource = GetTrue;
 } // Install()
 
 

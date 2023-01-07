@@ -50,7 +50,7 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->PutBallast   = FenixPutBallast;
   d->PutQNH       = PutQNH;
   d->Declare      = DeclareTask;
-  d->IsBaroSource = GetTrue;
+
   d->Config       = Config;
   d->PutTarget    = PutTarget;
 } // Install()

@@ -45,25 +45,9 @@ static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apG
 
 }
 
-
-/*
-static BOOL ZanderIsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-}
-*/
-
-
-static BOOL ZanderIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
-
 void zanderInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Zander"));
   d->ParseNMEA = ZanderParseNMEA;
-  d->IsBaroSource = ZanderIsBaroSource;
 }
 
 // *****************************************************************************

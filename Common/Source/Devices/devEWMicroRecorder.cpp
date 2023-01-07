@@ -242,16 +242,8 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, un
 }
 
 
-
-BOOL EWMicroRecorderIsTrue(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
-
 void ewMicroRecorderInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("EW MicroRecorder"));
   d->ParseNMEA = EWMicroRecorderParseNMEA;
   d->Declare = EWMicroRecorderDeclare;
-  d->IsBaroSource = EWMicroRecorderIsTrue;
 }

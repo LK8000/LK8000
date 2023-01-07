@@ -586,7 +586,6 @@ BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 void Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, DeviceName);
   d->ParseNMEA = ParseNMEA;
-  d->IsBaroSource = LK8EX1IsBaroSource;
 }
 
 } // GXAirCom

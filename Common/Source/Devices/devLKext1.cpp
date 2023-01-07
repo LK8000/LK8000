@@ -23,16 +23,10 @@ BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   return FALSE;
 }
 
-BOOL LK8EX1IsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
 void LK8EX1Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("LK8EX1"));
   d->ParseNMEA = LK8EX1ParseNMEA;
-  d->IsBaroSource = LK8EX1IsBaroSource;
 }
 
 /*

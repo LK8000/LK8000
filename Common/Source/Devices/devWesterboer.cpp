@@ -146,12 +146,6 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 
 }
 
-static BOOL WesterboerIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
-
 void WesterboerInstall(PDeviceDescriptor_t d) {
   StartupStore(_T(". WESTERBOER device installed%s"),NEWLINE);
 
@@ -160,7 +154,6 @@ void WesterboerInstall(PDeviceDescriptor_t d) {
   d->PutMacCready = devWesterboerPutMacCready;
   d->PutBugs = devWesterboerPutBugs;
   d->PutBallast = devWesterboerPutBallast;
-  d->IsBaroSource =  WesterboerIsBaroSource;
 }
 
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)

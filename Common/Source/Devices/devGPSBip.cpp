@@ -38,10 +38,6 @@ namespace {
     return FALSE;
   }
 
-  BOOL GetTrue(DeviceDescriptor_t *d) {
-    return TRUE;
-  }
-
 } // namespace
 
 
@@ -62,5 +58,4 @@ void GPSBipInstall(PDeviceDescriptor_t d) {
 
   _tcscpy(d->Name, szDeviceName);
   d->ParseNMEA = ParseNMEA;
-  d->IsBaroSource = GetTrue;
 }

@@ -462,11 +462,6 @@ BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
 }
 
-BOOL cai302IsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
 void cai302Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("CAI 302"));
@@ -477,7 +472,6 @@ void cai302Install(PDeviceDescriptor_t d){
   d->Open = cai302Open;
   d->Close = cai302Close;
   d->Declare = cai302Declare;
-  d->IsBaroSource = cai302IsBaroSource;
 }
 
 // local stuff

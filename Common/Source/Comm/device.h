@@ -94,7 +94,7 @@ struct DeviceDescriptor_t {
   BOOL (*Close)(DeviceDescriptor_t *d);
   BOOL (*LinkTimeout)(DeviceDescriptor_t *d);
   BOOL (*Declare)(DeviceDescriptor_t *d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
-  BOOL (*IsBaroSource)(DeviceDescriptor_t *d);
+  
   BOOL (*IsRadio)(DeviceDescriptor_t *d);
   BOOL (*PutQNH)(DeviceDescriptor_t *d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
@@ -104,6 +104,8 @@ struct DeviceDescriptor_t {
   BOOL (*NMEAOut)(DeviceDescriptor_t *d, const TCHAR* String);
   BOOL (*PutTarget)(DeviceDescriptor_t *d, const WAYPOINT& wpt);
  
+  bool IsBaroSource;
+
   bool m_bAdvancedMode;
   int iSharedPort;
   int PortNumber;
@@ -167,7 +169,7 @@ BOOL devPutFreqStandby(unsigned Freq, const TCHAR* StationName);
 BOOL devLinkTimeout();
 BOOL devDeclare(PDeviceDescriptor_t	d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(DeviceDescriptor_t& d);
-BOOL devIsBaroSource(PDeviceDescriptor_t d);
+BOOL devIsBaroSource(const DeviceDescriptor_t& d);
 BOOL devIsRadio(PDeviceDescriptor_t d);
 
 BOOL devHeartBeat();

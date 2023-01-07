@@ -29,7 +29,7 @@ void CDevCProbe::Install( PDeviceDescriptor_t d ) {
 	d->ParseNMEA = ParseNMEA;
 	d->Open = Open;
 	d->Close = Close;
-	d->IsBaroSource = GetTrue;
+
 	d->Config = Config;
 }
 

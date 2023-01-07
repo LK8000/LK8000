@@ -1258,7 +1258,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     _tcscpy(StateText,_T(""));
     if( DeviceList[SelectedDevice].nmeaParser.gpsValid) _tcscat(StateText,TEXT("GPSFix "));
     if( DeviceList[SelectedDevice].nmeaParser.isFlarm) _tcscat(StateText,TEXT("Flarm "));
-    if( DeviceList[SelectedDevice].nmeaParser.IsValidBaroSource()) _tcscat(StateText,TEXT("Baro "));
+    if( devIsBaroSource(DeviceList[SelectedDevice])) _tcscat(StateText,TEXT("Baro "));
     if( DeviceList[SelectedDevice].iSharedPort>=0 ) _tcscat(StateText,TEXT("Shared "));
 
     if(DeviceList[idx].Disabled)

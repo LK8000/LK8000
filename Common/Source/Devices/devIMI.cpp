@@ -840,5 +840,4 @@ void CDevIMI::Install(PDeviceDescriptor_t d)
 
   _tcscpy(d->Name, GetName());
   d->Declare      = DeclareTask;
-  d->IsBaroSource = GetTrue;
 }

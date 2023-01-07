@@ -210,7 +210,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 }
 #endif
 
-BOOL NMEAParser::ParseNMEAString_Internal(const DeviceDescriptor_t& d, TCHAR* String, NMEA_INFO* pGPS) {
+BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, TCHAR* String, NMEA_INFO* pGPS) {
   TCHAR ctemp[MAX_NMEA_LEN];
   TCHAR* params[MAX_NMEA_PARAMS];
 
@@ -840,7 +840,7 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 }
 
 
-BOOL NMEAParser::RMZ(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   (void)pGPS;
 
@@ -867,7 +867,7 @@ BOOL NMEAParser::RMZ(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **params,
 
 
 // TASMAN instruments support for Tasman Flight Pack model Fp10
-BOOL NMEAParser::PTAS1(const DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 4) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));

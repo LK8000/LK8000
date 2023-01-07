@@ -10,8 +10,6 @@
 #include "devBorgeltB50.h"
 #include "Calc/Vario.h"
 
-BOOL bBaroAvailable = FALSE;
-
 static BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 
 extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -25,7 +23,6 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   else
     if(_tcsncmp(TEXT("$PGCS"), String, 5)==0)
     {
-      bBaroAvailable = true;
       return vl_PGCS1( d, &String[6], pGPS);
     }
 
@@ -33,17 +30,10 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-
-BOOL B50IsBaroSource(PDeviceDescriptor_t d){
-  (void)d;
-  return(bBaroAvailable); // ? is this true
-}
-
 void b50Install(PDeviceDescriptor_t d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
-  d->IsBaroSource = B50IsBaroSource;
 }
 
 

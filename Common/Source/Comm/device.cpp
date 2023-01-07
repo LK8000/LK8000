@@ -392,7 +392,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Close = nullptr;
     LinkTimeout = nullptr;
     Declare = nullptr;
-    IsBaroSource = nullptr;
+
     IsRadio = nullptr;
     PutQNH = nullptr;
     OnSysTicker = nullptr;
@@ -402,6 +402,8 @@ void DeviceDescriptor_t::InitStruct(int i) {
     NMEAOut = nullptr;
     PutTarget = nullptr;
     Disabled = true;
+
+    IsBaroSource = false;
 
     Status = CPS_UNUSED; // 100210
     HB = 0; // counter
@@ -890,14 +892,8 @@ BOOL devIsLogger(DeviceDescriptor_t& d) {
 /**
  * used only in devInit() and UpdateMonitor() : already under LockComm ...
  */
-BOOL devIsBaroSource(PDeviceDescriptor_t d) {
-  if(d) {
-    if (d->IsBaroSource) {
-      return d->IsBaroSource(d);
-    }
-    return d->nmeaParser.IsValidBaroSource();
-  }
-  return false;
+BOOL devIsBaroSource(const DeviceDescriptor_t& d) {
+  return d.IsBaroSource;
 }
 
 /**

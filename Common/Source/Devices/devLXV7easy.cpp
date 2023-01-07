@@ -20,10 +20,6 @@ static bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 
 extern BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
-static BOOL isTrue(PDeviceDescriptor_t) {
-     return TRUE;
-}
-
 static bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 {
   TCHAR  temp[80];
@@ -44,7 +40,6 @@ void LXV7easyInstall(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, TEXT("LXV7 easy"));
   d->ParseNMEA    = LXV7easyParseNMEA;
-  d->IsBaroSource = isTrue;
 }
 
 

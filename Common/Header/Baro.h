@@ -18,6 +18,6 @@ void ResetBaroAvailable(NMEA_INFO& Info);
 
 void CheckBaroAltitudeValidity(NMEA_INFO& Info);
 
-void UpdateBaroSource(NMEA_INFO* pGPS, const DeviceDescriptor_t* d, double fAlt);
+void UpdateBaroSource(NMEA_INFO* pGPS, DeviceDescriptor_t* d, double fAlt);
 
 #endif

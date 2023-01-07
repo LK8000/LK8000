@@ -162,7 +162,7 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
   d->PutBugs      = Nano3_PutBugs;
   d->PutBallast   = Nano3_PutBallast;
   d->Declare      = DeclareTask;
-  d->IsBaroSource = GetTrue;
+
   d->Config       = Config;
   d->DirectLink   = Nano3_DirectLink;
   d->PutTarget    = PutTarget;

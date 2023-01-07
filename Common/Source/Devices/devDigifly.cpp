@@ -40,25 +40,12 @@ static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pG
   return FALSE;
 }
 
-/*
-static BOOL DigiflyIsLogger(PDeviceDescriptor_t d){
-  (void)d;
-  return(FALSE);
-}
-*/
-
-static BOOL DigiflyIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
 void DigiflyInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". DIGIFLY device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Digifly"));
   d->ParseNMEA = DigiflyParseNMEA;
-  d->IsBaroSource = DigiflyIsBaroSource;
 }
 
 static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)

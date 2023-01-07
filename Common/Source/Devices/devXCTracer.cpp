@@ -18,10 +18,6 @@
 #include "Calc/Vario.h"
 #include "nmeaistream.h"
 
-static BOOL XCTracerTrue(PDeviceDescriptor_t) {
-    return (true);
-} // GetTrue()
-
 /**
  * Helper functions to parse and check an input field
  * Should these be added as methods to Class CSVLine ?
@@ -244,8 +240,6 @@ static BOOL XCTracerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_
 }
 
 void XCTracerInstall(PDeviceDescriptor_t d) {
-
     _tcscpy(d->Name, _T("XCTracer"));
     d->ParseNMEA = XCTracerParseNMEA;
-    d->IsBaroSource = XCTracerTrue;
 }

@@ -76,7 +76,6 @@ void DevLXNano::Install(PDeviceDescriptor_t d)
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->Declare      = DeclareTask;
-  d->IsBaroSource = GetTrue;
 
   StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
     GetName(),

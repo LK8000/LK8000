@@ -36,16 +36,9 @@ static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 }
 
 
-static BOOL FlytecIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
-
 void FlytecInstall(PDeviceDescriptor_t d) {
   _tcscpy(d->Name, TEXT("Flytec/FLYSEN"));
   d->ParseNMEA = FlytecParseNMEA;
-  d->IsBaroSource = FlytecIsBaroSource;
 }
 
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)

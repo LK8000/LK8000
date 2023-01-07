@@ -31,20 +31,12 @@ static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
 }
 
-
-static BOOL CompeoIsBaroSource(PDeviceDescriptor_t d){
-	(void)d;
-  return(TRUE);
-}
-
-
 void CompeoInstall(PDeviceDescriptor_t d) {
 
   StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Brauniger/Compeo 5030"));
   d->ParseNMEA = CompeoParseNMEA;
-  d->IsBaroSource = CompeoIsBaroSource;
 }
 
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)

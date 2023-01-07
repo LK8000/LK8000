@@ -72,7 +72,7 @@ void DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->PutBallast   = LXMiniMapPutBallast;
   d->Open         = Open;
   d->Declare      = DeclareTaskMinimap;
-  d->IsBaroSource = GetTrue;
+
   d->PutQNH = LXMiniMapPutQNH;
 } // Install()
 
