@@ -29,6 +29,7 @@ Copyright_License {
 #include "UncompressedImage.hpp"
 #include "Texture.hpp"
 #include "Debug.hpp"
+#include <utility>
 
 Bitmap::Bitmap(Bitmap &&src) :
    texture(std::exchange(src.texture, nullptr)),
