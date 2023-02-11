@@ -2198,7 +2198,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         }
         const char* dataStr = category->value();
         size_t len = strlen(dataStr);
-        int Type=-1;
+        int Type = OTHER;
         if(len>0) switch(dataStr[0]) {
         case 'A':
             if(len==1) Type=CLASSA; // A class airspace
@@ -2256,16 +2256,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             Type = OTHER;
         }
         if(Type < 0) {
-            if(dataStr == nullptr) continue;
             Type = OTHER;
-#ifdef UNICODE
-            TCHAR sTmp[100] = {};
-            from_utf8(dataStr, sTmp);
-#else
-            const char* sTmp = dataStr;
-#endif
-            StartupStore(TEXT(".. Skipping ASP with unknown CATEGORY attribute: %s.%s"), sTmp, NEWLINE);
-            continue;
         }
 
         // Airspace country
