@@ -28,10 +28,8 @@ public:
   // context.
   void Update(const void* input, size_t size);
 
-  template<typename T>
+  template<typename T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
   void Update(const T& data) {
-    static_assert(std::is_trivially_copyable_v<T>, "incompatible type");
-    static_assert(!std::is_pointer_v<T>, "incompatible type");
     Update(&data, sizeof(data));
   }
 

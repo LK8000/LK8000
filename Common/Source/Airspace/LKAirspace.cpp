@@ -814,7 +814,8 @@ std::string CAirspace_Circle::Hash() const {
 
     CAirspace::Hash(md5);
 
-    md5.Update(_center);
+    md5.Update(_center.latitude);
+    md5.Update(_center.longitude);
     md5.Update(_radius);
 
     return md5.Final();
@@ -1011,7 +1012,8 @@ std::string CAirspace_Area::Hash() const {
     CAirspace::Hash(md5);
 
     for (const auto& point : _geopoints) {
-        md5.Update(point);
+        md5.Update(point.Latitude());
+        md5.Update(point.Longitude());
     }
 
     return md5.Final();
