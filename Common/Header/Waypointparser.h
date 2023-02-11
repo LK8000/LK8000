@@ -7,7 +7,6 @@
 #include "Util/tstring.hpp"
 
 class zzip_stream;
-class zzip_file_ptr;
 struct WAYPOINT;
 struct TASK_POINT;
 

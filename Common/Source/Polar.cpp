@@ -10,7 +10,6 @@
 #include "McReady.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-#include "utils/openzip.h"
 #include "utils/zzip_stream.h"
 #include "Utils.h"
 

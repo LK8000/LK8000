@@ -47,7 +47,6 @@
 #include "Hardware/CPU.hpp"
 #include "LKInterface/CScreenOrientation.h"
 #include <time.h>
-#include "utils/openzip.h"
 
 #include "Airspace/Sonar.h"
 #include <OS/RotateScreen.h>

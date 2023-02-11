@@ -13,8 +13,6 @@
 #define	OPENZIP_H
 
 #include <zzip/zzip.h>
-#include <tchar.h>
-#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,62 +28,23 @@ ZZIP_FILE * openzip(const char* szFile, const char *mode);
 #endif
 
 #ifdef __cplusplus
-#include <utility>
+#include <memory>
 
-#ifdef WIN32
+#ifdef UNICODE
 static inline
-ZZIP_FILE * openzip(const TCHAR* szFile, const char *mode) {
+ZZIP_FILE * openzip(const wchar_t* szFile, const char *mode) {
 	return zzip_fopen(szFile, mode);
 }
 #endif
 
-class zzip_file_ptr {
-public:
-    zzip_file_ptr() : _fp() { }
-    explicit zzip_file_ptr(ZZIP_FILE* fp) : _fp(fp) { }
-
-	zzip_file_ptr(const zzip_file_ptr&) = delete;
-
-	zzip_file_ptr(zzip_file_ptr&& src) {
-		_fp = src._fp;
-		src._fp = nullptr;
-	}
-
-	zzip_file_ptr& operator=(zzip_file_ptr&& src) {
-		std::swap(_fp, src._fp);
-	  return (*this);
-	}
-
-    zzip_file_ptr& operator=(ZZIP_FILE* fp) {
-        if(_fp != fp) {
-            close();
-        }
-        _fp = fp;
-        return *this;
-    }
-
-    ~zzip_file_ptr() {
-        close();
-    }
-
-    void close() {
-        if(_fp) {
-            zzip_close(_fp);
-            _fp = nullptr;
-        }
-    }
-
-    operator bool() const {
-        return (_fp != nullptr); 
-    }
-
-    operator ZZIP_FILE*() const { 
-        assert(_fp);
-        return _fp; 
-    }
-
-protected:
-    ZZIP_FILE* _fp;
+struct zzip_file_ptr_delete {
+    inline void operator()(ZZIP_FILE *__ptr) {
+        zzip_close(__ptr);
+    };
 };
+
+using zzip_file_ptr = std::unique_ptr<ZZIP_FILE, zzip_file_ptr_delete>;
+
+
 #endif
 #endif	/* OPENZIP_H */

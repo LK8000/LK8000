@@ -15,6 +15,7 @@
 #include "openzip.h"
 #include <string>
 #include <streambuf>
+#include "tchar.h"
 #include "Util/AllocatedArray.hpp"
 
 class zzip_stream : public std::streambuf {
@@ -29,12 +30,12 @@ public:
   bool open(const TCHAR* szFile, const char *mode);
 
   void close() {
-    _fp.close();
+    _fp = nullptr;
     setg(nullptr, nullptr, nullptr);
   }
 
   operator bool() const {
-    return (_fp);
+    return _fp.operator bool();
   }
 
   template<typename char_type, size_t size>

@@ -19,7 +19,6 @@
 
 #include "utils/2dpclip.h"
 #include "utils/stringext.h"
-#include "utils/openzip.h"
 #include "Draw/ScreenProjection.h"
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"

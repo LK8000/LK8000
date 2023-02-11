@@ -36,7 +36,7 @@ bool zzip_stream::open(const TCHAR *szFile, const char *mode) {
     return false; // invalid open mode
   }
 
-  _fp = openzip(szFile, mode);
+  _fp.reset(openzip(szFile, mode));
   if (!_fp) {
     // failed to open file
     return false;
@@ -65,7 +65,7 @@ int zzip_stream::underflow() {
   assert(gptr() == egptr());
 
   // read next chunk
-  zzip_ssize_t read_size = zzip_read(_fp, _buffer, std::size(_buffer));
+  zzip_ssize_t read_size = zzip_read(_fp.get(), _buffer, std::size(_buffer));
   if (read_size <= 0) {
     return traits_type::eof();
   } else {
