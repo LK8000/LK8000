@@ -29,10 +29,6 @@
 #define INSIDE 4
 #define ALLOFF 5
 
-
-void ReadAirspace(void);
-
-
 //*******************************************************************************
 // experimental: new dialog based warning system
 
