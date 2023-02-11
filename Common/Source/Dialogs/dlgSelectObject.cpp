@@ -158,10 +158,6 @@ struct key_filter : public key_filter_interface {
     }
   }
 
-  size_t GetMatchIdx() const {
-    return best_match_idx;
-  }
-
   unsigned GetMatchCount() const override {
     return match_count;
   }
@@ -192,7 +188,6 @@ void dlgSelectObject::OnFilterName(WndButton* pWnd) {
 
   key_filter filter(*this);
   dlgTextEntryShowModal(newNameFilter, dlgSelectObject::NAMEFILTERLEN, &filter); // todo : implement keyFilter
-  size_t idx = filter.GetMatchIdx();
 
   SetNameCaption(pWnd, newNameFilter);
   SetNameFilter(newNameFilter);
@@ -208,11 +203,6 @@ void dlgSelectObject::OnFilterName(WndButton* pWnd) {
     auto wListEntry = dynamic_cast<WndOwnerDrawFrame*>(pForm->FindByName(TEXT("frmListEntry")));
     if (wListEntry) {
       wListEntry->SetFocus();
-    }
-
-    if(idx < array_info.size()) {
-        wList->SetItemIndexPos(idx);
-        wList->CenterScrollCursor();
     }
     wList->Redraw();
   }

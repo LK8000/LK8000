@@ -16,6 +16,7 @@
 #include "tchar.h"
 #include <memory>
 #include <vector>
+#include <set>
 #include "WindowControls.h"
 #include "utils/stringext.h"
 
@@ -50,8 +51,8 @@ struct ObjectAdaptor_t {
       keys.insert(to_lower(*(next_match + filter_size)));
       next_match = ci_search_substr(next_match+1, filter);
     }
-    
-    return (first_match) 
+
+    return (first_match)
         ? std::distance(Name(), first_match)
         : npos;
   }
@@ -64,17 +65,17 @@ struct ObjectSelectInfo_t {
   double Direction;
   std::unique_ptr<ObjectAdaptor_t> object;
 
-  void Select() const { 
-    object->Select(); 
+  void Select() const {
+    object->Select();
   }
 
   // return true to Close Dialog
-  bool Toggle() const { 
-    return object->Toggle(); 
+  bool Toggle() const {
+    return object->Toggle();
   }
 
-  const TCHAR* Name() const { 
-    return object->Name(); 
+  const TCHAR* Name() const {
+    return object->Name();
   }
 
   bool FilterName(const TCHAR* filter) const {
@@ -109,7 +110,9 @@ public:
 
   int DoModal();
 
-  array_info_t& GetArrayInfo() { return array_info; }
+  array_info_t& GetArrayInfo() {
+    return array_info;
+  }
 
   virtual unsigned GetTypeCount() const = 0;
   virtual const TCHAR* GetTypeLabel(unsigned type) const = 0;

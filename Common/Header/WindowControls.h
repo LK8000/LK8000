@@ -775,7 +775,6 @@ class WndListFrame:public WndFrame{
     }
 
     void SetItemIndexPos(int iValue);
-    void CenterScrollCursor(void);
 
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select);
