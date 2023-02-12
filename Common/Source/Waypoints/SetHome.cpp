@@ -59,9 +59,6 @@ bool SetNewHome(size_t idx) {
 void SetHome(bool reset) {
   TestLog(TEXT(".... SetHome (current=%d), reset=%d"), HomeWaypoint, reset);
 
-  unsigned int i;
-  bool resetalternates = false;
-
   if (reset || !ValidWayPoint(NUMRESWP) ||
       !ValidNotResWayPoint(HomeWaypoint)) {  // BUGFIX 100213 see if really we have wps!
     TestLog(TEXT(".... Home Reset"));
@@ -71,21 +68,17 @@ void SetHome(bool reset) {
   // If one of the alternates is no longer valid, we reset both of them
   if (Alternate1 != -1) {
     if (!ValidNotResWayPoint(Alternate1)) {
-      resetalternates = true;
+      Alternate1 = -1;
     }
   }
   if (Alternate2 != -1) {
     if (!ValidNotResWayPoint(Alternate2)) {
-      resetalternates = true;
+      Alternate2 = -1;
     }
-  }
-  if (reset || resetalternates) {
-    Alternate1 = -1;
-    Alternate2 = -1;
   }
 
   // check invalid task ref waypoint or forced reset due to file change
-  if (reset || !ValidNotResWayPoint(TeamCodeRefWaypoint)) {
+  if (!ValidNotResWayPoint(TeamCodeRefWaypoint)) {
     TeamCodeRefWaypoint = -1;
   }
 
@@ -97,7 +90,7 @@ void SetHome(bool reset) {
   if (!ValidNotResWayPoint(HomeWaypoint)) {
     // search for home in waypoint list, if we don't have a home
     HomeWaypoint = -1;
-    for (i = NUMRESWP; i < WayPointList.size(); ++i) {
+    for (size_t i = NUMRESWP; i < WayPointList.size(); ++i) {
       if ((WayPointList[i].Flags & HOME) == HOME) {
         if (HomeWaypoint < 0) {
           HomeWaypoint = i;
@@ -115,7 +108,7 @@ void SetHome(bool reset) {
   // if we still don't have a valid home , search for match against memory home
   // This will fix a problem reloading waypoints after editing, or changing files with similars
   if ((!ValidNotResWayPoint(HomeWaypoint)) && home_position != AGeoPoint({0, 0}, 0)) {
-    for (i = NUMRESWP; i < WayPointList.size(); i++) {
+    for (size_t i = NUMRESWP; i < WayPointList.size(); i++) {
       if (GetWayPointPosition(WayPointList[i]) != home_position) {
         continue;
       }
