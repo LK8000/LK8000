@@ -1,13 +1,8 @@
 /*
- * Author:
- *	Guido Draheim <guidod@gmx.de>
+ * Author: 
+ *     Guido Draheim <guidod@gmx.de>
  *
- * Copyright (c) 2002,2003 Guido Draheim
- * 	    All rights reserved
- *	    use under the restrictions of the
- *	    Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft
  *
  *  the interfaces for the plugin_io system
  *
@@ -59,7 +54,8 @@ typedef union _zzip_plugin_io
 } zzip_plugin_io_handlers;
 
 #define _zzip_plugin_io_handlers zzip_plugin_io_handlers
-/* for backward compatibility, and the following to your application code:
+
+/* for backward compatibility, add the following to your application code:
  * #ifndef _zzip_plugin_io_handlers
  * #define _zzip_plugin_io_handlers struct zzip_plugin_io
  */
@@ -74,7 +70,9 @@ typedef zzip_plugin_io_handlers* zzip_plugin_io_handlers_t;
 _zzip_export zzip_off_t
 zzip_filesize(int fd);
 
-/* get the default file I/O functions */
+/* get the default file I/O functions.
+ *  This functions returns a pointer to an internal static structure.
+ */
 _zzip_export zzip_plugin_io_t zzip_get_default_io(void);
 
 /*
@@ -90,7 +88,7 @@ int zzip_init_io(zzip_plugin_io_handlers_t io, int flags);
 # define ZZIP_IO_USE_MMAP 1
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif

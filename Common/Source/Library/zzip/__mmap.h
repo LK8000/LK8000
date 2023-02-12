@@ -9,17 +9,12 @@
  * functions (or just static members) and a few defines, simply to be
  * able to reuse these across - and have everything in a specific place.
  *
- * Copyright (c) 2002,2003 Guido Draheim
- *          All rights reserved,
- *          use under the restrictions of the
- *          Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)
  */
 
 #ifdef _USE_MMAP
 #if    defined ZZIP_HAVE_SYS_MMAN_H
-//JMW#include <sys/mman.h>
+#include <sys/mman.h>
 #define USE_POSIX_MMAP 1
 #elif defined ZZIP_HAVE_WINBASE_H || defined WIN32
 #include <windows.h>
@@ -49,13 +44,12 @@
 #ifndef MAP_FAILED
 #define MAP_FAILED 0
 #endif
-/* we (ab)use the "*user" variable to store the FileMapping handle */
-                 /* which assumes (sizeof(long) == sizeof(HANDLE)) */
+/* we had used the plugin->sys variable for (user) but not anymore */
 
 static size_t win32_getpagesize (void)
-{
-    SYSTEM_INFO si; GetSystemInfo (&si);
-    return si.dwAllocationGranularity;
+{ 
+    SYSTEM_INFO si; GetSystemInfo (&si); 
+    return si.dwAllocationGranularity; 
 }
 static void*  win32_mmap (long* user, int fd, zzip_off_t offs, size_t len)
 {
@@ -63,22 +57,21 @@ static void*  win32_mmap (long* user, int fd, zzip_off_t offs, size_t len)
 	return 0;
   {
     HANDLE hFile = (HANDLE)_get_osfhandle(fd);
+    HANDLE fileMapping = NULL;
     if (hFile)
-	*user = (int) CreateFileMapping (hFile, 0, PAGE_READONLY, 0, 0, NULL);
-    if (*user)
+	fileMapping = CreateFileMapping (hFile, 0, PAGE_READONLY, 0, 0, NULL);
+    if (fileMapping != NULL)
     {
-	char* p = 0;
-	p = MapViewOfFile(*(HANDLE*)user, FILE_MAP_READ, 0, offs, len);
-	if (p) return p + offs;
-	CloseHandle (*(HANDLE*)user); *user = 1;
-    }
+	char* p = MapViewOfFile(fileMapping, FILE_MAP_READ, 0, offs, len);
+	CloseHandle (fileMapping); *user = 1;
+	if (p) return p;
+    } 
     return MAP_FAILED;
   }
 }
 static void win32_munmap (long* user, char* fd_map, size_t len)
 {
     UnmapViewOfFile (fd_map);
-    CloseHandle (*(HANDLE*)user); *user = 1;
 }
 
 #define _zzip_mmap(user, fd, offs, len) \

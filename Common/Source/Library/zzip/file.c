@@ -1,42 +1,29 @@
+
 /*
  * Author:
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- * Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
- *          All rights reserved,
- *          use under the restrictions of the
- *          Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)
  */
 
-#include <zzip/lib.h>                                         /* exported...*/
+#include <zzip/lib.h>           /* exported... */
 #include <zzip/file.h>
 
 #include <string.h>
 #include <sys/stat.h>
-#include <errno.h>
+#include "__errno.h"
 #include <stdlib.h>
 #include <ctype.h>
 
 #include <zzip/format.h>
 #include <zzip/fetch.h>
+#include <zzip/zzip32.h>
 #include <zzip/__debug.h>
-
-#include "utils/stringext.h"
-
-#if defined(__MINGW32__)
-#include <windef.h>
-//(WINDOWSPC>0)&&
-// JMW needed otherwise seek/tell won't work!
-#undef _fmode
-int _fmode = _O_BINARY;
-#endif
 
 #if 0
 # if defined ZZIP_HAVE_IO_H
-# include <io.h> /* tell */
+# include <io.h>                /* tell */
 # else
 # define tell(fd) lseek(fd,0,SEEK_CUR)
 # endif
@@ -44,8 +31,8 @@ int _fmode = _O_BINARY;
 #define tells(fd) seeks(fd,0,SEEK_CUR)
 #endif
 
-/**
- * the direct function of => zzip_close(fp). it will cleanup the
+/** end usage.
+ * This function is the direct call of => zzip_close(fp). It will cleanup the
  * inflate-portion of => zlib and free the structure given.
  *
  * it is called quite from the error-cleanup parts
@@ -57,19 +44,20 @@ int
 zzip_file_close(ZZIP_FILE * fp)
 {
     auto int self;
-    ZZIP_DIR * dir = fp->dir;
+    ZZIP_DIR *dir = fp->dir;
 
     if (fp->method)
-        inflateEnd(&fp->d_stream); /* inflateEnd() can be called many times */
+        inflateEnd(&fp->d_stream);      /* inflateEnd() can be called many times */
 
     if (dir->cache.locked == NULL)
-	dir->cache.locked = &self;
+        dir->cache.locked = &self;
 
     if (fp->buf32k)
     {
-        if (dir->cache.locked == &self &&
-	    dir->cache.buf32k == NULL) dir->cache.buf32k = fp->buf32k;
-        else free(fp->buf32k);
+        if (dir->cache.locked == &self && dir->cache.buf32k == NULL)
+            dir->cache.buf32k = fp->buf32k;
+        else
+            free(fp->buf32k);
     }
 
     if (dir->currentfp == fp)
@@ -79,18 +67,18 @@ zzip_file_close(ZZIP_FILE * fp)
     /* ease to notice possible dangling reference errors */
     memset(fp, 0, sizeof(*fp));
 
-    if (dir->cache.locked == &self &&
-	dir->cache.fp == NULL) dir->cache.fp = fp;
-    else free(fp);
+    if (dir->cache.locked == &self && dir->cache.fp == NULL)
+        dir->cache.fp = fp;
+    else
+        free(fp);
 
     if (dir->cache.locked == &self)
-	dir->cache.locked = NULL;
+        dir->cache.locked = NULL;
 
-    if (! dir->refcount) {
-	return zzip_dir_close(dir);
-    } else {
-	return 0;
-    }
+    if (! dir->refcount)
+        return zzip_dir_close(dir);
+    else
+        return 0;
 }
 
 
@@ -101,6 +89,7 @@ zzip_file_saveoffset(ZZIP_FILE * fp)
     {
         int fd = fp->dir->fd;
         zzip_off_t off = fp->io->fd.seeks(fd, 0, SEEK_CUR);
+
         if (off < 0)
             return -1;
 
@@ -109,57 +98,75 @@ zzip_file_saveoffset(ZZIP_FILE * fp)
     return 0;
 }
 
-#if !defined(__MINGW32__)
-//RMK: removed due to build errors, 1 is the correct default.
-# ifndef ZZIP_CHECK_BACKSLASH_DIRSEPARATOR           /* NOTE: also default */
-# define ZZIP_CHECK_BACKSLASH_DIRSEPARATOR 0         /* to "NO" on win32 ! */
-# endif
+
+/* user-definition */
+#ifndef ZZIP_BACKSLASH_DIRSEP
+#if defined HAVE_WINDOWS_H || defined ZZIP_HAVE_WINDOWS_H || defined _WIN32
+#define ZZIP_BACKSLASH_DIRSEP 1
+#elif defined ZZIP_CHECK_BACKSLASH_DIRSEPARATOR
+#define ZZIP_BACKSLASH_DIRSEP 1
+#else
+#define ZZIP_BACKSLASH_DIRSEP 0
+#endif
 #endif
 
-# if ! defined strcasecmp && ! defined ZZIP_HAVE_STRCASECMP
-# define ZZIP_CHECK_BACKSLASH_DIRSEPARATOR 1
-# endif
-
-#if ! ZZIP_CHECK_BACKSLASH_DIRSEPARATOR+0
-#define dirsep_strrchr(N,C) strrchr(N,C)
-#define dirsep_casecmp strcasecmp
-#else
-#define dirsep_strrchr(N,C) _dirsep_strrchr(N)
-#define dirsep_casecmp _dirsep_casecmp
 static zzip_char_t*
-_dirsep_strrchr (zzip_char_t* name)
+strrchr_basename(zzip_char_t* name)
 {
-    char* n = strrchr (name, '/');
-    char* m = strrchr (name, '\\');
-    if (m && n && m > n) n = m;
-    return n;
+    register zzip_char_t *n = strrchr(name, '/');
+    if (n) return n + 1;
+    return name;
 }
+
+static zzip_char_t*
+dirsep_basename(zzip_char_t* name)
+{
+    register zzip_char_t *n = strrchr(name, '/');
+
+    if (ZZIP_BACKSLASH_DIRSEP)
+    {
+        register zzip_char_t *m = strrchr(name, '\\');
+        if (!n || (m && n < m))
+            n = m;
+    }
+
+    if (n) return n + 1;
+    return name;
+}
+
+#if defined strcasecmp
+#define dirsep_strcasecmp strcasecmp
+#else
 static int
-_dirsep_casecmp (zzip_char_t* s1, zzip_char_t* s2)
+dirsep_strcasecmp(zzip_char_t * s1, zzip_char_t * s2)
 {
     /* ASCII tolower - including mapping of backslash in normal slash */
     static const char mapping[] = "@abcdefghijklmnopqrstuvwxyz[/]^_";
     int c1, c2;
+
     while (*s1 && *s2)
     {
-	c1 = (int)(unsigned char) *s1;
-	c2 = (int)(unsigned char) *s2;
-	if ((c1&0xE0) == 0x40) c1 = mapping[c1&0x1f];
-	if ((c2&0xE0) == 0x40) c2 = mapping[c2&0x1f];
-	if (c1 != c2)
-	    return (c1 - c2);
-	s1++; s2++;
+        c1 = (int) (unsigned char) *s1;
+        c2 = (int) (unsigned char) *s2;
+        if ((c1 & 0xE0) == 0x40)
+            c1 = mapping[c1 & 0x1f];
+        if ((c2 & 0xE0) == 0x40)
+            c2 = mapping[c2 & 0x1f];
+        if (c1 != c2)
+            return (c1 - c2);
+        s1++;
+        s2++;
     }
 
-    return (((int)(unsigned char) *s1) - ((int)(unsigned char) *s2));
+    return (((int) (unsigned char) *s1) - ((int) (unsigned char) *s2));
 }
 #endif
 
 static int zzip_inflate_init(ZZIP_FILE *, struct zzip_dir_hdr *);
 
-/**
- * open an => ZZIP_FILE from an already open => ZZIP_DIR handle. Since
- * we have a chance to reuse a cached => buf32k and => ZZIP_FILE memchunk
+/** start usage.
+ * This function opens an => ZZIP_FILE from an already open => ZZIP_DIR handle. 
+ * Since we have a chance to reuse a cached => buf32k and => ZZIP_FILE memchunk
  * this is the best choice to unpack multiple files.
  *
  * Note: the zlib supports 2..15 bit windowsize, hence we provide a 32k
@@ -168,67 +175,60 @@ static int zzip_inflate_init(ZZIP_FILE *, struct zzip_dir_hdr *);
  * On error it returns null and sets errcode in the ZZIP_DIR.
  */
 ZZIP_FILE *
-zzip_file_open(ZZIP_DIR * dir, zzip_char_t* name, int o_mode)
+zzip_file_open(ZZIP_DIR * dir, zzip_char_t * name, int o_mode)
 {
-    // JMW auto
-    int self;
+    auto int self;
     zzip_error_t err = 0;
-    struct zzip_file * fp = 0;
-    struct zzip_dir_hdr * hdr = dir->hdr0;
-    int (*cmp)(zzip_char_t*, zzip_char_t*);
+    struct zzip_file *fp = 0;
+    struct zzip_dir_hdr *hdr = dir->hdr0;
+    int (*filename_strcmp) (zzip_char_t *, zzip_char_t *);
+    zzip_char_t* (*filename_basename)(zzip_char_t*);
 
-    cmp = (o_mode & ZZIP_CASELESS)? dirsep_casecmp: strcmp;
+    filename_strcmp = (o_mode & ZZIP_CASELESS) ? dirsep_strcasecmp : strcmp;
+    filename_basename = (o_mode & ZZIP_CASELESS) ? dirsep_basename : strrchr_basename;
 
-    if (! dir) {
-	return NULL;
-    }
-    if (! dir->fd || dir->fd == -1) {
-	dir->errcode = EBADF; return NULL;
-    }
-    if (! hdr) {
-	dir->errcode = ENOENT; return NULL;
-    }
+    if (! dir)
+        return NULL;
+    if (! dir->fd || dir->fd == -1)
+        { dir->errcode = EBADF; return NULL; }
+    if (! hdr)
+        { dir->errcode = ENOENT; return NULL; }
 
     if (o_mode & ZZIP_NOPATHS)
-    {
-	register zzip_char_t* n = dirsep_strrchr(name, '/');
-        if (n)  name = n + 1;
-    }
+        name = filename_basename(name);
 
     while (1)
     {
-	register zzip_char_t* hdr_name = hdr->d_name;
+        register zzip_char_t *hdr_name = hdr->d_name;
+
         if (o_mode & ZZIP_NOPATHS)
-        {
-	    register zzip_char_t* n = dirsep_strrchr(hdr_name, '/');
-            if (n)  hdr_name = n + 1;
-        }
+            hdr_name = filename_basename(hdr_name);
 
         HINT4("name='%s', compr=%d, size=%d\n",
-	      hdr->d_name, hdr->d_compr, hdr->d_usize);
+              hdr->d_name, hdr->d_compr, hdr->d_usize);
 
-        if (! cmp(hdr_name, name))
+        if (! filename_strcmp(hdr_name, name))
         {
             switch (hdr->d_compr)
             {
-            case 0: /* store */
-            case 8: /* inflate */
+            case 0:            /* store */
+            case 8:            /* inflate */
                 break;
             default:
                 { err = ZZIP_UNSUPP_COMPR; goto error; }
             }
 
-	    if (dir->cache.locked == NULL)
-		dir->cache.locked = &self;
+            if (dir->cache.locked == NULL)
+                dir->cache.locked = &self;
 
-            if (dir->cache.locked == &self &&
-		dir->cache.fp)
+            if (dir->cache.locked == &self && dir->cache.fp)
             {
-                fp = dir->cache.fp; dir->cache.fp = NULL;
+                fp = dir->cache.fp;
+                dir->cache.fp = NULL;
                 /* memset(zfp, 0, sizeof *fp); cleared in zzip_file_close() */
-            }else
+            } else
             {
-                if (! (fp = (ZZIP_FILE *)calloc(1, sizeof(*fp))))
+                if (! (fp = (ZZIP_FILE *) calloc(1, sizeof(*fp))))
                     { err =  ZZIP_OUTOFMEM; goto error; }
             }
 
@@ -236,17 +236,18 @@ zzip_file_open(ZZIP_DIR * dir, zzip_char_t* name, int o_mode)
             fp->io = dir->io;
             dir->refcount++;
 
-            if (dir->cache.locked == &self &&
-		dir->cache.buf32k)
-              { fp->buf32k = dir->cache.buf32k; dir->cache.buf32k = NULL; }
-            else
+            if (dir->cache.locked == &self && dir->cache.buf32k)
             {
-                if (! (fp->buf32k = (char *)malloc(ZZIP_32K)))
+                fp->buf32k = dir->cache.buf32k;
+                dir->cache.buf32k = NULL;
+            } else
+            {
+                if (! (fp->buf32k = (char *) malloc(ZZIP_32K)))
                     { err = ZZIP_OUTOFMEM; goto error; }
             }
 
-	    if (dir->cache.locked == &self)
-		dir->cache.locked = NULL;
+            if (dir->cache.locked == &self)
+                dir->cache.locked = NULL;
             /*
              * In order to support simultaneous open files in one zip archive
              * we'll fix the fd offset when opening new file/changing which
@@ -262,55 +263,58 @@ zzip_file_open(ZZIP_DIR * dir, zzip_char_t* name, int o_mode)
             if (dir->io->fd.seeks(dir->fd, hdr->d_off, SEEK_SET) < 0)
                 { err = ZZIP_DIR_SEEK; goto error; }
 
-            {   /* skip local header - should test tons of other info,
-		 * but trust that those are correct */
+            {
+                /* skip local header - should test tons of other info,
+                 * but trust that those are correct */
                 zzip_ssize_t dataoff;
-                struct zzip_file_header * p = (void*) fp->buf32k;
+                struct zzip_file_header *p = (void *) fp->buf32k;
 
-		dataoff = dir->io->fd.read(dir->fd, (void*)p, sizeof(*p));
-		if (dataoff < (zzip_ssize_t)sizeof(*p))
-		{ err = ZZIP_DIR_READ;  goto error; }
-                if (! zzip_file_header_check_magic(p)) /* PK\3\4 */
-		{ err = ZZIP_CORRUPTED; goto error; }
+                dataoff = dir->io->fd.read(dir->fd, (void *) p, sizeof(*p));
+                if (dataoff < (zzip_ssize_t) sizeof(*p))
+                    { err = ZZIP_DIR_READ;  goto error; }
+                if (! zzip_file_header_check_magic(p))   /* PK\3\4 */
+                    { err = ZZIP_CORRUPTED; goto error; }
 
                 dataoff = zzip_file_header_sizeof_tail(p);
 
                 if (dir->io->fd.seeks(dir->fd, dataoff, SEEK_CUR) < 0)
-                { err = ZZIP_DIR_SEEK; goto error; }
+                    { err = ZZIP_DIR_SEEK; goto error; }
 
                 fp->dataoffset = dir->io->fd.tells(dir->fd);
                 fp->usize = hdr->d_usize;
                 fp->csize = hdr->d_csize;
             }
 
-            err = zzip_inflate_init (fp, hdr);
-            if (err) { goto error; }
+            err = zzip_inflate_init(fp, hdr);
+            if (err)
+                goto error;
 
             return fp;
-        }else
+        } else
         {
             if (hdr->d_reclen == 0)
                 break;
-            hdr = (struct zzip_dir_hdr *)((char *)hdr + hdr->d_reclen);
-        }/*cmp name*/
-    }/*forever*/
+            hdr = (struct zzip_dir_hdr *) ((char *) hdr + hdr->d_reclen);
+        }                       /*filename_strcmp */
+    }                           /*forever */
     dir->errcode = ZZIP_ENOENT;
-
     return NULL;
-error:
-    if (fp) zzip_file_close(fp);
+  error:
+    if (fp)
+        zzip_file_close(fp);
     dir->errcode = err;
     return NULL;
 }
 
-/**
+/** internal.
  *  call => inflateInit and setup fp's iterator variables,
  *  used by lowlevel => _open functions.
  */
 static int
-zzip_inflate_init(ZZIP_FILE * fp, struct zzip_dir_hdr* hdr)
+zzip_inflate_init(ZZIP_FILE * fp, struct zzip_dir_hdr *hdr)
 {
     int err;
+
     fp->method = hdr->d_compr;
     fp->restlen = hdr->d_usize;
 
@@ -319,17 +323,19 @@ zzip_inflate_init(ZZIP_FILE * fp, struct zzip_dir_hdr* hdr)
         memset(&fp->d_stream, 0, sizeof(fp->d_stream));
 
         err = inflateInit2(&fp->d_stream, -MAX_WBITS);
-        if (err != Z_OK) { goto error; }
+        if (err != Z_OK)
+            goto error;
 
         fp->crestlen = hdr->d_csize;
     }
     return 0;
-error:
-    if (fp) zzip_file_close(fp);
+  error:
+    if (fp)
+        zzip_file_close(fp);
     return err;
 }
 
-/**
+/** end usage.
  * This function closes the given ZZIP_FILE handle.
  *
  * If the ZZIP_FILE wraps a normal stat'fd then it is just that int'fd
@@ -338,24 +344,26 @@ error:
 int
 zzip_fclose(ZZIP_FILE * fp)
 {
-    if (! fp) return 0;
-    if (! fp->dir)
-      { int r = fp->io->fd.close(fp->fd); free(fp); return r; } /* stat fd */
-    else return zzip_file_close(fp);
+    if (! fp)
+        return 0;
+    if (! fp->dir)               /* stat fd */
+        { int r = fp->io->fd.close(fp->fd); free(fp); return r; }
+    else
+        return zzip_file_close(fp);
 }
 
 /** => zzip_fclose
  */
 int
-zzip_close(ZZIP_FILE* fp)
+zzip_close(ZZIP_FILE * fp)
 {
-    return zzip_fclose (fp);
+    return zzip_fclose(fp);
 }
 
-/**
- * This functions read data from zip-contained file.
+/** read data.
+ * This function reads data from zip-contained file.
  *
- * It works like => read(2) and will fill the given buffer with bytes from
+ * This fuction works like => read(2) and will fill the given buffer with bytes from
  * the opened file. It will return the number of bytes read, so if the => EOF
  * is encountered you will be prompted with the number of bytes actually read.
  *
@@ -367,13 +375,14 @@ zzip_close(ZZIP_FILE* fp)
  *       a smaller buffer.
  */
 zzip_ssize_t
-zzip_file_read(ZZIP_FILE * fp, void * buf, zzip_size_t len)
+zzip_file_read(ZZIP_FILE * fp, void *buf, zzip_size_t len)
 {
-    ZZIP_DIR * dir;
+    ZZIP_DIR *dir;
     zzip_size_t l;
     zzip_ssize_t rv;
 
-    if (! fp || ! fp->dir) return 0;
+    if (! fp || ! fp->dir)
+        return 0;
 
     dir = fp->dir;
     l = fp->restlen > len ? len : fp->restlen;
@@ -387,69 +396,72 @@ zzip_file_read(ZZIP_FILE * fp, void * buf, zzip_size_t len)
     if (dir->currentfp != fp)
     {
         if (zzip_file_saveoffset(dir->currentfp) < 0
-        || fp->io->fd.seeks(dir->fd, fp->offset, SEEK_SET) < 0)
-          { dir->errcode = ZZIP_DIR_SEEK; return -1; }
+            || fp->io->fd.seeks(dir->fd, fp->offset, SEEK_SET) < 0)
+            { dir->errcode = ZZIP_DIR_SEEK; return -1; }
         else
-          { dir->currentfp = fp; }
+            { dir->currentfp = fp; }
     }
 
     /* if more methods is to be supported, change this to `switch ()' */
-    if (fp->method) /* method != 0   == 8, inflate */
+    if (fp->method)             /* method != 0   == 8, inflate */
     {
         fp->d_stream.avail_out = l;
-        fp->d_stream.next_out = (unsigned char *)buf;
+        fp->d_stream.next_out = (unsigned char *) buf;
 
-        do {
+        do
+        {
             int err;
             zzip_size_t startlen;
 
             if (fp->crestlen > 0 && fp->d_stream.avail_in == 0)
             {
-                zzip_size_t cl = ( fp->crestlen < ZZIP_32K ?
-				    fp->crestlen : ZZIP_32K );
-            /*  zzip_size_t cl = fp->crestlen > 128 ? 128 : fp->crestlen; */
-
+                zzip_size_t cl = (fp->crestlen < ZZIP_32K ?
+                                  fp->crestlen : ZZIP_32K);
+                /*  zzip_size_t cl =
+                 *      fp->crestlen > 128 ? 128 : fp->crestlen;
+                 */
                 zzip_ssize_t i = fp->io->fd.read(dir->fd, fp->buf32k, cl);
+
                 if (i <= 0)
                 {
-                    dir->errcode = ZZIP_DIR_READ; /* or ZZIP_DIR_READ_EOF ? */
+                    dir->errcode = ZZIP_DIR_READ;
+                    /* or ZZIP_DIR_READ_EOF ? */
                     return -1;
                 }
                 fp->crestlen -= i;
                 fp->d_stream.avail_in = i;
-                fp->d_stream.next_in = (unsigned char *)fp->buf32k;
+                fp->d_stream.next_in = (unsigned char *) fp->buf32k;
             }
 
             startlen = fp->d_stream.total_out;
             err = inflate(&fp->d_stream, Z_NO_FLUSH);
 
             if (err == Z_STREAM_END)
-              { fp->restlen = 0; }
+                { fp->restlen = 0; }
+            else if (err == Z_OK)
+                { fp->restlen -= (fp->d_stream.total_out - startlen); }
             else
-            if (err == Z_OK)
-              { fp->restlen -= (fp->d_stream.total_out - startlen); }
-            else
-              { dir->errcode = err; return -1; }
-        } while (fp->restlen && fp->d_stream.avail_out);
+                { dir->errcode = err; return -1; }
+        }
+        while (fp->restlen && fp->d_stream.avail_out);
 
         return l - fp->d_stream.avail_out;
-    }else
-    {   /* method == 0 -- unstore */
+    } else
+    {                           /* method == 0 -- unstore */
         rv = fp->io->fd.read(dir->fd, buf, l);
         if (rv > 0)
             { fp->restlen-= rv; }
-        else
-        if (rv < 0)
+        else if (rv < 0)
             { dir->errcode = ZZIP_DIR_READ; }
         return rv;
     }
 }
 
-/**
+/** read data.
  * This function will read(2) data from a real/zipped file.
  *
- * the replacement for => read(2) will fill the given buffer with bytes from
- * the opened file. It will return the number of bytes read, so if the EOF
+ * This function is the replacement for => read(2) will fill the given buffer with 
+ * bytes from the opened file. It will return the number of bytes read, so if the EOF
  * is encountered you will be prompted with the number of bytes actually read.
  *
  * If the file-handle is wrapping a stat'able file then it will actually just
@@ -457,28 +469,64 @@ zzip_file_read(ZZIP_FILE * fp, void * buf, zzip_size_t len)
  * to decompress the data stream and any error is mapped to => errno(3).
  */
 zzip_ssize_t
-zzip_read(ZZIP_FILE * fp, void * buf, zzip_size_t len)
+zzip_read(ZZIP_FILE * fp, void *buf, zzip_size_t len)
 {
-    if (! fp) return 0;
+    if (! fp)
+        return 0;
     if (! fp->dir)
-      {
-	  return fp->io->fd.read(fp->fd, buf, len); } /* stat fd */
+        { return fp->io->fd.read(fp->fd, buf, len); }    /* stat fd */
     else
     {
-        zzip_ssize_t v;
+        register zzip_ssize_t v;
+
         v = zzip_file_read(fp, buf, len);
-        if (v == -1) { errno = zzip_errno(fp->dir->errcode); }
+        if (v == -1)
+            { errno = zzip_errno(fp->dir->errcode); }
         return v;
     }
+}
+
+static zzip_size_t
+zzip_pread_fallback(ZZIP_FILE *file, void *ptr, zzip_size_t size,
+                    zzip_off_t offset)
+{
+    zzip_off_t new_offset = zzip_seek(file, offset, SEEK_SET);
+    if (new_offset < 0)
+        return -1;
+
+    return zzip_read(file, ptr, size);
+}
+
+zzip_size_t
+zzip_pread(ZZIP_FILE *file, void *ptr, zzip_size_t size, zzip_off_t offset)
+{
+#ifdef ZZIP_HAVE_PREAD
+    if (file->dir == NULL) {
+        /* reading from a regular file */
+        return pread(file->fd, ptr, size, offset);
+    } else if (file->method == 0) {
+        /* uncompressed: can read directly from the ZIP file using
+           pread() */
+        offset += file->dataoffset;
+        return pread(file->dir->fd, ptr, size, offset);
+    } else {
+#endif
+        /* compressed (or no pread() system call): fall back to
+           zzip_seek() + zzip_read() */
+        return zzip_pread_fallback(file, ptr, size, offset);
+#ifdef ZZIP_HAVE_PREAD
+    }
+#endif
 }
 
 /** => zzip_read
  */
 zzip_size_t
-zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
+zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE * file)
 {
-    if (! size) size=1;
-    return zzip_read (file, ptr, size*nmemb)/size;
+    if (! size)
+        size = 1;
+    return zzip_read(file, ptr, size * nmemb) / size;
 }
 
 
@@ -501,7 +549,7 @@ zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
 
 /* ------------------------------------------------------------------- */
 
-/**                                                          also: fopen(2)
+/** start usage.                                            also: fopen(2)
  * This function will => fopen(3) a real/zipped file.
  *
  * It has some magic functionality builtin - it will first try to open
@@ -514,7 +562,7 @@ zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
  *
  * Note that if the file is found in the normal fs-directory the
  * returned structure is mostly empty and the => zzip_read call will
- * use the libc => read to obtain data. Otherwise a => zzip_file_open
+ * use the libc => read(2) to obtain data. Otherwise a => zzip_file_open
  * is performed and any error mapped to => errno(3).
  *
  * unlike the posix-wrapper => zzip_open the mode-argument is
@@ -548,19 +596,10 @@ zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
  * This function returns a new zzip-handle (use => zzip_close to return
  * it). On error this function will return null setting => errno(3).
  */
-#define countof(array) (sizeof(array)/sizeof(array[0]))
-
-ZZIP_FILE*
-zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
+ZZIP_FILE *
+zzip_fopen(zzip_char_t * filename, zzip_char_t * mode)
 {
-#ifdef UNICODE
-    char utfname[MAX_PATH*2];
-    to_utf8(filename, utfname, countof(utfname));
-
-    return zzip_freopen (utfname, mode, 0);
-#else
-    return zzip_freopen (filename, mode, 0);
-#endif
+    return zzip_freopen(filename, mode, 0);
 }
 
 /** => zzip_fopen
@@ -572,7 +611,7 @@ zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
  * Per default, the old file stream is closed and only the internal
  * structures associated with it are kept. These internal structures
  * may be reused for the return value, and this is a lot quicker when
- * the filename matches a zipped file that is incidently in the very
+ * the filename matches a zipped file that is incidentally in the very
  * same zip arch as the old filename wrapped in the stream struct.
  *
  * That's simply because the zip arch's central directory does not
@@ -585,12 +624,14 @@ zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
  * This function returns a new zzip-handle (use => zzip_close to return
  * it). On error this function will return null setting => errno(3).
  */
-ZZIP_FILE*
-zzip_freopen(zzip_char_t* filename, zzip_char_t* mode, ZZIP_FILE* stream)
+ZZIP_FILE *
+zzip_freopen(zzip_char_t * filename, zzip_char_t * mode, ZZIP_FILE * stream)
 {
     int o_flags = 0;
     int o_modes = 0664;
-    if (! mode) mode = "rb";
+
+    if (! mode)
+        mode = "rb";
 
 #   ifndef O_BINARY
 #   define O_BINARY 0
@@ -605,10 +646,11 @@ zzip_freopen(zzip_char_t* filename, zzip_char_t* mode, ZZIP_FILE* stream)
 #   define O_NONBLOCK 0
 #   endif
 
-    for(; *mode; mode++)
+    for (; *mode; mode++)
     {
         switch (*mode)
         {
+	    /* *INDENT-OFF* */
 	case '0': case '1': case '2': case '3': case '4':
 	case '5': case '6': case '7': case '8': case '9':
 	    continue; /* ignore if not attached to other info */
@@ -623,30 +665,30 @@ zzip_freopen(zzip_char_t* filename, zzip_char_t* mode, ZZIP_FILE* stream)
         case 's': o_flags |= O_SYNC; break;
         case 'n': o_flags |= O_NONBLOCK; break;
 	case 'o': o_modes &=~ 07;
-                  o_modes |= ((mode[1] - '0'))&07; continue;
+                  o_modes |= ((mode[1] - '0')) & 07; continue;
 	case 'g': o_modes &=~ 070;
-                  o_modes |= ((mode[1] - '0')<<3)&070; continue;
+                  o_modes |= ((mode[1] - '0') << 3) & 070; continue;
 	case 'u': o_modes &=~ 0700;
-                  o_modes |= ((mode[1] - '0')<<6)&0700; continue;
+                  o_modes |= ((mode[1] - '0') << 6) & 0700; continue;
 	case 'q': o_modes |= ZZIP_FACTORY; break;
 	case 'z': /* compression level */
 	    continue; /* currently ignored, just for write mode */
+	    /* *INDENT-ON* */
         }
     }
 
     {
-	ZZIP_FILE* fp =
-	    zzip_open_shared_io (stream, filename, o_flags, o_modes, 0, 0);
+        ZZIP_FILE *fp =
+            zzip_open_shared_io(stream, filename, o_flags, o_modes, 0, 0);
 
-	if ( (!(o_modes&ZZIP_FACTORY)) && stream ) {
-	    zzip_file_close (stream);
-	}
+        if (! (o_modes & ZZIP_FACTORY) && stream)
+            zzip_file_close(stream);
 
-	return fp;
+        return fp;
     }
 }
 
-/**
+/** start usage.
  * This function will => open(2) a real/zipped file
  *
  * It has some magic functionality builtin - it will first try to open
@@ -659,7 +701,7 @@ zzip_freopen(zzip_char_t* filename, zzip_char_t* mode, ZZIP_FILE* stream)
  *
  * Note that if the file is found in the normal fs-directory the
  * returned structure is mostly empty and the => zzip_read call will
- * use the libc => read to obtain data. Otherwise a => zzip_file_open
+ * use the libc => read(2) to obtain data. Otherwise a => zzip_file_open
  * is performed and any error mapped to => errno(3).
  *
  * There was a possibility to transfer zziplib-specific openmodes
@@ -673,15 +715,16 @@ zzip_freopen(zzip_char_t* filename, zzip_char_t* mode, ZZIP_FILE* stream)
  *
  * compare with  => open(2) and => zzip_fopen
  */
-ZZIP_FILE*
-zzip_open(zzip_char_t* filename, int o_flags)
+ZZIP_FILE *
+zzip_open(zzip_char_t * filename, int o_flags)
 {
     /* backward compatibility */
     int o_modes = 0664;
+
     if (o_flags & ZZIP_CASEINSENSITIVE)
-    {  o_flags ^= ZZIP_CASEINSENSITIVE; o_modes |= ZZIP_CASELESS; }
+        {  o_flags ^= ZZIP_CASEINSENSITIVE; o_modes |= ZZIP_CASELESS; }
     if (o_flags & ZZIP_IGNOREPATH)
-    {  o_flags ^= ZZIP_IGNOREPATH;      o_modes |= ZZIP_NOPATHS; }
+        {  o_flags ^= ZZIP_IGNOREPATH;      o_modes |= ZZIP_NOPATHS; }
     return zzip_open_ext_io(filename, o_flags, o_modes, 0, 0);
 }
 
@@ -703,12 +746,15 @@ zzip_open(zzip_char_t* filename, int o_flags)
  *
  * This function returns a new zzip-handle (use => zzip_close to return
  * it). On error this function will return null setting => errno(3).
+ * 
+ * If any ext_io handlers were used then the referenced structure
+ * should be static as the allocated ZZIP_FILE does not copy them.
  */
-ZZIP_FILE*
-zzip_open_ext_io(zzip_char_t* filename, int o_flags, int o_modes,
-                 zzip_strings_t* ext, zzip_plugin_io_t io)
+ZZIP_FILE *
+zzip_open_ext_io(zzip_char_t * filename, int o_flags, int o_modes,
+                 zzip_strings_t * ext, zzip_plugin_io_t io)
 {
-    return zzip_open_shared_io (0, filename, o_flags, o_modes, ext, io);
+    return zzip_open_shared_io(0, filename, o_flags, o_modes, ext, io);
 }
 
 /** => zzip_open
@@ -732,52 +778,52 @@ zzip_open_ext_io(zzip_char_t* filename, int o_flags, int o_modes,
  * This function returns a new zzip-handle (use => zzip_close to return
  * it). On error this function will return null setting => errno(3).
  */
-
-
-ZZIP_FILE*
-zzip_open_shared_io (ZZIP_FILE* stream,
-		     zzip_char_t* filename, int o_flags, int o_modes,
-		     zzip_strings_t* ext, zzip_plugin_io_t io)
+ZZIP_FILE *
+zzip_open_shared_io(ZZIP_FILE * stream,
+                    zzip_char_t * filename, int o_flags, int o_modes,
+                    zzip_strings_t * ext, zzip_plugin_io_t io)
 {
     if (stream && stream->dir)
     {
-	if (! ext) ext = stream->dir->fileext;
-	if (! io) io = stream->dir->io;
+        if (! ext)
+            ext = stream->dir->fileext;
+        if (! io)
+            io = stream->dir->io;
     }
-    if (! io) io = zzip_get_default_io ();
+    if (! io)
+        io = zzip_get_default_io();
 
-    if (o_modes & (ZZIP_PREFERZIP|ZZIP_ONLYZIP)) goto try_zzip;
- try_real:
+    if (o_modes & (ZZIP_PREFERZIP | ZZIP_ONLYZIP))
+        goto try_zzip;
+  try_real:
     /* prefer an existing real file */
     {
-	zzip_plugin_io_t os = (o_modes & ZZIP_ALLOWREAL)
-	    ?  zzip_get_default_io () : io;
-	int fd = os->fd.open(filename, o_flags); /* io->fd.open */
+        zzip_plugin_io_t os = (o_modes & ZZIP_ALLOWREAL)
+            ? zzip_get_default_io() : io;
+        int fd = (os->fd.open)(filename, o_flags);        /* io->fd.open */
+
         if (fd != -1)
         {
-            ZZIP_FILE* fp = calloc (1, sizeof(ZZIP_FILE));
-            if (! fp) {
-            os->fd.close(fd); return 0;
-	    } /* io->fd.close */
+            ZZIP_FILE *fp = calloc(1, sizeof(ZZIP_FILE));
 
-            fp->dir = NULL;
+            if (! fp)
+                { os->fd.close(fd); return 0; }  /* io->fd.close */
+
             fp->fd = fd;
             fp->io = os;
-            fp->usize = os->fd.filesize(fd);
             return fp;
         }
-        if (o_modes & ZZIP_PREFERZIP) {
-	    return 0;
-	}
+        if (o_modes & ZZIP_PREFERZIP)
+            return 0;
     }
- try_zzip:
+  try_zzip:
 
     /* if the user had it in place of a normal xopen, then
      * we better defend this lib against illegal usage */
-    if (o_flags & (O_CREAT|O_WRONLY))     {
-	errno = EINVAL; return 0;
-    }
-    if (o_flags & (O_RDWR)) { o_flags ^= O_RDWR; o_flags |= O_RDONLY; }
+    if (o_flags & (O_CREAT | O_WRONLY))
+        { errno = EINVAL; return 0; }
+    if (o_flags & (O_RDWR))
+        { o_flags ^= O_RDWR; o_flags |= O_RDONLY; }
 
     /* this is just for backward compatibility -and strictly needed to
      * prepare ourselves for more options and more options later on... */
@@ -785,131 +831,134 @@ zzip_open_shared_io (ZZIP_FILE* stream,
     /*# if (o_modes & ZZIP_NOPATHS)  { o_flags |= ZZIP_IGNOREPATH; } */
 
     /* see if we can open a file that is a zip file */
-    { char basename[PATH_MAX];
-      char* p;
-      int filename_len = strlen (filename);
+    {
+        char basename[PATH_MAX];
+        char *p;
+        int filename_len = strlen(filename);
 
-      if (filename_len >= PATH_MAX) {
-#ifdef ENAMETOOLONG
-		  errno = ENAMETOOLONG;
-#endif
-		  return 0;
-	  }
-      memcpy (basename, filename, filename_len+1);
+        if (filename_len >= PATH_MAX)
+            { errno = ENAMETOOLONG; return 0; }
+        memcpy(basename, filename, filename_len + 1);
 
-      /* see if we can share the same zip directory */
-      if (stream && stream->dir && stream->dir->realname)
-      {
-	  zzip_size_t len = strlen (stream->dir->realname);
-	  if (! memcmp (filename, stream->dir->realname, len) &&
-	      ((filename[len] == '/') || (filename[len] == '\\'))
-               && filename[len+1])
-	  {
-	      ZZIP_FILE* fp =
-		  zzip_file_open (stream->dir, filename+len+1, o_modes);
-	      if (! fp) {
-		  errno = zzip_errno (stream->dir->errcode);
-	      }
-	      return fp;
-	  }
-      }
+        /* see if we can share the same zip directory */
+        if (stream && stream->dir && stream->dir->realname)
+        {
+            zzip_size_t len = strlen(stream->dir->realname);
 
-      /* per each slash in filename, check if it there is a zzip around */
+            if (! memcmp(filename, stream->dir->realname, len) &&
+                filename[len] == '/' && filename[len + 1])
+            {
+                ZZIP_FILE *fp =
+                    zzip_file_open(stream->dir, filename + len + 1, o_modes);
+                if (! fp)
+                    { errno = zzip_errno (stream->dir->errcode); }
+                return fp;
+            }
+        }
 
-      while ((p = strrchr (basename, '/')) || (p = strrchr (basename, '\\')))
-      {
-          zzip_error_t e = 0;
-          ZZIP_DIR* dir;
-          ZZIP_FILE* fp;
-          int fd;
+        /* per each slash in filename, check if it there is a zzip around */
+        while ((p = strrchr(basename, '/')))
+        {
+            zzip_error_t e = 0;
+            ZZIP_DIR *dir;
+            ZZIP_FILE *fp;
+            int fd;
 
-          *p = '\0'; /* cut at path separator == possible zipfile basename */
-          fd = __zzip_try_open (basename, o_flags|O_RDONLY|O_BINARY, ext, io);
+            *p = '\0';
+            /* i.e. cut at path separator == possible zipfile basename */
+            fd = __zzip_try_open(basename, o_flags | O_RDONLY | O_BINARY,
+                                 ext, io);
+            if (fd == -1)
+                { continue; }
 
-          if (fd == -1) {
-	      continue;
-	  }
+            /* found zip-file ....  now try to parse it */
+            dir = zzip_dir_fdopen_ext_io(fd, &e, ext, io);
+            if (e)
+                { errno = zzip_errno(e); io->fd.close(fd); return 0; }
 
-/*    found: */
-          /* found zip-file, now try to parse it */
-          dir = zzip_dir_fdopen_ext_io(fd, &e, ext, io);
-          if (e) {
-	      errno = zzip_errno(e); io->fd.close(fd); return 0;
-	  }
+            /* (p - basename) is the lenghtof zzip_dir part of the filename */
+            fp = zzip_file_open(dir, filename + (p - basename) + 1, o_modes);
+            if (! fp)
+                { errno = zzip_errno(dir->errcode); }
+            else
+                { if (! dir->realname) dir->realname = strdup (basename); }
 
-          /* (p - basename) is the lenghtof zzip_dir part of the filename */
-          fp = zzip_file_open(dir, filename + (p - basename) +1, o_modes);
-          if (! fp) { errno = zzip_errno(dir->errcode); }
-	  else { if (! dir->realname) dir->realname = strdup (basename); }
+            zzip_dir_close(dir);
+            /* note: since (fp) is attached that (dir) will survive */
+            /* but (dir) is implicitly closed on next zzip_close(fp) */
 
-          zzip_dir_close(dir);
-          /* note: since (fp) is attached that (dir) will survive */
-          /* but (dir) is implicitly closed on next zzip_close(fp) */
+            return fp;
+        }
 
-          return fp;
-      } /*again*/
-
-      if (o_modes & ZZIP_PREFERZIP) goto try_real;
-      errno = ENOENT; return 0;
+        if (o_modes & ZZIP_PREFERZIP)
+            goto try_real;
+        else
+            { errno = ENOENT; return 0; }
     }
 }
 
 #if defined ZZIP_LARGEFILE_RENAME && defined EOVERFLOW && defined PIC
-#undef zzip_open_shared_io /* zzip_open_shared_io64 */
-#undef zzip_open_ext_io    /* zzip_open_ext_io64 */
-#undef zzip_opendir_ext_io /* zzip_opendir_ext_io64 */
-
-_zzip_export
-ZZIP_FILE * zzip_open_shared_io(ZZIP_FILE* stream,
-				zzip_char_t* name, int o_flags, int o_modes,
-				zzip_strings_t* ext, zzip_plugin_io_t io);
-_zzip_export
-ZZIP_FILE * zzip_open_ext_io(zzip_char_t* name, int o_flags, int o_modes,
-			     zzip_strings_t* ext, zzip_plugin_io_t io);
-_zzip_export
-ZZIP_DIR *  zzip_opendir_ext_io(zzip_char_t* name, int o_modes,
-				zzip_strings_t* ext, zzip_plugin_io_t io);
 
 /* DLL compatibility layer - so that 32bit code can link with this lib too */
 
-_zzip_export
-ZZIP_FILE * zzip_open_shared_io(ZZIP_FILE* stream,
-				zzip_char_t* name, int o_flags, int o_modes,
-				zzip_strings_t* ext, zzip_plugin_io_t io)
+#undef zzip_open_shared_io      /* zzip_open_shared_io64 */
+#undef zzip_open_ext_io         /* zzip_open_ext_io64 */
+#undef zzip_opendir_ext_io      /* zzip_opendir_ext_io64 */
+
+ZZIP_FILE *zzip_open_shared_io(ZZIP_FILE * stream,
+                               zzip_char_t * name, int o_flags,
+                               int o_modes, zzip_strings_t * ext,
+                               zzip_plugin_io_t io);
+ZZIP_FILE *zzip_open_ext_io(zzip_char_t * name, int o_flags,
+                            int o_modes, zzip_strings_t * ext,
+                            zzip_plugin_io_t io);
+ZZIP_DIR *zzip_opendir_ext_io(zzip_char_t * name, int o_modes,
+                              zzip_strings_t * ext, zzip_plugin_io_t io);
+
+ZZIP_FILE *
+zzip_open_shared_io(ZZIP_FILE * stream,
+                    zzip_char_t * name, int o_flags,
+                    int o_modes, zzip_strings_t * ext, zzip_plugin_io_t io)
 {
-    if (! io) return zzip_open_shared_io64 (stream, name, o_flags, o_modes,
-					    ext, io);
-    errno = EOVERFLOW; return NULL;
+    if (! io)
+        return zzip_open_shared_io64(stream, name, o_flags, o_modes, ext, io);
+    errno = EOVERFLOW;
+    return NULL;
 }
 
-_zzip_export
-ZZIP_FILE * zzip_open_ext_io(zzip_char_t* name, int o_flags, int o_modes,
-			     zzip_strings_t* ext, zzip_plugin_io_t io)
+ZZIP_FILE *
+zzip_open_ext_io(zzip_char_t * name, int o_flags, int o_modes,
+                 zzip_strings_t * ext, zzip_plugin_io_t io)
 {
-    if (! io) return zzip_open_ext_io64 (name, o_flags, o_modes, ext, io);
-    errno = EOVERFLOW; return NULL;
+    if (! io)
+        return zzip_open_ext_io64(name, o_flags, o_modes, ext, io);
+    errno = EOVERFLOW;
+    return NULL;
 }
 
-_zzip_export
-ZZIP_DIR *  zzip_opendir_ext_io(zzip_char_t* name, int o_modes,
-				zzip_strings_t* ext, zzip_plugin_io_t io)
+ZZIP_DIR *
+zzip_opendir_ext_io(zzip_char_t * name, int o_modes,
+                    zzip_strings_t * ext, zzip_plugin_io_t io)
 {
-    if (! io) return zzip_opendir_ext_io64 (name, o_modes, ext, io);
-    errno = EOVERFLOW; return NULL;
+    if (! io)
+        return zzip_opendir_ext_io64(name, o_modes, ext, io);
+    else
+        { errno = EOVERFLOW; return NULL; }
 }
 
 #endif /* ZZIP_LARGEFILE_RENAME && EOVERFLOW && PIC */
 
 /* ------------------------------------------------------------------- */
 
-/**
+/** rewind.
+ *
  * This function will rewind a real/zipped file.
  *
  * It seeks to the beginning of this file's data in the zip,
  * or the beginning of the file for a stat'fd.
  */
 int
-zzip_rewind(ZZIP_FILE *fp)
+zzip_rewind(ZZIP_FILE * fp)
 {
     ZZIP_DIR *dir;
     int err;
@@ -918,8 +967,8 @@ zzip_rewind(ZZIP_FILE *fp)
         return -1;
 
     if (! fp->dir)
-    { /* stat fd */
-        fp->io->fd.seeks(fp->fd,0,SEEK_SET);
+    {                           /* stat fd */
+        fp->io->fd.seeks(fp->fd, 0, SEEK_SET);
         return 0;
     }
 
@@ -930,9 +979,9 @@ zzip_rewind(ZZIP_FILE *fp)
     if (dir->currentfp != fp)
     {
         if (zzip_file_saveoffset(dir->currentfp) < 0)
-        { dir->errcode = ZZIP_DIR_SEEK; return -1; }
+            { dir->errcode = ZZIP_DIR_SEEK; return -1; }
         else
-        { dir->currentfp = fp; }
+            { dir->currentfp = fp; }
     }
 
     /* seek to beginning of this file */
@@ -944,23 +993,26 @@ zzip_rewind(ZZIP_FILE *fp)
     fp->offset = fp->dataoffset;
 
     if (fp->method)
-    { /* method == 8, deflate */
+    {                           /* method == 8, deflate */
         err = inflateReset(&fp->d_stream);
-        if (err != Z_OK) { goto error; }
+        if (err != Z_OK)
+            goto error;
 
-	/* start over at next inflate with a fresh read() */
-	fp->d_stream.avail_in = 0;
+        /* start over at next inflate with a fresh read() */
+        fp->d_stream.avail_in = 0;
         fp->crestlen = fp->csize;
     }
 
     return 0;
 
- error:
-    if (fp) zzip_file_close(fp);
+  error:
+    if (fp)
+        zzip_file_close(fp);
     return err;
 }
 
-/**
+/** seek.
+ *
  * This function will perform a => lseek(2) operation on a real/zipped file
  *
  * It will try to seek to the offset specified by offset, relative to whence,
@@ -984,7 +1036,7 @@ zzip_seek(ZZIP_FILE * fp, zzip_off_t offset, int whence)
         return -1;
 
     if (! fp->dir)
-    { /* stat fd */
+    {                           /* stat fd */
         return fp->io->fd.seeks(fp->fd, offset, whence);
     }
 
@@ -993,41 +1045,41 @@ zzip_seek(ZZIP_FILE * fp, zzip_off_t offset, int whence)
     /* calculate relative offset */
     switch (whence)
     {
-    case SEEK_SET: /* from beginning */
+    case SEEK_SET:             /* from beginning */
         rel_ofs = offset - cur_pos;
         break;
-    case SEEK_CUR: /* from current */
+    case SEEK_CUR:             /* from current */
         rel_ofs = offset;
         break;
-    case SEEK_END: /* from end */
+    case SEEK_END:             /* from end */
         rel_ofs = fp->usize + offset - cur_pos;
         break;
-    default: /* something wrong */
+    default:                   /* something wrong */
         return -1;
     }
 
     if (rel_ofs == 0)
-        return cur_pos; /* don't have to move */
+        return cur_pos;         /* don't have to move */
 
     if (rel_ofs < 0)
-    { /* convert backward into forward */
+    {                           /* convert backward into forward */
         if (zzip_rewind(fp) == -1)
             return -1;
 
         read_size = cur_pos + rel_ofs;
         cur_pos = 0;
-    }else
-    { /* amount to read is positive relative offset */
+    } else
+    {                           /* amount to read is positive relative offset */
         read_size = rel_ofs;
     }
 
-    if (read_size < 0) /* bad offset, before beginning of file */
+    if (read_size < 0)          /* bad offset, before beginning of file */
         return -1;
 
-    if (read_size + cur_pos > (zzip_off_t)fp->usize) /* bad offset, past EOF */
+    if (read_size + cur_pos > (zzip_off_t) fp->usize)   /* bad offset, past EOF */
         return -1;
 
-    if (read_size == 0) /* nothing to read */
+    if (read_size == 0)         /* nothing to read */
         return cur_pos;
 
     dir = fp->dir;
@@ -1038,47 +1090,53 @@ zzip_seek(ZZIP_FILE * fp, zzip_off_t offset, int whence)
     if (dir->currentfp != fp)
     {
         if (zzip_file_saveoffset(dir->currentfp) < 0
-            || dir->currentfp->io->fd.seeks(dir->fd, fp->offset, SEEK_SET) < 0)
-        { dir->errcode = ZZIP_DIR_SEEK; return -1; }
+            || fp->io->fd.seeks(dir->fd, fp->offset, SEEK_SET) < 0)
+            { dir->errcode = ZZIP_DIR_SEEK; return -1; }
         else
-        { dir->currentfp = fp; }
+            { dir->currentfp = fp; }
     }
 
     if (fp->method == 0)
-    { /* unstore, just lseek relatively */
+    {                           /* unstore, just lseek relatively */
         ofs = fp->io->fd.tells(dir->fd);
-        ofs = fp->io->fd.seeks(dir->fd,read_size,SEEK_CUR);
+        ofs = fp->io->fd.seeks(dir->fd, read_size, SEEK_CUR);
         if (ofs > 0)
-        { /* readjust from beginning of file */
+        {                       /* readjust from beginning of file */
             ofs -= fp->dataoffset;
             fp->restlen = fp->usize - ofs;
         }
         return ofs;
-    }else
-    { /* method == 8, inflate */
+    } else
+    {                           /* method == 8, inflate */
         char *buf;
+
         /*FIXME: use a static buffer! */
-        buf = (char *)malloc(ZZIP_32K);
-        if (! buf) return -1;
+        buf = (char *) malloc(ZZIP_32K);
+        if (! buf)
+            return -1;
 
         while (read_size > 0)
         {
             zzip_off_t size = ZZIP_32K;
-            if (read_size < size/*32K*/) size = read_size;
 
-            size = zzip_file_read(fp, buf, (zzip_size_t)size);
-            if (size <= 0) { free(buf); return -1; }
+            if (read_size < size /*32K */ )
+                size = read_size;
+
+            size = zzip_file_read(fp, buf, (zzip_size_t) size);
+            if (size <= 0)
+                { free(buf); return -1; }
 
             read_size -= size;
         }
 
-        free (buf);
+        free(buf);
     }
 
     return zzip_tell(fp);
 }
 
-/**
+/** tell.
+ *
  * This function will => tell(2) the current position in a real/zipped file
  *
  * It will return the current offset within the real/zipped file,
@@ -1095,17 +1153,57 @@ zzip_tell(ZZIP_FILE * fp)
     if (! fp)
         return -1;
 
-    if (! fp->dir)  /* stat fd */
+    if (! fp->dir)               /* stat fd */
         return fp->io->fd.tells(fp->fd);
 
     /* current uncompressed offset is uncompressed size - data left */
     return (fp->usize - fp->restlen);
 }
 
-zzip_off_t
-zzip_file_size(ZZIP_FILE * fp)
+#ifndef EOVERFLOW
+#define EOVERFLOW EFBIG
+#endif
+
+/** => zzip_tell
+ * This function is provided for users who can not use any largefile-mode.
+ */
+long
+zzip_tell32(ZZIP_FILE * fp)
 {
-    return fp->usize;
+    if (sizeof(zzip_off_t) == sizeof(long))
+    {
+        return zzip_tell(fp);
+    } else
+    {
+        off_t off = zzip_tell(fp);
+        if (off >= 0) {
+            register long off32 = off;
+            if (off32 == off) return off32;
+            errno = EOVERFLOW;
+        }
+        return -1;
+    }
+}
+
+/** => zzip_seek
+ * This function is provided for users who can not use any largefile-mode.
+ */
+long
+zzip_seek32(ZZIP_FILE * fp, long offset, int whence)
+{
+    if (sizeof(zzip_off_t) == sizeof(long))
+    {
+        return zzip_seek(fp, offset, whence);
+    } else
+    {
+        off_t off = zzip_seek(fp, offset, whence);
+        if (off >= 0) {
+            register long off32 = off;
+            if (off32 == off) return off32;
+            errno = EOVERFLOW;
+        }
+        return -1;
+    }
 }
 
 /*

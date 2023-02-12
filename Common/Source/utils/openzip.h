@@ -31,20 +31,24 @@ ZZIP_FILE * openzip(const char* szFile, const char *mode);
 #include <memory>
 
 #ifdef UNICODE
+#include "utils/charset_helper.h"
+
 static inline
 ZZIP_FILE * openzip(const wchar_t* szFile, const char *mode) {
-	return zzip_fopen(szFile, mode);
+    std::string uname = to_utf8(szFile);
+	return openzip(uname.c_str(), mode);
 }
+
 #endif
 
 struct zzip_file_ptr_delete {
-    inline void operator()(ZZIP_FILE *__ptr) {
+    void operator()(ZZIP_FILE *__ptr) {
         zzip_close(__ptr);
-    };
+    }
 };
 
 using zzip_file_ptr = std::unique_ptr<ZZIP_FILE, zzip_file_ptr_delete>;
 
 
-#endif
-#endif	/* OPENZIP_H */
+#endif /* __cplusplus */
+#endif /* OPENZIP_H */

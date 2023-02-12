@@ -858,7 +858,7 @@ find_package (boost_container REQUIRED)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
-    Common/Header/libzzip
+    Common/Source/Library
     Common/Header
     Common/Source
     Common/Source/xcs

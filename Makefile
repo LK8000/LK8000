@@ -10,7 +10,7 @@ HOST_IS_ARM := $(call string_contains,$(UNAME_M),armv)
 HOST_IS_ARMV7 := $(call string_equals,$(UNAME_M),armv7l)
 
 ifeq ($(HOST_IS_ARMV7),y)
- HOST_HAS_NEON := $(call string_contains,$(shell grep -E ^Features /proc/cpuinfo),neon)
+ HOST_HAS_NEON := $(call string_contains,$(shell -)
 else
  HOST_HAS_NEON := n
 endif
@@ -586,7 +586,11 @@ endif
 ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
 else
- INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR)/mingw32compat/zlib -I$(HDR)/libzzip -I$(HDR) -I$(SRC)
+ INCLUDES	:= -I$(HDR)/mingw32compat 
+ INCLUDES	+= -I$(HDR)/mingw32compat/zlib 
+ INCLUDES	+= -I$(SRC)/Library 
+ INCLUDES	+= -I$(HDR) 
+ INCLUDES	+= -I$(SRC)
  ifneq ($(CONFIG_PC),y)
   INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
  endif
@@ -1436,12 +1440,12 @@ RSCSRC  := $(SRC)/Resource
 
 ZZIPSRC	:=$(LIB)/zzip
 ZZIP	:=\
-	$(ZZIPSRC)/err.c \
-	$(ZZIPSRC)/fetch.c \
-	$(ZZIPSRC)/file.c \
-	$(ZZIPSRC)/info.c \
-	$(ZZIPSRC)/plugin.c \
 	$(ZZIPSRC)/zip.c \
+	$(ZZIPSRC)/file.c \
+	$(ZZIPSRC)/dir.c \
+	$(ZZIPSRC)/err.c \
+	$(ZZIPSRC)/plugin.c \
+	$(ZZIPSRC)/fetch.c\
 	$(LIB)/zlib/adler32.c \
 	$(LIB)/zlib/crc32.c \
 	$(LIB)/zlib/infback.c \

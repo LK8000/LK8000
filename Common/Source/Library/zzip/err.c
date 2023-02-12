@@ -1,41 +1,43 @@
+
 /*
- * Author:
+ * Author: 
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- *      Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
- *          All rights reserved,
- *          use under the restrictions of the
- *          Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)
  */
 
-#include <zzip/lib.h>                                    /* exported... */
+#include <zzip/lib.h>           /* exported... */
 #include <zlib.h>
 
 #include <string.h>
-#include <errno.h>
+#include "__errno.h"
 
 #include <zzip/file.h>
 
+#ifdef UNDER_CE
+static char * strerror(int e) {
+    return "";
+}
+#endif
+
 /* *INDENT-OFF* */
-static struct errlistentry { int code; const char* mesg; }
-errlist[] =
+static struct errlistentry { int code; const char* mesg; } 
+errlist[] = 
 {
     { ZZIP_NO_ERROR,        "No error" },
-    { ZZIP_OUTOFMEM,
+    { ZZIP_OUTOFMEM,        
       "could not get temporary memory for internal structures" },
     { ZZIP_DIR_OPEN,        "Failed to open zip-file %s" },
     { ZZIP_DIR_STAT,        "Failed to fstat zip-file %s" },
     { ZZIP_DIR_SEEK,        "Failed to lseek zip-file %s" },
-    { ZZIP_DIR_READ,        "Failed to read zip-file %s"},
+    { ZZIP_DIR_READ,        "Failed to read zip-file %s"},  
     { ZZIP_DIR_TOO_SHORT,   "zip-file %s too short" },
     { ZZIP_DIR_EDH_MISSING, "zip-file central directory not found" },
     { ZZIP_DIRSIZE,         "Directory size too big..." },
     { ZZIP_ENOENT,          "No such file found in zip-file %s" },
     { ZZIP_UNSUPP_COMPR,    "Unsupported compression format" },
-    { ZZIP_CORRUPTED,       "Zipfile corrupted" },
+    { ZZIP_CORRUPTED,       "Zipfile corrupted" }, 
     { ZZIP_UNDEF,           "Some undefined error occurred" },
     { ZZIP_DIR_LARGEFILE,   "Directory is largefile variant" },
     { 0, 0 },
@@ -45,10 +47,6 @@ errlist[] =
 
 #define errlistSIZE (sizeof(errlist)/sizeof(*errlist))
 
-#ifdef __MINGW32__
-#define strerror(x) ""
-#endif
-
 /**
  * returns the static string for the given error code. The
  * error code can be either a normal system error (a
@@ -57,45 +55,47 @@ errlist[] =
  * or it can be an error code from => libzzip, which is an
  * negative value lower than => ZZIP_ERROR
  */
-zzip_char_t*
+zzip_char_t *
 zzip_strerror(int errcode)
 {
-  if (errcode < ZZIP_ERROR && errcode > ZZIP_ERROR-32)
-  {
-      struct errlistentry* err = errlist;
-      for (; err->mesg ; err++)
-      {
-          if (err->code == errcode)
-              return err->mesg;
-      }
-      errcode = EINVAL;
-  }
+    if (errcode < ZZIP_ERROR && errcode > ZZIP_ERROR - 32)
+    {
+        struct errlistentry *err = errlist;
 
-  if (errcode < 0)
-  {
-      if (errcode == -1)
-          return strerror(errcode);
-      else
-          return zError(errcode);
-  }
+        for (; err->mesg; err++)
+        {
+            if (err->code == errcode)
+                return err->mesg;
+        }
+        errcode = EINVAL;
+    }
 
-  return strerror (errcode);
+    if (errcode < 0)
+    {
+        if (errcode == -1)
+            return strerror(errcode);
+        else
+            return zError(errcode);
+    }
+
+    return strerror(errcode);
 }
 
 /** => zzip_strerror
- * This function fetches the errorcode from the => DIR-handle and
+ * This function fetches the errorcode from the => DIR-handle and 
  * runs it through => zzip_strerror to obtain the static string
  * describing the error.
  */
-zzip_char_t*
-zzip_strerror_of(ZZIP_DIR* dir)
+zzip_char_t *
+zzip_strerror_of(ZZIP_DIR * dir)
 {
-    if (! dir) return strerror (errno);
+    if (! dir)
+        return strerror(errno);
     return zzip_strerror(dir->errcode);
 }
 
-/* *INDENT-OFF*
-static struct errnolistentry { int code; int e_no; }
+/* *INDENT-OFF* */
+static struct errnolistentry { int code; int e_no; } 
 errnolist[] =
 {
     { Z_STREAM_ERROR, EPIPE },
@@ -103,14 +103,14 @@ errnolist[] =
     { Z_MEM_ERROR, ENOMEM },
     { Z_BUF_ERROR, EMFILE },
     { Z_VERSION_ERROR, ENOEXEC },
-
+      
     { ZZIP_DIR_OPEN, ENOTDIR },
     { ZZIP_DIR_STAT, EREMOTE },
     { ZZIP_DIR_SEEK, ESPIPE },
 #  ifdef ESTRPIPE
-    { ZZIP_DIR_READ, ESTRPIPE},
+    { ZZIP_DIR_READ, ESTRPIPE},  
 #  else
-    { ZZIP_DIR_READ, EPIPE},
+    { ZZIP_DIR_READ, EPIPE},  
 #  endif
     { ZZIP_DIR_TOO_SHORT, ENOEXEC },
 #  ifdef ENOMEDIUM
@@ -125,16 +125,16 @@ errnolist[] =
     { ZZIP_UNSUPP_COMPR, EPFNOSUPPORT },
 #  else
     { ZZIP_UNSUPP_COMPR, EACCES },
-#  endif
+#  endif 
 # ifdef EILSEQ
-    { ZZIP_CORRUPTED, EILSEQ },
+    { ZZIP_CORRUPTED, EILSEQ }, 
 # else
-    { ZZIP_CORRUPTED, ELOOP },
+    { ZZIP_CORRUPTED, ELOOP }, 
 # endif
     { ZZIP_UNDEF, EINVAL },
     { 0, 0 },
-};
- *INDENT-ON* */
+};    
+/* *INDENT-ON* */
 
 /**
  * map the error code to a system error code. This is used
@@ -146,22 +146,23 @@ errnolist[] =
 int
 zzip_errno(int errcode)
 {
-    if (errcode >= -1) return errno;
+    if (errcode >= -1)
+    {
+        return errno;
+    } else
+    {
+        struct errnolistentry *err = errnolist;
 
-    return errcode;
-/*
-    {   struct errnolistentry* err = errnolist;
-        for (; err->code ; err++)
+        for (; err->code; err++)
         {
             if (err->code == errcode)
                 return err->e_no;
         }
+        return EINVAL;
     }
-    return EINVAL;
-*/
 }
 
-/*
+/* 
  * Local variables:
  * c-file-style: "stroustrup"
  * End:

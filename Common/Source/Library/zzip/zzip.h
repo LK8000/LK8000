@@ -1,14 +1,9 @@
 /*
- * Author:
+ * Author: 
  *	Guido Draheim <guidod@gmx.de>
  *	Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- *	Copyright (c) 1999,2000,2001,2002,2003,2004 Guido Draheim
- * 	    All rights reserved,
- *          usage allowed under the restrictions of the
- *	    Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft (LPGL,MPL)
  *
  * if you see "unknown symbol" errors, check first that `-I ..` is part of
  * your compiler options - a special hint to VC/IDE users who tend to make up
@@ -20,7 +15,6 @@
 #define _ZZIP_ZZIP_H
 
 #include <zzip/types.h>
-#include <tchar.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +23,7 @@ extern "C" {
 /* the zzip_error_t is also used to pass back ZLIB errors... */
 #define ZZIP_ERROR -4096
 
-typedef enum
+typedef enum 
 {
     ZZIP_NO_ERROR = 0,	/* no error, may be used if user sets it. */
     ZZIP_OUTOFMEM =      ZZIP_ERROR-20, /* out of memory */
@@ -91,19 +85,19 @@ struct zzip_dirent
 };
 
 /*
- * Getting error strings
+ * Getting error strings 
  * zzip/err.c
  */
 _zzip_export    /* error in _opendir : */
-zzip_char_t* 	zzip_strerror(int errcode);
+zzip_char_t* 	zzip_strerror(int errcode); 
 _zzip_export    /* error in other functions : */
-zzip_char_t* 	zzip_strerror_of(ZZIP_DIR * dir);
+zzip_char_t* 	zzip_strerror_of(ZZIP_DIR * dir); 
 _zzip_export    /* error mapped to errno.h defines : */
-int    	 	zzip_errno(int errcode);
+int    	 	zzip_errno(int errcode); 
 
 
 /*
- * Functions to grab information from ZZIP_DIR/ZZIP_FILE structure
+ * Functions to grab information from ZZIP_DIR/ZZIP_FILE structure 
  * (if ever needed)
  * zzip/info.c
  */
@@ -169,7 +163,7 @@ _zzip_export
 void	 	zzip_seekdir(ZZIP_DIR * dir, zzip_off_t offset);
 
 /*
- * 'opening', 'closing' and reading invidual files in zip archive.
+ * 'opening', 'closing' and reading individual files in zip archive.
  * zzip/file.c
  */
 _zzip_export
@@ -187,15 +181,23 @@ _zzip_export
 zzip_ssize_t	zzip_read(ZZIP_FILE * fp, void * buf, zzip_size_t len);
 
 /*
+ * Read data from the specified offset.  Depending on the
+ * implementation, this may or may not move the file pointer.
+ */
+_zzip_export
+zzip_size_t
+zzip_pread(ZZIP_FILE *file, void *ptr, zzip_size_t size, zzip_off_t offset);
+
+/*
  * the stdc variant to open/read/close files. - Take note of the freopen()
  * call as it may reuse an existing preparsed copy of a zip central directory
  */
 _zzip_export
 ZZIP_FILE*      zzip_freopen(zzip_char_t* name, zzip_char_t* mode, ZZIP_FILE*);
 _zzip_export
-ZZIP_FILE*      zzip_fopen(const TCHAR* name, zzip_char_t* mode);
+ZZIP_FILE*      zzip_fopen(zzip_char_t* name, zzip_char_t* mode);
 _zzip_export
-zzip_size_t     zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb,
+zzip_size_t     zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, 
 			   ZZIP_FILE * file);
 _zzip_export
 int  		zzip_fclose(ZZIP_FILE * fp);
@@ -210,15 +212,12 @@ zzip_off_t      zzip_seek(ZZIP_FILE * fp, zzip_off_t offset, int whence);
 _zzip_export
 zzip_off_t      zzip_tell(ZZIP_FILE * fp);
 
-// JMW added
-_zzip_export zzip_off_t zzip_file_size(ZZIP_FILE * fp);
-
 /*
- * reading info of a single file
+ * reading info of a single file 
  * zzip/stat.c
  */
 _zzip_export
-int		zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name,
+int		zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, 
 			      ZZIP_STAT * zs, int flags);
 _zzip_export
 int		zzip_file_stat(ZZIP_FILE * fp, ZZIP_STAT * zs);
@@ -260,12 +259,12 @@ ZZIP_DIR *  zzip_dir_open_ext_io(zzip_char_t* filename,
 /* zzip_file_open_ext_io => zzip_dir_open_ext_io + zzip_file_open */
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif /* _ZZIPLIB_H */
 
-/*
+/* 
  * Local variables:
  * c-file-style: "stroustrup"
  * End:

@@ -2,15 +2,10 @@
  * unlike in <zzip/conf.h> we are allowed to make up typedefs here,
  * while over there only #defines are allowed
  *
- * Author:
+ * Author: 
  *	Guido Draheim <guidod@gmx.de>
  *
- *	Copyright (c) 2003,2004 Guido Draheim
- * 	    All rights reserved,
- *          usage allowed under the restrictions of the
- *	    Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)
  *
  * This file is usually the first to define some real symbols. If you do
  * see some errors here then it is most likely the includepath is wrong
@@ -54,3 +49,4 @@ typedef struct zzip_extra_block ZZIP_EXTRA_BLOCK;
 
 
 #endif
+

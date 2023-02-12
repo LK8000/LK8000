@@ -8,16 +8,11 @@
  * a while now so perhaps some program sources have errnously taken
  * advantage of this file.
  *
- * Author:
+ * Author: 
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@tfi.net>
  *
- *      Copyright (c) 1999,2000,2001,2002 Guido Draheim
- *          All rights reserved,
- *          use under the restrictions of the
- *          Lesser GNU General Public License
- *          or alternatively the restrictions
- *          of the Mozilla Public License 1.1
+ * Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)
  */
 
 #ifndef _ZZIP_FILE_H /* zzip-file.h */
@@ -34,7 +29,7 @@
 #include <zlib.h>
 
 #ifdef ZZIP_HAVE_UNISTD_H
-//JMW#include <unistd.h>
+#include <unistd.h>
 #else
 #include <stdio.h>
 # ifdef ZZIP_HAVE_SYS_TYPES_H
@@ -43,7 +38,7 @@
 #endif
 
 #ifdef ZZIP_HAVE_SYS_PARAM_H
-//JMW#include <sys/param.h> /* PATH_MAX */
+#include <sys/param.h> /* PATH_MAX */
 #endif
 
 #ifndef PATH_MAX
@@ -62,7 +57,7 @@
 
 struct zzip_file
 {
-    struct zzip_dir* dir;
+    struct zzip_dir* dir; 
     int fd;
     int method;
     zzip_size_t restlen;
@@ -78,3 +73,4 @@ struct zzip_file
 };
 
 #endif /* _ZZIP_FILE_H */
+
