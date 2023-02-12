@@ -118,11 +118,12 @@ void CContestMgr::Reset(unsigned handicap) {
   _handicap = handicap;
   {
     ScopeLock TraceGuard(_traceCS);
-    _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
+    _trace = std::make_unique<CTrace>(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
   }
-  _traceSprint.reset(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM));
-  _traceFreeTriangle.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
-  _traceLoop.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
+  _traceSprint = std::make_unique<CTrace>(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM);
+  _traceFreeTriangle = std::make_unique<CTrace>(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
+  _traceLoop = std::make_unique<CTrace>(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
+
   _prevFAIFront.reset(0);
   _prevFAIBack.reset(0);
   _prevFAIPredictedFront.reset(0);

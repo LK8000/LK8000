@@ -43,7 +43,7 @@ void TaskRendererMgr::SetCircle(unsigned idx, const GeoPoint& center, double rad
         _renderer_list.resize(idx + 1);
     }
 
-    _renderer_list[idx].reset(new TaskRendererCircle(center, radius));
+    _renderer_list[idx] = std::make_unique<TaskRendererCircle>(center, radius);
 }
 
 void TaskRendererMgr::SetSector(unsigned idx, const GeoPoint& center, double radius, double start, double end) {
@@ -52,7 +52,7 @@ void TaskRendererMgr::SetSector(unsigned idx, const GeoPoint& center, double rad
         _renderer_list.resize(idx + 1);
     }
 
-    _renderer_list[idx].reset(new TaskRendererSector(center, radius, start, end));
+    _renderer_list[idx] = std::make_unique<TaskRendererSector>(center, radius, start, end);
 }
 
 void TaskRendererMgr::SetDae(unsigned idx, const GeoPoint& center, double start, double end) {
@@ -61,7 +61,7 @@ void TaskRendererMgr::SetDae(unsigned idx, const GeoPoint& center, double start,
         _renderer_list.resize(idx + 1);
     }
 
-    _renderer_list[idx].reset(new TaskRendererDae(center, start, end));
+    _renderer_list[idx] = std::make_unique<TaskRendererDae>(center, start, end);
 }
 
 void TaskRendererMgr::SetLine(unsigned idx, const GeoPoint& center, double radius, double radial) {
@@ -70,7 +70,7 @@ void TaskRendererMgr::SetLine(unsigned idx, const GeoPoint& center, double radiu
         _renderer_list.resize(idx + 1);
     }
 
-    _renderer_list[idx].reset(new TaskRendererLine(center, radius, radial));
+    _renderer_list[idx] = std::make_unique<TaskRendererLine>(center, radius, radial);
 }
 
 void TaskRendererMgr::SetStartSector(unsigned idx, const GeoPoint& center, double radius, double start, double end) {
@@ -79,7 +79,7 @@ void TaskRendererMgr::SetStartSector(unsigned idx, const GeoPoint& center, doubl
         _renderer_list.resize(idx + 1);
     }
 
-    _renderer_list[idx].reset(new TaskRendererStartSector(center, radius, start, end));
+    _renderer_list[idx] = std::make_unique<TaskRendererStartSector>(center, radius, start, end);
 }
 
 void TaskRendererMgr::Clear() {

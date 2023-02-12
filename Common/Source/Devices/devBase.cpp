@@ -330,7 +330,7 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
   const size_t rx_size = checkChars;
   std::unique_ptr<uint8_t[]> rx_debug;
   if(!rxBuf) {
-      rx_debug.reset(new uint8_t[rx_size]);
+      rx_debug = std::make_unique<uint8_t[]>(rx_size);
       prx = rx_debug.get();
   }
 #endif

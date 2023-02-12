@@ -51,10 +51,15 @@ bool RasterMap::Open(const TCHAR* zfilename) {
    * if file size less than 10MB, store DEM data into heap memory. 
    */
   if (file_size < (10*1024*1024)) {
-    /*
-     *  try to create buffer to store DEM data
-     */
-    pTerrainMem.reset(new(std::nothrow) short[nsize]);
+    try {
+      /*
+       *  try to create buffer to store DEM data
+       */
+      pTerrainMem = std::make_unique<short[]>(nsize);
+    } catch(std::bad_alloc&) {
+      // ignore memory allocation error
+    }
+
     /*
      * if available memory is less than 5MB
      * after allocate buffer we don't load terrain.
