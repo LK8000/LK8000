@@ -3483,7 +3483,6 @@ namespace {
     DELARE_EVENT(Bugs),
     DELARE_EVENT(Calculator),
     DELARE_EVENT(Checklist),
-    DELARE_EVENT(DLLExecute),
     DELARE_EVENT(FlightMode),
     DELARE_EVENT(Logger),
     DELARE_EVENT(MacCready),

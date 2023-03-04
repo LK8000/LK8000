@@ -235,7 +235,6 @@ add_library( LK8000 SHARED
     Common/Source/ConditionMonitor.cpp
     Common/Source/DataOptions.cpp
     Common/Source/Dialogs.cpp
-    Common/Source/DLL.cpp
     Common/Source/DoInits.cpp
     Common/Source/ExpandMacros.cpp
     Common/Source/FlarmIdFile.cpp

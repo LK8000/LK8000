@@ -1347,7 +1347,6 @@ SRC_FILES :=\
 	$(SRC)/ConditionMonitor.cpp \
 	$(SRC)/DataOptions.cpp \
 	$(SRC)/Dialogs.cpp\
-	$(SRC)/DLL.cpp \
 	$(SRC)/DoInits.cpp\
 	$(SRC)/ExpandMacros.cpp	\
 	$(SRC)/FlarmIdFile.cpp 		\

@@ -108,7 +108,6 @@ public:
   static void eventBugs(const TCHAR *misc);
   static void eventCalculator(const TCHAR *misc);
   static void eventChecklist(const TCHAR *misc);
-  static void eventDLLExecute(const TCHAR *misc);
   static void eventFlightMode(const TCHAR *misc);
   static void eventLogger(const TCHAR *misc);
   static void eventMacCready(const TCHAR *misc);
