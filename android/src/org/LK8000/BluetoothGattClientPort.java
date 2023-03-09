@@ -23,6 +23,7 @@
 package org.LK8000;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -34,8 +35,6 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
 import java.io.IOException;
 import java.util.UUID;
 
@@ -43,7 +42,6 @@ import java.util.UUID;
  * AndroidPort implementation for Bluetooth Low Energy devices using the
  * GATT protocol.
  */
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothGattClientPort
     extends BluetoothGattCallback
     implements AndroidPort  {
@@ -90,15 +88,56 @@ public class BluetoothGattClientPort
   private final Object gattStateSync = new Object();
   private int gattState = BluetoothGatt.STATE_DISCONNECTED;
 
+  private BluetoothAdapter.LeScanCallback callback = null;
+
+  static int deviceType(BluetoothDevice device) {
+    try {
+      return device.getType();
+    }
+    catch (SecurityException ignore) {
+      return BluetoothDevice.DEVICE_TYPE_UNKNOWN;
+    }
+  }
+
+  static boolean isUnknownType(BluetoothDevice device) {
+    return (deviceType(device) != BluetoothDevice.DEVICE_TYPE_LE);
+  }
+
+  void startLeScan() {
+    if (callback == null) {
+      callback = (device, rssi, scanRecord) -> {
+        // nothing to do...
+      };
+      BluetoothHelper.startLeScan(callback);
+    }
+  }
+
+  void stopLeScan() {
+    BluetoothAdapter.LeScanCallback tmp = callback;
+    callback = null;
+    if (tmp != null) {
+      BluetoothHelper.stopLeScan(tmp);
+    }
+  }
+
   public BluetoothGattClientPort(Context context, BluetoothDevice device)
           throws IOException
   {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      gatt = device.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
+    if (isUnknownType(device)) {
+      startLeScan();
     }
-    else {
-      gatt = device.connectGatt(context, true, this);
+
+    try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        gatt = device.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
+      } else {
+        gatt = device.connectGatt(context, true, this);
+      }
     }
+    catch (SecurityException e) {
+      e.printStackTrace();
+    }
+
     if (gatt == null) {
       throw new IOException("Bluetooth GATT connect failed");
     }
@@ -142,6 +181,7 @@ public class BluetoothGattClientPort
       int newState) {
     int newPortState = STATE_LIMBO;
     if (BluetoothProfile.STATE_CONNECTED == newState) {
+      stopLeScan();
       if (!gatt.discoverServices()) {
         Log.e(TAG, "Discovering GATT services request failed");
         newPortState = STATE_FAILED;
@@ -261,6 +301,7 @@ public class BluetoothGattClientPort
 
   @Override
   public void close() {
+    stopLeScan();
     shutdown = true;
     writeBuffer.clear();
     gatt.disconnect();
