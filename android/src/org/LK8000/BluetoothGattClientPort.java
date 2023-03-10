@@ -35,7 +35,6 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -74,7 +73,7 @@ public class BluetoothGattClientPort
   private PortListener portListener;
   private volatile InputListener listener;
 
-  private BluetoothGatt gatt;
+  private BluetoothGatt gatt = null;
   private BluetoothGattCharacteristic dataCharacteristic;
   private BluetoothGattCharacteristic deviceNameCharacteristic;
   private volatile boolean shutdown = false;
@@ -103,10 +102,13 @@ public class BluetoothGattClientPort
     return (deviceType(device) != BluetoothDevice.DEVICE_TYPE_LE);
   }
 
-  void startLeScan() {
+  void startLeScan(Context context, String address) {
     if (callback == null) {
       callback = (device, rssi, scanRecord) -> {
-        // nothing to do...
+        if (device.getAddress().equals(address)) {
+          stopLeScan();
+          connectDevice(context, device);
+        }
       };
       BluetoothHelper.startLeScan(callback);
     }
@@ -120,26 +122,25 @@ public class BluetoothGattClientPort
     }
   }
 
-  public BluetoothGattClientPort(Context context, BluetoothDevice device)
-          throws IOException
-  {
+  public BluetoothGattClientPort(Context context, BluetoothDevice device) {
     if (isUnknownType(device)) {
-      startLeScan();
+      // unknown device : scan for device...
+      startLeScan(context, device.getAddress());
     }
+    else {
+      connectDevice(context, device);
+    }
+  }
 
+  private void connectDevice(Context context, BluetoothDevice device) {
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         gatt = device.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
       } else {
         gatt = device.connectGatt(context, true, this);
       }
-    }
-    catch (SecurityException e) {
+    } catch (SecurityException e) {
       e.printStackTrace();
-    }
-
-    if (gatt == null) {
-      throw new IOException("Bluetooth GATT connect failed");
     }
   }
 
@@ -175,13 +176,11 @@ public class BluetoothGattClientPort
     }
   }
 
+  @SuppressLint("MissingPermission")
   @Override
-  public void onConnectionStateChange(BluetoothGatt gatt,
-      int status,
-      int newState) {
+  public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
     int newPortState = STATE_LIMBO;
     if (BluetoothProfile.STATE_CONNECTED == newState) {
-      stopLeScan();
       if (!gatt.discoverServices()) {
         Log.e(TAG, "Discovering GATT services request failed");
         newPortState = STATE_FAILED;
@@ -208,12 +207,11 @@ public class BluetoothGattClientPort
 
   @SuppressLint("MissingPermission")
   @Override
-  public void onServicesDiscovered(BluetoothGatt gatt,
-                                   int status) {
+  public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = 20; // default mtu - 3
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        gatt.requestMtu(85); // Max NNEA length is 82 -> mtu = 82 + 3
+        gatt.requestMtu(85); // Max NMEA length is 82 -> mtu = 82 + 3
       }
       else {
         configureCharacteristics(gatt);
@@ -234,6 +232,7 @@ public class BluetoothGattClientPort
     }
   }
 
+  @SuppressLint("MissingPermission")
   private void configureCharacteristics(BluetoothGatt gatt) {
     if (findCharacteristics()) {
       if (gatt.setCharacteristicNotification(dataCharacteristic, true)) {
@@ -299,12 +298,21 @@ public class BluetoothGattClientPort
     listener = _listener;
   }
 
+  @SuppressLint("MissingPermission")
   @Override
   public void close() {
     stopLeScan();
     shutdown = true;
     writeBuffer.clear();
-    gatt.disconnect();
+    if (gatt != null) {
+      gatt.disconnect();
+      waitForClose();
+      gatt.close();
+      gatt = null;
+    }
+  }
+
+  private void waitForClose() {
     synchronized (gattStateSync) {
       long waitUntil = System.currentTimeMillis() + DISCONNECT_TIMEOUT;
       while (gattState != BluetoothGatt.STATE_DISCONNECTED) {
@@ -321,8 +329,6 @@ public class BluetoothGattClientPort
         }
       }
     }
-    gatt.close();
-    gatt = null;
   }
 
   @Override
