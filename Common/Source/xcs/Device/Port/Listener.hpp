@@ -42,7 +42,7 @@ public:
    * @param msg a human-readable error message (probably not
    * localised)
    */
-  virtual void PortError(const char *msg) {}
+  virtual void PortError(const char *msg) = 0;
 };
 
 #endif

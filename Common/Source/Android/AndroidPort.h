@@ -72,6 +72,7 @@ public:
     /* override PortListner */
     void PortStateChanged() override;
 
+    void PortError(const char *msg) override;
 protected:
 
     PortBridge *bridge = nullptr;

@@ -199,6 +199,10 @@ void AndroidPort::PortStateChanged() {
     newdata.Signal();
 }
 
+void AndroidPort::PortError(const char *msg) {
+    StartupStore(_T("ComPort Error : %s"), msg);
+}
+
 unsigned AndroidPort::RxThread() {
 
     ScopeLock lock(mutex);
