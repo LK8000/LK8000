@@ -43,7 +43,7 @@ import android.content.pm.PackageManager;
 @SuppressLint("MissingPermission")
 final class BluetoothHelper {
   private static final String TAG = "LK8000";
-  private static final UUID THE_UUID =
+  private static final UUID SPP_UUID =
         UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
   private static final BluetoothAdapter adapter;
@@ -63,6 +63,10 @@ final class BluetoothHelper {
     }
 
     adapter = _adapter;
+  }
+
+  public static void cancelDiscovery() {
+    adapter.cancelDiscovery();
   }
 
   public static void Initialize(Context context) {
@@ -170,20 +174,20 @@ final class BluetoothHelper {
 
   public static AndroidPort connect(Context ignoredContext, String address)
           throws IOException {
-    if (adapter == null)
+    if (adapter == null) {
       return null;
-
+    }
     BluetoothDevice device = adapter.getRemoteDevice(address);
-    if (device == null)
+    if (device == null) {
       return null;
+    }
 
     BluetoothSocket socket =
-            device.createRfcommSocketToServiceRecord(THE_UUID);
+            device.createRfcommSocketToServiceRecord(SPP_UUID);
     return new BluetoothClientPort(socket);
   }
 
-  public static AndroidPort connectHM10(Context context, String address)
-          throws IOException {
+  public static AndroidPort connectHM10(Context context, String address) {
     if (adapter == null || !hasLe)
       return null;
 
@@ -204,6 +208,6 @@ final class BluetoothHelper {
     if (adapter == null)
       return null;
 
-    return new BluetoothServerPort(adapter, THE_UUID);
+    return new BluetoothServerPort(adapter, SPP_UUID);
   }
 }

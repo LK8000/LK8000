@@ -38,8 +38,7 @@ class BluetoothClientPort extends ProxyAndroidPort implements Runnable {
 
   private Thread thread;
 
-  BluetoothClientPort(BluetoothSocket _socket)
-    throws IOException {
+  BluetoothClientPort(BluetoothSocket _socket) {
     socket = _socket;
 
     thread = new Thread(this, toString());
@@ -54,6 +53,22 @@ class BluetoothClientPort extends ProxyAndroidPort implements Runnable {
   }
 
   @Override public void close() {
+    closeSocket();
+
+    /* ensure that run() has finished before calling
+       ProxyAndroidPort.close() */
+    Thread thread = this.thread;
+    if (thread != null) {
+      try {
+        thread.join();
+      } catch (InterruptedException ignored) {
+      }
+    }
+
+    super.close();
+  }
+
+  private void closeSocket() {
     BluetoothSocket socket = this.socket;
     if (socket != null) {
       try {
@@ -62,18 +77,6 @@ class BluetoothClientPort extends ProxyAndroidPort implements Runnable {
         Log.w(TAG, "Failed to close BluetoothSocket", e);
       }
     }
-
-    /* ensure that run() has finished before calling
-       ProxyAndroidPort.close() */
-    Thread thread = this.thread;
-    if (thread != null) {
-      try {
-        thread.join();
-      } catch (InterruptedException e) {
-      }
-    }
-
-    super.close();
   }
 
   @Override public int getState() {
@@ -83,6 +86,7 @@ class BluetoothClientPort extends ProxyAndroidPort implements Runnable {
   }
 
   @Override public void run() {
+    BluetoothHelper.cancelDiscovery();
     try {
       BluetoothSocket socket = this.socket;
       if (socket != null) {
@@ -92,6 +96,7 @@ class BluetoothClientPort extends ProxyAndroidPort implements Runnable {
       }
     } catch (Exception e) {
       Log.e(TAG, "Failed to connect to Bluetooth", e);
+      closeSocket();
       error(e.getMessage());
     } finally {
       socket = null;
