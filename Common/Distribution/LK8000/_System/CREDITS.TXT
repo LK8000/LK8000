@@ -10,6 +10,13 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.2]
+. Updated baro altitude availability management
+. Don't reset Alternate 1 & 2 turnpoint on task changes
+. OpenAIP airspaces, load TMA class as Unknown class airspaces (#1605)
+. waypoints ans airspaces lookup : fix invalid scroll position after filtering (#1606)
+. Android : Fix bluetooth device connection issues.
+
 [version 7.4.1]
 . Update "GPSBip" driver to support new "UltraBip" device
 . Add Fanet+ Driver for Air3 7.3+ device
