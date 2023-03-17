@@ -3,10 +3,11 @@
           xmlns:tools="http://schemas.android.com/tools"
           android:installLocation="auto">
 
+  <!-- Required even on later versions (SDK>33) for some manufactures (Xiaomi,Poco) -->
   <uses-permission android:name="android.permission.BLUETOOTH"
-                   android:maxSdkVersion="30"/>
+                   android:maxSdkVersion="34"/>
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
-                   android:maxSdkVersion="30"/>
+                   android:maxSdkVersion="34"/>
 
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
