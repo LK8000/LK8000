@@ -32,6 +32,7 @@ bool AndroidPort::Initialize() {
             return true;
         }
     } catch (const std::exception& e) {
+        delete std::exchange(bridge, nullptr); // required if `setInputListener` or `setListener` throw exception
         const tstring what = to_tstring(e.what());
         StartupStore(_T("FAILED! <%s>" NEWLINE), what.c_str());
     }
@@ -41,12 +42,10 @@ bool AndroidPort::Initialize() {
 
 bool AndroidPort::Close() {
 
-    PortBridge * delete_bridge = nullptr;
-    {
-        ScopeLock lock(mutex);
+    PortBridge * delete_bridge = WithLock(mutex, [&]() {
         running = false;
-        delete_bridge = std::exchange(bridge, nullptr);
-    }
+        return std::exchange(bridge, nullptr);
+    });
 
     while(!ComPort::Close()) {
         Sleep(10);
@@ -58,10 +57,9 @@ bool AndroidPort::Close() {
 }
 
 bool AndroidPort::StopRxThread() {
-    {
-        ScopeLock lock(mutex);
+    WithLock(mutex, [&]() {
         running = false;
-    }
+    });
 
     if(ComPort::StopRxThread()) {
         return true;
@@ -207,13 +205,20 @@ unsigned AndroidPort::RxThread() {
 
     ScopeLock lock(mutex);
 
-    PortBridge * active_bridge = bridge;
     while( running ) {
 
         newdata.Wait(mutex);
 
         if (buffer.empty()) {
-            switch (active_bridge->getState(Java::GetEnv())) {
+
+            if (!bridge) {
+                SetPortStatus(CPS_OPENKO);
+                // port is Closed.
+                running = false;
+                return 0; // Stop RxThread...
+            }
+
+            switch (bridge->getState(Java::GetEnv())) {
                 case STATE_READY:
                     SetPortStatus(CPS_OPENOK);
                     devOpen(devGetDeviceOnPort(GetPortIndex()));
@@ -229,11 +234,6 @@ unsigned AndroidPort::RxThread() {
                     break;
             }
 
-            if (!bridge) {
-                SetPortStatus(CPS_OPENKO);
-                // port is Closed.
-                running = false;
-            }
         } else {
             std::swap(rxthread_buffer, buffer);
             buffer.clear();
