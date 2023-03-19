@@ -120,9 +120,6 @@
 // remove question for last turnpoint is good idea, but don't work
 // Usability of task definition needed to be refactoring before remove that.
 
-#define COM_DISCARD 0
-// en-/disable Com Port discard for Testbench on PC
-
 #ifdef  UNDER_CE
 #define UTF8PICTORIALS  false
 #define  FLARM_PICTO_THREADSAFE
