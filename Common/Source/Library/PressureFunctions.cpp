@@ -44,10 +44,9 @@ double AirDensitySinkRate(double ias, double qnhaltitude, double gload) {
 double AltitudeToStaticPressure(double ref, double alt) {
   // example, alt= 100, ref=1014
   // ps = 100203 Pa
-
-  double ps = 100.0*pow((pow(ref,k1)-k2*alt), inv_k1);
   assert(isfinite(alt)); // bug with Android ndk r21 ( release only )
-  return ps;
+  double ps = 100.0*pow((pow(ref,k1)-k2*alt), inv_k1);
+  return isfinite(ps) ? ps : 0.0;
 }
 
 double QNHAltitudeToStaticPressure(double alt) {
