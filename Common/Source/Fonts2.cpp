@@ -661,9 +661,9 @@ void Init_Fonts_2(void)
   const int syValue = tmpSurface.GetTextHeight(_T("5"));;
 
   if (ScreenLandscape)
-      BottomSize = syValue + syTitle;
+  	BottomSize = (syTitle + syValue) + 2 * NIBLSCALE(1);
   else
-      BottomSize = (syValue*2) + (syValue/2) + syTitle;
+  	BottomSize = 2 * (syTitle + syValue) + 3 * NIBLSCALE(1);
 
   BottomSize += NIBLSCALE(1);
   tmpSurface.SelectObject(oldFont);

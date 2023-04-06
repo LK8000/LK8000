@@ -177,10 +177,11 @@ struct PixelRect : public tagRECT {
   constexpr RasterPoint GetBottomRight() const {
     return { right, bottom };
   }
-  
+
   bool IsInside(RasterPoint pt) const {
     return ::PtInRect(this, pt);
   }
+
 };
 
 static_assert(sizeof(PixelRect) == sizeof(RECT), "not same size");

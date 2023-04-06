@@ -18,6 +18,7 @@
 #include "ContestMgr.h"
 #include "Library/TimeFunctions.h"
 #include "Baro.h"
+#include "OS/CpuLoad.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -3314,9 +3315,142 @@ lkfin_ete:
                 }
                 _tcscpy(BufferTitle, TEXT(""));
             }
-			break;            
-            
+			break;
+
 		// B253
+		case LK_START_ALT:
+			value = ALTITUDEMODIFY * DerivedDrawInfo.TaskStartAltitude;
+			if (value > 0) {
+				_stprintf(BufferValue, TEXT("%d"), (int)value);
+				_stprintf(BufferUnit, TEXT("%s"), (Units::GetAltitudeName()));
+				valid = true;
+			} else {
+				_tcscpy(BufferValue, TEXT("---"));
+				_tcscpy(BufferUnit, TEXT(""));
+				valid = false;
+			}
+			// LKTOKEN _@M1200_ "Start"
+			_tcscpy(BufferTitle, MsgToken(1200));
+			break;
+
+		case LK_SAT:
+			valid = true;
+			_tcscpy(BufferUnit, TEXT(""));
+			if (SIMMODE) {
+				// LKTOKEN _@M1199_ "Sat"
+				_stprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
+				_stprintf(BufferValue, TEXT("SIM"));
+			} else {
+				value = DrawInfo.SatellitesUsed;
+				if (value < 1 || value > 30) {
+					_stprintf(BufferValue, TEXT("---"));
+				} else {
+					_stprintf(BufferValue, TEXT("%d"), (int)value);
+				}
+				for (const auto& dev : DeviceList) {
+					if (dev.nmeaParser.activeGPS) {
+						// LKTOKEN _@M1199_ "Sat"
+						_stprintf(BufferTitle, _T("  (%s:%c)"), MsgToken(1199), _T('A') + dev.PortNumber);
+						break;  // we have got the first active port.
+					}
+				}
+			}
+			break;
+
+		case LK_HBAR_AVAILABLE:
+			// LKTOKEN _@M1068_ "HBAR"
+			_tcscpy(BufferTitle, MsgToken(1068));
+			if (BaroAltitudeAvailable(DrawInfo)) {
+				if (EnableNavBaroAltitude) {
+					// LKTOKEN _@M894_ "ON"
+					_tcscpy(BufferValue, MsgToken(894));
+				} else {
+					// LKTOKEN _@M491_ "OFF"
+					_tcscpy(BufferValue, MsgToken(491));
+				}
+			} else {
+				_stprintf(BufferValue, TEXT("---"));
+			}
+			valid = false;
+			break;
+
+		case LK_CPU:
+			_tcscpy(BufferTitle, _T("CPU"));
+			value = CpuSummary();
+			if (value >= 0 && value <= 100) {
+				valid = true;
+				_stprintf(BufferValue, _T("%d"), static_cast<int>(value));
+				_tcscpy(BufferUnit, _T("%"));
+			} else {
+				valid = false;
+				_tcscpy(BufferValue, TEXT("---"));
+			}
+			break;
+
+		case LK_TRIP_SPEED_AVG:
+			_tcscpy(BufferTitle, MsgToken(2091));  // Averag (speed average really)
+			{
+				int totime = (int)(Trip_Steady_Time + Trip_Moving_Time);
+				if (totime > 0) {
+					_stprintf(BufferValue, _T("%.1f"), (DerivedDrawInfo.Odometer * SPEEDMODIFY) / totime);
+					_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
+					valid = true;
+				} else {
+					_stprintf(BufferValue, TEXT("---"));
+					valid = false;
+				}
+			}
+			break;
+
+		case LK_TRIP_STEADY:
+			_tcscpy(BufferTitle, MsgToken(1810));  // Steady
+			if (DerivedDrawInfo.Flying) {
+				valid = Units::TimeToTextDown(BufferValue, (int)Trip_Steady_Time);
+				if (valid)
+					_tcscpy(BufferUnit, _T("h"));
+				else
+					_tcscpy(BufferUnit, _T(""));
+				valid = true;
+			} else {
+				_stprintf(BufferValue, TEXT("--:--"));
+				valid = false;
+			}
+			break;
+
+		case LK_TRIP_TOTAL:
+			_tcscpy(BufferTitle, MsgToken(1811));  // Total
+			if (DerivedDrawInfo.Flying) {
+				valid = Units::TimeToTextDown(BufferValue, (int)(Trip_Steady_Time + Trip_Moving_Time));
+				if (valid)
+					_tcscpy(BufferUnit, _T("h"));
+				else
+					_tcscpy(BufferUnit, _T(""));
+				valid = true;
+			} else {
+				_stprintf(BufferValue, TEXT("--:--"));
+				valid = false;
+			}
+			break;
+
+		case LK_SPEED_AVG:
+			_stprintf(BufferValue, _T("%.1f"), SPEEDMODIFY * Rotary_Speed);
+			_stprintf(BufferTitle, _T("AvgSpd"));
+			_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
+			valid = true;
+			break;
+
+		case LK_DIST_AVG:
+			if (Rotary_Distance < 100000) {
+				_stprintf(BufferValue, _T("%.2f"), DISTANCEMODIFY * Rotary_Distance);
+			} else {
+				_stprintf(BufferValue, _T("%.2f"), 0.0);
+			}
+			_stprintf(BufferTitle, _T("AvgDist"));
+			_stprintf(BufferUnit, TEXT("%s"), (Units::GetDistanceName()));
+			valid = true;
+			break;
+
+
 		case LK_DUMMY:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
@@ -3327,15 +3461,12 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("."));
 			break;
 
-		// B254
 		case LK_EMPTY:
-//lk_empty:
 			_tcscpy(BufferValue, TEXT(""));
 			_tcscpy(BufferUnit, TEXT(""));
 			_tcscpy(BufferTitle, TEXT(""));
 			break;
 
-		// B255
 		case LK_ERROR:
 lk_error:
 			// let it be shown entirely to understand the problem

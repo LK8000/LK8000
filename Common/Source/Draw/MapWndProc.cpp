@@ -256,6 +256,8 @@ void MapWindow::_OnDestroy() {
     hdcbuffer.Release();
     hdcMask.Release();
 #endif
+
+    ResetBottomBarDrawer();
 }
 
 /*

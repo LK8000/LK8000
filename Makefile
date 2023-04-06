@@ -907,6 +907,7 @@ LKINTER	:=\
 	
 
 DRAW	:=\
+	$(DRW)/BottomBar/BottomBar.cpp \
 	$(DRW)/CalculateScreen.cpp \
 	$(DRW)/CalculateWaypointReachable.cpp \
 	$(DRW)/DoAirspaces.cpp \

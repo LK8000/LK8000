@@ -759,12 +759,20 @@
 #define LK_NEXT_CENTER_ALTDIFF 250  // Same As  LK_NEXT_ALTDIFF but always with Waypoint center
 #define LK_NEXT_CENTER_GR	251	// Same as LK_NEXT_GR but always with Waypoint center
 #define LK_START_SPEED		252	// Requiered speed for reach Start of task at Gate Time !
-
+#define LK_START_ALT        253 // 
+#define LK_SAT              254
+#define LK_HBAR_AVAILABLE   255
+#define LK_CPU              256
+#define LK_TRIP_SPEED_AVG   257
+#define LK_TRIP_STEADY      258
+#define LK_TRIP_TOTAL       259
+#define LK_SPEED_AVG        260
+#define LK_DIST_AVG         261
 
 // Service values
-#define LK_DUMMY		253		//
-#define LK_EMPTY		254		//
-#define LK_ERROR		255		//
+#define LK_DUMMY		262		//
+#define LK_EMPTY		263		//
+#define LK_ERROR		264		//
 
 // GetMacCready
 #define GMC_DEFAULT	0	// default behaviour

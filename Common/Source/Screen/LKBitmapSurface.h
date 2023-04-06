@@ -20,6 +20,7 @@ public:
     virtual ~LKBitmapSurface();
 
     LKBitmapSurface(LKSurface& Surface, unsigned width, unsigned height);
+    LKBitmapSurface(LKSurface& Surface, PixelSize size) : LKBitmapSurface(Surface, size.cx, size.cy) { };
 
     virtual void Create(const LKSurface& Surface, unsigned width, unsigned height);
     virtual void Release();

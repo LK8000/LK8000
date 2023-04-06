@@ -1100,11 +1100,6 @@ bool UpToDate(short TerrainContrast, short TerrainBrightness, short TerrainRamp,
     return true;
 }
 
-bool operator!=(const RECT& a, const RECT& b) {
-    return (a.bottom != b.bottom) || (a.right != b.right)
-            || (a.left != b.left)  || (a.top != b.top);
-}
-
 } // namespace
 
 /**
@@ -1120,7 +1115,7 @@ bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Pr
 
     static RECT oldrc = {};
 
-    if (rc != oldrc) {
+    if (PixelRect(rc) != PixelRect(oldrc)) {
         // Resolution has changed, probably PAN mode on with bottombar full opaque
         // We paint full screen, so we resize it.
         trenderer = nullptr;

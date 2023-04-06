@@ -13,6 +13,7 @@
 #define SCREENGEO_H
 
 #include "Compiler.h"
+#include <type_traits>
 
 #define SCREEN_GEOMETRY_INVALID  0
 

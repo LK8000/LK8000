@@ -438,6 +438,8 @@ add_library( LK8000 SHARED
     Common/Source/Draw/Multimaps/TopView.cpp
     Common/Source/Draw/Multimaps/DrawVisualGlide.cpp
 
+    Common/Source/Draw/BottomBar/BottomBar.cpp
+
     Common/Source/Calc/AddSnailPoint.cpp
     Common/Source/Calc/AltitudeRequired.cpp
     Common/Source/Calc/Atmosphere.cpp

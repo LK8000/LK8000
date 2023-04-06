@@ -607,7 +607,6 @@ class MapWindow {
   static void DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawLook8000(LKSurface& Surface, const RECT& rc);
   static void DrawTextOrBitmap(LKSurface& Surface, const TCHAR* wText, int x, int y, const bool lwmode, const short align, const LKColor& rgb_text, bool invertable, SIZE txtSize, DrawBmp_t bmp);
-  static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawMapSpace(LKSurface& Surface, const RECT& rc);
   static void DrawNearest(LKSurface& Surface, const RECT& rc);
   static void DrawAspNearest(LKSurface& Surface, const RECT& rc);
@@ -832,6 +831,12 @@ private:
   static void SaturateLabelDeclutter();
  //----------------------
 
+private:
+
+  static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
+  static void ResetBottomBarDrawer();
+
+public:
 
   static bool RenderTimeAvailable();
   static bool TargetMoved(double &longitude, double &latitude);

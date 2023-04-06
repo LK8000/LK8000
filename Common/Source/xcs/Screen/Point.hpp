@@ -55,4 +55,17 @@ OverlapsRect(const PixelRect &a, const PixelRect &b)
     a.top <= b.bottom && b.top <= a.bottom;
 }
 
+inline bool 
+operator==(const PixelRect &a, const PixelRect &b) {
+  return a.left == b.left
+      && a.right == b.right
+      && a.top == b.top
+      && a.bottom == b.bottom;
+}
+
+inline bool
+operator!=(const PixelRect &a, const PixelRect &b) {
+  return !(a == b);
+}
+
 #endif
