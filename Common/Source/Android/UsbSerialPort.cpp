@@ -6,12 +6,12 @@
 #include "Android/PortBridge.hpp"
 #include "Android/UsbSerialHelper.h"
 
-bool UsbSerialPort::CreateBridge() {
+PortBridge* UsbSerialPort::CreateBridge() {
 
   JNIEnv *env = Java::GetEnv();
   if (env && UsbSerialHelper::isEnabled(env)) {
-    bridge = UsbSerialHelper::connectDevice(Java::GetEnv(), GetPortName(), _baud);
+    return UsbSerialHelper::connectDevice(env, GetPortName(), _baud);
   }
 
-  return (bridge);
+  return nullptr;
 }

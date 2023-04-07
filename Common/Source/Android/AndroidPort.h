@@ -46,8 +46,7 @@ public:
     size_t Read(void *szString, size_t size) override;
 
 protected:
-
-    virtual bool CreateBridge() = 0;
+    virtual PortBridge* CreateBridge() = 0;
 
     unsigned RxThread() override;
 

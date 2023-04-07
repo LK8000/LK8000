@@ -12,9 +12,6 @@
 #include "Main.hpp"
 #include "Android/IOIOHelper.hpp"
 
-bool IOIOUartPort::CreateBridge() {
-
-    bridge = ioio_helper->openUart(Java::GetEnv(), _ID, _baud);
-
-    return (bridge);
+PortBridge* IOIOUartPort::CreateBridge() {
+    return ioio_helper->openUart(Java::GetEnv(), _ID, _baud);
 }

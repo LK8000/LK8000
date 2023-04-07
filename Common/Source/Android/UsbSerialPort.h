@@ -16,9 +16,9 @@ class UsbSerialPort  : public AndroidPort {
 public:
   UsbSerialPort(int idx, const char* szName, unsigned baud, BitIndex_t BitSize) : AndroidPort(idx, szName), _baud(baud), _bit(BitSize) { }
 
-  bool CreateBridge() override;
-
 protected:
+  PortBridge* CreateBridge() override;
+
   const unsigned _baud;
   BitIndex_t _bit;
 };

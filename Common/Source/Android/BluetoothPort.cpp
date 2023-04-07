@@ -13,26 +13,26 @@
 #include "OS/Sleep.h"
 #include "functional"
 
-bool BluetoothPort::CreateBridge() {
+PortBridge* BluetoothPort::CreateBridge() {
     JNIEnv *env = Java::GetEnv();
     if (env && BluetoothHelper::isEnabled(env)) {
-        bridge = BluetoothHelper::connect(env, GetPortName());
+        return BluetoothHelper::connect(env, GetPortName());
     }
-    return (bridge);
+    return nullptr;
 }
 
-bool BleHM10Port::CreateBridge() {
+PortBridge* BleHM10Port::CreateBridge() {
     JNIEnv *env = Java::GetEnv();
     if (env && BluetoothHelper::isEnabled(env)) {
-        bridge = BluetoothHelper::connectHM10(env, GetPortName());
+        return BluetoothHelper::connectHM10(env, GetPortName());
     }
-    return (bridge);
+    return nullptr;
 }
 
-bool BluetoothServerPort::CreateBridge() {
+PortBridge* BluetoothServerPort::CreateBridge() {
     JNIEnv *env = Java::GetEnv();
     if (env && BluetoothHelper::isEnabled(env)) {
-        bridge = BluetoothHelper::createServer(env);
+        return BluetoothHelper::createServer(env);
     }
-    return (bridge);
+    return nullptr;
 }

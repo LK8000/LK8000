@@ -23,9 +23,9 @@ AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName) {
 bool AndroidPort::Initialize() {
 
     try {
-        JNIEnv *env = Java::GetEnv();
-        if (CreateBridge()) {
-            assert(bridge);
+        bridge = CreateBridge();
+        if (bridge) {
+            JNIEnv *env = Java::GetEnv();
             bridge->setInputListener(env, this);
             bridge->setListener(env, this);
 

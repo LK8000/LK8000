@@ -12,6 +12,7 @@
 
 
 #include "AndroidPort.h"
+class PortBridge;
 
 class IOIOUartPort : public AndroidPort {
 public:
@@ -22,9 +23,9 @@ public:
     {
     }
 
-    bool CreateBridge() override;
-
 protected:
+    PortBridge* CreateBridge() override;
+
     const unsigned _ID;
     const unsigned _baud;
 };

@@ -22,23 +22,26 @@ class BluetoothPort : public AndroidPort {
 public:
     BluetoothPort(int idx, const tstring& sName) : AndroidPort(idx, sName) { }
 
-    bool CreateBridge() override;
+protected:
+    PortBridge* CreateBridge() override;
 };
 
 class BleHM10Port : public AndroidPort {
 public:
     BleHM10Port(int idx, const tstring& sName) : AndroidPort(idx, sName) { }
 
-    bool CreateBridge() override;
+protected:
+    PortBridge* CreateBridge() override;
 };
 
 class BluetoothServerPort : public AndroidPort {
 public:
     BluetoothServerPort(int idx, const tstring& sName) : AndroidPort(idx, sName) { }
 
-    bool CreateBridge() override;
+protected:
+    PortBridge* CreateBridge() override;
 };
 
 
 
-#endif //ANDROID_STUDIO_BLUETOOTHPORT_H
+#endif //ANDROID_BLUETOOTHPORT_H
