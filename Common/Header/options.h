@@ -40,10 +40,6 @@
 
 #endif
 
-#ifdef PNA
-#define NOLINETO
-#endif
-
 #ifdef HAVE_GLES
  #define NO_DASH_LINES
 #endif
@@ -108,10 +104,6 @@
 
 // #define LKCOMPETITION	1	// Will disable TRI
 
-// Activate FastZoom and QUICKDRAW conditions, for fast paint of map the first time after zoom request
-// In v5 this is practically unused. Should be removed asap.
-#define USEBIGZOOM	1
-
 // Gyroscope based AHRS in TRI function - EXPERIMENTAL
 #define USE_AHRS
 
@@ -120,13 +112,8 @@
 // remove question for last turnpoint is good idea, but don't work
 // Usability of task definition needed to be refactoring before remove that.
 
-#ifdef  UNDER_CE
 #define UTF8PICTORIALS  false
 #define  FLARM_PICTO_THREADSAFE
-#else
-#define  UTF8PICTORIALS  false
-#define  FLARM_PICTO_THREADSAFE
-#endif
 
 #define OWN_POS_MS
 #define ORACLE_MS
@@ -161,9 +148,6 @@
 //  #define TEAM_CODE_MS		// button to trigger team code
 //  #define OWN_POS_MS		// button to trigger basic settings
 //  #define ORACLE_MS		// button to trigger oracle
-
-// do not add screen points if closer than 5pix to the previous
-//#define LKASP_REMOVE_NEAR_POINTS		1
 
 // Modify best cruise track calculation to assume goal arrival
 // altitude of safety altitude (not current flight altitude).
