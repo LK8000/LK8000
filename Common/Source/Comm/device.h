@@ -9,6 +9,7 @@
 #include <vector>
 #include "Util/tstring.hpp"
 #include "utils/stl_utils.h"
+#include "Comm/wait_ack.h"
 
 #define	NUMDEV		 6
 
@@ -126,6 +127,20 @@ struct DeviceDescriptor_t {
   NMEAParser nmeaParser;
 //  DeviceIO PortIO[NUMDEV];
   void InitStruct(int i);
+
+
+  wait_ack_shared_ptr make_wait_ack(const char* str) {
+    auto wait_ack = make_wait_ack_shared(str);
+    wait_ack_weak = wait_ack;
+    return wait_ack;
+  }
+
+  wait_ack_shared_ptr lock_wait_ack() {
+    return wait_ack_weak.lock();
+  }
+
+ private:
+  wait_ack_weak_ptr wait_ack_weak;
 };
 
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;

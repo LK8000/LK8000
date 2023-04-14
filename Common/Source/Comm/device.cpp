@@ -21,8 +21,11 @@
 #include "Radio.h"
 #include "Devices/DeviceRegister.h"
 #include "utils/printf.h"
+#include "utils/stringext.h"
 #include "LKInterface.h"
 #include "Baro.h"
+#include "Comm/wait_ack.h"
+
 #ifdef __linux__
   #include <dirent.h>
   #include <unistd.h>
@@ -96,7 +99,6 @@ BOOL for_all_device(Callable&& func, Args&&... args) {
 }
 
 static BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl);
-static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text);
 
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
@@ -121,46 +123,7 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
 }
 
-
-BOOL ExpectFlarmString(PDeviceDescriptor_t d, const TCHAR *token){
-#define TIMEOUT 500
 #define TMP_STR_SIZE 512
-#define FLARMDECL_DEBUG 1
-  unsigned int i=0;
-  int ch;
-  TCHAR rec[TMP_STR_SIZE] =_T("");
-  unsigned int timeout=0;
-
-  if (!d->Com)
-    return FALSE;
-  i=0;rec[i] =0;
-
-  while ((ch = d->Com->GetChar()) != 10 )
-  {
-    if(ch != EOF)
-    {
-      if(ch == '$') i=0;
-
-      rec[i++] =(TCHAR)ch;
-      rec[i] =0;
-
-      if (_tcsnicmp(rec,token,   _tcslen(token)-2)==0)
-      {
-        if(FLARMDECL_DEBUG) StartupStore(_T("... Flarm Declare received: %s %s"),rec, NEWLINE);
-        return(TRUE);
-      }
-    }
-    else
-      Poco::Thread::sleep(1);
-
-    if( timeout++ >= TIMEOUT)
-    {
-      if(FLARMDECL_DEBUG) StartupStore(_T("... Flarm Declare   timeout while receive: %s: %s %s "),token,rec, NEWLINE);
-      return(FALSE);
-    }
-  }
-  return(FALSE);
-}
 
 // This device is not available if Disabled
 // Index 0 or 1 
@@ -915,19 +878,25 @@ BOOL devPutTarget(const WAYPOINT& wpt) {
   return for_all_device(&DeviceDescriptor_t::PutTarget, wpt);
 }
 
-static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
-{
-  BYTE chk;
-  int i, len = _tcslen(text);
+namespace {
 
-  LKASSERT(text!=NULL);
-  LKASSERT(dst!=NULL);
-
-  for (chk = i = 0; i < len; i++)
-    chk ^= (BYTE)text[i];
-
-  lk::snprintf(dst, sz, TEXT("$%s*%02X\r\n"), text, chk);
+template<typename CharT>
+uint8_t nmea_crc(const CharT *text) {
+  uint8_t crc = 0U;
+  for (const CharT* c = text; *c; ++c) {
+    crc ^= static_cast<uint8_t>(*c);
+  }
+  return crc;
 }
+
+template<typename CharT, size_t size>
+void devFormatNMEAString(CharT (&dst)[size], const char *text) {
+  assert(text);
+  unsigned crc = nmea_crc(text);
+  lk::snprintf(dst, "$%s*%02X\r\n", text, crc);
+}
+
+} // namespace
 
 //
 // NOTICE V5: this function is used only by LXMiniMap device driver .
@@ -937,8 +906,8 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 {
   ScopeLock Lock(CritSec_Comm);
   if (d && !d->Disabled && d->Com) {
-    TCHAR tmp[512];
-    devFormatNMEAString(tmp, 512, text);
+    char tmp[512];
+    devFormatNMEAString(tmp, to_utf8(text).c_str());
 
     devDirectLink(d, true);
     d->Com->WriteString(tmp);
@@ -1032,126 +1001,110 @@ BOOL devPutFreqStandby(unsigned khz, const TCHAR* StationName) {
   return false;
 }
 
+namespace {
 
-static BOOL 
-FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
+template <size_t size>
+void flarm_command(char (&dst)[size], char command, const char* key, const char* value) {
+  size_t out_size = lk::snprintf(dst, "$PFLAC,%c,%s,%s", command, key, value);
+  if (out_size < size) {
+    unsigned crc = nmea_crc(dst + 1);
+    lk::snprintf(&dst[out_size], size - out_size, "*%02X\r\n", crc);
+  }
+}
 
-  TCHAR tmp[TMP_STR_SIZE];
-  TCHAR tmp2[TMP_STR_SIZE];
+BOOL FlarmDeclareSetGet(PDeviceDescriptor_t d, const char* key, const TCHAR* value) {
+  if (!d->Com) {
+    return FALSE;
+  }
 
-  _sntprintf(tmp, TMP_STR_SIZE, TEXT("%s"), Buffer);
-  devFormatNMEAString(tmp2, TMP_STR_SIZE, tmp );
-  if(FLARMDECL_DEBUG) StartupStore(_T("... ===================== %s"), NEWLINE);
-  if(FLARMDECL_DEBUG) StartupStore(_T("... Flarm Declare     send: %s %s"),tmp2, NEWLINE);
+  char ascii_value[TMP_STR_SIZE];
+  to_usascii(value, ascii_value);
 
-  if (d->Com)
+  char tmp_s[TMP_STR_SIZE];
+  flarm_command(tmp_s, 'S', key, ascii_value);
+
+  char tmp_a[TMP_STR_SIZE];
+  flarm_command(tmp_a, 'A', key, ascii_value);
+
+  wait_ack_shared_ptr wait_ack = d->make_wait_ack(tmp_a);
+
+  TestLog(_T(". Flarm Decl: > %s"), to_tstring(tmp_s).c_str());
+
+  d->Com->WriteString(tmp_s);
+
+  bool success = false;
   {
-    d->Com->WriteString(tmp2);
-  }
- 
-  tmp[6]= _T('A');
-  devFormatNMEAString(tmp2, TMP_STR_SIZE, tmp );
-  if(FLARMDECL_DEBUG)StartupStore(_T("... Flarm Declare expected: %s %s"),tmp2, NEWLINE);
-  for(int i=0; i < 20; i++) /* try to get expected answer max 5 times*/
-  {
-    if (ExpectFlarmString(d, tmp2)) 
-      return true;
+    ScopeUnlock unlock(CritSec_Comm);  // required to unlock RxThread
+    success = wait_ack->wait(20000);
   }
 
-  return false;
+  TestLog(_T(". Flarm Decl: < %s"), success ? to_tstring(tmp_a).c_str() : _T("failed"));
+  return success;
+}
 
-};
+}  // namespace
 
-
-BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl)
-{
-  BOOL result = TRUE;
-#define BUFF_LEN 512
-  TCHAR Buffer[BUFF_LEN];
- for(int i=0; i < 3; i++)
- {
-  d->Com->StopRxThread();
-  d->Com->SetRxTimeout(100);                     // set RX timeout to 50[ms]
-
-
-  _stprintf(Buffer,TEXT("PFLAC,S,PILOT,%s"),decl->PilotName);
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-
-  _stprintf(Buffer,TEXT("PFLAC,S,GLIDERID,%s"),decl->AircraftRego);
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-
-  _stprintf(Buffer,TEXT("PFLAC,S,GLIDERTYPE,%s"),decl->AircraftType);
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-  
-  _stprintf(Buffer,TEXT("PFLAC,S,COMPID,%s"),decl->CompetitionID);
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-  
-  _stprintf(Buffer,TEXT("PFLAC,S,COMPCLASS,%s"),decl->CompetitionClass);
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-  
-  _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Task"));
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TAKEOFF"));
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-
-  if(result == TRUE)
-    for (int j = 0; j < decl->num_waypoints; j++) {
-      int DegLat, DegLon;
-      double MinLat, MinLon;
-      char NoS, EoW;
-
-      DegLat = (int)decl->waypoint[j]->Latitude;
-      MinLat = decl->waypoint[j]->Latitude - DegLat;
-      NoS = 'N';
-      if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
-      {
-	    NoS = 'S';
-	    DegLat *= -1; MinLat *= -1;
-      }
-      MinLat *= 60;
-      MinLat *= 1000;
-    
-      DegLon = (int)decl->waypoint[j]->Longitude;
-      MinLon = decl->waypoint[j]->Longitude - DegLon;
-      EoW = 'E';
-      if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
-      {
-	    EoW = 'W';
-	    DegLon *= -1; MinLon *= -1;
-      }
-      MinLon *=60;
-      MinLon *= 1000;
-
-      TCHAR shortname[12];
-      _stprintf(shortname,_T("P%02d"),j);
-      _stprintf(Buffer,
-	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
-	      DegLat, MinLat, NoS, DegLon, MinLon, EoW, 
-	      shortname);
-      if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t* decl) {
+  if (!FlarmDeclareSetGet(d, "PILOT", decl->PilotName)) {
+    return FALSE;
   }
 
-  _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LANDING"));
-  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if (!FlarmDeclareSetGet(d, "GLIDERID", decl->AircraftRego)) {
+    return FALSE;
+  }
+
+  if (!FlarmDeclareSetGet(d, "GLIDERTYPE", decl->AircraftType)) {
+    return FALSE;
+  }
+
+  if (!FlarmDeclareSetGet(d, "COMPID", decl->CompetitionID)) {
+    return FALSE;
+  }
+
+  if (!FlarmDeclareSetGet(d, "COMPCLASS", decl->CompetitionClass)) {
+    return FALSE;
+  }
+
+  if (!FlarmDeclareSetGet(d, "NEWTASK", _T("Task"))) {
+    return FALSE;
+  }
+
+  if (!FlarmDeclareSetGet(d, "ADDWP", _T("0000000N,00000000E,TAKEOFF"))) {
+    return FALSE;
+  }
+
+  for (int j = 0; j < decl->num_waypoints; j++) {
+    auto& point = *(decl->waypoint[j]);
+
+    char NoS = (point.Latitude > 0) ? 'N' : 'S';
+    double latitude = std::abs(point.Latitude);
+    int DegLat = latitude;
+    int MinLat = (latitude - DegLat) * 60. * 10000.;
+
+    char EoW = (point.Longitude > 0) ? 'E' : 'W';
+    double longitude = std::abs(point.Longitude);
+    int DegLon = longitude;
+    int MinLon = (longitude - DegLon) * 60. * 10000.;
+
+    TCHAR value[32];
+    lk::snprintf(value, _T("%02d%05d%c,%03d%05d%c,P%02d"), DegLat, MinLat, NoS, DegLon, MinLon, EoW, j);
+    if (!FlarmDeclareSetGet(d, "ADDWP", value)) {
+      return FALSE;
+    }
+  }
+
+  if (!FlarmDeclareSetGet(d, "ADDWP", _T("0000000N,00000000E,LANDING"))) {
+    return FALSE;
+  }
 
   // Reboot flarm to make declaration active, according to specs
+  Poco::Thread::sleep(100);
+
+  d->Com->WriteString("$PFLAR,0*55\r\n");
 
   Poco::Thread::sleep(100);
 
-  devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLAR,0") );
-  if(result == TRUE)
-    d->Com->WriteString(Buffer);
-  Poco::Thread::sleep(100);
-
-
-  d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
-  d->Com->StartRxThread();                       // restart RX thread
-  if(result == TRUE)
-    return result;
-  Poco::Thread::sleep(100);
-}
- return false; // no success
+  return TRUE;  // success
 }
 
 BOOL IsDirInput(DataBiIoDir IODir) {

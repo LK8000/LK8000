@@ -211,6 +211,12 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 #endif
 
 BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, TCHAR* String, NMEA_INFO* pGPS) {
+
+  auto wait_ack = d.lock_wait_ack();
+  if (wait_ack && wait_ack->check(String)) {
+    return TRUE;
+  }
+
   TCHAR ctemp[MAX_NMEA_LEN];
   TCHAR* params[MAX_NMEA_PARAMS];
 

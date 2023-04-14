@@ -15,8 +15,7 @@
 #include "resource.h"
 #include "LKInterface.h"
 #include "McReady.h"
-#include "Thread/Cond.hpp"
-#include "Thread/Mutex.hpp"
+#include "Comm/wait_ack.h"
 
 #define MAX_VAL_STR_LEN    60
 
@@ -54,42 +53,6 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
   d->Config       = Config;
   d->PutTarget    = PutTarget;
 } // Install()
-
-namespace {
-
-  class wait_ack final {
-  public:
-    wait_ack(const TCHAR* str) : wait_str(str) {}
-
-    bool check(const TCHAR* str) {
-      bool signal = WithLock(mutex, [&]() {
-        if (wait_str == str) {
-          ready = true;
-        }
-        return ready;
-      });
-      if (signal) {
-        condition.Signal();
-      }
-      return signal;
-    }
-
-    bool wait(unsigned timeout_ms) {
-      ScopeLock lock(mutex);
-      condition.Wait(mutex, timeout_ms);
-      return std::exchange(ready, false);
-    }
-
-  private:
-    tstring_view wait_str;
-
-    Mutex mutex;
-    Cond condition;
-    bool ready = false;
-  };
-
-  std::weak_ptr<wait_ack> wait_ack_weak_ptr;
-}
 
 //static 
 BOOL DevRCFenix::Open(PDeviceDescriptor_t d) {
@@ -151,11 +114,11 @@ extern BOOL LX_EOS_ERA_bValid;
 //static
 BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
 
-  auto ack_ptr = wait_ack_weak_ptr.lock();
-  if (ack_ptr && ack_ptr->check(sentence)) {
+  auto wait_ack = d->lock_wait_ack();
+  if (wait_ack && wait_ack->check(sentence)) {
     return TRUE;
   }
- 
+
   if (!info) {
     return FALSE;
   }
@@ -371,10 +334,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
 
   bool success  = false;
 
-  std::shared_ptr<wait_ack> ptr = std::make_shared<wait_ack>(_T("$RCDT,ANS,OK*59\n"));
-  
-  assert(wait_ack_weak_ptr.expired());
-  wait_ack_weak_ptr = ptr;
+  wait_ack_shared_ptr wait_ack = d->make_wait_ack("$RCDT,ANS,OK*59\n");
 
   for (int ii = 0; ii < i; ii++) {
 
@@ -383,7 +343,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     success =  SendNmea(d, DeclStrings[ii]);
     if (success) {
       ScopeUnlock unlock(CritSec_Comm); // required to unlock RxThread
-      success = ptr->wait(20000);
+      success = wait_ack->wait(20000);
     }
 
     TestLog(_T(". RC Fenix Decl: < %s"), success ? _T("$RCDT,ANS,OK*59"): _T("failed"));
@@ -393,7 +353,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     }
   }
 
-  ptr = nullptr;
+  wait_ack = nullptr;
 
   Declare(false);
   ShowProgress(decl_disable);
