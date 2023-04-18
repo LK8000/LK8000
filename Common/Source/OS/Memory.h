@@ -13,11 +13,5 @@ size_t FindFreeSpace(const TCHAR *path);
 
 void MyCompactHeaps();
 
-#ifdef WIN32
-// Unused
-void MemCheckPoint();
-void MemLeakCheck();
-#endif
-
 #endif	/* MEMORY_H */
 

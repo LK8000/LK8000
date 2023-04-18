@@ -48,37 +48,6 @@ unsigned long CheckMaxHeapBlock(void) {
     return(0);
 }
 
-
-#if defined(UNDER_CE) && !defined(NDEBUG)
-_CrtMemState memstate_s1;
-#endif
-
-void MemCheckPoint()
-{
-#if defined(UNDER_CE) && !defined(NDEBUG)
-  _CrtMemCheckpoint( &memstate_s1 );
-#endif
-}
-
-
-void MemLeakCheck() {
-#if defined(UNDER_CE) && !defined(NDEBUG)
-
-  _CrtMemState memstate_s2, memstate_s3;
-
-   // Store a 2nd memory checkpoint in s2
-   _CrtMemCheckpoint( &memstate_s2 );
-
-   if ( _CrtMemDifference( &memstate_s3, &memstate_s1, &memstate_s2 ) ) {
-     _CrtMemDumpStatistics( &memstate_s3 );
-     _CrtMemDumpAllObjectsSince(&memstate_s1);
-   }
-
-  _CrtCheckMemory();
-#endif
-}
-
-
 // This is necessary to be called periodically to get rid of
 // memory defragmentation, since on pocket pc platforms there is no
 // automatic defragmentation.
