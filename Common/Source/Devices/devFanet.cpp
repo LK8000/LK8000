@@ -342,7 +342,7 @@ BOOL FanetParseType1Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
     traffic.ClimbRate = climb2 / 10.0;
   }
 
-  traffic.Bearing = AngleLimit360(msg[10] * 360. / 255.);
+  traffic.TrackBearing = AngleLimit360(msg[10] * 360. / 255.);
 
   if (!traffic.Name[0] || traffic.UpdateNameFlag) {
     UpdateName(traffic);
@@ -711,7 +711,7 @@ BOOL HeartBeat(DeviceDescriptor_t *d) {
     ss << GPS_INFO.Longitude << ",";
     ss << GPS_INFO.Altitude << ",";
     ss << GPS_INFO.Speed * TOKPH << ",";
-    ss << GPS_INFO.TrackBearing << ",";
+    ss << CALCULATED_INFO.Heading << ",";
     ss << GPS_INFO.Vario << ",";
     ss << GPS_INFO.Year - 1900 << ",";
     ss << GPS_INFO.Month << ",";
