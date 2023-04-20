@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "NavFunctions.h"
-#include "Util/UTF8.hpp"
+#include "utils/printf.h"
 
 /*
  * Used by Alternates and BestAlternate
@@ -17,21 +17,24 @@
  */
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
   ScopeLock lock(CritSec_TaskData);
-   
+
+  if (AltWaypoint == RESWP_EXT_TARGET) {
+    if (WayPointList[RESWP_EXT_TARGET].Altitude == RESWP_INVALIDNUMBER) {
+      // set EXT altitude from sterrain if not set by external device
+      WaypointAltitudeFromTerrain(&WayPointList[RESWP_EXT_TARGET]);
+    }
+  }
+
   // If flying an AAT and working on the RESWP_OPTIMIZED waypoint, then use
   // this "optimized" waypoint to store data for the AAT virtual waypoint.
 
-  if ((AltWaypoint == RESWP_OPTIMIZED) && (gTaskType==TSK_AAT)) {
-    WayPointList[RESWP_OPTIMIZED].Latitude  = Task[ActiveTaskPoint].AATTargetLat;
+  if ((AltWaypoint == RESWP_OPTIMIZED) && (gTaskType == TSK_AAT)) {
+    WayPointList[RESWP_OPTIMIZED].Latitude = Task[ActiveTaskPoint].AATTargetLat;
     WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveTaskPoint].AATTargetLon;
-    WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[Task[ActiveTaskPoint].Index].Altitude;
     WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
-    int ret = _sntprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"),WayPointList[Task[ActiveTaskPoint].Index].Name);
-    if(ret >= (NAME_SIZE - 1)) {
-#ifndef UNICODE
-      CropIncompleteUTF8(WayPointList[RESWP_OPTIMIZED].Name);
-#endif
-    }
+    int wp_idx = Task[ActiveTaskPoint].Index;
+    WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[wp_idx].Altitude;
+    lk::snprintf(WayPointList[RESWP_OPTIMIZED].Name, NAME_SIZE, _T("!%s"), WayPointList[wp_idx].Name);
   }
 
   // handle virtual wps as alternates

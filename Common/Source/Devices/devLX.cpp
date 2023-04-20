@@ -295,7 +295,7 @@ bool DevLX::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
   	lk::snprintf(WayPointList[RESWP_EXT_TARGET].Name, NAME_SIZE, TEXT("^%s"), tname.c_str());
     WayPointList[RESWP_EXT_TARGET].Latitude = Latitude;
     WayPointList[RESWP_EXT_TARGET].Longitude = Longitude;
-    WayPointList[RESWP_EXT_TARGET].Altitude = 0;  // GPRMB has no elevation information
+    WayPointList[RESWP_EXT_TARGET].Altitude = RESWP_INVALIDNUMBER;  // GPRMB has no elevation information
     Alternate2 = RESWP_EXT_TARGET;
   }
   UnlockTaskData();

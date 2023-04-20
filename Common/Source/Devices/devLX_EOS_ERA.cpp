@@ -1762,7 +1762,9 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
 
   ParToDouble(sentence, 4, &fLat);   // latitude
   ParToDouble(sentence, 5, &fLon);   // longitude
-  ParToDouble(sentence, 6, &fAlt);   // altitude (elevation)
+  if (!ParToDouble(sentence, 6, &fAlt)) {   // altitude (elevation)
+    fAlt = RESWP_INVALIDNUMBER;
+  }
 //ParToDouble(sentence, 7, &fTmp);   // distance (not needed)
 //ParToDouble(sentence, 8, &fTmp);   // bearing  (not needed)
   ParToDouble(sentence, 9, &fFlags); // landable?

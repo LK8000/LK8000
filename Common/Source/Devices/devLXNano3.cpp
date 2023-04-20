@@ -2180,8 +2180,10 @@ BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_I
   NMEAParser::ExtractParameter(sentence,szTmp,0);
   tstring tname = FixCharset(szTmp);
 
-  double Altitude = 0;
-  ParToDouble(sentence, 5, &Altitude);
+  double Altitude = RESWP_INVALIDNUMBER;
+  if (!ParToDouble(sentence, 5, &Altitude)) {
+    Altitude = RESWP_INVALIDNUMBER;
+  }
 
   LockTaskData();
   {
