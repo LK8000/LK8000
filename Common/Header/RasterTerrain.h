@@ -1,10 +1,18 @@
+/*
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id$
+ */
+
 #ifndef RASTERTERRAIN_H
 #define RASTERTERRAIN_H
 
+#include <memory>
 #include "Library/cpp-mmf/memory_mapped_file.hpp"
 
-typedef struct _TERRAIN_INFO
-{
+struct TERRAIN_INFO {
   double Left;
   double Right;
   double Top;
@@ -12,7 +20,7 @@ typedef struct _TERRAIN_INFO
   double StepSize;
   uint32_t Rows;
   uint32_t Columns;
-} TERRAIN_INFO;
+};
 
 
 class RasterMap final {
@@ -171,9 +179,10 @@ public:
   static void CloseTerrain();
   static bool isTerrainLoaded() {
     ScopeLock lock(mutex);
-    return TerrainMap;
+    return static_cast<bool>(TerrainMap);
   }
-  static RasterMap* TerrainMap;
+
+  static std::unique_ptr<RasterMap> TerrainMap;
   static Mutex mutex;
 
 public:

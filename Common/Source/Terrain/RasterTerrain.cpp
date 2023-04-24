@@ -144,10 +144,5 @@ bool RasterTerrain::WaypointIsInTerrainRange(double latitude, double longitude) 
 bool RasterTerrain::GetTerrainCenter(double *latitude, double *longitude) {
   ScopeLock lock(mutex);
 
-  if (TerrainMap) {
-    TerrainMap->GetMapCenter(latitude, longitude);
-    return true;
-  } else {
-    return false;
-  }
+  return TerrainMap && TerrainMap->GetMapCenter(latitude, longitude);
 }

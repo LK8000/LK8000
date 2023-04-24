@@ -312,7 +312,7 @@ public:
 
         ScopeLock Lock(RasterTerrain::mutex);
 
-        RasterMap* DisplayMap = RasterTerrain::TerrainMap;
+        RasterMap* DisplayMap = RasterTerrain::TerrainMap.get();
         assert(DisplayMap && DisplayMap->isMapLoaded());
         if(!DisplayMap || !DisplayMap->isMapLoaded()) {
             return;

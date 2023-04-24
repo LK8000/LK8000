@@ -65,7 +65,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
      * after allocate buffer we don't load terrain.
      */
     if( CheckFreeRam() < (5*1024*1024) ) {
-       pTerrainMem.reset();
+       pTerrainMem = nullptr;
     }
   }
   
@@ -80,7 +80,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
       if(read_size == nsize) {
           TerrainMem = pTerrainMem.get();
       } else {
-          pTerrainMem.reset();
+          pTerrainMem = nullptr;
       }
     }
   } else {
@@ -101,6 +101,7 @@ bool RasterMap::Open(const TCHAR* zfilename) {
         }
       }
       if (!TerrainMem) {
+        StartupStore(_T("... Terrain file size is %u"), static_cast<unsigned>(read_size));
         TerrainFile.close();
       }
     }
@@ -124,8 +125,7 @@ void RasterMap::Close(void) {
   TerrainInfo.Rows = 0;
 
   TerrainMem = nullptr;
-
-  pTerrainMem.reset();
+  pTerrainMem = nullptr;
 
 #ifndef UNDER_CE  
   if(TerrainFile.is_open()) {
