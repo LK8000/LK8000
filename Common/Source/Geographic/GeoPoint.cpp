@@ -27,3 +27,9 @@ double GeoPoint::Distance(const GeoPoint& point) const {
   DistanceBearing(latitude, longitude, point.latitude, point.longitude, &d, nullptr );
   return d;
 }
+
+double GeoPoint::Bearing(const GeoPoint& point) const {
+  double d;
+  DistanceBearing(latitude, longitude, point.latitude, point.longitude, nullptr, &d);
+  return d;
+}

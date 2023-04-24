@@ -26,6 +26,7 @@ struct GeoPoint {
     void Reverse(const GeoPoint& point, double& bearing, double& distance) const;
 
     double Distance(const GeoPoint& point) const;
+    double Bearing(const GeoPoint& point) const;
 
     bool operator== (const GeoPoint &point) const {
         return (longitude == point.longitude && latitude == point.latitude);
