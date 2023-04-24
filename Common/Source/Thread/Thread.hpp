@@ -36,7 +36,7 @@ public:
 protected:
     virtual void Run() = 0;
 
-    void run() {
+    void run() override {
         Run();
     }
 
