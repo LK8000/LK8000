@@ -23,6 +23,10 @@
 #include <zzip/__mmap.h>
 #include <zzip/__debug.h>
 
+#ifdef __BIONIC__
+#include <Android/fdsan.h>
+#endif
+
 #define __sizeof(X) ((zzip_ssize_t)(sizeof(X)))
 
 #ifndef ZZIP_EASY
@@ -670,8 +674,13 @@ zzip_dir_free(ZZIP_DIR * dir)
     if (dir->refcount)
         return (dir->refcount); /* still open files attached */
 
-    if (dir->fd >= 0)
+    if (dir->fd >= 0) {
+#ifdef __BIONIC__
+        fdsan_close(dir->fd, fdsan_owner_tag(&(dir->fd)));
+#else
         dir->io->fd.close(dir->fd);
+#endif
+    }
     if (dir->hdr0)
         free(dir->hdr0);
     if (dir->cache.fp)
@@ -728,6 +737,9 @@ zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errcode_p,
         { rv = ZZIP_OUTOFMEM; goto error; }
 
     dir->fd = fd;
+#ifdef __BIONIC__
+    fdsan_exchange_owner(dir->fd, 0, fdsan_owner_tag(&dir->fd));
+#endif
     if ((rv = __zzip_dir_parse(dir)))
         goto error;
 

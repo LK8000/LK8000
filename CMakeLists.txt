@@ -748,6 +748,9 @@ add_library( LK8000 SHARED
     Common/Source/Devices/Volkslogger/vlconv.cpp
     Common/Source/Devices/Volkslogger/vlutils.cpp
 
+    Common/Source/Android/fdsan.h
+    Common/Source/Android/fdsan.c
+
     Common/Source/Library/zzip/err.c
     Common/Source/Library/zzip/fetch.c
     Common/Source/Library/zzip/file.c

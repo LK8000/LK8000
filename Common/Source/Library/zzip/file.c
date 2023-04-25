@@ -21,6 +21,10 @@
 #include <zzip/zzip32.h>
 #include <zzip/__debug.h>
 
+#ifdef __BIONIC__
+#include <Android/fdsan.h>
+#endif
+
 #if 0
 # if defined ZZIP_HAVE_IO_H
 # include <io.h>                /* tell */
@@ -346,8 +350,15 @@ zzip_fclose(ZZIP_FILE * fp)
 {
     if (! fp)
         return 0;
-    if (! fp->dir)               /* stat fd */
-        { int r = fp->io->fd.close(fp->fd); free(fp); return r; }
+    if (! fp->dir) {              /* stat fd */
+#ifdef __BIONIC__
+        int r = fdsan_close(fp->fd, fdsan_owner_tag(&(fp->fd)));
+#else
+        int r = fp->io->fd.close(fp->fd);
+#endif
+        free(fp); 
+        return r; 
+    }
     else
         return zzip_file_close(fp);
 }
@@ -806,10 +817,15 @@ zzip_open_shared_io(ZZIP_FILE * stream,
         {
             ZZIP_FILE *fp = calloc(1, sizeof(ZZIP_FILE));
 
-            if (! fp)
-                { os->fd.close(fd); return 0; }  /* io->fd.close */
+            if (! fp) { 
+                os->fd.close(fd);
+                return 0;
+            }  /* io->fd.close */
 
             fp->fd = fd;
+#ifdef __BIONIC__
+            fdsan_exchange_owner(fp->fd, 0, fdsan_owner_tag(&(fp->fd)));
+#endif
             fp->io = os;
             return fp;
         }
@@ -873,8 +889,11 @@ zzip_open_shared_io(ZZIP_FILE * stream,
 
             /* found zip-file ....  now try to parse it */
             dir = zzip_dir_fdopen_ext_io(fd, &e, ext, io);
-            if (e)
-                { errno = zzip_errno(e); io->fd.close(fd); return 0; }
+            if (e) { 
+                errno = zzip_errno(e);
+                io->fd.close(fd); 
+                return 0; 
+            }
 
             /* (p - basename) is the lenghtof zzip_dir part of the filename */
             fp = zzip_file_open(dir, filename + (p - basename) + 1, o_modes);
