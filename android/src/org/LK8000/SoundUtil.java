@@ -90,7 +90,9 @@ public class SoundUtil {
                 soundPool = createSoundPoolCompat();
             }
 
-            soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f));
+            if (soundPool != null) {
+                soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f));
+            }
 
         } catch (Exception e) {
             Log.e(TAG, e.toString());
@@ -111,20 +113,17 @@ public class SoundUtil {
             try {
                 File soundDir = new File(context.getExternalFilesDir(null), soundsChild);
                 File f = new File(soundDir, name);
-                ParcelFileDescriptor fd = ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY);
-                if (fd != null) {
+                try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY)) {
                     soundId = soundPool.load(fd.getFileDescriptor(), 0, f.length(), 1);
-                    fd.close();
                     loadedSound.put(name, soundId);
                 }
-            } catch (Exception ignore) {
-            }
+                catch (Exception ignore) {}
+            } catch (Exception ignore) {}
 
             if (soundId == null) {
                 // load from asset...
-                try {
-                    AssetFileDescriptor descriptor = context.getAssets().openFd("sounds/" + name);
-                    soundId = soundPool.load(descriptor, 1);
+                try (AssetFileDescriptor fd = context.getAssets().openFd("sounds/" + name)) {
+                    soundId = soundPool.load(fd, 1);
                     loadedSound.put(name, soundId);
                 } catch (Exception e) {
                     Log.e(TAG, e.toString());
