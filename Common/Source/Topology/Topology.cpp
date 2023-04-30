@@ -158,7 +158,7 @@ Topology::Topology(const TCHAR* shpname, int field1) {
 
   field = field1;
 
-  // filename aleady points to _MAPS subdirectory!
+  // filename already points to _MAPS subdirectory!
   to_utf8(shpname, filename);
 
   Open();
