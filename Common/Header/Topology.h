@@ -9,7 +9,7 @@
 #ifndef TOPOLOGY_H
 #define TOPOLOGY_H
 
-#include "Poco/Thread.h"
+#include "Thread/Thread.hpp"
 #include "Topology/shapelib/mapserver.h"
 
 class ShapeSpecialRenderer;
@@ -139,7 +139,7 @@ class Topology final {
 /**
  * Thread class used by "Oracle" for find Topology Item nearest to current position.
  */
-class WhereAmI : public Poco::Runnable {
+class WhereAmI : public Thread {
 public:
     WhereAmI() : Thread("WhereAmI") {
         toracle[0] = _T('\0');
@@ -152,22 +152,19 @@ public:
         return toracle;
     }
 
-    void Start() {
+    bool Start() override {
         toracle[0] = _T('\0');
-        Thread.start(*this);
+        return Thread::Start();
     }
 
     bool IsDone() {
-        return !Thread.isRunning();
+        return !IsDefined();
     }
 
 protected:
-    void run();
+    void Run() override;
 
     TCHAR toracle[1000];
-
-    Poco::Thread Thread;
-
 };
 
 

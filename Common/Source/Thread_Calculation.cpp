@@ -45,10 +45,11 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
 // Give me a go/no-go
 static bool goCalculationThread = false;
 
-class CalculationThread : public Poco::Runnable {
+class CalculationThread : public Thread {
 public:
+    CalculationThread() : Thread("Calculation") {}
 
-    virtual void run() {
+    void Run() override {
         bool needcalculationsslow = false;
 
         // let's not create a deadlock here, setting the go after another race condition
@@ -149,26 +150,24 @@ public:
             ExternalDeviceSendTarget();
         }
     }
+
 private:
     NMEA_INFO tmpGPS;
     DERIVED_INFO tmpCALCULATED;
 };
 
-
-CalculationThread _CalculationThreadRun;
-Poco::Thread _CalculationThread("Calculation");
+CalculationThread _CalculationThread;
 
 // Since the calling function want to be sure that threads are created, they now flag a go status
 // and we save 500ms at startup.
 // At the end of thread creation, we expect goCalc and goInst flags are true
 void CreateCalculationThread() {
     // Create a read thread for performing calculations
-    _CalculationThread.start(_CalculationThreadRun);
-    _CalculationThread.setPriority(Poco::Thread::PRIO_NORMAL);
+    _CalculationThread.Start();
 
     while(!(goCalculationThread)) Poco::Thread::sleep(50);
 }
 
 void WaitThreadCalculation() {
-    _CalculationThread.join();
+    _CalculationThread.Join();
 }

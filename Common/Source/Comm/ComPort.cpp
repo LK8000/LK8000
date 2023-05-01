@@ -21,12 +21,8 @@
 #include "ComCheck.h"
 #include <sstream>
 
-ComPort::ComPort(int idx, const tstring& sName) : StopEvt(false), devIdx(idx), sPortName(sName) {
+ComPort::ComPort(int idx, const tstring& sName) : Thread("ComPort"), StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
-}
-
-ComPort::~ComPort() {
-    assert(!ReadThread.isRunning());
 }
 
 bool ComPort::Close() {
@@ -97,9 +93,9 @@ bool ComPort::StopRxThread() {
     DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), (unsigned)(GetPortIndex() + 1));
     CancelWaitEvent();
 
-    if (ReadThread.isRunning()) {
+    if (IsDefined()) {
         DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), (unsigned)(GetPortIndex() + 1));
-        ReadThread.join();
+        Join();
     }
     StopEvt.reset();
 
@@ -110,15 +106,10 @@ bool ComPort::StartRxThread() {
   try {
       StopEvt.reset();
 
-      std::ostringstream ss;
-      ss << "ComPort " << 'A' + GetPortIndex();
-      ReadThread.setName(ss.str());
-
       // Create a read thread for reading data from the communication port.
-      ReadThread.start(*this);
-      ReadThread.setPriority(Poco::Thread::PRIO_NORMAL); //THREAD_PRIORITY_ABOVE_NORMAL
+      Start();
 
-      if (!ReadThread.isRunning()) {
+      if (!IsDefined()) {
           // Could not create the read thread.
           StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread%s"),
                        (unsigned) (GetPortIndex() + 1), GetPortName(), NEWLINE);
@@ -140,7 +131,7 @@ bool ComPort::StartRxThread() {
   }
 }
 
-void ComPort::run() {
+void ComPort::Run() {
 
     StartupStore(_T(". ComPort %u ReadThread : started"), (unsigned)(GetPortIndex() + 1));
 

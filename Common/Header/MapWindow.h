@@ -28,8 +28,6 @@
 #include "ContestMgr.h"
 
 #ifndef ENABLE_OPENGL
-#include "Poco/ThreadTarget.h"
-#include "Poco/Thread.h"
 #include "Poco/Event.h"
 #endif
 #define SCALELISTSIZE  24
@@ -676,9 +674,10 @@ private:
 
 
 #ifndef ENABLE_OPENGL
-private:
+public:
   static void DrawThread ();
-  static Poco::ThreadTarget MapWindowThreadRun;
+
+private:
   static Poco::Event drawTriggerEvent;
 
   static LKBitmapSurface DrawSurface;

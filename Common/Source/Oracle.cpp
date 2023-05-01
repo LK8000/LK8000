@@ -103,14 +103,11 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 
 extern void ResetNearestTopology();
 
-void WhereAmI::run(void) {
+void WhereAmI::Run() {
+  TestLog(_T("Oracle : start to find position"));
 
-  #ifdef TESTBENCH
-  StartupStore(_T("Oracle : start to find position") NEWLINE);
-  #endif
-
-    PeriodClock _time;
-    _time.Update();
+  PeriodClock _time;
+  _time.Update();
 
   ResetNearestTopology();
 

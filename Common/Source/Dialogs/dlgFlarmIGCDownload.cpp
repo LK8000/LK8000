@@ -1129,37 +1129,30 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
   return 0;
 }
 
-class IGCReadThread : public Poco::Runnable {
+class IGCReadThread : public Thread {
 public:
   IGCReadThread() : Thread("IGCReadThread") { }
 
-  void Start() {
-
-
- 
-    if (!Thread.isRunning()) {
+  bool Start() override {
+    if (!IsDefined()) {
       bStop = false;
-      Thread.start(*this);
+      return Thread::Start();
     }
+    return false;
   }
 
   void Stop() {
-    if (Thread.isRunning()) {
+    if (IsDefined()) {
       bStop = true;
-      Thread.join();
-
-  
+      Join();
     }
   }
 
 protected:
-  bool bStop;
-  Poco::Thread Thread;
+  bool bStop = false;
 
-  void run() {
+  void Run() override {
     deb_Log(TEXT("IGC Thread Started !"));
- 
-    
 
     while (!bStop) {
       if (FlarmReadIGC.state() != IDLE_STATE) {

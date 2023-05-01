@@ -218,23 +218,23 @@ void DoSonar(void) {
 
 }
 
-class SonarThread : public Poco::Runnable
+class SonarThread : public Thread
 {
 public:
 	SonarThread() : Thread("SonarThread") { }
 
-    void Start() {
+    bool Start() override {
 		bStop = false;
-        Thread.start(*this);
+        return Thread::Start();
     }
 		
     void Stop() {
 		bStop = true;
-		Thread.join();
+		Join();
 	}
 
 protected:
-    void run() {
+    void Run() override {
 		PeriodClock Timer;
 		while (!bStop) {
 			DoSonar();
@@ -245,7 +245,6 @@ protected:
 	}
 
 	bool bStop = false;
-    Poco::Thread Thread;
 };
 
 SonarThread SonarThreadInstance;

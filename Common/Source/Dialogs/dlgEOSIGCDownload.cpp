@@ -586,31 +586,30 @@ ConvUnion BlkNo;
 }
 
 
-class EOS_IGCReadThread : public Poco::Runnable {
+class EOS_IGCReadThread : public Thread {
 public:
   EOS_IGCReadThread() : Thread("EOS_IGCReadThread") { }
 
-  void Start() {
-    if (!Thread.isRunning()) {
-      bStop = false;
-      
-      Thread.start(*this);
+  bool Start() override {
+    if (!IsDefined()) {
+      bStop = false;      
+      return Thread::Start();
     }
+    return false;
   }
 
   void Stop() {
-    if (Thread.isRunning()) {
+    if (IsDefined()) {
       bStop = true;
      
-      Thread.join();
+      Join();
     }
   }
 
 protected:
   bool bStop = false;
-  Poco::Thread Thread;
 
-  void run() {
+  void Run() override {
     if (deb_)
       StartupStore(TEXT("EOS IGC Thread Started !")); 
     while (!bStop) {

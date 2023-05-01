@@ -315,8 +315,17 @@ _dontbitblt:
 
 }
 
-Poco::ThreadTarget MapWindow::MapWindowThreadRun(MapWindow::DrawThread);
-Poco::Thread MapWindowThread("MapWindow");
+class ThreadDraw : public Thread {
+public:
+    ThreadDraw() : Thread("MapWindow") {}
+
+protected:
+    void Run() override {
+        MapWindow::DrawThread();
+    }
+};
+
+ThreadDraw MapWindowThread;
 #endif
 
 void MapWindow::CreateDrawingThread(void)
@@ -327,8 +336,7 @@ void MapWindow::CreateDrawingThread(void)
   THREADEXIT = FALSE;
 
 #ifndef ENABLE_OPENGL
-  MapWindowThread.start(MapWindowThreadRun);
-  MapWindowThread.setPriority(Poco::Thread::PRIO_NORMAL);
+  MapWindowThread.Start();
 #endif
 }
 
@@ -368,7 +376,7 @@ void MapWindow::CloseDrawingThread(void)
   #else
   drawTriggerEvent.reset(); // on linux this is delaying 5000
   #endif
-  MapWindowThread.join();
+  MapWindowThread.Join();
 
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));

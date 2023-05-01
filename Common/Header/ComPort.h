@@ -16,12 +16,11 @@
 #include "Enums.h"
 #include "Util/tstring.hpp"
 #include "Poco/Event.h"
-#include "Poco/Thread.h"
+#include "Thread/Thread.hpp"
 
-class ComPort : public Poco::Runnable {
+class ComPort : public Thread {
 public:
     ComPort(int idx, const tstring& sName);
-    virtual ~ComPort();
 
     ComPort() = delete;
 
@@ -100,13 +99,12 @@ protected:
     }
 
     Poco::Event StopEvt;
-    Poco::Thread ReadThread;
 
 private:
 
     using _NmeaString_t = TCHAR[MAX_NMEA_LEN];
 
-    void run();
+    void Run() override;
 
     const size_t devIdx;
     const tstring sPortName;
