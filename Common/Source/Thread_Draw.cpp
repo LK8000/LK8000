@@ -11,7 +11,6 @@
 #include "LKInterface.h"
 #include "Bitmaps.h"
 #include "RGB.h"
-#include "TraceThread.h"
 #include "Hardware/CPU.hpp"
 #include "Draw/ScreenProjection.h"
 #ifndef USE_GDI
@@ -116,13 +115,7 @@ void MapWindow::DrawThread ()
 	Poco::Thread::sleep(50);
   }
 
-  #if TRACETHREAD
-  StartupStore(_T("##############  DRAW threadid=%d\n"),GetCurrentThreadId());
-  #endif
-
-  #if TESTBENCH
-  StartupStore(_T("... DrawThread START%s"),NEWLINE);
-  #endif
+  TestLog(_T("... DrawThread START"));
 
   // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;

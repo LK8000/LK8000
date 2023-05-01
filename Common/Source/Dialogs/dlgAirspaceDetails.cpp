@@ -13,7 +13,6 @@
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
-#include "TraceThread.h"
 #include "LKObjects.h"
 #include "Sound/Sound.h"
 #include "resource.h"

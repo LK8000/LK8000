@@ -33,7 +33,6 @@
 #include "Bitmaps.h"
 #include "ComCheck.h"
 
-#include "TraceThread.h"
 #include "Poco/NamedEvent.h"
 
 #include "FlightDataRec.h"
@@ -99,10 +98,6 @@ void DetectKeyboardModel() {
 
 bool Startup(const TCHAR* szCmdLine) {
 
-  #if TRACETHREAD
-  _THREADID_WINMAIN=GetCurrentThreadId();
-  StartupStore(_T("##############  WINMAIN threadid=%d\n"),GetCurrentThreadId());
-  #endif
   _stprintf(LK8000_Version,_T("%s v%s.%s "), _T(LKFORK), _T(LKVERSION),_T(LKRELEASE));
   _tcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("------------------------------------------------------------%s"),NEWLINE);

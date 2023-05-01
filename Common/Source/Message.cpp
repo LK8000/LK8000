@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Message.h"
-#include "TraceThread.h"
 #include "Screen/LKSurface.h"
 #include "Window/WndTextEdit.h"
 #include "Event/Event.h"

@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "WindowControls.h"
-#include "TraceThread.h"
 #include <ctype.h>
 #include "dlgTools.h"
 #include "ComCheck.h"
@@ -237,8 +236,6 @@ WndProperty* wp = NULL;
 
 
 void dlgTerminal(int portnumber) {
-
-  SHOWTHREAD(_T("dlgTerminal"));
 
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TERMINAL_L : IDR_XML_TERMINAL_P);
 

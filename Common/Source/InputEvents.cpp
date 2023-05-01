@@ -25,7 +25,6 @@
 #include "Multimap.h"
 #include "Dialogs.h"
 #include "Sideview.h"
-#include "TraceThread.h"
 #include "CTaskFileHelper.h"
 #include "utils/stringext.h"
 #include "utils/zzip_stream.h"
@@ -1222,16 +1221,7 @@ void InputEvents::eventStatus(const TCHAR *misc) {
 //  See the analysis dialog section of the reference manual
 // for more info.
 void InputEvents::eventAnalysis(const TCHAR *misc) {
-	(void)misc;
-
-  #if TRACETHREAD
-  TCHAR myevent[80];
-  _stprintf(myevent,_T("eventAnalysis %s"),misc);
-  SHOWTHREAD(myevent);
-  #endif
-
   dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
-
 }
 
 // WaypointDetails
@@ -1650,13 +1640,6 @@ extern int CalculateWindRotary(windrotary_s *wbuf, double iaspeed, double *wfrom
 #define RESCHEDTIME 20
 //  if AUTO mode, be quiet and say nothing until successful
 void InputEvents::eventCalcWind(const TCHAR *misc) {
-
-  #if TRACETHREAD
-  TCHAR myevent[80];
-  _stprintf(myevent,_T("eventCalcWind %s"),misc);
-  SHOWTHREAD(myevent);
-  #endif
-
   double wfrom=0, wspeed=0;
   int resw=0;
   static TCHAR mbuf[200];
@@ -1836,11 +1819,6 @@ void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 // Simple events with no arguments.
 // USE SERVICE EVENTS INSTEAD OF CREATING NEW EVENTS!
 void InputEvents::eventService(const TCHAR *misc) {
-  #if TRACETHREAD
-  TCHAR myevent[80];
-  _stprintf(myevent,_T("eventService %s"),misc);
-  SHOWTHREAD(myevent);
-  #endif
 
   if (_tcscmp(misc, TEXT("TAKEOFF")) == 0) {
 	// No MESSAGE on screen, only a sound

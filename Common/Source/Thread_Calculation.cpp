@@ -10,7 +10,6 @@
 #include "Logger.h"
 #include "Tracking/Tracking.h"
 #include "FlightDataRec.h"
-#include "TraceThread.h"
 #include "Hardware/CPU.hpp"
 #include "Calc/Vario.h"
 #include "LKInterface.h"
@@ -58,11 +57,6 @@ public:
         while (!MapWindow::IsDisplayRunning()) {
             Poco::Thread::sleep(100);
         }
-
-#if TRACETHREAD
-        _THREADID_CALC = GetCurrentThreadId();
-        StartupStore(_T("##############  CALC threadid=%d\n"), GetCurrentThreadId());
-#endif
 
         // while (!goCalculating) Poco::Thread::sleep(100);
         Poco::Thread::sleep(1000); // 091213  BUGFIX need to syncronize !!! TOFIX02 TODO

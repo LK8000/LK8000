@@ -10,7 +10,6 @@
 #include "Logger.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
-#include "TraceThread.h"
 #include <ctype.h>
 #include "utils/stl_utils.h"
 #include "utils/stringext.h"

@@ -15,7 +15,6 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "Modeltype.h"
-#include "TraceThread.h"
 #include "Sideview.h"
 
 #include "Screen/LKBitmapSurface.h"
@@ -1738,9 +1737,6 @@ FontReference WndForm::SetTitleFont(FontReference Value){
 }
 
 int WndForm::ShowModal(void) {
-
-    SHOWTHREAD(_T("ShowModal"));
-
     enterTime.Update();
 
     Message::ScopeBlockRender BlockRender;

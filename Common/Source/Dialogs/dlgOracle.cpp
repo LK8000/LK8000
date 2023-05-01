@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Dialogs.h"
-#include "TraceThread.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "Sound/Sound.h"

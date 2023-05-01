@@ -12,7 +12,6 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "Dialogs.h"
-#include "TraceThread.h"
 #include "resource.h"
 #include "Baro.h"
 

@@ -9,8 +9,6 @@
 
 #include "externs.h"
 #include "Dialogs.h"
-#include "TraceThread.h"
-
 #include "externs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
@@ -457,9 +455,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void dlgRadioSettingsShowModal(void){
-  SHOWTHREAD(_T("dlgRadioSettingsShowModal"));
-
+void dlgRadioSettingsShowModal(void) {
 
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_RADIOSETTINGS );
   if (!wf) return;

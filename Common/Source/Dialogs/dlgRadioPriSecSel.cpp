@@ -9,8 +9,6 @@
 
 #include "externs.h"
 #include "Dialogs.h"
-#include "TraceThread.h"
-
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "resource.h"
@@ -71,8 +69,6 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
-  SHOWTHREAD(_T("dlgRadioPriSecSelShowModal"));
-    
   TCHAR Name[SHORT_DEVICE_NAME_LEN+30];
   WndForm *wf=NULL;
 
