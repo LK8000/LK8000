@@ -891,8 +891,13 @@ zzip_open_shared_io(ZZIP_FILE * stream,
             dir = zzip_dir_fdopen_ext_io(fd, &e, ext, io);
             if (e) { 
                 errno = zzip_errno(e);
-                io->fd.close(fd); 
-                return 0; 
+#ifdef __BIONIC__
+                fdsan_exchange_owner(fd, 0, fdsan_owner_tag(&fd));
+                fdsan_close(fd, fdsan_owner_tag(&fd));
+#else
+                io->fd.close(fd);
+#endif
+                return 0;
             }
 
             /* (p - basename) is the lenghtof zzip_dir part of the filename */

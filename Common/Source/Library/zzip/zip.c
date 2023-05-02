@@ -758,7 +758,7 @@ zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errcode_p,
 #ifdef __BIONIC__
         fdsan_exchange_owner(dir->fd, fdsan_owner_tag(&dir->fd), 0);
 #endif
-        dir->fd = 0;
+        dir->fd = -1;
         zzip_dir_free(dir);
     }
     if (errcode_p)
