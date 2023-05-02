@@ -1,4 +1,4 @@
-#C3;
+#C4;
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
 Join our free support forum at www.postfrontal.com/forum
@@ -9,6 +9,15 @@ Menu - Info 2/2 - INFO button
 
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
+
+[version 7.4.3]
+* fix :
+ - WinCE compatibility
+ - possible Segfault at startup on Android
+ - Turmpoint Altitude when received through $GPRMB nmea (RC Fenix, LX ...)
+ - freeze on Task Declare to Flarm
+ - [ALT 5] bottom bar layout on some device
+ - Fanet invalid buddy heading
 
 [version 7.4.2]
 . Updated baro altitude availability management
