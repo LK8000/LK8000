@@ -10,11 +10,11 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
-[version 7.4.3]
+[version 7.4.4]
 * fix :
  - WinCE compatibility
- - possible Segfault at startup on Android
- - Turmpoint Altitude when received through $GPRMB nmea (RC Fenix, LX ...)
+ - possible Segfault at startup on Android 11 and earlier
+ - Turnpoint Altitude when received through $GPRMB nmea (RC Fenix, LX ...)
  - freeze on Task Declare to Flarm
  - [ALT 5] bottom bar layout on some device
  - Fanet invalid buddy heading
