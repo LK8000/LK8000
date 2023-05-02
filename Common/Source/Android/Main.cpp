@@ -228,8 +228,9 @@ Java_org_LK8000_NativeView_pauseNative(JNIEnv *env, jobject obj)
     return false;
   }
 
-  main_window->Pause();
-
+  if (main_window) {
+    main_window->Pause();
+  }
   return true;
 }
 
@@ -245,7 +246,9 @@ Java_org_LK8000_NativeView_resumeNative(JNIEnv *env, jobject obj)
     return;
   }
 
-  main_window->Resume();
+  if (main_window) {
+    main_window->Resume();
+  }
 }
 
 extern "C"

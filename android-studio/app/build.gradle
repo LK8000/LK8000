@@ -26,7 +26,7 @@ android {
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 19 // KitKat
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 103
         versionName "7.4.3"
         setProperty("archivesBaseName", "LK8000-$versionName")
