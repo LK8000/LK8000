@@ -227,19 +227,11 @@ _tryagain:
 
 namespace {
 
-class no_target : public std::exception {
-public:
-  no_target() = default;
-
-  const char* what() const throw() override { 
-    return "no_target";
-  }
-};
-
-WAYPOINT GetTargetSyncData() {
+std::optional<WAYPOINT> GetTargetSyncData() {
   const TCHAR* name = _T("");
 
-  WAYPOINT curr_tp = WithLock(CritSec_TaskData, [&]() {
+  std::optional<WAYPOINT> curr_tp = WithLock(CritSec_TaskData, [&]() {
+    std::optional<WAYPOINT> tp;
     int overindex = -1;
 
     if (ValidTaskPointFast(ActiveTaskPoint)) {
@@ -254,17 +246,17 @@ WAYPOINT GetTargetSyncData() {
       name = GetOvertargetHeader();
     }
 
-    if (!ValidWayPointFast(overindex)) {
-      // no target ...
-      throw no_target();
+    if (ValidWayPointFast(overindex)) {
+      tp = WayPointList[overindex];
     }
-
-    return WayPointList[overindex];
+    return tp;
   });
 
-  curr_tp.Comment = nullptr;
-  curr_tp.Details = nullptr;
-  lk::snprintf(curr_tp.Name, _T("%s%s"), name, tstring(curr_tp.Name).c_str());
+  if (curr_tp) {
+    curr_tp->Comment = nullptr;
+    curr_tp->Details = nullptr;
+    lk::snprintf(curr_tp->Name, _T("%s%s"), name, tstring(curr_tp->Name).c_str());
+  }
   return curr_tp;
 }
 
@@ -274,22 +266,17 @@ AGeoPoint last_multitarget = {};
 }  // namespace
 
 void ExternalDeviceSendTarget() {
-  try {
-    WAYPOINT wpt       = GetTargetSyncData();
-    AGeoPoint position = {{wpt.Latitude, wpt.Longitude}, wpt.Altitude};
-
+  auto wpt = GetTargetSyncData();
+  if (wpt) {
+    AGeoPoint position = {{wpt->Latitude, wpt->Longitude}, wpt->Altitude};
     AGeoPoint previous = WithLock(last_multitarget_mtx, [&]() {
       return std::exchange(last_multitarget, position);
     });
 
     if (position != previous) {
       // target changed : send new target to external device.
-      devPutTarget(wpt);
+      devPutTarget(wpt.value());
     }
-
-  } catch (no_target& e) {
-    // no target to sync...
-	ResetMultitargetSync();
   }
 }
 
