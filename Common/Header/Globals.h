@@ -393,27 +393,6 @@ GEXTERN bool AutoContrast; // automatic contrast of terrain
 GEXTERN short SnailScale;  // user choice for rescaling the snail trail
 GEXTERN double TerrainWhiteness; // HSV luminance
 
-// Append over here NEW
-
-#if LK_CACHECALC
-
-#if (LK_CACHECALC_MCA && LK_CACHECALC_MCA_STAT)
-GEXTERN int  Cache_Calls_MCA;
-GEXTERN int  Cache_Hits_MCA;
-GEXTERN int  Cache_Fail_MCA;
-GEXTERN int  Cache_False_MCA;
-GEXTERN int  Cache_Incomplete_MCA;
-#endif
-
-#if (LK_CACHECALC_DBE && LK_CACHECALC_DBE_STAT)
-GEXTERN int  Cache_Calls_DBE;
-GEXTERN int  Cache_Hits_DBE;
-GEXTERN int  Cache_Fail_DBE;
-GEXTERN int  Cache_False_DBE;
-#endif
-
-#endif
-
 // General index of all pages
 // current mapspacemode: the internal identifier of a page type
 // should not be used for turning pages, only for direct access
@@ -736,12 +715,6 @@ GEXTERN int  Cache_Hits_MCA  GEXTZERO;
 GEXTERN int  Cache_Fail_MCA  GEXTZERO;
 GEXTERN int  Cache_False_MCA GEXTZERO;
 GEXTERN int  Cache_Incomplete_MCA GEXTZERO;
-#endif
-#if (LK_CACHECALC)
-GEXTERN int  Cache_Calls_DBE GEXTZERO;
-GEXTERN int  Cache_Hits_DBE  GEXTZERO;
-GEXTERN int  Cache_Fail_DBE  GEXTZERO;
-GEXTERN int  Cache_False_DBE GEXTZERO;
 #endif
 
 
