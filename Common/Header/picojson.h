@@ -132,8 +132,8 @@ namespace picojson {
       object* object_;
     };
   protected:
-    int type_;
-    _storage u_;
+    int type_ = null_type;
+    _storage u_ = {};
   public:
     value();
     value(int type, bool);
@@ -184,7 +184,7 @@ namespace picojson {
   typedef value::array array;
   typedef value::object object;
   
-  inline value::value() : type_(null_type) {}
+  inline value::value() = default;
   
   inline value::value(int type, bool) : type_(type) {
     switch (type) {
