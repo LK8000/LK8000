@@ -277,6 +277,11 @@ public:
   }
 #endif
 
+  /**
+   * @return true if `this` is Child of @WndParent
+   */
+  bool IsChild(Window* WndParent) const;
+
 protected:
   /**
    * Assert that the current thread is the one which created this

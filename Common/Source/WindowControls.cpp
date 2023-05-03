@@ -1749,7 +1749,7 @@ int WndForm::ShowModal(void) {
     mModalResult = 0;
 
     Window* oldFocus = main_window->GetFocusedWindow();
-    if(!GetFocusedWindow()) {
+    if (!oldFocus || !oldFocus->IsChild(this)) {
       FocusNext(NULL);
     }
 

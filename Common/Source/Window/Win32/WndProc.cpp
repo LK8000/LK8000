@@ -79,7 +79,7 @@ LRESULT CALLBACK WndMainBase::WinMsgHandler(HWND hWnd, UINT uMsg, WPARAM wParam,
             return 0;
 
         case WM_SETFOCUS:
-		if(::IsWindow(_hWndFocus) && IsChild(_hWnd, _hWndFocus)) {
+		if(::IsWindow(_hWndFocus) && ::IsChild(_hWnd, _hWndFocus)) {
 			// Set the Focus to the last know focus window
 			::SetFocus(_hWndFocus);
 			return 0;

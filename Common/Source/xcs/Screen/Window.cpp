@@ -38,6 +38,14 @@ Window::~Window()
   Destroy();
 }
 
+bool Window::IsChild(Window* WndParent) const {
+  auto pParent = GetParent();
+  if (pParent == WndParent) {
+    return true;
+  }
+  return pParent && pParent->IsChild(WndParent);
+}
+
 #ifndef NDEBUG
 
 void

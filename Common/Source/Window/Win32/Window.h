@@ -230,6 +230,10 @@ public:
         ::ScreenToClient(_hWnd, &pos);
     }
 
+    bool IsChild(Window* WndParent) const {
+        return ::IsChild(WndParent->Handle(), _hWnd);
+    }
+
 protected:
 
     void StartTimer(unsigned uTime /*millisecond*/) { ::SetTimer(_hWnd, 1, uTime, NULL); }
