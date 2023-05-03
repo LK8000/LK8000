@@ -12,6 +12,7 @@
 #include "Sound/Sound.h"
 #include "Geographic/GeoPoint.h"
 #include "utils/printf.h"
+#include <optional>
 
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex() {
@@ -230,7 +231,7 @@ namespace {
 std::optional<WAYPOINT> GetTargetSyncData() {
   const TCHAR* name = _T("");
 
-  std::optional<WAYPOINT> curr_tp = WithLock(CritSec_TaskData, [&]() {
+  auto curr_tp = WithLock(CritSec_TaskData, [&]() {
     std::optional<WAYPOINT> tp;
     int overindex = -1;
 
