@@ -715,9 +715,13 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
 
   // we will use text-defined class
   lxClass.SetName(lkDecl->CompetitionClass);
-  // stop RX thread
-  if (!StopRxThread(d, errBufSize, errBuf))
-    return(false);
+
+  {
+    // stop RX thread
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    if (!StopRxThread(d, errBufSize, errBuf))
+      return(false);
+  }
 
   // set new Rx timeout
   int  orgRxTimeout;

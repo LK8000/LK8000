@@ -92,10 +92,14 @@ BOOL VLDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
   // LKTOKEN  _@M1404_ = "Opening connection"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
   CreateProgressDialog(buffer);
-  if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
-    // LKTOKEN  _@M1411_ = "Device not connected!"
-    _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
-    return FALSE;
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+
+    if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
+      // LKTOKEN  _@M1411_ = "Device not connected!"
+      _tcsncpy(errBuffer, MsgToken(1411), errBufferLen);
+      return FALSE;
+    }
   }
 
   // LKTOKEN  _@M1400_ = "Task declaration"

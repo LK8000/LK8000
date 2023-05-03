@@ -261,7 +261,10 @@ BOOL cai302Declare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned er
   TCHAR szTmp[255];
   nDeclErrorCode = 0;
 
-  d->Com->StopRxThread();
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    d->Com->StopRxThread();
+  }
 
   d->Com->SetRxTimeout(500);
   d->Com->WriteString(TEXT("\x03"));

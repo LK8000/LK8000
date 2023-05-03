@@ -80,7 +80,10 @@ BOOL EWDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
   ewDecelTpIndex = 0;
   fDeclarationPending = TRUE;
 
-  d->Com->StopRxThread();
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    d->Com->StopRxThread();
+  }
 
   lLastBaudrate = d->Com->SetBaudrate(9600L);    // change to IO Mode baudrate
 

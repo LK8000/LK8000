@@ -725,8 +725,13 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
 
   FormatTP(DeclStrings[i++], num++ , wpCount, pTakeOff);   // Landing
 
-  bool status= false;
-  if ( StopRxThread(d, errBufSize, errBuf)) {
+  bool status = false;
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    status = StopRxThread(d, errBufSize, errBuf);
+  }
+
+  if (status) {
     // Send complete declaration to logger
     int orgRxTimeout;
     TestLog(_T(". EOS/ERA SetRxTimeout"));
@@ -763,36 +768,6 @@ BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDe
   ShowProgress(decl_disable);
   return(Good);
 } // DeclareTask()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Send one line of declaration to logger
-///
-/// @param d           device descriptor
-/// @param row         row number
-/// @param row         number of rows
-/// @param content     row content
-/// @param errBufSize  error message buffer size
-/// @param errBuf[]    [out] error message
-///
-/// @retval true  row successfully written
-/// @retval false error (description in @p errBuf)
-///
-// static
-bool DevLX_EOS_ERA::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows,
-                   TCHAR content[], unsigned errBufSize, TCHAR errBuf[]){
-  TCHAR szTmp[MAX_NMEA_LEN];
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXVC,DECL,W,%u,%u,%s"), row, n_rows, content);
-  bool status = DevLX_EOS_ERA::SendNmea(d, szTmp, errBufSize, errBuf);
-  if (status) {
-    char retstr[20];
-    sprintf(retstr, "$PLXVC,DECL,C,%u", row);
-    status = status && ComExpect(d, retstr, 512, NULL, errBufSize, errBuf);
-  }
-  return status;
-} // SendDecl()
-
-
 
 
 void DevLX_EOS_ERA::GetDirections(WndButton* pWnd){

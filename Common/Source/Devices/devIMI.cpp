@@ -800,8 +800,11 @@ BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsi
     return false;
 
   // stop Rx thread
-  if(!StopRxThread(d, errBufSize, errBuf))
-    return false;
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    if(!StopRxThread(d, errBufSize, errBuf))
+      return false;
+  }
 
   // set new Rx timeout
   int orgRxTimeout;

@@ -104,9 +104,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     /// Writes declaration into the logger.
     static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-    /// Send one line of ceclaration to logger
-    static bool SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows, TCHAR content[], unsigned errBufSize, TCHAR errBuf[]);
-
    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
    static BOOL EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
    

@@ -511,8 +511,11 @@ BOOL DevLXMiniMap::DeclareTaskMinimap(PDeviceDescriptor_t d,
   lxClass.SetName(lkDecl->CompetitionClass);
 
   // stop RX thread
-  if (!StopRxThread(d, errBufSize, errBuf))
-    return(false);
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    if (!StopRxThread(d, errBufSize, errBuf))
+      return(false);
+  }
 
   // set new Rx timeout
   int  orgRxTimeout;

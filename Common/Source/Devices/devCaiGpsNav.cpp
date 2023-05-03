@@ -355,9 +355,13 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1404));
   CreateProgressDialog(buffer);
 
-  // prepare communication
-  if(!StopRxThread(d, errBufSize, errBuf))
-    return false;
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    // prepare communication
+    if(!StopRxThread(d, errBufSize, errBuf))
+      return false;
+  }
+
   int timeout;
   bool status = SetRxTimeout(d, 500, timeout, errBufSize, errBuf);
 

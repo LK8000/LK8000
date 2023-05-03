@@ -168,7 +168,10 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, un
     return FALSE;
   }
 
-  d->Com->StopRxThread();
+  {
+    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
+    d->Com->StopRxThread();
+  }
 
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
 
