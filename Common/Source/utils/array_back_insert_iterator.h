@@ -9,11 +9,9 @@
 
 #ifndef _UTILS_BACK_INSERT_ITERATOR_H_
 #define _UTILS_BACK_INSERT_ITERATOR_H_
-#include <iterator>
 
 template <class _Tp>
-class array_back_insert_iterator
-    : public std::iterator<std::output_iterator_tag, void, void, void, void> {
+class array_back_insert_iterator final {
 protected:
   _Tp *array;
   size_t size;
