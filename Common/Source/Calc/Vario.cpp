@@ -20,9 +20,7 @@ bool VarioAvailable(const NMEA_INFO& Info) {
 
 const DeviceDescriptor_t* getVarioDevice(const NMEA_INFO& Info) {
   if (VarioAvailable(Info)) {
-    if (Info.VarioSourceIdx < std::size(DeviceList)) {
-      return &DeviceList[Info.VarioSourceIdx];
-    }
+    return devGetDeviceOnPort(Info.VarioSourceIdx);
   }
   return nullptr;
 }
