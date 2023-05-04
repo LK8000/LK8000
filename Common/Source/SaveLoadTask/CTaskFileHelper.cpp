@@ -378,7 +378,7 @@ void CTaskFileHelper::LoadOptionDefault(const xml_node* node) {
 
         const xml_node* nodeFinish = node->first_node("finish");
         if (nodeFinish) {
-            const char* szType = GetAttribute(nodeStart, "type");
+            const char* szType = GetAttribute(nodeFinish, "type");
             if (szType) {
                 if (strcmp(szType, "circle") == 0) {
                     FinishLine = 0;
