@@ -175,6 +175,10 @@ void FlarmIdFile::LoadFlarmnetDb() {
     std::istream stream(&file);
     std::getline(stream, src_line); // skip first line
     while (std::getline(stream, src_line)) {
+      if (src_line.length() != 172) {
+        continue; // avoid crash due to broken exception handling on WinCE target
+      }
+
       try {
         auto flarmId = std::make_unique<FlarmId>(src_line);
         flarmIds.emplace(flarmId->GetId(), std::move(flarmId));
