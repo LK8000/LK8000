@@ -92,7 +92,7 @@ void LKSound(const TCHAR *lpName) {
     *ptrExt=0;
 
     sound_code_t sound_code;
-    const bool bResult = EnumString<sound_code_t>::To( sound_code, soundFileStr );
+    const bool bResult = EnumString<sound_code_t>::To( sound_code, to_utf8(soundFileStr));
     
     if (!bResult) {
         // No sound found, take default sound
@@ -113,7 +113,7 @@ void PlayResource (const TCHAR* lpName) {
 
     resource_sound_t resource_sound = resource_sound_t::IDR_WAV_TONE1;
     sound_code_t sound_code = sound_code_t::DEFAULT;
-    const bool bResult = EnumString<resource_sound_t>::To( resource_sound, lpName );
+    const bool bResult = EnumString<resource_sound_t>::To( resource_sound, to_utf8(lpName));
     
     if (bResult) {
         // transform resource to sound_code
