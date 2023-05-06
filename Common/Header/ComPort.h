@@ -57,14 +57,14 @@ public:
 
     bool Write(const void *data, size_t size);
 
-    inline void Write(uint8_t b) {
-        Write(&b, sizeof(b));
+    inline bool Write(uint8_t b) {
+        return Write(&b, sizeof(b));
     }
 
 #ifdef UNICODE
-    void WriteString(const wchar_t* Text) gcc_nonnull_all;
+    bool WriteString(const wchar_t* Text) gcc_nonnull_all;
 #endif
-    void WriteString(const char* Text) gcc_nonnull_all;
+    bool WriteString(const char* Text) gcc_nonnull_all;
 
     virtual size_t Read(void* data, size_t size) = 0;
 

@@ -62,20 +62,22 @@ bool ComPort::Write(const void *data, size_t size) {
 
 #ifdef  _UNICODE
 // this should be deprecated
-void ComPort::WriteString(const wchar_t* Text) {
+bool ComPort::WriteString(const wchar_t* Text) {
     const std::string data = to_utf8(Text);
     if (!data.empty()) {
         // don't write trailing '\0' to device
-        Write(data.data(), data.size());
+        return Write(data.data(), data.size());
     }
+    return false;
 }
 #endif
 
-void ComPort::WriteString(const char* Text) {
+bool ComPort::WriteString(const char* Text) {
     const size_t length = strlen(Text);
     if(length > 0) {
-        Write(Text, length);
+        return Write(Text, length);
     }
+    return false;
 }
 
 int ComPort::GetChar() {
