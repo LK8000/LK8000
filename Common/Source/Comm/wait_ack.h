@@ -37,14 +37,16 @@ class wait_ack final {
 
   bool wait(unsigned timeout_ms) {
     ScopeLock lock(mutex);
-    condition.Wait(mutex, timeout_ms);
+    if (!ready) {
+      condition.Wait(mutex, timeout_ms);
+    }
     return std::exchange(ready, false);
   }
 
  private:
   static char valid_char(char c) { return c == '\r' || c == '\n' ? '\0' : c; }
 
-  // compare string ingnoring trailing <CR><LF>
+  // compare string ignoring trailing <CR><LF>
   bool compare_nmea(const TCHAR* str) {
     for (auto first1 = std::begin(wait_str); first1 != std::end(wait_str) && valid_char(*first1); ++first1, ++str) {
       if ((*first1) != (*str)) {
