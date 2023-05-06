@@ -136,24 +136,24 @@ InternalSensors* InternalSensors::create(JNIEnv* env, Context* context,
   assert(gps_cls != nullptr);
 
   // Construct InternalGPS object.
-  jobject gps_obj =
-    env->NewObject(gps_cls, gps_ctor_id, context->Get(), index);
-  if (Java::DiscardException(env))
-    return nullptr;
+  Java::LocalObject gps_obj = {
+    env, env->NewObject(gps_cls, gps_ctor_id, context->Get(), index)
+  };
 
-  assert(gps_obj != nullptr);
+  if (Java::DiscardException(env)) {
+    return nullptr;
+  }
+
+  assert(gps_obj);
 
   // Construct NonGPSSensors object.
-  jobject sensors_obj =
-      env->NewObject(sensors_cls, sensors_ctor_id, context->Get(), index);
+  Java::LocalObject sensors_obj = {
+    env, env->NewObject(sensors_cls, sensors_ctor_id, context->Get(), index)
+  };
+
   assert(sensors_obj != nullptr);
 
-  InternalSensors *internal_sensors =
-      new InternalSensors(env, gps_obj, sensors_obj);
-  env->DeleteLocalRef(gps_obj);
-  env->DeleteLocalRef(sensors_obj);
-
-  return internal_sensors;
+  return new InternalSensors(env, gps_obj, sensors_obj);
 }
 
 // Helper for retrieving the set of sensors to which we can subscribe.
