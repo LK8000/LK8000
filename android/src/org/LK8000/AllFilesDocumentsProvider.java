@@ -89,11 +89,17 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
         return projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION;
     }
 
+    private ContentResolver getContentResolver() {
+        return getContext().getContentResolver();
+    }
+
+    private static Uri getChildDocumentsUri(String parentDocumentId) {
+        return DocumentsContract.buildChildDocumentsUri(AUTHORITY, parentDocumentId);
+    }
+
     private void notifyChildDocumentsChange(String parentDocumentId) {
-        ContentResolver contentResolver = getContext().getContentResolver();
-        contentResolver.notifyChange(
-                DocumentsContract.buildChildDocumentsUri(AUTHORITY, parentDocumentId),
-                null, false);
+        ContentResolver contentResolver = getContentResolver();
+        contentResolver.notifyChange(getChildDocumentsUri(parentDocumentId),null, false);
     }
 
     @Override
@@ -123,6 +129,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
                 | Root.FLAG_SUPPORTS_SEARCH
                 | Root.FLAG_SUPPORTS_CREATE);
 
+        result.setNotificationUri(getContentResolver(), getChildDocumentsUri("RootId"));
         return (result);
     }
 
@@ -141,6 +148,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
             e.printStackTrace();
             throw new FileNotFoundException();
         }
+        result.setNotificationUri(getContentResolver(), getChildDocumentsUri(parentDocumentId));
         return (result);
     }
 
@@ -153,6 +161,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
             e.printStackTrace();
             throw new FileNotFoundException();
         }
+        result.setNotificationUri(getContentResolver(), getChildDocumentsUri(documentId));
         return (result);
     }
 
@@ -290,6 +299,8 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
         }
         if (parentFile != null) {
             notifyChildDocumentsChange(getDocIdForFile(parentFile));
+        } else {
+            notifyChildDocumentsChange("RootId");
         }
         return getDocIdForFile(dstFile);
     }
