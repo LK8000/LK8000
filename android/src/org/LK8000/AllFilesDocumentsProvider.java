@@ -202,12 +202,15 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
                 // allow to add file in directory
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
             } else {
-                // allow to delete and modify existing file
-                flags |= Document.FLAG_SUPPORTS_DELETE;
+                // allow to modify existing file
                 flags |= Document.FLAG_SUPPORTS_WRITE;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    flags |= Document.FLAG_SUPPORTS_RENAME;
-                }
+            }
+
+            // allow to delete Existing file or directory
+            flags |= Document.FLAG_SUPPORTS_DELETE;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // allow to rename existing file or directory
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             }
         }
         row.add(Document.COLUMN_FLAGS, flags);
@@ -221,7 +224,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     @Override
     public void deleteDocument(final String documentId) throws FileNotFoundException {
         File file = getFileForDocId(documentId);
-        if (file.delete()) {
+        if (FileUtils.deleteDirectory(file)) {
             File parentFile = file.getParentFile();
             if (parentFile != null) {
                 String parentDocumentId = getDocIdForFile(file.getParentFile());
