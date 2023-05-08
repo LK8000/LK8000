@@ -61,7 +61,7 @@ void CalculateAATTaskSectors()
 
       targetbearing = AngleLimit360(Task[i].Bisector+Task[i].AATTargetOffsetRadial);
 
-      if(Task[i].AATType == SECTOR) {
+      if(Task[i].AATType == sector_type_t::SECTOR) {
 
         //AATStartRadial
         //AATFinishRadial

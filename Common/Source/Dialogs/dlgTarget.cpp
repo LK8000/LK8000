@@ -50,7 +50,7 @@ static void MoveTarget(double adjust_angle) {
   double target_latitude, target_longitude;
   double bearing, distance;
   distance = 500;
-  if(Task[target_point].AATType == SECTOR) {
+  if(Task[target_point].AATType == sector_type_t::SECTOR) {
     distance = max(Task[target_point].AATSectorRadius/20.0,distance);
   } else {
     distance = max(Task[target_point].AATCircleRadius/20.0,distance);
@@ -108,7 +108,7 @@ static void MoveTarget(double adjust_angle) {
                       Task[target_point].AATTargetLon,
                       &distance, &bearing);
       bearing = AngleLimit180(bearing-Task[target_point].Bisector);
-      if(Task[target_point].AATType == SECTOR) {
+      if(Task[target_point].AATType == sector_type_t::SECTOR) {
         Range = (fabs(distance)/Task[target_point].AATSectorRadius)*2-1;
       } else {
         if (fabs(bearing)>90.0) {
@@ -183,7 +183,7 @@ static void MoveTarget(double target_longitude, double target_latitude) {
                       Task[target_point].AATTargetLon,
                       &distance, &bearing);
       bearing = AngleLimit180(bearing-Task[target_point].Bisector);
-      if(Task[target_point].AATType == SECTOR) {
+      if(Task[target_point].AATType == sector_type_t::SECTOR) {
         Range = (fabs(distance)/Task[target_point].AATSectorRadius)*2-1;
       } else {
         if (fabs(bearing)>90.0) {

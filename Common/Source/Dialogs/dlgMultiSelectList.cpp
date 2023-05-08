@@ -434,7 +434,7 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
 
          SecRadius = SectorRadius;
          if (UseAATTarget()) {
-             if (Task[iTaskIdx].AATType == SECTOR)
+             if (Task[iTaskIdx].AATType == sector_type_t::SECTOR)
                  SecRadius = Task[iTaskIdx].AATSectorRadius;
              else
                  SecRadius = Task[iTaskIdx].AATCircleRadius;

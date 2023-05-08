@@ -19,7 +19,8 @@ TaskRendererDae::TaskRendererDae(const GeoPoint& center, double start, double en
 
     _GeoPoints.reserve(360 + 4);
 
-// order of point is very important, need to be odered for allow drawing polygon using OpenGL triangle fan
+    // order of point is very important, need to be odered to allow
+    // drawing polygon using OpenGL triangle fan
 
     _GeoPoints.push_back(center.Direct(start, 500));
     _GeoPoints.push_back(center.Direct(start, 10e3));

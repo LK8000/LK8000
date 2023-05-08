@@ -265,7 +265,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
       if (i>=0) // UNMANAGED
       LegDistances[i] = leg_covered;
     }
-    if ((StartLine==0) && (i==0)) {
+    if ((StartLine == sector_type_t::CIRCLE) && (i==0)) {
       // Correct speed calculations for radius
       // JMW TODO accuracy: leg distance replace this with more accurate version
       // leg_distance -= StartRadius;

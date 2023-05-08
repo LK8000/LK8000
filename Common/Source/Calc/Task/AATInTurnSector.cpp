@@ -29,20 +29,24 @@ bool InAATTurnSector(const double longitude, const double latitude,
                   latitude,
                   longitude,
                   &distance, &AircraftBearing);
-  int Type; double Radius;
+  sector_type_t Type;
+  double Radius;
   GetTaskSectorParameter(the_turnpoint, &Type, &Radius);
   switch(Type) {
-      case ESS_CIRCLE:
-      case CIRCLE:
+      case sector_type_t::ESS_CIRCLE:
+      case sector_type_t::CIRCLE:
           retval = (distance < Radius);
           break;
-      case SECTOR:
+      case sector_type_t::SECTOR:
           retval = (AngleInRange(Task[the_turnpoint].AATStartRadial,
                                     Task[the_turnpoint].AATFinishRadial,
                                     AngleLimit360(AircraftBearing), true));
           break;
-      case CONE:
+      case sector_type_t::CONE:
           retval = (distance < PGConeTaskPt::ConeRadius(Altitude, Task[the_turnpoint].PGConeBase, Task[the_turnpoint].PGConeSlope, Task[the_turnpoint].PGConeBaseRadius));
+          break;
+      default:
+          assert(false);
           break;
   }
 

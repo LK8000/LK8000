@@ -107,11 +107,11 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
                 (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
 
       if (UseAATTarget() && ValidTaskPoint(i+1) && (i>0)) {
-        if (Task[i].AATType==0 || Task[i].AATType==3) {
+        if (Task[i].AATType == sector_type_t::CIRCLE || Task[i].AATType == sector_type_t::ESS_CIRCLE) {
           _stprintf(sTmp, TEXT("%.1f %s"),
                     Task[i].AATCircleRadius*DISTANCEMODIFY, wpName);
         } else {
-          if(Task[i].AATType==2 && (gTaskType==TSK_GP)) {
+          if(Task[i].AATType == sector_type_t::CONE && (gTaskType==TSK_GP)) {
              _stprintf(sTmp, TEXT("%s %.1f/1"),
                     wpName, Task[i].PGConeSlope);
           } else {

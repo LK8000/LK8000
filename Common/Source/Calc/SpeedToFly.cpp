@@ -22,15 +22,15 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             && DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
 
         // Special case for Conical end of Speed section
-        int Type = -1;
+        sector_type_t Type = sector_type_t::CIRCLE;
         double ConeSlope = 0.0;
         LockTaskData();
         if (ValidTaskPoint(ActiveTaskPoint)) {
-            GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
+            GetTaskSectorParameter(ActiveTaskPoint, &Type, nullptr);
             ConeSlope = Task[ActiveTaskPoint].PGConeSlope;
         }
         UnlockTaskData();
-        if (Type == CONE && ConeSlope > 0.0) {
+        if (Type == sector_type_t::CONE && ConeSlope > 0.0) {
             double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
             double eqMC = GlidePolar::EquMC(VOpt);
             if(eqMC <= MACCREADY ) {

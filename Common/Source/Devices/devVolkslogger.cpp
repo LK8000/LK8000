@@ -138,23 +138,26 @@ BOOL VLDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
 
   // start..
   switch(StartLine) {
-  case 0: // cylinder
+  case sector_type_t::CIRCLE: // cylinder
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
     vl.declaration.task.startpoint.lw = min(1500,(int)StartRadius);
     vl.declaration.task.startpoint.rz = min(1500,(int)StartRadius);
     vl.declaration.task.startpoint.rs = 0;
     break;
-  case 1: // line
+  case sector_type_t::LINE: // line
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_LINE;
     vl.declaration.task.startpoint.lw = StartRadius * 2;
     vl.declaration.task.startpoint.rs = 0;
     vl.declaration.task.startpoint.rz = 0;
     break;
-  case 2: // fai sector
+  case sector_type_t::SECTOR: // fai sector
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
     vl.declaration.task.startpoint.lw = min(15000,(int)StartRadius);
     vl.declaration.task.startpoint.rz = 0;
     vl.declaration.task.startpoint.rs = min(15000,(int)StartRadius);
+    break;
+  default:
+    assert(false);
     break;
   }
   vl.declaration.task.startpoint.ws = 360;
@@ -163,23 +166,26 @@ BOOL VLDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
   for (i=0; i<nturnpoints; i++) {
     // note this is for non-aat only!
     switch (SectorType) {
-    case 0: // cylinder
+    case sector_type_t::CIRCLE: // cylinder
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
       vl.declaration.task.turnpoints[i].rz = min(1500,(int)SectorRadius);
       vl.declaration.task.turnpoints[i].rs = 0;
       vl.declaration.task.turnpoints[i].lw = 0;
       break;
-    case 1: // sector
+    case sector_type_t::SECTOR: // sector
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
       vl.declaration.task.turnpoints[i].rz = 0;
       vl.declaration.task.turnpoints[i].rs = min(15000,(int)SectorRadius);
       vl.declaration.task.turnpoints[i].lw = 0;
       break;
-    case 2: // German DAe 0.5/10
+    case sector_type_t::DAe: // German DAe 0.5/10
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
       vl.declaration.task.turnpoints[i].rz = 500;
       vl.declaration.task.turnpoints[i].rs = 10000;
       vl.declaration.task.turnpoints[i].lw = 0;
+      break;
+    default:
+      assert(false);
       break;
     };
     vl.declaration.task.turnpoints[i].ws = 360; // auto direction
@@ -188,23 +194,26 @@ BOOL VLDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
 
   // Finish
   switch(FinishLine) {
-  case 0: // cylinder
+  case sector_type_t::CIRCLE: // cylinder
     vl.declaration.task.finishpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
     vl.declaration.task.finishpoint.lw = min(1500,(int)FinishRadius);
     vl.declaration.task.finishpoint.rz = min(1500,(int)FinishRadius);
     vl.declaration.task.finishpoint.rs = 0;
     break;
-  case 1: // line
+  case sector_type_t::LINE: // line
     vl.declaration.task.finishpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_LINE;
     vl.declaration.task.finishpoint.lw = FinishRadius*2;
     vl.declaration.task.finishpoint.rz = 0;
     vl.declaration.task.finishpoint.rs = 0;
     break;
-  case 2: // fai sector
+  case sector_type_t::SECTOR: // fai sector
     vl.declaration.task.finishpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
     vl.declaration.task.finishpoint.lw = min(15000,(int)FinishRadius);
     vl.declaration.task.finishpoint.rz = 0;
     vl.declaration.task.finishpoint.rs = min(15000,(int)FinishRadius);
+    break;
+  default:
+    assert(false);
     break;
   }
   vl.declaration.task.finishpoint.ws = 360;

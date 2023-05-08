@@ -8,12 +8,30 @@
 #define TSK_GP          2 // Race To Goal in PG Mode
 /////////////////
 
-#define CIRCLE 0
-#define SECTOR 1
-#define DAe    2 // only Exist for not AAT and Not PGTask.
-#define LINE   3 // only Used for Save Start and Finish Type in xml file.
-#define CONE   4 // Only Used In PG Optimized Task
-#define ESS_CIRCLE   5 // Only Used In PG Optimized Task
+enum class sector_type_t : int {
+  CIRCLE = 0,
+  SECTOR = 1,
+  DAe = 2, // only Exist for not AAT and Not PGTask.
+  LINE = 3, // only Used for Save Start and Finish Type in xml file.
+  CONE = 4, // Only Used In PG Optimized Task
+  ESS_CIRCLE = 5 // Only Used In PG Optimized Task
+};
+
+struct task_sectors {
+  virtual ~task_sectors() {}
+
+  virtual const sector_type_t* begin() const = 0;
+  virtual const sector_type_t* end() const = 0;
+
+  virtual unsigned index(sector_type_t type) const = 0;
+  virtual sector_type_t type(unsigned idx) const = 0;
+};
+
+std::unique_ptr<task_sectors> get_start_sectors(int type);
+std::unique_ptr<task_sectors> get_finish_sectors(int type);
+std::unique_ptr<task_sectors> get_task_sectors(int type);
+
+const TCHAR* get_sectors_label(sector_type_t type);
 
 /**
  * use to notify dlgTaskOverview about task change outside of dialog...
@@ -37,7 +55,7 @@ struct TASK_POINT
   double OutBound;
   double Bisector;
   double Leg;
-  int	 AATType;
+  sector_type_t AATType;
   double AATCircleRadius;
   double AATSectorRadius;
   double AATStartRadial;
@@ -111,7 +129,7 @@ bool ValidNotResWayPoint(int i);
 bool ValidResWayPoint(int i);
 bool ValidStartPoint(size_t i);
 
-int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius);
+void GetTaskSectorParameter(int TskIdx, sector_type_t* SecType, double* SecRadius);
 
 double FindInsideAATSectorRange(double latitude,
                                 double longitude,

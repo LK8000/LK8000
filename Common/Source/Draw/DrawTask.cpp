@@ -33,7 +33,7 @@ void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc, do
 {
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
-int SecType = SectorType;
+sector_type_t SecType = SectorType;
 int width = center_x-2;
 const auto oldbrush = Surface.SelectObject(UseAATTarget()
                                            ? LKBrush_LightGrey
@@ -71,22 +71,22 @@ double FinishRadial = Task[TaskIdx].AATFinishRadial;
 
 double LineBrg;
 double SecRadius;
-GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
+GetTaskSectorParameter( TaskIdx, &SecType, &SecRadius);
 
     switch (SecType)
     {
-        case ESS_CIRCLE:
-        case CIRCLE:
+        case sector_type_t::ESS_CIRCLE:
+        case sector_type_t::CIRCLE:
             Surface.DrawCircle(center_x, center_y, width-2, true);
             break;
-        case SECTOR:
+        case sector_type_t::SECTOR:
             Surface.Segment(
              center_x,
              center_y, width, rc,
              StartRadial,
              FinishRadial);
             break;
-        case DAe:
+        case sector_type_t::DAe:
             if (!UseAATTarget()) { // this Type exist only if not AAT task
                 // JMW added german rules
                 Surface.DrawCircle(center_x, center_y, width/8, true);
@@ -99,7 +99,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
             }
             break;
        default:
-       case LINE:
+       case sector_type_t::LINE:
             if (TaskIdx == 0) {
                 LineBrg = Task[TaskIdx].OutBound-90;
             } else if (TaskIdx == finish) {
@@ -117,7 +117,7 @@ GetTaskSectorParameter( TaskIdx, &SecType,&SecRadius);
                 Surface.Polygon(track, std::size(track));
             }
        break;
-        case CONE:
+        case sector_type_t::CONE:
             if (gTaskType==TSK_GP) {
 
                 int radius = width-2;
@@ -247,7 +247,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 				}
 			} else { // normal sector
 
-				if(SectorType == LINE && (gTaskType != TSK_AAT) && ISGAAIRCRAFT) { // this Type exist only if not AAT task
+				if(SectorType == sector_type_t::LINE && (gTaskType != TSK_AAT) && ISGAAIRCRAFT) { // this Type exist only if not AAT task
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
 					const int length=IBLSCALE(14); //Make intermediate WP lines always of the same size independent by zoom level
 

@@ -202,9 +202,9 @@ void Globals_Init(void) {
   TeamFlarmTracking = false;
   TeammateCodeValid = false;
 
-  SectorType = 1; // FAI sector
+  SectorType = sector_type_t::SECTOR; // FAI sector
   SectorRadius = 3000;
-  StartLine = TRUE;
+  StartLine = sector_type_t::LINE;
   StartRadius = 3000;
 
   HomeWaypoint = -1;
@@ -533,7 +533,7 @@ void Globals_Init(void) {
   EnableFAIFinishHeight = false;
   BallastTimerActive = false;
 
-  FinishLine=1;
+  FinishLine = sector_type_t::LINE;
   FinishRadius=3000;
 
   BallastSecsToEmpty = 120;

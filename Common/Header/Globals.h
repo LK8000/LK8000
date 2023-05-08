@@ -474,13 +474,13 @@ GEXTERN int RealActiveWaypoint;
 GEXTERN int ActiveTaskPoint;
 GEXTERN bool TaskAborted;
 GEXTERN int SelectedWaypoint;
-GEXTERN int SectorType;
+GEXTERN sector_type_t SectorType;
 GEXTERN double SectorRadius;
 
 GEXTERN bool EnableMultipleStartPoints;
-GEXTERN int StartLine;
+GEXTERN sector_type_t StartLine;
 GEXTERN double StartRadius;
-GEXTERN int FinishLine;
+GEXTERN sector_type_t FinishLine;
 GEXTERN double FinishRadius;
 GEXTERN double AATTaskLength;
 GEXTERN int gTaskType GEXTZERO;

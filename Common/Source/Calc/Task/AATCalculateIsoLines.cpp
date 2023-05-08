@@ -44,7 +44,7 @@ void CalculateAATIsoLines(void) {
       bool in_sector = true;
 
       double max_distance, delta;
-      if(Task[i].AATType == SECTOR) {
+      if(Task[i].AATType == sector_type_t::SECTOR) {
         max_distance = Task[i].AATSectorRadius;
       } else {
         max_distance = Task[i].AATCircleRadius;

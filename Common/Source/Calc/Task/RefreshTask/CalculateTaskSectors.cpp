@@ -26,19 +26,20 @@ void CalculateTaskSectors(int Idx) {
 
             // start turnpoint sector
             switch (StartLine) {
-                case 0:
+                case sector_type_t::CIRCLE:
                     gTaskSectorRenderer.SetCircle(Idx, center, StartRadius);
                     break;
-                case 1:
+                case sector_type_t::LINE:
                     gTaskSectorRenderer.SetLine(Idx, center, StartRadius, SectorBearing);
                     break;
-                case 2:
+                case sector_type_t::SECTOR:
                     gTaskSectorRenderer.SetStartSector(Idx, center, StartRadius,
                                                        SectorBearing - 45,
                                                        SectorBearing + 45);
                     break;
                 default:
-                    LKASSERT(false);
+                    assert(false);
+                    break;
             }
         } else if (ValidTaskPointFast(Idx + 1)) {
             if (gTaskType == TSK_DEFAULT) {
@@ -46,58 +47,61 @@ void CalculateTaskSectors(int Idx) {
                 SectorBearing = TaskPt.Bisector;
 
                 switch (SectorType) {
-                    case CIRCLE:
+                    case sector_type_t::CIRCLE:
                         gTaskSectorRenderer.SetCircle(Idx, center, SectorRadius);
                         break;
-                    case SECTOR:
+                    case sector_type_t::SECTOR:
                         gTaskSectorRenderer.SetSector(Idx, center, SectorRadius,
                                                       SectorBearing - 45,
                                                       SectorBearing + 45);
                         break;
-                    case DAe:
+                    case sector_type_t::DAe:
                         gTaskSectorRenderer.SetDae(Idx, center,
                                                    SectorBearing - 45,
                                                    SectorBearing + 45);
                         break;
-                    case LINE:
+                    case sector_type_t::LINE:
                         gTaskSectorRenderer.SetLine(Idx, center, SectorRadius, SectorBearing + 90);
                         break;
                     default:
-                        LKASSERT(false);
+                        assert(false);
+                        break;
                 }
             } else {
                 switch (TaskPt.AATType) {
-                    case CIRCLE : // CIRCLE
-                    case 2 : // CONE
-                    case 3 : // ESS_CIRCLE
+                    case sector_type_t::CIRCLE:
+                    case sector_type_t::CONE:
+                    case sector_type_t::ESS_CIRCLE:
                         gTaskSectorRenderer.SetCircle(Idx, center, TaskPt.AATCircleRadius);
                         break;
-                    case SECTOR : // SECTOR
+                    case sector_type_t::SECTOR:
                         gTaskSectorRenderer.SetSector(Idx, center, TaskPt.AATSectorRadius,
                                                       TaskPt.AATStartRadial,
                                                       TaskPt.AATFinishRadial);
                         break;
                     default:
-                        LKASSERT(false);
+                        assert(false);
+                        break;
                 }
             }
         } else {
             SectorBearing = TaskPt.InBound;
 
             switch (FinishLine) {
-                case 0:
+                case sector_type_t::CIRCLE:
                     gTaskSectorRenderer.SetCircle(Idx, center, FinishRadius);
                     break;
-                case 1:
+                case sector_type_t::LINE:
                     gTaskSectorRenderer.SetLine(Idx, center, FinishRadius, SectorBearing);
                     break;
-                case 2:
+                case sector_type_t::SECTOR:
                     gTaskSectorRenderer.SetStartSector(Idx, center, FinishRadius,
                                                        SectorBearing - 45,
                                                        SectorBearing + 45);
                     break;
                 default:
-                    LKASSERT(false);
+                    assert(false);
+                    break;
             }
         }
         if (!UseAATTarget()) {
@@ -120,12 +124,18 @@ void CalculateTaskSectors(void) {
             if (StartPt.Active && ValidWayPoint(StartPt.Index)) {
                 const WAYPOINT &StartWpt = WayPointList[StartPt.Index];
                 const GeoPoint center(StartWpt.Latitude, StartWpt.Longitude);
-                if (StartLine == 2) {
+                switch (StartLine) {
+                case sector_type_t::SECTOR:
                     gStartSectorRenderer.SetStartSector(i, center, StartRadius,
                                                         StartPt.OutBound + 45,
                                                         StartPt.OutBound - 45);
-                } else {
+                    break;                
+                case sector_type_t::LINE:
                     gStartSectorRenderer.SetLine(i, center, StartRadius, StartPt.OutBound);
+                    break;
+                default:
+                    assert(false);
+                    break;
                 }
             }
         }

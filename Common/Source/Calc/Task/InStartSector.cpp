@@ -37,8 +37,7 @@ bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   bool inrange = (FirstPointDistance < StartRadius);
 
-  if(StartLine==0) { 
-    // Start Circle 
+  if (StartLine == sector_type_t::CIRCLE) { 
     return inrange;
   }
   // Start Line
@@ -47,7 +46,7 @@ bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   // JMW bugfix, was Bisector, which is invalid
 
   bool approaching;
-  if(StartLine==1) { // Start line 
+  if (StartLine == sector_type_t::LINE) { // Start line 
     approaching = ((AircraftBearing >= -90) && (AircraftBearing <= 90));
   } else {
     // FAI 90 degree
@@ -118,7 +117,7 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool StartOut, in
   isInSector &= in_height;
 
   // StartOut only Valid if Start is Cylindre.
-  if (gTaskType == TSK_GP && StartLine == 0 && StartOut) {  // 100509
+  if (gTaskType == TSK_GP && StartLine == sector_type_t::CIRCLE && StartOut) {  // 100509
     // we crossed the start if we were outside sector and now we are in.
     *CrossedStart = !LastInSector.value_or(true) && isInSector;
   } else {

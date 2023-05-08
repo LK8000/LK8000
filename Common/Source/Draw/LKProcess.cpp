@@ -2587,28 +2587,30 @@ olc_score:
       if ( ValidTaskPoint(ActiveTaskPoint)) {
         const double Distance = WayPointCalc[Task[ActiveTaskPoint].Index].Distance;
         if (ActiveTaskPoint == 0) {
-          if (StartLine == 0) {
+          if (StartLine == sector_type_t::CIRCLE) {
             value = Distance - StartRadius;
 			valid=true;
           }
         } else if (ValidTaskPoint(ActiveTaskPoint + 1)) {
           if (!UseAATTarget()) {
-            if(SectorType == CIRCLE) {
+            if(SectorType == sector_type_t::CIRCLE) {
               value = Distance - SectorRadius;
               valid=true;
             }
           } else {
             switch(Task[ActiveTaskPoint].AATType) {
-              case CIRCLE : // CIRCLE
-              case 2 : // CONE
-              case 3 : // ESS_CIRCLE
+              case sector_type_t::CIRCLE:
+              case sector_type_t::CONE:
+              case sector_type_t::ESS_CIRCLE:
                 value = Distance - Task[ActiveTaskPoint].AATCircleRadius;
                 valid=true;
                 break;
-            }
+			default:
+				break;
+			}
           }
         } else {
-          if(FinishLine == 0) {
+          if(FinishLine == sector_type_t::CIRCLE) {
             value = Distance - FinishRadius; 
             valid=true;
           }

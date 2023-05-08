@@ -3026,13 +3026,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M210_ = "Cylinder" 
-    dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M393_ = "Line" 
-    dfe->addEnumText(MsgToken(393));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
-    dfe->addEnumText(MsgToken(274));
-    dfe->Set(FinishLine);
+    auto sectors = get_finish_sectors(TSK_DEFAULT);
+    if (dfe && sectors) {
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
+      }
+      dfe->Set(sectors->index(FinishLine));
+    }
     wp->RefreshDisplay();
   }
 
@@ -3046,13 +3046,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M210_ = "Cylinder" 
-    dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M393_ = "Line" 
-    dfe->addEnumText(MsgToken(393));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
-    dfe->addEnumText(MsgToken(274));
-    dfe->Set(StartLine);
+    auto sectors = get_start_sectors(TSK_DEFAULT);
+    if (dfe && sectors) {
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
+      }
+      dfe->Set(sectors->index(StartLine));
+    }
     wp->RefreshDisplay();
   }
 
@@ -3066,14 +3066,13 @@ DataField* dfe = wp->GetDataField();
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M210_ = "Cylinder" 
-    dfe->addEnumText(MsgToken(210));
-	// LKTOKEN  _@M274_ = "FAI Sector" 
-    dfe->addEnumText(MsgToken(274));
-    dfe->addEnumText(LKGetText(TEXT("DAe 0.5/10")));
-    dfe->addEnumText(MsgToken(393));
-    
-    dfe->Set(SectorType);
+    auto sectors = get_task_sectors(TSK_DEFAULT);
+    if (dfe && sectors) {
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
+      }
+      dfe->Set(sectors->index(SectorType));
+    }
     wp->RefreshDisplay();
   }
 
@@ -4054,8 +4053,10 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
-    if (FinishLine != wp->GetDataField()->GetAsInteger()) {
-      FinishLine = wp->GetDataField()->GetAsInteger();
+    auto sectors = get_finish_sectors(TSK_DEFAULT);
+    sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
+    if (FinishLine != new_type) {
+      FinishLine = new_type;
       taskchanged = true;
     }
   }
@@ -4071,8 +4072,10 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
-    if (StartLine != wp->GetDataField()->GetAsInteger()) {
-      StartLine = wp->GetDataField()->GetAsInteger();
+    auto sectors = get_start_sectors(TSK_DEFAULT);
+    sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
+    if (StartLine != new_type) {
+      StartLine = new_type;
       taskchanged = true;
     }
   }
@@ -4088,8 +4091,10 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
   if (wp) {
-    if ((int)SectorType != wp->GetDataField()->GetAsInteger()) {
-      SectorType = wp->GetDataField()->GetAsInteger();
+    auto sectors = get_task_sectors(TSK_DEFAULT);
+    sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
+    if (SectorType != new_type) {
+      SectorType = new_type;
       taskchanged = true;
     }
   }

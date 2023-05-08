@@ -41,36 +41,30 @@ static void SetWaypointValues(bool first=false) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
+    auto sectors = get_task_sectors(gTaskType);
     if (first) {
       dfe->Clear();
-      // LKTOKEN  _@M210_ = "Cylinder"
-      dfe->addEnumText(MsgToken(210));
-      // LKTOKEN  _@M590_ = "Sector"
-      dfe->addEnumText(MsgToken(590));
-      if(gTaskType==TSK_GP) {
-        // Conical ESS
-        dfe->addEnumText(MsgToken(2175));
-        // Circle ESS
-        dfe->addEnumText(MsgToken(2189));
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
       }
     }
     dfe->SetDetachGUI(true); // disable call to OnTaskType
-    dfe->Set(Task[twItemIndex].AATType);
+    dfe->Set(sectors->index(Task[twItemIndex].AATType));
     dfe->SetDetachGUI(false);
     wp->RefreshDisplay();
   }
 
   WindowControl* pFrm = wf->FindByName(_T("frmCircle"));
   if(pFrm) {
-    pFrm->SetVisible((Task[twItemIndex].AATType==0) || (Task[twItemIndex].AATType==3));
+    pFrm->SetVisible((Task[twItemIndex].AATType ==  sector_type_t::CIRCLE ) || (Task[twItemIndex].AATType == sector_type_t::ESS_CIRCLE));
   }
   pFrm = wf->FindByName(_T("frmSector"));
   if(pFrm) {
-    pFrm->SetVisible(Task[twItemIndex].AATType==1);
+    pFrm->SetVisible(Task[twItemIndex].AATType == sector_type_t::SECTOR);
   }
   pFrm = wf->FindByName(_T("frmCone"));
   if(pFrm) {
-    pFrm->SetVisible(Task[twItemIndex].AATType==2);
+    pFrm->SetVisible(Task[twItemIndex].AATType == sector_type_t::CONE);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
@@ -251,17 +245,13 @@ static void SetValues(bool first) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    if (dfe) {
+    auto sectors = get_finish_sectors(gTaskType);
+    if (dfe && sectors) {
       dfe->Clear();
-      // LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(MsgToken(210));
-      // LKTOKEN  _@M393_ = "Line" 
-      dfe->addEnumText(MsgToken(393));
-      if (gTaskType == TSK_DEFAULT || gTaskType == TSK_GP) {
-        // LKTOKEN  _@M274_ = "FAI Sector" 
-        dfe->addEnumText(MsgToken(274));
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
       }
-      dfe->Set(FinishLine);
+      dfe->Set(sectors->index(FinishLine));
     }
     wp->RefreshDisplay();
   }
@@ -276,31 +266,16 @@ static void SetValues(bool first) {
   wp = (WndProperty*) wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    if (first) {
+    auto sectors = get_start_sectors(gTaskType);
+    if (dfe && sectors) {
       dfe->Clear();
-      // LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(MsgToken(210));
-      // LKTOKEN  _@M393_ = "Line" 
-      dfe->addEnumText(MsgToken(393));
-      if (gTaskType == TSK_DEFAULT || gTaskType == TSK_GP) {
-        // LKTOKEN  _@M274_ = "FAI Sector" 
-        dfe->addEnumText(MsgToken(274));
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
       }
-    } else {
-      if ((gTaskType == TSK_DEFAULT || gTaskType == TSK_GP)) {
-        if (dfe->getCount() == 2) {
-          // LKTOKEN  _@M274_ = "FAI Sector"
-          dfe->addEnumText(MsgToken(274));
-        }
-      } else {
-        if (dfe->getCount() == 3) {
-          dfe->removeLastEnum();
-        }
-      }
+      dfe->SetDetachGUI(true); // disable call to OnTaskType
+      dfe->Set(sectors->index(StartLine));
+      dfe->SetDetachGUI(false);
     }
-    dfe->SetDetachGUI(true); // disable call to OnTaskType
-    dfe->Set(StartLine);
-    dfe->SetDetachGUI(false);
     wp->RefreshDisplay();
   }
 
@@ -317,18 +292,15 @@ static void SetValues(bool first) {
     // WE HAVE MANY PROBLEMS! I THINK IT IS TIME TO GO BACK TO bool AND GET RID OF MS BOOLS!!
     wp->SetVisible(gTaskType==TSK_DEFAULT);
     DataField* dfe = wp->GetDataField();
+    auto sectors = get_task_sectors(TSK_DEFAULT);
     if (first) {
       dfe->Clear();
-      // LKTOKEN  _@M210_ = "Cylinder" 
-      dfe->addEnumText(MsgToken(210));
-      // LKTOKEN  _@M274_ = "FAI Sector" 
-      dfe->addEnumText(MsgToken(274));
-      dfe->addEnumText(LKGetText(TEXT("DAe 0.5/10")));
-      	// LKTOKEN  _@M393_ = "Line" 
-      dfe->addEnumText(MsgToken(393));
+      for (auto type : *sectors) {
+        dfe->addEnumText(get_sectors_label(type));
+      }
     }
     dfe->SetDetachGUI(true); // disable call to OnTaskType
-    dfe->Set(SectorType);
+    dfe->Set(sectors->index(SectorType));
     dfe->SetDetachGUI(false);
     wp->RefreshDisplay();
   }
@@ -425,8 +397,9 @@ static void GetWaypointValues(void) {
     LockTaskData();
     wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
     if (wp) {
-      changed = CHECK_CHANGED(Task[twItemIndex].AATType, 
-                    wp->GetDataField()->GetAsInteger());
+      auto dfe = wp->GetDataField();
+      auto sectors = get_task_sectors(gTaskType);
+      changed = CHECK_CHANGED(Task[twItemIndex].AATType, sectors->type(dfe->GetAsInteger()));
     }
 
     wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
@@ -499,8 +472,9 @@ static void ReadValues(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
   if (wp) {
-    changed = CHECK_CHANGED(FinishLine,
-                  wp->GetDataField()->GetAsInteger());
+    auto dfe = wp->GetDataField();
+    auto sectors = get_finish_sectors(gTaskType);
+    changed = CHECK_CHANGED(FinishLine, sectors->type(dfe->GetAsInteger()));
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
@@ -511,8 +485,9 @@ static void ReadValues(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
   if (wp) {
-    changed = CHECK_CHANGED(StartLine, 
-                  wp->GetDataField()->GetAsInteger());
+    auto dfe = wp->GetDataField();
+    auto sectors = get_start_sectors(gTaskType);
+    changed = CHECK_CHANGED(StartLine, sectors->type(dfe->GetAsInteger()));
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
@@ -523,8 +498,9 @@ static void ReadValues(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
   if (wp) {
-    changed = CHECK_CHANGED(SectorType,
-                  wp->GetDataField()->GetAsInteger());
+    DataField* dfe = wp->GetDataField();
+    auto sectors = get_task_sectors(TSK_DEFAULT);
+    changed = CHECK_CHANGED(SectorType, sectors->type(dfe->GetAsInteger()));
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));

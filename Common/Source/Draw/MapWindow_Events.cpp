@@ -118,7 +118,7 @@ start_search:
 
 
     // TASK MULTISELECT
-    int SecType= DAe;
+    sector_type_t SecType = sector_type_t::DAe;
     double SecRadius =0;
     double Bear=0;
     bool Angleinside = false;

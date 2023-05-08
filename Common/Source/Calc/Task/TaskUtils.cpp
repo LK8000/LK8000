@@ -10,90 +10,176 @@
 #include <iterator>
 #include "NavFunctions.h"
 #include "Util/ScopeExit.hxx"
+#include "utils/lookup_table.h"
 
 bool TaskModified = false;
 bool TargetModified = false;
 TCHAR LastTaskFileName[MAX_PATH]= TEXT("\0");
 
+constexpr sector_type_t default_start_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::LINE,
+  sector_type_t::SECTOR,
+};
 
+constexpr sector_type_t aat_start_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::LINE,
+};
 
-int GetTaskSectorParameter(int TskIdx, int *SecType, double *SecRadius)
-{
-*SecType = LINE;
-  if(TskIdx ==0 )
-  {
-	*SecType = StartLine;
-	if(StartLine ==0)
-	  *SecType = CIRCLE;
-	if(StartLine ==1)
-	  *SecType = LINE;
-	if(StartLine ==2)
-	  *SecType = SECTOR;
+constexpr sector_type_t default_finish_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::LINE,
+  sector_type_t::SECTOR,
+};
 
-    if(SecRadius)
-      *SecRadius = (double)StartRadius;
+constexpr sector_type_t aat_finish_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::LINE,
+};
+
+constexpr sector_type_t default_task_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::SECTOR,
+  sector_type_t::DAe,
+  sector_type_t::LINE,
+};
+
+constexpr sector_type_t aat_task_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::SECTOR,
+};
+
+constexpr sector_type_t gp_task_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::SECTOR,
+  sector_type_t::CONE,
+  sector_type_t::ESS_CIRCLE,
+};
+
+auto sector_labels_table = lookup_table<sector_type_t, std::function<const TCHAR*()>>({
+  { sector_type_t::CIRCLE , std::bind(MsgToken, 210) }, // _@M210_ = "Cylinder"
+  { sector_type_t::SECTOR , std::bind(MsgToken, 590) }, // _@M590_ = "Sector"
+  { sector_type_t::SECTOR , std::bind(MsgToken, 274) }, // _@M274_ = "FAI Sector"
+  { sector_type_t::DAe, std::bind(LKGetText, _T("DAe 0.5/10")) },
+  { sector_type_t::LINE, std::bind(MsgToken, 393) }, // _@M393_ = "Line"
+  { sector_type_t::CONE , std::bind(MsgToken, 2175) }, // _@M2175_ = "Conical ESS"
+  { sector_type_t::ESS_CIRCLE , std::bind(MsgToken, 2189) }, // _@M2189_ = "Circle ESS"
+});
+
+const TCHAR* get_sectors_label(sector_type_t type) {
+  auto label = sector_labels_table.get(type, []() {
+    return _T("");
+  });
+  return label();
+}
+
+template<size_t size>
+class task_sectors_adaptor final : public task_sectors {
+  using type_array_t = sector_type_t[size];
+public:
+  task_sectors_adaptor(const type_array_t& array) : type_array(array) {}
+
+  const sector_type_t* begin() const override {
+    return std::begin(type_array);
   }
-  else
-  {
-    if(!ValidTaskPoint(TskIdx+1) )
-    {
+  const sector_type_t* end() const override {
+    return std::end(type_array);
+  }
+
+  unsigned index(sector_type_t type) const override {
+    auto it = std::find(begin(), end(), type);
+    if (it != end()) {
+      return std::distance(begin(), it);
+    }
+    return 0;
+  }
+
+  sector_type_t type(unsigned idx) const override {
+    auto item = std::next(begin(), idx < std::size(type_array) ? idx : 0);
+    return *item;
+  }
+
+private:
+  const type_array_t& type_array;
+};
+
+template<size_t size>
+std::unique_ptr<task_sectors> make_task_sectors_adaptor(const sector_type_t (&array)[size]) {
+  return std::make_unique<task_sectors_adaptor<size>>(array);
+}
+
+std::unique_ptr<task_sectors> get_start_sectors(int type) {
+  switch (type) {  
+  default:
+  case TSK_DEFAULT:
+  case TSK_GP:
+    return make_task_sectors_adaptor(default_start_sectors);
+  case TSK_AAT:
+    return make_task_sectors_adaptor(aat_start_sectors);
+  }
+}
+
+std::unique_ptr<task_sectors> get_finish_sectors(int type) {
+  switch (type) {  
+  default:
+  case TSK_DEFAULT:
+  case TSK_GP:
+    return make_task_sectors_adaptor(default_finish_sectors);
+  case TSK_AAT:
+    return make_task_sectors_adaptor(aat_finish_sectors);
+  }
+}
+
+std::unique_ptr<task_sectors> get_task_sectors(int type) {
+  switch (type) {  
+  default:
+  case TSK_DEFAULT:
+    return make_task_sectors_adaptor(default_task_sectors);
+  case TSK_AAT:
+    return make_task_sectors_adaptor(aat_task_sectors);
+  case TSK_GP:
+    return make_task_sectors_adaptor(gp_task_sectors);
+  }
+}
+
+
+void GetTaskSectorParameter(int TskIdx, sector_type_t* SecType, double* SecRadius) {
+  if (TskIdx == 0) {
+    if (SecType) {
+      *SecType = StartLine;
+    }
+    if (SecRadius) {
+      *SecRadius = StartRadius;
+    }
+  } else if (!ValidTaskPoint(TskIdx + 1)) {
+    if (SecType) {
       *SecType = FinishLine;
-      if(FinishLine ==0)
-	*SecType = CIRCLE;
-	  if(FinishLine ==1)
-		*SecType = LINE;
-	  if(FinishLine ==2)
-	*SecType = SECTOR;
-
-      if(SecRadius)
-	    *SecRadius  = (double)FinishRadius;
     }
-    else
-    {
-      if(UseAATTarget())
-      {
-        LKASSERT(ValidTaskPoint(TskIdx)); // could be -1
-	*SecType = Task[TskIdx].AATType;
-
-        if(SecRadius)
-	  *SecRadius  = Task[TskIdx].AATCircleRadius;
-
-        switch(Task[TskIdx].AATType) {
-            case 0:
-                *SecType = CIRCLE;
-                break;
-            case 1:
-                *SecType = SECTOR;
-                if(SecRadius)
-                  *SecRadius  = Task[TskIdx].AATSectorRadius;
-                break;
-            case 2:
-                *SecType = CONE;
-                break;
-            case 3:
-                *SecType = ESS_CIRCLE;
-                break;
-        }
+    if (SecRadius) {
+      *SecRadius = FinishRadius;
+    }
+  } else if (UseAATTarget()) {
+    LKASSERT(ValidTaskPoint(TskIdx));  // could be -1
+    if (SecType) {
+      *SecType = Task[TskIdx].AATType;
+    }
+    if (SecRadius) {
+      if (Task[TskIdx].AATType == sector_type_t::SECTOR) {
+        *SecRadius = Task[TskIdx].AATSectorRadius;
       }
-      else
-      {
-	*SecType = SectorType;
-/*
-	if(SectorType ==0)
-	  *SecType = CIRCLE;
-	if(SectorType ==1)
-	  *SecType = SECTOR;
-	if(SectorType ==2)
-	  *SecType = DAe;
-	if(SectorType ==3)
-	  *SecType = LINE;
-*/
-        if(SecRadius)
-	  *SecRadius = SectorRadius;
+      else {
+        *SecRadius = Task[TskIdx].AATCircleRadius;
       }
+    }
+  } else {
+    if (SecType) {
+      *SecType = SectorType;
+    }
+    if (SecRadius) {
+      *SecRadius = SectorRadius;
     }
   }
-  return 0;
 }
 
 
@@ -210,7 +296,7 @@ double FindInsideAATSectorDistance_old(double latitude,
   bool t_in_sector;
   double delta;
   double max_distance;
-  if(Task[taskwaypoint].AATType == SECTOR) {
+  if(Task[taskwaypoint].AATType == sector_type_t::SECTOR) {
     max_distance = Task[taskwaypoint].AATSectorRadius*2;
   } else {
     max_distance = Task[taskwaypoint].AATCircleRadius*2;
@@ -247,7 +333,7 @@ double FindInsideAATSectorDistance(double latitude,
                                    double p_found) {
 
   double max_distance;
-  if(Task[taskwaypoint].AATType == SECTOR) {
+  if(Task[taskwaypoint].AATType == sector_type_t::SECTOR) {
     max_distance = Task[taskwaypoint].AATSectorRadius;
   } else {
     max_distance = Task[taskwaypoint].AATCircleRadius;

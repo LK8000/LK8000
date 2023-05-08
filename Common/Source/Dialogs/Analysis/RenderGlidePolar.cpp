@@ -93,9 +93,9 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
     // Find Cone Slope :
     LockTaskData();
     for(unsigned i = 0; ValidTaskPoint(i); ++i) {
-        int Type;
+        sector_type_t Type;
         GetTaskSectorParameter(i, &Type, NULL);
-        if(Type == CONE) {
+        if(Type == sector_type_t::CONE) {
           ConeSlope = Task[i].PGConeSlope;
           break;
         }

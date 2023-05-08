@@ -174,20 +174,20 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
           SetNewHome(Task[0].Index);
         }
 
-        StartLine = 0; // CIRCLE
+        StartLine = sector_type_t::CIRCLE;
         StartRadius = tp.get("radius").get<double>();
 
         task_it = std::begin(Task); // always start task with Start of Speed Turnpoint
-        task_it->AATType = CIRCLE;
+        task_it->AATType = sector_type_t::CIRCLE;
         task_it->AATCircleRadius = StartRadius;
       }
       else if (type_str == "ESS") {
-        task_it->AATType = 3; // ESS_CIRCLE;
+        task_it->AATType = sector_type_t::ESS_CIRCLE;
       } else {
-        task_it->AATType = CIRCLE;
+        task_it->AATType = sector_type_t::CIRCLE;
       }
     } else {
-      task_it->AATType = CIRCLE;
+      task_it->AATType = sector_type_t::CIRCLE;
     }
   
     task_it->Index = FindOrAddWaypoint(&newPoint, false);
@@ -218,14 +218,14 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
   if(task_it != std::begin(Task)) { // Empty Task ??
     auto goal_tp = std::prev(task_it);
     FinishRadius = goal_tp->AATCircleRadius;
-    FinishLine = 0; // CIRCLE
+    FinishLine = sector_type_t::CIRCLE;
 
     const json::value& goal = task_json.get("goal");
     if (goal.is<json::object>()) {
       const json::value& type = goal.get("type"); // string - one of "CYLINDER"/"LINE", optional (default CYLINDER)
       if(type.is<std::string>()) {
         if(type.get<std::string>() == "LINE") {
-          FinishLine = 1; // LINE
+          FinishLine = sector_type_t::LINE; // LINE
         }
       }
     }
@@ -280,19 +280,19 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
         }
 
         task_it = std::begin(Task); // always start task with Start of Speed Turnpoint
-        task_it->AATType = CIRCLE;
-        StartLine = 0;
+        task_it->AATType = sector_type_t::CIRCLE;
+        StartLine = sector_type_t::CIRCLE;
         StartRadius = polyline[3];
         break;
       case 3: // ESS
-        task_it->AATType = 3; // ESS_CIRCLE;
+        task_it->AATType = sector_type_t::ESS_CIRCLE;
         break;
       default:
-        task_it->AATType = CIRCLE;
+        task_it->AATType = sector_type_t::CIRCLE;
         break;
       }
     } else {
-      task_it->AATType = CIRCLE;
+      task_it->AATType = sector_type_t::CIRCLE;
     }
 
     task_it->Index = FindOrAddWaypoint(&newPoint, false);
@@ -313,7 +313,7 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
   if(task_it != std::begin(Task)) { // Empty task ??
     auto goal_tp = std::prev(task_it);
     FinishRadius = goal_tp->AATCircleRadius;
-    FinishLine = 0; // CIRCLE
+    FinishLine = sector_type_t::CIRCLE;
 
     const json::value& goal = task_json.get("g");
     if (goal.is<json::object>()) {
@@ -321,7 +321,7 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
       const json::value& type = goal.get("t"); // number, optional one of 1 (LINE), 2 (CYLINDER) (default 2)
       if(type.is<double>()) {
         if (static_cast<int>(type.get<double>()) == 1) {
-          FinishLine = 1; // LINE
+          FinishLine = sector_type_t::LINE;
         }
       }
 

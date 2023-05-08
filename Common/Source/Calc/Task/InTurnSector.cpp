@@ -13,14 +13,15 @@ static
 bool InDefaultTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int the_turnpoint) {
 	if(!ValidTaskPoint(the_turnpoint)) return false;
 	switch(SectorType) {
-		case CIRCLE:
+		case sector_type_t::CIRCLE:
 			if(Calculated->WaypointDistance < SectorRadius) return true;
 			break;
-		case SECTOR:
-		case DAe: {
-			if(SectorType==DAe) { // JMW added german rules
-				if (Calculated->WaypointDistance<500) return true;
+		case sector_type_t::DAe:
+			// JMW added german rules
+			if (Calculated->WaypointDistance < 500) {
+				return true;
 			}
+		case sector_type_t::SECTOR: {
 			double AircraftBearing;
 			LockTaskData();
 			DistanceBearing(WayPointList[Task[the_turnpoint].Index].Latitude,
@@ -33,14 +34,14 @@ bool InDefaultTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int the_tur
 			while(AircraftBearing<-180) AircraftBearing+= 360;
 			while(AircraftBearing>180) AircraftBearing-= 360;
 			if(AircraftBearing>=-45 && AircraftBearing<=45) {
-				if(SectorType==SECTOR) {
+				if(SectorType == sector_type_t::SECTOR) {
 					if(Calculated->WaypointDistance < SectorRadius) return true;
 				} else { //It's a DAe
 					if(Calculated->WaypointDistance < 10000) return true; // JMW added german rules
 				}
 			}
 		}   break;
-		case LINE: {
+		case sector_type_t::LINE: {
 			//First check if we simply passed the WayPoint
 			LockTaskData();
 			if(Calculated->LegDistanceToGo<Task[the_turnpoint].Leg && Calculated->LegDistanceCovered>=Task[the_turnpoint].Leg) {
@@ -56,7 +57,8 @@ bool InDefaultTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int the_tur
 			UnlockTaskData();
 			if(bisectorOverpassed) return true;
 		}   break;
-		default: //Unknown sector type
+		default:
+			assert(false);
 			break;
 	}
 	return false;

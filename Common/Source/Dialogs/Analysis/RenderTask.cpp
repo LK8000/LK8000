@@ -110,7 +110,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 
         if (ValidTaskPoint(i+1))
         {
-          if (Task[i].AATType == SECTOR)
+          if (Task[i].AATType == sector_type_t::SECTOR)
             radius = Task[i].AATSectorRadius;
           else
             radius = Task[i].AATCircleRadius;
@@ -172,7 +172,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
                   Surface.SelectObject(LKBrush_Yellow);
 #endif
 		  Surface.SelectObject(LK_WHITE_PEN);
-		  if (Task[i].AATType == SECTOR)
+		  if (Task[i].AATType == sector_type_t::SECTOR)
 		  {
 			Surface.Segment((long)((x2-x_min)*xscale+rc.left+BORDER_X),(long)((y_max-y2)*yscale+rc.top),(long)(aatradius[i]*yscale),rc,	Task[i].AATStartRadial,	Task[i].AATFinishRadial);
 		  }

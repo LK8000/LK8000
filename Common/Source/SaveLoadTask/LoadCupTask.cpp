@@ -54,13 +54,13 @@ public:
     void UpdateTask() {
         if (mA1 == 180.0) {
             if (mIdx == 0) {
-                StartLine = 0;
+                StartLine = sector_type_t::CIRCLE;
                 StartRadius = mR1;
             } else if (mIdx == (size_t) getFinalWaypoint()) {
-                FinishLine = 0;
+                FinishLine = sector_type_t::CIRCLE;
                 FinishRadius = mR1;
             } else {
-                Task[mIdx].AATType = CIRCLE;
+                Task[mIdx].AATType = sector_type_t::CIRCLE;
                 Task[mIdx].AATCircleRadius = mR1;
             }
         } else {
@@ -126,13 +126,13 @@ public:
 
     void UpdateFixedSector() {
         if (mIdx == 0) {
-            StartLine = 2;
+            StartLine = sector_type_t::SECTOR;
             StartRadius = mR1;
         } else if (mIdx == (size_t) getFinalWaypoint()) {
-            FinishLine = 2;
+            FinishLine = sector_type_t::SECTOR;
             FinishRadius = mR1;
         } else {
-            Task[mIdx].AATType = SECTOR;
+            Task[mIdx].AATType = sector_type_t::SECTOR;
             Task[mIdx].AATSectorRadius = mR1;
             Task[mIdx].AATStartRadial = mA12 - 180.0 - (mA1);
             Task[mIdx].AATFinishRadial = mA12 - 180.0 + (mA1);
@@ -141,10 +141,10 @@ public:
 
     void UpdateSymLine() {
         if (mIdx == 0) {
-            StartLine = 1;
+            StartLine = sector_type_t::LINE;
             StartRadius = mR1;
         } else if (mIdx == (size_t) getFinalWaypoint()) {
-            FinishLine = 1;
+            FinishLine = sector_type_t::LINE;
             FinishRadius = mR1;
         } else {
             StartupStore(_T("..Cup Task : LINE Turnpoint is only supported for Start or Finish%s"), NEWLINE);
@@ -376,7 +376,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
             {
                 TaskValid = true;
                 TaskFound = true;
-                SectorType=SECTOR;  // normal sector by default if no other ObsZone parameter
+                SectorType = sector_type_t::SECTOR; // normal sector by default if no other ObsZone parameter
                 gTaskType = TSK_DEFAULT; // racing task by default, if AAT will overwrite this
 
                 if(Entries[0].size() == 0)
@@ -470,7 +470,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                                 TmpZone.mA1 = _tcstod(pToken + 3, &sz);
                                 if( TmpZone.mR1 > 179.5)  //  180° = Circle sector
                                   if( TmpZone.mR1 < 180.5)
-                                    SectorType=CIRCLE;
+                                    SectorType = sector_type_t::CIRCLE;
                             } else if (_tcsstr(pToken, _T("R2=")) == pToken) {
                                 // Radius 2
                                 TmpZone.mR2 = ReadLength(pToken + 3);
@@ -484,7 +484,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                                 // AAT
                         	      gTaskType = TSK_AAT;
                                 if( _tcstod(pToken + 4, &sz) > 0) // AAT = 1?
-                                  SectorType=CIRCLE;
+                                  SectorType = sector_type_t::CIRCLE;
                             } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
                                 // true For Line Turmpoint type
                                 // Exist only for start an Goalin LK
@@ -493,7 +493,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                         }
                         if(  TmpZone.mR1 >0)   // if both radius defined
                           if(  TmpZone.mR2 >0) // must be keyhole definition
-                            SectorType=DAe;    // the only similar sectortype in LK
+                            SectorType = sector_type_t::DAe;    // the only similar sectortype in LK
 
                         if( TmpZone.mLine) // line has priority (Start & Finish) if multiple definitions
                         {

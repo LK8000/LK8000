@@ -286,7 +286,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   INT i = 0;
 
   double SecRadius;
-  int Type;
+  sector_type_t Type;
 
   _stprintf(DeclStrings[i++], _T("RCDT,SET,PILOT,%s,%s"), PilotName, PilotSurName);
   _stprintf(DeclStrings[i++], _T("RCDT,SET,GLIDER,%s,%s,%s,%s"), 
@@ -315,12 +315,15 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
     FormatTP(DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
 
     GetTaskSectorParameter(ii, &Type, &SecRadius);
-    switch(Type) {
-      case LINE  : isline=1; r1= SecRadius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
-      case SECTOR: isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
-      case CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
-      case DAe   : isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
-      case CONE  : isline=0; r1= SecRadius; a1 =180 ; a2=0  ; r2=0  ; a21 =0; break;
+    switch (Type) {
+      case sector_type_t::LINE  : isline=1; r1= SecRadius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::SECTOR: isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::DAe   : isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
+      case sector_type_t::CONE  : isline=0; r1= SecRadius; a1 =180 ; a2=0  ; r2=0  ; a21 =0; break;
+      default:
+        assert(false);
+        break;
     }
 
     elev = WayPointList[HomeWaypoint].Altitude;

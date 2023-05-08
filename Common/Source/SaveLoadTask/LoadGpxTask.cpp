@@ -123,18 +123,18 @@ bool LoadGpxTask(std::istream& stream) {
     } while(WPnode); //for(each node in rtept)
 
     if(ISGAAIRCRAFT) { //Set task options for GA aircraft
-        StartLine=1; //Line
+        StartLine = sector_type_t::LINE;
         StartRadius=1000;
-        SectorType=LINE;
+        SectorType = sector_type_t::LINE;
         SectorRadius=1000;
-        FinishLine=0; //Circle
+        FinishLine = sector_type_t::CIRCLE;
         FinishRadius=500;
     } else { //otherwise set default task options for other categories
-        StartLine=2; //Sector
+        StartLine = sector_type_t::SECTOR;
         StartRadius=1500;
-        SectorType=CIRCLE;
+        SectorType = sector_type_t::CIRCLE;
         SectorRadius=2000;
-        FinishLine=0; //Circle
+        FinishLine = sector_type_t::CIRCLE;
         FinishRadius=3000;
     }
     AutoAdvance=1; //Auto

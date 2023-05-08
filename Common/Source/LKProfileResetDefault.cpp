@@ -109,7 +109,7 @@ void LKProfileResetDefault() {
   WindCalcTime=WCALC_TIMEBACK;
   WindCalcSpeed=27.778;
 
-  SectorType = 1;
+  SectorType = sector_type_t::SECTOR;
   SectorRadius = 3000;
 
 
@@ -145,11 +145,11 @@ void LKProfileResetDefault() {
 
   TeamCodeRefWaypoint = -1;
 
-  StartLine = 1;
+  StartLine = sector_type_t::LINE;
 
   StartRadius = 3000;
 
-  FinishLine = 1;
+  FinishLine = sector_type_t::LINE;
 
   FinishRadius = 3000;
 

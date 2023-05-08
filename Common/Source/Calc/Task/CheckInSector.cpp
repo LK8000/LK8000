@@ -33,9 +33,9 @@ bool IsCircle(const size_t& idx) {
   if (idx > 0 && ValidTaskPointFast(idx + 1)) { 
     // Not Start or Finish
     switch (Task[idx].AATType) {
-      case CIRCLE:
-      case 2: // CONE
-      case 3: // ESS_CIRCLE
+      case sector_type_t::CIRCLE:
+      case sector_type_t::CONE:
+      case sector_type_t::ESS_CIRCLE:
         return true;
       default:
         return false;

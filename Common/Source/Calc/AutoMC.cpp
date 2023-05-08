@@ -54,12 +54,12 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             first_mc = true;
         }
 
-        if (DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
+        if (UseAATTarget() && Calculated->NextAltitude > 0.) {
             // Special case for Conical end of Speed section
-            int Type = -1;
-            GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
+            sector_type_t Type = sector_type_t::CIRCLE;
+            GetTaskSectorParameter(ActiveTaskPoint, &Type, nullptr);
             ConeSlope = Task[ActiveTaskPoint].PGConeSlope;
-            if (Type == CONE && ConeSlope > 0.0) {
+            if (Type == sector_type_t::CONE && ConeSlope > 0.0) {
                 is_final_glide = true;
                 is_conical_ess = true;
             }

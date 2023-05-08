@@ -27,11 +27,13 @@ GeoPoint GetWayPointPosition(size_t idx) {
 } // namespace
 
 bool ExitStart(const DERIVED_INFO& Calculated) {
-	if (gTaskType != TSK_GP || StartLine) {
+	ScopeLock lock(CritSec_TaskData);
+	if (gTaskType != TSK_GP) {
 		return true; // start IN and go out, OLD CLASSIC MODE
 	}
-
-	ScopeLock lock(CritSec_TaskData);
+	if (StartLine != sector_type_t::CIRCLE) {
+		return true; // start IN and go out, OLD CLASSIC MODE
+	}
 	if (ValidTaskPointFast(0) && ValidTaskPointFast(1)) {
 
 		GeoPoint start = GetWayPointPosition(Task[0].Index);
@@ -40,7 +42,6 @@ bool ExitStart(const DERIVED_INFO& Calculated) {
 		// start OUT and go IN if next is outside start cylinder
 		return start.Distance(next) > StartRadius;
 	}
-
 	return true; // default is OLD CLASSIC MODE
 }
 

@@ -563,17 +563,17 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 if ( ValidTaskPoint(ActiveTaskPoint)) {
                     double AltBase = 0.0, Radius = 0.0;
                     LockTaskData();
-                    int Type;
-                    GetTaskSectorParameter(ActiveTaskPoint, &Type, NULL);
+                    sector_type_t Type = sector_type_t::CIRCLE;
+                    GetTaskSectorParameter(ActiveTaskPoint, &Type, nullptr);
                     const double baselon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
                     const double baselat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
-                    if(Type == CONE) {
+                    if(Type == sector_type_t::CONE) {
                         AltBase = Task[ActiveTaskPoint].PGConeBase;
                         Radius = Task[ActiveTaskPoint].PGConeBaseRadius;
                         Slope = Task[ActiveTaskPoint].PGConeSlope;
                     }
                     UnlockTaskData();
-                    if(Type == CONE && Slope > 0.) {
+                    if(Type == sector_type_t::CONE && Slope > 0.) {
                         double basedist = 0.;
                         DistanceBearing(aclat, aclon, baselat, baselon, &basedist, NULL);
                         VOpt = GlidePolar::FindSpeedForSlope(Slope);

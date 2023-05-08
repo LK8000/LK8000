@@ -16,11 +16,12 @@
 
 struct GeoPoint;
 
-class TaskRendererMgr {
+class TaskRendererMgr final {
 public:
     TaskRendererMgr();
-    virtual ~TaskRendererMgr();
+    ~TaskRendererMgr();
 
+    TaskRendererMgr(TaskRendererMgr&&) = delete;
     TaskRendererMgr(const TaskRendererMgr&) = delete;
 
     void CalculateScreenPosition(const rectObj &screenbounds, const ScreenProjection& _Proj);
@@ -36,8 +37,7 @@ public:
     const TaskRenderer* GetRenderer(unsigned idx) const;
 
 private:
-    typedef std::unique_ptr<TaskRenderer> TaskRenderer_ptr;
-    typedef std::vector<TaskRenderer_ptr> renderer_list_t;
+    using renderer_list_t = std::vector<std::unique_ptr<TaskRenderer>>;
 
     renderer_list_t _renderer_list;
 };

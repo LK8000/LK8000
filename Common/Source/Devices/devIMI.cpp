@@ -393,14 +393,17 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
     // START
     imiWp.oz.style = 3;
     switch(StartLine) {
-    case 0: // cylinder
+    case sector_type_t::CIRCLE:
       imiWp.oz.A1 = 1800;
       break;
-    case 1: // line
+    case sector_type_t::LINE:
       imiWp.oz.line_only = 1;
       break;
-    case 2: // fai sector
+    case sector_type_t::SECTOR:
       imiWp.oz.A1 = 450;
+      break;
+    default:
+      assert(false);
       break;
     }
     imiWp.oz.R1 = std::min(250000., StartRadius);
@@ -409,14 +412,17 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
     // FINISH
     imiWp.oz.style = 4;
     switch(FinishLine) {
-    case 0: // cylinder
+    case sector_type_t::CIRCLE:
       imiWp.oz.A1 = 1800;
       break;
-    case 1: // line
+    case sector_type_t::LINE:
       imiWp.oz.line_only = 1;
       break;
-    case 2: // fai sector
+    case sector_type_t::SECTOR:
       imiWp.oz.A1 = 450;
+      break;
+    default:
+      assert(false);
       break;
     }
     imiWp.oz.R1 = std::min(250000., FinishRadius);
@@ -426,33 +432,39 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
     if(UseAATTarget()) {
       imiWp.oz.style = 1;
       switch(Task[idx].AATType) {
-      case CIRCLE:
+      case sector_type_t::CIRCLE:
         imiWp.oz.A1 = 1800;
         imiWp.oz.R1 = std::min(250000., Task[idx].AATCircleRadius);
         break;
-      case SECTOR:
+      case sector_type_t::SECTOR:
         imiWp.oz.A1 = ((int)(360 + Task[idx].AATFinishRadial - Task[idx].AATStartRadial) % 360) * 10 / 2;
         imiWp.oz.A12 = ((int)(Task[idx].AATStartRadial * 10) + 1800 + imiWp.oz.A1) % 3600;
         imiWp.oz.R1 = std::min(250000., Task[idx].AATSectorRadius);
+        break;
+      default:
+        assert(false);
         break;
       }
     }
     else {
       imiWp.oz.style = 2;
       switch(SectorType) {
-      case 0: // cylinder
+      case sector_type_t::CIRCLE:
         imiWp.oz.A1 = 1800;
         imiWp.oz.R1 = std::min(250000., SectorRadius);
         break;
-      case 1: // sector
+      case sector_type_t::SECTOR:
         imiWp.oz.A1 = 450;
         imiWp.oz.R1 = std::min(250000., SectorRadius);
         break;
-      case 2: // German DAe 0.5/10
+      case sector_type_t::DAe: // German DAe 0.5/10
         imiWp.oz.A1 = 450;
         imiWp.oz.R1 = 10000;
         imiWp.oz.A2 = 1800;
         imiWp.oz.R2 = 500;
+        break;
+      default:
+        assert(false);
         break;
       }
     }

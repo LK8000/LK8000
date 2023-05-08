@@ -144,7 +144,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                    Basic->Latitude,
                                    &LegXTD, &LegCurrentCourse);
 
-    if ((StartLine==0) && (ActiveTaskPoint==1)) {
+    if ((StartLine == sector_type_t::CIRCLE) && (ActiveTaskPoint == 1)) {
       // Correct speed calculations for radius
       // JMW TODO accuracy: legcovered replace this with more accurate version
       // LegDistance -= StartRadius;

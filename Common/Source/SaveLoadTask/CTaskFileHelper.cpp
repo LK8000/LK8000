@@ -366,11 +366,11 @@ void CTaskFileHelper::LoadOptionDefault(const xml_node* node) {
             const char* szType = GetAttribute(nodeStart, "type");
             if (szType) {
                 if (strcmp(szType, "circle") == 0) {
-                    StartLine = 0;
+                    StartLine = sector_type_t::CIRCLE;
                 } else if (strcmp(szType, "line") == 0) {
-                    StartLine = 1;
+                    StartLine = sector_type_t::LINE;
                 } else if (strcmp(szType, "sector") == 0) {
-                    StartLine = 2;
+                    StartLine = sector_type_t::SECTOR;
                 }
             }
             GetAttribute(nodeStart, "radius", StartRadius);
@@ -381,11 +381,11 @@ void CTaskFileHelper::LoadOptionDefault(const xml_node* node) {
             const char* szType = GetAttribute(nodeFinish, "type");
             if (szType) {
                 if (strcmp(szType, "circle") == 0) {
-                    FinishLine = 0;
+                    FinishLine = sector_type_t::CIRCLE;
                 } else if (strcmp(szType, "line") == 0) {
-                    FinishLine = 1;
+                    FinishLine = sector_type_t::LINE;
                 } else if (strcmp(szType, "sector") == 0) {
-                    FinishLine = 2;
+                    FinishLine = sector_type_t::SECTOR;
                 }
             }
             GetAttribute(nodeFinish, "radius", FinishRadius);
@@ -395,13 +395,13 @@ void CTaskFileHelper::LoadOptionDefault(const xml_node* node) {
         if (nodeSector) {
             const char* szType = GetAttribute(nodeSector, "type");
             if (strcmp(szType, "circle") == 0) {
-                SectorType = CIRCLE;
+                SectorType = sector_type_t::CIRCLE;
             } else if (strcmp(szType, "sector") == 0) {
-                SectorType = SECTOR;
+                SectorType = sector_type_t::SECTOR;
             } else if (strcmp(szType, "DAe") == 0) {
-                SectorType = DAe;
+                SectorType = sector_type_t::DAe;
             } else if (strcmp(szType, "line") == 0) {
-                SectorType = LINE;
+                SectorType = sector_type_t::LINE;
             }
             GetAttribute(nodeSector, "radius", SectorRadius);
         }
@@ -463,51 +463,32 @@ bool CTaskFileHelper::LoadTaskPointList(const xml_node* node) {
     // TODO : this code is temporary before rewriting task system
     if (UseAATTarget()) {
         if (ValidTaskPoint(mFinishIndex)) {
-            switch (Task[mFinishIndex].AATType) {
-                case CIRCLE:
+            FinishLine = Task[mFinishIndex].AATType;
+            switch (FinishLine) {
+                case sector_type_t::CIRCLE:
+                case sector_type_t::LINE:
                     FinishRadius = Task[mFinishIndex].AATCircleRadius;
-                    FinishLine = 0;
                     break;
-                case LINE:
-                    FinishRadius = Task[mFinishIndex].AATCircleRadius;
-                    FinishLine = 1;
-                    break;
-                case SECTOR:
+                case sector_type_t::SECTOR:
                     FinishRadius = Task[mFinishIndex].AATSectorRadius;
-                    FinishLine = 2;
+                    break;
+                default:
+                    assert(false);
                     break;
             }
         }
         if (ValidTaskPoint(0)) {
+            StartLine = Task[0].AATType;
             switch (Task[0].AATType) {
-                case CIRCLE:
+                case sector_type_t::CIRCLE:
+                case sector_type_t::LINE:
                     StartRadius = Task[0].AATCircleRadius;
-                    StartLine = 0;
                     break;
-                case LINE:
-                    StartRadius = Task[0].AATCircleRadius;
-                    StartLine = 1;
-                    break;
-                case SECTOR:
+                case sector_type_t::SECTOR:
                     StartRadius = Task[0].AATSectorRadius;
-                    StartLine = 2;
                     break;
-            }
-        }
-        for(unsigned i = 1; ValidTaskPoint(i+1); ++i) {
-            switch (Task[i].AATType) {
-                case CIRCLE:
-                case SECTOR:
-                    break;
-                case DAe:
-                case LINE:
-                    LKASSERT(FALSE);
-                    break;
-                case CONE:
-                    Task[i].AATType = 2;
-                    break;
-                case ESS_CIRCLE:
-                    Task[i].AATType = 3;
+                default:
+                    assert(false);
                     break;
             }
         }
@@ -568,25 +549,25 @@ bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
         const char* szType = GetAttribute(node, "type");
         if (szType) {
             if (strcmp(szType, "circle") == 0) {
-                Task[idx].AATType = CIRCLE;
+                Task[idx].AATType = sector_type_t::CIRCLE;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
             } else if (strcmp(szType, "sector") == 0) {
-                Task[idx].AATType = SECTOR;
+                Task[idx].AATType = sector_type_t::SECTOR;
                 GetAttribute(node, "radius", Task[idx].AATSectorRadius);
                 GetAttribute(node, "start-radial", Task[idx].AATStartRadial);
                 GetAttribute(node, "end-radial", Task[idx].AATFinishRadial);
             } else if (strcmp(szType, "line") == 0) {
-                Task[idx].AATType = LINE;
+                Task[idx].AATType = sector_type_t::LINE;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
             } else if (strcmp(szType, "DAe") == 0) {
-                Task[idx].AATType = DAe; // not Used in AAT and PGTask
+                Task[idx].AATType = sector_type_t::DAe; // not Used in AAT and PGTask
             } else if (strcmp(szType, "cone") == 0) {
-                Task[idx].AATType = CONE; // Only Used in PGTask
+                Task[idx].AATType = sector_type_t::CONE; // Only Used in PGTask
                 GetAttribute(node, "base", Task[idx].PGConeBase);
                 GetAttribute(node, "radius", Task[idx].PGConeBaseRadius);
                 GetAttribute(node, "slope", Task[idx].PGConeSlope);
             } else if (strcmp(szType, "ess_circle") == 0) {
-                Task[idx].AATType = ESS_CIRCLE;
+                Task[idx].AATType = sector_type_t::ESS_CIRCLE;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
             }
         }
@@ -810,14 +791,17 @@ bool CTaskFileHelper::SaveOptionDefault(xml_node* node) {
     xml_node* nodeStart = AddNode(node, "start");
     if (nodeStart) {
         switch (StartLine) {
-            case 0: //circle
+            case sector_type_t::CIRCLE:
                 SetAttribute(nodeStart, "type", "circle");
                 break;
-            case 1: //line
+            case sector_type_t::LINE:
                 SetAttribute(nodeStart, "type", "line");
                 break;
-            case 2: //sector
+            case sector_type_t::SECTOR:
                 SetAttribute(nodeStart, "type", "sector");
+                break;
+            default:
+                assert(false);
                 break;
         }
         SetAttribute(nodeStart, "radius", StartRadius);
@@ -828,14 +812,17 @@ bool CTaskFileHelper::SaveOptionDefault(xml_node* node) {
     xml_node* nodeFinish = AddNode(node, "finish");
     if (nodeFinish) {
         switch (FinishLine) {
-            case 0: //circle
+            case sector_type_t::CIRCLE:
                 SetAttribute(nodeFinish, "type", "circle");
                 break;
-            case 1: //line
+            case sector_type_t::LINE:
                 SetAttribute(nodeFinish, "type", "line");
                 break;
-            case 2: //sector
+            case sector_type_t::SECTOR:
                 SetAttribute(nodeFinish, "type", "sector");
+                break;
+            default:
+                assert(false);
                 break;
         }
         SetAttribute(nodeFinish, "radius", FinishRadius);
@@ -846,22 +833,24 @@ bool CTaskFileHelper::SaveOptionDefault(xml_node* node) {
     xml_node* nodeSector = AddNode(node, "sector");
     if (nodeSector) {
         switch (SectorType) {
-            case CIRCLE: //circle
+            case sector_type_t::CIRCLE:
                 SetAttribute(nodeSector, "type", "circle");
                 SetAttribute(nodeSector, "radius", SectorRadius);
                 break;
-            case SECTOR: //sector
+            case sector_type_t::SECTOR:
                 SetAttribute(nodeSector, "type", "sector");
                 SetAttribute(nodeSector, "radius", SectorRadius);
                 break;
-            case DAe: //DAe
+            case sector_type_t::DAe:
                 SetAttribute(nodeSector, "type", "DAe");
                 break;
-            case LINE: //line
+            case sector_type_t::LINE:
                 SetAttribute(nodeSector, "type", "line");
                 SetAttribute(nodeSector, "radius", SectorRadius);
                 break;
-                
+            default:
+                assert(false);
+                break;
         }
     } else {
         return false;
@@ -973,33 +962,34 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
     SetAttribute(node, "name", WayPointList[TaskPt.Index].Name);
 
     if (UseAATTarget()) {
-        int Type; double Radius;
+        sector_type_t Type = sector_type_t::CIRCLE;
+        double Radius;
         GetTaskSectorParameter(idx, &Type, &Radius);
         switch (Type) {
-            case CIRCLE:
+            case sector_type_t::CIRCLE:
                 SetAttribute(node, "type", "circle");
                 SetAttribute(node, "radius", Radius);
                 break;
-            case SECTOR:
+            case sector_type_t::SECTOR:
                 SetAttribute(node, "type", "sector");
                 SetAttribute(node, "radius", Radius);
                 SetAttribute(node, "start-radial", TaskPt.AATStartRadial);
                 SetAttribute(node, "end-radial", TaskPt.AATFinishRadial);
                 break;
-            case LINE:
+            case sector_type_t::LINE:
                 SetAttribute(node, "type", "line");
                 SetAttribute(node, "radius", Radius);
                 break;
-            case DAe: // not Used in AAT and PGTask
-                LKASSERT(false);
+            case sector_type_t::DAe: // not Used in AAT and PGTask
+                SetAttribute(node, "type", "DAe");
                 break;
-            case CONE:
+            case sector_type_t::CONE:
                 SetAttribute(node, "type", "cone");
                 SetAttribute(node, "base", TaskPt.PGConeBase);
                 SetAttribute(node, "radius", TaskPt.PGConeBaseRadius);
                 SetAttribute(node, "slope", TaskPt.PGConeSlope);
                 break;
-            case ESS_CIRCLE:
+            case sector_type_t::ESS_CIRCLE:
                 SetAttribute(node, "type", "ess_circle");
                 SetAttribute(node, "radius", Radius);
                 break;

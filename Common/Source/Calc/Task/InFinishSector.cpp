@@ -41,11 +41,10 @@ bool InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i)
     LastInSector = false;
   }
 
-  if(!FinishLine) // Start Circle
-    {
-      retval = inrange;
-      goto OnExit;
-    }
+  if (FinishLine == sector_type_t::CIRCLE) {
+    retval = inrange;
+    goto OnExit;
+  }
         
   // Finish line
   AircraftBearing = AngleLimit180(AircraftBearing - Task[i].InBound);
@@ -53,7 +52,7 @@ bool InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i)
   // JMW bugfix, was Bisector, which is invalid
 
   bool approaching;
-  if(FinishLine==1) { // Finish line 
+  if(FinishLine == sector_type_t::LINE) { // Finish line 
     approaching = ((AircraftBearing >= -90) && (AircraftBearing <= 90));
   } else {
     // FAI 90 degree

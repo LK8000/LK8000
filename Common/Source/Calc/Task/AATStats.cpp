@@ -72,7 +72,7 @@ void AATStats_Distance(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
                         Task[i].AATTargetLon,
                         &TargetLegToGo, NULL);
 
-        if(Task[i].AATType == CIRCLE)
+        if(Task[i].AATType == sector_type_t::CIRCLE)
         {
           MaxDistance = LegToGo + (Task[i].AATCircleRadius );  // ToDo: should be adjusted for angle of max target and for national rules
           MinDistance = LegToGo - (Task[i].AATCircleRadius );  
@@ -105,7 +105,7 @@ void AATStats_Distance(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	MaxDistance += LegDistance;
 	MinDistance += LegDistance;
 	
-	if(Task[ActiveTaskPoint].AATType == CIRCLE) {
+	if(Task[ActiveTaskPoint].AATType == sector_type_t::CIRCLE) {
 	  // breaking out single Areas increases accuracy for start
 	  // and finish
 	  
