@@ -35,6 +35,7 @@ Copyright_License {
 #include "Calc/Vario.h"
 #include "ComCheck.h"
 #include "Android/Vario/VarioPlayer.h"
+#include "Java/Env.hxx"
 
 
 Java::TrivialClass InternalSensors::gps_cls, InternalSensors::sensors_cls;
@@ -135,25 +136,19 @@ InternalSensors* InternalSensors::create(JNIEnv* env, Context* context,
   assert(sensors_cls != nullptr);
   assert(gps_cls != nullptr);
 
-  // Construct InternalGPS object.
-  Java::LocalObject gps_obj = {
-    env, env->NewObject(gps_cls, gps_ctor_id, context->Get(), index)
-  };
+  try {
+    // Construct InternalGPS object.
+    Java::LocalObject gps_obj = NewObjectRethrow(env, gps_cls, gps_ctor_id, context->Get(), index);
 
-  if (Java::DiscardException(env)) {
-    return nullptr;
+    // Construct NonGPSSensors object.
+    Java::LocalObject sensors_obj = NewObjectRethrow(env, sensors_cls, sensors_ctor_id, context->Get(), index);
+
+    return new InternalSensors(env, gps_obj, sensors_obj);
   }
-
-  assert(gps_obj);
-
-  // Construct NonGPSSensors object.
-  Java::LocalObject sensors_obj = {
-    env, env->NewObject(sensors_cls, sensors_ctor_id, context->Get(), index)
-  };
-
-  assert(sensors_obj != nullptr);
-
-  return new InternalSensors(env, gps_obj, sensors_obj);
+  catch (std::exception& e) {
+    StartupStore(_T("Failed to create `InternalSensors` : %s"), to_tstring(e.what()).c_str());
+  }
+  return nullptr;
 }
 
 // Helper for retrieving the set of sensors to which we can subscribe.
