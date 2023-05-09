@@ -199,6 +199,7 @@ void AndroidPort::PortStateChanged() {
 
 void AndroidPort::PortError(const char *msg) {
     StartupStore(_T("ComPort Error : %s"), msg);
+    Close();
 }
 
 unsigned AndroidPort::RxThread() {
