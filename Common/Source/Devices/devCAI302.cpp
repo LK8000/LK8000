@@ -229,22 +229,12 @@ void test(void){
 
 
 BOOL cai302Open(PDeviceDescriptor_t d){
-
-//test();
-
-  if (!SIMMODE) {
-    d->Com->WriteString(TEXT("\x03"));
-    d->Com->WriteString(TEXT("LOG 0\r"));
+  if (d && d->Com) {
+    d->Com->WriteString("\x03");
+    d->Com->WriteString("LOG 0\r");
   }
-
-  return(TRUE);
+  return TRUE;
 }
-
-BOOL cai302Close(PDeviceDescriptor_t d){
-  (void)d;
-  return(TRUE);
-}
-
 
 static int DeclIndex = 128;
 static int nDeclErrorCode;
@@ -473,7 +463,6 @@ void cai302Install(PDeviceDescriptor_t d){
   d->PutBugs = cai302PutBugs;
   d->PutBallast = cai302PutBallast;
   d->Open = cai302Open;
-  d->Close = cai302Close;
   d->Declare = cai302Declare;
 }
 
