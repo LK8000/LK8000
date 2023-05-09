@@ -115,7 +115,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
                 return;
             }
 
-            UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
             if (device == null) {
                 return;
             }
@@ -138,6 +138,9 @@ public class UsbSerialHelper extends BroadcastReceiver {
                         AddAvailable(device);
                     }
                 }
+                else {
+                    Log.d(TAG, "permission refused for device " + device);
+                }
             }
         }
     }
@@ -149,8 +152,8 @@ public class UsbSerialHelper extends BroadcastReceiver {
 
             if (exists(supported_ids, vid, pid)) {
                 try {
-                    Log.v(TAG, "UsbDevice Found : " + device);
                     _AvailableDevices.put(getDeviceName(device), device);
+                    Log.v(TAG, "UsbDevice Found : " + device);
                 } catch (SecurityException ignored) {
                     // Permission may be required to get serial number if app targets SDK >= 29
                     UsbManager usbmanager = (UsbManager) _Context.getSystemService(Context.USB_SERVICE);

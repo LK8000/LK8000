@@ -36,30 +36,42 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
     private PortListener portListener;
     private InputListener inputListener;
     private int _baudRate;
+    private int state = STATE_LIMBO;
+    private final SafeDestruct safeDestruct = new SafeDestruct();
 
     public synchronized void open(UsbManager manager) {
         Log.v(TAG, "open()");
 
         _UsbConnection = manager.openDevice(_UsbDevice);
-        if (_UsbConnection != null) {
-            _SerialPort = UsbSerialDevice.createUsbSerialDevice(_UsbDevice, _UsbConnection);
-            if (_SerialPort != null) {
-                if (_SerialPort.open()) {
-                    _SerialPort.setBaudRate(getBaudRate());
-                    _SerialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
-                    _SerialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
-                    _SerialPort.setParity(UsbSerialInterface.PARITY_NONE);
-                    _SerialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
-                    _SerialPort.read(this);
-                }
-                stateChanged();
-            }
+        if (_UsbConnection == null) {
+            setState(STATE_FAILED);
+            return;
         }
+        _SerialPort = UsbSerialDevice.createUsbSerialDevice(_UsbDevice, _UsbConnection);
+        if (_SerialPort == null) {
+            setState(STATE_FAILED);
+            return;
+        }
+        if (!_SerialPort.open()) {
+            _SerialPort = null;
+            setState(STATE_FAILED);
+            return;
+        }
+        _SerialPort.setBaudRate(getBaudRate());
+        _SerialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
+        _SerialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
+        _SerialPort.setParity(UsbSerialInterface.PARITY_NONE);
+        _SerialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
+        _SerialPort.read(this);
+
+        setState(STATE_READY);
     }
 
 
     public synchronized void close() {
         Log.v(TAG, "close()");
+        safeDestruct.beginShutdown();
+
         if( _SerialPort != null) {
             _SerialPort.close();
             _SerialPort = null;
@@ -70,7 +82,7 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
             _UsbConnection = null;
         }
 
-        stateChanged();
+        safeDestruct.finishShutdown();
     }
 
     @Override
@@ -85,7 +97,7 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
 
     @Override
     public int getState() {
-        return (_SerialPort != null) ? STATE_READY : STATE_LIMBO;
+        return state;
     }
 
     @Override
@@ -99,8 +111,9 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
     }
 
     @Override
-    public boolean setBaudRate(int baud) {
-        _baudRate =  baud;
+    public synchronized boolean setBaudRate(int baud) {
+        _SerialPort.setBaudRate(baud);
+        _baudRate = baud;
         return true;
     }
 
@@ -111,16 +124,51 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
     }
 
     @Override
-    public synchronized void onReceivedData(byte[] arg0) {
+    public void onReceivedData(byte[] arg0) {
+        if (arg0.length == 0) {
+            error("Disconnected");
+            return;
+        }
+
         InputListener listener = inputListener;
-        if(listener != null) {
-            listener.dataReceived(arg0, arg0.length);
+        if(listener != null && safeDestruct.Increment()) {
+            try {
+                listener.dataReceived(arg0, arg0.length);
+            } finally {
+                safeDestruct.Decrement();
+            }
         }
     }
 
     private void stateChanged() {
         PortListener portListener = this.portListener;
-        if (portListener != null)
-            portListener.portStateChanged();
+        if (portListener != null && safeDestruct.Increment()) {
+            try {
+                portListener.portStateChanged();
+            } finally {
+                safeDestruct.Decrement();
+            }
+        }
+    }
+
+    private void setState(int newState) {
+        if (newState == state)
+            return;
+
+        state = newState;
+        stateChanged();
+    }
+
+    private void error(String msg) {
+        state = STATE_FAILED;
+
+        PortListener portListener = this.portListener;
+        if (portListener != null && safeDestruct.Increment()) {
+            try {
+                portListener.portError(msg);
+            } finally {
+                safeDestruct.Decrement();
+            }
+        }
     }
 }
