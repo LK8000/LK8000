@@ -87,16 +87,9 @@ GetTaskSectorParameter( TaskIdx, &SecType, &SecRadius);
              FinishRadial);
             break;
         case sector_type_t::DAe:
-            if (!UseAATTarget()) { // this Type exist only if not AAT task
-                // JMW added german rules
-                Surface.DrawCircle(center_x, center_y, width/8, true);
-
-                Surface.Segment(
-                 center_x,
-                 center_y, width, rc,
-                 StartRadial,
-                 FinishRadial);
-            }
+            // JMW added german rules
+            Surface.Segment(center_x, center_y, width / 8, rc, Task[TaskIdx].Bisector + 45, Task[TaskIdx].Bisector - 45);
+            Surface.Segment(center_x, center_y, width, rc, Task[TaskIdx].Bisector - 45, Task[TaskIdx].Bisector + 45);
             break;
        default:
        case sector_type_t::LINE:

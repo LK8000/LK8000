@@ -56,6 +56,7 @@ constexpr sector_type_t gp_task_sectors[] = {
   sector_type_t::SECTOR,
   sector_type_t::CONE,
   sector_type_t::ESS_CIRCLE,
+  sector_type_t::DAe,
 };
 
 auto sector_labels_table = lookup_table<sector_type_t, std::function<const TCHAR*()>>({

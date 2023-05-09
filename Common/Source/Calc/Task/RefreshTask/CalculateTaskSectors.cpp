@@ -79,6 +79,11 @@ void CalculateTaskSectors(int Idx) {
                                                       TaskPt.AATStartRadial,
                                                       TaskPt.AATFinishRadial);
                         break;
+                    case sector_type_t::DAe:
+                        gTaskSectorRenderer.SetDae(Idx, center,
+                                                   TaskPt.Bisector - 45,
+                                                   TaskPt.Bisector + 45);
+                        break;
                     default:
                         assert(false);
                         break;
