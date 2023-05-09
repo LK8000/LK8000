@@ -115,8 +115,6 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                       const bool doadvance, const bool doannounce);
 
-bool  InAATTurnSector(const double longitude, const double latitude, const int thepoint, const double Altitude);
-
 void IterateEffectiveMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp);

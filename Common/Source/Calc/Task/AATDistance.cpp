@@ -338,7 +338,7 @@ void AATDistance::ShiftTargetFromBehind(double longitude, double latitude,
                           &t_lat,
                           &t_lon);
 
-    if (InAATTurnSector(t_lon, t_lat, taskwaypoint, 0)) {
+    if (InTurnSector({{t_lat, t_lon}, 0}, taskwaypoint)) {
       d_total_this = DoubleLegDistance(taskwaypoint,
                                        t_lon,
                                        t_lat);

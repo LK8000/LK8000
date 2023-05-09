@@ -23,7 +23,7 @@ void AdvanceToNext(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
     flightstats.LegStartTime[ActiveTaskPoint] = Basic->Time;
 
     // Update 'IsInSector' is required because ActiveTaskPoint has changed !
-    Calculated->IsInSector = InTurnSector(Basic, Calculated, ActiveTaskPoint);
+    Calculated->IsInSector = InTurnSector(Basic, ActiveTaskPoint);
   }
 }
 

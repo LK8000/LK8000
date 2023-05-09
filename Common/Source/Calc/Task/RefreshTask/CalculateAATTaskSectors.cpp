@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "NavFunctions.h"
+#include "CalcTask.h"
 
 
 extern bool TargetDialogOpen;
@@ -102,8 +103,7 @@ void CalculateAATTaskSectors()
       // go from current aircraft position to projection of target
       // out to the edge of the sector
 
-      if (InAATTurnSector(longitude, latitude, i, altitude) && (awp==i) &&
-          !Task[i].AATTargetLocked) {
+      if (InTurnSector({{latitude, longitude}, altitude}, i) && (awp==i) && !Task[i].AATTargetLocked) {
 
         // special case, currently in AAT sector/cylinder
 

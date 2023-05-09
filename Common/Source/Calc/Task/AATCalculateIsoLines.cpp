@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "CalcTask.h"
 
 
 void CalculateAATIsoLines(void) {
@@ -94,7 +94,7 @@ void CalculateAATIsoLines(void) {
                               &latitude,
                               &longitude);
 
-        in_sector = InAATTurnSector(longitude, latitude, i, 0);
+        in_sector = InTurnSector({{latitude, longitude}, 0}, i);
         /*
         if (dist_0 < distance_glider) {
           in_sector = false;

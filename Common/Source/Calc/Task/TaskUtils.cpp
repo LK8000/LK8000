@@ -11,6 +11,7 @@
 #include "NavFunctions.h"
 #include "Util/ScopeExit.hxx"
 #include "utils/lookup_table.h"
+#include "CalcTask.h"
 
 bool TaskModified = false;
 bool TargetModified = false;
@@ -316,9 +317,7 @@ double FindInsideAATSectorDistance_old(double latitude,
                           &t_lat,
                           &t_lon);
 
-    t_in_sector = InAATTurnSector(t_lon,
-                                  t_lat,
-                                  taskwaypoint, 0);
+    t_in_sector = InTurnSector({{t_lat, t_lon}, 0.}, taskwaypoint);
 
   } while (t_in_sector);
 
@@ -352,7 +351,7 @@ double FindInsideAATSectorDistance(double latitude,
                           course_bearing, t_distance,
                           &t_lat, &t_lon);
 
-    if (InAATTurnSector(t_lon, t_lat, taskwaypoint, 0)) {
+    if (InTurnSector({{t_lat, t_lon}, 0 }, taskwaypoint)) {
       t_distance_lower = t_distance;
       // ok, can go further
       t_distance += delta;

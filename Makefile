@@ -1066,7 +1066,6 @@ CALC	:=\
 TASK	:=\
 	$(TSK)/AATCalculateIsoLines.cpp \
 	$(TSK)/AATDistance.cpp \
-	$(TSK)/AATInTurnSector.cpp	\
 	$(TSK)/AATStats.cpp 		\
 	$(TSK)/AATtools.cpp 		\
 	$(TSK)/AnnounceWPSwitch.cpp 	\

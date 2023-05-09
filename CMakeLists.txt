@@ -509,7 +509,6 @@ add_library( LK8000 SHARED
 
     Common/Source/Calc/Task/AATCalculateIsoLines.cpp
     Common/Source/Calc/Task/AATDistance.cpp
-    Common/Source/Calc/Task/AATInTurnSector.cpp
     Common/Source/Calc/Task/AATStats.cpp
     Common/Source/Calc/Task/AATtools.cpp
     Common/Source/Calc/Task/AnnounceWPSwitch.cpp

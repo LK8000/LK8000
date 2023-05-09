@@ -21,7 +21,13 @@ extern void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance);
 extern bool IsFinalWaypoint(void);
 extern bool InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i);
 extern bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool StartOut, int &index, BOOL *CrossedStart);
-extern bool InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int the_turnpoint);
+
+bool InTurnSector(const AGeoPoint& position, int tp_index);
+
+inline bool InTurnSector(NMEA_INFO *Basic, int tp_index) {
+    return InTurnSector({ { Basic->Latitude, Basic->Longitude }, Basic->Altitude }, tp_index);
+}
+
 extern void CheckFinish(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void CheckForceFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
