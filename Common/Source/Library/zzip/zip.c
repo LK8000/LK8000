@@ -753,7 +753,7 @@ zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errcode_p,
     if (dir) {
         /*
          * in case of error, fd will be closed by caller,
-         * don't take the fd ownership, otherwise fd wil be closed twice
+         * don't take the fd ownership, otherwise fd will be closed twice
          */
 #ifdef __BIONIC__
         fdsan_exchange_owner(dir->fd, fdsan_owner_tag(&dir->fd), 0);
