@@ -10,19 +10,14 @@
 #include "NavFunctions.h"
 #include <optional>
 
-
-// For PGs we are using cylinders, so: 
+// For PGs we are using cylinders, so:
 // If we are inside cylinder return true  else false
-template<typename T>
-static
-bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
-                           int Index, double OutBound, T &LastInSector)
-{
-  if (!ValidWayPoint(Index)) {
+template <typename T>
+static bool InStartSector_Internal(NMEA_INFO* Basic, DERIVED_INFO* Calculated,
+                                   int Index, double OutBound, T& LastInSector) {
+  if (!ValidWayPointFast(Index)) {
     return false;
   }
-
-  // No Task Loaded
 
   double AircraftBearing;
   double FirstPointDistance;
@@ -37,7 +32,7 @@ bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   bool inrange = (FirstPointDistance < StartRadius);
 
-  if (StartLine == sector_type_t::CIRCLE) { 
+  if (StartLine == sector_type_t::CIRCLE) {
     return inrange;
   }
   // Start Line
@@ -46,7 +41,7 @@ bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   // JMW bugfix, was Bisector, which is invalid
 
   bool approaching;
-  if (StartLine == sector_type_t::LINE) { // Start line 
+  if (StartLine == sector_type_t::LINE) {  // Start line
     approaching = ((AircraftBearing >= -90) && (AircraftBearing <= 90));
   } else {
     // FAI 90 degree
@@ -64,57 +59,55 @@ bool InStartSector_Internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 }
 
 
-bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool StartOut, int &index, BOOL *CrossedStart)
-{
-  static std::optional<bool> LastInSector; // unknown at start ( before takeoff ?)
+bool InStartSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated, bool StartOut, int& index, BOOL* CrossedStart) {
+  static std::optional<bool> LastInSector;  // unknown at start ( before takeoff ?)
   static int EntryStartSector = index;
 
-  if(ISGAAIRCRAFT) { //Detect start for GA aircraft
-  	if(!ValidTaskPoint(ActiveTaskPoint) || !ValidTaskPoint(0)) {
+  ScopeLock lock(CritSec_TaskData);
+
+  if (ISGAAIRCRAFT) {  // Detect start for GA aircraft
+    if (!ValidTaskPointFast(ActiveTaskPoint) || !ValidTaskPointFast(0)) {
       return false;
     }
-  	if(ActiveTaskPoint==0) { //if the next WP is the departure
-  		LockTaskData();
-  		double departureRadius=1000; //1 Km default departure radius
-  		if(WayPointList[Task[0].Index].RunwayLen>0) departureRadius=WayPointList[Task[0].Index].RunwayLen/2; // if we have runaway length available
-  		if(Calculated->WaypointDistance<=departureRadius) *CrossedStart=true; //consider in departure as reached
-  		else *CrossedStart=false;
-  		UnlockTaskData();
-  		if(*CrossedStart) return true;
-  	} else return false;
+    if (ActiveTaskPoint == 0) { // if the next WP is the departure
+      double departureRadius = 1000;  // 1 Km default departure radius
+      if (WayPointList[Task[0].Index].RunwayLen > 0) {
+        departureRadius = WayPointList[Task[0].Index].RunwayLen / 2;  // if we have runaway length available
+      }
+      if (Calculated->WaypointDistance <= departureRadius) {
+        *CrossedStart = true;  // consider in departure as reached
+      } else {
+        *CrossedStart = false;
+      }
+      if (*CrossedStart) {
+        return true;
+      }
+    } else {
+      return false;
+    }
   }
 
-  bool isInSector= false;
-  bool retval=false;
-
-  if (!Calculated->Flying || !ValidTaskPoint(ActiveTaskPoint) || !ValidTaskPoint(0)) {
+  if (!Calculated->Flying || !ValidTaskPointFast(ActiveTaskPoint) || !ValidTaskPointFast(0)) {
     return false;
   }
 
-  LockTaskData();
-
-  bool in_height = true;
-
-  if ((ActiveTaskPoint>0) && !ValidTaskPoint(ActiveTaskPoint+1)) {
+  if ((ActiveTaskPoint > 0) && !ValidTaskPointFast(ActiveTaskPoint + 1)) {
     // don't detect start if finish is selected
-    retval = false;
-    goto OnExit;
+    return false;
   }
 
-  in_height = InsideStartHeight(Basic, Calculated, StartMaxHeightMargin);
+  if (!InsideStartHeight(Basic, Calculated, StartMaxHeightMargin)) {
+    return false;
+  }
 
   // if waypoint is not the task 0 start wp, and it is valid, then make it the entrystartsector. ?? why ??
-  if ((Task[0].Index != EntryStartSector) && (EntryStartSector>=0)) {
+  if ((Task[0].Index != EntryStartSector) && (EntryStartSector >= 0)) {
     LastInSector = false;
     EntryStartSector = Task[0].Index;
   }
 
   // are we inside the start sector?
-  isInSector = InStartSector_Internal(Basic, Calculated, 
-                                      Task[0].Index, Task[0].OutBound,
-                                      LastInSector);
-  // and within height limits?
-  isInSector &= in_height;
+  bool isInSector = InStartSector_Internal(Basic, Calculated, Task[0].Index, Task[0].OutBound, LastInSector);
 
   // StartOut only Valid if Start is Cylindre.
   if (gTaskType == TSK_GP && StartLine == sector_type_t::CIRCLE && StartOut) {  // 100509
@@ -127,19 +120,16 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool StartOut, in
 
   LastInSector = isInSector;
   if (*CrossedStart) {
-    goto OnExit;
+    return isInSector;
   }
-  
+
   if (EnableMultipleStartPoints) {
-    for (int i=0; i<MAXSTARTPOINTS; i++) {
-      if (StartPoints[i].Active && (StartPoints[i].Index>=0)
-          && (StartPoints[i].Index != Task[0].Index)) {
-         
-        retval = InStartSector_Internal(Basic, Calculated, 
-                                        StartPoints[i].Index, 
-                                        StartPoints[i].OutBound,
-                                        StartPoints[i].InSector);
-        retval &= in_height;
+    for (int i = 0; i < MAXSTARTPOINTS; i++) {
+      if (StartPoints[i].Active && (StartPoints[i].Index >= 0) && (StartPoints[i].Index != Task[0].Index)) {
+
+        bool retval = InStartSector_Internal(Basic, Calculated, StartPoints[i].Index, 
+                                             StartPoints[i].OutBound, StartPoints[i].InSector);
+
         isInSector |= retval;
 
         index = StartPoints[i].Index;
@@ -152,15 +142,10 @@ bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool StartOut, in
             EntryStartSector = index;
             RefreshTask();
           }
-          goto OnExit;
+          return isInSector;
         }
-
       }
     }
   }
-
- OnExit:
-
-  UnlockTaskData();
   return isInSector;
 }
