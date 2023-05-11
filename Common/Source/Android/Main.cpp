@@ -209,8 +209,9 @@ Java_org_LK8000_NativeView_resizedNative(JNIEnv *env, jobject obj,
   if (event_queue == nullptr)
     return;
 
-  main_window->AnnounceResize({width, height});
-
+  if (main_window) {
+    main_window->AnnounceResize({width, height});
+  }
   event_queue->Purge(Event::RESIZE);
 
   Event event(Event::RESIZE, width, height);
