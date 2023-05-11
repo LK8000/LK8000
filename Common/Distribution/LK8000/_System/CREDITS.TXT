@@ -10,6 +10,15 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.5]
+* fix :
+ - freeze on task Declare to external device
+ - Task finish laoding #1613
+ - android document provider : refresh on files changes
+ - android usb serial : Segfault on Port restart
+* new :
+ - allow to use DAE 0.5/10 turnpoint type on GP/Race to Goal task
+
 [version 7.4.4]
 * fix :
  - WinCE compatibility
