@@ -186,7 +186,7 @@ void RefreshComPortList() {
       if(portok) {
         char path[512]; // at least MAX_NAME + prefix size
         sprintf(path, "/dev/%s", namelist[i]->d_name);
-        if (access(path, R_OK|W_OK) == 0 && access(path, X_OK) < 0) {
+        if (access(path, R_OK|W_OK) == 0) {
           COMMPort.emplace_back(path);
         }
       }
