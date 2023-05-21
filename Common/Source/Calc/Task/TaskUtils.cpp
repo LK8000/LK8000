@@ -81,7 +81,7 @@ template<size_t size>
 class task_sectors_adaptor final : public task_sectors {
   using type_array_t = sector_type_t[size];
 public:
-  task_sectors_adaptor(const type_array_t& array) : type_array(array) {}
+  explicit task_sectors_adaptor(const type_array_t& array) : type_array(array) {}
 
   const sector_type_t* begin() const override {
     return std::begin(type_array);
@@ -242,7 +242,7 @@ void RefreshTaskWaypoint(int i) {
                             WayPointList[Task[i].Index].Longitude,
                             WayPointList[Task[j].Index].Latitude,
                             WayPointList[Task[j].Index].Longitude,
-                            NULL,
+                            nullptr,
                             &Task[i].InBound);
         } else {
             j = i+1;
@@ -254,7 +254,7 @@ void RefreshTaskWaypoint(int i) {
                                 WayPointList[Task[j].Index].Longitude,
                                 WayPointList[Task[i].Index].Latitude,
                                 WayPointList[Task[i].Index].Longitude,
-                                NULL,
+                                nullptr,
                                 &Task[i].InBound);
             }
         }
@@ -281,7 +281,7 @@ void RefreshTaskWaypoint(int i) {
                               WayPointList[StartPoints[j].Index].Longitude,
                               WayPointList[Task[i].Index].Latitude,
                               WayPointList[Task[i].Index].Longitude,
-                              NULL, &StartPoints[j].OutBound);
+                              nullptr, &StartPoints[j].OutBound);
             }
           }
         }
@@ -360,7 +360,7 @@ double DoubleLegDistance(int taskwaypoint,
 		    longitude,
 		    Task[taskwaypoint+1].AATTargetLat,
 		    Task[taskwaypoint+1].AATTargetLon,
-		    &d1, NULL);
+		    &d1, nullptr);
     return d1;
   }
 
@@ -371,7 +371,7 @@ const WAYPOINT* TaskWayPoint(size_t idx) {
     if (ValidTaskPoint(idx)) {
         return &WayPointList[Task[idx].Index];
     }
-    return NULL;
+    return nullptr;
 }
 
 void ReverseTask() {
@@ -391,11 +391,11 @@ int GetTaskBearing() {
     UnlockTaskData();
   };
 
-  if ( ValidTaskPointFast(ActiveTaskPoint) != false ) {
+  if (ValidTaskPointFast(ActiveTaskPoint)) {
     int index = Task[ActiveTaskPoint].Index;
     if (index>=0) {
 
-      int value = UseAATTarget() 
+      double value = UseAATTarget()
               ? CALCULATED_INFO.WaypointBearing
               : WayPointCalc[index].Bearing;
 
