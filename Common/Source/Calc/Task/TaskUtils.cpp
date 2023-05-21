@@ -59,14 +59,15 @@ constexpr sector_type_t gp_task_sectors[] = {
   sector_type_t::DAe,
 };
 
-auto sector_labels_table = lookup_table<sector_type_t, std::function<const TCHAR*()>>({
-  { sector_type_t::CIRCLE , std::bind(MsgToken, 210) }, // _@M210_ = "Cylinder"
-  { sector_type_t::SECTOR , std::bind(MsgToken, 590) }, // _@M590_ = "Sector"
-  { sector_type_t::SECTOR , std::bind(MsgToken, 274) }, // _@M274_ = "FAI Sector"
-  { sector_type_t::DAe, std::bind(LKGetText, _T("DAe 0.5/10")) },
-  { sector_type_t::LINE, std::bind(MsgToken, 393) }, // _@M393_ = "Line"
-  { sector_type_t::CONE , std::bind(MsgToken, 2175) }, // _@M2175_ = "Conical ESS"
-  { sector_type_t::ESS_CIRCLE , std::bind(MsgToken, 2189) }, // _@M2189_ = "Circle ESS"
+
+constexpr auto sector_labels_table = lookup_table<sector_type_t, const TCHAR*(*)()>({
+  { sector_type_t::CIRCLE , [] { return MsgToken(210); } }, // _@M210_ = "Cylinder"
+  { sector_type_t::SECTOR , [] { return MsgToken(590); } }, // _@M590_ = "Sector"
+  { sector_type_t::SECTOR , [] { return MsgToken(274); } }, // _@M274_ = "FAI Sector"
+  { sector_type_t::DAe, [] { return LKGetText(_T("DAe 0.5/10")); } },
+  { sector_type_t::LINE, [] { return MsgToken(393); } }, // _@M393_ = "Line"
+  { sector_type_t::CONE , [] { return MsgToken(2175); } }, // _@M2175_ = "Conical ESS"
+  { sector_type_t::ESS_CIRCLE , [] { return MsgToken(2189); } }, // _@M2189_ = "Circle ESS"
 });
 
 const TCHAR* get_sectors_label(sector_type_t type) {
