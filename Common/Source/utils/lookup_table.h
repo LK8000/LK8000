@@ -77,7 +77,7 @@ public:
  */
 template<typename key_type, typename mapped_type, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size, std::equal_to<key_type>>
-lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
+lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) noexcept {
   return lookup_table_t<key_type, mapped_type, size, std::equal_to<key_type>>(data, std::make_index_sequence<size>());
 }
 
@@ -87,7 +87,7 @@ lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
  */
 template<typename key_type, typename mapped_type, typename key_comp, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size, key_comp>
-lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
+lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) noexcept {
   return lookup_table_t<key_type, mapped_type, size, key_comp>(data, std::make_index_sequence<size>());
 }
 
