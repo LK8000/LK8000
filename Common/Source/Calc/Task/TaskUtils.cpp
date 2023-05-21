@@ -290,43 +290,6 @@ void RefreshTaskWaypoint(int i) {
 }
 
 
-
-double FindInsideAATSectorDistance_old(double latitude,
-                                       double longitude,
-                                       int taskwaypoint,
-                                       double course_bearing,
-                                       double p_found) {
-  bool t_in_sector;
-  double delta;
-  double max_distance;
-  if(Task[taskwaypoint].AATType == sector_type_t::SECTOR) {
-    max_distance = Task[taskwaypoint].AATSectorRadius*2;
-  } else {
-    max_distance = Task[taskwaypoint].AATCircleRadius*2;
-  }
-  delta = max(250.0, max_distance/40.0);
-
-  double t_distance = p_found;
-  double t_distance_inside;
-
-  do {
-    double t_lat, t_lon;
-    t_distance_inside = t_distance;
-    t_distance += delta;
-
-    FindLatitudeLongitude(latitude, longitude,
-                          course_bearing, t_distance,
-                          &t_lat,
-                          &t_lon);
-
-    t_in_sector = InTurnSector({{t_lat, t_lon}, 0.}, taskwaypoint);
-
-  } while (t_in_sector);
-
-  return t_distance_inside;
-}
-
-
 double FindInsideAATSectorDistance(double latitude,
                                    double longitude,
                                    int taskwaypoint,
