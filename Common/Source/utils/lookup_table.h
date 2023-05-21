@@ -73,7 +73,7 @@ public:
 
 /**
  * convenience function template that constructs a lookup_table_t 
- * whith size deduced from argument
+ * with size deduced from argument
  */
 template<typename key_type, typename mapped_type, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size, std::equal_to<key_type>>
@@ -83,7 +83,7 @@ lookup_table(const std::pair<const key_type, const mapped_type> (&data)[size]) {
 
 /**
  * convenience function template that constructs a lookup_table_t 
- * whith size deduced from argument and custom key compare predicate
+ * with size deduced from argument and custom key compare predicate
  */
 template<typename key_type, typename mapped_type, typename key_comp, size_t size>
 constexpr lookup_table_t<key_type, mapped_type, size, key_comp>
