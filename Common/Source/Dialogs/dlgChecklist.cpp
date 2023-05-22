@@ -11,7 +11,6 @@
 #include "Dialogs.h"
 #include "dlgTools.h"
 #include "WindowControls.h"
-#include "utils/fileext.h"
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
 #include "resource.h"
