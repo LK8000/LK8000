@@ -103,10 +103,10 @@ private:
     bool Overflow(const GeoPoint& pt) const {
         using numeric_limits = std::numeric_limits<scalar_type>;
         FloatPoint screen_point = ToScreen<FloatPoint>(pt);
-        return (screen_point.x < numeric_limits::min()
-             || screen_point.x > numeric_limits::max()
-             || screen_point.y < numeric_limits::min()
-             || screen_point.y > numeric_limits::max());
+        return (screen_point.x < static_cast<FloatPoint::scalar_type>(numeric_limits::min())
+             || screen_point.x > static_cast<FloatPoint::scalar_type>(numeric_limits::max())
+             || screen_point.y < static_cast<FloatPoint::scalar_type>(numeric_limits::min())
+             || screen_point.y > static_cast<FloatPoint::scalar_type>(numeric_limits::max()));
     }
 
     /*
