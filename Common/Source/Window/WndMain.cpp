@@ -91,9 +91,6 @@ void BeforeShutdown(void) {
   LKProfileSave(defaultProfileFile);
   LKDeviceSave(defaultDeviceFile);
 
-  #if TESTBENCH
-  StartupStore(TEXT(". Save_Recent_WP_history%s"),NEWLINE);
-  #endif
   SaveRecentList();
   // Stop sound
 
