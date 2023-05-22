@@ -69,6 +69,7 @@
  #define BUGSTOP 1
  #define USELKASSERT 1
  #define YDEBUG  1
+ #define TESTBENCH 1
  #endif
 
  //#define YDEBUG       1       // Force using assert() instead of LKASSERT even if DEBUG is off.

@@ -14,6 +14,7 @@
 
 #include <tchar.h>
 #include <stdio.h>
+#include "utils/unique_file_ptr.h"
 
 /*____________________________________________________________________________*/
 
@@ -23,8 +24,7 @@
 /// any of new line characters ('\n' '\r'), they are handled internally.
 /// Class is able to read files with both CR+LF and LF line endings.
 ///
-class Utf8File
-{
+class Utf8File final {
   public:
     enum Mode
     {
@@ -35,21 +35,17 @@ class Utf8File
 
     Utf8File() = default;
     Utf8File(const Utf8File&) = delete;
+    Utf8File(Utf8File&&) = delete;
 
     ~Utf8File();
 
     bool Open(const TCHAR* fileName, Mode ioMode);
     void Close();
     void WriteLn(const TCHAR* unicode = NULL);
-
-    static bool Exists(const TCHAR* fileName);
+    bool Empty() const;
 
   protected:
-
-    tstring path;
-    FILE* fp = nullptr;
-    bool  convErReported = false;
-    bool  writeErReported = false;
+    unique_file_ptr fp;
 }; // Utf8File
 
 #endif /* __fileext_h__ */

@@ -7,8 +7,10 @@
 */
 //______________________________________________________________________________
 
-#include "externs.h"
+#include "Compiler.h"
+#include "options.h"
 #include "fileext.h"
+#include "Util/tstring.hpp"
 #include "stringext.h"
 
 #include <memory>
@@ -31,10 +33,7 @@ Utf8File::~Utf8File()
 ///
 void Utf8File::Close()
 {
-  if (fp != NULL) {
-    fclose(fp);
-    fp = NULL;
-  }
+    fp = nullptr;
 } // Close()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,8 +42,7 @@ void Utf8File::Close()
 /// @retval true  file open successfully
 /// @retval false cannot open file
 ///
-bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
-{
+bool Utf8File::Open(const TCHAR* fileName, Mode ioMode) {
   const TCHAR* fmode;
 
   switch (ioMode) {
@@ -55,11 +53,10 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       return(false);
   }
 
-  path = fileName;
-
-
-  fp = _tfopen(fileName, fmode);
-  if (fp) return true;
+  fp = make_unique_file_ptr(fileName, fmode);
+  if (fp) {
+    return true;
+  }
 
   //
   // Windows has case-insensitive file system. We try alternatives only for unix
@@ -73,15 +70,15 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
   ci_equal<std::string> comp;
   for (auto const& dir_entry : std::filesystem::directory_iterator{file_path.parent_path()}) {
     if (comp(name, dir_entry.path().filename().string())) {
-      fp = _tfopen(dir_entry.path().c_str(), fmode);
+      fp = make_unique_file_ptr(dir_entry.path().c_str(), fmode);
       if (fp) {
         return true;
       }
     }
   }
-#endif
 
-  return(false);
+#endif
+  return false;
 } // Open()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,18 +104,13 @@ void Utf8File::WriteLn(const TCHAR* unicode) {
     const char* cstr = unicode;
 #endif
   
-    if (fputs(cstr, fp) == EOF && !writeErReported) {
-      StartupStore(_T("Cannot wite to file '%s'\n"), path.c_str());
-      writeErReported = true;
-    }
+    fputs(cstr, fp.get());
   }
-  fputc('\n', fp);
+  fputc('\n', fp.get());
+  fflush(fp.get());
 } // WriteLn()
 
 
-//static
-bool Utf8File::Exists(const TCHAR* fileName)
-{
-  Utf8File file;
-  return(file.Open(fileName, io_read));
-} // Exists()
+bool Utf8File::Empty() const {
+  return (std::ftell(fp.get()) == 0);
+}

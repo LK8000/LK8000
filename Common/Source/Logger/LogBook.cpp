@@ -19,47 +19,35 @@
 //
 void UpdateLogBook(bool welandedforsure) {
 
-  #if TESTBENCH
-  #else
+#if TESTBENCH || !defined(NDEBUG)
+#else
+  if (SIMMODE)
+    return;
+#endif  // !testbench
 
-  #if (WINDOWSPC>0)
-  #else
-  // Only in SIMMODE on pna/ppc we dont log
-  if (SIMMODE) return;
-  #endif
-
-  #endif // !testbench
-
-  #if TESTBENCH
-  StartupStore(_T("... UpdateLogBook start\n"));
-  #endif
+  TestLog(_T("... UpdateLogBook start\n"));
 
   // If we are called by WndProc then we might be still flying and we
   // must log. Otherwise if we are not flying, it means that we already
   // logged at landing detection, so we can return.
-  if (!welandedforsure ) {
-	if (!CALCULATED_INFO.Flying) {
-		#if TESTBENCH
-		StartupStore(_T("... Not flying, no reason to do logbook on exit\n"));
-		#endif
-		return;
-	}
-	#if TESTBENCH
-	else
-		StartupStore(_T("... Still flying! Do LogBook on exit!\n"));
-	#endif
+  if (!welandedforsure) {
+    if (!CALCULATED_INFO.Flying) {
+      TestLog(_T("... Not flying, no reason to do logbook on exit\n"));
+      return;
+    }
+    else {
+      TestLog(_T("... Still flying! Do LogBook on exit!\n"));
+    }
   }
 
-  if (CALCULATED_INFO.FlightTime<=0) {
-	#if TESTBENCH
-	StartupStore(_T("... UpdateLogBook: flight-time is zero, no log!\n"));
-	#endif
-	return;
+  if (CALCULATED_INFO.FlightTime <= 0) {
+    TestLog(_T("... UpdateLogBook: flight-time is zero, no log!\n"));
+    return;
   }
+
   UpdateLogBookTXT(welandedforsure);
   UpdateLogBookCSV(welandedforsure);
   UpdateLogBookLST(welandedforsure);
-
 }
 
 
@@ -70,15 +58,12 @@ void ResetLogBook(void) {
 
   TCHAR filename[MAX_PATH];
   LocalPath(filename, _T(LKD_LOGS), _T(LKF_LOGBOOKTXT));
-#if TESTBENCH
-  StartupStore(_T("... ResetLogBook <%s>\n"),filename);
-#endif
+  TestLog(_T("... ResetLogBook <%s>\n"),filename);
   lk::filesystem::deleteFile(filename);
 
   LocalPath(filename, _T(LKD_LOGS), _T(LKF_LOGBOOKLST));
-#if TESTBENCH
-  StartupStore(_T("... ResetLogBook <%s>\n"),filename);
-#endif
+  TestLog(_T("... ResetLogBook <%s>\n"),filename);
+
   lk::filesystem::deleteFile(filename);
 }
 
@@ -94,19 +79,14 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 
   LocalPath(filename,_T(LKD_LOGS), _T(LKF_LOGBOOKTXT));
 
-  #if TESTBENCH
-  StartupStore(_T("... UpdateLogBookTXT <%s>\n"),filename);
-  #endif
-
-  bool dofirstline = !Utf8File::Exists(filename);
-
+  StartupStore(_T("... UpdateLogBookTXT <%s>"),filename);
   Utf8File file;
   if (!file.Open(filename, Utf8File::io_append)) {
     StartupStore(_T(".... ERROR updating LogBookTXT, file open failure!%s"),NEWLINE);
     return false;
   }
 
-  if (dofirstline) {
+  if (file.Empty()) {
     file.WriteLn(_T("### AUTO-GENERATED LOGBOOK (ENCODED IN UTF-8)"));
     file.WriteLn(_T("###"));
   }
@@ -263,11 +243,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 
   LocalPath(filename, _T(LKD_LOGS), _T(LKF_LOGBOOKCSV));
 
-  #if TESTBENCH
-  StartupStore(_T("... UpdateLogBookCSV <%s>\n"),filename);
-  #endif
-
-  bool dofirstline = !Utf8File::Exists(filename);
+  StartupStore(_T("... UpdateLogBookCSV <%s>"),filename);
 
   Utf8File file;
   if (!file.Open(filename, Utf8File::io_append)) {
@@ -275,7 +251,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
     return false;
   }
 
-  if (dofirstline) {
+  if (file.Empty()) {
     file.WriteLn(_T("Year,Month,Day,Pilot,AircraftRego,AircraftType,TakeoffTime,TakeoffUTC,TakeOffLocation,LandingTime,LandingUTC,LandingLocation,TowingTime,TowingAltitude,AltUnits,TotalFlyTime,Odometer,OLCdist,DistUnits"));
   }
 
@@ -355,11 +331,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
 
   LocalPath(filename, _T(LKD_LOGS), _T(LKF_LOGBOOKLST));
 
-  #if TESTBENCH
-  StartupStore(_T("... UpdateLogBookLST <%s>\n"),filename);
-  #endif
-
-  bool dofirstline = !Utf8File::Exists(filename);
+  StartupStore(_T("... UpdateLogBookLST <%s>"),filename);
 
   Utf8File file;
   if (!file.Open(filename, Utf8File::io_append)) {
@@ -367,6 +339,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
     return false;
   }
 
+  bool dofirstline = file.Empty();
   if (dofirstline) {
     file.WriteLn(_T("### AUTO-GENERATED LOGBOOK (ENCODED IN UTF-8)"));
     file.WriteLn(_T("###"));
