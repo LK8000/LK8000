@@ -18,9 +18,7 @@
 extern bool CommandResolution;
 
 void LKProfileSave(const TCHAR *szFile) {
-#if TESTBENCH
-  StartupStore(_T("... SaveProfile <%s>%s"), szFile, NEWLINE);
-#endif
+  StartupStore(_T(". Save system config to <%s>"), szFile);
 
   if (!szFile || !szFile[0]) {
     // nullptr or empty string.
@@ -410,9 +408,7 @@ void LKProfileSave(const TCHAR *szFile) {
 // Save only Aircraft related parameters
 //
 void LKAircraftSave(const TCHAR *szFile) {
-#if TESTBENCH
-  StartupStore(_T("... AircraftSave <%s>%s"), szFile, NEWLINE);
-#endif
+  StartupStore(_T(". Save aircraft config to <%s>"), szFile);
 
   if (!szFile || !szFile[0]) {
     // nullptr or empty string.
@@ -441,9 +437,7 @@ void LKAircraftSave(const TCHAR *szFile) {
 // Save only Pilot related parameters
 //
 void LKPilotSave(const TCHAR *szFile) {
-#if TESTBENCH
-  StartupStore(_T("... PilotSave <%s>%s"), szFile, NEWLINE);
-#endif
+  StartupStore(_T(". Save pilot config to <%s>"), szFile);
 
   if (!szFile || !szFile[0]) {
     // nullptr or empty string.
@@ -465,9 +459,7 @@ void LKPilotSave(const TCHAR *szFile) {
 // Save only Device related parameters
 //
 void LKDeviceSave(const TCHAR *szFile) {
-#if TESTBENCH
-  StartupStore(_T("... DeviceSave <%s>%s"), szFile, NEWLINE);
-#endif
+  StartupStore(_T(". Save device config to <%s>"), szFile);
 
   if (!szFile || !szFile[0]) {
     // nullptr or empty string.
