@@ -597,7 +597,7 @@ int main(int argc, char *argv[]) {
   ScreenGlobalInit InitScreen;
   SoundGlobalInit InitSound;
   
-  std::unique_ptr<CScreenOrientation> pSaveScreen(new CScreenOrientation(LKGetLocalPath()));
+  auto pSaveScreen = std::make_unique<CScreenOrientation>(LKGetLocalPath());
 
 #ifndef DOCTEST_CONFIG_DISABLE
   {
