@@ -187,19 +187,19 @@ void bottom_bar::draw_lkvalues_data(LKSurface& Surface, const std::array<short, 
 void bottom_bar::draw_cru_data(LKSurface& Surface) const {
   auto array = []() -> std::array<short, 10> {
     if (ISCAR) {
-      return {LK_ODOMETER,   LK_GNDSPEED,   LK_HNAV,       LK_TRACK, LK_TRIP_SPEED_AVG,
-              LK_TIME_LOCAL, LK_TIME_LOCAL, LK_TIME_LOCAL, LK_IAS,   LK_SPEED_MC};
+      return {{LK_ODOMETER,   LK_GNDSPEED,   LK_HNAV,       LK_TRACK, LK_TRIP_SPEED_AVG,
+              LK_TIME_LOCAL, LK_TIME_LOCAL, LK_TIME_LOCAL, LK_IAS,   LK_SPEED_MC}};
     } else {
-      return {LK_TL_AVG,  LK_GNDSPEED, LK_HNAV,      LK_TRACK, LK_HEADWINDSPEED,
-              LK_LD_INST, LK_LD_AVR,   LK_LD_CRUISE, LK_IAS,   LK_SPEED_MC};
+      return {{LK_TL_AVG,  LK_GNDSPEED, LK_HNAV,      LK_TRACK, LK_HEADWINDSPEED,
+              LK_LD_INST, LK_LD_AVR,   LK_LD_CRUISE, LK_IAS,   LK_SPEED_MC}};
     }
   };
   draw_lkvalues_data(Surface, array());
 }
 
 void bottom_bar::draw_hgt_data(LKSurface& Surface) const {
-  std::array<short, 10> array = {LK_HGPS, LK_HBARO, LK_QFE,     LK_HAGL, LK_FL,
-                                 LK_AQNH, LK_HGND,  LK_AALTAGL, LK_IAS,  LK_SPEED_MC};
+  std::array<short, 10> array = {{LK_HGPS, LK_HBARO, LK_QFE,     LK_HAGL, LK_FL,
+                                 LK_AQNH, LK_HGND,  LK_AALTAGL, LK_IAS,  LK_SPEED_MC}};
 
   if (AltitudeUnit_Config == 1) {
     std::swap(array[4], array[5]);  // swap LK_FL and LK_AQNH
@@ -210,13 +210,13 @@ void bottom_bar::draw_hgt_data(LKSurface& Surface) const {
 void bottom_bar::draw_aux_data(LKSurface& Surface) const {
   auto array = []() -> std::array<short, 10> {
     if (ISCAR) {
-      return {LK_TC_ALL, LK_TRIP_STEADY, LK_TRIP_TOTAL, LK_SPEED_AVG, LK_DIST_AVG,
-              LK_MAXALT, LK_MAXALT,      LK_MAXHGAINED, LK_IAS,       LK_SPEED_MC};
+      return {{LK_TC_ALL, LK_TRIP_STEADY, LK_TRIP_TOTAL, LK_SPEED_AVG, LK_DIST_AVG,
+              LK_MAXALT, LK_MAXALT,      LK_MAXHGAINED, LK_IAS,       LK_SPEED_MC}};
     } else {
       short second_value = UseContestEngine() ? LK_OLC_CLASSIC_DIST : LK_ODOMETER;
 
-      return {LK_TC_ALL,   second_value, LK_TIMEFLIGHT, LK_HOME_DIST, LK_MAXALT,
-              LK_ODOMETER, LK_PRCCLIMB,  LK_MAXHGAINED, LK_IAS,       LK_SPEED_MC};
+      return {{LK_TC_ALL,   second_value, LK_TIMEFLIGHT, LK_HOME_DIST, LK_MAXALT,
+              LK_ODOMETER, LK_PRCCLIMB,  LK_MAXHGAINED, LK_IAS,       LK_SPEED_MC}};
     }
   };
 
@@ -224,8 +224,8 @@ void bottom_bar::draw_aux_data(LKSurface& Surface) const {
 }
 
 void bottom_bar::draw_tsk_data(LKSurface& Surface) const {
-  draw_lkvalues_data(Surface, {LK_FIN_DIST, LK_FIN_ALTDIFF, LK_FIN_ETE, LK_TASK_DISTCOV, LK_START_ALT, LK_SPEEDTASK_ACH,
-                               LK_FIN_GR, LK_SPEEDTASK_AVG, LK_IAS, LK_SPEED_MC});
+  draw_lkvalues_data(Surface, {{LK_FIN_DIST, LK_FIN_ALTDIFF, LK_FIN_ETE, LK_TASK_DISTCOV, LK_START_ALT, LK_SPEEDTASK_ACH,
+                               LK_FIN_GR, LK_SPEEDTASK_AVG, LK_IAS, LK_SPEED_MC}});
 }
 
 void bottom_bar::draw_alt_data(LKSurface& Surface) const {
@@ -263,8 +263,8 @@ void bottom_bar::draw_alt_data(LKSurface& Surface) const {
 }
 
 void bottom_bar::draw_sys_data(LKSurface& Surface) const {
-  draw_lkvalues_data(Surface, {LK_BATTERY, LK_EXTBATT1VOLT, LK_SAT, LK_HBAR_AVAILABLE, LK_CPU, LK_LOGGER,
-                               LK_EXTBATT2VOLT, LK_EXTBATTBANK, LK_IAS, LK_SPEED_MC});
+  draw_lkvalues_data(Surface, {{LK_BATTERY, LK_EXTBATT1VOLT, LK_SAT, LK_HBAR_AVAILABLE, LK_CPU, LK_LOGGER,
+                               LK_EXTBATT2VOLT, LK_EXTBATTBANK, LK_IAS, LK_SPEED_MC}});
 }
 
 void bottom_bar::draw_cus_data(LKSurface& Surface) const {
