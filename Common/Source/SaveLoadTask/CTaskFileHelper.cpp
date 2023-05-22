@@ -14,7 +14,6 @@
 #include <stdarg.h>
 #include "CTaskFileHelper.h"
 #include "Util/tstring.hpp"
-#include "utils/fileext.h"
 #include "utils/charset_helper.h"
 #include "Waypointparser.h"
 #include "Waypoints/SetHome.h"
