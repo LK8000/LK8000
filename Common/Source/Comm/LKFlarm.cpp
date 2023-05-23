@@ -606,7 +606,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	traffic.TurnRate = _tcstod(params[7], nullptr);
 	traffic.Speed = _tcstod(params[8], nullptr);
 	traffic.ClimbRate = _tcstod(params[9], nullptr);
-	traffic.Type = _tcstoul(params[4], nullptr, 10);
+	traffic.Type = _tcstoul(params[10], nullptr, 16);
 
 	UpdateFlarmScale(pGPS);
 
