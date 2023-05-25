@@ -106,7 +106,7 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
     }
 
     @Override
-    public int getBaudRate() {
+    public synchronized int getBaudRate() {
         return _baudRate;
     }
 
