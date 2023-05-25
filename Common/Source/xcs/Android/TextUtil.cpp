@@ -29,6 +29,7 @@ Copyright_License {
 #include "Asset.hpp"
 #include "Android/Context.hpp"
 #include "Android/Main.hpp"
+#include <array>
 
 JNIEnv *TextUtil::env;
 static Java::TrivialClass cls;
@@ -62,25 +63,22 @@ TextUtil::TextUtil(jobject _obj)
   :Java::GlobalObject(env, _obj) {
   // get height, ascent_height and capital_height
   assert(midGetFontMetrics);
-  jintArray metricsArray = env->NewIntArray(5);
-  env->CallVoidMethod(Get(), midGetFontMetrics, metricsArray);
+  Java::LocalRef<jintArray> metricsArray = { env, env->NewIntArray(5) };
+  env->CallVoidMethod(Get(), midGetFontMetrics, metricsArray.Get());
 
-  jint metrics[5];
-  env->GetIntArrayRegion(metricsArray, 0, 5, metrics);
+  std::array<jint, 5> metrics;
+  env->GetIntArrayRegion(metricsArray, 0, metrics.size(), metrics.data());
+
   height = metrics[0];
   style = metrics[1];
   ascent_height = metrics[2];
   capital_height = metrics[3];
   line_spacing = metrics[4];
-
-  // free local references
-  env->DeleteLocalRef(metricsArray);
 }
 
 TextUtil *
 TextUtil::create(const char *facename, int height, bool bold, bool italic)
 {
-  jobject localObject;
   jint paramStyle, paramTextSize;
 
   Java::String paramFamilyName(env, facename);
@@ -97,31 +95,30 @@ TextUtil::create(const char *facename, int height, bool bold, bool italic)
     paint_flags |= 1;
 
   // construct org.xcsoar.TextUtil object
-  localObject = env->NewObject(cls, midTextUtil,context->Get(),paramFamilyName.Get(),
-                               paramStyle, paramTextSize,
-                               paint_flags, false);
+  Java::LocalObject localObject = {
+          env, env->NewObject(cls, midTextUtil, context->Get(), paramFamilyName.Get(),
+                              paramStyle, paramTextSize,
+                              paint_flags, false)
+  };
+
   if (!localObject)
     return nullptr;
 
-  TextUtil *tu = new TextUtil(localObject);
-
-  env->DeleteLocalRef(localObject);
-
-  return tu;
+  return new TextUtil(localObject);
 }
 
 PixelSize
 TextUtil::getTextBounds(const char *text) const
 {
-  jint extent[2];
 
   Java::String text2(env, text);
-  jintArray paramExtent = (jintArray)
-    env->CallObjectMethod(Get(), midGetTextBounds,
-                          text2.Get());
+  Java::LocalRef<jintArray> paramExtent = {
+          env, (jintArray)env->CallObjectMethod(Get(), midGetTextBounds, text2.Get())
+  };
+
+  std::array<jint, 2> extent;
   if (!Java::DiscardException(env)) {
-    env->GetIntArrayRegion(paramExtent, 0, 2, extent);
-    env->DeleteLocalRef(paramExtent);
+    env->GetIntArrayRegion(paramExtent, 0, extent.size(), extent.data());
   } else {
     /* Java exception has occurred; return zeroes */
     extent[0] = 0;
@@ -135,13 +132,13 @@ TextUtil::Texture
 TextUtil::getTextTextureGL(const char *text) const
 {
   Java::String text2(env, text);
-  jintArray jresult = (jintArray)
-    env->CallObjectMethod(Get(), midGetTextTextureGL,
-                          text2.Get());
-  jint result[5];
+
+  Java::LocalRef<jintArray> jresult = {
+          env, (jintArray)env->CallObjectMethod(Get(), midGetTextTextureGL, text2.Get())
+  };
+  std::array<jint, 5> result;
   if (!Java::DiscardException(env) && jresult != nullptr) {
-    env->GetIntArrayRegion(jresult, 0, 5, result);
-    env->DeleteLocalRef(jresult);
+    env->GetIntArrayRegion(jresult, 0, result.size(), result.data());
   } else {
     result[0] = result[1] = result[2] = result[3] = result[4] = 0;
   }
