@@ -124,7 +124,7 @@ static void LogPointToFile(const LoggerBuffer_t& point) {
   int DegLon = longitude;
   int MinLon = (longitude - DegLon) * 60. * 10000.;
 
-  char szBRecord[64];
+  char szBRecord[128];
 
   /*
    * NoS/EoW and 6th digit of lat/lon was swaped after printf
