@@ -41,9 +41,10 @@
 #include "Radio.h"
 #include "utils/charset_helper.h"
 #include "utils/printf.h"
+#include "Comm/UpdateQNH.h"
+
 
 unsigned int uiEOSDebugLevel = 1;
-extern bool UpdateQNH(const double newqnh);
 
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;

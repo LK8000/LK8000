@@ -12,6 +12,7 @@
 #include "InputEvents.h"
 #include "Baro.h"
 #include "Calc/Vario.h"
+#include "Comm/UpdateQNH.h"
 
 #define VW_BIDIRECTIONAL
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
@@ -21,8 +22,6 @@ BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
 BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
 BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
-extern bool UpdateQNH(const double newqnh);
-
 
 int oldSerial;
 int SerialNumber =0;

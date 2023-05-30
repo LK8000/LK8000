@@ -9,9 +9,9 @@
 #include "externs.h"
 #include "Baro.h"
 #include "Calc/Vario.h"
+#include "Comm/UpdateQNH.h"
 #include "devIlec.h"
 
-extern bool UpdateQNH(const double newqnh);
 
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 

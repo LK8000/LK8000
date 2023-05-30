@@ -16,10 +16,8 @@
 #include "McReady.h"
 #include "Baro.h"
 #include "Calc/Vario.h"
+#include "Comm/UpdateQNH.h"
 #include "devCAI302.h"
-
-extern bool UpdateQNH(const double newqnh);
-
 
 using std::min;
 using std::max;

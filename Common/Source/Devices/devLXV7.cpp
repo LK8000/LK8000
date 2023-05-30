@@ -14,8 +14,7 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 #include "utils/printf.h"
-
-extern bool UpdateQNH(const double newqnh);
+#include "Comm/UpdateQNH.h"
 
 
 int iLXV7_RxUpdateTime=0;

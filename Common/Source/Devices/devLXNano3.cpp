@@ -33,9 +33,8 @@
 #include "McReady.h"
 #include "Time/PeriodClock.hpp"
 #include "utils/printf.h"
+#include "Comm/UpdateQNH.h"
 
-
-extern bool UpdateQNH(const double newqnh);
 
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32

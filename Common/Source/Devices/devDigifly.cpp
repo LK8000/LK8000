@@ -11,8 +11,7 @@
 #include "Calc/Vario.h"
 #include "devDigifly.h"
 #include "MathFunctions.h"
-
-extern bool UpdateQNH(const double newqnh);
+#include "Comm/UpdateQNH.h"
 
 static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 

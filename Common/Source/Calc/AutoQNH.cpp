@@ -12,8 +12,8 @@
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "Baro.h"
+#include "Comm/UpdateQNH.h"
 
-extern bool UpdateQNH(const double newqnh);
 
 void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static int done_autoqnh = 0;

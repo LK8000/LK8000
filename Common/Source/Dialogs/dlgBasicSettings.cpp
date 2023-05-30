@@ -14,11 +14,10 @@
 #include "Dialogs.h"
 #include "resource.h"
 #include "Baro.h"
+#include "Comm/UpdateQNH.h"
+
 
 static WndForm *wf=NULL;
-
-extern bool UpdateQNH(const double newqnh);
-
 
 // static bool BallastTimerActive = false;
 

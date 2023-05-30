@@ -14,9 +14,7 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 #include "utils/printf.h"
-
-extern bool UpdateQNH(const double newqnh);
-
+#include "Comm/UpdateQNH.h"
 
 int iLXV7_EXP_RxUpdateTime=0;
 double LXV7_EXP_oldMC = MACCREADY;

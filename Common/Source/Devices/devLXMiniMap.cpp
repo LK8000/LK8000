@@ -18,11 +18,8 @@
 #include "devLXMiniMap.h"
 #include "McReady.h"
 #include "InputEvents.h"
+#include "Comm/UpdateQNH.h"
 #include "devLXNano.h"
-
-extern bool UpdateQNH(const double newqnh);
-
-
 
 //____________________________________________________________class_definitions_
 
