@@ -414,7 +414,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
+bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -426,28 +426,18 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
   // polar_b: float polar_b=b/100 v=(km/h/100) w=(m/s)
   // polar_c: float polar_c=c
   // audio volume 0 - 100%
-//float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
+  //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
 
-
-double fTmp;
-int iTmp;
-if(MacCreadyUpdateTimeout > 0)
-{
-	MacCreadyUpdateTimeout--;
-}
-else
-  if (ParToDouble(sentence, 0, &fTmp))
-  {
-	iTmp =(int) (fTmp*100.0+0.5f);
-	fTmp = (double)(iTmp)/100.0;
-	bValid = true;
-	if(fabs(MACCREADY - fTmp)> 0.001)
-	{
-	  CheckSetMACCREADY(fTmp);
-	  iLX16xx_RxUpdateTime =5;
-	}
+  double fTmp;
+  if (MacCreadyUpdateTimeout > 0) {
+    MacCreadyUpdateTimeout--;
+  } else if (ParToDouble(sentence, 0, &fTmp)) {
+    int iTmp = (int)(fTmp * 100.0 + 0.5f);
+    bValid = true;
+    if (CheckSetMACCREADY(iTmp / 100.0, d)) {
+      iLX16xx_RxUpdateTime = 5;
+    }
   }
-
 
 if(BallastUpdateTimeout > 0)
 {

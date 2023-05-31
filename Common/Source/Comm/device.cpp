@@ -767,11 +767,12 @@ BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable) {
 
 /**
  * Send MacCready to all connected device.
- * @param MacCready
+ * @param MacCready new MC value
+ * @param Sender device to ignore, use nullptr to send to all device.
  * @return FALSE if error on one device.
  */
-BOOL devPutMacCready(double MacCready) {
-    return for_all_device(&DeviceDescriptor_t::PutMacCready, MacCready);
+BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender) {
+    return for_all_device(Sender, &DeviceDescriptor_t::PutMacCready, MacCready);
 }
 
 

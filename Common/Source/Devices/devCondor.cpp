@@ -69,7 +69,7 @@ static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   (void)pGPS;
 
   NMEAParser::ExtractParameter(String,ctemp,0);
-  CheckSetMACCREADY(StrToDouble(ctemp,NULL));
+  CheckSetMACCREADY(StrToDouble(ctemp,NULL), d);
   return TRUE;
 }
 

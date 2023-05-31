@@ -243,7 +243,7 @@ bool DevVaulter::PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV5(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO* info )
+bool DevVaulter::PITV5(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info )
 {
 //  $PITV5,5.0,30.0,0.950,0.15,0,2.30*44
 //  Feld Beispiel Beschreibung
@@ -268,15 +268,11 @@ double fTmp;
     }
   }
 
-  if(VaulterMacCreadyUpdateTimeout > 0)
+  if (VaulterMacCreadyUpdateTimeout > 0) {
     VaulterMacCreadyUpdateTimeout--;
-  else
-  {
-    if (ParToDouble(sentence, 5, &fTmp))
-    {
-        info->MacReady = fTmp;
-    }
+  } else if (ParToDouble(sentence, 5, &fTmp)) {
+    CheckSetMACCREADY(fTmp, d);
   }
-  return(true);
+  return (true);
 } // PITV5()
 

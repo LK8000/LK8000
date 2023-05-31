@@ -1463,35 +1463,23 @@ BOOL DevLXNanoIII::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
 
-  if(Nano3_MacCreadyUpdateTimeout > 0)
-  {
+  if (Nano3_MacCreadyUpdateTimeout > 0) {
     Nano3_MacCreadyUpdateTimeout--;
-  }
-  else
-  {
-    if (ParToDouble(sentence, 0, &fTmp))
-    {
-      iTmp =(int) (fTmp*100.0+0.5f);
-      fTmp = (double)(iTmp)/100.0;
-      if(Values(d))
-      {
-        TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s ($LXWP2)"),fTmp);
-        SetDataText( d, _MC,   szTmp);
-      }
-      Nano3_bValid = true;
-      if(IsDirInput(PortIO.MCDir))
-      {
-        if(fabs(MACCREADY - fTmp)> 0.001)
-        {
-          CheckSetMACCREADY(fTmp);
-          Nano3_MacCreadyUpdateTimeout =5;
-        }
+  } else if (ParToDouble(sentence, 0, &fTmp)) {
+    iTmp = (int)(fTmp * 100.0 + 0.5f);
+    fTmp = (double)(iTmp) / 100.0;
+    if (Values(d)) {
+      TCHAR szTmp[MAX_NMEA_LEN];
+      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2fm/s ($LXWP2)"), fTmp);
+      SetDataText(d, _MC, szTmp);
+    }
+    Nano3_bValid = true;
+    if (IsDirInput(PortIO.MCDir)) {
+      if (CheckSetMACCREADY(fTmp, d)) {
+        Nano3_MacCreadyUpdateTimeout = 5;
       }
     }
   }
-
-
 
   if(Nano3_BallastUpdateTimeout > 0)
   {
@@ -1877,9 +1865,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       }
       if(IsDirInput(PortIO.MCDir))
       {
-        if(fabs(MACCREADY - fTmp)> 0.001)
-        {
-          CheckSetMACCREADY(fTmp);
+        if (CheckSetMACCREADY(fTmp, d)) {
           iRxUpdateTime =5;
           StartupStore(_T("Nano3 MC: %5.2f"),fTmp);
           return true;

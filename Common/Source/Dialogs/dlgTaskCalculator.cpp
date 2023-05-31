@@ -224,7 +224,7 @@ static void OnMacCreadyData(DataField *Sender, DataField::DataAccessKind_t Mode)
   switch(Mode){
   case DataField::daSpecial:
     if (CALCULATED_INFO.timeCircling>0) {
-      CheckSetMACCREADY(CALCULATED_INFO.TotalHeightClimb /CALCULATED_INFO.timeCircling);
+      CheckSetMACCREADY(CALCULATED_INFO.TotalHeightClimb /CALCULATED_INFO.timeCircling, nullptr);
       Sender->Set(MACCREADY*LIFTMODIFY);
       RefreshCalculator();
     }
@@ -234,7 +234,7 @@ static void OnMacCreadyData(DataField *Sender, DataField::DataAccessKind_t Mode)
     break;
   case DataField::daPut:
   case DataField::daChange:
-    CheckSetMACCREADY(Sender->GetAsFloat()/LIFTMODIFY);
+    CheckSetMACCREADY(Sender->GetAsFloat()/LIFTMODIFY, nullptr);
     RefreshCalculator();
     break;
   case DataField::daInc:
@@ -337,7 +337,7 @@ void dlgTaskCalculatorShowModal(void){
 
   if (wf->ShowModal() == mrCancel) {
     // todo: restore task settings.
-    CheckSetMACCREADY(MACCREADY_enter);
+    CheckSetMACCREADY(MACCREADY_enter, nullptr);
     CRUISE_EFFICIENCY = CRUISE_EFFICIENCY_enter;
   }
   delete wf;

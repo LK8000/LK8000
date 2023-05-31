@@ -686,7 +686,7 @@ void dlgTaskOverviewShowModal(int Idx){
   showAdvanced = false;
   
   if(MACCREADY < 0.1) {
-    CheckSetMACCREADY(GlidePolar::SafetyMacCready);
+    CheckSetMACCREADY(GlidePolar::SafetyMacCready, nullptr);
   }
     
   WndForm* wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_TASKOVERVIEW_L : IDR_XML_TASKOVERVIEW_P);

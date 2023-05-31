@@ -1338,11 +1338,11 @@ void MacCreadyProcessing(int UpDown) {
 
   if (UpDown == 1) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY + 0.1 / LIFTMODIFY); // BUGFIX 100102
+    CheckSetMACCREADY(MACCREADY + 0.1 / LIFTMODIFY, nullptr); // BUGFIX 100102
   }
   else if(UpDown == -1) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY - 0.1 / LIFTMODIFY); // 100102
+    CheckSetMACCREADY(MACCREADY - 0.1 / LIFTMODIFY, nullptr); // 100102
   }
   else if (UpDown == 0) {
     CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready;
@@ -1356,11 +1356,11 @@ void MacCreadyProcessing(int UpDown) {
   }
   else if (UpDown == 3) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY + 0.5 / LIFTMODIFY); // 100102
+    CheckSetMACCREADY(MACCREADY + 0.5 / LIFTMODIFY, nullptr); // 100102
   }
   else if (UpDown == -3) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY - 0.5 / LIFTMODIFY); // 100102
+    CheckSetMACCREADY(MACCREADY - 0.5 / LIFTMODIFY, nullptr); // 100102
   }
   else if (UpDown == -5) {
     CALCULATED_INFO.AutoMacCready = true;

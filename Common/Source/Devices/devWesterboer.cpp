@@ -312,9 +312,7 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,1);
   iTmp = (int)StrToDouble(ctemp,NULL);
   fTemp = (double)iTmp/10.0f;
-  if(fabs(fTemp-MACCREADY)> 0.05)
-  {
-    CheckSetMACCREADY(fTemp);
+  if (CheckSetMACCREADY(fTemp, d)) {
     iWEST_RxUpdateTime = 5;
   }
 

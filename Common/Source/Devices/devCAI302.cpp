@@ -575,12 +575,12 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   double Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
   UpdateVarioSource(*pGPS, *d, Vario);
 
-  NMEAParser::ExtractParameter(String,ctemp,10);
-  pGPS->MacReady = (StrToDouble(ctemp,NULL) / 10.0) * KNOTSTOMETRESSECONDS;
-  if (MacCreadyUpdateTimeout <= 0)
-    CheckSetMACCREADY(pGPS->MacReady);
-  else
+  if (MacCreadyUpdateTimeout <= 0) {
+    NMEAParser::ExtractParameter(String, ctemp, 10);
+    CheckSetMACCREADY((StrToDouble(ctemp, NULL) / 10.0) * KNOTSTOMETRESSECONDS, d);
+  } else {
     MacCreadyUpdateTimeout--;
+  }
 
   NMEAParser::ExtractParameter(String,ctemp,11);
   pGPS->Ballast = StrToDouble(ctemp,NULL) / 100.0;

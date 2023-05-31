@@ -171,7 +171,7 @@ BOOL devOpen(PDeviceDescriptor_t d);
 BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
 void devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
-BOOL devPutMacCready(double MacCready);
+BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender);
 BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
 BOOL devPutBugs(double	Bugs);
 BOOL devPutBallast(double Ballast);

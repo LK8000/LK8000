@@ -50,7 +50,7 @@ struct NMEA_INFO {
     bool NAVWarning;
     double IndicatedAirspeed;
     double TrueAirspeed;
-    double MacReady;
+
     bool ExternalWindAvailable;
     double ExternalWindSpeed;
     double ExternalWindDirection;

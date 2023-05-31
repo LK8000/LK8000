@@ -39,7 +39,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
         UnlockTaskData();
 
-        CheckSetMACCREADY(mc_new);
+        CheckSetMACCREADY(mc_new, nullptr);
 
         return;
     }
@@ -151,7 +151,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     UnlockTaskData();
 
-    CheckSetMACCREADY(LowPassFilter(MACCREADY, mc_new, 0.6));
+    CheckSetMACCREADY(LowPassFilter(MACCREADY, mc_new, 0.6), nullptr);
 
     //  UnlockFlightData();
 

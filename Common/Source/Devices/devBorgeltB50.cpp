@@ -84,8 +84,7 @@ BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   wnet = StrToDouble(ctemp,NULL)/TOKNOTS;
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  pGPS->MacReady = StrToDouble(ctemp,NULL)/TOKNOTS;
-  CheckSetMACCREADY(pGPS->MacReady);
+  CheckSetMACCREADY(StrToDouble(ctemp, NULL) / TOKNOTS, d);
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   vias = sqrt(StrToDouble(ctemp,NULL))/TOKNOTS;

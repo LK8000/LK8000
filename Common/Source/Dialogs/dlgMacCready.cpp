@@ -34,7 +34,7 @@ void Refresh(WndForm* pForm) {
 
 void OnUp(WndForm* pForm) {
   CALCULATED_INFO.AutoMacCready = false; // disable AutoMacCready when changing MC values
-  CheckSetMACCREADY(MACCREADY + 0.1 / LIFTMODIFY);
+  CheckSetMACCREADY(MACCREADY + 0.1 / LIFTMODIFY, nullptr);
 
   Refresh(pForm);
 }
@@ -47,7 +47,7 @@ void OnUpClick(WndButton* pWnd) {
 
 void OnDown(WndForm* pForm) {
   CALCULATED_INFO.AutoMacCready = false; // disable AutoMacCready when changing MC values
-  CheckSetMACCREADY(MACCREADY - 0.1 / LIFTMODIFY);
+  CheckSetMACCREADY(MACCREADY - 0.1 / LIFTMODIFY, nullptr);
 
   Refresh(pForm);
 }

@@ -120,11 +120,13 @@ double GetMacCready(int wpindex, short wpmode) {
 //
 // This is not used on startup by profiles
 //
-void CheckSetMACCREADY(double value) {
+bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender) {
     double old_value = std::exchange(MACCREADY, Clamp(value, 0.0, 12.0));
-    if (old_value != MACCREADY) {
-        devPutMacCready(MACCREADY);
+    if (fabs(old_value - MACCREADY) > 0.05) {
+        devPutMacCready(MACCREADY, Sender);
+        return true;
     }
+    return false;
 }
 
 void SetOverColorRef() {

@@ -353,7 +353,7 @@ double DevLXMiniMap::CalculateBalast(double Factor)
 
 
 
-bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -372,8 +372,9 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO* 
 	}
 	else
 	{
-		ParToDouble(sentence, 0, &info->MacReady);
-		CheckSetMACCREADY(info->MacReady);
+		double value;
+		ParToDouble(sentence, 0, &value);
+		CheckSetMACCREADY(value, d);
 	}
 
 	if(BallastTimeout>0)

@@ -443,7 +443,7 @@ if(_tcslen(String) < 180) {
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
+bool DevLXV7::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -457,26 +457,16 @@ bool DevLXV7::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
   // audio volume 0 - 100%
 //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
 
-
-double fTmp;
-int iTmp;
-if(LXV7_MacCreadyUpdateTimeout > 0)
-{
-	LXV7_MacCreadyUpdateTimeout--;
-}
-else
-  if (ParToDouble(sentence, 0, &fTmp))
-  {
-	iTmp =(int) (fTmp*100.0+0.5f);
-	fTmp = (double)(iTmp)/100.0;
-	LXV7_bValid = true;
-	if(fabs(MACCREADY - fTmp)> 0.001)
-	{
-	  CheckSetMACCREADY(fTmp);
-	  iLXV7_RxUpdateTime =5;
-	}
+  double fTmp;
+  if (LXV7_MacCreadyUpdateTimeout > 0) {
+    LXV7_MacCreadyUpdateTimeout--;
+  } else if (ParToDouble(sentence, 0, &fTmp)) {
+    int iTmp = (int)(fTmp * 100.0 + 0.5f);
+    LXV7_bValid = true;
+    if (CheckSetMACCREADY(iTmp / 100.0, d)) {
+      iLXV7_RxUpdateTime = 5;
+    }
   }
-
 
 if(LXV7_BallastUpdateTimeout > 0)
 {
