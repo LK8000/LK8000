@@ -20,6 +20,7 @@
 #include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
 #include <sstream>
+#include <regex>
 
 ComPort::ComPort(int idx, const tstring& sName) : Thread("ComPort"), StopEvt(false), devIdx(idx), sPortName(sName) {
     pLastNmea = std::begin(_NmeaString);
@@ -43,7 +44,10 @@ namespace {
     }
 
     tstring data_string(const void *data, size_t size) {
-        return to_tstring(std::string(static_cast<const char*>(data), size));
+        std::string s(static_cast<const char*>(data), size);
+        s = std::regex_replace(s, std::regex(R"(\n)"), R"(\n)");
+        s = std::regex_replace(s, std::regex(R"(\r)"), R"(\r)");
+        return to_tstring(s);
     }
 
 }
