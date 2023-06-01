@@ -1162,19 +1162,9 @@ BOOL DevLX_EOS_ERA::EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *in
   }
 
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
- 
-  if(IsDirInput(PortIO.BUGDir ))
-  {
-    if(  fabs(fTmp -BUGS) >= 0.01)
-    {
-      fTmp = CalculateBugsFromLX(fTmp);
-      CheckSetBugs(fTmp);
-      if(  fabs(fTmp -BUGS) >= 0.01) // >= 1% difference
-      {
-        BUGS = fTmp;
-        ret = true;
-      }
-    }
+
+  if (IsDirInput(PortIO.BUGDir)) {
+    ret = CheckSetBugs(CalculateBugsFromLX(fTmp), d);
   }
 
   return ret;

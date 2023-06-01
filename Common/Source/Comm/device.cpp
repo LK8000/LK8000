@@ -802,8 +802,8 @@ BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
  * @param Bugs [0.0 - 1.0]
  * @return FALSE if error on one device.
  */
-BOOL devPutBugs(double Bugs) {
-    return for_all_device(&DeviceDescriptor_t::PutBugs, Bugs);
+BOOL devPutBugs(double Bugs, DeviceDescriptor_t* Sender) {
+    return for_all_device(Sender, &DeviceDescriptor_t::PutBugs, Bugs);
 }
 
 /**

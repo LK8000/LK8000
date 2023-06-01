@@ -2193,33 +2193,29 @@ void InputEvents::eventChangeBack(const TCHAR *misc) { // 100114
 // min: selects the worst performance (50%)
 // show: shows the current bug degradation
 void InputEvents::eventBugs(const TCHAR *misc) {
-  double oldBugs = BUGS;
 
   LockFlightData();
 
   if (_tcscmp(misc, TEXT("up")) == 0) {
-    CheckSetBugs(iround(BUGS*100+10) / 100.0);
+    CheckSetBugs(iround(BUGS*100+10) / 100.0, nullptr);
   }
-  if (_tcscmp(misc, TEXT("down")) == 0) {
-    CheckSetBugs(iround(BUGS*100-10) / 100.0);
+  else if (_tcscmp(misc, TEXT("down")) == 0) {
+    CheckSetBugs(iround(BUGS*100-10) / 100.0, nullptr);
   }
-  if (_tcscmp(misc, TEXT("max")) == 0) {
-    CheckSetBugs(1.0);
+  else if (_tcscmp(misc, TEXT("max")) == 0) {
+    CheckSetBugs(1.0, nullptr);
   }
-  if (_tcscmp(misc, TEXT("min")) == 0) {
-    CheckSetBugs(0.5);
+  else if (_tcscmp(misc, TEXT("min")) == 0) {
+    CheckSetBugs(0.5, nullptr);
   }
+
+  UnlockFlightData();
+
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
     _stprintf(Temp,TEXT("%d"), iround(BUGS*100));
     DoStatusMessage(TEXT("Bugs Performance"), Temp);
   }
-  if (BUGS != oldBugs) {
-    CheckSetBugs(BUGS);
-    devPutBugs(BUGS);
-    GlidePolar::SetBallast();
-  }
-  UnlockFlightData();
 }
 
 // Ballast

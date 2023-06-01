@@ -144,8 +144,8 @@ bool	LockMode(short lmode);
 double	GetMacCready(int wpindex, short wpmode);
 
 bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender);
+bool CheckSetBugs(double value, DeviceDescriptor_t* Sender);
 
-double CheckSetBugs(double val);
 double CheckSetBallast(double val);
 double CalculateLXBalastFactor(double Ballast);
 double CalculateBalastFromLX(double Factor);

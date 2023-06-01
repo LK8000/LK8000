@@ -327,25 +327,14 @@ double CheckSetBallast(double val) {
 
 // BUGS is really EFFICIENCY. In the range 100% to 50%, i.e. 1 to 0.5 .
 // It cannot be 0.
-#define MINBUGS 0.5
-
-double CheckSetBugs(double val) {
-    if ((val >= MINBUGS) && (val <= 1)) {
-        BUGS = val;
-        return val;
+bool CheckSetBugs(double value, DeviceDescriptor_t* Sender) {
+    double old_value = std::exchange(BUGS, Clamp(value, 0.5, 1.0));
+    if (fabs(old_value - BUGS) > 0.05) {
+        GlidePolar::SetBallast();
+        devPutBugs(BUGS, Sender);
+        return true;
     }
-
-    if (val < MINBUGS) BUGS = MINBUGS;
-    else if (val > 1) BUGS = 1.0;
-
-#if TESTBENCH
-    static short counter = 0;
-    if (counter < 10) {
-        StartupStore(_T(". CHECKSETBUGS ERROR, input=%f output=%f\n"), val, BUGS);
-        counter++;
-    }
-#endif
-    return BUGS;
+    return false;
 }
 
 // is thermal bar visible or not ?

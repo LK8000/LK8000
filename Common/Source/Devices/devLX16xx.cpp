@@ -454,21 +454,14 @@ else
     }
   }
 
-if(BugsUpdateTimeout > 0)
-{
-  BugsUpdateTimeout--;
-}
-else {
-  if(ParToDouble(sentence, 2, &fTmp))
-  {
-    double newBug = CalculateBugsFromLX(fTmp);
-	if(  fabs(newBug -BUGS) >= 0.03)
-    {
-      CheckSetBugs(newBug);
+  if (BugsUpdateTimeout > 0) {
+    BugsUpdateTimeout--;
+  } else if (ParToDouble(sentence, 2, &fTmp)) {
+    if (CheckSetBugs(CalculateBugsFromLX(fTmp), d)) {
       iLX16xx_RxUpdateTime = 5;
     }
   }
-}
+
   if (ParToDouble(sentence, 3, &fTmp))
     fPolar_a = fTmp;
   if (ParToDouble(sentence, 4, &fTmp))

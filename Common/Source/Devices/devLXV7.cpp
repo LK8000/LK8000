@@ -483,32 +483,14 @@ else
     }
   }
 
-if(LXV7_BugsUpdateTimeout > 0)
-{
-  LXV7_BugsUpdateTimeout--;
-}
-else
-  if(ParToDouble(sentence, 2, &fTmp))
-  {
-    double newBugs = CalculateBalastFromLX(fTmp);
-	if(  fabs(newBugs -BUGS) >= 0.03)
-    {
-      CheckSetBugs(newBugs);
+  if (LXV7_BugsUpdateTimeout > 0) {
+    LXV7_BugsUpdateTimeout--;
+  } else if (ParToDouble(sentence, 2, &fTmp)) {
+    if (CheckSetBugs(CalculateBalastFromLX(fTmp), d)) {
       iLXV7_RxUpdateTime = 5;
     }
   }
-/*
-  if (ParToDouble(sentence, 3, &fTmp))
-    fPolar_a = fTmp;
-  if (ParToDouble(sentence, 4, &fTmp))
-    fPolar_b = fTmp;
-  if (ParToDouble(sentence, 5, &fTmp))
-    fPolar_c = fTmp;
-  if (ParToDouble(sentence, 6, &fTmp))
-  {
-    fVolume = fTmp;
-  }
-*/
+
   return(true);
 } // LXWP2()
 

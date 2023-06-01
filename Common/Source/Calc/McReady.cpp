@@ -51,14 +51,16 @@ double GlidePolar::GetAUW() {
 
 
 void GlidePolar::SetBallast() {
-  LockFlightData();
+  ScopeLock lock(CritSec_FlightData);
+
   double BallastWeight;
   BallastLitres = WEIGHTS[2] * BALLAST;
   BallastWeight = GetAUW();
   // Always positive.  But sqrt requires a >=0 value and we do check anyway.
   BUGSTOP_LKASSERT(BallastWeight>=0);
-  if (BallastWeight<0) {; UnlockFlightData(); return; } // <= ?
-
+  if (BallastWeight<0) {
+    return; 
+  }
   if (WingArea>0.1) {
     WingLoading = BallastWeight/WingArea;
   } else {
@@ -66,7 +68,6 @@ void GlidePolar::SetBallast() {
   }
   BallastWeight = (double)sqrt(BallastWeight);
   BUGSTOP_LKASSERT(BUGS!=0);
-  CheckSetBugs(BUGS);
   double bugfactor = 1.0/BUGS;
   BUGSTOP_LKASSERT(BallastWeight!=0);
   if (BallastWeight==0) BallastWeight=1;
@@ -116,8 +117,6 @@ void GlidePolar::SetBallast() {
      TESTBENCH_DO_ONLY(10, StartupStore(_T(".... SetBallast bestld=%f NOT FOUND! Polar error?%s"),bestld,NEWLINE));
      bestld=1;
   }
-  UnlockFlightData();
-
 }
 
 inline double GlidePolar::_SinkRateFast(const double &MC, const unsigned &v) {

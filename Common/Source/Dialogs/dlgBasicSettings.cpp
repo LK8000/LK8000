@@ -208,30 +208,21 @@ static void OnBallastData(DataField *Sender, DataField::DataAccessKind_t Mode){
   }
 }
 
-static void OnBugsData(DataField *Sender, DataField::DataAccessKind_t Mode){
-
-  static double lastRead = -1;
-
-  switch(Mode){
-    case DataField::daGet:
-      lastRead = BUGS;
-      Sender->Set(BUGS*100);
+static
+void OnBugsData(DataField *Sender, DataField::DataAccessKind_t Mode){
+  switch (Mode) {
+  case DataField::daGet:
+    Sender->Set(BUGS * 100);
     break;
-    case DataField::daChange:
-    case DataField::daPut:
-      if (fabs(lastRead-Sender->GetAsFloat()/100.0) >= 0.005)
-      {
-        lastRead = CheckSetBugs(Sender->GetAsFloat()/100.0);
-        GlidePolar::SetBallast();
-        devPutBugs(BUGS);
-      }
+  case DataField::daChange:
+  case DataField::daPut:
+    CheckSetBugs(Sender->GetAsFloat() / 100.0, nullptr);
     break;
   case DataField::daInc:
   case DataField::daDec:
   case DataField::daSpecial:
     break;
   }
-
 }
 
 static void OnWingLoadingData(DataField *Sender, DataField::DataAccessKind_t Mode) { // 100127

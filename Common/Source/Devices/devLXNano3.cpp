@@ -1506,37 +1506,22 @@ BOOL DevLXNanoIII::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     }
   }
 
-
-  if(Nano3_BugsUpdateTimeout > 0)
-  {
-      Nano3_BugsUpdateTimeout--;
-  }
-  else
-  {
-    if(ParToDouble(sentence, 2, &fTmp))
-    {
-      if(Values(d))
-      {
+  if (Nano3_BugsUpdateTimeout > 0) {
+    Nano3_BugsUpdateTimeout--;
+  } else {
+    if (ParToDouble(sentence, 2, &fTmp)) {
+      if (Values(d)) {
         TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp);
-        SetDataText( d,_BUGS,  szTmp);
+        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"), fTmp);
+        SetDataText(d, _BUGS, szTmp);
       }
-      if(IsDirInput(PortIO.BUGDir ))
-      {
-        if(  fabs(fTmp -BUGS) >= 0.01)
-        {
-          fTmp = CalculateBugsFromLX(fTmp);
-          CheckSetBugs(fTmp);
-          if(  fabs(fTmp -BUGS) >= 0.01) // >= 1% difference
-          {
-            BUGS = fTmp;
-            Nano3_BugsUpdateTimeout = 5;
-          }
+      if (IsDirInput(PortIO.BUGDir)) {
+        if (CheckSetBugs(CalculateBugsFromLX(fTmp), d)) {
+          Nano3_BugsUpdateTimeout = 5;
         }
       }
     }
   }
-
 
  double fa,fb,fc;
      if(ParToDouble(sentence, 3, &fa))

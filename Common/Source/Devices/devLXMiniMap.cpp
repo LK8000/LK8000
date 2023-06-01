@@ -396,27 +396,13 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 	}
 
-
-	if(BugsTimeout>0)
-	{
-		BugsTimeout--;
-	}
-	else
-	{
-
-		double tempBugs;
-		ParToDouble(sentence, 2, &tempBugs);
-
-		tempBugs = (100.0 - tempBugs)/100;
-
-		if(fabs(tempBugs -BUGS) > 0.01)
-		{
-			CheckSetBugs(tempBugs);
-		}
-
-	}
-
-
+  if (BugsTimeout > 0) {
+    BugsTimeout--;
+  } else {
+    double tempBugs;
+    ParToDouble(sentence, 2, &tempBugs);
+    CheckSetBugs((100.0 - tempBugs) / 100, d);
+  }
 
   return(true);
 } // LXWP2()

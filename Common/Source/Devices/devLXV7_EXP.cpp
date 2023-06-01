@@ -530,32 +530,25 @@ else
     }
   }
 
-if(LXV7_EXP_BugsUpdateTimeout > 0)
-{
-  LXV7_EXP_BugsUpdateTimeout--;
-}
-else
-  if(ParToDouble(sentence, 2, &fTmp))
-  {
-    double newBug = CalculateBugsFromLX(fTmp);
-	if(  fabs(newBug -BUGS) >= 0.03)
-    {
-      CheckSetBugs(newBug);
+  if (LXV7_EXP_BugsUpdateTimeout > 0) {
+    LXV7_EXP_BugsUpdateTimeout--;
+  } else if (ParToDouble(sentence, 2, &fTmp)) {
+    if (CheckSetBugs(CalculateBugsFromLX(fTmp), d)) {
       iLXV7_EXP_RxUpdateTime = 5;
     }
   }
-/*
-  if (ParToDouble(sentence, 3, &fTmp))
-    fPolar_a = fTmp;
-  if (ParToDouble(sentence, 4, &fTmp))
-    fPolar_b = fTmp;
-  if (ParToDouble(sentence, 5, &fTmp))
-    fPolar_c = fTmp;
-  if (ParToDouble(sentence, 6, &fTmp))
-  {
-    fVolume = fTmp;
-  }
-*/
+  /*
+    if (ParToDouble(sentence, 3, &fTmp))
+      fPolar_a = fTmp;
+    if (ParToDouble(sentence, 4, &fTmp))
+      fPolar_b = fTmp;
+    if (ParToDouble(sentence, 5, &fTmp))
+      fPolar_c = fTmp;
+    if (ParToDouble(sentence, 6, &fTmp))
+    {
+      fVolume = fTmp;
+    }
+  */
   return(true);
 } // LXWP2()
 

@@ -589,14 +589,11 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   else
     BallastUpdateTimeout--;
 
-
-  NMEAParser::ExtractParameter(String,ctemp,12);
-  pGPS->Bugs = StrToDouble(ctemp,NULL) / 100.0;
-  if (BugsUpdateTimeout <= 0)
-    CheckSetBugs(pGPS->Bugs);
-  else
+  if (BugsUpdateTimeout <= 0) {
+    NMEAParser::ExtractParameter(String, ctemp, 12);
+    CheckSetBugs(StrToDouble(ctemp, NULL) / 100.0, d);
+  } else {
     BugsUpdateTimeout--;
-
+  }
   return TRUE;
-
 }

@@ -349,12 +349,9 @@ static int  iOldVarioSwitch=0;
     iWEST_RxUpdateTime = 5;
   }
 
-  NMEAParser::ExtractParameter(String,ctemp,7);
-  iTmp = (int) StrToDouble(ctemp,NULL);
-  fTemp = (double)(100-iTmp)/100.0f;
-  if(fabs(fTemp-BUGS)> 0.005)
-  {
-    CheckSetBugs(fTemp);
+  NMEAParser::ExtractParameter(String, ctemp, 7);
+  iTmp = (int)StrToDouble(ctemp, NULL);
+  if (CheckSetBugs((100. - iTmp) / 100.0, d)) {
     iWEST_RxUpdateTime = 5;
   }
 
