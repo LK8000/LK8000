@@ -77,25 +77,38 @@ COMMPort_t COMMPort;
 DeviceDescriptor_t DeviceList[NUMDEV];
 
 /**
- * Call DeviceDescriptor_t::*func on all connected device.
- * @return FALSE if error on one device.
+ * Call DeviceDescriptor_t::*func on all connected device except @Sender.
+ * @return TRUE if at least one device success.
  *
  * TODO : report witch device failed (useless still return value are never used).
  */
 template<typename Callable, typename ...Args>
-BOOL for_all_device(Callable&& func, Args&&... args) {
+BOOL for_all_device(DeviceDescriptor_t* Sender, Callable&& func, Args&&... args) {
     if (SIMMODE) {
       return TRUE;
     }
     unsigned nbDeviceFailed = 0;
 
     for( DeviceDescriptor_t& d : DeviceList) {
+      if (&d == Sender) {
+        continue; // ignore sender.
+      }
       ScopeLock Lock(CritSec_Comm);
       if( !d.Disabled && d.Com && (d.*func) ) {
         nbDeviceFailed += (d.*func)(&d, std::forward<Args>(args)...) ? 0 : 1;
       }
     }
     return (nbDeviceFailed > 0);
+}
+
+/**
+ * Call DeviceDescriptor_t::*func on all connected device.
+ * @return TRUE if at least one device success.
+ */
+template<typename Callable, typename ...Args>
+BOOL for_all_device(Callable&& func, Args&&... args) {
+  constexpr DeviceDescriptor_t* null_descriptor = nullptr;
+  return for_all_device(null_descriptor, std::forward<Callable>(func), std::forward<Args>(args)...);
 }
 
 static BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl);
