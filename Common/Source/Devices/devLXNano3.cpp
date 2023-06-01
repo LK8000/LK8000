@@ -1481,27 +1481,18 @@ BOOL DevLXNanoIII::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     }
   }
 
-  if(Nano3_BallastUpdateTimeout > 0)
-  {
-     Nano3_BallastUpdateTimeout--;
-  }
-  else
-  {
-    if (ParToDouble(sentence, 1, &fTmp))
-    {
+  if (Nano3_BallastUpdateTimeout > 0) {
+    Nano3_BallastUpdateTimeout--;
+  } else {
+    if (ParToDouble(sentence, 1, &fTmp)) {
       double fBALPerc = CalculateBalastFromLX(fTmp);
-      if(Values(d))
-      {
+      if (Values(d)) {
         TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%5.2f = %3.0f%% ($LXWP2)"),fTmp,(fBALPerc*100.0));
-        SetDataText( d, _BAL,  szTmp);
+        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f = %3.0f%% ($LXWP2)"), fTmp, (fBALPerc * 100.0));
+        SetDataText(d, _BAL, szTmp);
       }
-      if(IsDirInput(PortIO.BALDir  ))
-      {
-        if(fabs(fBALPerc- BALLAST) > 0.01 )
-        {
-          CheckSetBallast(fBALPerc);
-        }
+      if (IsDirInput(PortIO.BALDir)) {
+        CheckSetBallast(fBALPerc, d);
       }
     }
   }
@@ -1872,23 +1863,19 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     }
 
     double fTmp;
-    if(ParToDouble(sentence, 2, &fTmp))
-    {
+    if (ParToDouble(sentence, 2, &fTmp)) {
       double fNewBal = CalculateBalastFromLX(fTmp);
-      if(Values(d))
-      { TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN,_T("%2.1f %3.0f PLXV0"),fTmp, fNewBal);
-        SetDataText( d,_BAL,  szTmp);
+      if (Values(d)) {
+        TCHAR szTmp[MAX_NMEA_LEN];
+        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%2.1f %3.0f PLXV0"), fTmp, fNewBal);
+        SetDataText(d, _BAL, szTmp);
       }
-      if(IsDirInput(PortIO.BALDir))
-      {
-        if(fabs(BALLAST - fNewBal)> 0.001)
-        {
-          CheckSetBallast(fNewBal);
-          Nano3_BallastUpdateTimeout =5;
+      if (IsDirInput(PortIO.BALDir)) {
+        if (CheckSetBallast(fNewBal, d)) {
+          Nano3_BallastUpdateTimeout = 5;
           return true;
         }
-        StartupStore(_T("Nano3 BAL: %5.2f"),fTmp);
+        StartupStore(_T("Nano3 BAL: %5.2f"), fTmp);
       }
     }
     return false;

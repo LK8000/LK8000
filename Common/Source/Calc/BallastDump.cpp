@@ -26,7 +26,7 @@ void BallastDump() {
       }
 
       GlidePolar::SetBallast();
-      devPutBallast(BALLAST);
+      devPutBallast(BALLAST, nullptr);
 
       BallastTimeLast = GPS_INFO.Time;
     }

@@ -468,17 +468,10 @@ bool DevLXV7::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
     }
   }
 
-if(LXV7_BallastUpdateTimeout > 0)
-{
-	LXV7_BallastUpdateTimeout--;
-}
-else
-  if (ParToDouble(sentence, 1, &fTmp))
-  {
-    double newBallast = CalculateBalastFromLX(fTmp);
-    if(  fabs(newBallast -BALLAST) >= 0.01)
-    {
-      CheckSetBallast(newBallast);
+  if (LXV7_BallastUpdateTimeout > 0) {
+    LXV7_BallastUpdateTimeout--;
+  } else if (ParToDouble(sentence, 1, &fTmp)) {
+    if (CheckSetBallast(CalculateBalastFromLX(fTmp), d)) {
       iLXV7_RxUpdateTime = 5;
     }
   }

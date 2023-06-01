@@ -145,8 +145,8 @@ double	GetMacCready(int wpindex, short wpmode);
 
 bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender);
 bool CheckSetBugs(double value, DeviceDescriptor_t* Sender);
+bool CheckSetBallast(double val, DeviceDescriptor_t* Sender);
 
-double CheckSetBallast(double val);
 double CalculateLXBalastFactor(double Ballast);
 double CalculateBalastFromLX(double Factor);
 

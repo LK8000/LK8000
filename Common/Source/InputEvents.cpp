@@ -2226,31 +2226,26 @@ void InputEvents::eventBugs(const TCHAR *misc) {
 // min: selects 0% ballast
 // show: displays a status message indicating the ballast percentage
 void InputEvents::eventBallast(const TCHAR *misc) {
-  double oldBallast= BALLAST;
   LockFlightData();
   if (_tcscmp(misc, TEXT("up")) == 0) {
-    CheckSetBallast(iround(BALLAST*100.0+10) / 100.0);
+    CheckSetBallast(iround(BALLAST*100.0+10) / 100.0, nullptr);
   }
   if (_tcscmp(misc, TEXT("down")) == 0) {
-    CheckSetBallast(iround(BALLAST*100.0-10) / 100.0);
+    CheckSetBallast(iround(BALLAST*100.0-10) / 100.0, nullptr);
   }
   if (_tcscmp(misc, TEXT("max")) == 0) {
-    CheckSetBallast(1.0);
+    CheckSetBallast(1.0, nullptr);
   }
   if (_tcscmp(misc, TEXT("min")) == 0) {
-    CheckSetBallast(0.0);
+    CheckSetBallast(0.0, nullptr);
   }
+  UnlockFlightData();
+
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
     _stprintf(Temp,TEXT("%d"),iround(BALLAST*100));
     DoStatusMessage(TEXT("Ballast %"), Temp);
   }
-  if (BALLAST != oldBallast) {
-    CheckSetBallast(BALLAST);
-    devPutBallast(BALLAST);
-    GlidePolar::SetBallast();
-  }
-  UnlockFlightData();
 }
 
 #include "Task.h"

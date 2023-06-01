@@ -102,18 +102,17 @@ static void SetBallast(bool updateDevices) {
 
   GlidePolar::SetBallast();
   if (updateDevices) {
-	devPutBallast(BALLAST);
+    devPutBallast(BALLAST, nullptr);
   }
-	static double foldBallast = BALLAST;
-	if(fabs (foldBallast - BALLAST) > 0.01) /* update on change only */
-	{
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBallastPercent"));
-      if (wp)
-      {
-    wp->GetDataField()->Set(BALLAST*100);
-    wp->RefreshDisplay();
-	    foldBallast = BALLAST;
-  }
+  static double foldBallast = BALLAST;
+  if (fabs(foldBallast - BALLAST) > 0.01) /* update on change only */
+  {
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBallastPercent"));
+    if (wp) {
+      wp->GetDataField()->Set(BALLAST * 100);
+      wp->RefreshDisplay();
+      foldBallast = BALLAST;
+    }
 	}
 
 	static double foldLiter = GlidePolar::BallastLitres;
@@ -198,7 +197,7 @@ static void OnBallastData(DataField *Sender, DataField::DataAccessKind_t Mode){
   case DataField::daChange:
   case DataField::daPut:
     if (fabs(lastRead-Sender->GetAsFloat()/100.0) >= 0.005){
-      lastRead = CheckSetBallast(Sender->GetAsFloat()/100.0);
+      lastRead = CheckSetBallast(Sender->GetAsFloat() / 100.0, nullptr);
       SetBallast(true);
     }
     break;

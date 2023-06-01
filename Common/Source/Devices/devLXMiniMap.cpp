@@ -377,24 +377,13 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 		CheckSetMACCREADY(value, d);
 	}
 
-	if(BallastTimeout>0)
-	{
-		BallastTimeout--;
-	}
-	else
-	{
-		double tempBallastFactor;
-
-		ParToDouble(sentence, 1, &tempBallastFactor);
-
-		double newBallast = CalculateBalast(tempBallastFactor);
-
-		if(fabs(newBallast- BALLAST) > 0.01 )
-		{
-			CheckSetBallast(newBallast);
-		}
-
-	}
+  if (BallastTimeout > 0) {
+    BallastTimeout--;
+  } else {
+    double tempBallastFactor;
+    ParToDouble(sentence, 1, &tempBallastFactor);
+    CheckSetBallast(CalculateBalast(tempBallastFactor), d);
+  }
 
   if (BugsTimeout > 0) {
     BugsTimeout--;

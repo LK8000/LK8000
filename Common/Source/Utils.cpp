@@ -302,27 +302,14 @@ double CalculateBugsFromLX(double LXBug)
 
 // All values in the range 100% (1) to 0% (0);
 
-double CheckSetBallast(double val) {
-    if ((val >= 0) && (val <= 1)) {
-        BALLAST = val;
+bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
+    double old_value = std::exchange(BALLAST, Clamp(value, 0., 1.));
+    if (fabs(old_value - BALLAST) > 0.05) {
+        GlidePolar::SetBallast();
+        devPutBallast(BALLAST, Sender);
+        return true;
     }
-    else
-    {
-#if TESTBENCH
-      static short counter = 0;
-      if (counter < 10) {
-	  StartupStore(_T(". CHECKSETBALLAST ERROR, input=%f output=%f\n"), val, BALLAST);
-	  counter++;
-      }
-#endif
-    }
-
-    if (val < 0) BALLAST = 0.0;
-    else if (val > 1) BALLAST = 1.0;
-
-
-    GlidePolar::SetBallast();
-    return BALLAST;
+    return false;
 }
 
 // BUGS is really EFFICIENCY. In the range 100% to 50%, i.e. 1 to 0.5 .

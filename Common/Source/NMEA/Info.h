@@ -64,7 +64,7 @@ struct NMEA_INFO {
     double Vario;
 
     double NettoVario;
-    double Ballast;
+
     bool AccelerationAvailable;
     double AccelX;
     double AccelY;

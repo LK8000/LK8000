@@ -582,12 +582,12 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
     MacCreadyUpdateTimeout--;
   }
 
-  NMEAParser::ExtractParameter(String,ctemp,11);
-  pGPS->Ballast = StrToDouble(ctemp,NULL) / 100.0;
-  if (BallastUpdateTimeout <= 0)
-    CheckSetBallast(pGPS->Ballast);
-  else
+  if (BallastUpdateTimeout <= 0) {
+    NMEAParser::ExtractParameter(String, ctemp, 11);
+    CheckSetBallast(StrToDouble(ctemp, NULL) / 100.0, d);
+  } else {
     BallastUpdateTimeout--;
+  }
 
   if (BugsUpdateTimeout <= 0) {
     NMEAParser::ExtractParameter(String, ctemp, 12);
