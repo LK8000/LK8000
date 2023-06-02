@@ -19,7 +19,7 @@
 
 int iLXV7_RxUpdateTime=0;
 double LXV7_oldMC = MACCREADY;
-int  LXV7_BugsUpdateTimeout = 0;
+
 int  LXV7_BallastUpdateTimeout =0;
 int LXV7_iGPSBaudrate = 0;
 int LXV7_iPDABaudrate = 0;
@@ -223,7 +223,6 @@ BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs){
     LXV7NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
 
-    LXV7_BugsUpdateTimeout = 5;
     return(TRUE);
 }
 
@@ -471,9 +470,7 @@ bool DevLXV7::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
     }
   }
 
-  if (LXV7_BugsUpdateTimeout > 0) {
-    LXV7_BugsUpdateTimeout--;
-  } else if (ParToDouble(sentence, 2, &fTmp)) {
+  if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
     if (CheckSetBugs(CalculateBalastFromLX(fTmp), d)) {
       iLXV7_RxUpdateTime = 5;
     }

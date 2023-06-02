@@ -58,7 +58,7 @@ uint m_CurLine =0;
 
 int iNano3_RxUpdateTime=0;
 double Nano3_oldMC = MACCREADY;
-int Nano3_BugsUpdateTimeout = 0;
+
 int Nano3_BallastUpdateTimeout =0;
 int iS_SeriesTimeout =0;
 int iNano3_GPSBaudrate = 0;
@@ -1491,20 +1491,14 @@ if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
     }
   }
 
-  if (Nano3_BugsUpdateTimeout > 0) {
-    Nano3_BugsUpdateTimeout--;
-  } else {
-    if (ParToDouble(sentence, 2, &fTmp)) {
-      if (Values(d)) {
-        TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"), fTmp);
-        SetDataText(d, _BUGS, szTmp);
-      }
-      if (IsDirInput(PortIO.BUGDir)) {
-        if (CheckSetBugs(CalculateBugsFromLX(fTmp), d)) {
-          Nano3_BugsUpdateTimeout = 5;
-        }
-      }
+  if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
+    if (Values(d)) {
+      TCHAR szTmp[MAX_NMEA_LEN];
+      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"), fTmp);
+      SetDataText(d, _BUGS, szTmp);
+    }
+    if (IsDirInput(PortIO.BUGDir)) {
+      CheckSetBugs(CalculateBugsFromLX(fTmp), d);
     }
   }
 
@@ -1867,35 +1861,20 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   /****************************************************************
    * BUGs
    ****************************************************************/
-  if (_tcscmp(szTmp1,_T("BUGS"))==0)
-  {
-    if(Nano3_BugsUpdateTimeout > 0)
-    {
-        Nano3_BugsUpdateTimeout--;
-      return false;
-    }
+  if (_tcscmp(szTmp1, _T("BUGS")) == 0) {
     double fTmp;
-    if(ParToDouble(sentence, 2, &fTmp))
-    {
-      if(Values(d))
-      {
+    if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
+      if (Values(d)) {
         TCHAR szTmp[20];
-        _sntprintf(szTmp, std::size(szTmp), _T("%3.0f%% ($PLXV0)"),fTmp);
-        SetDataText( d,_BUGS,  szTmp);
+        _sntprintf(szTmp, std::size(szTmp), _T("%3.0f%% ($PLXV0)"), fTmp);
+        SetDataText(d, _BUGS, szTmp);
       }
-      if(IsDirInput(PortIO.BUGDir))
-      {
-        if(fabs(BUGS - fTmp)> 0.001)
-        {
-          Nano3_BugsUpdateTimeout =5;
-          StartupStore(_T("Nano3 BUG: %5.2f"),fTmp);
-          return true;
-        }
+      if (IsDirInput(PortIO.BUGDir)) {
+        return CheckSetBugs(fTmp, d);
       }
     }
     return false;
   }
-
 
   if (_tcscmp(szTmp1,_T("VOL"))==0)
   {
@@ -2005,8 +1984,7 @@ BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs){
     _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PFLX2,,,%d,,,"), (int)LXBugs);
 
   DevLXNanoIII::SendNmea(d,szTmp);
-  Nano3_BugsUpdateTimeout = 5;
-return(TRUE);
+  return(TRUE);
 }
 
 

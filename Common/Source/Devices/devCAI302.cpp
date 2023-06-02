@@ -105,7 +105,6 @@ static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *pGPS);
 
-static int  BugsUpdateTimeout = 0;
 static int  BallastUpdateTimeout = 0;
 
 
@@ -152,8 +151,6 @@ BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs){
   _stprintf(szTmp, TEXT("!g,u%d\r"), int((Bugs * 100) + 0.5));
 
   d->Com->WriteString(szTmp);
-
-  BugsUpdateTimeout = 2;
 
   return(TRUE);
 
@@ -584,11 +581,9 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
     BallastUpdateTimeout--;
   }
 
-  if (BugsUpdateTimeout <= 0) {
+  if (CheckBugsTimer()) {
     NMEAParser::ExtractParameter(String, ctemp, 12);
     CheckSetBugs(StrToDouble(ctemp, NULL) / 100.0, d);
-  } else {
-    BugsUpdateTimeout--;
   }
   return TRUE;
 }

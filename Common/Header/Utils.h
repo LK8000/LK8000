@@ -147,6 +147,10 @@ bool CheckMcTimer();
 void UpdateMcTimer();
 
 bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender);
+
+bool CheckBugsTimer();
+void UpdateBugsTimer();
+
 bool CheckSetBugs(double value, DeviceDescriptor_t* Sender);
 bool CheckSetBallast(double val, DeviceDescriptor_t* Sender);
 

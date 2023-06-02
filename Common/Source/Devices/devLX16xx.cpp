@@ -17,7 +17,7 @@
 
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;
-int  BugsUpdateTimeout = 0;
+
 int  BallastUpdateTimeout =0;
 int  LX166AltitudeUpdateTimeout =0;
 int  LX16xxAlt=0;
@@ -205,9 +205,8 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
 
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-
-	BugsUpdateTimeout = 5;
-    return(TRUE);
+  
+  return(TRUE);
 
 }
 
@@ -442,9 +441,7 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
     }
   }
 
-  if (BugsUpdateTimeout > 0) {
-    BugsUpdateTimeout--;
-  } else if (ParToDouble(sentence, 2, &fTmp)) {
+  if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
     if (CheckSetBugs(CalculateBugsFromLX(fTmp), d)) {
       iLX16xx_RxUpdateTime = 5;
     }

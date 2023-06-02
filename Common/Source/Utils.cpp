@@ -325,6 +325,16 @@ bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
     return false;
 }
 
+static PeriodClock BugsTime;
+
+bool CheckBugsTimer() {
+    return BugsTime.Check(5000);
+}
+
+void UpdateBugsTimer() {
+    BugsTime.Update();
+}
+
 // BUGS is really EFFICIENCY. In the range 100% to 50%, i.e. 1 to 0.5 .
 // It cannot be 0.
 bool CheckSetBugs(double value, DeviceDescriptor_t* Sender) {

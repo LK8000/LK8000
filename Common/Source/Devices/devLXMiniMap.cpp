@@ -36,7 +36,6 @@ PeriodClock		  AlttimeOutTicker;
 bool AltTimeoutWait = false;
 
 
-short BugsTimeout = 0;
 short BallastTimeout = 0;
 
 double AltOffset = 0;
@@ -87,7 +86,6 @@ BOOL DevLXMiniMap::LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast)
 }
 BOOL DevLXMiniMap::LXMiniMapPutBugs(PDeviceDescriptor_t	d, double	Bugs)
 {
-		BugsTimeout = 2;
 		TCHAR mcbuf[100];
 
 		int TransformedBugsValue = 100 - (int)(Bugs*100.0);
@@ -378,9 +376,7 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
     CheckSetBallast(CalculateBalast(tempBallastFactor), d);
   }
 
-  if (BugsTimeout > 0) {
-    BugsTimeout--;
-  } else {
+  if (CheckBugsTimer()) {
     double tempBugs;
     ParToDouble(sentence, 2, &tempBugs);
     CheckSetBugs((100.0 - tempBugs) / 100, d);
