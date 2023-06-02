@@ -377,8 +377,6 @@ BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   TCHAR  szTmp[MAX_NMEA_LEN];
   _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
 
-  TestLog(_T("Send: %s"), szTmp);
-
   SendNmea(d,szTmp);
   return TRUE;
 }
@@ -397,8 +395,6 @@ BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast) {
 
   TCHAR szTmp[MAX_NMEA_LEN];
   _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,SET,MC_BAL,,%.0f,,,,,"), GlidePolar::BallastLitres);
-
-  TestLog(_T("Send: %s"), szTmp);
 
   SendNmea(d, szTmp);
 
@@ -421,8 +417,6 @@ BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
   double fLXBugs = CalculateLXBugs(Bugs);
   _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,SET,MC_BAL,,,%.0f,,,,"), fLXBugs);
 
-  TestLog(_T("Send: %s"), szTmp);
-
   SendNmea(d,szTmp);
   return TRUE;
 }
@@ -437,11 +431,9 @@ BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
 
   if (!IsDirOutput(PortIO.QNHDir)) {
     return false;
-  } 
+  }
   TCHAR szTmp[MAX_NMEA_LEN];
   _stprintf(szTmp,  TEXT("RCDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
-
-  TestLog(_T("Send: %s"), szTmp);
 
   SendNmea(d, szTmp);
 
