@@ -368,9 +368,7 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 		CheckSetMACCREADY(value, d);
 	}
 
-  if (BallastTimeout > 0) {
-    BallastTimeout--;
-  } else {
+  if (CheckBallastTimer()) {
     double tempBallastFactor;
     ParToDouble(sentence, 1, &tempBallastFactor);
     CheckSetBallast(CalculateBalast(tempBallastFactor), d);

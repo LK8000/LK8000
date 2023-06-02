@@ -312,9 +312,17 @@ double CalculateBugsFromLX(double LXBug)
 }
 
 
+static PeriodClock BallastTime;
+
+bool CheckBallastTimer() {
+    return BallastTime.Check(5000);
+}
+
+void UpdateBallastTimer() {
+    BallastTime.Update();
+}
 
 // All values in the range 100% (1) to 0% (0);
-
 bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
     double old_value = std::exchange(BALLAST, Clamp(value, 0., 1.));
     if (fabs(old_value - BALLAST) > 0.05) {

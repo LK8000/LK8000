@@ -433,9 +433,7 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
     }
   }
 
-  if (BallastUpdateTimeout > 0) {
-    BallastUpdateTimeout--;
-  } else if (ParToDouble(sentence, 1, &fTmp)) {
+  if (CheckBallastTimer() && ParToDouble(sentence, 1, &fTmp)) {
     if (CheckSetBallast(CalculateBalastFromLX(fTmp), d)) {
       iLX16xx_RxUpdateTime = 5;
     }

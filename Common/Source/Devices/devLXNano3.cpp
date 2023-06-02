@@ -59,7 +59,6 @@ uint m_CurLine =0;
 int iNano3_RxUpdateTime=0;
 double Nano3_oldMC = MACCREADY;
 
-int Nano3_BallastUpdateTimeout =0;
 int iS_SeriesTimeout =0;
 int iNano3_GPSBaudrate = 0;
 int iNano3_PDABaudrate = 0;
@@ -1475,19 +1474,15 @@ if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
     }
   }
 
-  if (Nano3_BallastUpdateTimeout > 0) {
-    Nano3_BallastUpdateTimeout--;
-  } else {
-    if (ParToDouble(sentence, 1, &fTmp)) {
-      double fBALPerc = CalculateBalastFromLX(fTmp);
-      if (Values(d)) {
-        TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f = %3.0f%% ($LXWP2)"), fTmp, (fBALPerc * 100.0));
-        SetDataText(d, _BAL, szTmp);
-      }
-      if (IsDirInput(PortIO.BALDir)) {
-        CheckSetBallast(fBALPerc, d);
-      }
+  if (CheckBallastTimer() && ParToDouble(sentence, 1, &fTmp)) {
+    double fBALPerc = CalculateBalastFromLX(fTmp);
+    if (Values(d)) {
+      TCHAR szTmp[MAX_NMEA_LEN];
+      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f = %3.0f%% ($LXWP2)"), fTmp, (fBALPerc * 100.0));
+      SetDataText(d, _BAL, szTmp);
+    }
+    if (IsDirInput(PortIO.BALDir)) {
+      CheckSetBallast(fBALPerc, d);
     }
   }
 
@@ -1834,14 +1829,8 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
    ****************************************************************/
   if (_tcscmp(szTmp1,_T("BAL"))==0)
   {
-    if(Nano3_BallastUpdateTimeout > 0)
-    {
-      Nano3_BallastUpdateTimeout--;
-      return false;
-    }
-
     double fTmp;
-    if (ParToDouble(sentence, 2, &fTmp)) {
+    if (CheckBallastTimer() && ParToDouble(sentence, 2, &fTmp)) {
       double fNewBal = CalculateBalastFromLX(fTmp);
       if (Values(d)) {
         TCHAR szTmp[MAX_NMEA_LEN];
@@ -1850,7 +1839,6 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
       }
       if (IsDirInput(PortIO.BALDir)) {
         if (CheckSetBallast(fNewBal, d)) {
-          Nano3_BallastUpdateTimeout = 5;
           return true;
         }
         StartupStore(_T("Nano3 BAL: %5.2f"), fTmp);
@@ -1962,9 +1950,7 @@ BOOL Nano3_PutBallast(PDeviceDescriptor_t d, double Ballast){
     _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PFLX2,,%.2f,,,,"), BallastFact);
   DevLXNanoIII::SendNmea(d,szTmp);
 
-  Nano3_BallastUpdateTimeout =10;
-
-return(TRUE);
+  return(TRUE);
 }
 
 

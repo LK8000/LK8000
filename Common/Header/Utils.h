@@ -152,6 +152,10 @@ bool CheckBugsTimer();
 void UpdateBugsTimer();
 
 bool CheckSetBugs(double value, DeviceDescriptor_t* Sender);
+
+bool CheckBallastTimer();
+void UpdateBallastTimer();
+
 bool CheckSetBallast(double val, DeviceDescriptor_t* Sender);
 
 double CalculateLXBalastFactor(double Ballast);

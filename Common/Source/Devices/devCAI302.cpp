@@ -105,9 +105,6 @@ static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *pGPS);
 
-static int  BallastUpdateTimeout = 0;
-
-
 BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
@@ -164,8 +161,6 @@ BOOL cai302PutBallast(PDeviceDescriptor_t d, double Ballast){
   _stprintf(szTmp, TEXT("!g,b%d\r"), int((Ballast * 10) + 0.5));
 
   d->Com->WriteString(szTmp);
-
-  BallastUpdateTimeout = 2;
 
   return(TRUE);
 
@@ -574,11 +569,9 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
     CheckSetMACCREADY((StrToDouble(ctemp, NULL) / 10.0) * KNOTSTOMETRESSECONDS, d);
   }
 
-  if (BallastUpdateTimeout <= 0) {
+  if (CheckBallastTimer()) {
     NMEAParser::ExtractParameter(String, ctemp, 11);
     CheckSetBallast(StrToDouble(ctemp, NULL) / 100.0, d);
-  } else {
-    BallastUpdateTimeout--;
   }
 
   if (CheckBugsTimer()) {

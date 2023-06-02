@@ -814,6 +814,7 @@ BOOL devPutBugs(double Bugs, DeviceDescriptor_t* Sender) {
  * @return FALSE if error on one device.
  */
 BOOL devPutBallast(double Ballast, DeviceDescriptor_t* Sender) {
+    UpdateBallastTimer();
     return for_all_device(Sender, &DeviceDescriptor_t::PutBallast, Ballast);
 }
 
