@@ -58,6 +58,7 @@
 #include "devOpenVario.h"
 #include "devLX_EOS_ERA.h"
 #include "devRCFenix.h"
+#include "devXCVario.h"
 
 namespace {
 
@@ -110,7 +111,8 @@ DeviceRegister_t device_list[] = {
     DevLX_EOS_ERA::Register(),
     GXAirCom::Register(),
     DevRCFenix::Register(),
-    Fanet::Register()
+    Fanet::Register(),
+    XCVario::Register()
 };
 
 

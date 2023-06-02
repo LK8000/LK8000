@@ -1215,6 +1215,7 @@ DEVS	:=\
 	$(DEV)/devOpenVario.cpp \
 	$(DEV)/devLX_EOS_ERA.cpp \
 	$(DEV)/devFanet.cpp \
+	$(DEV)/devXCVario.cpp \
 	$(DEV)/DeviceRegister.cpp \
 
 VOLKS	:=\

@@ -324,6 +324,10 @@ void UpdateBallastTimer() {
 
 // All values in the range 100% (1) to 0% (0);
 bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
+    if (value < 0. || value > 1.) {
+        DebugLog(_T("Invalid Ballast %f"), value);
+    }
+
     double old_value = std::exchange(BALLAST, Clamp(value, 0., 1.));
     if (fabs(old_value - BALLAST) > 0.05) {
         GlidePolar::SetBallast();
