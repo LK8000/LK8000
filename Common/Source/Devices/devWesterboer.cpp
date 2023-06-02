@@ -309,11 +309,13 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   int iTmp;
 
   // Get MC Ready
-  NMEAParser::ExtractParameter(String,ctemp,1);
-  iTmp = (int)StrToDouble(ctemp,NULL);
-  fTemp = (double)iTmp/10.0f;
-  if (CheckSetMACCREADY(fTemp, d)) {
-    iWEST_RxUpdateTime = 5;
+  if (CheckMcTimer()) {
+    NMEAParser::ExtractParameter(String, ctemp, 1);
+    iTmp = (int)StrToDouble(ctemp, NULL);
+    fTemp = (double)iTmp / 10.0f;
+    if (CheckSetMACCREADY(fTemp, d)) {
+      iWEST_RxUpdateTime = 5;
+    }
   }
 
   // Get STF switch
@@ -349,10 +351,10 @@ static int  iOldVarioSwitch=0;
     iWEST_RxUpdateTime = 5;
   }
 
-  NMEAParser::ExtractParameter(String, ctemp, 7);
-  iTmp = (int)StrToDouble(ctemp, NULL);
-  if (CheckSetBugs((100. - iTmp) / 100.0, d)) {
-    iWEST_RxUpdateTime = 5;
+  if (CheckMcTimer()) {
+    NMEAParser::ExtractParameter(String, ctemp, 7);
+    iTmp = (int)StrToDouble(ctemp, NULL);
+    CheckSetBugs((100. - iTmp) / 100.0, d);
   }
 
   return TRUE;

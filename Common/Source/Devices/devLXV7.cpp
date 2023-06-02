@@ -19,7 +19,6 @@
 
 int iLXV7_RxUpdateTime=0;
 double LXV7_oldMC = MACCREADY;
-int  LXV7_MacCreadyUpdateTimeout = 0;
 int  LXV7_BugsUpdateTimeout = 0;
 int  LXV7_BallastUpdateTimeout =0;
 int LXV7_iGPSBaudrate = 0;
@@ -189,7 +188,6 @@ BOOL LXV7PutMacCready(PDeviceDescriptor_t d, double MacCready) {
     LXV7NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
 
-    LXV7_MacCreadyUpdateTimeout = 5;
     return true;
 }
 
@@ -258,7 +256,6 @@ BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 	    if(fabs(LXV7_oldMC - MACCREADY)> 0.005f) {
 		LXV7PutMacCready( d,  MACCREADY);
 		LXV7_oldMC = MACCREADY;
-		LXV7_MacCreadyUpdateTimeout = 2;
             }
 	}
     }
@@ -458,9 +455,7 @@ bool DevLXV7::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
 //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
 
   double fTmp;
-  if (LXV7_MacCreadyUpdateTimeout > 0) {
-    LXV7_MacCreadyUpdateTimeout--;
-  } else if (ParToDouble(sentence, 0, &fTmp)) {
+  if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
     int iTmp = (int)(fTmp * 100.0 + 0.5f);
     LXV7_bValid = true;
     if (CheckSetMACCREADY(iTmp / 100.0, d)) {

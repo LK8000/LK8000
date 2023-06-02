@@ -210,12 +210,11 @@ bool DevLX::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
   // polar_b: float polar_b=b/100 v=(km/h/100) w=(m/s)
   // polar_c: float polar_c=c
   // audio volume 0 - 100%
-
-  double value;
-  ParToDouble(sentence, 0, &value);
-  CheckSetMACCREADY(value, d);
-
-
+  if (CheckMcTimer()) {
+    double value;
+    ParToDouble(sentence, 0, &value);
+    CheckSetMACCREADY(value, d);
+  }
   return(true);
 } // LXWP2()
 

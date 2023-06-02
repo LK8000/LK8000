@@ -772,6 +772,7 @@ BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable) {
  * @return FALSE if error on one device.
  */
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender) {
+    UpdateMcTimer();
     return for_all_device(Sender, &DeviceDescriptor_t::PutMacCready, MacCready);
 }
 

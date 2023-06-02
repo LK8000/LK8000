@@ -143,6 +143,9 @@ void	LKRunStartEnd(bool);
 bool	LockMode(short lmode);
 double	GetMacCready(int wpindex, short wpmode);
 
+bool CheckMcTimer();
+void UpdateMcTimer();
+
 bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender);
 bool CheckSetBugs(double value, DeviceDescriptor_t* Sender);
 bool CheckSetBallast(double val, DeviceDescriptor_t* Sender);

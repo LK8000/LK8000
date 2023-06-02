@@ -36,7 +36,6 @@ PeriodClock		  AlttimeOutTicker;
 bool AltTimeoutWait = false;
 
 
-short McReadyTimeout = 0;
 short BugsTimeout = 0;
 short BallastTimeout = 0;
 
@@ -118,7 +117,6 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
 
 BOOL DevLXMiniMap::LXMiniMapPutMacCready(PDeviceDescriptor_t d, double MacCready) {
 
-	McReadyTimeout = 2;
 	TCHAR mcbuf[100];
 	_stprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
 	devWriteNMEAString(d, mcbuf);
@@ -366,12 +364,7 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // polar_c: float polar_c=c
   // audio volume 0 - 100%
 
-	if(McReadyTimeout>0)
-	{
-		McReadyTimeout--;
-	}
-	else
-	{
+  if (CheckMcTimer()) {
 		double value;
 		ParToDouble(sentence, 0, &value);
 		CheckSetMACCREADY(value, d);

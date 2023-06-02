@@ -1072,7 +1072,9 @@ BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
   if (IsDirInput(PortIO.MCDir)) {
-    ret = CheckSetMACCREADY(fTmp, d);
+    if (CheckMcTimer()) {
+      ret = CheckSetMACCREADY(fTmp, d);
+    }
   }
 
   return ret;

@@ -17,7 +17,6 @@
 
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;
-int  MacCreadyUpdateTimeout = 0;
 int  BugsUpdateTimeout = 0;
 int  BallastUpdateTimeout =0;
 int  LX166AltitudeUpdateTimeout =0;
@@ -169,7 +168,6 @@ BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
 
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-  MacCreadyUpdateTimeout = 5;
   return true;
 
 }
@@ -248,8 +246,7 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
 	  {
 		LX16xxPutMacCready( d,  MACCREADY);
 		oldMC = MACCREADY;
-		MacCreadyUpdateTimeout = 2;
-      }
+    }
 	}
   }
 
@@ -429,9 +426,7 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
   //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
 
   double fTmp;
-  if (MacCreadyUpdateTimeout > 0) {
-    MacCreadyUpdateTimeout--;
-  } else if (ParToDouble(sentence, 0, &fTmp)) {
+  if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
     int iTmp = (int)(fTmp * 100.0 + 0.5f);
     bValid = true;
     if (CheckSetMACCREADY(iTmp / 100.0, d)) {

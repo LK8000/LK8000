@@ -14,7 +14,6 @@
 
 int iVaulter_RxUpdateTime=0;
 double oldVaulterMC = MACCREADY;
-int  VaulterMacCreadyUpdateTimeout = 0;
 int  VaulterBugsUpdateTimeout = 0;
 int  VaulterBallastUpdateTimeout =0;
 int  VaulterAltitudeUpdateTimeout =0;
@@ -77,7 +76,6 @@ BOOL VaulterPutMacCready(PDeviceDescriptor_t d, double MacCready){
   _stprintf(szTmp, TEXT("$PITV1,MC=%4.2f"), MacCready);
   VaulterNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-  VaulterMacCreadyUpdateTimeout = 5;
   return true;
 
 }
@@ -268,9 +266,7 @@ double fTmp;
     }
   }
 
-  if (VaulterMacCreadyUpdateTimeout > 0) {
-    VaulterMacCreadyUpdateTimeout--;
-  } else if (ParToDouble(sentence, 5, &fTmp)) {
+  if (CheckMcTimer() && ParToDouble(sentence, 5, &fTmp)) {
     CheckSetMACCREADY(fTmp, d);
   }
   return (true);

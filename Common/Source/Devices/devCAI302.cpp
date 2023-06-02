@@ -105,7 +105,6 @@ static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *pGPS);
 
-static int  MacCreadyUpdateTimeout = 0;
 static int  BugsUpdateTimeout = 0;
 static int  BallastUpdateTimeout = 0;
 
@@ -140,8 +139,6 @@ BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready){
   _stprintf(szTmp, TEXT("!g,m%d\r"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5));
 
   d->Com->WriteString(szTmp);
-
-  MacCreadyUpdateTimeout = 2;
 
   return(TRUE);
 
@@ -575,11 +572,9 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   double Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
   UpdateVarioSource(*pGPS, *d, Vario);
 
-  if (MacCreadyUpdateTimeout <= 0) {
+  if (CheckMcTimer()) {
     NMEAParser::ExtractParameter(String, ctemp, 10);
     CheckSetMACCREADY((StrToDouble(ctemp, NULL) / 10.0) * KNOTSTOMETRESSECONDS, d);
-  } else {
-    MacCreadyUpdateTimeout--;
   }
 
   if (BallastUpdateTimeout <= 0) {

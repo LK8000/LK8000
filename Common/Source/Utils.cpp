@@ -129,6 +129,19 @@ bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender) {
     return false;
 }
 
+static PeriodClock McTime;
+
+bool CheckMcTimer() {
+    return McTime.Check(5000);
+}
+
+void UpdateMcTimer() {
+    McTime.Update();
+}
+
+
+
+
 void SetOverColorRef() {
     switch (OverColor) {
         case OcWhite:
