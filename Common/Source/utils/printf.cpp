@@ -28,17 +28,19 @@ TEST_CASE("testing the lk::snprintf function") {
 
     SUBCASE("utf8 no truncate") {
         char out[12];
-        lk::snprintf(out, "%s", input);
+        size_t out_size = lk::snprintf(out, "%s", input);
         CHECK(ValidateUTF8(out));
         CHECK(strlen(out) < std::size(out));
+        CHECK(strlen(out) == out_size);
         CHECK(strcmp(input, out) == 0);
     }
 
     SUBCASE("utf8 truncate") {
         char out[11];
-        lk::snprintf(out, "%s", input);
+        size_t out_size = lk::snprintf(out, "%s", input);
         CHECK(ValidateUTF8(out));
         CHECK(strlen(out) < std::size(out));
+        CHECK(strlen(out) == out_size);
         CHECK(strcmp("κόσμ", out) == 0);
     }
 
@@ -47,15 +49,17 @@ TEST_CASE("testing the lk::snprintf function") {
 
     SUBCASE("unicode no truncate") {
         wchar_t out[6];
-        lk::snprintf(out, L"%s", winput);
+        size_t out_size = lk::snprintf(out, L"%s", winput);
         CHECK(wcslen(out) < std::size(out));
+        CHECK(wcslen(out) == out_size);
         CHECK(wcscmp(winput, out) == 0);
     }
 
     SUBCASE("unicode truncate") {
         wchar_t out[5];
-        lk::snprintf(out, L"%s", winput);
+        size_t out_size = lk::snprintf(out, L"%s", winput);
         CHECK(wcslen(out) < std::size(out));
+        CHECK(wcslen(out) == out_size);
         CHECK(wcscmp(L"κόσμ", out) == 0);
     }
 #endif
