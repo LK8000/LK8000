@@ -29,15 +29,21 @@
 #define _UTILS_BASE64_H_
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 /**
- * RFC 4648 §4: base64 (standard)
- */
+* RFC 4648 §4: base64 (standard)
+*/
 std::string base64_encode(const uint8_t* byte, size_t size, bool padding = true);
 
+std::vector<uint8_t> base64_decode(const std::string_view& String);
+
 /**
- * RFC 4648 §5: base64url (URL and filename-safe standard)
- */
+* RFC 4648 §5: base64url (URL and filename-safe standard)
+*/
 std::string base64url_encode(const uint8_t* byte, size_t size, bool padding = true);
+
+std::vector<uint8_t> base64url_decode(const std::string_view& String);
 
 #endif // _UTILS_BASE64_H_
