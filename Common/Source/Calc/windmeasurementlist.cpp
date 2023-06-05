@@ -18,20 +18,6 @@
 
 #include "windmeasurementlist.h"
 
-
-
-WindMeasurementList::WindMeasurementList(){
-  nummeasurementlist = 0;
-}
-
-
-WindMeasurementList::~WindMeasurementList(){
-  for (unsigned int i=0; i<nummeasurementlist; i++) {
-    delete measurementlist[i];
-  }
-}
-
-
 /**
   * Returns the weighted mean windvector over the stored values, or 0
   * if no valid vector could be calculated (for instance: too little or
@@ -49,21 +35,16 @@ Vector WindMeasurementList::getWind(double Time, double alt, bool *found){
 
   unsigned int total_quality=0;
   unsigned int quality=0, q_quality=0, a_quality=0, t_quality=0;
-  Vector result;
-  WindMeasurement * m;
+  Vector result = {0, 0};
   int now= (int)(Time);
   double altdiff=0;
   double timediff=0;
-
   *found = false;
-
-  result.x = 0;
-  result.y = 0;
   double override_time = 1.1;
   bool overridden = false;
 
   for(uint i=0;i< nummeasurementlist; i++) {
-    m= measurementlist[i];
+    const auto& m= measurementlist[i];
     altdiff= (alt - m->altitude)*1.0/altRange;
     timediff= fabs((double)(now - m->time)/timeRange);
 
@@ -90,8 +71,7 @@ Vector WindMeasurementList::getWind(double Time, double alt, bool *found){
           // over-ride happened, so re-set accumulator
           override_time = timediff;
           total_quality = 0;
-          result.x = 0;
-          result.y = 0;
+          result = { 0, 0 };
           overridden = true;
         } else {
           // this isn't the latest over-ride or obtained fix, so ignore
@@ -106,22 +86,19 @@ Vector WindMeasurementList::getWind(double Time, double alt, bool *found){
             // re-set accumulators
             overridden = false;
             total_quality = 0;
-            result.x = 0;
-            result.y = 0;
+            result = { 0, 0 };
           }
         }
       }
       quality= q_quality * (a_quality * t_quality);
-      result.x += m->vector.x * quality;
-      result.y += m->vector.y * quality;
+      result += m->vector * quality;
       total_quality+= quality;
     }
   }
 
   if (total_quality>0) {
     *found = true;
-    result.x=result.x/(int)total_quality;
-    result.y=result.y/(int)total_quality;
+    result = result / total_quality;
   }
   return result;
 }
@@ -133,19 +110,10 @@ void WindMeasurementList::addMeasurement(double Time,
   uint index;
   if (nummeasurementlist==MAX_MEASUREMENTS) {
     index = getLeastImportantItem(Time);
-    delete measurementlist[index];
-    nummeasurementlist--;
   } else {
-    index = nummeasurementlist;
+    index = nummeasurementlist++;
   }
-  WindMeasurement * wind = new WindMeasurement;
-  wind->vector.x = vector.x;
-  wind->vector.y = vector.y;
-  wind->quality=quality;
-  wind->altitude=alt;
-  wind->time= (long)Time;
-  measurementlist[index] = wind;
-  nummeasurementlist++;
+  measurementlist[index] = std::make_unique<WindMeasurement>(WindMeasurement{vector, quality, static_cast<long>(Time), alt});
 }
 
 /**
@@ -174,11 +142,3 @@ uint WindMeasurementList::getLeastImportantItem(double Time) {
   }
   return founditem;
 }
-
-
-/*
-int WindMeasurementList::compareItems(QCollection::Item s1, QCollection::Item s2) {
-  //return the difference between the altitudes in item 1 and item 2
-  return (int)(((WindMeasurement*)s1)->altitude - ((WindMeasurement*)s2)->altitude).getMeters();
-}
-*/

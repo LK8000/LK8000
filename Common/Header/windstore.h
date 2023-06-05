@@ -19,6 +19,8 @@
 #define WINDSTORE_H
 
 #include "windmeasurementlist.h"
+struct NMEA_INFO;
+struct DERIVED_INFO;
 
 /**
   * WindStore receives single windmeasurements and stores these. It uses
@@ -31,8 +33,8 @@
 class WindStore  {
 
 public:
-  WindStore();
-  ~WindStore();
+  WindStore() = default;
+  ~WindStore() {}
 
 public: // Public slots
   /**
@@ -59,15 +61,16 @@ public: // Public slots
 
 private:
 
-  Vector _lastWind;
-  double _lastAltitude;
-  WindMeasurementList * windlist ;
+  Vector _lastWind = {};
+  double _lastAltitude = -10000.0; // invalide altitude for warantly first calculation done.
+
+  WindMeasurementList windlist ;
 
   /** Recalculates the wind from the stored measurements.
     * May result in a newWind signal. */
   void recalculateWind(NMEA_INFO *basic, DERIVED_INFO *derived);
 
-  bool updated;
+  bool updated = true;
 
 };
 

@@ -13,25 +13,12 @@
 **
 **
 ***********************************************************************/
-
-#include "externs.h"
-
+#include "Compiler.h"
+#include "options.h"
 #include "windstore.h"
-
-
-WindStore::WindStore() : _lastWind() {
-  //create the lists
-  windlist = new WindMeasurementList();
-  updated = true;
-  _lastAltitude = -10000.0; // invalide altitude for warantly first calculation done.
-}
-
-
-WindStore::~WindStore(){
-  delete windlist;
-}
-
-
+#include "NMEA/Info.h"
+#include "NMEA/Derived.h"
+#include "Defines.h"
 /**
   * Called with new measurements. The quality is a measure for how
   * good the measurement is. Higher quality measurements are more
@@ -41,7 +28,7 @@ void WindStore::slot_measurement(NMEA_INFO *nmeaInfo,
                                  DERIVED_INFO *derivedInfo,
                                  Vector windvector, int quality){
   updated = true;
-  windlist->addMeasurement(nmeaInfo->Time, windvector, nmeaInfo->Altitude, quality);
+  windlist.addMeasurement(nmeaInfo->Time, windvector, nmeaInfo->Altitude, quality);
   //we may have a new wind value, so make sure it's emitted if needed!
   recalculateWind(nmeaInfo, derivedInfo);
 }
@@ -67,7 +54,7 @@ void WindStore::slot_Altitude(NMEA_INFO *nmeaInfo,
 
 
 Vector WindStore::getWind(double Time, double h, bool *found) {
-  return windlist->getWind(Time, h, found);
+  return windlist.getWind(Time, h, found);
 }
 
 /** Recalculates the wind from the stored measurements.
@@ -76,7 +63,7 @@ Vector WindStore::getWind(double Time, double h, bool *found) {
 void WindStore::recalculateWind(NMEA_INFO *nmeaInfo,
                                 DERIVED_INFO *derivedInfo) {
   bool found;
-  Vector CurWind= windlist->getWind(nmeaInfo->Time,
+  Vector CurWind = windlist.getWind(nmeaInfo->Time,
                                     nmeaInfo->Altitude, &found);
 
   if (found) {
