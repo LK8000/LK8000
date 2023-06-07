@@ -29,7 +29,7 @@ class Message {
   static void InitFont();
 
   static void Destroy();
-  static bool Render(); // returns true if messages have changed
+  static void Render();
 
   static void AddMessage(unsigned tshow, int type, const TCHAR *Text);
 

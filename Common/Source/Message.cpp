@@ -119,9 +119,6 @@ void Message::Resize() {
   if (size==0) {
     if (!hidden) {
         WndMsg.SetVisible(false);
-#ifndef USE_GDI
-        main_window->Refresh();
-#endif
     }
     hidden = true;
   } else {
@@ -159,19 +156,14 @@ void Message::Resize() {
     WndMsg.Move(rthis);
     WndMsg.SetVisible(true);
     hidden = false;
-
-#ifndef USE_GDI
-    main_window->Refresh();
-#endif
-
   }
 
 }
 
 
-bool Message::Render() {
-    if (!GlobalRunning) return false;
-    if (ScopeBlockRender::isBlocked()) return false;
+void Message::Render() {
+    if (!GlobalRunning) return;
+    if (ScopeBlockRender::isBlocked()) return;
 
     Lock();
     unsigned fpsTime = startTime.Elapsed();
@@ -215,12 +207,20 @@ bool Message::Render() {
         // don't save more than 20 message into history.
         messagesHistory.erase(--messagesHistory.end());
     }
+    if (!hidden && messages.empty()) {
+        changed = true;
+    }
 
-    if (changed || (!hidden && messages.empty())) {
+    if (changed) {
         Resize();
     }
     Unlock();
-    return changed;
+
+#ifndef USE_GDI
+    if (changed) {
+        main_window->Refresh();
+    }
+#endif
 }
 
 void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
