@@ -39,3 +39,7 @@
     .section .rodata
 
     binfile IDR_RASTER_EGM96S, Common/Data/Bitmaps/egm96s.dem
+
+#if defined(__linux__) && defined(__ELF__)
+    .section .note.GNU-stack,"",%progbits
+#endif

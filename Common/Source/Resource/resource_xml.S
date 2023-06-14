@@ -172,3 +172,7 @@
     binfile IDR_XML_NMEAREPLAY, Common/Data/Dialogs/dlgNMEAReplay.xml
     binfile IDR_XML_RADIOPRISECSEL, Common/Data/Dialogs/dlgRadioPriSecSel.xml
     binfile IDR_XML_MACCREADY, Common/Data/Dialogs/dlgMacCready.xml
+
+#if defined(__linux__) && defined(__ELF__)
+    .section .note.GNU-stack,"",%progbits
+#endif

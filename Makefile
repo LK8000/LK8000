@@ -1722,12 +1722,12 @@ $(BIN)/resource.a: $(BIN)/Resource/resource_wave.o $(BIN)/Resource/resource_data
 $(BIN)/Resource/resource_xml.o:  $(BIN)/Resource/resource_xml.min.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(AS) $(OUTPUT_OPTION) $<
+	$(Q)$(CC) -c $(OUTPUT_OPTION) $<
 
 $(BIN)/Resource/resource_data.o:  $(RSCSRC)/resource_data.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(AS) $(OUTPUT_OPTION) $<
+	$(Q)$(CC) -c $(OUTPUT_OPTION) $<
 
 $(BIN)/Resource/resource_bmp.o:  $(BIN)/Resource/resource_bmp.png.S
 	@$(NQ)echo "  AS     $@"
@@ -1737,7 +1737,7 @@ $(BIN)/Resource/resource_bmp.o:  $(BIN)/Resource/resource_bmp.png.S
 $(BIN)/Resource/resource_wave.o:  $(RSCSRC)/resource_wave.S
 	@$(NQ)echo "  AS     $@"
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(AS) $(OUTPUT_OPTION) $<
+	$(Q)$(CC) -c $(OUTPUT_OPTION) $<
 
 
 $(BIN)/Resource/resource_bmp.png.S : $(RSCSRC)/resource_bmp.S $(patsubst Common/Data/Bitmaps/%.bmp,$(BIN)/Data/Bitmaps/%.png,$(BITMAP_RES))

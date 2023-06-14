@@ -70,3 +70,7 @@
     binfile IDR_WAV_OVERTONE5, Common/Data/Sounds/LK_S5.WAV
     binfile IDR_WAV_OVERTONE6, Common/Data/Sounds/LK_S6.WAV
     binfile IDR_WAV_OVERTONE7, Common/Data/Sounds/LK_S6b.WAV
+
+#if defined(__linux__) && defined(__ELF__)
+    .section .note.GNU-stack,"",%progbits
+#endif

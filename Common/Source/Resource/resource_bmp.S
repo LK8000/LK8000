@@ -42,3 +42,7 @@
     binfile IDB_TOWN                Common/Data/Bitmaps/town.bmp
     binfile IDB_LKSMALLTOWN         Common/Data/Bitmaps/smalltown.bmp
     binfile IDB_LKVERYSMALLTOWN     Common/Data/Bitmaps/verysmalltown.bmp
+
+#if defined(__linux__) && defined(__ELF__)
+    .section .note.GNU-stack,"",%progbits
+#endif
