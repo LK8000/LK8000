@@ -13,6 +13,7 @@
 #include "DoInits.h"
 #include "NavFunctions.h"
 #include "Library/TimeFunctions.h"
+#include "utils/printf.h"
 
 
 // 
@@ -81,7 +82,7 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   TCHAR tstring[10];
   Units::TimeToTextSimple(tstring,LocalTime(ThTime));
   
-  _stprintf(ThermalHistory[i].Name,_T("th%s"),tstring);
+  lk::snprintf(ThermalHistory[i].Name,_T("th%s"),tstring);
   ThermalHistory[i].Time = ThTime;
   ThermalHistory[i].Latitude = ThLat;
   ThermalHistory[i].Longitude = ThLon;
