@@ -18,6 +18,8 @@
 #include <string.h>
 #include <signal.h>
 
+#include "utils/lookup_table.h"
+
 #ifdef KOBO
 #include "Kobo/System.hpp"
 #endif
@@ -39,36 +41,28 @@ TTYPort::~TTYPort() {
     Close();
 }
 
+namespace {
+
+constexpr auto DecodeBaudrateTable = lookup_table<int, speed_t>({
+    {1200, B1200},
+    {2400, B2400},
+    {4800, B4800},
+    {9600, B9600},
+    {19200, B19200},
+    {38400, B38400},
+    {57600, B57600},
+    {115200, B115200},
+    {230400, B230400},
+    {460800, B460800},
+    {500000, B500000},
+    {1000000, B1000000}
+});
+
 speed_t DecodeBaudrate(int speed) {
-
-    struct SpeedToFlag {
-        int nSpeed;
-        speed_t FlagSpeed;
-    };
-    static const SpeedToFlag SpeedToFlagTable[] = {
-        {1200, B1200},
-        {2400, B2400},
-        {4800, B4800},
-        {9600, B9600},
-        {19200, B19200},
-        {38400, B38400},
-        {57600, B57600},
-        {115200, B115200},
-        {230400, B230400},
-        {460800, B460800},
-        {500000, B500000},
-        {1000000, B1000000}
-    };
-
-    speed_t BaudRate = B9600;
-    const SpeedToFlag* ItSpeed = std::find_if(std::begin(SpeedToFlagTable), std::end(SpeedToFlagTable), [speed](SpeedToFlag const& t) {
-        return t.nSpeed == speed;
-    });
-    if (ItSpeed != std::end(SpeedToFlagTable)) {
-        BaudRate = ItSpeed->FlagSpeed;
-    }
-    return BaudRate;
+    return DecodeBaudrateTable.get(speed, B9600);
 }
+
+} // namespace
 
 bool TTYPort::Initialize() {
     StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"), (unsigned)(GetPortIndex() + 1),GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
