@@ -43,6 +43,8 @@
 // redeclaration of itoa()
 #include "utils.h"
 
+#include "utils/printf.h"
+
 // Conversion-Constants
 
 
@@ -198,8 +200,8 @@ class C_RECORD {
       TKF.print(version,aus,"Takeoff");             // Ausgabe von Takeoff-Point
       STA.print(version,aus,"Start  ");		    //	       Start-Point
       for (i=0; i<NTP; i++) {   	    // 	       Turnpoints
-	sprintf(is,"TP%02u   ",i+1);
-	TP[i].print(version,aus,is);
+      	lk::snprintf(is,"TP%02u   ",i+1);
+      	TP[i].print(version,aus,is);
       }
       FIN.print(version,aus,"Finish ");             //         Finish-Point
       LDG.print(version,aus,"Landing");             //         Landing-Point
