@@ -63,20 +63,20 @@ BOOL PXCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS
     UpdateVarioSource(*pGPS, *d, value);
   }
 
-  if (CheckMcTimer() && ReadChecked(params[2], value)) {
+  if (ReadChecked(params[2], value)) {
     // MacCready 0 to 10 m/s
-    CheckSetMACCREADY(value, d);
+    d->RecvMacCready(value);
   }
-  if (CheckBugsTimer() && ReadChecked(params[3], value)) {
+  if (ReadChecked(params[3], value)) {
     // Bugs degradation, 0 = clean to 30 %
-    CheckSetBugs(1 - Clamp(value, 0., 30.) / 100., d);
+    d->RecvBugs(1 - Clamp(value, 0., 30.) / 100.);
   }
 
   /**
    * unusable
-  if (CheckBallastTimer() && ReadChecked(params[4], value)) {
+  if (ReadChecked(params[4], value)) {
     // Ballast 1.00 to 1.60
-    CheckSetBallast(value, d);
+    d->RecvBallast(value);
   }
   */
 
@@ -144,7 +144,7 @@ BOOL XCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS)
   if (params[1] == _T("bal-water"sv)) {
     double liters;
     if (ReadChecked(params[2], liters)) {
-      CheckSetBallast(WEIGHTS[2] / liters, d);
+      d->RecvBallast(WEIGHTS[2] / liters);
     }
   }
   return TRUE;

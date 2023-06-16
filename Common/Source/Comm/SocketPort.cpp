@@ -43,6 +43,8 @@ bool SocketPort::Initialize() {
 
         goto failed;
     }
+
+    SetPortStatus(CPS_OPENOK);
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)GetPortIndex() + 1, GetPortName(), NEWLINE);
     return true;
 failed:

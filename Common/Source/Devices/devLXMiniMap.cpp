@@ -34,10 +34,6 @@ PeriodClock		  TICKER;
 PeriodClock		  TICKER_PFLX4;
 PeriodClock		  AlttimeOutTicker;
 bool AltTimeoutWait = false;
-
-
-short BallastTimeout = 0;
-
 double AltOffset = 0;
 double FT2M = 0.3048;
 double M2FT = 1.0/FT2M;
@@ -73,8 +69,6 @@ void DevLXMiniMap::Install(PDeviceDescriptor_t d)
 
 BOOL DevLXMiniMap::LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast)
 {
-
-		BallastTimeout = 2;
 		TCHAR mcbuf[100];
 
 		double newBallastFactor = CalculateBalastFactor(Ballast) ;
@@ -114,7 +108,6 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
 }
 
 BOOL DevLXMiniMap::LXMiniMapPutMacCready(PDeviceDescriptor_t d, double MacCready) {
-
 	TCHAR mcbuf[100];
 	_stprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
 	devWriteNMEAString(d, mcbuf);
@@ -361,24 +354,18 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   // polar_b: float polar_b=b/100 v=(km/h/100) w=(m/s)
   // polar_c: float polar_c=c
   // audio volume 0 - 100%
+  double value;
+  ParToDouble(sentence, 0, &value);
+  d->RecvMacCready(value);
 
-  if (CheckMcTimer()) {
-		double value;
-		ParToDouble(sentence, 0, &value);
-		CheckSetMACCREADY(value, d);
-	}
+  double tempBallastFactor;
+  ParToDouble(sentence, 1, &tempBallastFactor);
 
-  if (CheckBallastTimer()) {
-    double tempBallastFactor;
-    ParToDouble(sentence, 1, &tempBallastFactor);
-    CheckSetBallast(CalculateBalast(tempBallastFactor), d);
-  }
+  d->RecvBallast(CalculateBalast(tempBallastFactor));
 
-  if (CheckBugsTimer()) {
-    double tempBugs;
-    ParToDouble(sentence, 2, &tempBugs);
-    CheckSetBugs((100.0 - tempBugs) / 100, d);
-  }
+  double tempBugs;
+  ParToDouble(sentence, 2, &tempBugs);
+  d->RecvBugs((100.0 - tempBugs)/100);
 
   return(true);
 } // LXWP2()

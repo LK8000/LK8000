@@ -103,6 +103,7 @@ bool TTYPort::Initialize() {
     tcflush(_tty, TCIFLUSH);
     tcsetattr(_tty, TCSANOW, &newtio);
 
+    SetPortStatus(CPS_OPENOK);
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
 
     return true;

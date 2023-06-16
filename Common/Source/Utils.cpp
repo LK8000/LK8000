@@ -123,24 +123,12 @@ double GetMacCready(int wpindex, short wpmode) {
 bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender) {
     double old_value = std::exchange(MACCREADY, Clamp(value, 0.0, 12.0));
     if (fabs(old_value - MACCREADY) > 0.05) {
+        TriggerGPSUpdate();
         devPutMacCready(MACCREADY, Sender);
         return true;
     }
     return false;
 }
-
-static PeriodClock McTime;
-
-bool CheckMcTimer() {
-    return McTime.Check(5000);
-}
-
-void UpdateMcTimer() {
-    McTime.Update();
-}
-
-
-
 
 void SetOverColorRef() {
     switch (OverColor) {
@@ -311,17 +299,6 @@ double CalculateBugsFromLX(double LXBug)
   return (100.0 - LXBug)/100.0;
 }
 
-
-static PeriodClock BallastTime;
-
-bool CheckBallastTimer() {
-    return BallastTime.Check(5000);
-}
-
-void UpdateBallastTimer() {
-    BallastTime.Update();
-}
-
 // All values in the range 100% (1) to 0% (0);
 bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
     if (value < 0. || value > 1.) {
@@ -331,20 +308,11 @@ bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
     double old_value = std::exchange(BALLAST, Clamp(value, 0., 1.));
     if (fabs(old_value - BALLAST) > 0.05) {
         GlidePolar::SetBallast();
+        TriggerGPSUpdate();
         devPutBallast(BALLAST, Sender);
         return true;
     }
     return false;
-}
-
-static PeriodClock BugsTime;
-
-bool CheckBugsTimer() {
-    return BugsTime.Check(5000);
-}
-
-void UpdateBugsTimer() {
-    BugsTime.Update();
 }
 
 // BUGS is really EFFICIENCY. In the range 100% to 50%, i.e. 1 to 0.5 .
@@ -353,6 +321,7 @@ bool CheckSetBugs(double value, DeviceDescriptor_t* Sender) {
     double old_value = std::exchange(BUGS, Clamp(value, 0.5, 1.0));
     if (fabs(old_value - BUGS) > 0.05) {
         GlidePolar::SetBallast();
+        TriggerGPSUpdate();
         devPutBugs(BUGS, Sender);
         return true;
     }

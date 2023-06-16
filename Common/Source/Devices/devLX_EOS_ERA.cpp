@@ -1072,9 +1072,7 @@ BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
   if (IsDirInput(PortIO.MCDir)) {
-    if (CheckMcTimer()) {
-      ret = CheckSetMACCREADY(fTmp, d);
-    }
+    d->RecvMacCready(fTmp);
   }
 
   return ret;
@@ -1144,7 +1142,7 @@ BOOL DevLX_EOS_ERA::EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *inf
     if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[2] > 0))
     {
       GlidePolar::BallastLitres = fTmp;
-      BALLAST =  GlidePolar::BallastLitres / WEIGHTS[2];
+      d->RecvBallast(GlidePolar::BallastLitres / WEIGHTS[2]);
       ret = true;
     }
   }
@@ -1165,8 +1163,9 @@ BOOL DevLX_EOS_ERA::EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *in
 
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
-  if (CheckBugsTimer() && IsDirInput(PortIO.BUGDir)) {
-    ret = CheckSetBugs(CalculateBugsFromLX(fTmp), d);
+  if (IsDirInput(PortIO.BUGDir)) {
+    d->RecvBugs(CalculateBugsFromLX(fTmp));
+    ret = true;
   }
 
   return ret;

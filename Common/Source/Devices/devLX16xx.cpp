@@ -15,10 +15,6 @@
 #include "Utils.h"
 #include "utils/printf.h"
 
-int iLX16xx_RxUpdateTime=0;
-double oldMC = MACCREADY;
-
-int  BallastUpdateTimeout =0;
 int  LX166AltitudeUpdateTimeout =0;
 int  LX16xxAlt=0;
 double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
@@ -163,13 +159,10 @@ BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
   if(bValid == false) {
     return false;
   }
-
   _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,CalculateLXBalastFactor(BALLAST),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
   return true;
-
 }
 
 
@@ -184,7 +177,6 @@ BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast){
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
-  BallastUpdateTimeout =5;
   return (TRUE);
 }
 
@@ -205,9 +197,7 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
 
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-  
   return(TRUE);
-
 }
 
 
@@ -232,30 +222,11 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
     return FALSE;
   }
 
-
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-  {
-	if(iLX16xx_RxUpdateTime > 0)
-	{
-	  iLX16xx_RxUpdateTime--;
-	}
-	else
-	{
-	  if(fabs(oldMC - MACCREADY)> 0.005f)
-	  {
-		LX16xxPutMacCready( d,  MACCREADY);
-		oldMC = MACCREADY;
-    }
-	}
-  }
-
   /* configure LX after 30 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
-  {
-    if(i++ > 10)
-    {
+  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+    if (i++ > 10) {
       SetupLX_Sentence(d);
-	  i=0;
+      i = 0;
     }
   }
 
@@ -425,24 +396,18 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
   //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
 
   double fTmp;
-  if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
-    int iTmp = (int)(fTmp * 100.0 + 0.5f);
+  if (ParToDouble(sentence, 0, &fTmp)) {
+    int iTmp = (fTmp * 100.0 + 0.5f);
     bValid = true;
-    if (CheckSetMACCREADY(iTmp / 100.0, d)) {
-      iLX16xx_RxUpdateTime = 5;
-    }
+    d->RecvMacCready((double)(iTmp) / 100.0);
   }
 
-  if (CheckBallastTimer() && ParToDouble(sentence, 1, &fTmp)) {
-    if (CheckSetBallast(CalculateBalastFromLX(fTmp), d)) {
-      iLX16xx_RxUpdateTime = 5;
-    }
+  if (ParToDouble(sentence, 1, &fTmp)) {
+    d->RecvBallast(CalculateBalastFromLX(fTmp));
   }
 
-  if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
-    if (CheckSetBugs(CalculateBugsFromLX(fTmp), d)) {
-      iLX16xx_RxUpdateTime = 5;
-    }
+  if(ParToDouble(sentence, 2, &fTmp)) {
+    d->RecvBugs(CalculateBugsFromLX(fTmp));
   }
 
   if (ParToDouble(sentence, 3, &fTmp))

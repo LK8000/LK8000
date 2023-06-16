@@ -19,8 +19,6 @@
 
 int iLXV7_RxUpdateTime=0;
 double LXV7_oldMC = MACCREADY;
-
-int  LXV7_BallastUpdateTimeout =0;
 int LXV7_iGPSBaudrate = 0;
 int LXV7_iPDABaudrate = 0;
 
@@ -204,8 +202,6 @@ TCHAR  szTmp[254];
 
   LXV7NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-
-  LXV7_BallastUpdateTimeout =10;
   return(TRUE);
 }
 
@@ -249,14 +245,14 @@ BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
     }
 
     if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
-	if(iLXV7_RxUpdateTime > 0) {
-	    iLXV7_RxUpdateTime--;
-	} else {
-	    if(fabs(LXV7_oldMC - MACCREADY)> 0.005f) {
-		LXV7PutMacCready( d,  MACCREADY);
-		LXV7_oldMC = MACCREADY;
+        if (iLXV7_RxUpdateTime > 0) {
+            iLXV7_RxUpdateTime--;
+        } else {
+            if (fabs(LXV7_oldMC - MACCREADY) > 0.005f) {
+              LXV7PutMacCready(d, MACCREADY);
+              LXV7_oldMC = MACCREADY;
             }
-	}
+        }
     }
 
     /* configure LX after 10 GPS positions */
@@ -454,24 +450,20 @@ bool DevLXV7::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
 //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
 
   double fTmp;
-  if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
+  if (ParToDouble(sentence, 0, &fTmp)) {
     int iTmp = (int)(fTmp * 100.0 + 0.5f);
+    fTmp = (double)(iTmp) / 100.0;
     LXV7_bValid = true;
-    if (CheckSetMACCREADY(iTmp / 100.0, d)) {
-      iLXV7_RxUpdateTime = 5;
-    }
+    d->RecvMacCready(fTmp);
   }
 
-  if (CheckBallastTimer() && ParToDouble(sentence, 1, &fTmp)) {
-    if (CheckSetBallast(CalculateBalastFromLX(fTmp), d)) {
-      iLXV7_RxUpdateTime = 5;
-    }
+  if (ParToDouble(sentence, 1, &fTmp)) {
+    double newBallast = CalculateBalastFromLX(fTmp);
+    d->RecvBallast(newBallast);
   }
 
-  if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
-    if (CheckSetBugs(CalculateBalastFromLX(fTmp), d)) {
-      iLXV7_RxUpdateTime = 5;
-    }
+  if(ParToDouble(sentence, 2, &fTmp)) {
+    d->RecvBugs(CalculateBalastFromLX(fTmp));
   }
 
   return(true);

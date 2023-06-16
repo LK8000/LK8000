@@ -94,8 +94,8 @@ BOOL for_all_device(DeviceDescriptor_t* Sender, Callable&& func, Args&&... args)
         continue; // ignore sender.
       }
       ScopeLock Lock(CritSec_Comm);
-      if( !d.Disabled && d.Com && (d.*func) ) {
-        nbDeviceFailed += (d.*func)(&d, std::forward<Args>(args)...) ? 0 : 1;
+      if( !d.Disabled && d.Status == CPS_OPENOK && d.Com) {
+        nbDeviceFailed += (d.*func)(std::forward<Args>(args)...) ? 0 : 1;
       }
     }
     return (nbDeviceFailed > 0);
@@ -394,6 +394,99 @@ void DeviceDescriptor_t::InitStruct(int i) {
 #endif
 
     nmeaParser.Reset();
+
+    IgnoreMacCready.Reset();
+    IgnoreBugs.Reset();
+    IgnoreBallast.Reset();
+
+}
+
+BOOL DeviceDescriptor_t::_PutMacCready(double McReady) {
+  if (PutMacCready) {
+    IgnoreMacCready.Update();
+    return PutMacCready(this, McReady);
+  }
+  return FALSE;
+}
+
+BOOL DeviceDescriptor_t::_PutBugs(double Bugs) {
+  if (PutBugs) {
+    IgnoreBugs.Update();
+    return PutBugs(this, Bugs);
+  }
+  return FALSE;
+}
+
+BOOL DeviceDescriptor_t::_PutBallast(double Ballast) {
+  if (PutBallast) {
+    IgnoreBallast.Update();
+    return PutBallast(this, Ballast);
+  }
+  return FALSE;
+}
+
+BOOL DeviceDescriptor_t::_PutVolume(int Volume) {
+  return PutVolume && PutVolume(this, Volume);
+}
+
+BOOL DeviceDescriptor_t::_PutRadioMode(int mode) {
+  return PutRadioMode && PutRadioMode(this, mode);
+}
+
+BOOL DeviceDescriptor_t::_PutSquelch(int Squelch) {
+  return PutSquelch && PutSquelch(this, Squelch);
+}
+
+BOOL DeviceDescriptor_t::_PutFreqActive(unsigned khz, const TCHAR* StationName) {
+  return PutFreqActive && PutFreqActive(this, khz, StationName);
+}
+
+BOOL DeviceDescriptor_t::_StationSwap() {
+  return StationSwap && StationSwap(this);
+}
+
+BOOL DeviceDescriptor_t::_PutFreqStandby(unsigned khz, const TCHAR* StationName) {
+  return PutFreqStandby && PutFreqStandby(this, khz, StationName);
+}
+
+BOOL DeviceDescriptor_t::_PutTarget(const WAYPOINT& wpt) {
+  return PutTarget && PutTarget(this, wpt);
+}
+
+BOOL DeviceDescriptor_t::_PutQNH(double NewQNH) {
+  return PutQNH && PutQNH(this, NewQNH);
+}
+
+BOOL DeviceDescriptor_t::_LinkTimeout() {
+  return LinkTimeout && LinkTimeout(this);
+}
+
+BOOL DeviceDescriptor_t::_HeartBeat() {
+  return HeartBeat && HeartBeat(this);
+}
+
+BOOL DeviceDescriptor_t::RecvMacCready(double McReady) {
+  if (IgnoreMacCready.Check(5000)) {
+    CheckSetMACCREADY(McReady, this);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+BOOL DeviceDescriptor_t::RecvBugs(double Bugs) {
+  if (IgnoreBugs.Check(5000)) {
+    CheckSetBugs(Bugs, this);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+BOOL DeviceDescriptor_t::RecvBallast(double Ballast) {
+  if (IgnoreBallast.Check(5000)) {
+    CheckSetBallast(Ballast, this);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 void RestartCommPorts() {
@@ -415,7 +508,6 @@ BOOL devOpen(PDeviceDescriptor_t d) {
   }
   return TRUE;
 }
-
 
 static bool IsIdenticalPort(int i, int j) {
   const auto& ConfigA = PortConfig[i];
@@ -772,8 +864,7 @@ BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable) {
  * @return FALSE if error on one device.
  */
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender) {
-    UpdateMcTimer();
-    return for_all_device(Sender, &DeviceDescriptor_t::PutMacCready, MacCready);
+    return for_all_device(Sender, &DeviceDescriptor_t::_PutMacCready, MacCready);
 }
 
 
@@ -804,8 +895,7 @@ BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
  * @return FALSE if error on one device.
  */
 BOOL devPutBugs(double Bugs, DeviceDescriptor_t* Sender) {
-    UpdateBugsTimer();
-    return for_all_device(Sender, &DeviceDescriptor_t::PutBugs, Bugs);
+    return for_all_device(Sender, &DeviceDescriptor_t::_PutBugs, Bugs);
 }
 
 /**
@@ -814,16 +904,15 @@ BOOL devPutBugs(double Bugs, DeviceDescriptor_t* Sender) {
  * @return FALSE if error on one device.
  */
 BOOL devPutBallast(double Ballast, DeviceDescriptor_t* Sender) {
-    UpdateBallastTimer();
-    return for_all_device(Sender, &DeviceDescriptor_t::PutBallast, Ballast);
+    return for_all_device(Sender, &DeviceDescriptor_t::_PutBallast, Ballast);
 }
 
 BOOL devHeartBeat() {
-  return for_all_device(&DeviceDescriptor_t::HeartBeat);
+  return for_all_device(&DeviceDescriptor_t::_HeartBeat);
 }
 
 BOOL devLinkTimeout() {
-  return for_all_device(&DeviceDescriptor_t::LinkTimeout);
+  return for_all_device(&DeviceDescriptor_t::_LinkTimeout);
 }
 
 
@@ -888,11 +977,11 @@ BOOL devIsRadio(PDeviceDescriptor_t d) {
 
 
 BOOL devPutQNH(double NewQNH) {
-  return for_all_device(&DeviceDescriptor_t::PutQNH, NewQNH);
+  return for_all_device(&DeviceDescriptor_t::_PutQNH, NewQNH);
 }
 
 BOOL devPutTarget(const WAYPOINT& wpt) {
-  return for_all_device(&DeviceDescriptor_t::PutTarget, wpt);
+  return for_all_device(&DeviceDescriptor_t::_PutTarget, wpt);
 }
 
 namespace {
@@ -948,7 +1037,7 @@ bool devDriverActivated(const TCHAR *DeviceName) {
  */
 BOOL devPutVolume(int Volume) {
   RadioPara.VolValid = false;
-  return for_all_device(&DeviceDescriptor_t::PutVolume, Volume);
+  return for_all_device(&DeviceDescriptor_t::_PutVolume, Volume);
 
 }
 
@@ -959,7 +1048,7 @@ BOOL devPutVolume(int Volume) {
  */
 BOOL devPutSquelch(int Squelch) {
   RadioPara.SqValid = false;
-  return for_all_device(&DeviceDescriptor_t::PutSquelch, Squelch);
+  return for_all_device(&DeviceDescriptor_t::_PutSquelch, Squelch);
 
 }    
 
@@ -972,7 +1061,7 @@ BOOL devPutSquelch(int Squelch) {
  */
 BOOL devPutRadioMode(int mode) {
   RadioPara.DualValid = false;
-  return for_all_device(&DeviceDescriptor_t::PutRadioMode, mode);
+  return for_all_device(&DeviceDescriptor_t::_PutRadioMode, mode);
 }
 
 /**
@@ -982,7 +1071,7 @@ BOOL devPutRadioMode(int mode) {
 BOOL devPutFreqSwap() {
   RadioPara.ActiveValid = false;
   RadioPara.PassiveValid = false;
-  return for_all_device(&DeviceDescriptor_t::StationSwap);
+  return for_all_device(&DeviceDescriptor_t::_StationSwap);
 
 }
 
@@ -999,7 +1088,7 @@ BOOL devPutFreqActive(unsigned khz, const TCHAR* StationName) {
     RadioPara.ActiveValid = false;
     RadioPara.ActiveKhz = khz;
     CopyTruncateString(RadioPara.ActiveName, NAME_SIZE, StationName);
-    return for_all_device(&DeviceDescriptor_t::PutFreqActive, khz, StationName);
+    return for_all_device(&DeviceDescriptor_t::_PutFreqActive, khz, StationName);
   }
   return false;
 }
@@ -1013,7 +1102,7 @@ BOOL devPutFreqStandby(unsigned khz, const TCHAR* StationName) {
     RadioPara.PassiveValid = false;
     RadioPara.PassiveKhz = khz;
     CopyTruncateString(RadioPara.PassiveName, NAME_SIZE, StationName);
-    return for_all_device(&DeviceDescriptor_t::PutFreqStandby, khz, StationName);
+    return for_all_device(&DeviceDescriptor_t::_PutFreqStandby, khz, StationName);
   }
   return false;
 }

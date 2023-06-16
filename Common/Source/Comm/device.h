@@ -128,6 +128,29 @@ struct DeviceDescriptor_t {
 //  DeviceIO PortIO[NUMDEV];
   void InitStruct(int i);
 
+  BOOL _PutMacCready(double McReady);
+  BOOL _PutBugs(double	Bugs);
+  BOOL _PutBallast(double Ballast);
+  BOOL _PutVolume(int Volume);
+  BOOL _PutRadioMode(int mode);
+  BOOL _PutSquelch(int Squelch);
+  BOOL _PutFreqActive(unsigned khz, const TCHAR* StationName);
+  BOOL _StationSwap();
+  BOOL _PutFreqStandby(unsigned khz, const TCHAR* StationName);
+  BOOL _PutTarget(const WAYPOINT& wpt);
+  BOOL _PutQNH(double NewQNH);
+  BOOL _LinkTimeout();
+  BOOL _HeartBeat();
+
+
+  BOOL RecvMacCready(double McReady);
+  PeriodClock IgnoreMacCready;
+
+  BOOL RecvBugs(double Bugs);
+  PeriodClock IgnoreBugs;
+
+  BOOL RecvBallast(double Ballast);
+  PeriodClock IgnoreBallast;
 
   wait_ack_shared_ptr make_wait_ack(const char* str) {
     auto wait_ack = make_wait_ack_shared(str);

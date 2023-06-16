@@ -145,10 +145,11 @@ static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   //windcomponent (km/h)
   //wing loading (kp/m2)
   //best glide ratio
-  if (CheckMcTimer()) {
-    TCHAR ctemp[80];
-    NMEAParser::ExtractParameter(String, ctemp, 0);
-    CheckSetMACCREADY(StrToDouble(ctemp, nullptr), d);
-  }
-  return TRUE;
+
+  TCHAR ctemp[80];
+
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  d->RecvMacCready(StrToDouble(ctemp, nullptr));
+
+  return true;
 }

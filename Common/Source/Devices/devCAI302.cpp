@@ -127,45 +127,29 @@ BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-static
-BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready){
-
-  TCHAR  szTmp[32];
+static BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready) {
+  TCHAR szTmp[32];
 
   _stprintf(szTmp, TEXT("!g,m%d\r"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5));
-
   d->Com->WriteString(szTmp);
-
-  return(TRUE);
-
+  return (TRUE);
 }
 
 static
-BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs){
-
-  TCHAR  szTmp[32];
-
+BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs) {
+  TCHAR szTmp[32];
   _stprintf(szTmp, TEXT("!g,u%d\r"), int((Bugs * 100) + 0.5));
-
   d->Com->WriteString(szTmp);
-
-  return(TRUE);
-
+  return (TRUE);
 }
 
 static
-BOOL cai302PutBallast(PDeviceDescriptor_t d, double Ballast){
-
-  TCHAR  szTmp[32];
-
+BOOL cai302PutBallast(PDeviceDescriptor_t d, double Ballast) {
+  TCHAR szTmp[32];
   _stprintf(szTmp, TEXT("!g,b%d\r"), int((Ballast * 10) + 0.5));
-
   d->Com->WriteString(szTmp);
-
-  return(TRUE);
-
+  return (TRUE);
 }
-
 
 #if 0
 void test(void){
@@ -564,19 +548,14 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   double Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
   UpdateVarioSource(*pGPS, *d, Vario);
 
-  if (CheckMcTimer()) {
-    NMEAParser::ExtractParameter(String, ctemp, 10);
-    CheckSetMACCREADY((StrToDouble(ctemp, NULL) / 10.0) * KNOTSTOMETRESSECONDS, d);
-  }
+  NMEAParser::ExtractParameter(String,ctemp,10);
+  d->RecvMacCready((StrToDouble(ctemp, nullptr) / 10.0) * KNOTSTOMETRESSECONDS);
 
-  if (CheckBallastTimer()) {
-    NMEAParser::ExtractParameter(String, ctemp, 11);
-    CheckSetBallast(StrToDouble(ctemp, NULL) / 100.0, d);
-  }
+  NMEAParser::ExtractParameter(String,ctemp,11);
+  d->RecvBallast(StrToDouble(ctemp, nullptr) / 100.0);
 
-  if (CheckBugsTimer()) {
-    NMEAParser::ExtractParameter(String, ctemp, 12);
-    CheckSetBugs(StrToDouble(ctemp, NULL) / 100.0, d);
-  }
+  NMEAParser::ExtractParameter(String,ctemp,12);
+  d->RecvBugs(StrToDouble(ctemp, nullptr) / 100.0);
+
   return TRUE;
 }

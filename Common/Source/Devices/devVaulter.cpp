@@ -266,8 +266,8 @@ double fTmp;
     }
   }
 
-  if (CheckMcTimer() && ParToDouble(sentence, 5, &fTmp)) {
-    CheckSetMACCREADY(fTmp, d);
+  if (ParToDouble(sentence, 5, &fTmp)) {
+    d->RecvMacCready(fTmp);
   }
   return (true);
 } // PITV5()

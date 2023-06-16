@@ -1459,41 +1459,47 @@ BOOL DevLXNanoIII::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
 
-  
-if (CheckMcTimer() && ParToDouble(sentence, 0, &fTmp)) {
-    iTmp = (int)(fTmp * 100.0 + 0.5f);
-    fTmp = (double)(iTmp) / 100.0;
-    if (Values(d)) {
+  if (ParToDouble(sentence, 0, &fTmp))
+  {
+    iTmp =(int) (fTmp*100.0+0.5f);
+    fTmp = (double)(iTmp)/100.0;
+    if(Values(d))
+    {
       TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2fm/s ($LXWP2)"), fTmp);
-      SetDataText(d, _MC, szTmp);
+      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s ($LXWP2)"),fTmp);
+      SetDataText( d, _MC,   szTmp);
     }
     Nano3_bValid = true;
     if (IsDirInput(PortIO.MCDir)) {
-      CheckSetMACCREADY(fTmp, d);
+      d->RecvMacCready(fTmp);
     }
   }
 
-  if (CheckBallastTimer() && ParToDouble(sentence, 1, &fTmp)) {
+  if (ParToDouble(sentence, 1, &fTmp))
+  {
     double fBALPerc = CalculateBalastFromLX(fTmp);
-    if (Values(d)) {
+    if(Values(d))
+    {
       TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f = %3.0f%% ($LXWP2)"), fTmp, (fBALPerc * 100.0));
-      SetDataText(d, _BAL, szTmp);
+      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%5.2f = %3.0f%% ($LXWP2)"),fTmp,(fBALPerc*100.0));
+      SetDataText( d, _BAL,  szTmp);
     }
     if (IsDirInput(PortIO.BALDir)) {
-      CheckSetBallast(fBALPerc, d);
+      d->RecvBallast(fBALPerc);
     }
   }
 
-  if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
-    if (Values(d)) {
+  if(ParToDouble(sentence, 2, &fTmp))
+  {
+    if(Values(d))
+    {
       TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"), fTmp);
-      SetDataText(d, _BUGS, szTmp);
+      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% ($LXWP2)"),fTmp);
+      SetDataText( d,_BUGS,  szTmp);
     }
     if (IsDirInput(PortIO.BUGDir)) {
-      CheckSetBugs(CalculateBugsFromLX(fTmp), d);
+      fTmp = CalculateBugsFromLX(fTmp);
+      d->RecvBugs(fTmp);
     }
   }
 
@@ -1808,17 +1814,16 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
    ****************************************************************/
   if (_tcscmp(szTmp1, _T("MC")) == 0) {
     double fTmp;
-    if (CheckMcTimer() && ParToDouble(sentence, 2, &fTmp)) {
+    if (ParToDouble(sentence, 2, &fTmp)) {
       if (Values(d)) {
         TCHAR szTmp[MAX_NMEA_LEN];
         _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.2f PLXV0"), fTmp);
         SetDataText(d, _MC, szTmp);
       }
       if (IsDirInput(PortIO.MCDir)) {
-        if (CheckSetMACCREADY(fTmp, d)) {
-          StartupStore(_T("Nano3 MC: %5.2f"), fTmp);
-          return true;
-        }
+        d->RecvMacCready(fTmp);
+        StartupStore(_T("Nano3 MC: %5.2f"), fTmp);
+        return true;
       }
     }
     return false;
@@ -1830,7 +1835,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   if (_tcscmp(szTmp1,_T("BAL"))==0)
   {
     double fTmp;
-    if (CheckBallastTimer() && ParToDouble(sentence, 2, &fTmp)) {
+    if (ParToDouble(sentence, 2, &fTmp)) {
       double fNewBal = CalculateBalastFromLX(fTmp);
       if (Values(d)) {
         TCHAR szTmp[MAX_NMEA_LEN];
@@ -1838,10 +1843,8 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
         SetDataText(d, _BAL, szTmp);
       }
       if (IsDirInput(PortIO.BALDir)) {
-        if (CheckSetBallast(fNewBal, d)) {
-          return true;
-        }
-        StartupStore(_T("Nano3 BAL: %5.2f"), fTmp);
+        d->RecvBallast(fNewBal);
+        return true;
       }
     }
     return false;
@@ -1849,16 +1852,18 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
   /****************************************************************
    * BUGs
    ****************************************************************/
-  if (_tcscmp(szTmp1, _T("BUGS")) == 0) {
+  if (_tcscmp(szTmp1,_T("BUGS"))==0)
+  {
     double fTmp;
-    if (CheckBugsTimer() && ParToDouble(sentence, 2, &fTmp)) {
+    if (ParToDouble(sentence, 2, &fTmp)) {
       if (Values(d)) {
         TCHAR szTmp[20];
         _sntprintf(szTmp, std::size(szTmp), _T("%3.0f%% ($PLXV0)"), fTmp);
         SetDataText(d, _BUGS, szTmp);
       }
       if (IsDirInput(PortIO.BUGDir)) {
-        return CheckSetBugs(fTmp, d);
+        d->RecvBugs(fTmp);
+        return true;
       }
     }
     return false;

@@ -63,13 +63,10 @@ static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 }
 
 
-static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
-{
-  if (CheckMcTimer()) {
-    TCHAR ctemp[80];
-    NMEAParser::ExtractParameter(String,ctemp,0);
-    CheckSetMACCREADY(StrToDouble(ctemp,NULL), d);
-  }
+static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+  TCHAR ctemp[80];
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  d->RecvMacCready(StrToDouble(ctemp, nullptr));
   return TRUE;
 }
 
