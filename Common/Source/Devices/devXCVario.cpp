@@ -72,14 +72,6 @@ BOOL PXCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS
     d->RecvBugs(1 - Clamp(value, 0., 30.) / 100.);
   }
 
-  /**
-   * unusable
-  if (ReadChecked(params[4], value)) {
-    // Ballast 1.00 to 1.60
-    d->RecvBallast(value);
-  }
-  */
-
   int ival;
   if (ReadChecked(params[5], ival)) {
     // 1 in climb, 0 in cruise, Note: Original Borgelt docushows vice versa
@@ -144,7 +136,19 @@ BOOL XCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS)
   if (params[1] == _T("bal-water"sv)) {
     double liters;
     if (ReadChecked(params[2], liters)) {
-      d->RecvBallast(WEIGHTS[2] / liters);
+      d->RecvBallast(liters / WEIGHTS[2]);
+    }
+  } 
+  else if (params[1] == _T("crew-weight"sv)) {
+    double weight;
+    if (ReadChecked(params[2], weight)) {
+      // TODO : set WEIGHTS[0] ?
+    }
+  }
+  else if (params[1] == _T("empty-weight"sv)) {
+    double weight;
+    if (ReadChecked(params[2], weight)) {
+      // TODO : set WEIGHTS[1] ?
     }
   }
   return TRUE;
@@ -183,13 +187,6 @@ BOOL PutBugs(DeviceDescriptor_t* d, double Bugs) {
   return TRUE;
 }
 
-BOOL PutBallast(DeviceDescriptor_t* d, double Ballast) {
-  char  szTmp[32];
-  sprintf(szTmp, "!g,b%.3f\r", Ballast * 10.);
-  d->Com->WriteString(szTmp);
-  return TRUE;
-}
-
 BOOL PutQNH(DeviceDescriptor_t* d, double NewQNH) {
   char  szTmp[32];
   sprintf(szTmp, "!g,q%d\r", iround(NewQNH));
@@ -197,16 +194,54 @@ BOOL PutQNH(DeviceDescriptor_t* d, double NewQNH) {
   return TRUE;
 }
 
+int calcNMEACheckSum(const char *nmea) {
+	int XOR = 0;
+	for (size_t i = 0; i < strlen(nmea); i++) {
+		auto c = (unsigned char)nmea[i];
+		if (c == '*') break;
+		if ((c != '$') && (c != '!')) XOR ^= c;
+	}
+	return XOR;
+}
+
+bool PutXcs(DeviceDescriptor_t* d, const char* item, double value) {
+  if (d && d->Com) {
+    char str[40];
+    sprintf( str,"!xcs,%s,%d", item, (int)(value+0.5) );
+    int cs = calcNMEACheckSum(&str[1]);
+    int i = strlen(str);
+    sprintf( &str[i], "*%02X\r\n", cs );
+    return d->Com->WriteString(str);
+  }
+  return false;
+}
+
 bool PutVersion(DeviceDescriptor_t* d) {
-  return d && d->Com && d->Com->WriteString("!xcs,version,2*20\r\n");
+  return PutXcs(d, "version", 2);
+}
+
+bool PutCrewWeight(DeviceDescriptor_t* d, double weight) {
+  return PutXcs(d, "crew-weight", weight);
+}
+
+bool PutEmptyWeight(DeviceDescriptor_t* d, double weight) {
+  return PutXcs(d, "empty-weight", weight);
+}
+
+BOOL PutBallast(DeviceDescriptor_t* d, double Ballast) {
+  double weight = WEIGHTS[2] * Ballast;
+  return PutXcs(d, "bal-water", weight);
 }
 
 BOOL Open(DeviceDescriptor_t* d) {
   PutVersion(d);
 
+  PutCrewWeight(d, WEIGHTS[0]);
+  PutEmptyWeight(d, WEIGHTS[1]);
+  PutBallast(d, BALLAST);
+
   PutMacCready(d, MACCREADY);
   PutBugs(d, BUGS);
-  PutBallast(d, BALLAST);
   PutQNH(d, QNH);
 
   return TRUE;
