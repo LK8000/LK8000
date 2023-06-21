@@ -1,0 +1,6 @@
+* LK8000 polar for: Silent 2 electro
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 276, 0, 80.0, -0.65, 90.0, -0.65, 150.0, -1.55, 8.9 
+ 276, 5, 0, L, 75, +1, 90, 0, 110, -1, 150, S
+
+
