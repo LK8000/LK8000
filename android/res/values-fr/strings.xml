@@ -12,4 +12,6 @@
     <string name="error_native_library">Échec du chargement de la bibliothèque native LK8000.
 \nSignalez-nous ce problème en incluant les informations suivantes :
 \n</string>
+    <string name="overwrite_download">Le fichier existe déjà. Voulez-vous le télécharger à nouveau \?</string>
+    <string name="download_title">Téléchargement LK8000</string>
 </resources>
