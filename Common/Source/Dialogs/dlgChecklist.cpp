@@ -15,12 +15,11 @@
 #include "utils/TextWrapArray.h"
 #include "resource.h"
 #include "utils/zzip_stream.h"
+#include <vector>
 
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
 #define MAXNOTEDETAILS 5000	// max size of each note details
-#define MAXNOTELINES 300	// max number of lines in a note, enough for maxnotedetails size!
-#define MAXNOTES 300		// max number of notes
 
 #define MAXNOTELIMITER 50	// character reserved for last line comment on note oversized
 #define NOTECONTINUED		"\r\n          >>>>>\r\n"
@@ -29,33 +28,35 @@
 
 #define ENDOFLINE  "\n"         // \r\n  in v5
 
-int page=0;
+namespace {
 
 int DrawListIndex=0;
-static TextWrapArray aTextLine;
+TextWrapArray aTextLine;
 
-int nLists=0;
+struct checklist_item {
+  tstring title;
+  tstring text;
+};
 
-TCHAR *ChecklistText[MAXNOTES+1];
-TCHAR *ChecklistTitle[MAXNOTES+1];
+std::vector<checklist_item> checklist_data;
+
+int page = 0;
+
 TCHAR NoteModeTitle[50];
+
+} // namespace
 
 static void InitNotepad(void) {
   page=0;
   DrawListIndex=0;
   aTextLine.clear();
-
-  nLists=0;
-
-  std::fill(std::begin(ChecklistText), std::end(ChecklistText), nullptr);
-  std::fill(std::begin(ChecklistTitle), std::end(ChecklistTitle), nullptr);
+  checklist_data = {};
 }
 
 
 static void DeinitNotepad(void) {
   aTextLine.clear();
-  std::for_each(std::begin(ChecklistText), std::end(ChecklistText), safe_free());
-  std::for_each(std::begin(ChecklistTitle), std::end(ChecklistTitle), safe_free());
+  checklist_data = {}; // trick to force deallocate.
 }
 
 
@@ -66,11 +67,11 @@ static void NextPage(WndForm* pForm, int Step){
 
   TCHAR buffer[200];
   page += Step;
-  if (page>=nLists) {
-    page=0;
+  if (page < 0) {
+    page = checklist_data.size() - 1;
   }
-  if (page<0) {
-    page= nLists-1;
+  else if (static_cast<size_t>(page) >= checklist_data.size()) {
+    page = 0;
   }
 
   WndOwnerDrawFrame* wDetailsEntry = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmDetailsEntry"));
@@ -80,9 +81,9 @@ static void NextPage(WndForm* pForm, int Step){
 
   LKWindowSurface Surface(*wDetailsEntry);
   Surface.SelectObject(wDetailsEntry->GetFont());
-  aTextLine.update(Surface, wDetailsEntry->GetWidth(), ChecklistText[page]);
+  aTextLine.update(Surface, wDetailsEntry->GetWidth(), checklist_data[page].text.c_str());
 
-  switch(nLists) {
+  switch(checklist_data.size()) {
 	case 0:
 		_stprintf(buffer, _T("%s %s"),NoteModeTitle,MsgToken(1750)); // empty
 		break;
@@ -90,15 +91,14 @@ static void NextPage(WndForm* pForm, int Step){
 		_stprintf(buffer, _T("%s"),NoteModeTitle);
 		break;
 	default:
-		_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists);
-		break;
+    _stprintf(buffer, _T("%s %d/%d"), NoteModeTitle, page + 1, checklist_data.size());
+    break;
   }
 
-  if (ChecklistTitle[page] &&
-      (_tcslen(ChecklistTitle[page])>0)
-      && (_tcslen(ChecklistTitle[page])<60)) {
-	_tcscat(buffer, TEXT(": "));
-	_tcscat(buffer, ChecklistTitle[page]);
+  const auto& title = checklist_data[page].title;
+  if (!title.empty() && title.size() < 60) {
+    _tcscat(buffer, TEXT(": "));
+    _tcscat(buffer, title.c_str());
   }
 
   pForm->SetCaption(buffer);
@@ -185,11 +185,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void addChecklist(TCHAR* name, TCHAR* details) {
-  if (nLists < MAXNOTES) {
-    ChecklistTitle[nLists] = _tcsdup(name);
-    ChecklistText[nLists] = _tcsdup(details);
-    nLists++;
-  }
+  checklist_data.push_back({name, details});
 }
 
 
