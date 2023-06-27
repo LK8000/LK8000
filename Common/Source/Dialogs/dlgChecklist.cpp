@@ -91,7 +91,7 @@ static void NextPage(WndForm* pForm, int Step){
 		_stprintf(buffer, _T("%s"),NoteModeTitle);
 		break;
 	default:
-    _stprintf(buffer, _T("%s %d/%d"), NoteModeTitle, page + 1, checklist_data.size());
+    _stprintf(buffer, _T("%s %d/%d"), NoteModeTitle, page + 1, static_cast<int>(checklist_data.size()));
     break;
   }
 
