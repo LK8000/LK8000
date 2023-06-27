@@ -16,6 +16,7 @@
 #include "LKInterface.h"
 #include "McReady.h"
 #include "Comm/wait_ack.h"
+#include "utils/printf.h"
 
 #define MAX_VAL_STR_LEN    60
 
@@ -375,7 +376,7 @@ BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   }
 
   TCHAR  szTmp[MAX_NMEA_LEN];
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
+  lk::snprintf(szTmp, _T("RCDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
 
   SendNmea(d,szTmp);
   return TRUE;
@@ -394,7 +395,7 @@ BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast) {
   }
 
   TCHAR szTmp[MAX_NMEA_LEN];
-  _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,SET,MC_BAL,,%.0f,,,,,"), GlidePolar::BallastLitres);
+  lk::snprintf(szTmp, _T("RCDT,SET,MC_BAL,,%.0f,,,,,"), GlidePolar::BallastLitres);
 
   SendNmea(d, szTmp);
 
@@ -415,7 +416,7 @@ BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
   TCHAR szTmp[MAX_NMEA_LEN];
 
   double fLXBugs = CalculateLXBugs(Bugs);
-  _sntprintf(szTmp, MAX_NMEA_LEN, _T("RCDT,SET,MC_BAL,,,%.0f,,,,"), fLXBugs);
+  lk::snprintf(szTmp, _T("RCDT,SET,MC_BAL,,,%.0f,,,,"), fLXBugs);
 
   SendNmea(d,szTmp);
   return TRUE;
@@ -433,7 +434,7 @@ BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
     return false;
   }
   TCHAR szTmp[MAX_NMEA_LEN];
-  _stprintf(szTmp,  TEXT("RCDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
+  lk::snprintf(szTmp, _T("RCDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
 
   SendNmea(d, szTmp);
 
@@ -494,7 +495,7 @@ BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
     }
     MinLon *=60;
 
-    _sntprintf(szTmp, MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
+    lk::snprintf(szTmp, _T("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
                                     wpt.Name, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
     SendNmea(d, szTmp);
