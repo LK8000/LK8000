@@ -902,6 +902,7 @@ namespace rapidxml
             : m_type(type)
             , m_first_node(0)
             , m_first_attribute(0)
+            , m_last_attribute(0)
         {
         }
 
