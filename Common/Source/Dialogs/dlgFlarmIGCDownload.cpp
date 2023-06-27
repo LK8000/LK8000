@@ -761,7 +761,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
   static uint16_t Sequence;
   static uint8_t retrys = 0;
   static uint8_t TimeOutFactor = 1;
-  uint8_t pByteBlk[MAX_FLARM_ANSWER_LEN];
+  uint8_t pByteBlk[MAX_FLARM_ANSWER_LEN] = {};
   pByteBlk[0] = IGC_FileIndex;
   uint16_t blocksize = 1;
   uint16_t RecSequence;
