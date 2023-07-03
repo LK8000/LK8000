@@ -275,7 +275,6 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   return true;
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
@@ -285,121 +284,97 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 ///
 /// @retval true if the sentence has been parsed
 ///
-//static
-
-
-BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
-{
+// static
+BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
   auto wait_ack = d->lock_wait_ack();
   if (wait_ack && wait_ack->check(sentence)) {
     return TRUE;
   }
 
-  TCHAR  szTmp[MAX_NMEA_LEN];
+  TCHAR szTmp[MAX_NMEA_LEN];
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
 
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-  {
+  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
     Nano3_bValid = true;
-    if(iNano3_RxUpdateTime > 0)
-    {
+    if (iNano3_RxUpdateTime > 0) {
       iNano3_RxUpdateTime--;
-    }
-    else
-    {
-      if(!IsDirOutput(PortIO.MCDir))
-      {
-        if(fabs(Nano3_oldMC - MACCREADY)> 0.005f)
-        {
-          Nano3_PutMacCready( d,  MACCREADY);
+    } else {
+      if (!IsDirOutput(PortIO.MCDir)) {
+        if (fabs(Nano3_oldMC - MACCREADY) > 0.005f) {
+          Nano3_PutMacCready(d, MACCREADY);
           Nano3_oldMC = MACCREADY;
         }
       }
     }
   }
 
-
-static char lastSec =0;
-  if( !Declare() && (info->Second != lastSec))  // execute every second only if no task is declaring
+  static char lastSec = 0;
+  if (!Declare() && (info->Second != lastSec))  // execute every second only if no task is declaring
   {
     lastSec = info->Second;
-    if((info->Second % 10) ==0) // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
+    if ((info->Second % 10) == 0)  // config every 10s (not on every xx $GPGGA as there are 10Hz GPS now
     {
       SetupLX_Sentence(d);
     }
   }
 
-
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
-  {
-    if(iS_SeriesTimeout-- < 0)
-      devSetAdvancedMode(d,false);
-
+  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+    if (iS_SeriesTimeout-- < 0)
+      devSetAdvancedMode(d, false);
 
 #ifdef QNH_OR_ELEVATION
-    static int iOldQNH   =0;
-    int iQNH = (int)(QNH*100.0);
-    if(iQNH != iOldQNH)
-    {
+    static int iOldQNH = 0;
+    int iQNH = (int)(QNH * 100.0);
+    if (iQNH != iOldQNH) {
       iOldQNH = iQNH;
-      _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,QNH,W,%i"),(int)iQNH);
-      SendNmea(d,szTmp);
+      _sntprintf(szTmp, MAX_NMEA_LEN, TEXT("PLXV0,QNH,W,%i"), (int)iQNH);
+      SendNmea(d, szTmp);
     }
 #else
-    static int oldQFEOff =0;
+    static int oldQFEOff = 0;
     int QFE = (int)QFEAltitudeOffset;
-    if(QFE != oldQFEOff)
-    {
-       oldQFEOff = QFE;
-      _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
-       SendNmea(d,szTmp);
+    if (QFE != oldQFEOff) {
+      oldQFEOff = QFE;
+      _sntprintf(szTmp, MAX_NMEA_LEN, TEXT("PLXV0,ELEVATION,W,%i"), (int)(QFEAltitudeOffset));
+      SendNmea(d, szTmp);
     }
 #endif
   }
 #ifdef EEE
-  if(iNano3_GPSBaudrate ==0)
-  {
+  if (iNano3_GPSBaudrate == 0) {
     _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
-    SendNmea(d,szTmp);
+    SendNmea(d, szTmp);
   }
 #endif
-  if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
-  {
-    return PLXVC( d,  sentence, info);
+  if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0) {
+    return PLXVC(d, sentence, info);
   }
 
-    if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
-      return FALSE;
-    }
-    if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
-      return PLXVF(d, sentence + 7, info);
-    else
-      if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
-        return PLXVS(d, sentence + 7, info);
-      else
-      if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
-        return PLXV0(d, sentence + 7, info);
-      else
-        if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-          return LXWP2(d, sentence + 7, info);
-        else
-          if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-            return LXWP0(d, sentence + 7, info);
-          else
-            if(_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
-              return PLXVTARG(d, sentence + 10, info);
-            else
-              if(_tcsncmp(_T("$GPRMB"), sentence, 6) == 0)
-                return GPRMB(d, sentence + 7, info);
-              else
-                if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-                {
-                  Nano3_bValid = true;
-                  return LXWP1(d, sentence + 7, info);
-                }
-return false;
-} // ParseNMEA()
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
+    return FALSE;
+  }
+
+  if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+    return PLXVF(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+    return PLXVS(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+    return PLXV0(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+    return LXWP2(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+    return LXWP0(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
+    return PLXVTARG(d, sentence + 10, info);
+  else if (_tcsncmp(_T("$GPRMB"), sentence, 6) == 0)
+    return GPRMB(d, sentence + 7, info);
+  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0) {
+    Nano3_bValid = true;
+    return LXWP1(d, sentence + 7, info);
+  }
+  return false;
+}  // ParseNMEA()
 
 CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
