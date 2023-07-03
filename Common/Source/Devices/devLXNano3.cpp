@@ -290,6 +290,11 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
 BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
+  auto wait_ack = d->lock_wait_ack();
+  if (wait_ack && wait_ack->check(sentence)) {
+    return TRUE;
+  }
+
   TCHAR  szTmp[MAX_NMEA_LEN];
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
@@ -688,6 +693,18 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
   return TRUE;
 }
 
+namespace {
+
+template <typename CharT>
+uint8_t nmea_crc(const CharT* text) {
+  uint8_t crc = 0U;
+  for (const CharT* c = text; *c; ++c) {
+    crc ^= static_cast<uint8_t>(*c);
+  }
+  return crc;
+}
+
+}  // namespace
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the logger.
@@ -700,118 +717,115 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
 /// @retval true  declaration has been written successfully
 /// @retval false error during declaration (description in @p errBuf)
 ///
-//static
-BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d,
-  const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
-  Decl  decl;
+// static
+BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
+
+  // to declared Start, TPs, and Finish we will add Takeoff and Landing,
+  // so maximum NB of declared TPs is Decl::max_wp_count - 2
+  if (!CheckWPCount(*lkDecl, Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)) {
+    return false;
+  }
+
+  Decl decl;
   Class lxClass;
   byte t_DD, t_MM, t_YY, t_hh, t_mm, t_ss;
-  TCHAR buffer[128];
-
   // we will use text-defined class
   lxClass.SetName(lkDecl->CompetitionClass);
 
-  {
-    // stop RX thread
-    ScopeUnlock unlock(CritSec_Comm); // required to avoid deadlock In StopRxThread
-    if (!StopRxThread(d, errBufSize, errBuf))
-      return(false);
+  bool status = false;
+
+  Declare(true);
+  ShowProgress(decl_enable);
+  // Create and send task declaration...
+  ShowProgress(decl_send);
+
+  int wpCount = lkDecl->num_waypoints;
+  unsigned totalLines = 6 + 1 + wpCount + 1;
+  TCHAR DeclStrings[totalLines][256];
+  unsigned i = 0;
+
+  // Metadata
+  _stprintf(DeclStrings[i++], TEXT("HFPLTPILOT:%s"), lkDecl->PilotName);
+  _stprintf(DeclStrings[i++], TEXT("HFGTYGGLIDERTYPE:%s"), lkDecl->AircraftType);
+  _stprintf(DeclStrings[i++], TEXT("HFGIDGLIDERID:%s"), lkDecl->AircraftRego);
+  _stprintf(DeclStrings[i++], TEXT("HFCIDCOMPETITIONID:%s"), lkDecl->CompetitionID);
+  _stprintf(DeclStrings[i++], TEXT("HFCCLCOMPETITIONCLASS:%s"), lkDecl->CompetitionClass);
+
+  // "C" record, first line acording to IGC GNSS specification 3.6.1
+  if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 && GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 &&
+      GPS_INFO.Month >= 1 && GPS_INFO.Month <= 12) {
+    t_DD = GPS_INFO.Day;
+    t_MM = GPS_INFO.Month;
+    t_YY = GPS_INFO.Year % 100;
+    t_hh = GPS_INFO.Hour;
+    t_mm = GPS_INFO.Minute;
+    t_ss = GPS_INFO.Second;
+  } else {  // use system time
+    time_t sysTime = time(NULL);
+    struct tm tm_temp = {};
+    struct tm* utc = gmtime_r(&sysTime, &tm_temp);
+    t_DD = utc->tm_mday;
+    t_MM = utc->tm_mon + 1;
+    t_YY = utc->tm_year % 100;
+    t_hh = utc->tm_hour;
+    t_mm = utc->tm_min;
+    t_ss = utc->tm_sec;
+  }
+  _stprintf(DeclStrings[i++], TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
+         // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
+            t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,         1,    wpCount - 2);
+
+  // TakeOff point
+  if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
+    decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
+  } else {
+    decl.WpFormat(DeclStrings[i++], NULL, Decl::tp_takeoff);
   }
 
-  // set new Rx timeout
-  int  orgRxTimeout;
-  bool status = SetRxTimeout(d, 4000, orgRxTimeout, errBufSize, errBuf);
-  if (status) {
-      Declare(true);
-    ShowProgress(decl_enable);
+  // TurnPoints
+  for (int ii = 0; ii < wpCount; ii++) {
+    decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular);
+  }
 
-    // Establish connecttion and check two-way communication...
-    _stprintf(buffer, _T("PLXVC,INFO,R"));
-    status = status && DevLXNanoIII::SendNmea(d, buffer, errBufSize, errBuf);
-    if (status)
-      status = status && ComExpect(d, "$PLXVC,INFO,A,", 256, NULL, errBufSize, errBuf);
-    Poco::Thread::sleep(300);
-    if (status) {
+  // Landing point
+  if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
+    decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
+  } else {
+    decl.WpFormat(DeclStrings[i++], NULL, Decl::tp_landing);
+  }
 
-      // Create and send task declaration...
-      ShowProgress(decl_send);
-      // to declared Start, TPs, and Finish we will add Takeoff and Landing,
-      // so maximum NB of declared TPs is Decl::max_wp_count - 2
-      if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)){
-           SetRxTimeout(d, orgRxTimeout,orgRxTimeout, status ? errBufSize : 0, errBuf);
-           StartRxThread(d, status ? errBufSize : 0, errBuf);
-         Declare(false);
-        return(false);
-      }
-      int wpCount = lkDecl->num_waypoints;
-      int totalLines = 6 + 1 + wpCount + 1;
-      TCHAR DeclStrings[totalLines][256];
-      INT i = 0;
+  for (unsigned ii = 0; ii < i; ii++) {
+    TestLog(_T(". NANO Decl: > %s"), DeclStrings[ii]);
 
-      // Metadata
-      _stprintf(DeclStrings[i++], TEXT("HFPLTPILOT:%s"), lkDecl->PilotName);
-      _stprintf(DeclStrings[i++], TEXT("HFGTYGGLIDERTYPE:%s"), lkDecl->AircraftType);
-      _stprintf(DeclStrings[i++], TEXT("HFGIDGLIDERID:%s"), lkDecl->AircraftRego);
-      _stprintf(DeclStrings[i++], TEXT("HFCIDCOMPETITIONID:%s"), lkDecl->CompetitionID);
-      _stprintf(DeclStrings[i++], TEXT("HFCCLCOMPETITIONCLASS:%s"), lkDecl->CompetitionClass);
-
-      // "C" record, first line acording to IGC GNSS specification 3.6.1
-      if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 &&
-        GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 && GPS_INFO.Month >= 1 && GPS_INFO.Month <= 12) {
-        t_DD = GPS_INFO.Day;   t_MM = GPS_INFO.Month;   t_YY = GPS_INFO.Year % 100;
-        t_hh = GPS_INFO.Hour;  t_mm = GPS_INFO.Minute;  t_ss = GPS_INFO.Second;
-      } else { // use system time
-        time_t sysTime = time(NULL);
-        struct tm tm_temp = {};
-        struct tm* utc = gmtime_r(&sysTime, &tm_temp);
-        t_DD = utc->tm_mday;   t_MM = utc->tm_mon + 1;  t_YY = utc->tm_year % 100;
-        t_hh = utc->tm_hour;   t_mm = utc->tm_min;      t_ss = utc->tm_sec;
-      }
-      _stprintf(DeclStrings[i++], TEXT("C%02d%02d%02d%02d%02d%02d000000%04d%02d"),
-                  // DD    MM    YY    HH    MM    SS (DD MM YY) IIII  TT
-                   t_DD, t_MM, t_YY, t_hh, t_mm, t_ss,              1, wpCount-2);
-
-      // TakeOff point
-      if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
-        decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_takeoff);
-      } else {
-        decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_takeoff);
-      }
-
-      // TurnPoints
-      for (int ii = 0; ii < wpCount; ii++) {
-        decl.WpFormat(DeclStrings[i++], lkDecl->waypoint[ii], Decl::tp_regular);
-      }
-
-      // Landing point
-      if ((HomeWaypoint >= 0) && ValidWayPoint(HomeWaypoint) && DeclTakeoffLanding) {
-        decl.WpFormat(DeclStrings[i++], &WayPointList[HomeWaypoint], Decl::tp_landing);
-      } else {
-        decl.WpFormat(DeclStrings[i++],NULL, Decl::tp_landing);
-      }
-
-      // Send complete declaration to logger
-      for (int ii = 0; ii < i ; ii++){
-        if (status)
-          status = status && DevLXNanoIII::SendDecl(d, ii+1, totalLines,
-                                   DeclStrings[ii], errBufSize, errBuf);
-        StartupStore(_T(". NANO Decl: %s %s "),   DeclStrings[ii], NEWLINE);
-        Poco::Thread::sleep(50);
-      }
+    char wait_str[128];
+    size_t out_size = lk::snprintf(wait_str, "$PLXVC,DECL,C,%u", ii + 1);
+    if (out_size < 128) {
+      unsigned crc = nmea_crc(wait_str + 1);
+      lk::snprintf(&wait_str[out_size], 128 - out_size, "*%02X\r\n", crc);
     }
-    ShowProgress(decl_disable);
+    wait_ack_shared_ptr wait_ack = d->make_wait_ack(wait_str);
+
+    TCHAR send_str[512];
+    lk::snprintf(send_str, _T("PLXVC,DECL,W,%u,%u,%s"), ii + 1, i, DeclStrings[ii]);
+
+    status = SendNmea(d, send_str);
+    if (status) {
+      ScopeUnlock unlock(CritSec_Comm);  // required to unlock RxThread
+      status = wait_ack->wait(10000);
+    }
+
+    TestLog(_T(". NANO Decl: < %s"), status ? to_tstring(wait_str).c_str() : _T("failed"));
+
+    if (!status) {
+      break;  // failed ...
+    }
   }
-  Poco::Thread::sleep(300);
 
-  // restore Rx timeout (we must try that always; don't overwrite error descr)
-  status = status && SetRxTimeout(d, orgRxTimeout,
-           orgRxTimeout, status ? errBufSize : 0, errBuf);
-
-  // restart RX thread (we must try that always; don't overwrite error descr)
-  status = status && StartRxThread(d, status ? errBufSize : 0, errBuf);
+  ShowProgress(decl_disable);
   Declare(false);
-  return(status);
-} // DeclareTask()
+
+  return status;
+}  // DeclareTask()
 
 // #############################################################################
 // *****************************************************************************
@@ -933,39 +947,6 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[]){
  // StartupStore(_T(" Nano3 SenadNmea %s %s"),buf, NEWLINE);
   return true;
 } // SendNmea()
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Send one line of declaration to logger
-///
-/// @param d           device descriptor
-/// @param row         row number
-/// @param row         number of rows
-/// @param content     row content
-/// @param errBufSize  error message buffer size
-/// @param errBuf[]    [out] error message
-///
-/// @retval true  row successfully written
-/// @retval false error (description in @p errBuf)
-///
-// static
-bool DevLXNanoIII::SendDecl(PDeviceDescriptor_t d, unsigned row, unsigned n_rows,
-                   TCHAR content[], unsigned errBufSize, TCHAR errBuf[]){
-  TCHAR szTmp[MAX_NMEA_LEN];
-
-  char retstr[20];
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("PLXVC,DECL,W,%u,%u,%s"), row, n_rows, content);
-  bool status = DevLXNanoIII::SendNmea(d, szTmp, errBufSize, errBuf);
-  if (status) {
-    sprintf(retstr, "$PLXVC,DECL,C,%u", row);
-    status = status && ComExpect(d, retstr, 512, NULL, errBufSize, errBuf);
-
-  }
-  return status;
-
-} // SendDecl()
-
-
-
 
 void DevLXNanoIII::GetDirections(WndButton* pWnd){
   if(pWnd) {
