@@ -668,19 +668,6 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
   return TRUE;
 }
 
-namespace {
-
-template <typename CharT>
-uint8_t nmea_crc(const CharT* text) {
-  uint8_t crc = 0U;
-  for (const CharT* c = text; *c; ++c) {
-    crc ^= static_cast<uint8_t>(*c);
-  }
-  return crc;
-}
-
-}  // namespace
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the logger.
 ///

@@ -168,6 +168,8 @@ struct DeviceDescriptor_t {
 
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 
+uint8_t nmea_crc(const char *text);
+
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
 
 #ifdef ANDROID

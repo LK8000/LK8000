@@ -986,23 +986,22 @@ BOOL devPutTarget(const WAYPOINT& wpt) {
 
 namespace {
 
-template<typename CharT>
-uint8_t nmea_crc(const CharT *text) {
-  uint8_t crc = 0U;
-  for (const CharT* c = text; *c; ++c) {
-    crc ^= static_cast<uint8_t>(*c);
-  }
-  return crc;
-}
-
-template<typename CharT, size_t size>
-void devFormatNMEAString(CharT (&dst)[size], const char *text) {
+template<size_t size>
+void devFormatNMEAString(char (&dst)[size], const char *text) {
   assert(text);
   unsigned crc = nmea_crc(text);
   lk::snprintf(dst, "$%s*%02X\r\n", text, crc);
 }
 
 } // namespace
+
+uint8_t nmea_crc(const char *text) {
+  uint8_t crc = 0U;
+  for (const char* c = text; *c; ++c) {
+    crc ^= static_cast<uint8_t>(*c);
+  }
+  return crc;
+}
 
 //
 // NOTICE V5: this function is used only by LXMiniMap device driver .
