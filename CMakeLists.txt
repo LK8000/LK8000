@@ -601,6 +601,7 @@ add_library( LK8000 SHARED
 
     Common/Source/Comm/GpsWeekNumberFix.h
     Common/Source/Comm/GpsWeekNumberFix.cpp
+    Common/Source/Comm/wait_ack.cpp
 
     Common/Source/Devices/devBase.cpp
     Common/Source/Devices/devBorgeltB50.cpp

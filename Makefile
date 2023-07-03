@@ -1165,6 +1165,7 @@ COMMS	:=\
 	$(CMM)/Bluetooth/BthPort.cpp \
 	$(CMM)/Obex/CObexPush.cpp \
 	$(CMM)/FilePort.cpp\
+	$(CMM)/wait_ack.cpp\
 
 
 DEVS	:=\

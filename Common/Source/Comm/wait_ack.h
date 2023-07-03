@@ -13,48 +13,35 @@
 #define _Comm_wait_ack_h_
 
 #include <memory>
+#include <utility>
 #include "Thread/Cond.hpp"
 #include "Thread/Mutex.hpp"
+#include "tchar.h"
 #include "Util/tstring.hpp"
 
 class wait_ack final {
  public:
-  explicit wait_ack(const char* str) : wait_str(str) {}
+  /**
+   * @str must exist until this is destroyed
+   */
+  explicit wait_ack(const char* str);
 
-  bool check(const TCHAR* str) {
-    bool signal = WithLock(mutex, [&]() {
-      if (compare_nmea(str)) {
-        ready = true;
-      }
-      return ready;
-    });
+  /**
+   * return true and set `ready` state if @str is same as string provided to ctor
+   * rmq : even if param type is TCHAR, only work for ascci 7bit character on Win32
+   */
+  bool check(const TCHAR* str);
 
-    if (signal) {
-      condition.Signal();
-    }
-    return signal;
-  }
-
-  bool wait(unsigned timeout_ms) {
-    ScopeLock lock(mutex);
-    if (!ready) {
-      condition.Wait(mutex, timeout_ms);
-    }
-    return std::exchange(ready, false);
-  }
+  /**
+   * wait for and reset `ready` state
+   */
+  bool wait(unsigned timeout_ms);
 
  private:
-  static char valid_char(char c) { return c == '\r' || c == '\n' ? '\0' : c; }
-
-  // compare string ignoring trailing <CR><LF>
-  bool compare_nmea(const TCHAR* str) {
-    for (auto first1 = std::begin(wait_str); first1 != std::end(wait_str) && valid_char(*first1); ++first1, ++str) {
-      if ((*first1) != (*str)) {
-        return false;
-      }
-    }
-    return true;
-  }
+  /**
+   * compare string ignoring trailing <CR><LF>
+   */
+  bool compare_nmea(const TCHAR* str);
 
   std::string_view wait_str;
 
