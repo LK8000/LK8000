@@ -41,11 +41,14 @@ bool InternalPort::Close() {
         return p;
     });
 
-    delete p;
-
     if(thread_status.joinable()) {
         thread_status.join();
     }
+
+    if (p) {
+        p->DeinitialiseVarioSound();
+    }
+    delete p;
 
     return NullComPort::Close();
 }
@@ -61,12 +64,12 @@ void InternalPort::thread_run() {
         if (!internal_sensors) {
             continue;
         }
-        if(EnableAudioVario) {
-            PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
-            if (d && devIsBaroSource(*d)) {
-                internal_sensors->InitialiseVarioSound();
-            }
+        if(!EnableAudioVario) {
+            continue;
+        }
+        PDeviceDescriptor_t d = devGetDeviceOnPort(GetPortIndex());
+        if (d && devIsBaroSource(*d)) {
+            internal_sensors->InitialiseVarioSound();
         }
     }
-    internal_sensors->DeinitialiseVarioSound();
 }
