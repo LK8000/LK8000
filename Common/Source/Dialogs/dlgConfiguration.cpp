@@ -4501,10 +4501,20 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAndroidAudioVario"));
   if (wp) {
-    EnableAudioVario = wp->GetDataField()->GetAsBoolean();
+    if (!std::exchange(EnableAudioVario, wp->GetDataField()->GetAsBoolean() && EnableAudioVario)) {
+      // TODO : notify thread waiting for `EnableAudioVario`.
+      // currently, only Android `Internal` wait for this.
+      // must be refactored if another one is added.
+      for (auto& d : DeviceList) {
+        ScopeLock lock(CritSec_Comm);
+        if (d.Com) {
+          d.Com->CancelWaitEvent();
+        }
+      }
+    }
   }
 
- UpdateAircraftConfig();
+  UpdateAircraftConfig();
 
   int i,j;
   for (i=0; i<4; i++) {
