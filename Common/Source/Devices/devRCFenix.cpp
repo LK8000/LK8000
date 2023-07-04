@@ -322,6 +322,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
       case sector_type_t::CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
       case sector_type_t::DAe   : isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
       case sector_type_t::CONE  : isline=0; r1= SecRadius; a1 =180 ; a2=0  ; r2=0  ; a21 =0; break;
+      case sector_type_t::ESS_CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
       default:
         assert(false);
         break;
