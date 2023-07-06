@@ -10,6 +10,17 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.6]
+* fix :
+ - segfault at shutdown on kobo.
+ - log book: remove 300 flight limit.
+ - improve MC/bugs/ballast sync with external devices.
+ - allow to enable audio vario without restart.
+ - LX Nano III task declare.
+* new :
+ - added XCVario driver
+ - added Silent 2 electro polar
+
 [version 7.4.5]
 * fix :
  - freeze on task Declare to external device
