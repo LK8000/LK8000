@@ -93,7 +93,7 @@ bool GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 
     // code shamelessly copied from OS/SystemLoad.cpp
     char line[256];
-    if (!File::ReadString("/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/uevent",
+    if (!File::ReadString("/sys/class/power_supply/mc13892_bat/uevent",
             line, sizeof (line))) {
         return false;
     }
