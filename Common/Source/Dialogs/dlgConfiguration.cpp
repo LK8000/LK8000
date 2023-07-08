@@ -4501,7 +4501,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAndroidAudioVario"));
   if (wp) {
-    if (!std::exchange(EnableAudioVario, wp->GetDataField()->GetAsBoolean() && EnableAudioVario)) {
+    if (!std::exchange(EnableAudioVario, wp->GetDataField()->GetAsBoolean()) && EnableAudioVario) {
       // TODO : notify thread waiting for `EnableAudioVario`.
       // currently, only Android `Internal` wait for this.
       // must be refactored if another one is added.
