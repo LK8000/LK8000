@@ -264,7 +264,7 @@ static void AdditionalHeaders() {
             continue;
         }
 
-        sprintf(tmps, HFREMARK, &tmpString[1]);
+        lk::snprintf(tmps, HFREMARK, &tmpString[1]);
         IGCWriteRecord(tmps);
     }
     fclose(stream);
@@ -350,7 +350,7 @@ static void LoggerHeader(const LoggerBuffer_t& point, const asset_id_t& asset) {
   IGCWriteRecord("HFDTM100GPSDATUM:WGS-84\r\n");
 
   if (GPSAltitudeOffset != 0) {
-     sprintf(temp,"HFGPSALTITUDEOFFSET: %+.0f\r\n", GPSAltitudeOffset);
+     lk::snprintf(temp,"HFGPSALTITUDEOFFSET:%+.0f\r\n", GPSAltitudeOffset);
      IGCWriteRecord(temp);
   }
 
@@ -753,7 +753,7 @@ static bool LogFileIsOlder(const TCHAR *oldestname, const TCHAR *thisname) {
 static bool DeleteOldIGCFile(TCHAR *pathname) {
   TCHAR searchpath[MAX_PATH+1];
   TCHAR fullname[MAX_PATH+1];
-  _stprintf(searchpath, TEXT("%s*.igc"),pathname);
+  lk::snprintf(searchpath, TEXT("%s*.igc"),pathname);
     tstring oldestname;
     lk::filesystem::directory_iterator It(searchpath);
     if (It) {
@@ -767,7 +767,7 @@ static bool DeleteOldIGCFile(TCHAR *pathname) {
     }
 
   // now, delete the file...
-  _stprintf(fullname, TEXT("%s%s"),pathname,oldestname.c_str());
+  lk::snprintf(fullname, TEXT("%s%s"),pathname,oldestname.c_str());
   #if TESTBENCH
   StartupStore(_T("... DeleteOldIGCFile <%s> ...\n"),fullname);
   #endif
