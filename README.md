@@ -87,7 +87,6 @@ KOBO=<kobo rootfs directory>
 ```
 dependencies : 
    zlib1g-dev
-   libzzip-dev
    libpng-dev
    libfreetype6-dev
    libgeographic-dev

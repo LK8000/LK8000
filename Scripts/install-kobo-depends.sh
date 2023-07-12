@@ -28,33 +28,21 @@ cd ${BUILD_DIR}
 BUILD_FLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neon-quad"
 
 
-# install zlib ( 1.2.11 - 2017-01-15)
-[ ! -f zlib-1.2.11.tar.gz ] && wget http://zlib.net/zlib-1.2.11.tar.gz
-[ -d zlib-1.2.11 ] && rm -rf zlib-1.2.11
-tar -xvzf zlib-1.2.11.tar.gz
-cd zlib-1.2.11
+# install zlib ( 1.2.13 - 2022-10-13 )
+[ ! -f zlib-1.2.13.tar.gz ] && wget https://zlib.net/zlib-1.2.13.tar.gz
+[ -d zlib-1.2.13 ] && rm -rf zlib-1.2.13
+tar -xvzf zlib-1.2.13.tar.gz
+cd zlib-1.2.13
 CC=$TC-gcc CFLAGS=$BUILD_FLAGS \
 ./configure --prefix=$TARGET_DIR
 make all && make install
 cd ..
 
-# install zziplib ( 0.13.69 - 2018-03-17)
-[ ! -f v0.13.69.tar.gz ] && wget https://github.com/gdraheim/zziplib/archive/v0.13.69.tar.gz
-[ -d zziplib-0.13.69 ] && rm -rf zziplib-0.13.69
-[ -d zzipbuild ] && rm -rf zzipbuild
-tar -xvzf v0.13.69.tar.gz 
-mkdir zzipbuild
-cd zzipbuild
-CFLAGS="$BUILD_FLAGS" \
-../zziplib-0.13.69/configure --host=$TC --target=$TC --prefix=$TARGET_DIR --with-zlib
-make all && make install
-cd ..
-
-# install boostlib ( 1.76.0 - 2021-04-13 )
-[ ! -f boost_1_76_0.tar.gz ] && wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz
-[ -d boost_1_76_0 ] && rm -rf boost_1_76_0
-tar xzf boost_1_76_0.tar.gz
-cd boost_1_76_0
+# install boostlib ( 1.82.0 - 2023-04-14 )
+[ ! -f boost_1_82_0.tar.gz ] && wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz
+[ -d boost_1_82_0 ] && rm -rf boost_1_82_0
+tar xzf boost_1_82_0.tar.gz
+cd boost_1_82_0
 ./bootstrap.sh
 echo "using gcc : arm : $TC-g++ : cxxflags=$BUILD_FLAGS ;" > user-config.jam
 ./b2 toolset=gcc-arm \
@@ -72,36 +60,36 @@ echo "using gcc : arm : $TC-g++ : cxxflags=$BUILD_FLAGS ;" > user-config.jam
            install
 cd ..
 
-# install libpng ( 1.6.37 - 2019-04-15 )
-[ ! -f libpng-1.6.37.tar.gz ] && wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.37/libpng-1.6.37.tar.gz
-[ -d libpng-1.6.37 ] && rm -rf libpng-1.6.37
+# install libpng ( 1.6.40 - 2023-06-21 )
+[ ! -f libpng-1.6.40.tar.gz ] && wget http://sourceforge.net/projects/libpng/files/libpng16/1.6.40/libpng-1.6.40.tar.gz
+[ -d libpng-1.6.40 ] && rm -rf libpng-1.6.40
 [ -d libpng-build ] && rm -rf libpng-build
-tar xzf libpng-1.6.37.tar.gz
+tar xzf libpng-1.6.40.tar.gz
 mkdir libpng-build
 cd libpng-build
-../libpng-1.6.37/configure \
+../libpng-1.6.40/configure \
     --host=$TC \
     CC=$TC-gcc \
     AR=$TC-ar \
     STRIP=$TC-strip \
     RANLIB=$TC-ranlib \
-    CPPFLAGS="$BUILD_FLAGS -I$TARGET_DIR/include" \
+    CPPFLAGS="-funwind-tables $BUILD_FLAGS -I$TARGET_DIR/include" \
     LDFLAGS="-L$TARGET_DIR/lib" \
     --prefix=$TARGET_DIR \
     --enable-arm-neon
 make && make install
 cd ..
 
-# install freetype2 ( 2.10.4 - 2020-10-19 )
-[ ! -f freetype-2.10.4.tar.gz ] && wget https://download.savannah.gnu.org/releases/freetype/freetype-2.10.4.tar.gz
-[ -d freetype-2.10.4 ] && rm -rf freetype-2.10.4
+# install freetype2 ( 2.13.1 - 2020-10-19 )
+[ ! -f freetype-2.13.1.tar.gz ] && wget https://download.savannah.gnu.org/releases/freetype/freetype-2.13.1.tar.gz
+[ -d freetype-2.13.1 ] && rm -rf freetype-2.13.1
 [ -d freetype-build ] && rm -rf freetype-build
-tar xzf freetype-2.10.4.tar.gz
+tar xzf freetype-2.13.1.tar.gz
 mkdir freetype-build
 cd freetype-build
 CFLAGS=$BUILD_FLAGS \
 LDFLAGS="-L$TARGET_DIR/lib"  \
-../freetype-2.10.4/configure \
+../freetype-2.13.1/configure \
     --host=$TC \
     --target=$TC \
     --prefix=$TARGET_DIR \

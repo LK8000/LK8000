@@ -532,9 +532,6 @@ ifeq ($(CONFIG_LINUX),y)
 
  endif
 
-  $(eval $(call pkg-config-library,ZZIP,zziplib))
-  CE_DEFS += $(patsubst -I%,-isystem %,$(ZZIP_CPPFLAGS))
-
   $(eval $(call pkg-config-library,ZLIB,zlib))
   CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
 
@@ -588,7 +585,6 @@ ifeq ($(CONFIG_LINUX),y)
 else
  INCLUDES	:= -I$(HDR)/mingw32compat 
  INCLUDES	+= -I$(HDR)/mingw32compat/zlib 
- INCLUDES	+= -I$(SRC)/Library 
  INCLUDES	+= -I$(HDR) 
  INCLUDES	+= -I$(SRC)
  ifneq ($(CONFIG_PC),y)
@@ -596,8 +592,9 @@ else
  endif
 endif
 
-INCLUDES	+=  -I$(SRC)/xcs
-INCLUDES	+=  -Ilib/doctest
+INCLUDES	+= -I$(SRC)/Library 
+INCLUDES	+= -I$(SRC)/xcs
+INCLUDES	+= -Ilib/doctest
 
 ifeq ($(GLES2),y)
  INCLUDES	+=  -Ilib/glm
@@ -694,7 +691,7 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm -lGeographic
  LDLIBS += $(PNG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
- LDLIBS += $(ZZIP_LDLIBS)
+ LDLIBS += $(ZLIB_LDLIBS)
  LDLIBS += $(OPENGL_LDLIBS)
  LDLIBS += $(EGL_LDLIBS)
  LDLIBS += $(X11_LDLIBS)
@@ -1447,6 +1444,9 @@ ZZIP	:=\
 	$(ZZIPSRC)/err.c \
 	$(ZZIPSRC)/plugin.c \
 	$(ZZIPSRC)/fetch.c\
+
+ifeq ($(CONFIG_WIN32),y)
+  ZZIP +=\
 	$(LIB)/zlib/adler32.c \
 	$(LIB)/zlib/crc32.c \
 	$(LIB)/zlib/infback.c \
@@ -1457,6 +1457,7 @@ ZZIP	:=\
 	$(LIB)/zlib/zutil.c \
 	$(LIB)/zlib/uncompr.c \
 
+endif
 
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
@@ -1533,14 +1534,14 @@ endif
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/poco.a 
-	
+	$(BIN)/poco.a \
+    $(BIN)/zzip.a
+
 ifneq ($(WIN32_RESOURCE), y)	
 OBJS	+= $(BIN)/resource.a
 endif
 
 ifneq ($(CONFIG_LINUX),y)
- OBJS	+= $(BIN)/zzip.a 
  OBJS	+= $(BIN)/lk8000.rsc
  ifneq ($(CONFIG_PC),y)
   OBJS	+= $(BIN)/compat.a

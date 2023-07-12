@@ -28,7 +28,6 @@ KOBO_SYS_LIB_NAMES = \
 
 KOBO_SYS_LIB_PATHS = $(addprefix $(SYSROOT)/lib/,$(KOBO_SYS_LIB_NAMES))
 
-KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libzzip-0.so.13
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libz.so.1
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libpng16.so.16
 KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libfreetype.so.6
