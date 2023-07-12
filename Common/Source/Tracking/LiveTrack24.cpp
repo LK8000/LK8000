@@ -74,7 +74,6 @@ static char _pilotname[100];
 static char _password[100];
 static bool flarmwasinit = false;
 static bool _t_radar_run = false;             // Thread run
-static bool _t_radar_end = false;             // Thread end
 
 // Globals for Tracking API V2
 static std::string v2_pwt = ""; // Password token for API V2
@@ -102,7 +101,6 @@ typedef std::deque<livetracker_point_t> PointQueue;
 //Protected thread storage
 static Mutex _t_mutex;                  // Mutex
 static bool _t_run = false;             // Thread run
-static bool _t_end = false;             // Thread end
 static PointQueue _t_points;            // Point FIFO
 
 // Prototypes
@@ -249,7 +247,6 @@ void LiveTrackerInit() {
 // Shutdown Live Tracker
 void LiveTrackerShutdown() {
 	if (_ThreadTracker.isRunning()) {
-		_t_end = false;
 		_t_run = false;
 		NewDataEvent.set();
 		_ThreadTracker.join();
@@ -257,7 +254,6 @@ void LiveTrackerShutdown() {
 	}
 
 	if (_ThreadRadar.isRunning()) {
-		_t_radar_end = false;
 		_t_radar_run = false;
 		NewDataEvent.set();
 		_ThreadRadar.join();
@@ -756,7 +752,6 @@ static void LiveTrackerThread() {
 	unsigned int session_id = 0;
 	int userid = -1;
 
-	_t_end = false;
 	_t_run = true;
 
 	srand(MonotonicClockMS());
@@ -861,8 +856,6 @@ static void LiveTrackerThread() {
 			}
 		} while (sendpoint_valid && _t_run);
 	} while (_t_run);
-
-	_t_end = true;
 }
 
 // Leonardo Live Info (www.livetrack24.com) data exchange thread for API V2
@@ -1234,7 +1227,6 @@ static bool InterruptibleSleepRadar(int msecs) {
 }
 
 static void LiveTrackRadarThread2() {
-	_t_radar_end = false;
 	_t_radar_run = true;
 
 	InterruptibleSleepRadar(5000);
@@ -1249,9 +1241,6 @@ static void LiveTrackRadarThread2() {
 
 		}
 	} while (_t_radar_run);
-
-	_t_radar_end = true;
-
 }
 
 // Leonardo Live Tracker (www.livetrack24.com) data exchange thread for API V2
@@ -1518,7 +1507,6 @@ static void LiveTrackerThread2() {
 	// Session variables
 	unsigned int packet_id = 0;
 
-	_t_end = false;
 	_t_run = true;
 
 	do {
@@ -1590,6 +1578,4 @@ static void LiveTrackerThread2() {
 
 		}
 	} while (_t_run);
-
-	_t_end = true;
 }
