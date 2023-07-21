@@ -772,7 +772,6 @@ BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDec
 
     status = SendNmea(d, send_str);
     if (status) {
-      ScopeUnlock unlock(CritSec_Comm);  // required to unlock RxThread
       status = wait_ack->wait(10000);
     }
 

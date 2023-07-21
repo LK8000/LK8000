@@ -347,7 +347,6 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
 
     success =  SendNmea(d, DeclStrings[ii]);
     if (success) {
-      ScopeUnlock unlock(CritSec_Comm); // required to unlock RxThread
       success = wait_ack->wait(20000);
     }
 

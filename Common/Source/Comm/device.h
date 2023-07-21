@@ -66,6 +66,7 @@ typedef struct Declaration {
 } Declaration_t;
 
 
+extern Mutex CritSec_Comm;
 
 struct DeviceDescriptor_t {
   
@@ -153,7 +154,7 @@ struct DeviceDescriptor_t {
   PeriodClock IgnoreBallast;
 
   wait_ack_shared_ptr make_wait_ack(const char* str) {
-    auto wait_ack = make_wait_ack_shared(str);
+    auto wait_ack = make_wait_ack_shared(CritSec_Comm, str);
     wait_ack_weak = wait_ack;
     return wait_ack;
   }
@@ -178,8 +179,6 @@ extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 extern COMMPort_t COMMPort;
 
 extern DeviceDescriptor_t	DeviceList[NUMDEV];
-
-extern Mutex CritSec_Comm;
 
 void RefreshComPortList();
 

@@ -24,7 +24,7 @@ class wait_ack final {
   /**
    * @str must exist until this is destroyed
    */
-  explicit wait_ack(const char* str);
+  wait_ack(Mutex& mtx, const char* str);
 
   /**
    * return true and set `ready` state if @str is same as string provided to ctor
@@ -43,9 +43,10 @@ class wait_ack final {
    */
   bool compare_nmea(const TCHAR* str);
 
+  Mutex& mutex;
+
   std::string_view wait_str;
 
-  Mutex mutex;
   Cond condition;
   bool ready = false;
 };
@@ -54,8 +55,8 @@ using wait_ack_weak_ptr = std::weak_ptr<wait_ack>;
 
 using wait_ack_shared_ptr = std::shared_ptr<wait_ack>;
 
-inline wait_ack_shared_ptr make_wait_ack_shared(const char* str) {
-  return std::make_shared<wait_ack>(str);
+inline wait_ack_shared_ptr make_wait_ack_shared(Mutex& mtx, const char* str) {
+  return std::make_shared<wait_ack>(mtx, str);
 }
 
 #endif  // _Comm_wait_ack_h_

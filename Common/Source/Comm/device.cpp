@@ -1137,11 +1137,7 @@ BOOL FlarmDeclareSetGet(PDeviceDescriptor_t d, const char* key, const TCHAR* val
 
   d->Com->WriteString(tmp_s);
 
-  bool success = false;
-  {
-    ScopeUnlock unlock(CritSec_Comm);  // required to unlock RxThread
-    success = wait_ack->wait(20000);
-  }
+  bool success = wait_ack->wait(20000);
 
   TestLog(_T(". Flarm Decl: < %s"), success ? to_tstring(tmp_a).c_str() : _T("failed"));
   return success;

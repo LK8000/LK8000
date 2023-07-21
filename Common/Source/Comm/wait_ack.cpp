@@ -12,7 +12,7 @@
 #include "options.h"
 #include "wait_ack.h"
 
-wait_ack::wait_ack(const char* str) : wait_str(str) {
+wait_ack::wait_ack(Mutex& mtx, const char* str) : mutex(mtx), wait_str(str) {
   // remove trailing <CR><LF>
   tstring_view::size_type n = wait_str.find_last_not_of("\r\n");
   if (n != tstring_view::npos) {
@@ -36,7 +36,6 @@ bool wait_ack::check(const TCHAR* str) {
 }
 
 bool wait_ack::wait(unsigned timeout_ms) {
-  ScopeLock lock(mutex);
   if (!ready) {
     condition.Wait(mutex, timeout_ms);
   }
@@ -66,9 +65,9 @@ TEST_CASE("testing the wait_ack class") {
 
   SUBCASE("method : wait_ack::check()") {
     const char* array[] = {"abcd", "abcd\r", "abcd\n", "abcd\r\n"};
-
+    Mutex mtx;
     for (auto a : array) {
-      wait_ack test(a);
+      wait_ack test(mtx, a);
       for (auto b : array) {
         CHECK_UNARY(test.check(to_tstring(b).c_str()));
         CHECK_UNARY(test.check(_T("abcd\r\nef")));  // <CR><LF> is the end of string ...
@@ -79,11 +78,16 @@ TEST_CASE("testing the wait_ack class") {
   }
 
   SUBCASE("method : wait_ack::wait()") {
-    wait_ack test("abcd");
+    Mutex mtx;
+    ScopeLock lock(mtx);
+    wait_ack test(mtx, "abcd");
+
     std::thread set_thread([&] {
+      ScopeLock lock(mtx);
       std::this_thread::sleep_for(500ms);
-      CHECK_UNARY(test.check(_T("abcd")));
+      test.check(_T("abcd"));
     });
+
     CHECK_UNARY(test.wait(5000));
     CHECK_UNARY_FALSE(test.wait(1));
     set_thread.join();
