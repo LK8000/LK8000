@@ -32,7 +32,7 @@
 class FilePort :  public ComPort {
 public:
 
-    FilePort(int idx, const tstring& sName);
+    FilePort(unsigned idx, const tstring& sName);
 
     ~FilePort();
     

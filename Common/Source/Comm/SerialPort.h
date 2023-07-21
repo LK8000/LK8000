@@ -17,7 +17,7 @@
 #ifdef WIN32
 class SerialPort : public ComPort {
 public:
-    SerialPort(int idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
+    SerialPort(unsigned idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
     virtual ~SerialPort();
 
     bool Initialize() override;

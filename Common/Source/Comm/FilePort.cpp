@@ -16,7 +16,7 @@
 using namespace std::placeholders;
 
 
-FilePort::FilePort (int idx, const tstring& sName) : ComPort(idx, sName)
+FilePort::FilePort (unsigned idx, const tstring& sName) : ComPort(idx, sName)
 {
   FileStream = NULL;
 }
@@ -33,13 +33,13 @@ bool FilePort::Initialize() {
 	FileStream = _tfopen(szReplayFileName, TEXT("rt"));
 
 	if (!FileStream) {
-		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s>"), (unsigned)GetPortIndex() + 1, file_name, GetPortName());
+		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s>"), GetPortIndex() + 1, file_name, GetPortName());
 		 StatusMessage(_T("%s %s"), MsgToken(762), GetPortName());
 		 return false;
 	}
 
   SetPortStatus(CPS_OPENOK);
-	StartupStore(_T(". FilePort  %u open file %s Port <%s> OK"), (unsigned)GetPortIndex() + 1, file_name, GetPortName());
+	StartupStore(_T(". FilePort  %u open file %s Port <%s> OK"), GetPortIndex() + 1, file_name, GetPortName());
 	m_dwWaitTime =0;
 	return true;
 }
@@ -67,7 +67,7 @@ bool FilePort::Close() {
 	ComPort::Close();
 	fclose(FileStream);
 	FileStream = NULL;
-	StartupStore(_T(". FilePort %u %s closed Ok.%s"), (unsigned)GetPortIndex(),GetPortName(), NEWLINE);
+	StartupStore(_T(". FilePort %u %s closed Ok.%s"), GetPortIndex(), GetPortName(), NEWLINE);
 	return true;
 }
 

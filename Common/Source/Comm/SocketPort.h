@@ -47,7 +47,7 @@ typedef struct in_addr IN_ADDR;
 
 class SocketPort : public ComPort {
 public:
-    SocketPort(int idx, const tstring& sName);
+    SocketPort(unsigned idx, const tstring& sName);
     ~SocketPort();
     
     bool Initialize() override;

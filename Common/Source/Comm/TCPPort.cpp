@@ -77,7 +77,7 @@ bool TCPClientPort::Connect() {
     mSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (mSocket == INVALID_SOCKET) {
         unsigned dwError = WSAGetLastError();
-        StartupStore(_T("... TCPClientPort Port %u Unable to create socket, error=%u") NEWLINE, (unsigned)GetPortIndex() + 1, dwError); // 091117
+        StartupStore(_T("... TCPClientPort Port %u Unable to create socket, error=%u"), GetPortIndex() + 1, dwError); // 091117
 
         return false;
     }
@@ -125,21 +125,21 @@ bool TCPClientPort::Connect() {
             res = getsockopt(mSocket, SOL_SOCKET, SO_ERROR, &so_error, &len);
 
             if (so_error != 0) {
-                StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, SO_ERROR=%d") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), so_error);
+                StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, SO_ERROR=%d"), GetPortIndex() + 1, GetPortName(), so_error);
                 return false;
             }
 
         } else if(res == 0) {
-            StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, TIMEOUT") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName()); // 091117
+            StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, TIMEOUT"), GetPortIndex() + 1, GetPortName()); // 091117
             return false;
         } else {
-            StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, errno=%d") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), errno);
+            StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, errno=%d"), GetPortIndex() + 1, GetPortName(), errno);
             return false;
         }
 
 #else
         unsigned dwError = WSAGetLastError();
-        StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, error=%u") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName(), dwError); // 091117
+        StartupStore(_T("... TCPClientPort Port %u <%s> connect Failed, error=%u"), GetPortIndex() + 1, GetPortName(), dwError); // 091117
         return false;
 #endif
     }
@@ -151,7 +151,7 @@ bool TCPClientPort::Connect() {
 #endif
 
 
-    StartupStore(_T(". TCPClientPort %u Connect <%s> OK") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName());
+    StartupStore(_T(". TCPClientPort %u Connect <%s> OK"), GetPortIndex() + 1, GetPortName());
 
     return true;
 }

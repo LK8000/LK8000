@@ -27,7 +27,7 @@
 
 using namespace std::placeholders;
 
-TTYPort::TTYPort(int idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
+TTYPort::TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize),
@@ -65,7 +65,7 @@ speed_t DecodeBaudrate(int speed) {
 } // namespace
 
 bool TTYPort::Initialize() {
-    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"), (unsigned)(GetPortIndex() + 1),GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
+    StartupStore(_T(". ComPort %u Initialize <%s> speed=%u bit=%u %s"), GetPortIndex() + 1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
 
 #ifdef KOBO
     if (_tcscmp(GetPortName(), _T("/dev/ttyGS0")) == 0) {
@@ -80,7 +80,7 @@ bool TTYPort::Initialize() {
 
     _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY);
     if (_tty < 0 || !isatty(_tty)) {
-        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), (unsigned)(GetPortIndex() + 1), errno, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, errno, NEWLINE); // 091117
         StatusMessage(_T("%s %s"), MsgToken(762), GetPortName());
         goto failed;
     }
@@ -104,7 +104,7 @@ bool TTYPort::Initialize() {
     tcsetattr(_tty, TCSANOW, &newtio);
 
     SetPortStatus(CPS_OPENOK);
-    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)(GetPortIndex() + 1), GetPortName(), NEWLINE);
+    StartupStore(_T(". ComPort %u Init <%s> end OK"), GetPortIndex() + 1, GetPortName());
 
     return true;
 

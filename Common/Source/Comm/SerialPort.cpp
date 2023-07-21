@@ -18,7 +18,7 @@
 
 using namespace std::placeholders;
 
-SerialPort::SerialPort(int idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) :
+SerialPort::SerialPort(unsigned idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         hPort(INVALID_HANDLE_VALUE),
         _dwPortSpeed(dwSpeed),

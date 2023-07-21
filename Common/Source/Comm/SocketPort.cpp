@@ -13,7 +13,7 @@
 #include <functional>
 using namespace std::placeholders;
 
-SocketPort::SocketPort(int idx, const tstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
+SocketPort::SocketPort(unsigned idx, const tstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
 #ifdef WIN32
     WSADATA wsd;
     WSAStartup(MAKEWORD(1, 1), &wsd);
@@ -37,7 +37,7 @@ bool SocketPort::Initialize() {
 
     if (SetRxTimeout(RXTIMEOUT) == -1) {
         unsigned dwError = GetLastError();
-        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u%s"), (unsigned)GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
+        StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u"), GetPortIndex() + 1, GetPortName(), dwError); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
         StatusMessage(_T("%s %s"), MsgToken(760), GetPortName());        
 
@@ -45,7 +45,7 @@ bool SocketPort::Initialize() {
     }
 
     SetPortStatus(CPS_OPENOK);
-    StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)GetPortIndex() + 1, GetPortName(), NEWLINE);
+    StartupStore(_T(". ComPort %u Init <%s> end OK"), GetPortIndex() + 1, GetPortName());
     return true;
 failed:
     StatusMessage(_T("%s %s"), MsgToken(762), GetPortName());
@@ -99,7 +99,7 @@ size_t SocketPort::Read(void *data, size_t size) {
 
     if(iResult == SOCKET_ERROR) {
         AddStatErrRx(1);
-        StartupStore(_T("ComPort %u : socket was forcefully disconnected <%d>.%s"), (unsigned)GetPortIndex() + 1, WSAGetLastError(), NEWLINE);
+        StartupStore(_T("ComPort %u : socket was forcefully disconnected <%d>."), GetPortIndex() + 1, WSAGetLastError());
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;
     }
@@ -112,7 +112,7 @@ bool SocketPort::Close() {
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;
     }
-    StartupStore(_T(". ComPort %u closed Ok.%s"), (unsigned)GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
+    StartupStore(_T(". ComPort %u closed Ok."), GetPortIndex() + 1); // 100210 BUGFIX missing
     return true;
 }
 
@@ -155,7 +155,7 @@ bool SocketPort::Write_Impl(const void *data, size_t size) {
     
     if (iResult == SOCKET_ERROR) {
         AddStatErrTx(1);
-        StartupStore(_T("ComPort %u : socket was forcefully disconnected.%s"), (unsigned)GetPortIndex() + 1, NEWLINE);
+        StartupStore(_T("ComPort %u : socket was forcefully disconnected."), GetPortIndex() + 1);
         closesocket(mSocket);
         mSocket = INVALID_SOCKET;
 

@@ -18,7 +18,7 @@
 
 class GpsIdPort : public ComPort {
 public:
-    GpsIdPort(int idx, const tstring& sName);
+    GpsIdPort(unsigned idx, const tstring& sName);
     ~GpsIdPort();
 
     bool Initialize() override;

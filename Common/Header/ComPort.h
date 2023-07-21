@@ -20,7 +20,7 @@
 
 class ComPort : public Thread {
 public:
-    ComPort(int idx, const tstring& sName);
+    ComPort(unsigned idx, const tstring& sName);
 
     ComPort() = delete;
 
@@ -37,7 +37,7 @@ public:
         return sPortName.c_str();
     }
 
-    inline size_t GetPortIndex() const {
+    inline unsigned GetPortIndex() const {
         return devIdx;
     }
 
@@ -105,7 +105,7 @@ private:
 
     void Run() override;
 
-    const size_t devIdx;
+    const unsigned devIdx;
     const tstring sPortName;
 
     _NmeaString_t _NmeaString;
