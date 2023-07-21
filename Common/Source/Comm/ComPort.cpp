@@ -121,7 +121,7 @@ bool ComPort::StartRxThread() {
                        (unsigned) (GetPortIndex() + 1), GetPortName(), NEWLINE);
 
           // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
-          StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(761), GetPortName());
+          StatusMessage(_T("%s %s"), MsgToken(761), GetPortName());
           //DWORD dwError = GetLastError();
           return false;
       }
@@ -208,7 +208,7 @@ void ComPort::SetPortStatus(int nStatus) {
     }
 }
 
-void ComPort::StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...) {
+void ComPort::StatusMessage(const TCHAR *fmt, ...) {
     TCHAR tmp[127];
     va_list ap;
     LKASSERT(fmt!=NULL);
@@ -218,12 +218,6 @@ void ComPort::StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *f
     va_end(ap);
     LKASSERT(n>=0); // Message to long for "tmp" buffer
 
-
     tmp[126] = _T('\0');
-
-    if (caption) {
-        MessageBoxX(tmp, LKGetText(caption), type);
-    } else {
-        DoStatusMessage(tmp);
-    }
+    DoStatusMessage(tmp);
 }

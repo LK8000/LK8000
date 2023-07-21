@@ -78,8 +78,7 @@ public:
 protected:
 
     static
-    void StatusMessage(MsgType_t type, const TCHAR *caption, const TCHAR *fmt, ...)
-            gcc_printf(3,4) gcc_nonnull(3);
+    void StatusMessage(const TCHAR *fmt, ...) gcc_printf(1,2) gcc_nonnull(1);
 
     void AddStatRx(unsigned dwBytes);
     void AddStatErrRx(unsigned dwBytes);

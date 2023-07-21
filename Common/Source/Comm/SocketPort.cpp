@@ -39,7 +39,7 @@ bool SocketPort::Initialize() {
         unsigned dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%u%s"), (unsigned)GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
-        StatusMessage(mbOk, MsgToken(266), TEXT("%s %s"), MsgToken(760), GetPortName());        
+        StatusMessage(_T("%s %s"), MsgToken(760), GetPortName());        
 
         goto failed;
     }
@@ -48,7 +48,7 @@ bool SocketPort::Initialize() {
     StartupStore(_T(". ComPort %u Init <%s> end OK%s"), (unsigned)GetPortIndex() + 1, GetPortName(), NEWLINE);
     return true;
 failed:
-    StatusMessage(mbOk, NULL, TEXT("%s %s"), MsgToken(762), GetPortName());
+    StatusMessage(_T("%s %s"), MsgToken(762), GetPortName());
 
     // Failed to initialize
     if (mSocket != INVALID_SOCKET) {
