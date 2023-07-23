@@ -224,9 +224,9 @@ TCHAR  szTmp[MAX_NMEA_LEN];
   {
     _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
     SendNmea(d,szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
+    Sleep(CHANGE_DELAY);
     SendNmea(d, szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
+    Sleep(CHANGE_DELAY);
   }
 
 
@@ -239,20 +239,20 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
     _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,DIRECT"));
     SendNmea(d, szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
+    Sleep(CHANGE_DELAY);
     if((iNano3_PDABaudrate > 0) && (iNano3_GPSBaudrate >0) && (iNano3_PDABaudrate != iNano3_GPSBaudrate))
     {
       d->Com->SetBaudrate(iNano3_GPSBaudrate);
     #if TESTBENCH
       StartupStore(TEXT("LAXNav: Set Baudrate %i %s"),iNano3_GPSBaudrate, NEWLINE);
     #endif
-      Poco::Thread::sleep(CHANGE_DELAY);
+      Sleep(CHANGE_DELAY);
     }
-    Poco::Thread::sleep(CHANGE_DELAY);
+    Sleep(CHANGE_DELAY);
   }
   else
   {
-    Poco::Thread::sleep(CHANGE_DELAY);
+    Sleep(CHANGE_DELAY);
 
     if((iNano3_PDABaudrate > 0) && (iNano3_GPSBaudrate > 0) &&(iNano3_PDABaudrate != iNano3_GPSBaudrate))
     {
@@ -260,7 +260,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
       StartupStore(TEXT("LAXNav: Set Baudrate %i %s"),iNano3_PDABaudrate, NEWLINE);
 #endif
       d->Com->SetBaudrate(iNano3_PDABaudrate);
-      Poco::Thread::sleep(CHANGE_DELAY);
+      Sleep(CHANGE_DELAY);
     }
 
     #if TESTBENCH
@@ -268,7 +268,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
     #endif
     _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
     SendNmea(d,szTmp);
-    Poco::Thread::sleep(CHANGE_DELAY);
+    Sleep(CHANGE_DELAY);
 
   }
 

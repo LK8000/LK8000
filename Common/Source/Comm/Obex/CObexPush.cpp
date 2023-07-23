@@ -86,7 +86,7 @@ size_t CObexPush::LookupDevice() {
         StartupStore(_T("Obex failed to Start Device Enum %s"), NEWLINE);
         return 0U;
     }
-    Poco::Thread::sleep(15000);
+    Sleep(15000);
     //enumerate through the devices
     hRes = _pObex->StopDeviceEnum();
     if (FAILED(hRes)) {

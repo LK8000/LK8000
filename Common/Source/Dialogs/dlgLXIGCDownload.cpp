@@ -11,7 +11,6 @@
 #include "WindowControls.h"
 #include "resource.h"
 #include "Util/Clamp.hpp"
-#include "OS/Sleep.h"
 #include "Devices/devLXNano3.h"
 #include "dlgLXIGCDownload.h"
 #include "utils/tokenizer.h"

@@ -15,6 +15,7 @@
 #include "InputEvents.h"
 #include "utils/printf.h"
 #include "Comm/UpdateQNH.h"
+#include "OS/Sleep.h"
 
 int iLXV7_EXP_RxUpdateTime=0;
 double LXV7_EXP_oldMC = MACCREADY;
@@ -71,9 +72,9 @@ if(LXV7_EXP_iGPSBaudrate ==0)
   _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-  Poco::Thread::sleep(CHANGE_DELAY);
+  Sleep(CHANGE_DELAY);
   d->Com->WriteString(szTmp);
-  Poco::Thread::sleep(CHANGE_DELAY);
+  Sleep(CHANGE_DELAY);
 }
 
 
@@ -87,20 +88,20 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(CHANGE_DELAY);
+	Sleep(CHANGE_DELAY);
     if(LXV7_EXP_iPDABaudrate != LXV7_EXP_iGPSBaudrate)
     {
 	  d->Com->SetBaudrate(LXV7_EXP_iGPSBaudrate);
 	#if TESTBENCH
 	  StartupStore(TEXT("V7: Set Baudrate %i %s"),LXV7_EXP_iGPSBaudrate, NEWLINE);
 	#endif
-	  Poco::Thread::sleep(CHANGE_DELAY);
+	  Sleep(CHANGE_DELAY);
     }
-	Poco::Thread::sleep(CHANGE_DELAY);
+	Sleep(CHANGE_DELAY);
   }
   else
   {
-	Poco::Thread::sleep(CHANGE_DELAY);
+	Sleep(CHANGE_DELAY);
 
     if(LXV7_EXP_iPDABaudrate != LXV7_EXP_iGPSBaudrate)
     {
@@ -108,7 +109,7 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	  StartupStore(TEXT("V7: Set Baudrate %i %s"),LXV7_EXP_iPDABaudrate, NEWLINE);
 	#endif
 	  d->Com->SetBaudrate(LXV7_EXP_iPDABaudrate);
-	  Poco::Thread::sleep(CHANGE_DELAY);
+	  Sleep(CHANGE_DELAY);
     }
 
 	#if TESTBENCH
@@ -117,8 +118,8 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(CHANGE_DELAY);
-	Poco::Thread::sleep(CHANGE_DELAY);
+	Sleep(CHANGE_DELAY);
+	Sleep(CHANGE_DELAY);
 
   }
 

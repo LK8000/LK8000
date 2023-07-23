@@ -19,6 +19,7 @@
 #include "utils/stringext.h"
 #include <vector>
 #include <set>
+#include "OS/Sleep.h"
 
 namespace {
 
@@ -274,7 +275,7 @@ namespace {
 
     // get active configuration
     TCAIRecordX recordX;
-    Poco::Thread::sleep(500); // some params come up 0 if we don't wait!
+    Sleep(500); // some params come up 0 if we don't wait!
     d->Com->Read(&recordX, sizeof(recordX));
     if(!CAIUploadModeExpect(d, errBufSize, errBuf))
       return false;
@@ -315,7 +316,7 @@ BOOL CDevCAIGpsNav::Open(DeviceDescriptor_t* d)
 {
   if(!SIMMODE) {
     d->Com->WriteString(TEXT("\x03"));
-    Poco::Thread::sleep(500);
+    Sleep(500);
     d->Com->WriteString(TEXT("NMEA\r"));
 
     // This is for a slightly different mode, that

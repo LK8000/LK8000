@@ -56,6 +56,7 @@
 #include "Tracking/Tracking.h"
 #include "Waypoints/SetHome.h"
 #include "Baro.h"
+#include "OS/Sleep.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -359,10 +360,10 @@ bool Startup(const TCHAR* szCmdLine) {
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(MsgToken(1208));
-    Poco::Thread::sleep(ERRDELAY);
+    Sleep(ERRDELAY);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
     CreateProgressDialog(MsgToken(1209));
-    Poco::Thread::sleep(ERRDELAY);
+    Sleep(ERRDELAY);
   }
 #endif // non PNA
 
@@ -370,12 +371,12 @@ bool Startup(const TCHAR* szCmdLine) {
     if (AircraftCategory == (AircraftCategory_t) umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
         CreateProgressDialog(MsgToken(1210));
-        Poco::Thread::sleep(MSGDELAY);
+        Sleep(MSGDELAY);
     }
     if (SIMMODE) {
         // LKTOKEN _@M1211_ "SIMULATION"
         CreateProgressDialog(MsgToken(1211));
-        Poco::Thread::sleep(MSGDELAY);
+        Sleep(MSGDELAY);
     }
 
 #ifdef PNA
@@ -440,7 +441,7 @@ bool Startup(const TCHAR* szCmdLine) {
   // Finally ready to go
   TestLog(TEXT(".... WinMain CreateDrawingThread"));
   MapWindow::CreateDrawingThread();
-  Poco::Thread::sleep(50);
+  Sleep(50);
 
   SwitchToMapWindow();
   TestLog(TEXT(".... CreateCalculationThread"));

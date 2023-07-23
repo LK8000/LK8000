@@ -14,6 +14,7 @@
 #include "Calc/Vario.h"
 #include "Utils.h"
 #include "utils/printf.h"
+#include "OS/Sleep.h"
 
 int  LX166AltitudeUpdateTimeout =0;
 int  LX16xxAlt=0;
@@ -94,7 +95,7 @@ TCHAR  szTmp[254];
 	_stprintf(szTmp, TEXT("$PFLX0,COLIBRI"));
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(100);
+	Sleep(100);
   }
   else
   {
@@ -108,19 +109,19 @@ TCHAR  szTmp[254];
 
 	/* switch to 4k8 for new Firmware versions of LX1600 */
 	d->Com->SetBaudrate(4800);
-	Poco::Thread::sleep(100);
+	Sleep(100);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(100);
+	Sleep(100);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(100);
+	Sleep(100);
 
 	/* return to previous original */
 	d->Com->SetBaudrate(lOldBR);
-	Poco::Thread::sleep(100);
+	Sleep(100);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(100);
+	Sleep(100);
 	d->Com->WriteString(szTmp);
-	Poco::Thread::sleep(100);
+	Sleep(100);
   }
   return true;
 }

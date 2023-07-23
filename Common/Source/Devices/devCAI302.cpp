@@ -18,6 +18,7 @@
 #include "Calc/Vario.h"
 #include "Comm/UpdateQNH.h"
 #include "devCAI302.h"
+#include "OS/Sleep.h"
 
 using std::min;
 using std::max;
@@ -188,7 +189,7 @@ void test(void){
 
       for (retries=0; retries < 10 && DeleteFile(Buffer) == 0; retries++){
         SendMessage(HWND_BROADCAST, WM_WININICHANGE, 0xF2, 0);
-        Poco::Thread::sleep(250*retries);
+        Sleep(250*retries);
       }
 
     }
@@ -247,7 +248,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
   ExpectString(d, TEXT("$$$"));
 
   d->Com->WriteString(TEXT("O\r"));
-  Poco::Thread::sleep(500); // some params come up 0 if we don't wait!
+  Sleep(500); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataNoArgs, sizeof(cai302_OdataNoArgs));
 
   if (!ExpectString(d, TEXT("up>"))){
@@ -256,7 +257,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
   }
 
   d->Com->WriteString(TEXT("O 0\r"));  // 0=active pilot
-  Poco::Thread::sleep(1000); // some params come up 0 if we don't wait!
+  Sleep(1000); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataPilot, min(sizeof(cai302_OdataPilot), (size_t)cai302_OdataNoArgs.PilotRecordSize+3));
   if (!ExpectString(d, TEXT("up>"))){
     nDeclErrorCode = 1;

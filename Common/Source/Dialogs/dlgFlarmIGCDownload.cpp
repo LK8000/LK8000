@@ -194,7 +194,7 @@ void SendBinBlock(DeviceDescriptor_t* d, uint16_t Sequence, uint8_t Command,
 
   deb_Log(TEXT("\r\n===="));
 
-  Poco::Thread::sleep(GC_IDLETIME);
+  Sleep(GC_IDLETIME);
   Poco::Thread::yield();
 }
 
@@ -690,7 +690,7 @@ void EnterBinMode(DeviceDescriptor_t* d)
   deb_Log(TEXT("$PFLAX\r "));
   FlarmReadIGC.state(PING_STATE_TX);
   SetBinaryModeFlag(true);
-  Poco::Thread::sleep(100);
+  Sleep(100);
 }
 
 
@@ -1158,7 +1158,7 @@ protected:
       if (FlarmReadIGC.state() != IDLE_STATE) {
         ReadFlarmIGCFile(CDevFlarm::GetDevice(), IGC_DLIndex);
       }
-      Poco::Thread::sleep(GC_IDLETIME);
+      Sleep(GC_IDLETIME);
       Poco::Thread::yield();
     }
     deb_Log(TEXT("IGC Thread Stopped !"));

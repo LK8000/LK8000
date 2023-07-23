@@ -20,6 +20,7 @@
 #include "InputEvents.h"
 #include "Comm/UpdateQNH.h"
 #include "devLXNano.h"
+#include "OS/Sleep.h"
 
 //____________________________________________________________class_definitions_
 
@@ -472,7 +473,7 @@ BOOL DevLXMiniMap::DeclareTaskMinimap(DeviceDescriptor_t* d,
   {
 	  devWriteNMEAString(d,TEXT("PFLX0,COLIBRI") );
 
-	 Poco::Thread::sleep(100);
+	 Sleep(100);
 
 
 	 d->Com->SetBaudrate(4800);

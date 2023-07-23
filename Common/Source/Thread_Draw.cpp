@@ -13,6 +13,7 @@
 #include "RGB.h"
 #include "Hardware/CPU.hpp"
 #include "Draw/ScreenProjection.h"
+#include "OS/Sleep.h"
 #ifndef USE_GDI
 #include "Screen/Canvas.hpp"
 #endif
@@ -112,7 +113,7 @@ void MapWindow::Initialize() {
 void MapWindow::DrawThread ()
 {
   while ((!ProgramStarted) || (!Initialised)) {
-	Poco::Thread::sleep(50);
+	Sleep(50);
   }
 
   TestLog(_T("... DrawThread START"));
@@ -132,7 +133,7 @@ void MapWindow::DrawThread ()
 	if (CLOSETHREAD) break; // drop out without drawing
 
 	if ((!THREADRUNNING) || (!GlobalRunning)) {
-        Poco::Thread::sleep(50);
+        Sleep(50);
 		continue;
 	}
     drawTriggerEvent.reset();
@@ -381,7 +382,9 @@ void MapWindow::CloseDrawingThread(void)
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));
   #endif
-  while(!THREADEXIT) { Poco::Thread::sleep(50); };
+  while(!THREADEXIT) {
+    Sleep(50);
+  }
   #if TESTBENCH
   StartupStore(_T("... CloseDrawingThread finished\n"));
   #endif

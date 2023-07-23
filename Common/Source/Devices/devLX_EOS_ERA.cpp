@@ -225,7 +225,7 @@ uint8_t EOSRecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
   ScopeLock lock(EOSmutex);
 
   while(EOSbuffered_data.empty()) {
-    Poco::Thread::sleep(1);
+    Sleep(1);
     Poco::Thread::yield();
 
     if(!EOScond.Wait(EOSmutex, Timeout)) 
@@ -757,7 +757,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
       }
       attemps++;
       if (!Good)
-        Poco::Thread::sleep(500);
+        Sleep(500);
     } while ((!Good) && (attemps < 3));
 
 
@@ -946,9 +946,9 @@ void DevLX_EOS_ERA::OnIGCDownloadClicked(WndButton* pWnd) {
   }
   m_bTriggered = true;
   SendNmea(Device(), _T("LXDT,SET,BC_INT,AHRS,0.0,SENS,0.0"));    
-  Poco::Thread::sleep(50);
+  Sleep(50);
   SendNmea(Device(), _T("LXDT,GET,FLIGHTS_NO"));
-  Poco::Thread::sleep(50);
+  Sleep(50);
   dlgEOSIGCSelectListShowModal();
 }
 
@@ -1770,7 +1770,7 @@ BOOL DevLX_EOS_ERA::GetTarget(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA
 BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(DeviceDescriptor_t* d)
 {
   if(!EOSRadioEnabled(d)) return false;
-  Poco::Thread::sleep(50);
+  Sleep(50);
   SendNmea(d,(TCHAR*)_T("LXDT,GET,RADIO"));
   return true;
 }

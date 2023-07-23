@@ -38,6 +38,7 @@
 #include "ChangeScreen.h"
 #include "IO/Async/GlobalIOThread.hpp"
 #include "Tracking/Tracking.h"
+#include "OS/Sleep.h"
 
 WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 }
@@ -52,7 +53,8 @@ void BeforeShutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(MsgToken(1219));
 
-  LKSound(_T("LK_DISCONNECT.WAV")); Poco::Thread::sleep(500); // real WAV length is 410+ms
+  LKSound(_T("LK_DISCONNECT.WAV"));
+  Sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
 	// force exit mode for the case of being in welcome screen: OnTimerNotify will catch it

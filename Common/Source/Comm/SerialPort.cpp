@@ -148,10 +148,10 @@ failed:
 
 #ifdef UNDER_CE
         if (_PollingMode) {
-            Poco::Thread::sleep(2000);
+            Sleep(2000);
         }
 #else
-        Poco::Thread::sleep(2000); // needed for windows bug
+        Sleep(2000); // needed for windows bug
 #endif
     }
     return false;
@@ -209,7 +209,7 @@ unsigned long SerialPort::SetBaudrate(unsigned long BaudRate) {
         ClearCommError(hPort, &dwErrors, &ComStat);
     } while (ComStat.cbOutQue > 0);
 
-    Poco::Thread::sleep(10);
+    Sleep(10);
 
     GetCommState(hPort, &PortDCB);
 
@@ -236,7 +236,7 @@ unsigned long SerialPort::GetBaudrate() const {
         ClearCommError(hPort, &dwErrors, &ComStat);
     } while (ComStat.cbOutQue > 0);
 
-    Poco::Thread::sleep(10);
+    Sleep(10);
 
     GetCommState(hPort, &PortDCB);
 
@@ -266,10 +266,10 @@ bool SerialPort::Close() {
 
 #ifdef UNDER_CE
             if (_PollingMode) {
-                Poco::Thread::sleep(2000);
+                Sleep(2000);
             }
 #else
-            Poco::Thread::sleep(2000); // needed for windows bug
+            Sleep(2000); // needed for windows bug
 #endif
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
@@ -375,17 +375,17 @@ unsigned SerialPort::RxThread() {
 
 #ifdef UNDER_CE
         if (_PollingMode) {
-            Poco::Thread::sleep(5);
+            Sleep(5);
         } else {
             // Wait for an event to occur for the port.
             if (!WaitCommEvent(hPort, &dwCommModemStatus, 0)) {
                 // error reading from port
-                Poco::Thread::sleep(5);
+                Sleep(5);
             }
         }
 #else
         // PC version does BUSY WAIT
-        Poco::Thread::sleep(5); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
+        Sleep(5); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
 #endif
 
 #ifdef UNDER_CE
@@ -403,7 +403,7 @@ unsigned SerialPort::RxThread() {
                         dwBytesTransferred = 0;
                     }
                 });
-                Poco::Thread::sleep(1); // JMW20070515: give port some time to
+                Sleep(1); // JMW20070515: give port some time to
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
 

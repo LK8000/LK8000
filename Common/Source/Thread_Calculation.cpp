@@ -13,6 +13,7 @@
 #include "Hardware/CPU.hpp"
 #include "Calc/Vario.h"
 #include "LKInterface.h"
+#include "OS/Sleep.h"
 
 #ifndef ENABLE_OPENGL
 extern bool OnFastPanning;
@@ -56,11 +57,10 @@ public:
         goCalculationThread = true; // 091119 CHECK
         // wait for proper startup signal
         while (!MapWindow::IsDisplayRunning()) {
-            Poco::Thread::sleep(100);
+            Sleep(100);
         }
 
-        // while (!goCalculating) Poco::Thread::sleep(100);
-        Poco::Thread::sleep(1000); // 091213  BUGFIX need to syncronize !!! TOFIX02 TODO
+        Sleep(1000); // 091213  BUGFIX need to syncronize !!! TOFIX02 TODO
 
         while (!MapWindow::CLOSETHREAD) {
 
@@ -165,7 +165,9 @@ void CreateCalculationThread() {
     // Create a read thread for performing calculations
     _CalculationThread.Start();
 
-    while(!(goCalculationThread)) Poco::Thread::sleep(50);
+    while(!(goCalculationThread)) {
+        Sleep(50);
+    }
 }
 
 void WaitThreadCalculation() {

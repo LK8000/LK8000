@@ -12,6 +12,7 @@
 #include "FilePort.h"
 #include <functional>
 #include "utils/stringext.h"
+#include "OS/Sleep.h"
 
 using namespace std::placeholders;
 
@@ -122,7 +123,7 @@ int32_t i_skip = 1;
       ms = m_dwWaitTime - Timer.ElapsedUpdate();
       if((ms > 0)&&(ms < 10000))
       {
-        Poco::Thread::sleep(ms); 
+        Sleep(ms); 
         Timer.Update();
       }
       LastTimeSeconds = TimeInSeconds;     
@@ -166,7 +167,7 @@ int32_t i_skip = 1;
         ms = m_dwWaitTime - Timer.ElapsedUpdate();         
         if((ms > 0)&&(ms < 10000))
         {
-          Poco::Thread::sleep(ms); 
+          Sleep(ms); 
           Timer.Update();
         }
         LastTimeSeconds = TimeInSeconds;     

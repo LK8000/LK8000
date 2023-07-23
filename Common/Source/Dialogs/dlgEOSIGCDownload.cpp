@@ -616,7 +616,7 @@ protected:
 
       ReadEOS_IGCFile(DevLX_EOS_ERA::GetDevice(), EOS_IGCReadDialog.DownloadIndex());
 
-      Poco::Thread::sleep(GC_IDLETIME);
+      Sleep(GC_IDLETIME);
       Poco::Thread::yield();
     }
     SetEOSBinaryModeFlag(false);
@@ -703,7 +703,7 @@ uint16_t error= REC_NO_ERROR;
     case READRECORD_STATE_RX: 
       if(!EOSBlockReceived())
       {
-         Poco::Thread::sleep(GC_IDLETIME);
+         Sleep(GC_IDLETIME);
         Poco::Thread::yield();
       }
       else

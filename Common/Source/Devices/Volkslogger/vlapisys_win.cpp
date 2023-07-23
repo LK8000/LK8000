@@ -17,6 +17,7 @@
 
 #include "externs.h"
 #include "vla_support.h"
+#include "OS/Sleep.h"
 
 #include <stdio.h>
 #if defined(HAVE_POSIX) || !defined(_WIN32_WCE)
@@ -35,7 +36,7 @@ int noninteractive=1;
 /** wait a specified amount of milliseconds (t) */
 void VLA_SYS::wait_ms(const int32 t)  {
   if (t>0) {
-    Poco::Thread::sleep(t);
+    Sleep(t);
   }
 }
 

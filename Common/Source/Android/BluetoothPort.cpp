@@ -10,7 +10,6 @@
 #include "BluetoothPort.h"
 #include "Android/PortBridge.hpp"
 #include "Android/BluetoothHelper.hpp"
-#include "OS/Sleep.h"
 #include "functional"
 
 PortBridge* BluetoothPort::CreateBridge() {

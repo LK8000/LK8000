@@ -12,6 +12,7 @@
 #include "devAR620x.h"
 #include "Comm/device.h"
 #include "Radio.h"
+#include "OS/Sleep.h"
 
 namespace {
 
@@ -52,10 +53,10 @@ int SendCommand(DeviceDescriptor_t* d, uint8_t szTmp[], uint16_t len) {
 
   bSending = true;
   d->Com->Write(szTmp,len);
-  Poco::Thread::sleep(100);
+  Sleep(100);
 
   d->Com->Write(szTmp,len);
-  Poco::Thread::sleep(100); // don't listen to old status in the pipe
+  Sleep(100); // don't listen to old status in the pipe
   bSending = false;
   return true;
 }

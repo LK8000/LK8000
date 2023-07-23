@@ -25,6 +25,7 @@
 #include "LKInterface.h"
 #include "Baro.h"
 #include "Comm/wait_ack.h"
+#include "OS/Sleep.h"
 
 #ifdef __linux__
   #include <dirent.h>
@@ -1199,11 +1200,11 @@ BOOL FlarmDeclare(DeviceDescriptor_t* d, const Declaration_t* decl) {
   }
 
   // Reboot flarm to make declaration active, according to specs
-  Poco::Thread::sleep(100);
+  Sleep(100);
 
   d->Com->WriteString("$PFLAR,0*55\r\n");
 
-  Poco::Thread::sleep(100);
+  Sleep(100);
 
   return TRUE;  // success
 }

@@ -95,7 +95,7 @@ bool CBtHandlerWince::StartHW() {
     } else if (m_hLibBthUtil && m_BthSetMode) {
         StartupStore(_T("swith on Bluetooth%s"),NEWLINE);
         m_BthSetMode(BTH_CONNECTABLE);
-        Poco::Thread::sleep(10000); // connecting failed with error WSAECONNREFUSED (10061) without that...
+        Sleep(10000); // connecting failed with error WSAECONNREFUSED (10061) without that...
     } else {
         return false;
     }
@@ -135,7 +135,7 @@ int CBtHandlerWince::GetHWState() {
             if (iRet != ERROR_SUCCESS)
                 break;
             if (iStatus == HCI_HARDWARE_INITIALIZING || iStatus == HCI_HARDWARE_ERROR) {
-                Poco::Thread::sleep(100);
+                Sleep(100);
                 ++iLoop;
                 if (iLoop >= 100) {
                     break;

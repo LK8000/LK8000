@@ -10,7 +10,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "InputEvents.h"
-#include "Airspace.h"
+#include "Airspace/Airspace.h"
 #include "AirspaceWarning.h"
 #include "Dialogs.h"
 #include "LKObjects.h"

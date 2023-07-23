@@ -13,7 +13,6 @@
 #include "resource.h"
 #include "dlgIGCProgress.h"
 #include "Util/Clamp.hpp"
-#include "OS/Sleep.h"
 #include "dlgFlarmIGCDownload.h"
 #include <queue>
 #include "Thread/Mutex.hpp"

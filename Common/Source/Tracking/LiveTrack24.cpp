@@ -52,6 +52,7 @@
 #include "NavFunctions.h"
 #include "utils/base64.h"
 #include "Library/TimeFunctions.h"
+#include "OS/Sleep.h"
 
 #ifdef KOBO
 #include "Kobo/System.hpp"
@@ -351,7 +352,7 @@ static bool InterruptibleSleep(int msecs) {
 			if (!_t_run)
 				return true;
 		}
-		Poco::Thread::sleep(1000);
+		Sleep(1000);
 	} while (secs--);
 	return false;
 }
@@ -1221,7 +1222,7 @@ static bool InterruptibleSleepRadar(int msecs) {
 			if (!_t_radar_run)
 				return true;
 		}
-		Poco::Thread::sleep(1000);
+		Sleep(1000);
 	} while (secs--);
 	return false;
 }
