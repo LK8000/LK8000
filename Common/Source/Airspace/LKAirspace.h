@@ -14,6 +14,7 @@
 #include <zzip/zzip.h>
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
+#include "Airspace.h"
 
 class ScreenProjection;
 class MD5;

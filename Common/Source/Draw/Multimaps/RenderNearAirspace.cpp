@@ -6,7 +6,7 @@
    $Id$
  */
 #include "externs.h"
-#include "LKAirspace.h"
+#include "Airspace/LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 #include "Multimap.h"

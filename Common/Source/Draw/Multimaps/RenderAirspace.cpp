@@ -11,7 +11,7 @@
 #include "Dialogs.h"
 #include "Atmosphere.h"
 #include "LKInterface.h"
-#include "LKAirspace.h"
+#include "Airspace/LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 #include "LKObjects.h"
