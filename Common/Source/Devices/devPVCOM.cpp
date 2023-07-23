@@ -85,13 +85,13 @@ LKASSERT(szStrg != NULL);
 
 
 
-BOOL PVCOMIsRadio(PDeviceDescriptor_t d){
+BOOL PVCOMIsRadio(DeviceDescriptor_t* d){
   (void)d;
 
   return(TRUE);
 }
 
-BOOL PVCOMRadioMode(PDeviceDescriptor_t d, int mode) {
+BOOL PVCOMRadioMode(DeviceDescriptor_t* d, int mode) {
 	  TCHAR  szTmp[255];
 	  if(mode == 0)
 	    _stprintf(szTmp, TEXT("$PVCOM,S,MOD,N"));
@@ -105,7 +105,7 @@ BOOL PVCOMRadioMode(PDeviceDescriptor_t d, int mode) {
 	  return(TRUE);
 	}
 
-BOOL PVCOMPutVolume(PDeviceDescriptor_t d, int Volume) {
+BOOL PVCOMPutVolume(DeviceDescriptor_t* d, int Volume) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,S,VOL,%d"), Volume);
 #ifdef TESTBENCH
@@ -119,7 +119,7 @@ BOOL PVCOMPutVolume(PDeviceDescriptor_t d, int Volume) {
   return(TRUE);
 }
 
-BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) {
+BOOL PVCOMPutSquelch(DeviceDescriptor_t* d, int Squelch) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,S,SQL,%d"), Squelch);
 #ifdef TESTBENCH
@@ -137,7 +137,7 @@ BOOL PVCOMPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, unsigned Freq, const TCHAR* Station) {
+BOOL PVCOMPutFreqActive(DeviceDescriptor_t* d, unsigned Freq, const TCHAR* Station) {
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL) {
@@ -159,7 +159,7 @@ BOOL PVCOMPutFreqActive(PDeviceDescriptor_t d, unsigned Freq, const TCHAR* Stati
 }
 
 
-BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, unsigned Freq,  const TCHAR* Station) {
+BOOL PVCOMPutFreqStandby(DeviceDescriptor_t* d, unsigned Freq,  const TCHAR* Station) {
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL)
@@ -180,7 +180,7 @@ BOOL PVCOMPutFreqStandby(PDeviceDescriptor_t d, unsigned Freq,  const TCHAR* Sta
 }
 
 
-BOOL PVCOMStationSwap(PDeviceDescriptor_t d) {
+BOOL PVCOMStationSwap(DeviceDescriptor_t* d) {
   TCHAR  szTmp[255];
 #ifdef TESTBENCH
    StartupStore(_T(". RADIO Station swap %s"), NEWLINE);
@@ -195,7 +195,7 @@ BOOL PVCOMStationSwap(PDeviceDescriptor_t d) {
 }
 
 
-BOOL PVCOMRequestAllData(PDeviceDescriptor_t d) {
+BOOL PVCOMRequestAllData(DeviceDescriptor_t* d) {
   TCHAR  szTmp[255];
   _stprintf(szTmp, TEXT("$PVCOM,R,ALL"));
   PVCOMNMEAddCheckSumStrg(szTmp);
@@ -228,7 +228,7 @@ bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 } // ParToDouble()
 
 
-bool PVCOM_ProcessPEYI(PDeviceDescriptor_t d, const TCHAR *sentence, NMEA_INFO *info)
+bool PVCOM_ProcessPEYI(DeviceDescriptor_t* d, const TCHAR *sentence, NMEA_INFO *info)
 {
   TSpaceInfo data = {};
   unsigned fieldIdx = 0;
@@ -299,7 +299,7 @@ static bool TRI_on = false;
 
 
 
-BOOL PVCOMParseString(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *info)
+BOOL PVCOMParseString(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *info)
 {
 TCHAR  device[250];
 TCHAR  cmd[220];
@@ -436,7 +436,7 @@ return  RadioPara.Changed;
 
 } // namespace
 
-void PVCOMInstall(PDeviceDescriptor_t d){
+void PVCOMInstall(DeviceDescriptor_t* d){
 
   _tcscpy(d->Name, TEXT("PVCOM"));
   d->IsRadio = PVCOMIsRadio;

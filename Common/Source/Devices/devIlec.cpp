@@ -13,9 +13,9 @@
 #include "devIlec.h"
 
 
-static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PILC(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL IlecParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -34,12 +34,12 @@ static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 }
 
 
-void IlecInstall(PDeviceDescriptor_t d) {
+void IlecInstall(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, TEXT("Ilec SN10"));
   d->ParseNMEA = IlecParseNMEA;
 }
 
-static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PILC(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];

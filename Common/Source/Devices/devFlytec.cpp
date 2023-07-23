@@ -15,9 +15,9 @@ extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
 
-static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL FlytecParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -36,12 +36,12 @@ static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 }
 
 
-void FlytecInstall(PDeviceDescriptor_t d) {
+void FlytecInstall(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, TEXT("Flytec/FLYSEN"));
   d->ParseNMEA = FlytecParseNMEA;
 }
 
-static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];

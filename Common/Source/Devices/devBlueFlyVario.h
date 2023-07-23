@@ -14,11 +14,11 @@
 
 #include "Devices/DeviceRegister.h"
 
-void BlueFlyInstall(PDeviceDescriptor_t d);
+void BlueFlyInstall(DeviceDescriptor_t* d);
 
 inline constexpr
-DeviceRegister_t BlueFlyRegister(void) {
-    return devRegister(_T("BlueFlyVario"), BlueFlyInstall);
+DeviceRegister_t BlueFlyRegister() {
+  return devRegister(_T("BlueFlyVario"), BlueFlyInstall);
 }
 
 #endif	/* DEVBLUEFLYVARIO_H */

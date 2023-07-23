@@ -38,10 +38,10 @@ class DevVaulter : public DevBase
     DevVaulter() {}
 
     /// Installs device specific handlers.
-    static void Install(PDeviceDescriptor_t d);
+    static void Install(DeviceDescriptor_t* d);
 
     /// Parses LXWPn sentences.
-    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+    static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr
@@ -50,13 +50,13 @@ class DevVaulter : public DevBase
     }
 
     /// Parses PITV5 sentence.
-    static bool PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool PITV3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP3 sentence.
-    static bool PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool PITV4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP4 sentence.
-    static bool PITV5(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool PITV5(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
 }; // DevLX
 

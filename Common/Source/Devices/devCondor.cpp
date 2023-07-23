@@ -12,11 +12,11 @@
 #include "devCondor.h"
 
 
-static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cLXWP0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cLXWP1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cLXWP2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL CondorParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
@@ -42,7 +42,7 @@ static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 }
 
 
-void condorInstall(PDeviceDescriptor_t d) {
+void condorInstall(DeviceDescriptor_t* d) {
 
   StartupStore(_T(". Condor device installed%s"),NEWLINE);
   _tcscpy(d->Name, TEXT("Condor"));
@@ -54,7 +54,7 @@ void condorInstall(PDeviceDescriptor_t d) {
 // local stuff
 
 
-static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL cLXWP1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
   //  TCHAR ctemp[80];
   (void)pGPS;
@@ -63,7 +63,7 @@ static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 }
 
 
-static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+static BOOL cLXWP2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   d->RecvMacCready(StrToDouble(ctemp, nullptr));
@@ -71,7 +71,7 @@ static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
 }
 
 
-static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+static BOOL cLXWP0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   TCHAR ctemp[80];
 
   /*

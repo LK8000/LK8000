@@ -61,7 +61,7 @@ bool DevBase::ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* va
 /// @param d  device descriptor (unused)
 ///
 //static
-BOOL DevBase::GetTrue(PDeviceDescriptor_t)
+BOOL DevBase::GetTrue(DeviceDescriptor_t* )
 {
   return(true);
 } // GetTrue()
@@ -155,7 +155,7 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+bool DevBase::StopRxThread(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
 {
   if (!d->Com->StopRxThread())
   {
@@ -181,7 +181,7 @@ bool DevBase::StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR err
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+bool DevBase::StartRxThread(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
 {
   if (!d->Com->StartRxThread())
   {
@@ -209,7 +209,7 @@ bool DevBase::StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR er
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::SetRxTimeout(PDeviceDescriptor_t d,
+bool DevBase::SetRxTimeout(DeviceDescriptor_t* d,
   int newTimeout, int& orgTimeout, unsigned errBufSize, TCHAR errBuf[])
 {
   orgTimeout = d->Com->SetRxTimeout(newTimeout);
@@ -240,7 +240,7 @@ bool DevBase::SetRxTimeout(PDeviceDescriptor_t d,
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsigned errBufSize, TCHAR errBuf[])
+bool DevBase::ComWrite(DeviceDescriptor_t* d, const void* data, int length, unsigned errBufSize, TCHAR errBuf[])
 {
   bool res;
 
@@ -277,7 +277,7 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsi
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComWrite(PDeviceDescriptor_t d,
+bool DevBase::ComWrite(DeviceDescriptor_t* d,
   char character, unsigned errBufSize, TCHAR errBuf[])
 {
   return(ComWrite(d, &character, 1, errBufSize, errBuf));
@@ -291,7 +291,7 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d,
 /// @param d           device descriptor
 ///
 //static
-void DevBase::ComFlush(PDeviceDescriptor_t d)
+void DevBase::ComFlush(DeviceDescriptor_t* d)
 {
   d->Com->Flush();
 }
@@ -317,7 +317,7 @@ void DevBase::ComFlush(PDeviceDescriptor_t d)
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
+bool DevBase::ComExpect(DeviceDescriptor_t* d, const void* expected,
   int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
   uint8_t* prx = static_cast<uint8_t*>(rxBuf);
@@ -391,7 +391,7 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComExpect(PDeviceDescriptor_t d, char expected,
+bool DevBase::ComExpect(DeviceDescriptor_t* d, char expected,
   int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
   return(ComExpect(d, &expected, 1, checkChars, rxBuf, errBufSize, errBuf));
@@ -417,7 +417,7 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, char expected,
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComExpect(PDeviceDescriptor_t d, const char* expected,
+bool DevBase::ComExpect(DeviceDescriptor_t* d, const char* expected,
   int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
   return(ComExpect(

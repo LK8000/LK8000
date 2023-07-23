@@ -10,7 +10,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void LXV7easyInstall(PDeviceDescriptor_t d);
+void LXV7easyInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t LXV7easyRegister() {

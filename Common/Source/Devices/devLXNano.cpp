@@ -71,7 +71,7 @@ static const char PKT_CCWRITE   = '\xD0';
 /// @retval false device cannot be installed
 ///
 //static
-void DevLXNano::Install(PDeviceDescriptor_t d)
+void DevLXNano::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -96,7 +96,7 @@ void DevLXNano::Install(PDeviceDescriptor_t d)
 /// @retval false error during declaration (description in @p errBuf)
 ///
 //static
-BOOL DevLXNano::DeclareTask(PDeviceDescriptor_t d,
+BOOL DevLXNano::DeclareTask(DeviceDescriptor_t* d,
   const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
 {
   Decl  decl;
@@ -163,7 +163,7 @@ BOOL DevLXNano::DeclareTask(PDeviceDescriptor_t d,
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+bool DevLXNano::StartNMEAMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
 {
   if(ComWrite(d, PKT_SYN, errBufSize, errBuf)) {
     ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
@@ -196,7 +196,7 @@ bool DevLXNano::StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR 
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::StartCMDMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+bool DevLXNano::StartCMDMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
 {
   // we have to wait longer while enabling declaration phase because we have
   // to parse all NMEA sequences that are incomming before declaration mode
@@ -327,7 +327,7 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::WriteDecl(PDeviceDescriptor_t d, Decl& decl, unsigned errBufSize, TCHAR errBuf[])
+bool DevLXNano::WriteDecl(DeviceDescriptor_t* d, Decl& decl, unsigned errBufSize, TCHAR errBuf[])
 {
   byte buf[sizeof(Decl)];
 
@@ -355,7 +355,7 @@ bool DevLXNano::WriteDecl(PDeviceDescriptor_t d, Decl& decl, unsigned errBufSize
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[])
+bool DevLXNano::WriteClass(DeviceDescriptor_t* d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[])
 {
   byte buf[sizeof(Class)];
 

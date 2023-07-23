@@ -34,7 +34,7 @@
 
  Mutex DLmutex;
 
-int ReadEOS_IGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) ;
+int ReadEOS_IGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) ;
 static void UpdateList(void);
 
 TCHAR DownoadIGCFilename[MAX_NMEA_PAR_LEN];
@@ -449,7 +449,7 @@ int8_t CRC_Update(int8_t m_byCrc, uint8_t d)
   return m_byCrc;
 }
 
-void SendBinBlock(DeviceDescriptor_t *d, uint8_t Command, uint8_t FileId, uint16_t Sequence) 
+void SendBinBlock(DeviceDescriptor_t* d, uint8_t Command, uint8_t FileId, uint16_t Sequence) 
 {
   if (d == NULL)
     return;
@@ -485,7 +485,7 @@ ConvUnion FLightNo;
 
 
 
-static uint8_t RecBinBlock(DeviceDescriptor_t *d, FILE *pf_IGCFile, uint16_t Sequence, uint16_t* BytesRead) {
+static uint8_t RecBinBlock(DeviceDescriptor_t* d, FILE *pf_IGCFile, uint16_t Sequence, uint16_t* BytesRead) {
 uint8_t error = REC_NO_ERROR;
 uint8_t CRC_in;
 uint16_t Timeout = REC_TIMEOUT;
@@ -658,7 +658,7 @@ void StopEOS_IGCReadThread() {
 
 
 
-int ReadEOS_IGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
+int ReadEOS_IGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
  ScopeLock lock(DLmutex);
 static volatile uint16_t BlockNo=1; 
 static uint8_t ErrCnt = 0;

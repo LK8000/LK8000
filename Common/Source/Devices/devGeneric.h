@@ -11,14 +11,14 @@
 
 #include "Devices/DeviceRegister.h"
 
-void genInstall(PDeviceDescriptor_t d);
+void genInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t genRegister() {
   return devRegister( _T("Generic"), genInstall);
 }
 
-void internalInstall(PDeviceDescriptor_t d);
+void internalInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t InternalRegister() {

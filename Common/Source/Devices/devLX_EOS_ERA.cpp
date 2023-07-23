@@ -126,7 +126,7 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 /// @retval false device cannot be installed
 ///
 //static
-void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
+void DevLX_EOS_ERA::Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, GetName());
   d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
@@ -149,7 +149,7 @@ void DevLX_EOS_ERA::Install(PDeviceDescriptor_t d) {
   d->PutTarget      = PutTarget;
 } // Install()
 
-BOOL DevLX_EOS_ERA::Open(PDeviceDescriptor_t d) {
+BOOL DevLX_EOS_ERA::Open(DeviceDescriptor_t* d) {
   ResetMultitargetSync();
   return TRUE;
 }
@@ -184,7 +184,7 @@ bool SetEOSBinaryModeFlag(bool bBinMode) {
 
 
 
-BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
   if ((!d) || (!String) || (!len)) {
     return FALSE;
   }
@@ -221,7 +221,7 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t *d, char *String, int len,
 
 
 
-uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
+uint8_t EOSRecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
   ScopeLock lock(EOSmutex);
 
   while(EOSbuffered_data.empty()) {
@@ -241,7 +241,7 @@ uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
   return REC_NO_ERROR;
 }
 
-uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
+uint8_t EOSRecChar16(DeviceDescriptor_t* d, uint16_t *inchar, uint16_t Timeout) {
   ConvUnion tmp;
   int error = EOSRecChar(d, &(tmp.byte[0]), Timeout);
   if (error == REC_NO_ERROR) {
@@ -262,7 +262,7 @@ uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) 
 //static
 
 
-BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX_EOS_ERA::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 {
   if (Declare()) return false ;  // do not configure during declaration
   if( IsEOSInBinaryMode()) return false;
@@ -329,7 +329,7 @@ BOOL DevLX_EOS_ERA::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO*
 } // ParseNMEA()
 
 
-BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
+BOOL DevLX_EOS_ERA::SetupLX_Sentence(DeviceDescriptor_t* d)
 {
 #ifdef TIMEOUTCHECK
   static int i=0;
@@ -355,7 +355,7 @@ BOOL DevLX_EOS_ERA::SetupLX_Sentence(PDeviceDescriptor_t d)
 
 
 
-BOOL DevLX_EOS_ERA::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
+BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
 {
   WndProperty *wp;
   if(!wf) return false;
@@ -561,7 +561,7 @@ bool DevLX_EOS_ERA::OnTimer(WndForm* pWnd)
   return true;
 }
 
-BOOL DevLX_EOS_ERA::Config(PDeviceDescriptor_t d){
+BOOL DevLX_EOS_ERA::Config(DeviceDescriptor_t* d){
 
   CallBackTableEntry_t CallBackTable[] = {
     EndCallBackEntry()
@@ -647,7 +647,7 @@ BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
 /// @retval false error during declaration (description in @p errBuf)
 ///
 //static
-BOOL DevLX_EOS_ERA::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
+BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
 
   bool Good  = true;
 
@@ -964,7 +964,7 @@ void DevLX_EOS_ERA::OnIGCDownloadClicked(WndButton* pWnd) {
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -1056,7 +1056,7 @@ BOOL DevLX_EOS_ERA::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 
 
 
-BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info )
+BOOL DevLX_EOS_ERA::EOSSetMC(DeviceDescriptor_t* d,float fTmp, const TCHAR *info )
 {
   bool ret = false;
 
@@ -1080,7 +1080,7 @@ BOOL DevLX_EOS_ERA::EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info
 
 
 
-BOOL DevLX_EOS_ERA::EOSSetSTF(PDeviceDescriptor_t d,int  iTmp, const TCHAR *info)
+BOOL DevLX_EOS_ERA::EOSSetSTF(DeviceDescriptor_t* d,int  iTmp, const TCHAR *info)
 {
   bool ret = false;
 
@@ -1121,7 +1121,7 @@ BOOL DevLX_EOS_ERA::EOSSetSTF(PDeviceDescriptor_t d,int  iTmp, const TCHAR *info
   return ret;
 }
 
-BOOL DevLX_EOS_ERA::EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
+BOOL DevLX_EOS_ERA::EOSSetBAL(DeviceDescriptor_t* d,float fTmp, const TCHAR *info)
 {
   bool ret = false;
 
@@ -1150,7 +1150,7 @@ BOOL DevLX_EOS_ERA::EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *inf
   return ret;
 }
 
-BOOL DevLX_EOS_ERA::EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info)
+BOOL DevLX_EOS_ERA::EOSSetBUGS(DeviceDescriptor_t* d,float fTmp, const TCHAR *info)
 {
   bool ret = false;
 
@@ -1181,7 +1181,7 @@ BOOL DevLX_EOS_ERA::EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *in
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX_EOS_ERA::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
+BOOL DevLX_EOS_ERA::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -1257,7 +1257,7 @@ BOOL DevLX_EOS_ERA::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX_EOS_ERA::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX_EOS_ERA::LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   double fTmp;
   if(ParToDouble(sentence, 1, &fTmp))  // SC mode
@@ -1330,7 +1330,7 @@ BOOL DevLX_EOS_ERA::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INF
 } // LXWP3()
 
 
-BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   TCHAR szTmp[MAX_NMEA_LEN];
 
@@ -1473,7 +1473,7 @@ BOOL DevLX_EOS_ERA::LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 
 
-BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INFO* info, int ParNo)
+BOOL DevLX_EOS_ERA::SENS(DeviceDescriptor_t* d,  const TCHAR* sentence, NMEA_INFO* info, int ParNo)
 { 
   TCHAR szTmp[MAX_NMEA_LEN];
   double fTmp;
@@ -1522,7 +1522,7 @@ BOOL DevLX_EOS_ERA::SENS(PDeviceDescriptor_t d,  const TCHAR* sentence, NMEA_INF
   return true;
 }
 
-BOOL DevLX_EOS_ERA::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX_EOS_ERA::LXBC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   TCHAR szTmp[MAX_NMEA_LEN];
 
@@ -1575,7 +1575,7 @@ BOOL DevLX_EOS_ERA::LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 }
 
 
-BOOL DevLX_EOS_ERA::EOSPutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL DevLX_EOS_ERA::EOSPutMacCready(DeviceDescriptor_t* d, double MacCready){
   TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
@@ -1592,7 +1592,7 @@ BOOL DevLX_EOS_ERA::EOSPutMacCready(PDeviceDescriptor_t d, double MacCready){
 }
 
 
-BOOL DevLX_EOS_ERA::EOSPutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL DevLX_EOS_ERA::EOSPutBallast(DeviceDescriptor_t* d, double Ballast){
   TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
@@ -1610,7 +1610,7 @@ BOOL DevLX_EOS_ERA::EOSPutBallast(PDeviceDescriptor_t d, double Ballast){
 }
 
 
-BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
+BOOL DevLX_EOS_ERA::EOSPutBugs(DeviceDescriptor_t* d, double Bugs){
   TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
@@ -1627,7 +1627,7 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(PDeviceDescriptor_t d, double Bugs){
   return(TRUE);
 }
 
-BOOL DevLX_EOS_ERA::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
+BOOL DevLX_EOS_ERA::PutQNH(DeviceDescriptor_t* d, double qnh_mb) {
   if (!d) {
     return false;
   }
@@ -1645,7 +1645,7 @@ BOOL DevLX_EOS_ERA::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
   return TRUE;
 }
 
-BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt)
+BOOL DevLX_EOS_ERA::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt)
 {
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
   if(PortIO.T_TRGTDir == TP_Off) {
@@ -1716,7 +1716,7 @@ BOOL DevLX_EOS_ERA::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt)
 }
 
 
-BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevLX_EOS_ERA::GetTarget(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info) {
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
   if (PortIO.R_TRGTDir != TP_VTARG) {
@@ -1767,7 +1767,7 @@ BOOL DevLX_EOS_ERA::GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA
 
 
 
-BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(PDeviceDescriptor_t d)
+BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(DeviceDescriptor_t* d)
 {
   if(!EOSRadioEnabled(d)) return false;
   Poco::Thread::sleep(50);
@@ -1775,7 +1775,7 @@ BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(PDeviceDescriptor_t d)
   return true;
 }
 
-BOOL DevLX_EOS_ERA::EOSPutVolume(PDeviceDescriptor_t d, int Volume) {
+BOOL DevLX_EOS_ERA::EOSPutVolume(DeviceDescriptor_t* d, int Volume) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
@@ -1789,7 +1789,7 @@ BOOL DevLX_EOS_ERA::EOSPutVolume(PDeviceDescriptor_t d, int Volume) {
 
 
 
-BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
+BOOL DevLX_EOS_ERA::EOSPutSquelch(DeviceDescriptor_t* d, int Squelch) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,,,%i,,"),Squelch)  ;
@@ -1802,7 +1802,7 @@ BOOL DevLX_EOS_ERA::EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 
 
 
-BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
+BOOL DevLX_EOS_ERA::EOSPutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"), khz / 1000.);
@@ -1820,7 +1820,7 @@ BOOL DevLX_EOS_ERA::EOSPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const 
 }
 
 
-BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
+BOOL DevLX_EOS_ERA::EOSPutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"), khz / 1000.);
@@ -1835,7 +1835,7 @@ BOOL DevLX_EOS_ERA::EOSPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  cons
 }
 
 
-BOOL DevLX_EOS_ERA::EOSStationSwap(PDeviceDescriptor_t d) {
+BOOL DevLX_EOS_ERA::EOSStationSwap(DeviceDescriptor_t* d) {
    if(!EOSRadioEnabled(d)) return false;
   SendNmea(d,_T("LXDT,SET,R_SWITCH"));
 
@@ -1847,7 +1847,7 @@ BOOL DevLX_EOS_ERA::EOSStationSwap(PDeviceDescriptor_t d) {
 }
 
 
-BOOL DevLX_EOS_ERA::EOSRadioMode(PDeviceDescriptor_t d, int mode) {
+BOOL DevLX_EOS_ERA::EOSRadioMode(DeviceDescriptor_t* d, int mode) {
   if(!EOSRadioEnabled(d)) return false;
   TCHAR  szTmp[255];
   _stprintf(szTmp,_T("LXDT,SET,R_DUAL,%i"),mode);

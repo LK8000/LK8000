@@ -231,7 +231,7 @@ typedef std::map<DeviceDescriptor_t*, CHardwareParameters> Device2Parameters_t;
 Device2Parameters_t gHardwareParameters;
 
 namespace dlgBlueFlyConfig {
-    PDeviceDescriptor_t pDevice;
+    DeviceDescriptor_t* pDevice;
     bool Init = true;
 
     constexpr TCHAR const * lstPageName [] = { _T("1"), _T("2"), _T("3"), _T("4"), _T("5") };
@@ -372,7 +372,7 @@ namespace dlgBlueFlyConfig {
         }
     }
 
-    int Show(DeviceDescriptor_t *d) {
+    int Show(DeviceDescriptor_t* d) {
         int nRet = IdCancel;
 
         pDevice = d;
@@ -433,7 +433,7 @@ namespace dlgBlueFlyConfig {
 /**************************************************************************************************************************************************************/
 unsigned RequestParamTimer = 10;
 
-BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d) {
+BOOL BlueFlyVarioOpen(DeviceDescriptor_t* d) {
     RequestParamTimer = 10;
     CHardwareParameters& HardwareParameters = gHardwareParameters[d];
 
@@ -474,30 +474,30 @@ BOOL BlueFlyVarioOpen(PDeviceDescriptor_t d) {
     return TRUE;
 }
 
-bool RequestConfig(PDeviceDescriptor_t d) {
+bool RequestConfig(DeviceDescriptor_t* d) {
     // Request device Config
     const char szRequest[] = "$BST*";
     return d->Com->Write(szRequest, sizeof (szRequest));
 }
 
-BOOL BlueFlyVarioClose(PDeviceDescriptor_t d) {
+BOOL BlueFlyVarioClose(DeviceDescriptor_t* d) {
     gHardwareParameters.erase(d);
     return TRUE;
 }
 
-BOOL BlueFlyConfig(PDeviceDescriptor_t d) {
+BOOL BlueFlyConfig(DeviceDescriptor_t* d) {
     if(gHardwareParameters[d]) {
         return (dlgBlueFlyConfig::Show(d) == IdOk);
     }
     return FALSE;
 }
 
-BOOL PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
+BOOL PRS(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO){
 	UpdateBaroSource(_INFO, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)));
 	return TRUE;
 }
 
-BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL BlueFlyVarioParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
     if( RequestParamTimer == 1 ) {
         if(!RequestConfig(d)) {
             RequestParamTimer = 10;
@@ -533,7 +533,7 @@ BOOL BlueFlyVarioParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS
 
 } // unamed namespaces
 
-void BlueFlyInstall(PDeviceDescriptor_t d) {
+void BlueFlyInstall(DeviceDescriptor_t* d) {
 
     _tcscpy(d->Name, TEXT("BlueFlyVario"));
     d->ParseNMEA = BlueFlyVarioParseNMEA;

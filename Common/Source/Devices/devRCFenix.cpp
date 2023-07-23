@@ -41,7 +41,7 @@
 /// @retval true  when device has been installed successfully
 /// @retval false device cannot be installed
 ///
-void DevRCFenix::Install(PDeviceDescriptor_t d) {
+void DevRCFenix::Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, GetName());
   d->Open = Open;
   d->ParseNMEA    = ParseNMEA;
@@ -56,7 +56,7 @@ void DevRCFenix::Install(PDeviceDescriptor_t d) {
 } // Install()
 
 //static 
-BOOL DevRCFenix::Open(PDeviceDescriptor_t d) {
+BOOL DevRCFenix::Open(DeviceDescriptor_t* d) {
   if (!d) {
     return false;
   }
@@ -113,7 +113,7 @@ extern BOOL LX_EOS_ERA_bValid;
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevRCFenix::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
 
   auto wait_ack = d->lock_wait_ack();
   if (wait_ack && wait_ack->check(sentence)) {
@@ -184,7 +184,7 @@ BOOL DevRCFenix::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
   return FALSE;
 } // ParseNMEA()
 
-BOOL DevRCFenix::Config(PDeviceDescriptor_t d) {
+BOOL DevRCFenix::Config(DeviceDescriptor_t* d) {
 
   std::unique_ptr<WndForm>  wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P));
   if(wf) {
@@ -252,7 +252,7 @@ BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
 /// @retval false error during declaration (description in @p errBuf)
 ///
 //static
-BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
+BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
     const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
 
   if (!CheckWPCount(*lkDecl,Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf)) {
@@ -364,7 +364,7 @@ BOOL DevRCFenix::DeclareTask(PDeviceDescriptor_t d,
   return success;
 } // DeclareTask()
 
-BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready) {
+BOOL DevRCFenix::FenixPutMacCready(DeviceDescriptor_t* d, double MacCready) {
   if (!d) {
     return false;
   }
@@ -383,7 +383,7 @@ BOOL DevRCFenix::FenixPutMacCready(PDeviceDescriptor_t d, double MacCready) {
 }
 
 
-BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast) {
+BOOL DevRCFenix::FenixPutBallast(DeviceDescriptor_t* d, double Ballast) {
   if (!d) {
     return false;
   }
@@ -403,7 +403,7 @@ BOOL DevRCFenix::FenixPutBallast(PDeviceDescriptor_t d, double Ballast) {
 }
 
 
-BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
+BOOL DevRCFenix::FenixPutBugs(DeviceDescriptor_t* d, double Bugs) {
   if (!d) {
     return false;
   }
@@ -423,7 +423,7 @@ BOOL DevRCFenix::FenixPutBugs(PDeviceDescriptor_t d, double Bugs) {
 }
 
 
-BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
+BOOL DevRCFenix::PutQNH(DeviceDescriptor_t* d, double qnh_mb) {
   if (!d) {
     return false;
   }
@@ -442,7 +442,7 @@ BOOL DevRCFenix::PutQNH(PDeviceDescriptor_t d, double qnh_mb) {
 }
 
 
-BOOL DevRCFenix::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
+BOOL DevRCFenix::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
   if(PortIO.T_TRGTDir == TP_Off) {

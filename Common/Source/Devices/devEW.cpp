@@ -24,7 +24,7 @@ static int nDeclErrorCode = 0;
 static int ewDecelTpIndex = 0;
 
 
-BOOL EWParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL EWParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
   (void)String;
   (void)pGPS;
@@ -50,7 +50,7 @@ void appendCheckSum(TCHAR *String){
 }
 
 
-BOOL EWTryConnect(PDeviceDescriptor_t d) {
+BOOL EWTryConnect(DeviceDescriptor_t* d) {
   int retries=10;
   while (--retries){
 
@@ -66,10 +66,10 @@ BOOL EWTryConnect(PDeviceDescriptor_t d) {
 }
 
 
-BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
+BOOL EWDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp);
 
 
-BOOL EWDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   TCHAR sTmp[72];
   TCHAR sPilot[13];
@@ -187,7 +187,7 @@ BOOL EWDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
 }
 
 
-BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
+BOOL EWDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
 
   TCHAR EWRecord[100];
   TCHAR IDString[12];
@@ -290,7 +290,7 @@ BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 }
 
 
-BOOL EWLinkTimeout(PDeviceDescriptor_t d){
+BOOL EWLinkTimeout(DeviceDescriptor_t* d){
   if(d && d->Com) {
     if (!fDeclarationPending) {
       d->Com->WriteString(TEXT("NMEA\r\n"));
@@ -300,7 +300,7 @@ BOOL EWLinkTimeout(PDeviceDescriptor_t d){
 }
 
 
-void ewInstall(PDeviceDescriptor_t d){
+void ewInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("EW Logger"));
   d->ParseNMEA = EWParseNMEA;
   d->LinkTimeout = EWLinkTimeout;

@@ -57,8 +57,8 @@ class DevLXNanoIII : public DevLX
     static DeviceDescriptor_t* GetDevice(void) { return m_pDevice; }
 
     /// Send string as NMEA sentence with prefix '$', suffix '*', and CRC
-    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
-    static bool SendNmea(PDeviceDescriptor_t, const TCHAR buf[]);
+    static bool SendNmea(DeviceDescriptor_t* , const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]);
+    static bool SendNmea(DeviceDescriptor_t* , const TCHAR buf[]);
     static bool OnStartIGC_FileRead(TCHAR Filename[]) ;
     static BOOL AbortLX_IGC_FileRead(void);
 
@@ -77,7 +77,7 @@ class DevLXNanoIII : public DevLX
     DevLXNanoIII() {}
 
     /// Installs device specific handlers.
-    static void Install(PDeviceDescriptor_t d);
+    static void Install(DeviceDescriptor_t* d);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr
@@ -85,40 +85,40 @@ class DevLXNanoIII : public DevLX
       return _T("LX Nano 3");
     }
 
-    static BOOL Open(PDeviceDescriptor_t d);
+    static BOOL Open(DeviceDescriptor_t* d);
 
     /// Writes declaration into the logger.
-    static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
 
-   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+   static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
-   static BOOL Config(PDeviceDescriptor_t d);
+   static BOOL Config(DeviceDescriptor_t* d);
    static void OnCloseClicked(WndButton* pWnd);
 
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
-   static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable);
-   static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
-   static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
-   static BOOL Values(PDeviceDescriptor_t d);
+   static BOOL LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVC_INFO(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL Nano3_DirectLink(DeviceDescriptor_t* d, BOOL bLinkEnable);
+   static BOOL SetupLX_Sentence(DeviceDescriptor_t* d);
+   static BOOL PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt);
+   static BOOL Values(DeviceDescriptor_t* d);
    static BOOL ClearDataText( ValueStringIndex Idx );
-   static BOOL SetDataText(PDeviceDescriptor_t d, ValueStringIndex Idx,  const TCHAR ValueText[]);
-   static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
+   static BOOL SetDataText(DeviceDescriptor_t* d, ValueStringIndex Idx,  const TCHAR ValueText[]);
+   static BOOL ShowData(WndForm* wf , DeviceDescriptor_t* d);
    static void GetDirections(WndButton* pWnd);
    static BOOL ShowValues(void) {return m_bShowValues;};
    static void ShowValues(BOOL bShow) {m_bShowValues = bShow;};
@@ -128,11 +128,11 @@ class DevLXNanoIII : public DevLX
    static void Declare(BOOL bDL) {m_bDeclare = bDL;};
    static int Port(void) { if(m_pDevice) return m_pDevice->PortNumber; else return -1;};
 
-   static PDeviceDescriptor_t Device(void) {return m_pDevice;};
-   static void Device(PDeviceDescriptor_t d);
+   static DeviceDescriptor_t* Device(void) {return m_pDevice;};
+   static void Device(DeviceDescriptor_t* d);
 
    static CallBackTableEntry_t CallBackTable[];
-   static PDeviceDescriptor_t m_pDevice;
+   static DeviceDescriptor_t* m_pDevice;
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
    static BOOL m_bDeclare;

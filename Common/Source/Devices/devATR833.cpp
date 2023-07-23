@@ -35,8 +35,8 @@ int DeviceTimeout = 2;
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 #define BIT(n) (1 << (n))
 
-bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
-int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len);
+bool Send_Command(DeviceDescriptor_t* d, uint8_t Command, uint8_t Len, uint8_t *uiArg);
+int ATR833_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len);
 #ifdef TESTBENCH
 int  iATR833DebugLevel = 2;
 #else
@@ -44,14 +44,14 @@ int  iATR833DebugLevel = 1;
 #endif
 
 
-BOOL ATR833IsRadio(PDeviceDescriptor_t d){
+BOOL ATR833IsRadio(DeviceDescriptor_t* d){
   (void)d;
   return(TRUE);
 }
 
 
 
-bool Send_Command(PDeviceDescriptor_t d, uint8_t Command, uint8_t Length, uint8_t *uiArg)
+bool Send_Command(DeviceDescriptor_t* d, uint8_t Command, uint8_t Length, uint8_t *uiArg)
 {
 uint8_t szTmp[128] ;
 int len =0;
@@ -91,7 +91,7 @@ uint8_t uiCheckSum=0;
   return true;
 }
 
-BOOL ATR833RequestAllData(PDeviceDescriptor_t d) {
+BOOL ATR833RequestAllData(DeviceDescriptor_t* d) {
 
   if(d != NULL)
     if(!d->Disabled)
@@ -101,7 +101,7 @@ BOOL ATR833RequestAllData(PDeviceDescriptor_t d) {
   return(TRUE);
 }
 
-bool Send_ACK(PDeviceDescriptor_t d, uint8_t Command)
+bool Send_ACK(DeviceDescriptor_t* d, uint8_t Command)
 {
   if(d == NULL) return false;
 #ifdef ACK_NAK    
@@ -113,7 +113,7 @@ bool Send_ACK(PDeviceDescriptor_t d, uint8_t Command)
 }
 
 
-bool Send_NACK(PDeviceDescriptor_t d, uint8_t Command, uint8_t reason)
+bool Send_NACK(DeviceDescriptor_t* d, uint8_t Command, uint8_t reason)
 {  
   if(d == NULL) return false;
 #ifdef ACK_NAK    
@@ -125,7 +125,7 @@ bool Send_NACK(PDeviceDescriptor_t d, uint8_t Command, uint8_t reason)
 
 
 
-BOOL ATR833PutVolume(PDeviceDescriptor_t d, int Volume) {
+BOOL ATR833PutVolume(DeviceDescriptor_t* d, int Volume) {
 uint8_t Val = (uint8_t) Volume;
   if(d != NULL)
     if(!d->Disabled)
@@ -141,7 +141,7 @@ uint8_t Val = (uint8_t) Volume;
 
 
 
-BOOL ATR833PutSquelch(PDeviceDescriptor_t d, int Squelch) {
+BOOL ATR833PutSquelch(DeviceDescriptor_t* d, int Squelch) {
 uint8_t Val = (int8_t) Squelch;
   if(d != NULL)
     if(!d->Disabled)
@@ -154,7 +154,7 @@ uint8_t Val = (int8_t) Squelch;
   return(TRUE);
 }
 
-BOOL ATR833PutFreq(PDeviceDescriptor_t d, uint8_t cmd, unsigned khz, const TCHAR* StationName) {
+BOOL ATR833PutFreq(DeviceDescriptor_t* d, uint8_t cmd, unsigned khz, const TCHAR* StationName) {
   if(d && !d->Disabled && d->Com) {
     auto MHz = static_cast<uint8_t>(khz / 1000U);
     auto Chan = static_cast<uint8_t>((khz % 1000U) / 5U);
@@ -169,16 +169,16 @@ BOOL ATR833PutFreq(PDeviceDescriptor_t d, uint8_t cmd, unsigned khz, const TCHAR
   return(TRUE);
 }
 
-BOOL ATR833PutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
+BOOL ATR833PutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
   return ATR833PutFreq(d, 0x13, khz, StationName);
 }
 
-BOOL ATR833PutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
+BOOL ATR833PutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName) {
   return ATR833PutFreq(d, 0x12, khz, StationName);
 }
 
 
-BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
+BOOL ATR833StationSwap(DeviceDescriptor_t* d) {
   if(d != NULL)
     if(!d->Disabled)
       if (d->Com)
@@ -191,7 +191,7 @@ BOOL ATR833StationSwap(PDeviceDescriptor_t d) {
 }
 
 
-BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode) {
+BOOL ATR833RadioMode(DeviceDescriptor_t* d, int mode) {
  uint8_t Val= (int8_t) mode;
 
   if(d != NULL)
@@ -206,7 +206,7 @@ BOOL ATR833RadioMode(PDeviceDescriptor_t d, int mode) {
 
 
 
-BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) {
+BOOL ATR833_KeepAlive(DeviceDescriptor_t* d) {
 
   if(d != NULL)
     if(!d->Disabled)
@@ -236,7 +236,7 @@ BOOL ATR833_KeepAlive(PDeviceDescriptor_t d) {
   return(TRUE);
 }
 
-BOOL ATR833ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO)
+BOOL ATR833ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO)
 {
 uint16_t cnt=0;
 static int Recbuflen =0;
@@ -362,7 +362,7 @@ return RadioPara.Changed;
  * szCommand      ATR833 binary code to be converted
  * len            length of the ATR833 binary code to be converted
  ****************************************************************************/
-int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len)
+int ATR833_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len)
 {
   if(d == NULL) return 0;
   if(szCommand == NULL) return 0;
@@ -528,7 +528,7 @@ int ATR833_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len)
 
 } // namespace
 
-void ATR833Install(PDeviceDescriptor_t d){
+void ATR833Install(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("f.u.n.k.e. ATR833"));
   d->IsRadio        = ATR833IsRadio;
   d->PutVolume      = ATR833PutVolume;

@@ -11,13 +11,13 @@
 
 #include "Devices/DeviceRegister.h"
 
-void LK8EX1Install(PDeviceDescriptor_t d);
+void LK8EX1Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t LK8EX1Register(void){
   return devRegister( _T("LK8EX1"), LK8EX1Install);
 }
 
-BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
 #endif

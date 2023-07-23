@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void ewInstall(PDeviceDescriptor_t d);
+void ewInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t ewRegister() {

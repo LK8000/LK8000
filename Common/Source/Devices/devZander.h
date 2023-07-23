@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void zanderInstall(PDeviceDescriptor_t d);
+void zanderInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t zanderRegister() {

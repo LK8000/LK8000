@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void vlInstall(PDeviceDescriptor_t d);
+void vlInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t vlRegister(void){

@@ -42,7 +42,7 @@ struct TSpaceInfo {
   double localDeclination;
 };
 
-void PVCOMInstall(PDeviceDescriptor_t d);
+void PVCOMInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t PVCOMRegister() {

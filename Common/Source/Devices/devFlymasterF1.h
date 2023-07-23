@@ -11,14 +11,14 @@
 
 #include "Devices/DeviceRegister.h"
 
-void flymasterf1Install(PDeviceDescriptor_t d);
+void flymasterf1Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t flymasterf1Register() {
   return devRegister(_T("FlymasterF1"), flymasterf1Install);
 }
 
-void flymasterInstall(PDeviceDescriptor_t d);
+void flymasterInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t flymasterGPSRegister() {

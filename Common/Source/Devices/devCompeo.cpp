@@ -11,9 +11,9 @@
 #include "Calc/Vario.h"
 #include "devCompeo.h"
 
-static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL VMVABD(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL CompeoParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -31,7 +31,7 @@ static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGP
 
 }
 
-void CompeoInstall(PDeviceDescriptor_t d) {
+void CompeoInstall(DeviceDescriptor_t* d) {
 
   StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
 
@@ -39,7 +39,7 @@ void CompeoInstall(PDeviceDescriptor_t d) {
   d->ParseNMEA = CompeoParseNMEA;
 }
 
-static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL VMVABD(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	$VMVABD,

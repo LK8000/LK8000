@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void WesterboerInstall(PDeviceDescriptor_t d);
+void WesterboerInstall(DeviceDescriptor_t* d);
 
 inline constexpr 
 DeviceRegister_t WesterboerRegister() {

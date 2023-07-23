@@ -221,7 +221,7 @@ void UpdateName(FLARM_TRAFFIC& traffic) {
   }
 }
 
-BOOL FanetParseType1Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType1Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   /*
     Tracking (Type = 1)
     [recommended interval: floor((#neighbors/10 + 1) * 5s) ]
@@ -350,7 +350,7 @@ BOOL FanetParseType1Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
-BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   /*
     Name (Type = 2)
     [recommended interval: every 4min]
@@ -395,7 +395,7 @@ BOOL FanetParseType2Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
 
 }
 
-BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   /*
     Message (Type = 3)
 
@@ -438,7 +438,7 @@ BOOL FanetParseType3Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
-BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType4Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   /*
     Service (Type = 4)
     [recommended interval: 40sec]
@@ -532,16 +532,16 @@ BOOL FanetParseType4Msg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
-BOOL IgnoredMsg(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL IgnoredMsg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   DebugLog(_T("Ignored\"%s\""), String);
   return TRUE;
 }
 
 
-using parse_function = BOOL(*)(PDeviceDescriptor_t, TCHAR*, NMEA_INFO*);
+using parse_function = BOOL(*)(DeviceDescriptor_t* , TCHAR*, NMEA_INFO*);
 
 template<typename Table>
-BOOL FanetParse(Table& table, PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParse(Table& table, DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,4);
   uint8_t type = _tcstol(ctemp, nullptr, 10);
@@ -571,7 +571,7 @@ constexpr auto function_table = lookup_table<uint8_t, parse_function>({
   { 0x04, &FanetParseType4Msg }
 });
 
-BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   if(pGPS && _tcsncmp(TEXT("#FNF"), String, 4)==0) {
     return FanetParse(function_table, d, &String[5], pGPS);      
   }
@@ -605,7 +605,7 @@ constexpr auto function_table = lookup_table<uint8_t, parse_function>({
   { 0x04, &FanetParseType4Msg }
 });
 
-BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   if (!pGPS) {
     return FALSE;
   }
@@ -654,7 +654,7 @@ BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
   return FALSE;
 }
 
-BOOL Open(DeviceDescriptor_t *d) {
+BOOL Open(DeviceDescriptor_t* d) {
 #ifdef ANDROID
   if (PowerManagerUtils::openModuleFanet()) {
     Sleep(10000); // sleep 10sec after Enable Fanet Module
@@ -675,7 +675,7 @@ BOOL Open(DeviceDescriptor_t *d) {
   return TRUE;
 }
 
-BOOL Close(DeviceDescriptor_t *d) {
+BOOL Close(DeviceDescriptor_t* d) {
   d->Com->WriteString("#FAP 0\n"); // Power Off FLARM beacon
   d->Com->WriteString("#DGP 0\n"); // Power Off Module
 
@@ -686,7 +686,7 @@ BOOL Close(DeviceDescriptor_t *d) {
   return TRUE;
 }
 
-BOOL HeartBeat(DeviceDescriptor_t *d) {
+BOOL HeartBeat(DeviceDescriptor_t* d) {
   static PeriodClock timeName;
 
  /*

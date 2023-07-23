@@ -14,7 +14,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void GPSBipInstall(PDeviceDescriptor_t d);
+void GPSBipInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t GPSBipRegister() {

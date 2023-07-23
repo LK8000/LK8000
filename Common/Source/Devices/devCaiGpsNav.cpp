@@ -55,14 +55,14 @@ namespace {
   };
 
 
-  void EmptyRXBuffer(PDeviceDescriptor_t d)
+  void EmptyRXBuffer(DeviceDescriptor_t* d)
   {
     d->Com->WriteString(TEXT("\x03"));
     ExpectString(d, TEXT("$$$"));  // empty rx buffer (searching for
                                    // pattern that never occure)
   }
 
-  bool CAICommandModeExpect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAICommandModeExpect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!ExpectString(d, TEXT("cmd>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
@@ -72,14 +72,14 @@ namespace {
     return true;
   }
 
-  bool CAICommandMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAICommandMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     // enter command mode
     d->Com->WriteString(TEXT("\x03"));
     return CAICommandModeExpect(d, errBufSize, errBuf);
   }
 
-  bool CAINMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAINMEAMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
@@ -94,7 +94,7 @@ namespace {
     return true;
   }
 
-  bool CAIUploadModeExpect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAIUploadModeExpect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!ExpectString(d, TEXT("up>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
@@ -104,7 +104,7 @@ namespace {
     return true;
   }
 
-  bool CAIUploadMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAIUploadMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
@@ -114,7 +114,7 @@ namespace {
     return CAIUploadModeExpect(d, errBufSize, errBuf);
   }
 
-  bool CAIDownloadModeExpect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAIDownloadModeExpect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!ExpectString(d, TEXT("dn>"))) {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
@@ -124,7 +124,7 @@ namespace {
     return true;
   }
 
-  bool CAIDownloadMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool CAIDownloadMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
@@ -134,7 +134,7 @@ namespace {
     return CAIDownloadModeExpect(d, errBufSize, errBuf);
   }
 
-  bool WaypointsClear(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+  bool WaypointsClear(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     // clear old points
     d->Com->WriteString(TEXT("cle poi\r"));
@@ -146,7 +146,7 @@ namespace {
     return true;
   }
 
-  bool WaypointUpload(PDeviceDescriptor_t d, const WAYPOINT &wp, int idx, unsigned errBufSize, TCHAR errBuf[])
+  bool WaypointUpload(DeviceDescriptor_t* d, const WAYPOINT &wp, int idx, unsigned errBufSize, TCHAR errBuf[])
   {
     int DegLat = (int)wp.Latitude;
     double MinLat = wp.Latitude - DegLat;
@@ -214,7 +214,7 @@ namespace {
     return true;
   }
 
-  bool WaypointsUpload(PDeviceDescriptor_t d, const CTaskWPSet &wps, unsigned errBufSize, TCHAR errBuf[])
+  bool WaypointsUpload(DeviceDescriptor_t* d, const CTaskWPSet &wps, unsigned errBufSize, TCHAR errBuf[])
   {
     // set task name
     const unsigned TASK_NAME_LENGTH = 64;
@@ -240,7 +240,7 @@ namespace {
     return true;
   }
 
-  bool TaskUpload(PDeviceDescriptor_t d, const CTaskWPIdxArray &task, unsigned errBufSize, TCHAR errBuf[])
+  bool TaskUpload(DeviceDescriptor_t* d, const CTaskWPIdxArray &task, unsigned errBufSize, TCHAR errBuf[])
   {
     // prepare and send command
     TCHAR buffer[128];
@@ -263,7 +263,7 @@ namespace {
   }
 
 
-  bool PilotAndGliderUpload(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[])
+  bool PilotAndGliderUpload(DeviceDescriptor_t* d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[])
   {
     // enter CAI upload mode
     if(!CAIUploadMode(d, errBufSize, errBuf))
@@ -311,7 +311,7 @@ namespace {
 
 }
 
-BOOL CDevCAIGpsNav::Open(DeviceDescriptor_t *d)
+BOOL CDevCAIGpsNav::Open(DeviceDescriptor_t* d)
 {
   if(!SIMMODE) {
     d->Com->WriteString(TEXT("\x03"));
@@ -328,7 +328,7 @@ BOOL CDevCAIGpsNav::Open(DeviceDescriptor_t *d)
 }
 
 
-BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
+BOOL CDevCAIGpsNav::DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
 {
   // check requirements
   if(!CheckWPCount(*decl, 1, 9, errBufSize, errBuf))  /// @todo: check min number
@@ -415,7 +415,7 @@ BOOL CDevCAIGpsNav::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl
 }
 
 
-void CDevCAIGpsNav::Install(PDeviceDescriptor_t d)
+void CDevCAIGpsNav::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->Open         = Open;

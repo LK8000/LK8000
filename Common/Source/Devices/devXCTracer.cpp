@@ -81,7 +81,7 @@ ReadChecked(TCHAR *String, double &value_r) {
  * $XCTRC,year,month,day,hour,minute,second,centisecond,latitude,longitude,altitude,speedoverground,
  *      course,climbrate,res,res,res,rawpressure,batteryindication*checksum
  */
-static BOOL XTRC(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS) {
+static BOOL XTRC(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS) {
 
     if (nparams < 19) {
         return FALSE;
@@ -158,7 +158,7 @@ static BOOL XTRC(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INF
     return TRUE;
 }
 
-bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+bool LXWP0(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
 {
     // $LXWP0,logger_stored, airspeed, airaltitude,
     //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -223,7 +223,7 @@ bool LXWP0(PDeviceDescriptor_t d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     return(true);
 } // LXWP0()
 
-static BOOL XCTracerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO) {
+static BOOL XCTracerParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO) {
     TCHAR ctemp[MAX_NMEA_LEN];
     TCHAR * params[MAX_NMEA_PARAMS];
 
@@ -239,7 +239,7 @@ static BOOL XCTracerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_
     return FALSE;
 }
 
-void XCTracerInstall(PDeviceDescriptor_t d) {
+void XCTracerInstall(DeviceDescriptor_t* d) {
     _tcscpy(d->Name, _T("XCTracer"));
     d->ParseNMEA = XCTracerParseNMEA;
 }

@@ -111,9 +111,9 @@ BOOL for_all_device(Callable&& func, Args&&... args) {
   return for_all_device(null_descriptor, std::forward<Callable>(func), std::forward<Args>(args)...);
 }
 
-static BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t *decl);
+static BOOL FlarmDeclare(DeviceDescriptor_t* d, const Declaration_t *decl);
 
-BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
+BOOL ExpectString(DeviceDescriptor_t* d, const TCHAR *token){
 
   int i=0, ch;
 
@@ -502,7 +502,7 @@ void RestartCommPorts() {
 
 // Only called from devInit() above which
 // is in turn called with LockComm
-BOOL devOpen(PDeviceDescriptor_t d) {
+BOOL devOpen(DeviceDescriptor_t* d) {
   if (d && d->Open) {
     return d->Open(d);
   }
@@ -757,7 +757,7 @@ void devCloseAll() {
 }
 
 
-PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
+DeviceDescriptor_t* devGetDeviceOnPort(unsigned Port){
 
   if(Port < std::size(DeviceList)) {
     return &DeviceList[Port];
@@ -767,7 +767,7 @@ PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port){
 
 
 BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
-  PDeviceDescriptor_t din = devGetDeviceOnPort(portNum);
+  DeviceDescriptor_t* din = devGetDeviceOnPort(portNum);
   if (!din) {
     return FALSE;
   }
@@ -796,7 +796,7 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
 void devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
-  PDeviceDescriptor_t d = devGetDeviceOnPort(portNum);
+  DeviceDescriptor_t* d = devGetDeviceOnPort(portNum);
   if(!d) {
     return;
   }
@@ -834,7 +834,7 @@ void devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
 }
 
 
-BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode) {
+BOOL devSetAdvancedMode(DeviceDescriptor_t* d,	BOOL bAdvMode) {
   if(d) {
     d->m_bAdvancedMode = bAdvMode;
     return true;
@@ -842,7 +842,7 @@ BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode) {
   return false;
 }
 
-BOOL devGetAdvancedMode(PDeviceDescriptor_t d) {
+BOOL devGetAdvancedMode(DeviceDescriptor_t* d) {
   if(d) {
     return d->m_bAdvancedMode;
   }
@@ -850,7 +850,7 @@ BOOL devGetAdvancedMode(PDeviceDescriptor_t d) {
 }
 
 
-BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable) {
+BOOL devDirectLink(DeviceDescriptor_t* d,	BOOL bLinkEnable) {
   if (SIMMODE) {
     return TRUE;
   }
@@ -868,7 +868,7 @@ BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender) {
 }
 
 
-BOOL devRequestFlarmVersion(PDeviceDescriptor_t d)
+BOOL devRequestFlarmVersion(DeviceDescriptor_t* d)
 {
 #if FLARMDEADLOCK
   if (SIMMODE)
@@ -916,7 +916,7 @@ BOOL devLinkTimeout() {
 }
 
 
-BOOL devDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL devDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   BOOL result = FALSE;
 
@@ -968,7 +968,7 @@ BOOL devIsBaroSource(const DeviceDescriptor_t& d) {
 /**
  * used only in devInit() : already under LockComm ...
  */
-BOOL devIsRadio(PDeviceDescriptor_t d) {
+BOOL devIsRadio(DeviceDescriptor_t* d) {
   if (d && d->IsRadio) {
     return d->IsRadio(d);
   }
@@ -1007,7 +1007,7 @@ uint8_t nmea_crc(const char *text) {
 // NOTICE V5: this function is used only by LXMiniMap device driver .
 // The problem is that it is locking Comm from RXThread and this is 
 // creating a possible deadlock situation.
-void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
+void devWriteNMEAString(DeviceDescriptor_t* d, const TCHAR *text)
 {
   ScopeLock Lock(CritSec_Comm);
   if (d && !d->Disabled && d->Com) {
@@ -1117,7 +1117,7 @@ void flarm_command(char (&dst)[size], char command, const char* key, const char*
   }
 }
 
-BOOL FlarmDeclareSetGet(PDeviceDescriptor_t d, const char* key, const TCHAR* value) {
+BOOL FlarmDeclareSetGet(DeviceDescriptor_t* d, const char* key, const TCHAR* value) {
   if (!d->Com) {
     return FALSE;
   }
@@ -1145,7 +1145,7 @@ BOOL FlarmDeclareSetGet(PDeviceDescriptor_t d, const char* key, const TCHAR* val
 
 }  // namespace
 
-BOOL FlarmDeclare(PDeviceDescriptor_t d, const Declaration_t* decl) {
+BOOL FlarmDeclare(DeviceDescriptor_t* d, const Declaration_t* decl) {
   if (!FlarmDeclareSetGet(d, "PILOT", decl->PilotName)) {
     return FALSE;
   }

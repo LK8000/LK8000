@@ -21,8 +21,8 @@ int  VaulterAlt=0;
 
 BOOL bVaulterValid = false;
 int VaulterNMEAddCheckSumStrg( TCHAR szStrg[] );
-BOOL VaulterPutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL VaulterPutBallast(PDeviceDescriptor_t d, double Ballast);
+BOOL VaulterPutMacCready(DeviceDescriptor_t* d, double MacCready);
+BOOL VaulterPutBallast(DeviceDescriptor_t* d, double Ballast);
 
 
 //____________________________________________________________class_definitions_
@@ -36,7 +36,7 @@ BOOL VaulterPutBallast(PDeviceDescriptor_t d, double Ballast);
 /// @retval false device cannot be installed
 ///
 //static
-void DevVaulter::Install(PDeviceDescriptor_t d)
+void DevVaulter::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -67,7 +67,7 @@ TCHAR  szCheck[254];
 
 
 
-BOOL VaulterPutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL VaulterPutMacCready(DeviceDescriptor_t* d, double MacCready){
   TCHAR  szTmp[254];
   if(bVaulterValid == false) {
     return false;
@@ -81,7 +81,7 @@ BOOL VaulterPutMacCready(PDeviceDescriptor_t d, double MacCready){
 }
 
 
-BOOL VaulterPutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL VaulterPutBallast(DeviceDescriptor_t* d, double Ballast){
   TCHAR  szTmp[254];
   if(bVaulterValid == false) {
     return false;
@@ -112,7 +112,7 @@ BOOL VaulterPutBallast(PDeviceDescriptor_t d, double Ballast){
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevVaulter::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevVaulter::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 {
 
 
@@ -143,7 +143,7 @@ BOOL DevVaulter::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevVaulter::PITV3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 //  $PITV3,20.0,-5.3,280.2,33.0,1.1*44
 //  Feld Beispiel Beschreibung
@@ -200,7 +200,7 @@ bool DevVaulter::PITV3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevVaulter::PITV4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 //  $PITV4,2.0,2.8,2.2,430.2,460.2,460.4*44
 //  Feld Beispiel Beschreibung
@@ -241,7 +241,7 @@ bool DevVaulter::PITV4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV5(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info )
+bool DevVaulter::PITV5(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info )
 {
 //  $PITV5,5.0,30.0,0.950,0.15,0,2.30*44
 //  Feld Beispiel Beschreibung

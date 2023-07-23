@@ -26,7 +26,7 @@
 /// @retval false device cannot be installed
 ///
 //static
-void DevLX::Install(PDeviceDescriptor_t d)
+void DevLX::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -43,7 +43,7 @@ void DevLX::Install(PDeviceDescriptor_t d)
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 {
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
     return FALSE;
@@ -72,7 +72,7 @@ BOOL DevLX::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -138,7 +138,7 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
+bool DevLX::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -198,7 +198,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -229,7 +229,7 @@ bool DevLX::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLX::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -261,7 +261,7 @@ bool DevLX::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 
 
 
-bool DevLX::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX::GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
   TCHAR  szTmp[MAX_NMEA_LEN];

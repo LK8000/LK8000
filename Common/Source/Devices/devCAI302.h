@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void cai302Install(PDeviceDescriptor_t d);
+void cai302Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t cai302Register() {

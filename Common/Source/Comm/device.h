@@ -80,11 +80,11 @@ struct DeviceDescriptor_t {
   ComPort *Com;
   TCHAR	Name[DEVNAMESIZE+1];
 
-  BOOL (*DirectLink)(DeviceDescriptor_t *d, BOOL	bLinkEnable);
-  BOOL (*ParseNMEA)(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO);
-  BOOL (*ParseStream)(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+  BOOL (*DirectLink)(DeviceDescriptor_t* d, BOOL	bLinkEnable);
+  BOOL (*ParseNMEA)(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *GPS_INFO);
+  BOOL (*ParseStream)(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO);
   BOOL (*PutMacCready)(DeviceDescriptor_t	*d,	double McReady);
-  BOOL (*PutBugs)(DeviceDescriptor_t *d, double	Bugs);
+  BOOL (*PutBugs)(DeviceDescriptor_t* d, double	Bugs);
   BOOL (*PutBallast)(DeviceDescriptor_t	*d,	double Ballast);
   BOOL (*PutVolume)(DeviceDescriptor_t	*d,	int Volume);
   BOOL (*PutRadioMode)(DeviceDescriptor_t	*d,	int mode);
@@ -92,19 +92,19 @@ struct DeviceDescriptor_t {
   BOOL (*PutFreqActive)(DeviceDescriptor_t	*d,	unsigned khz, const TCHAR* StationName);
   BOOL (*StationSwap)(DeviceDescriptor_t	*d);
   BOOL (*PutFreqStandby)(DeviceDescriptor_t	*d,	unsigned khz, const TCHAR* StationName);
-  BOOL (*Open)(DeviceDescriptor_t *d);
-  BOOL (*Close)(DeviceDescriptor_t *d);
-  BOOL (*LinkTimeout)(DeviceDescriptor_t *d);
-  BOOL (*Declare)(DeviceDescriptor_t *d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
+  BOOL (*Open)(DeviceDescriptor_t* d);
+  BOOL (*Close)(DeviceDescriptor_t* d);
+  BOOL (*LinkTimeout)(DeviceDescriptor_t* d);
+  BOOL (*Declare)(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
   
-  BOOL (*IsRadio)(DeviceDescriptor_t *d);
-  BOOL (*PutQNH)(DeviceDescriptor_t *d, double NewQNH);
-  BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
-  BOOL (*PutVoice)(DeviceDescriptor_t *d, const TCHAR *Sentence);
+  BOOL (*IsRadio)(DeviceDescriptor_t* d);
+  BOOL (*PutQNH)(DeviceDescriptor_t* d, double NewQNH);
+  BOOL (*OnSysTicker)(DeviceDescriptor_t* d);
+  BOOL (*PutVoice)(DeviceDescriptor_t* d, const TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
-  BOOL (*HeartBeat)(DeviceDescriptor_t *d);
-  BOOL (*NMEAOut)(DeviceDescriptor_t *d, const TCHAR* String);
-  BOOL (*PutTarget)(DeviceDescriptor_t *d, const WAYPOINT& wpt);
+  BOOL (*HeartBeat)(DeviceDescriptor_t* d);
+  BOOL (*NMEAOut)(DeviceDescriptor_t* d, const TCHAR* String);
+  BOOL (*PutTarget)(DeviceDescriptor_t* d, const WAYPOINT& wpt);
  
   bool IsBaroSource;
 
@@ -167,11 +167,9 @@ struct DeviceDescriptor_t {
   wait_ack_weak_ptr wait_ack_weak;
 };
 
-typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
-
 uint8_t nmea_crc(const char *text);
 
-void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
+void devWriteNMEAString(DeviceDescriptor_t* d, const TCHAR *Text);
 
 #ifdef ANDROID
 extern Mutex COMMPort_mutex; // needed for Bluetooth LE scan
@@ -186,17 +184,17 @@ void RestartCommPorts();
 
 BOOL devInit();
 void devCloseAll();
-PDeviceDescriptor_t devGetDeviceOnPort(unsigned Port);
-BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
+DeviceDescriptor_t* devGetDeviceOnPort(unsigned Port);
+BOOL ExpectString(DeviceDescriptor_t* d, const TCHAR *token);
 
 // return true if all device are disabled 
 bool devIsDisabled();
-BOOL devOpen(PDeviceDescriptor_t d);
-BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
+BOOL devOpen(DeviceDescriptor_t* d);
+BOOL devDirectLink(DeviceDescriptor_t* d,	BOOL bLink);
 void devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender);
-BOOL devRequestFlarmVersion(PDeviceDescriptor_t d);
+BOOL devRequestFlarmVersion(DeviceDescriptor_t* d);
 BOOL devPutBugs(double	Bugs, DeviceDescriptor_t* Sender);
 BOOL devPutBallast(double Ballast, DeviceDescriptor_t* Sender);
 BOOL devPutVolume(int Volume);
@@ -206,18 +204,18 @@ BOOL devPutSquelch(int Volume);
 BOOL devPutFreqActive(unsigned Freq, const TCHAR* StationName);
 BOOL devPutFreqStandby(unsigned Freq, const TCHAR* StationName);
 BOOL devLinkTimeout();
-BOOL devDeclare(PDeviceDescriptor_t	d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
+BOOL devDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(DeviceDescriptor_t& d);
 BOOL devIsBaroSource(const DeviceDescriptor_t& d);
-BOOL devIsRadio(PDeviceDescriptor_t d);
+BOOL devIsRadio(DeviceDescriptor_t* d);
 
 BOOL devHeartBeat();
 BOOL devPutQNH(double NewQNH);
 
 BOOL devPutTarget(const WAYPOINT& wpt);
 
-BOOL devSetAdvancedMode(PDeviceDescriptor_t d,	BOOL bAdvMode);
-BOOL devGetAdvancedMode(PDeviceDescriptor_t d);
+BOOL devSetAdvancedMode(DeviceDescriptor_t* d,	BOOL bAdvMode);
+BOOL devGetAdvancedMode(DeviceDescriptor_t* d);
 
 template<size_t idx>
 BOOL devConfig() {

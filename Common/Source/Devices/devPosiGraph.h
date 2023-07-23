@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void pgInstall(PDeviceDescriptor_t d);
+void pgInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t pgRegister() {

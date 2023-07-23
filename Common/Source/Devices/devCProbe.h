@@ -15,8 +15,6 @@
 #include "dlgTools.h"
 #include "Devices/DeviceRegister.h"
 
-struct DeviceDescriptor_t;
-
 class WindowControl;
 class WndButton;
 
@@ -43,32 +41,32 @@ public:
 		return TEXT("C-Probe"); 
 	}
 	
-	static BOOL Open(PDeviceDescriptor_t d);
-	static BOOL Close (PDeviceDescriptor_t d);
+	static BOOL Open(DeviceDescriptor_t* d);
+	static BOOL Close (DeviceDescriptor_t* d);
 
 
 private:
-	static void Install(PDeviceDescriptor_t d);
+	static void Install(DeviceDescriptor_t* d);
 
 // Receive data
 private:
-	static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pINFO);
+	static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINFO);
 
-	static BOOL ParseData(DeviceDescriptor_t *d, tnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseData(DeviceDescriptor_t* d, tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseGyro(tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseFW(tnmeastring& wiss, NMEA_INFO *pINFO );
 	static BOOL ParseName(tnmeastring& wiss, NMEA_INFO *pINFO );
 
 // Send Command
-	static BOOL GetDeviceName( PDeviceDescriptor_t d );
-	static BOOL SetDeviceName( PDeviceDescriptor_t d, const tstring& strName );
-	static BOOL GetFirmwareVersion( PDeviceDescriptor_t d );
-	static BOOL SetBaroOn( PDeviceDescriptor_t d );
-	static BOOL SetBaroOff( PDeviceDescriptor_t d );
-	static BOOL SetZeroDeltaPressure( PDeviceDescriptor_t d );
-	static BOOL SetCompassCalOn( PDeviceDescriptor_t d );
-	static BOOL SetCompassCalOff( PDeviceDescriptor_t d );
-	static BOOL SetCalGyro( PDeviceDescriptor_t d );
+	static BOOL GetDeviceName(DeviceDescriptor_t* d );
+	static BOOL SetDeviceName(DeviceDescriptor_t* d, const tstring& strName );
+	static BOOL GetFirmwareVersion(DeviceDescriptor_t* d );
+	static BOOL SetBaroOn(DeviceDescriptor_t* d );
+	static BOOL SetBaroOff(DeviceDescriptor_t* d );
+	static BOOL SetZeroDeltaPressure(DeviceDescriptor_t* d );
+	static BOOL SetCompassCalOn(DeviceDescriptor_t* d );
+	static BOOL SetCompassCalOff(DeviceDescriptor_t* d );
+	static BOOL SetCalGyro(DeviceDescriptor_t* d );
 
 	static BOOL m_bCompassCalOn;
 
@@ -83,7 +81,7 @@ private:
 	static void UnlockDeviceData();
 
 // Config
-	static BOOL Config(PDeviceDescriptor_t d);
+	static BOOL Config(DeviceDescriptor_t* d);
 	static void OnCloseClicked(WndButton* pWnd);
 	static void OnCompassCalClicked(WndButton* pWnd);
 	static void OnCalGyroClicked(WndButton* pWnd);
@@ -94,6 +92,6 @@ private:
 	static void Update(WndForm* pWnd);
 
 	static CallBackTableEntry_t CallBackTable[];
-	static PDeviceDescriptor_t m_pDevice;
+	static DeviceDescriptor_t* m_pDevice;
 };
 #endif // devCProbe_h__

@@ -20,13 +20,13 @@ constexpr uint8_t ACK = 0x06; /* acknolage hex code                           */
 constexpr uint8_t NAK = 0x15; /* not acknolage hex code                       */
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 
-BOOL KRT2IsRadio(PDeviceDescriptor_t d) {
+BOOL KRT2IsRadio(DeviceDescriptor_t* d) {
   return TRUE;
 }
 
 bool device_found = false; 
 
-BOOL OpenClose(PDeviceDescriptor_t d) {
+BOOL OpenClose(DeviceDescriptor_t* d) {
   device_found = false;
   return TRUE;
 }
@@ -108,7 +108,7 @@ int  SetKRT2Audio(uint8_t *Command ,int Vol, int Squelch, int Vox)
 }
 
 
-BOOL KRT2PutVolume(PDeviceDescriptor_t d, int Volume) {
+BOOL KRT2PutVolume(DeviceDescriptor_t* d, int Volume) {
 
   if(d && !d->Disabled && d->Com) {
     uint8_t  szTmp[255];
@@ -123,7 +123,7 @@ BOOL KRT2PutVolume(PDeviceDescriptor_t d, int Volume) {
 }
 
 
-BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
+BOOL KRT2PutSquelch(DeviceDescriptor_t* d, int Squelch) {
 
   if(d && !d->Disabled && d->Com) {
     uint8_t szTmp[255];
@@ -138,7 +138,7 @@ BOOL KRT2PutSquelch(PDeviceDescriptor_t d, int Squelch) {
 }
 
 
-BOOL KRT2PutFreq(PDeviceDescriptor_t d, char ur, unsigned khz, const TCHAR* StationName) {
+BOOL KRT2PutFreq(DeviceDescriptor_t* d, char ur, unsigned khz, const TCHAR* StationName) {
   if(d && !d->Disabled && d->Com) {
     uint8_t szTmp[25];
 
@@ -150,15 +150,15 @@ BOOL KRT2PutFreq(PDeviceDescriptor_t d, char ur, unsigned khz, const TCHAR* Stat
   return TRUE;
 }
 
-BOOL KRT2PutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
+BOOL KRT2PutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
   return KRT2PutFreq(d, 'U', khz, StationName);
 }
 
-BOOL KRT2PutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
+BOOL KRT2PutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName) {
   return KRT2PutFreq(d, 'R', khz, StationName);
 }
 
-BOOL KRT2StationSwap(PDeviceDescriptor_t d) {
+BOOL KRT2StationSwap(DeviceDescriptor_t* d) {
   if (d && !d->Disabled && d->Com) {
     uint8_t szTmp[] = { STX, 'C' }; 
     d->Com->Write(szTmp, std::size(szTmp));
@@ -167,7 +167,7 @@ BOOL KRT2StationSwap(PDeviceDescriptor_t d) {
   return TRUE;
 }
 
-BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
+BOOL KRT2RadioMode(DeviceDescriptor_t* d, int mode) {
   if (d && !d->Disabled && d->Com) {
     if (mode > 0) {
       uint8_t Cmd[] = { STX, 'O' }; // turn Dual Mode On
@@ -191,7 +191,7 @@ BOOL KRT2RadioMode(PDeviceDescriptor_t d, int mode) {
  * szCommand      KRT2 binary code to be converted
  * len            length of the KRT2 binary code to be converted
  ****************************************************************************/
-int KRT2_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len) {
+int KRT2_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len) {
   if(d == NULL) return 0;
   if(szCommand == NULL) return 0;
   if(len == 0)          return 0;
@@ -469,7 +469,7 @@ int KRT2_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len) {
 }
 
 
-BOOL KRT2ParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+BOOL KRT2ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
   if(d == NULL) return 0;
   if(String == NULL) return 0;
   if(len == 0) return 0;

@@ -101,11 +101,11 @@ static cai302_OdataNoArgs_t cai302_OdataNoArgs;
 static cai302_OdataPilot_t cai302_OdataPilot;
 
 // Additional sentance for CAI302 support
-static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cai_w(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cai_PCAID(DeviceDescriptor_t* d,TCHAR *String, NMEA_INFO *pGPS);
 
-BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai302ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
@@ -127,7 +127,7 @@ BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-static BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready) {
+static BOOL cai302PutMacCready(DeviceDescriptor_t* d, double MacCready) {
   TCHAR szTmp[32];
 
   _stprintf(szTmp, TEXT("!g,m%d\r"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5));
@@ -136,7 +136,7 @@ static BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready) {
 }
 
 static
-BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs) {
+BOOL cai302PutBugs(DeviceDescriptor_t* d, double Bugs) {
   TCHAR szTmp[32];
   _stprintf(szTmp, TEXT("!g,u%d\r"), int((Bugs * 100) + 0.5));
   d->Com->WriteString(szTmp);
@@ -144,7 +144,7 @@ BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs) {
 }
 
 static
-BOOL cai302PutBallast(PDeviceDescriptor_t d, double Ballast) {
+BOOL cai302PutBallast(DeviceDescriptor_t* d, double Ballast) {
   TCHAR szTmp[32];
   _stprintf(szTmp, TEXT("!g,b%d\r"), int((Ballast * 10) + 0.5));
   d->Com->WriteString(szTmp);
@@ -199,7 +199,7 @@ void test(void){
 #endif
 
 
-BOOL cai302Open(PDeviceDescriptor_t d){
+BOOL cai302Open(DeviceDescriptor_t* d){
   if (d && d->Com) {
     d->Com->WriteString("\x03");
     d->Com->WriteString("LOG 0\r");
@@ -211,10 +211,10 @@ static int DeclIndex = 128;
 static int nDeclErrorCode;
 
 
-BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
+BOOL cai302DeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp);
 
 
-BOOL cai302Declare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   TCHAR PilotName[25];
   TCHAR GliderType[13];
@@ -369,7 +369,7 @@ BOOL cai302Declare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned er
 }
 
 
-BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
+BOOL cai302DeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
 
   TCHAR Name[13];
   TCHAR  szTmp[128];
@@ -426,7 +426,7 @@ BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
 }
 
-void cai302Install(PDeviceDescriptor_t d){
+void cai302Install(DeviceDescriptor_t* d){
 
   _tcscpy(d->Name, TEXT("CAI 302"));
   d->ParseNMEA = cai302ParseNMEA;
@@ -463,7 +463,7 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 
 static bool have_Qnhaltitude=false;
 
-BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai_PCAID(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   TCHAR ctemp[80];
   static short waitinit=3;
@@ -506,7 +506,7 @@ BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 *hh  Checksum, XOR of all bytes
 */
 
-BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai_w(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   TCHAR ctemp[80];
 

@@ -13,12 +13,12 @@
 #include "devLXV7easy.h"
 #include "utils/printf.h"
 
-static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+static bool LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
-static bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-static bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+static bool PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+static bool PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
-extern BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+extern BOOL LXV7easyParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
 static bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 {
@@ -36,7 +36,7 @@ static bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* valu
   return(true);
 } 
 
-void LXV7easyInstall(PDeviceDescriptor_t d)
+void LXV7easyInstall(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, TEXT("LXV7 easy"));
   d->ParseNMEA    = LXV7easyParseNMEA;
@@ -44,7 +44,7 @@ void LXV7easyInstall(PDeviceDescriptor_t d)
 
 
 
-BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL LXV7easyParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 {
 
     if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
@@ -90,7 +90,7 @@ BOOL LXV7easyParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 }
 
 
-bool LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
+bool LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
 {
     // $LXWP1,serial number,instrument ID, software version, hardware
     //   version,license string,NU*SC<CR><LF>
@@ -142,7 +142,7 @@ bool LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
 
 
 
-bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
     double alt=0, airspeed=0;
@@ -169,7 +169,7 @@ bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 
 
 
-bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
+bool PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info) {
 
     double Batt;
     double OAT;

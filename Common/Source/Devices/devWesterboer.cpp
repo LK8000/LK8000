@@ -15,13 +15,13 @@
 #include "Comm/UpdateQNH.h"
 
 #define VW_BIDIRECTIONAL
-static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
-BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
-BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
-BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
+static BOOL PWES0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PWES1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PWES2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+BOOL devWesterboerPutMacCready(DeviceDescriptor_t* d, double Mc);
+BOOL devWesterboerPutBallast(DeviceDescriptor_t* d, double Ballast);
+BOOL devWesterboerPutBugs(DeviceDescriptor_t* d, double Bus);
+BOOL devWesterboerPutWingload(DeviceDescriptor_t* d, double fWingload);
 
 int oldSerial;
 int SerialNumber =0;
@@ -48,7 +48,7 @@ TCHAR  szCheck[254];
   return iCheckSum;
 }
 
-bool RequestInfos(PDeviceDescriptor_t d)
+bool RequestInfos(DeviceDescriptor_t* d)
 {
 #ifdef  VW_BIDIRECTIONAL
 TCHAR  szTmp[254];
@@ -82,7 +82,7 @@ else
 
 
 
-static BOOL WesterboerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL WesterboerParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -145,7 +145,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 
 }
 
-void WesterboerInstall(PDeviceDescriptor_t d) {
+void WesterboerInstall(DeviceDescriptor_t* d) {
   StartupStore(_T(". WESTERBOER device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Westerboer"));
@@ -155,7 +155,7 @@ void WesterboerInstall(PDeviceDescriptor_t d) {
   d->PutBallast = devWesterboerPutBallast;
 }
 
-static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PWES0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
@@ -282,7 +282,7 @@ if(_tcslen(String) < 180)
 //GEXTERN double POLARV[POLARSIZE];
 //GEXTERN double POLARLD[POLARSIZE];
 
-static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PWES1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
@@ -356,7 +356,7 @@ static int  iOldVarioSwitch=0;
 
 
 
-BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc){
+BOOL devWesterboerPutMacCready(DeviceDescriptor_t* d, double Mc){
 	  (void)d;
 #ifdef  VW_BIDIRECTIONAL
 iReceiveSuppress = 1;
@@ -370,7 +370,7 @@ TCHAR  szTmp[254];
 }
 
 
-BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload){
+BOOL devWesterboerPutWingload(DeviceDescriptor_t* d, double fWingload){
 	  (void)d;
 #ifdef  VW_BIDIRECTIONAL
   TCHAR  szTmp[254];
@@ -384,14 +384,14 @@ BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload){
 }
 
 
-BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL devWesterboerPutBallast(DeviceDescriptor_t* d, double Ballast){
 	  (void)d;
 
   return(TRUE);
 
 }
 
-BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bug){
+BOOL devWesterboerPutBugs(DeviceDescriptor_t* d, double Bug){
 	  (void)d;
 #ifdef  VW_BIDIRECTIONAL
 iReceiveSuppress = 1;
@@ -404,7 +404,7 @@ iReceiveSuppress = 1;
 
 }
 
-static BOOL PWES2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PWES2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 //	$PWES2: Datenausgabe, Ger�teparameter
 //	$PWES2,DD,SSSS,YY,FFFF*CS<CR><LF>

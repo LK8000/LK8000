@@ -47,7 +47,7 @@ protected:
   DevRCFenix() = delete;
 
   /// Installs device specific handlers.
-  static void Install(PDeviceDescriptor_t d);
+  static void Install(DeviceDescriptor_t* d);
 
   /// Returns device name (max length is @c DEVNAMESIZE).
   static constexpr
@@ -56,22 +56,22 @@ protected:
   }
 
   /// to send data at connection start
-  static BOOL Open(PDeviceDescriptor_t d);
+  static BOOL Open(DeviceDescriptor_t* d);
 
   /// Writes declaration into the logger.
-  static BOOL DeclareTask(PDeviceDescriptor_t d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+  static BOOL DeclareTask(DeviceDescriptor_t* d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-  static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
 
-  static BOOL Config(PDeviceDescriptor_t d);
+  static BOOL Config(DeviceDescriptor_t* d);
 
-  static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
+  static BOOL PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt);
 
-  static BOOL FenixPutMacCready(PDeviceDescriptor_t d, double MacCready);
-  static BOOL FenixPutBallast(PDeviceDescriptor_t d, double Ballast);
-  static BOOL FenixPutBugs(PDeviceDescriptor_t d, double Bugs);
-  static BOOL PutQNH(PDeviceDescriptor_t d, double qnh);
+  static BOOL FenixPutMacCready(DeviceDescriptor_t* d, double MacCready);
+  static BOOL FenixPutBallast(DeviceDescriptor_t* d, double Ballast);
+  static BOOL FenixPutBugs(DeviceDescriptor_t* d, double Bugs);
+  static BOOL PutQNH(DeviceDescriptor_t* d, double qnh);
 
 }; // DevRCFenix
 

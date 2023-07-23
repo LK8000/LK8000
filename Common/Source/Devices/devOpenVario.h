@@ -38,13 +38,13 @@ protected:
   DevOpenVario() { }
 
   /// Installs device specific handlers.
-  static void Install(PDeviceDescriptor_t d);
+  static void Install(DeviceDescriptor_t* d);
 
 
-  static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
   /// Parses POV sentence.
-  static BOOL POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL POV(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
 
   /// Returns device name (max length is @c DEVNAMESIZE).

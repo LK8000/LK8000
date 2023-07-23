@@ -44,23 +44,23 @@ class DevLXMiniMap : public DevLXNano
 
 
     /// Installs device specific handlers.
-    static void Install(PDeviceDescriptor_t d);
+    static void Install(DeviceDescriptor_t* d);
 
     /// Parses LXWPn sentences.
-    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+    static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
-    static BOOL LXMiniMapPutMacCready(PDeviceDescriptor_t d, double MacCready);
-    static BOOL LXMiniMapOnSysTicker(DeviceDescriptor_t *d);
-    static BOOL LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH);
-    static BOOL LXMiniMapPutBugs(PDeviceDescriptor_t	d, double	Bugs);
-    static BOOL LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast);
+    static BOOL LXMiniMapPutMacCready(DeviceDescriptor_t* d, double MacCready);
+    static BOOL LXMiniMapOnSysTicker(DeviceDescriptor_t* d);
+    static BOOL LXMiniMapPutQNH(DeviceDescriptor_t* d, double NewQNH);
+    static BOOL LXMiniMapPutBugs(DeviceDescriptor_t* d, double	Bugs);
+    static BOOL LXMiniMapPutBallast(DeviceDescriptor_t* d, double	Ballast);
 
-    static BOOL SendPFLX4(DeviceDescriptor_t *d);
+    static BOOL SendPFLX4(DeviceDescriptor_t* d);
 
     static double CalculateBalastFactor(double Ballast);
     static double CalculateBalast(double Factor);
 
-    static BOOL Open(PDeviceDescriptor_t d);
+    static BOOL Open(DeviceDescriptor_t* d);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr
@@ -69,18 +69,18 @@ class DevLXMiniMap : public DevLXNano
     }
 
     /// Parses LXWP0 sentence.
-    static bool LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP1 sentence.
-    static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP2 sentence.
-    static bool LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP3 sentence.
-    static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
-    static BOOL DeclareTaskMinimap(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTaskMinimap(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
 
 }; // DevLX

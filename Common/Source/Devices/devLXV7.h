@@ -34,7 +34,7 @@ class DevLXV7 : public DevBase
     }
 
     // Send $PFLX2 to request Info from LX.
-    static bool SetupLX_Sentence(PDeviceDescriptor_t d);
+    static bool SetupLX_Sentence(DeviceDescriptor_t* d);
 
   //----------------------------------------------------------------------------
   protected:
@@ -43,12 +43,12 @@ class DevLXV7 : public DevBase
     DevLXV7() {}
 
     /// Installs device specific handlers.
-    static void Install(PDeviceDescriptor_t d);
+    static void Install(DeviceDescriptor_t* d);
 
     /// Parses LXWPn sentences.
-    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+    static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
 
-    static BOOL LXV7DirectLink(PDeviceDescriptor_t d, BOOL LinkStatus);
+    static BOOL LXV7DirectLink(DeviceDescriptor_t* d, BOOL LinkStatus);
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr 
     const TCHAR* GetName() {
@@ -56,27 +56,27 @@ class DevLXV7 : public DevBase
     }
 
     /// Parses PLXVF sentence.
-    static bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses PLXVS sentence.
-    static bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses PLXV0 sentence.
-    static bool PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
     /// Parses LXWP0 sentence.
-    static bool LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP1 sentence.
-    static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP2 sentence.
-    static bool LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP3 sentence.
-    static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
     /// Parses LXWP4 sentence.
-    static bool LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
 }; // DevLX
 

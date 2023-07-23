@@ -11,9 +11,9 @@
 #include "Calc/Vario.h"
 #include "devFlymasterF1.h"
 
-static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL VARIO(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL FlymasterF1ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -45,7 +45,7 @@ static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO
  *  To return to navigation mode, i.e. tell F1 to start sending navigation data again send:
  *  $PFMNAV,*02
  */
-static BOOL Open(PDeviceDescriptor_t d) {
+static BOOL Open(DeviceDescriptor_t* d) {
   if(d && d->Com) {
     const char szNmeaOn[] = "$PFMNAV,*2E\r\n";
     return d->Com->Write(szNmeaOn, strlen(szNmeaOn));
@@ -53,7 +53,7 @@ static BOOL Open(PDeviceDescriptor_t d) {
   return FALSE;
 }
 
-static BOOL Close(PDeviceDescriptor_t d) {
+static BOOL Close(DeviceDescriptor_t* d) {
   if(d && d->Com) {
     const char szNmeaOff[] = "$PFMSNP,*3A\r\n";
     return d->Com->Write(szNmeaOff, strlen(szNmeaOff));
@@ -61,7 +61,7 @@ static BOOL Close(PDeviceDescriptor_t d) {
   return FALSE;
 }
 
-void flymasterf1Install(PDeviceDescriptor_t d) {
+void flymasterf1Install(DeviceDescriptor_t* d) {
 
   StartupStore(_T(". FlymasterF1 device installed%s"),NEWLINE);
 
@@ -69,7 +69,7 @@ void flymasterf1Install(PDeviceDescriptor_t d) {
   d->ParseNMEA = FlymasterF1ParseNMEA;
 }
 
-void flymasterInstall(PDeviceDescriptor_t d) {
+void flymasterInstall(DeviceDescriptor_t* d) {
 
   StartupStore(_T(". Flymaster GPS device installed%s"),NEWLINE);
 
@@ -83,7 +83,7 @@ void flymasterInstall(PDeviceDescriptor_t d) {
 // *****************************************************************************
 // local stuff
 
-static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL VARIO(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
   // $VARIO,fPressure,fVario,Bat1Volts,Bat2Volts,BatBank,TempSensor1,TempSensor2*CS
 

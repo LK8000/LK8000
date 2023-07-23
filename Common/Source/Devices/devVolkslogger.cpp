@@ -20,7 +20,7 @@
 // Source data:
 // $PGCS,1,0EC0,FFF9,0C6E,02*61
 // $PGCS,1,0EC0,FFFA,0C6E,03*18
-BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+BOOL vl_PGCS1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];
@@ -56,7 +56,7 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
 }
 
 
-BOOL VLParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL VLParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
@@ -76,10 +76,10 @@ VLAPI vl;
 
 static int nturnpoints = 0;
 
-BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
+BOOL VLDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp);
 
 
-BOOL VLDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL VLDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   vl.set_device(d);
   nturnpoints = 0;
@@ -239,7 +239,7 @@ BOOL VLDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBuf
 }
 
 
-BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
+BOOL VLDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
 
   if (nturnpoints == 0) {
     to_usascii(wp->Name, vl.declaration.task.startpoint.name);
@@ -268,7 +268,7 @@ BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
 
 }
 
-void vlInstall(PDeviceDescriptor_t d){
+void vlInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("Volkslogger"));
   d->ParseNMEA = VLParseNMEA;
   d->Declare = VLDeclare;

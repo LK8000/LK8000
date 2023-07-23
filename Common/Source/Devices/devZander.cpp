@@ -11,12 +11,12 @@
 #include "Calc/Vario.h"
 #include "devZander.h"
 
-static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS);
-static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS);
-static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS);
-static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS);
+static BOOL PZAN1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS);
+static BOOL PZAN2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS);
+static BOOL PZAN3(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS);
+static BOOL PZAN4(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS);
 
-static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS){
+static BOOL ZanderParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS){
   (void)d;
 
   if (!NMEAParser::NMEAChecksum(String) || (apGPS == NULL)){
@@ -45,7 +45,7 @@ static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apG
 
 }
 
-void zanderInstall(PDeviceDescriptor_t d) {
+void zanderInstall(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, TEXT("Zander"));
   d->ParseNMEA = ZanderParseNMEA;
 }
@@ -54,7 +54,7 @@ void zanderInstall(PDeviceDescriptor_t d) {
 // local stuff
 
 
-static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
+static BOOL PZAN1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS)
 {
   double palt=0;
   TCHAR ctemp[80];
@@ -65,7 +65,7 @@ static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
 }
 
 
-static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
+static BOOL PZAN2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS)
 {
   TCHAR ctemp[80];
 
@@ -86,7 +86,7 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   return TRUE;
 }
 
-static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
+static BOOL PZAN3(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS)
 {
   //$PZAN3,+,026,A,321,035,V*cc
   //Windkomponente (+=R�ckenwind, -=Gegenwind)
@@ -137,7 +137,7 @@ static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
   return true;
 }
 
-static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *apGPS)
+static BOOL PZAN4(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *apGPS)
 {
   //$PZAN4,1.5,+,20,39,45*cc
   //Einstellungen am ZS1:

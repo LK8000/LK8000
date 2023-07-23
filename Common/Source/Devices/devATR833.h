@@ -11,10 +11,10 @@
 
 #include "Devices/DeviceRegister.h"
 
-void ATR833Install(PDeviceDescriptor_t d);
+void ATR833Install(DeviceDescriptor_t* d);
 
 inline constexpr
-DeviceRegister_t ATR833Register(void){
+DeviceRegister_t ATR833Register(){
   return devRegister(_T("f.u.n.k.e. ATR833"), ATR833Install);
 }
 

@@ -15,7 +15,7 @@
 #include "Calc/Vario.h"
 
 
-PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
+DeviceDescriptor_t* CDevCProbe::m_pDevice=NULL;
 BOOL CDevCProbe::m_bCompassCalOn=FALSE;
 Mutex* CDevCProbe::m_pCritSec_DeviceData=NULL;
 double CDevCProbe::m_abs_press=0.0;
@@ -24,7 +24,7 @@ double CDevCProbe::m_delta_press=0.0;
 TCHAR CDevCProbe::m_szVersion[15]={0};
 
 
-void CDevCProbe::Install( PDeviceDescriptor_t d ) {
+void CDevCProbe::Install(DeviceDescriptor_t* d ) {
 	_tcscpy(d->Name, GetName());
 	d->ParseNMEA = ParseNMEA;
 	d->Open = Open;
@@ -33,7 +33,7 @@ void CDevCProbe::Install( PDeviceDescriptor_t d ) {
 	d->Config = Config;
 }
 
-BOOL CDevCProbe::Open( PDeviceDescriptor_t d) {
+BOOL CDevCProbe::Open(DeviceDescriptor_t* d) {
 	m_pDevice = d;
 
 	m_pCritSec_DeviceData = new Mutex();
@@ -41,7 +41,7 @@ BOOL CDevCProbe::Open( PDeviceDescriptor_t d) {
 	return TRUE;
 }
 
-BOOL CDevCProbe::Close (PDeviceDescriptor_t d) {
+BOOL CDevCProbe::Close (DeviceDescriptor_t* d) {
 	m_pDevice = NULL;
 
 	delete m_pCritSec_DeviceData;
@@ -74,7 +74,7 @@ void CDevCProbe::UnlockDeviceData(){
 	}
 }
 
-BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINFO ) {
 	tnmeastring wiss(String);
 	TCHAR* strToken = wiss.GetNextString();
 
@@ -164,7 +164,7 @@ BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pIN
 // - C: is transmitted only if the C-Probe is being charged. In this case, heat produced by the charging
 //    process is likely to affect the readings of the temperature and humidity sensors.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseData(DeviceDescriptor_t *d, tnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, tnmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	double q0 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
 	double q1 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
@@ -274,28 +274,28 @@ BOOL CDevCProbe::ParseName( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetBaroOn( PDeviceDescriptor_t d ){
+BOOL CDevCProbe::SetBaroOn(DeviceDescriptor_t* d ){
     if (d && d->Com) {
     	d->Com->WriteString(TEXT("$PCPILOT,C,BAROON\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetBaroOff( PDeviceDescriptor_t d ){
+BOOL CDevCProbe::SetBaroOff(DeviceDescriptor_t* d ){
     if (d && d->Com) {
     	d->Com->WriteString(TEXT("$PCPILOT,C,BAROOFF\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::GetDeviceName( PDeviceDescriptor_t d ){
+BOOL CDevCProbe::GetDeviceName(DeviceDescriptor_t* d ){
     if (d && d->Com) {
     	d->Com->WriteString(TEXT("$PCPILOT,C,GETNAME\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetDeviceName( PDeviceDescriptor_t d, const tstring& strName ){
+BOOL CDevCProbe::SetDeviceName(DeviceDescriptor_t* d, const tstring& strName ){
 	if (d && d->Com && strName.size() <= 15) {
 		d->Com->WriteString(TEXT("$PCPILOT,C,SET,"));
 		d->Com->WriteString(strName.c_str());
@@ -305,35 +305,35 @@ BOOL CDevCProbe::SetDeviceName( PDeviceDescriptor_t d, const tstring& strName ){
 	return FALSE;
 }
 
-BOOL CDevCProbe::GetFirmwareVersion(PDeviceDescriptor_t d) {
+BOOL CDevCProbe::GetFirmwareVersion(DeviceDescriptor_t* d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PCPILOT,C,GETFW\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetZeroDeltaPressure(PDeviceDescriptor_t d) {
+BOOL CDevCProbe::SetZeroDeltaPressure(DeviceDescriptor_t* d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PCPILOT,C,CALZERO\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetCompassCalOn(PDeviceDescriptor_t d) {
+BOOL CDevCProbe::SetCompassCalOn(DeviceDescriptor_t* d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALON\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetCompassCalOff(PDeviceDescriptor_t d) {
+BOOL CDevCProbe::SetCompassCalOff(DeviceDescriptor_t* d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALOFF\r\n"));
     }
 	return TRUE;
 }
 
-BOOL CDevCProbe::SetCalGyro(PDeviceDescriptor_t d) {
+BOOL CDevCProbe::SetCalGyro(DeviceDescriptor_t* d) {
     if (d && d->Com) {
         d->Com->WriteString(TEXT("$PCPILOT,C,CALGYRO\r\n"));
     }
@@ -344,7 +344,7 @@ CallBackTableEntry_t CDevCProbe::CallBackTable[]={
   EndCallBackEntry()
 };
 
-BOOL CDevCProbe::Config(PDeviceDescriptor_t d){
+BOOL CDevCProbe::Config(DeviceDescriptor_t* d){
 	if(m_pDevice != d) {
 		StartupStore(_T("C-Probe Config : Invalide device descriptor%s"), NEWLINE);
 		return FALSE;

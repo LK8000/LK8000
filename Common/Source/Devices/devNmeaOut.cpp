@@ -10,7 +10,7 @@
 #include <regex>
 
 static 
-BOOL NMEAOut(DeviceDescriptor_t *d, const TCHAR* String) {
+BOOL NMEAOut(DeviceDescriptor_t* d, const TCHAR* String) {
   if(d) {
     try {
       std::regex re(R"(((?!\r)\n|\r(?!\n)))"); // to fix end of line...
@@ -22,7 +22,7 @@ BOOL NMEAOut(DeviceDescriptor_t *d, const TCHAR* String) {
   return TRUE;
 }
 
-void nmoInstall(PDeviceDescriptor_t d){
+void nmoInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("NmeaOut"));
   d->NMEAOut = NMEAOut;
 }

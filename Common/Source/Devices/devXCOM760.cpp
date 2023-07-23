@@ -13,13 +13,13 @@
 
 
 
-static BOOL XCOM760IsRadio(PDeviceDescriptor_t d){
+static BOOL XCOM760IsRadio(DeviceDescriptor_t* d){
   (void)d;
   return(TRUE);
 }
 
 
-static BOOL XCOM760PutVolume(PDeviceDescriptor_t d, int Volume) {
+static BOOL XCOM760PutVolume(DeviceDescriptor_t* d, int Volume) {
   TCHAR  szTmp[32];
   _stprintf(szTmp, TEXT("$RVOL=%d\r\n"), Volume);
   d->Com->WriteString(szTmp);
@@ -27,7 +27,7 @@ static BOOL XCOM760PutVolume(PDeviceDescriptor_t d, int Volume) {
 }
 
 
-static BOOL XCOM760PutFreqActive(PDeviceDescriptor_t d, unsigned Freq, const TCHAR* StationName) {
+static BOOL XCOM760PutFreqActive(DeviceDescriptor_t* d, unsigned Freq, const TCHAR* StationName) {
   TCHAR  szTmp[32];
   double Mhz = Freq / 1000.0;
   _stprintf(szTmp, TEXT("$TXAF=%.3f\r\n"), Mhz);
@@ -36,7 +36,7 @@ static BOOL XCOM760PutFreqActive(PDeviceDescriptor_t d, unsigned Freq, const TCH
 }
 
 
-static BOOL XCOM760PutFreqStandby(PDeviceDescriptor_t d, unsigned Freq,  const TCHAR* StationName) {
+static BOOL XCOM760PutFreqStandby(DeviceDescriptor_t* d, unsigned Freq,  const TCHAR* StationName) {
   TCHAR  szTmp[32];
   double Mhz = Freq / 1000.0;
   _stprintf(szTmp, TEXT("$TXSF=%.3f\r\n"), Mhz);
@@ -45,7 +45,7 @@ static BOOL XCOM760PutFreqStandby(PDeviceDescriptor_t d, unsigned Freq,  const T
 }
 
 
-void XCOM760Install(PDeviceDescriptor_t d) {
+void XCOM760Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, TEXT("XCOM760"));
   d->IsRadio = XCOM760IsRadio;
   d->PutVolume = XCOM760PutVolume;

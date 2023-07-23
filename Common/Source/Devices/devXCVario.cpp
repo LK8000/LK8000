@@ -35,7 +35,7 @@ bool ReadChecked(TCHAR* String, int& value_r) {
   return true;
 }
 
-BOOL PXCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS) {
+BOOL PXCV(DeviceDescriptor_t* d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS) {
   /*
   Sentence has following format:
   $PXCV,
@@ -132,7 +132,7 @@ BOOL PXCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS
   return TRUE;
 }
 
-BOOL XCV(PDeviceDescriptor_t d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS) {
+BOOL XCV(DeviceDescriptor_t* d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS) {
   if (params[1] == _T("bal-water"sv)) {
     double liters;
     if (ReadChecked(params[2], liters)) {

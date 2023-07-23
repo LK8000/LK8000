@@ -54,7 +54,7 @@ bool FirstCheckBaroAlt = true;
 /// @retval false device cannot be installed
 ///
 //static
-void DevLXMiniMap::Install(PDeviceDescriptor_t d)
+void DevLXMiniMap::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -67,7 +67,7 @@ void DevLXMiniMap::Install(PDeviceDescriptor_t d)
   d->PutQNH = LXMiniMapPutQNH;
 } // Install()
 
-BOOL DevLXMiniMap::LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast)
+BOOL DevLXMiniMap::LXMiniMapPutBallast(DeviceDescriptor_t* d, double	Ballast)
 {
 		TCHAR mcbuf[100];
 
@@ -78,7 +78,7 @@ BOOL DevLXMiniMap::LXMiniMapPutBallast(PDeviceDescriptor_t	d, double	Ballast)
 
 		return (TRUE);
 }
-BOOL DevLXMiniMap::LXMiniMapPutBugs(PDeviceDescriptor_t	d, double	Bugs)
+BOOL DevLXMiniMap::LXMiniMapPutBugs(DeviceDescriptor_t* d, double	Bugs)
 {
 		TCHAR mcbuf[100];
 
@@ -89,7 +89,7 @@ BOOL DevLXMiniMap::LXMiniMapPutBugs(PDeviceDescriptor_t	d, double	Bugs)
 
 		return (TRUE);
 }
-BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
+BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t* d, double NewQNH){
 
 
 
@@ -107,7 +107,7 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t *d, double NewQNH){
   return(TRUE);
 }
 
-BOOL DevLXMiniMap::LXMiniMapPutMacCready(PDeviceDescriptor_t d, double MacCready) {
+BOOL DevLXMiniMap::LXMiniMapPutMacCready(DeviceDescriptor_t* d, double MacCready) {
 	TCHAR mcbuf[100];
 	_stprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
 	devWriteNMEAString(d, mcbuf);
@@ -116,7 +116,7 @@ BOOL DevLXMiniMap::LXMiniMapPutMacCready(PDeviceDescriptor_t d, double MacCready
 
 }
 
-BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t *d)
+BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t* d)
 {
 	/*PFLX4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage *CS<CR><LF>
 	· Sc float (m/s)
@@ -168,7 +168,7 @@ BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t *d)
 }
 
 
-BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t *d) {
+BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t* d) {
     if (TICKER_PFLX4.CheckUpdate(2*1000)) {
         SendPFLX4(d);
 
@@ -182,7 +182,7 @@ BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t *d) {
     return (TRUE);
 }
 
-BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d){
+BOOL DevLXMiniMap::Open(DeviceDescriptor_t* d){
 
   devWriteNMEAString(d, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,3"));
 
@@ -199,7 +199,7 @@ BOOL DevLXMiniMap::Open(PDeviceDescriptor_t d){
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXMiniMap::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXMiniMap::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 {
 
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
@@ -231,7 +231,7 @@ BOOL DevLXMiniMap::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -293,7 +293,7 @@ bool DevLXMiniMap::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXMiniMap::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLXMiniMap::LXWP1(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -342,7 +342,7 @@ double DevLXMiniMap::CalculateBalast(double Factor)
 
 
 
-bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -381,7 +381,7 @@ bool DevLXMiniMap::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXMiniMap::LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
 
@@ -439,7 +439,7 @@ double CalculateQNH(double alt_qne, double alt_qnh)
 
 
 ////////////////////////////////   TASK    /////////////////////////////////////
-BOOL DevLXMiniMap::DeclareTaskMinimap(PDeviceDescriptor_t d,
+BOOL DevLXMiniMap::DeclareTaskMinimap(DeviceDescriptor_t* d,
   const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
 {
   Decl  decl;

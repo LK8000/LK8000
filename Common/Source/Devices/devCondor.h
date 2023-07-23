@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void condorInstall(PDeviceDescriptor_t d);
+void condorInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t condorRegister() {

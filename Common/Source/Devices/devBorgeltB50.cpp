@@ -10,12 +10,12 @@
 #include "devBorgeltB50.h"
 #include "Calc/Vario.h"
 
-static BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PBB50(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+extern BOOL vl_PGCS1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
 
-BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL B50ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
 
   if(_tcsncmp(TEXT("$PBB50"), String, 6)==0)
@@ -30,7 +30,7 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-void b50Install(PDeviceDescriptor_t d){
+void b50Install(DeviceDescriptor_t* d){
 
   _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
@@ -69,7 +69,7 @@ CHK = standard NMEA checksum
 
 */
 
-BOOL PBB50(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL PBB50(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   // $PBB50,100,0,10,1,10000,0,1,0,20*4A..
   // $PBB50,0,.0,.0,0,0,1.07,0,-228*58
   // $PBB50,14,-.2,.0,196,0,.92,0,-228*71

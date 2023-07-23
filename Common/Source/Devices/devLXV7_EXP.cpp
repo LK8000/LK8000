@@ -26,12 +26,12 @@ int LXV7_EXP_iPDABaudrate = 0;
 //double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
 BOOL LXV7_EXP_bValid = false;
 int LXV7_EXPNMEAddCheckSumStrg( TCHAR szStrg[] );
-BOOL LXV7_EXPPutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL LXV7_EXPPutBugs(PDeviceDescriptor_t d, double Bugs);
+BOOL LXV7_EXPPutMacCready(DeviceDescriptor_t* d, double MacCready);
+BOOL LXV7_EXPPutBallast(DeviceDescriptor_t* d, double Ballast);
+BOOL LXV7_EXPPutBugs(DeviceDescriptor_t* d, double Bugs);
 
 static
-BOOL Open(PDeviceDescriptor_t d) {
+BOOL Open(DeviceDescriptor_t* d) {
     ResetMultitargetSync();
     return TRUE;
 }
@@ -46,7 +46,7 @@ BOOL Open(PDeviceDescriptor_t d) {
 /// @retval false device cannot be installed
 ///
 //static
-void DevLXV7_EXP::Install(PDeviceDescriptor_t d)
+void DevLXV7_EXP::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->Open = Open;
@@ -61,7 +61,7 @@ void DevLXV7_EXP::Install(PDeviceDescriptor_t d)
 
 
 
-BOOL DevLXV7_EXP::LXV7_EXP_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
+BOOL DevLXV7_EXP::LXV7_EXP_DirectLink(DeviceDescriptor_t* d, BOOL bLinkEnable)
 {
 TCHAR  szTmp[254];
 #define CHANGE_DELAY 10
@@ -160,7 +160,7 @@ TCHAR  szCheck[254];
 }
 
 
-bool DevLXV7_EXP::SetupLX_Sentence(PDeviceDescriptor_t d)
+bool DevLXV7_EXP::SetupLX_Sentence(DeviceDescriptor_t* d)
 {
 TCHAR  szTmp[254];
 
@@ -199,7 +199,7 @@ return lBaudrate;
 
 
 
-BOOL LXV7_EXPPutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL LXV7_EXPPutMacCready(DeviceDescriptor_t* d, double MacCready){
   TCHAR  szTmp[254];
   if(LXV7_EXP_bValid == false) {
     return false;
@@ -214,7 +214,7 @@ BOOL LXV7_EXPPutMacCready(PDeviceDescriptor_t d, double MacCready){
 
 }
 
-BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast) {
+BOOL LXV7_EXPPutBallast(DeviceDescriptor_t* d, double Ballast) {
   TCHAR szTmp[254];
   if (LXV7_EXP_bValid == false) {
     return false;
@@ -227,7 +227,7 @@ BOOL LXV7_EXPPutBallast(PDeviceDescriptor_t d, double Ballast) {
   return (TRUE);
 }
 
-BOOL LXV7_EXPPutBugs(PDeviceDescriptor_t d, double Bugs){
+BOOL LXV7_EXPPutBugs(DeviceDescriptor_t* d, double Bugs){
 TCHAR  szTmp[254];
 
 if(LXV7_EXP_bValid == false)
@@ -244,7 +244,7 @@ if(LXV7_EXP_bValid == false)
 }
 
 
-BOOL  DevLXV7_EXP::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
+BOOL  DevLXV7_EXP::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
 
   int DegLat = (int)wpt.Latitude;
   double MinLat = wpt.Latitude - DegLat;
@@ -292,7 +292,7 @@ BOOL  DevLXV7_EXP::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXV7_EXP::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
   static int i = 40;
   TCHAR szTmp[256];
 
@@ -375,7 +375,7 @@ BOOL DevLXV7_EXP::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* i
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -416,7 +416,7 @@ bool DevLXV7_EXP::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
+bool DevLXV7_EXP::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -477,7 +477,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
+bool DevLXV7_EXP::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -521,7 +521,7 @@ bool DevLXV7_EXP::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLXV7_EXP::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 {
 
 
@@ -556,7 +556,7 @@ bool DevLXV7_EXP::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 
 
 
-bool DevLXV7_EXP::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
 
@@ -578,7 +578,7 @@ bool DevLXV7_EXP::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*
 
 
 
-bool DevLXV7_EXP::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
   double alt=0, airspeed=0;
@@ -640,7 +640,7 @@ if(iTmp != iOldVarioSwitch)
 } // PLXVF()
 
 
-bool DevLXV7_EXP::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 double Batt;
 double OAT;
@@ -684,7 +684,7 @@ double OAT;
 
 
 
-bool DevLXV7_EXP::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 TCHAR  szTmp1[80], szTmp2[80];
 

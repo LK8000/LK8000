@@ -81,7 +81,7 @@ void NMEAParser::Reset() {
 BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
     LKASSERT(!ReplayLogger::IsEnabled());
 
-    PDeviceDescriptor_t pdev = devGetDeviceOnPort(Idx);
+    DeviceDescriptor_t* pdev = devGetDeviceOnPort(Idx);
     if(pdev) {
       pdev->HB = LKHearthBeats;
       return pdev->nmeaParser.ParseGPS_POSITION_internal(loc, GPSData);

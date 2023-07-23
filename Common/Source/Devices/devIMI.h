@@ -81,26 +81,26 @@ class CDevIMI : public DevBase
   // IMI tools
   static IMIWORD CRC16Checksum(const void *message, unsigned bytes);
   static void IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint &imiWp);
-  static bool Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg);
-  static bool Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+  static bool Send(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg);
+  static bool Send(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[],
                    IMIBYTE msgID, const void *payload = 0, IMIWORD payloadSize = 0,
                    IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0);
-  static const TMsg *Receive(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+  static const TMsg *Receive(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[],
                              unsigned extraTimeout, unsigned expectedPayloadSize);
-  static const TMsg *SendRet(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+  static const TMsg *SendRet(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[],
                              IMIBYTE msgID, const void *payload, IMIWORD payloadSize,
                              IMIBYTE reMsgID, IMIWORD retPayloadSize,
                              IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0,
                              unsigned extraTimeout = 500, int retry = 4);
 
   // IMI interface
-  static bool Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
-  static bool DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[]);
-  static bool Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
+  static bool Connect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[]);
+  static bool DeclarationWrite(DeviceDescriptor_t* d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[]);
+  static bool Disconnect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[]);
 
   // LK interface
-  static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
-  static void Install(PDeviceDescriptor_t d);
+  static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
+  static void Install(DeviceDescriptor_t* d);
 
   static constexpr 
   const TCHAR *GetName() {

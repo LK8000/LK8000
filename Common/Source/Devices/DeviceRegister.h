@@ -16,7 +16,7 @@
 
 struct DeviceDescriptor_t;
 
-typedef void (*Installer_t)(DeviceDescriptor_t* d);
+using Installer_t = void(*)(DeviceDescriptor_t* d);
 
 struct DeviceRegister_t {
   const TCHAR* Name;

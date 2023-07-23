@@ -487,7 +487,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
  *
  * @return Operation status
  */
-bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg)
+bool CDevIMI::Send(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg)
 {
   bool status = ComWrite(d, &msg, IMICOMM_MSG_HEADER_SIZE + msg.payloadSize + 2, errBufSize, errBuf);
 
@@ -513,7 +513,7 @@ bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[], c
  *
  * @return Operation status
  */
-bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+bool CDevIMI::Send(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[],
                    IMIBYTE msgID, const void *payload /* =0 */, IMIWORD payloadSize /* =0 */,
                    IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */)
 {
@@ -557,7 +557,7 @@ bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
  *
  * @return Pointer to a message structure if expected message was received or 0 otherwise
  */
-const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+const CDevIMI::TMsg *CDevIMI::Receive(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[],
                                       unsigned extraTimeout, unsigned expectedPayloadSize)
 {
   if(expectedPayloadSize > COMM_MAX_PAYLOAD_SIZE)
@@ -625,7 +625,7 @@ const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned errBufSize
  *
  * @return Pointer to a message structure if expected message was received or 0 otherwise
  */
-const CDevIMI::TMsg *CDevIMI::SendRet(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+const CDevIMI::TMsg *CDevIMI::SendRet(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[],
                                       IMIBYTE msgID, const void *payload, IMIWORD payloadSize,
                                       IMIBYTE reMsgID, IMIWORD retPayloadSize,
                                       IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */,
@@ -658,7 +658,7 @@ const CDevIMI::TMsg *CDevIMI::SendRet(PDeviceDescriptor_t d, unsigned errBufSize
  *
  * @return Operation status
  */
-bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+bool CDevIMI::Connect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
 {
   if(_connected)
     if(!Disconnect(d, errBufSize, errBuf))
@@ -739,7 +739,7 @@ bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]
  *
  * @return Operation status
  */
-bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[])
+bool CDevIMI::DeclarationWrite(DeviceDescriptor_t* d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[])
 {
   if(!_connected) {
     // LKTOKEN  _@M1411_ = "Device not connected!"
@@ -792,7 +792,7 @@ bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl,
  *
  * @return Operation status
  */
-bool CDevIMI::Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
+bool CDevIMI::Disconnect(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
 {
   if(_connected) {
     if(Send(d, errBufSize, errBuf, MSG_CFG_BYE)) {
@@ -805,7 +805,7 @@ bool CDevIMI::Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBu
   return false;
 }
 
-BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
+BOOL CDevIMI::DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
 {
   // verify WP number
   if(!CheckWPCount(*decl, 2, 13, errBufSize, errBuf))
@@ -847,7 +847,7 @@ BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, const Declaration_t *decl, unsi
 
 
 
-void CDevIMI::Install(PDeviceDescriptor_t d)
+void CDevIMI::Install(DeviceDescriptor_t* d)
 {
   _connected = false;
   memset(&_info, 0, sizeof(_info));

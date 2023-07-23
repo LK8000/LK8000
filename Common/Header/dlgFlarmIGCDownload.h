@@ -9,10 +9,10 @@
 #ifndef _DLGFLARMIGCDOWNLOAD_H_
 #define _DLGFLARMIGCDOWNLOAD_H_
 
-  ListElement* dlgIGCSelectListShowModal(  DeviceDescriptor_t *d) ;
+  ListElement* dlgIGCSelectListShowModal(DeviceDescriptor_t* d) ;
   void StartIGCReadThread();
   void StopIGCReadThread(void) ;
-  void LeaveBinModeWithReset(DeviceDescriptor_t *d);
+  void LeaveBinModeWithReset(DeviceDescriptor_t* d);
 #endif
 
 

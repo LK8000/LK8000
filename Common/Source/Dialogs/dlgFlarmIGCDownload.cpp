@@ -117,7 +117,7 @@ TCHAR szStatusText[STATUS_TXT_LEN];
 
 bool bShowMsg = false;
 
-void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
+void SendBinBlock(DeviceDescriptor_t* d, uint16_t Sequence, uint8_t Command,
                   uint8_t *pBlock, uint16_t blocksize);
 
 uint16_t crc_update(uint16_t crc, uint8_t data) {
@@ -138,7 +138,7 @@ uint16_t crc_update16(uint16_t crc, uint16_t data) {
   return crc;
 }
 
-void SendEscChar(DeviceDescriptor_t *d, uint8_t byte) {
+void SendEscChar(DeviceDescriptor_t* d, uint8_t byte) {
   if (d && d->Com)
     switch (byte) {
     case ESCAPE:
@@ -155,7 +155,7 @@ void SendEscChar(DeviceDescriptor_t *d, uint8_t byte) {
     }
 }
 
-void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
+void SendBinBlock(DeviceDescriptor_t* d, uint16_t Sequence, uint8_t Command,
                   uint8_t *pBlock, uint16_t blocksize) {
   uint16_t i;
   uint16_t CRC = 0;
@@ -198,7 +198,7 @@ void SendBinBlock(DeviceDescriptor_t *d, uint16_t Sequence, uint8_t Command,
   Poco::Thread::yield();
 }
 
-uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
+uint8_t RecChar8(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
   uint8_t Tmp;
   uint8_t err = RecChar(d, &Tmp, Timeout);
   if (err == REC_NO_ERROR) {
@@ -220,7 +220,7 @@ uint8_t RecChar8(DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
   return err;
 }
 
-uint8_t RecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
+uint8_t RecChar16(DeviceDescriptor_t* d, uint16_t *inchar, uint16_t Timeout) {
   ConvUnion tmp;
   bool error = RecChar8(d, &(tmp.byte[0]), Timeout);
   if (error == REC_NO_ERROR) {
@@ -231,7 +231,7 @@ uint8_t RecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) {
 }
 
 template<size_t size>
-static uint8_t RecBinBlock(DeviceDescriptor_t *d, uint16_t *Sequence, uint8_t *Command,
+static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t *Sequence, uint8_t *Command,
                     uint8_t (&pBlock)[size], uint16_t *blocksize, uint16_t Timeout) {
   uint8_t error = REC_NO_ERROR;
   uint8_t inchar;
@@ -588,7 +588,7 @@ static CallBackTableEntry_t IGCCallBackTable[] = {
     ClickNotifyCallbackEntry(OnDownClicked),
     EndCallBackEntry()};
 
-void LeaveBinMode(DeviceDescriptor_t *d) {
+void LeaveBinMode(DeviceDescriptor_t* d) {
   if (d != NULL) {
     int Sequence = 0;
 
@@ -603,7 +603,7 @@ void LeaveBinMode(DeviceDescriptor_t *d) {
   }
 }
 
-void LeaveBinModeWithReset(DeviceDescriptor_t *d) {
+void LeaveBinModeWithReset(DeviceDescriptor_t* d) {
   if (d != NULL) {
     LeaveBinMode(d); 
     d->Com->WriteString("$PFLAR,0*55\r\n");
@@ -627,7 +627,7 @@ public:
   }
 };
 
-ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
+ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
 
   FlarmResourceLock ResourceGuard; // simply need to exist for recource Lock/Unlock
   StartupStore(TEXT(".... StartIGCReadThread%s"), NEWLINE);
@@ -684,7 +684,7 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t *d) {
   return pIGCResult;
 }
 
-void EnterBinMode(DeviceDescriptor_t *d)
+void EnterBinMode(DeviceDescriptor_t* d)
 {
   d->Com->WriteString("$PFLAX\r\n"); // set to binary
   deb_Log(TEXT("$PFLAX\r "));
@@ -752,7 +752,7 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
 }
 
 static
-int ReadFlarmIGCFile(DeviceDescriptor_t *d, uint8_t IGC_FileIndex) {
+int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
   if (d == NULL)
     return 0; 
   static uint32_t TotalSize =0;

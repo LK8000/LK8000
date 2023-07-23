@@ -20,7 +20,7 @@ static int user_size = 0;
 static TCHAR user_data[MAX_USER_SIZE];
 
 
-BOOL ExpectStringWait(PDeviceDescriptor_t d, const TCHAR *token) {
+BOOL ExpectStringWait(DeviceDescriptor_t* d, const TCHAR *token) {
 
   int i=0, ch;
   int j=0;
@@ -54,7 +54,7 @@ BOOL ExpectStringWait(PDeviceDescriptor_t d, const TCHAR *token) {
 
 
 
-BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d,
+BOOL EWMicroRecorderParseNMEA(DeviceDescriptor_t* d,
                               TCHAR *String, NMEA_INFO *pGPS){
   TCHAR ctemp[80], *params[5];
   int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
@@ -72,7 +72,7 @@ BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d,
 }
 
 
-BOOL EWMicroRecorderTryConnect(PDeviceDescriptor_t d) {
+BOOL EWMicroRecorderTryConnect(DeviceDescriptor_t* d) {
   int retries=10;
   TCHAR ch;
 
@@ -111,7 +111,7 @@ BOOL EWMicroRecorderTryConnect(PDeviceDescriptor_t d) {
 }
 
 
-static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d,
+static void EWMicroRecorderWriteWayPoint(DeviceDescriptor_t* d,
                                          const WAYPOINT *wp,
                                          const TCHAR* EWType) {
   TCHAR EWRecord[128];
@@ -151,7 +151,7 @@ static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d,
 }
 
 
-BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   const WAYPOINT *wp;
   nDeclErrorCode = 0;
@@ -245,7 +245,7 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, const Declaration_t *decl, un
 }
 
 
-void ewMicroRecorderInstall(PDeviceDescriptor_t d){
+void ewMicroRecorderInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("EW MicroRecorder"));
   d->ParseNMEA = EWMicroRecorderParseNMEA;
   d->Declare = EWMicroRecorderDeclare;

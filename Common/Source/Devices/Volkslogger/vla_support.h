@@ -74,7 +74,7 @@ protected:
   void showwait(VLS_TXT_ID);
 
   //
-  PDeviceDescriptor_t device;
+  DeviceDescriptor_t* device;
 };
 
 

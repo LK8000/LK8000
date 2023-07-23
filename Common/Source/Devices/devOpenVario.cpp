@@ -14,9 +14,9 @@
 
 
 
-BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs);
+BOOL OpenVarioPutMacCready(DeviceDescriptor_t* d, double MacCready);
+BOOL OpenVarioPutBallast(DeviceDescriptor_t* d, double Ballast);
+BOOL OpenVarioPutBugs(DeviceDescriptor_t* d, double Bugs);
 
 constexpr int OV_DebugLevel = 0;
 //____________________________________________________________class_definitions_
@@ -30,7 +30,7 @@ constexpr int OV_DebugLevel = 0;
 /// @retval FALSE device cannot be installed
 ///
 //static
-void DevOpenVario::Install(PDeviceDescriptor_t d) {
+void DevOpenVario::Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = OpenVarioPutMacCready;
@@ -41,7 +41,7 @@ void DevOpenVario::Install(PDeviceDescriptor_t d) {
 
 
 
-BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
+BOOL OpenVarioPutMacCready(DeviceDescriptor_t* d, double MacCready) {
   char szTmp[80];
 
   sprintf(szTmp, "$POV,C,MC,%0.2f", MacCready); // 14 + 5 + 1 char
@@ -51,7 +51,7 @@ BOOL OpenVarioPutMacCready(PDeviceDescriptor_t d, double MacCready) {
   return TRUE;
 }
 
-BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
+BOOL OpenVarioPutBallast(DeviceDescriptor_t* d, double Ballast) {
   char szTmp[80];
 
   sprintf(szTmp, "$POV,C,WL,%3f", (1.0 + Ballast)); // 13 + 5 + 1 char
@@ -61,7 +61,7 @@ BOOL OpenVarioPutBallast(PDeviceDescriptor_t d, double Ballast) {
   return TRUE;
 }
 
-BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
+BOOL OpenVarioPutBugs(DeviceDescriptor_t* d, double Bugs) {
   char szTmp[80];
 
   sprintf(szTmp, "$POV,C,BU,%0.2f", Bugs); // 14 + 5 + 1 char
@@ -86,7 +86,7 @@ BOOL OpenVarioPutBugs(PDeviceDescriptor_t d, double Bugs) {
 /// @retval TRUE if the sentence has been parsed
 ///
 //static
-BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevOpenVario::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
 
 
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
@@ -105,7 +105,7 @@ BOOL DevOpenVario::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* 
 } // ParseNMEA()
 
 
-BOOL DevOpenVario::POV(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info) {
   TCHAR szTmp1[80];
 
 

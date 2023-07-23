@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void ewMicroRecorderInstall(PDeviceDescriptor_t d);
+void ewMicroRecorderInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t ewMicroRecorderRegister() {

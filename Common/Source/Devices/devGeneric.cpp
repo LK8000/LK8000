@@ -11,10 +11,10 @@
 #include "devGeneric.h"
 
 
-void genInstall(PDeviceDescriptor_t d){
+void genInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("Generic"));
 }
 
-void internalInstall(PDeviceDescriptor_t d){
+void internalInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, DEV_INTERNAL_NAME);
 }

@@ -13,12 +13,12 @@
 #include "MathFunctions.h"
 #include "Comm/UpdateQNH.h"
 
-static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PDGFTL1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
 // Leonardo Pro & Catesio
-static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL D(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL DigiflyParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -39,7 +39,7 @@ static BOOL DigiflyParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pG
   return FALSE;
 }
 
-void DigiflyInstall(PDeviceDescriptor_t d) {
+void DigiflyInstall(DeviceDescriptor_t* d) {
 
   StartupStore(_T(". DIGIFLY device installed%s"),NEWLINE);
 
@@ -47,7 +47,7 @@ void DigiflyInstall(PDeviceDescriptor_t d) {
   d->ParseNMEA = DigiflyParseNMEA;
 }
 
-static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PDGFTL1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 /*
 	$PDGFTL1		     field     example
@@ -130,7 +130,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
   return TRUE;
 }
 
-static BOOL D(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS) {
+static BOOL D(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 /*
  * 00 : vario ist           in dm/sec
  * 01 : pressure            in cents of mB

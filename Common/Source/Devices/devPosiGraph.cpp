@@ -19,9 +19,9 @@
 #include "Baro.h"
 #include "devPosiGraph.h"
 
-static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL GPWIN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL PGParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   (void)d;
   (void)String;
   (void)pGPS;
@@ -42,12 +42,12 @@ BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
 
 }
 
-BOOL PGIsGPSSource(PDeviceDescriptor_t d){
+BOOL PGIsGPSSource(DeviceDescriptor_t* d){
   (void)d;
   return(TRUE);
 }
 
-void pgInstall(PDeviceDescriptor_t d){
+void pgInstall(DeviceDescriptor_t* d){
 
   _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
@@ -57,7 +57,7 @@ void pgInstall(PDeviceDescriptor_t d){
 // *****************************************************************************
 // local stuff
 
-static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL GPWIN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
   TCHAR ctemp[80];
   (void)pGPS;

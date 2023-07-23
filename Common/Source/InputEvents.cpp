@@ -1543,7 +1543,7 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
   // if ( strncmp  misc PF ..)
 
   if (misc) {
-    PDeviceDescriptor_t found_flarm = nullptr;
+    DeviceDescriptor_t* found_flarm = nullptr;
     for ( auto &dev : DeviceList) {
       if (dev.nmeaParser.isFlarm) {
         found_flarm = &dev;

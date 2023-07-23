@@ -27,7 +27,7 @@ namespace {
 
   std::array<DeviceDescriptor_t, std::size(DeviceNameList)> DeviceDesciptorList;
 
-  BOOL ParseNMEA(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO) {
+  BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *GPS_INFO) {
     for(auto& Dev : DeviceDesciptorList) {
       if(Dev.ParseNMEA && Dev.ParseNMEA(d, String, GPS_INFO)) {
         // this device send GPS data only when fix is valid.
@@ -41,7 +41,7 @@ namespace {
 } // namespace
 
 
-void GPSBipInstall(PDeviceDescriptor_t d) {
+void GPSBipInstall(DeviceDescriptor_t* d) {
 
   static_assert(DeviceDesciptorList.size() == std::size(DeviceNameList));
 

@@ -44,11 +44,11 @@ IntConvertStruct sStatus;
 volatile BOOL bSending = false;
 
 
-BOOL AR620xIsRadio(PDeviceDescriptor_t d) {
+BOOL AR620xIsRadio(DeviceDescriptor_t* d) {
   return TRUE;
 }
 
-int SendCommand(PDeviceDescriptor_t d, uint8_t szTmp[], uint16_t len) {
+int SendCommand(DeviceDescriptor_t* d, uint8_t szTmp[], uint16_t len) {
 
   bSending = true;
   d->Com->Write(szTmp,len);
@@ -178,7 +178,7 @@ static int  SetAR620xStation(uint8_t *Command ,int Active_Passive, unsigned khz,
   return len;
 }
 
-BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
+BOOL AR620xPutVolume(DeviceDescriptor_t* d, int Volume) {
   uint8_t  szTmp[MAX_CMD_LEN];
 
   if (d && !d->Disabled && d->Com) {
@@ -200,7 +200,7 @@ BOOL AR620xPutVolume(PDeviceDescriptor_t d, int Volume) {
   return TRUE;
 }
 
-BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
+BOOL AR620xPutSquelch(DeviceDescriptor_t* d, int Squelch) {
   uint8_t szTmp[MAX_CMD_LEN];
 
   if (d && !d->Disabled && d->Com) {
@@ -223,7 +223,7 @@ BOOL AR620xPutSquelch(PDeviceDescriptor_t d, int Squelch) {
 }
 
 
-BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName) {
+BOOL AR620xPutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
   uint8_t szTmp[MAX_CMD_LEN];
   if (d && !d->Disabled && d->Com) {
     TestLog(_T(". AR620x Active Station %7.3fMHz %s"), (khz / 1000.), StationName);
@@ -239,7 +239,7 @@ BOOL AR620xPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* Stati
 }
 
 
-BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName) {
+BOOL AR620xPutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName) {
   uint8_t  szTmp[MAX_CMD_LEN];
   if (d && !d->Disabled && d->Com) {
     int len = SetAR620xStation(szTmp ,PASSIVE_STATION, khz, StationName);
@@ -255,7 +255,7 @@ BOOL AR620xPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* Sta
 }
 
 
-BOOL AR620xStationSwap(PDeviceDescriptor_t d) {
+BOOL AR620xStationSwap(DeviceDescriptor_t* d) {
   uint8_t szTmp[MAX_CMD_LEN];
   if (d && !d->Disabled && d->Com) {
     uint8_t len = 0;
@@ -280,7 +280,7 @@ BOOL AR620xStationSwap(PDeviceDescriptor_t d) {
 }
 
 
-BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode) {
+BOOL AR620xRadioMode(DeviceDescriptor_t* d, int mode) {
   uint8_t  szTmp[MAX_CMD_LEN];
   if (d && !d->Disabled && d->Com) {
     if (mode > 0) {
@@ -315,7 +315,7 @@ BOOL AR620xRadioMode(PDeviceDescriptor_t d, int mode) {
  * szCommand      AR620x binary code to be converted
  * len            length of the AR620x binary code to be converted
  ****************************************************************************/
-int AR620x_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len, uint16_t CRC) {
+int AR620x_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len, uint16_t CRC) {
   if(d == NULL) return 0;
   if(szCommand == NULL) return 0;
   if(len == 0)          return 0;
@@ -412,7 +412,7 @@ int AR620x_Convert_Answer(DeviceDescriptor_t *d, uint8_t *szCommand, int len, ui
   return processed;  /* return the number of converted characters */
 }
 
-BOOL AR620xParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+BOOL AR620xParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
   int cnt=0;
   uint16_t CalCRC=0;
   static  uint16_t Recbuflen=0;
@@ -471,7 +471,7 @@ BOOL AR620xParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *
 
 } // namespace
 
-void AR620xInstall(PDeviceDescriptor_t d){
+void AR620xInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("Dittel AR620x"));
   d->IsRadio        = AR620xIsRadio;
   d->PutVolume      = AR620xPutVolume;

@@ -55,7 +55,7 @@ typedef union{
 #define highbyte(a)  (((a)>>8) & 0xFF)
 #define lowbyte(a)   ((a) & 0xFF)
 
-uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout);
+uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout);
 bool BlockReceived();
 bool IsInBinaryMode();
 bool SetBinaryModeFlag(bool bBinMode);
@@ -83,28 +83,28 @@ public:
     return TEXT("Flarm"); 
   }
 
-  static BOOL Open(PDeviceDescriptor_t d);
-  static BOOL Close (PDeviceDescriptor_t d);
+  static BOOL Open(DeviceDescriptor_t* d);
+  static BOOL Close (DeviceDescriptor_t* d);
   static DeviceDescriptor_t* GetDevice(void) {
     return m_pDevice;
   }
 
 private:
-  static void Install(PDeviceDescriptor_t d);
+  static void Install(DeviceDescriptor_t* d);
 
 // Receive data
 private:
 
-  static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
-  static BOOL FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL FlarmParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO);
+  static BOOL FlarmParse(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
   // Send Command
-  static BOOL FlarmReboot(PDeviceDescriptor_t d);
+  static BOOL FlarmReboot(DeviceDescriptor_t* d);
 
 
 
 
   // Config
-  static BOOL Config(PDeviceDescriptor_t d);
+  static BOOL Config(DeviceDescriptor_t* d);
   static void OnCloseClicked(WndButton* pWnd);
 
 
@@ -112,7 +112,7 @@ private:
   static void OnRebootClicked(WndButton* pWnd);
 
   static CallBackTableEntry_t CallBackTable[];
-  static PDeviceDescriptor_t m_pDevice;
+  static DeviceDescriptor_t* m_pDevice;
 };
 
 typedef struct

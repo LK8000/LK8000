@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void XCOM760Install(PDeviceDescriptor_t d);
+void XCOM760Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t xcom760Register() {

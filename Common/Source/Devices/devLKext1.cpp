@@ -11,9 +11,9 @@
 #include "Calc/Vario.h"
 #include "devLK8EX1.h"
 
-static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL LK8EX1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
 
-BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
   if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0) {
     if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
       return FALSE;
@@ -23,7 +23,7 @@ BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS){
   return FALSE;
 }
 
-void LK8EX1Install(PDeviceDescriptor_t d){
+void LK8EX1Install(DeviceDescriptor_t* d){
 
   _tcscpy(d->Name, TEXT("LK8EX1"));
   d->ParseNMEA = LK8EX1ParseNMEA;
@@ -71,7 +71,7 @@ void LK8EX1Install(PDeviceDescriptor_t d){
 
 */
 
-static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL LK8EX1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 {
 
   TCHAR ctemp[80];

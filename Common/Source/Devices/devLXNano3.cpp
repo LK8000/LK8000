@@ -39,7 +39,7 @@
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32
 
-PDeviceDescriptor_t DevLXNanoIII::m_pDevice=NULL;
+DeviceDescriptor_t* DevLXNanoIII::m_pDevice=NULL;
 BOOL DevLXNanoIII::m_bShowValues = false;
 BOOL DevLXNanoIII::bIGC_Download = false;
 BOOL DevLXNanoIII::m_bDeclare = false;
@@ -65,9 +65,9 @@ int iNano3_PDABaudrate = 0;
 //double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
 BOOL Nano3_bValid = false;
 int Nano3_NMEAddCheckSumStrg( TCHAR szStrg[] );
-BOOL Nano3_PutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL Nano3_PutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs);
+BOOL Nano3_PutMacCready(DeviceDescriptor_t* d, double MacCready);
+BOOL Nano3_PutBallast(DeviceDescriptor_t* d, double Ballast);
+BOOL Nano3_PutBugs(DeviceDescriptor_t* d, double Bugs);
 
 
 
@@ -127,7 +127,7 @@ TCHAR LxValueStr[_LAST][ MAX_VAL_STR_LEN];
 //  status: Stop=0,CanStop=1,Start=2
 
 
-BOOL  DevLXNanoIII::Values( PDeviceDescriptor_t d)
+BOOL  DevLXNanoIII::Values(DeviceDescriptor_t* d)
 {
   bool res = false;
 
@@ -150,7 +150,7 @@ BOOL  DevLXNanoIII::Values( PDeviceDescriptor_t d)
 /// @retval false device cannot be installed
 ///
 //static
-void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
+void DevLXNanoIII::Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, GetName());
   d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
@@ -169,7 +169,7 @@ void DevLXNanoIII::Install(PDeviceDescriptor_t d) {
     PlatfEndian::To32BE(0x01000000), NEWLINE);
 } // Install()
 
-BOOL DevLXNanoIII::Open(PDeviceDescriptor_t d) {
+BOOL DevLXNanoIII::Open(DeviceDescriptor_t* d) {
   Nano3_PutMacCready(d, MACCREADY);
   Nano3_PutBallast(d, BALLAST);
   Nano3_PutBugs(d, BUGS);
@@ -210,7 +210,7 @@ return lBaudrate;
 
 
 
-BOOL DevLXNanoIII::Nano3_DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
+BOOL DevLXNanoIII::Nano3_DirectLink(DeviceDescriptor_t* d, BOOL bLinkEnable)
 {
 TCHAR  szTmp[MAX_NMEA_LEN];
 #define CHANGE_DELAY 10
@@ -285,7 +285,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 /// @retval true if the sentence has been parsed
 ///
 // static
-BOOL DevLXNanoIII::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
   auto wait_ack = d->lock_wait_ack();
   if (wait_ack && wait_ack->check(sentence)) {
     return TRUE;
@@ -383,14 +383,14 @@ CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
 
 
-BOOL DevLXNanoIII::SetupLX_Sentence(PDeviceDescriptor_t d)
+BOOL DevLXNanoIII::SetupLX_Sentence(DeviceDescriptor_t* d)
 {
   SendNmea(d, TEXT("PLXV0,NMEARATE,W,2,5,10,10,1,5,5"));
   return true;
 }
 
 
-BOOL DevLXNanoIII::SetDataText( PDeviceDescriptor_t d, ValueStringIndex Idx,  const TCHAR ValueText[])
+BOOL DevLXNanoIII::SetDataText(DeviceDescriptor_t* d, ValueStringIndex Idx,  const TCHAR ValueText[])
 {
 	bool res = false;
 if(d)
@@ -416,7 +416,7 @@ BOOL DevLXNanoIII::ClearDataText( ValueStringIndex Idx )
 }
 
 
-BOOL DevLXNanoIII::ShowData(WndForm* wf ,PDeviceDescriptor_t d)
+BOOL DevLXNanoIII::ShowData(WndForm* wf , DeviceDescriptor_t* d)
 {
   WndProperty *wp;
   if(!wf) return false;
@@ -634,7 +634,7 @@ static bool OnTimer(WndForm* pWnd)
   return true;
 }
 
-BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
+BOOL DevLXNanoIII::Config(DeviceDescriptor_t* d){
 
   WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P);
   if(wf) {
@@ -680,7 +680,7 @@ BOOL DevLXNanoIII::Config(PDeviceDescriptor_t d){
 /// @retval false error during declaration (description in @p errBuf)
 ///
 // static
-BOOL DevLXNanoIII::DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
+BOOL DevLXNanoIII::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]) {
 
   // to declared Start, TPs, and Finish we will add Takeoff and Landing,
   // so maximum NB of declared TPs is Decl::max_wp_count - 2
@@ -871,7 +871,7 @@ void DevLXNanoIII::Class::SetName(const TCHAR* text){
 /// @retval false error (description in @p errBuf)
 ///
 // static
-bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
+bool DevLXNanoIII::SendNmea(DeviceDescriptor_t* d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
 
   ScopeLock Lock(CritSec_Comm);
   if(!d || !d->Com) {
@@ -896,7 +896,7 @@ bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[], unsigned e
 } // SendNmea()
 
 
-bool DevLXNanoIII::SendNmea(PDeviceDescriptor_t d, const TCHAR buf[]){
+bool DevLXNanoIII::SendNmea(DeviceDescriptor_t* d, const TCHAR buf[]){
   TCHAR errBuf[100] = _T("");
 
   DevLXNanoIII::SendNmea(d, buf, std::size(errBuf), errBuf);
@@ -1120,7 +1120,7 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
 }
 
 
-BOOL DevLXNanoIII::PLXVC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
 bool bCRCok = NMEAParser::NMEAChecksum(sentence);
@@ -1219,7 +1219,7 @@ return(true);
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -1319,7 +1319,7 @@ BOOL DevLXNanoIII::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
+BOOL DevLXNanoIII::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -1381,7 +1381,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
+BOOL DevLXNanoIII::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -1499,7 +1499,7 @@ BOOL DevLXNanoIII::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+BOOL DevLXNanoIII::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -1531,7 +1531,7 @@ BOOL DevLXNanoIII::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 
 
 
-BOOL DevLXNanoIII::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 // $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
 // Sc  float (m/s)
@@ -1549,7 +1549,7 @@ BOOL DevLXNanoIII::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 
 
-BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   TCHAR szTmp[MAX_NMEA_LEN];
   double alt=0, airspeed=0;
@@ -1667,7 +1667,7 @@ BOOL DevLXNanoIII::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 } // PLXVF()
 
 
-BOOL DevLXNanoIII::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   double Batt;
   double OAT;
@@ -1710,7 +1710,7 @@ BOOL DevLXNanoIII::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 } // PLXVS()
 
 
-BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
   const auto& Port = PortConfig[d->PortNumber];
@@ -1860,7 +1860,7 @@ BOOL DevLXNanoIII::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 
 
 
-BOOL Nano3_PutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL Nano3_PutMacCready(DeviceDescriptor_t* d, double MacCready){
   TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
@@ -1881,7 +1881,7 @@ BOOL Nano3_PutMacCready(PDeviceDescriptor_t d, double MacCready){
 }
 
 
-BOOL Nano3_PutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL Nano3_PutBallast(DeviceDescriptor_t* d, double Ballast){
   TCHAR  szTmp[MAX_NMEA_LEN];
   if(!d)  return false;
   if(Nano3_bValid == false) return false;
@@ -1901,7 +1901,7 @@ BOOL Nano3_PutBallast(PDeviceDescriptor_t d, double Ballast){
 }
 
 
-BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs){
+BOOL Nano3_PutBugs(DeviceDescriptor_t* d, double Bugs){
   TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(!d)  return false;
@@ -1921,7 +1921,7 @@ BOOL Nano3_PutBugs(PDeviceDescriptor_t d, double Bugs){
 }
 
 
-BOOL DevLXNanoIII::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
+BOOL DevLXNanoIII::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
 
@@ -1976,7 +1976,7 @@ BOOL DevLXNanoIII::PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt) {
 
 
 
-BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
@@ -1999,7 +1999,7 @@ BOOL DevLXNanoIII::GPRMB(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO
 }
 
 
-BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
@@ -2060,7 +2060,7 @@ BOOL DevLXNanoIII::PLXVTARG(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_I
 
 
 
-BOOL DevLXNanoIII::PLXVC_INFO(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVC_INFO(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
@@ -2110,7 +2110,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
 } // PLXVC
 
-    void DevLXNanoIII::Device(PDeviceDescriptor_t d) 
+    void DevLXNanoIII::Device(DeviceDescriptor_t* d) 
 	 {
 
 		 if(d) 

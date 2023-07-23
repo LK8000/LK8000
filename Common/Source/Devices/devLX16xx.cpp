@@ -20,9 +20,9 @@ int  LX16xxAlt=0;
 double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
 BOOL bValid = false;
 int LX16xxNMEAddCheckSumStrg( TCHAR szStrg[] );
-BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs);
+BOOL LX16xxPutMacCready(DeviceDescriptor_t* d, double MacCready);
+BOOL LX16xxPutBallast(DeviceDescriptor_t* d, double Ballast);
+BOOL LX16xxPutBugs(DeviceDescriptor_t* d, double Bugs);
 
 //____________________________________________________________class_definitions_
 
@@ -36,7 +36,7 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs);
 /// @retval false device cannot be installed
 ///
 //static
-void DevLX16xx::Install(PDeviceDescriptor_t d)
+void DevLX16xx::Install(DeviceDescriptor_t* d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -85,7 +85,7 @@ TCHAR  szCheck[254];
 }
 
 
-BOOL DevLX16xx::LX16xxDirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
+BOOL DevLX16xx::LX16xxDirectLink(DeviceDescriptor_t* d, BOOL bLinkEnable)
 {
 TCHAR  szTmp[254];
   if(bLinkEnable)
@@ -126,7 +126,7 @@ TCHAR  szTmp[254];
 }
 
 
-bool DevLX16xx::SetupLX_Sentence(PDeviceDescriptor_t d)
+bool DevLX16xx::SetupLX_Sentence(DeviceDescriptor_t* d)
 {
 TCHAR  szTmp[254];
 
@@ -154,7 +154,7 @@ TCHAR  szTmp[254];
 
 
 
-BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL LX16xxPutMacCready(DeviceDescriptor_t* d, double MacCready){
   TCHAR  szTmp[254];
   if(bValid == false) {
     return false;
@@ -166,7 +166,7 @@ BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
 }
 
 
-BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL LX16xxPutBallast(DeviceDescriptor_t* d, double Ballast){
   TCHAR  szTmp[254];
   if(bValid == false) {
     return false;
@@ -182,7 +182,7 @@ BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast){
 
 // ToDo raw 2.5% may cause circular updates due to inaccurate steps
 // can be solved later update from LX to LK works
-BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
+BOOL LX16xxPutBugs(DeviceDescriptor_t* d, double Bugs){
   TCHAR  szTmp[254];
 
   if(bValid == false) {
@@ -214,7 +214,7 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX16xx::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 {
   static int i=40;
 
@@ -255,7 +255,7 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -318,7 +318,7 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP1(PDeviceDescriptor_t d, const TCHAR* String, NMEA_INFO* pGPS)
+bool DevLX16xx::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -381,7 +381,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
+bool DevLX16xx::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -434,7 +434,7 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO*)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLX16xx::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -464,7 +464,7 @@ bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 } // LXWP3()
 
 
-bool DevLX16xx::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX16xx::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
 // $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>

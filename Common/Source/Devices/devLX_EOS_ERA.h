@@ -69,8 +69,8 @@ void StartEOS_IGCReadThread(void) ;
 void StopEOS_IGCReadThread(void) ;
 bool SetEOSBinaryModeFlag(bool ) ;
 
-uint8_t EOSRecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) ;
-uint8_t EOSRecChar16(DeviceDescriptor_t *d, uint16_t *inchar, uint16_t Timeout) ;
+uint8_t EOSRecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) ;
+uint8_t EOSRecChar16(DeviceDescriptor_t* d, uint16_t *inchar, uint16_t Timeout) ;
 bool EOSBlockReceived(void);
 class DevLX_EOS_ERA : public DevLXNanoIII
 {
@@ -90,7 +90,7 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     DevLX_EOS_ERA() {}
 
     /// Installs device specific handlers.
-    static void Install(PDeviceDescriptor_t d);
+    static void Install(DeviceDescriptor_t* d);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr
@@ -98,36 +98,36 @@ class DevLX_EOS_ERA : public DevLXNanoIII
       return _T("LX EOS/ERA");  
     }
 
-    static BOOL Open(PDeviceDescriptor_t d);
+    static BOOL Open(DeviceDescriptor_t* d);
 
     static bool OnTimer(WndForm* pWnd);
     /// Writes declaration into the logger.
-    static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-   static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
-   static BOOL EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+   static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+   static BOOL EOSParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO);
    
-   static BOOL Config(PDeviceDescriptor_t d);
+   static BOOL Config(DeviceDescriptor_t* d);
    static void OnCloseClicked(WndButton* pWnd);
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
- //  static BOOL LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-  static BOOL LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-  static BOOL LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-  // static BOOL LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+ //  static BOOL LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+  // static BOOL LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
 
-   static BOOL GetTarget(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL GetTarget(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
 
-   static BOOL LXDT(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXBC(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL SENS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
-   static BOOL SetupLX_Sentence(PDeviceDescriptor_t d);
-   static BOOL PutTarget(PDeviceDescriptor_t d, const WAYPOINT& wpt);
+   static BOOL LXDT(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXBC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL SENS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
+   static BOOL SetupLX_Sentence(DeviceDescriptor_t* d);
+   static BOOL PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt);
 
-   static BOOL ShowData(WndForm* wf ,PDeviceDescriptor_t d);
+   static BOOL ShowData(WndForm* wf , DeviceDescriptor_t* d);
    static void GetDirections(WndButton* pWnd);
    static BOOL ShowValues(void) {return m_bShowValues;};
    static void ShowValues(BOOL bShow) {m_bShowValues = bShow;};
@@ -139,23 +139,23 @@ class DevLX_EOS_ERA : public DevLXNanoIII
    static BOOL m_bRadioEnabled;
    static BOOL m_bTriggered;
 
-   static BOOL EOSRadioEnabled(PDeviceDescriptor_t d) { return m_bRadioEnabled;};
-   static BOOL EOSPutMacCready(PDeviceDescriptor_t d, double MacCready);
-   static BOOL EOSPutBallast(PDeviceDescriptor_t d, double Ballast);
-   static BOOL EOSPutBugs(PDeviceDescriptor_t d, double Bugs);
-   static BOOL PutQNH(PDeviceDescriptor_t d, double qnh_mb);
-   static BOOL EOSRequestRadioInfo(PDeviceDescriptor_t d);
-   static BOOL EOSPutVolume(PDeviceDescriptor_t d, int Volume) ;
-   static BOOL EOSPutSquelch(PDeviceDescriptor_t d, int Squelch) ;
-   static BOOL EOSPutFreqActive(PDeviceDescriptor_t d, unsigned khz, const TCHAR* StationName);
-   static BOOL EOSPutFreqStandby(PDeviceDescriptor_t d, unsigned khz,  const TCHAR* StationName);
-   static BOOL EOSStationSwap(PDeviceDescriptor_t d) ;
-   static BOOL EOSRadioMode(PDeviceDescriptor_t d, int mode) ;
+   static BOOL EOSRadioEnabled(DeviceDescriptor_t* d) { return m_bRadioEnabled;};
+   static BOOL EOSPutMacCready(DeviceDescriptor_t* d, double MacCready);
+   static BOOL EOSPutBallast(DeviceDescriptor_t* d, double Ballast);
+   static BOOL EOSPutBugs(DeviceDescriptor_t* d, double Bugs);
+   static BOOL PutQNH(DeviceDescriptor_t* d, double qnh_mb);
+   static BOOL EOSRequestRadioInfo(DeviceDescriptor_t* d);
+   static BOOL EOSPutVolume(DeviceDescriptor_t* d, int Volume) ;
+   static BOOL EOSPutSquelch(DeviceDescriptor_t* d, int Squelch) ;
+   static BOOL EOSPutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName);
+   static BOOL EOSPutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName);
+   static BOOL EOSStationSwap(DeviceDescriptor_t* d) ;
+   static BOOL EOSRadioMode(DeviceDescriptor_t* d, int mode) ;
 
-   static BOOL EOSSetMC(PDeviceDescriptor_t d,float fTmp, const TCHAR *info );
-   static BOOL EOSSetBAL(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
-   static BOOL EOSSetBUGS(PDeviceDescriptor_t d,float fTmp, const TCHAR *info);
-   static BOOL EOSSetSTF(PDeviceDescriptor_t d,int iTmp, const TCHAR *info);
+   static BOOL EOSSetMC(DeviceDescriptor_t* d,float fTmp, const TCHAR *info );
+   static BOOL EOSSetBAL(DeviceDescriptor_t* d,float fTmp, const TCHAR *info);
+   static BOOL EOSSetBUGS(DeviceDescriptor_t* d,float fTmp, const TCHAR *info);
+   static BOOL EOSSetSTF(DeviceDescriptor_t* d,int iTmp, const TCHAR *info);
 
 }; // DevLX_EOS_ERA
 

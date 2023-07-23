@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void disInstall(PDeviceDescriptor_t d);
+void disInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t disRegister() {

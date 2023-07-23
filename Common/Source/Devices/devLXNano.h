@@ -62,7 +62,7 @@ class DevLXNano : public DevLX
     DevLXNano() {}
 
     /// Installs device specific handlers.
-    static void Install(PDeviceDescriptor_t d);
+    static void Install(DeviceDescriptor_t* d);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr
@@ -71,13 +71,13 @@ class DevLXNano : public DevLX
     }
 
     /// Writes declaration into the logger.
-    static BOOL DeclareTask(PDeviceDescriptor_t d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
+    static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Starts LX NMEA mode.
-    static bool StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
+    static bool StartNMEAMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Starts LX command mode.
-    static bool StartCMDMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
+    static bool StartCMDMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Fills out decl->Flight data.
     static bool FillFlight(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
@@ -86,10 +86,10 @@ class DevLXNano : public DevLX
     static bool FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Writes task declaration into the device.
-    static bool WriteDecl(PDeviceDescriptor_t d, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
+    static bool WriteDecl(DeviceDescriptor_t* d, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Writes competition class declaration into the device.
-    static bool WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[]);
+    static bool WriteClass(DeviceDescriptor_t* d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Calculate LX CRC value for the given data.
     static byte CalcCrc(int length, const void* data);

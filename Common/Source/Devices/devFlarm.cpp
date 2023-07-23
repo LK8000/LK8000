@@ -24,10 +24,10 @@
 
 
 
-PDeviceDescriptor_t CDevFlarm::m_pDevice=NULL;
+DeviceDescriptor_t* CDevFlarm::m_pDevice=NULL;
 
 
-void CDevFlarm::Install( PDeviceDescriptor_t d ) {
+void CDevFlarm::Install(DeviceDescriptor_t* d ) {
   StartupStore(_T("Flarm Drvier Install %s"), NEWLINE);
 	_tcscpy(d->Name, GetName());
 	d->ParseNMEA = FlarmParse ; // ParseNMEA;
@@ -44,7 +44,7 @@ namespace {
   bool bFLARM_BinMode = false;
 }
 
-BOOL CDevFlarm::FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL CDevFlarm::FlarmParse(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
   if (IsInBinaryMode()) {
     if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0) {
       StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
@@ -55,7 +55,7 @@ BOOL CDevFlarm::FlarmParse(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* in
   return false;
 }
 
-BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO) {
+BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
   if ((!d) || (!String) || (!len)) {
     return FALSE;
   }
@@ -98,7 +98,7 @@ bool SetBinaryModeFlag(bool bBinMode) {
   return OldVal;
 }
 
-uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
+uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
   ScopeLock lock(mutex);
 
   while(buffered_data.empty()) {
@@ -113,12 +113,12 @@ uint8_t RecChar( DeviceDescriptor_t *d, uint8_t *inchar, uint16_t Timeout) {
   return REC_NO_ERROR;
 }
 
-BOOL CDevFlarm::Open( PDeviceDescriptor_t d) {
+BOOL CDevFlarm::Open(DeviceDescriptor_t* d) {
 	m_pDevice = d;
 	return TRUE;
 }
 
-BOOL CDevFlarm::Close (PDeviceDescriptor_t d) {
+BOOL CDevFlarm::Close (DeviceDescriptor_t* d) {
   if(IsInBinaryMode()) { // if FLARM is in Binary Mode?
     FlarmReboot(d);
   }
@@ -138,7 +138,7 @@ CallBackTableEntry_t CDevFlarm::CallBackTable[]={
   EndCallBackEntry()
 };
 
-BOOL CDevFlarm::Config(PDeviceDescriptor_t d){
+BOOL CDevFlarm::Config(DeviceDescriptor_t* d){
         if(m_pDevice != d) {
                 StartupStore(_T("Flarm Config : Invalide device descriptor%s"), NEWLINE);
                 return FALSE;
@@ -231,7 +231,7 @@ void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
     }
 }
 
-BOOL CDevFlarm::FlarmReboot(PDeviceDescriptor_t d) {
+BOOL CDevFlarm::FlarmReboot(DeviceDescriptor_t* d) {
     if (d && d->Com) {
         LeaveBinModeWithReset(d);
     }

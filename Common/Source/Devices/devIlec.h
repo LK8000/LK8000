@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-void IlecInstall(PDeviceDescriptor_t d);
+void IlecInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t IlecRegister() {
