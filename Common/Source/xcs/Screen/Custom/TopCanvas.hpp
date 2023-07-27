@@ -54,8 +54,7 @@ Copyright_License {
 #endif
 
 #ifdef  KOBO
-#include "Poco/Timestamp.h"
-#include "Poco/Timespan.h"
+#include "Time/PeriodClock.hpp"
 #endif
 
 #include <stdint.h>
@@ -172,9 +171,7 @@ class TopCanvas
    * Runtime flag for unghost eInk Screen
    */
   bool unghost;
-  Poco::Timestamp unghost_request_time;
-  static const Poco::Timespan unghost_delay;
-
+  PeriodClock unghost_request_time;
   
 #endif /* KOBO */
 
@@ -302,7 +299,7 @@ public:
 
   void UnGhost() { 
       unghost = true; 
-      unghost_request_time.update(); 
+      unghost_request_time.Update(); 
   }
 #endif
 

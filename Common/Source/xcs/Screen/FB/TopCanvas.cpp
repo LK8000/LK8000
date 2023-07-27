@@ -50,7 +50,6 @@ Copyright_License {
 #endif
 
 #ifdef KOBO  
-const Poco::Timespan TopCanvas::unghost_delay(1,0); // 1s + 0 to gps fix interval delay before do unghost
 
 static unsigned
 GetWidth(const struct fb_var_screeninfo &vinfo) {
@@ -319,7 +318,8 @@ TopCanvas::Flip()
   };
  
   if(unghost) {
-    if (unghost_request_time.isElapsed(unghost_delay.totalMicroseconds())) {
+    // 1s + 0 to gps fix interval delay before do unghost
+    if (unghost_request_time.Check(1000)) {
         unghost = false;
         epd_update_data.flags |= EPDC_FLAG_ENABLE_INVERSION;
         ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);

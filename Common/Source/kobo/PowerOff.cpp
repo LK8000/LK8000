@@ -24,7 +24,7 @@
 #include "DisplayOrientation.hpp"
 #include "Kobo/Model.hpp"
 #include "utils/stl_utils.h"
-
+#include <iterator>
 #include <unistd.h>
 
 /**************************************************************
