@@ -294,7 +294,7 @@ void Topology::Open() {
   shapefileopen = false;
 
   if (msShapefileOpen(&shpfile, "rb", filename, true) == -1) {
-    StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
+    StartupStore(_T("------ Topology: Open FAILED for <%s>"), from_utf8(filename).c_str());
     return;
   }
 
