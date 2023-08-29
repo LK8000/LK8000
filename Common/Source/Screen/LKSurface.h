@@ -139,6 +139,13 @@ public:
     void Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect);
     void Polygon(const POINT *apt, int cpt);
 
+
+    template<typename Tarray>
+    void Polygon(const Tarray& array) {
+        Polygon(array.data(), array.size());
+    }
+
+
     void Polyline(const POINT *apt, int cpt);
     void Polyline(const POINT *apt, int cpt, const RECT& ClipRect);
 

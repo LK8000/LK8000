@@ -834,6 +834,7 @@ SCREEN := \
 	$(SRC_SCREEN)/LKWindowSurface.cpp \
 	$(SRC_SCREEN)/LKBitmapSurface.cpp \
 	$(SRC_SCREEN)/LKIcon.cpp \
+	$(SRC_SCREEN)/PolygonRenderer.cpp \
 
 ifeq ($(CONFIG_WIN32),y)
 SCREEN += \
@@ -841,15 +842,16 @@ SCREEN += \
 	
 endif
 
+ifneq ($(OPENGL),y)
+SCREEN += \
+	$(SRC_SCREEN)/Default/PolygonDrawCallBack.cpp \
+
+endif	
+
+
 ifeq ($(TARGET_HAS_MALI),y)
 SCREEN += \
 	$(SRC_SCREEN)/Sunxi/mali.cpp \
-
-endif
-
-ifeq ($(OPENGL),y)
-SCREEN += \
-	$(SRC_SCREEN)/OpenGL/PolygonRenderer.cpp
 
 endif
 
@@ -1106,12 +1108,7 @@ TERRAIN	:=\
 TOPOL	:=\
 	$(TOP)/Topology.cpp		\
 	$(TOP)/ShapeSpecialRenderer.cpp	\
-	
-ifeq ($(OPENGL),y)
-TOPOL	+=\
-	$(TOP)/OpenGL/GLShapeRenderer.cpp  \
-	
-endif
+	$(TOP)/ShapePolygonRenderer.cpp  \
 
 MAPDRAW	:=\
 	$(MAP)/DrawTerrain.cpp		\
@@ -1548,9 +1545,7 @@ ifneq ($(CONFIG_LINUX),y)
  endif
 endif
 
-ifeq ($(OPENGL),y)
 OBJS	+= $(BIN)/glutess.a 
-endif
 
 IGNORE	:= \( -name .git \) -prune -o
 

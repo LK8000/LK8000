@@ -218,7 +218,7 @@ add_library( LK8000 SHARED
     Common/Source/Screen/LKWindowSurface.cpp
     Common/Source/Screen/LKBitmapSurface.cpp
     Common/Source/Screen/LKIcon.cpp
-    Common/Source/Screen//OpenGL/PolygonRenderer.cpp
+    Common/Source/Screen/PolygonRenderer.cpp
 
     Common/Source/Airspace/LKAirspace.cpp
     Common/Source/Airspace/Sonar.cpp
@@ -552,8 +552,7 @@ add_library( LK8000 SHARED
 
     Common/Source/Topology/Topology.cpp
     Common/Source/Topology/ShapeSpecialRenderer.cpp
-
-    Common/Source/Topology/OpenGL/GLShapeRenderer.cpp
+    Common/Source/Topology/ShapePolygonRenderer.cpp
 
     Common/Source/MapDraw/DrawTerrain.cpp
     Common/Source/MapDraw/DrawTopology.cpp

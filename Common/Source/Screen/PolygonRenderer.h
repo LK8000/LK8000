@@ -16,22 +16,30 @@
 #include <vector>
 #include <array>
 #include <list>
+#include <functional>
 #include "Screen/Point.hpp"
+#include "Math/Point2D.hpp"
+#include "Screen/PolygonDrawCallback.h"
 
-
-class LKSurface;
 
 class PolygonRenderer {
-public:
-  PolygonRenderer();
+
+  PolygonRenderer() = delete;
   PolygonRenderer(const PolygonRenderer& orig) = delete;
   PolygonRenderer(PolygonRenderer&& orig) = delete;
+
+public:
+
+  using draw_callback_t = std::function<void(GLenum, std::vector<FloatPoint>)>;
+
+  explicit PolygonRenderer(draw_callback_t&& callback);
 
   virtual ~PolygonRenderer();
 
   void BeginPolygon() {
-    gluTessBeginPolygon(tess, this );
+    gluTessBeginPolygon(tess, this);
   }
+
   void BeginContour() {
     gluTessBeginContour(tess);
   }
@@ -50,6 +58,8 @@ public:
   }
 
 private:
+  draw_callback_t draw_callback;
+
   GLUtesselator* tess;
   GLenum curr_type;
   std::vector<FloatPoint> curr_polygon;
@@ -70,4 +80,3 @@ private:
 };
 
 #endif /* POLYGONRENDERER_H */
-

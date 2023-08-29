@@ -58,7 +58,7 @@ Copyright_License {
 #include <assert.h>
 #include "utils/stl_utils.h"
 #include "utils/array_adaptor.h"
-#include "Screen/OpenGL/PolygonRenderer.h"
+#include "Screen/PolygonRenderer.h"
 
 
 AllocatedArray<RasterPoint> Canvas::vertex_buffer;
@@ -278,7 +278,7 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
       blend = std::make_unique<const ScopeAlphaBlend>();
     }
 
-    static PolygonRenderer renderer;
+    PolygonRenderer renderer(PolygonDrawCallback{});
     renderer.BeginPolygon();
     renderer.BeginContour();
 

@@ -3,25 +3,25 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *
- * File:   GLShapeRenderer.h
+ * File:   ShapePolygonRenderer.h
  * Author: Bruno de Lacheisserie
  *
  * Created on August 26, 2015, 7:37 PM
  */
 
-#ifndef GLSHAPERENDERER_H
-#define	GLSHAPERENDERER_H
+#ifndef SHAPEPOLYGONRENDERER_H
+#define	SHAPEPOLYGONRENDERER_H
 
-#include "Screen/OpenGL/PolygonRenderer.h"
-#include "../ShapeSpecialRenderer.h"
+#include "Screen/PolygonRenderer.h"
+#include "ShapeSpecialRenderer.h"
 
 class Brush;
 class XShape;
 class ScreenProjection;
 
-class GLShapeRenderer final : protected PolygonRenderer {
+class ShapePolygonRenderer final : protected PolygonRenderer {
 public:
-    GLShapeRenderer() = default;
+    using PolygonRenderer::PolygonRenderer;
 
     void setClipRect(const PixelRect& rect) {
         clipRect = rect;
@@ -37,8 +37,7 @@ private:
 
     bool noLabel;
     PixelRect clipRect;
-    FloatPoint curr_LabelPos;
+    RasterPoint curr_LabelPos;
 };
 
-#endif	/* GLSHAPERENDERER_H */
-
+#endif	/* SHAPEPOLYGONRENDERER_H */

@@ -3,31 +3,31 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *
- * File:   GLShapeRenderer.cpp
+ * File:   ShapePolygonRenderer.cpp
  * Author: Bruno de Lacheisserie
  * 
  * Created on August 26, 2015, 7:37 PM
  */
 
-#include "GLShapeRenderer.h"
+#include "ShapePolygonRenderer.h"
 
 #include <memory>
 #include "utils/array_adaptor.h"
-
-#include "Screen/OpenGL/Scope.hpp"
-#include "Screen/OpenGL/VertexPointer.hpp"
 
 #include "externs.h"
 #include "Topology.h"
 #include "../Draw/ScreenProjection.h"
 
+#ifdef ENABLE_OPENGL
+#include "Screen/OpenGL/Scope.hpp"
 
 #ifdef USE_GLSL
-#include "Screen/OpenGL/Shaders.hpp"
 #include "Screen/OpenGL/Program.hpp"
 #endif
 
-void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj) {
+#endif
+
+void ShapePolygonRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj) {
   /*
    OpenGL cannot draw complex polygons so we need to use a Tessallator to draw the polygon using a GL_TRIANGLE_FAN
    */
@@ -35,37 +35,36 @@ void GLShapeRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& S
   OpenGL::solid_shader->Use();
 #endif
 
+#ifdef ENABLE_OPENGL
   brush.Bind();
 
   std::unique_ptr<const ScopeAlphaBlend> blend;
   if(!brush.IsOpaque()) {
     blend = std::make_unique<const ScopeAlphaBlend>();
   }
+#endif
 
-  curr_LabelPos.x = clipRect.right;
-  curr_LabelPos.y = clipRect.bottom;
+#ifdef HAVE_GLES  
+  using ScreenPoint = FloatPoint;
+#else
+  using ScreenPoint = RasterPoint;
+#endif
+
+  curr_LabelPos =  { clipRect.right, clipRect.bottom };
 
   const shapeObj& shp = shape.shape;
 
-  FloatPoint prev_pt = {
-          std::numeric_limits<FloatPoint::scalar_type>::max(),
-          std::numeric_limits<FloatPoint::scalar_type>::max()
-  };
-
-  const GeoToScreen<FloatPoint> ToScreen(_Proj);
+  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
   BeginPolygon();
   for( const lineObj& line : make_array(shp.line , shp.numlines)) {
     BeginContour();
     for( const pointObj &point : make_array(line.point, line.numpoints)) {
-      const FloatPoint pt = ToScreen(point);
+      const auto pt = ToScreen(point);
       if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
-        curr_LabelPos = pt;
+        curr_LabelPos = { pt.x, pt.y };
       }
-      if(ManhattanDistance(prev_pt, pt) > 1) {
-        AddVertex((GLdouble) pt.x, (GLdouble) pt.y);
-        prev_pt = pt;
-      }
+      AddVertex((GLdouble) pt.x, (GLdouble) pt.y);
     }
     EndContour();
   }

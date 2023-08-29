@@ -22,10 +22,8 @@
 #include <functional>
 #include "Utils.h"
 
-#ifdef ENABLE_OPENGL
-#include "OpenGL/GLShapeRenderer.h"
+#include "ShapePolygonRenderer.h"
 #include "shapelib/mapshape.h"
-#endif
 
 //#define DEBUG_TFC
 
@@ -547,7 +545,7 @@ bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
 }
 
 template <typename T>
-static T shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _Proj, std::vector<T>& points) {
+static T shape2Screen(const lineObj& line, const ScreenProjection& _Proj, std::vector<T>& points) {
 
   typedef typename T::scalar_type scalar_type;
   using std::placeholders::_1;
@@ -558,7 +556,7 @@ static T shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _P
   };
   const int last = line.numpoints-1;
   points.clear();
-  points.reserve((line.numpoints/iskip)+1);
+  points.reserve(line.numpoints + 1);
 
 
   const GeoToScreen<T> ToScreen(_Proj);
@@ -566,7 +564,7 @@ static T shape2Screen(const lineObj& line, int iskip, const ScreenProjection& _P
   // first point is inserted before loop for avoid to check "if(first)" inside loop
   points.push_back(ToScreen(line.point[0]));
 
-  for(int i = 1; i < last; i+=iskip) {
+  for(int i = 1; i < last; ++i) {
     const T pt = ToScreen(line.point[i]);
     if (pt.x<=leftPoint.x) {
       leftPoint = pt;
@@ -605,11 +603,14 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
     return;
   }
 
-#ifdef ENABLE_OPENGL
-  static GLShapeRenderer shape_renderer;
-  shape_renderer.setClipRect(rc);
-  shape_renderer.setNoLabel(nolabels);
+#ifdef HAVE_GLES  
+  using ScreenPoint = FloatPoint;
+#else
+  using ScreenPoint = RasterPoint;
 #endif
+  ShapePolygonRenderer shape_renderer(PolygonDrawCallback{Surface});
+  shape_renderer.setClipRect(PixelRect(rc));
+  shape_renderer.setNoLabel(nolabels);
 
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
@@ -624,30 +625,6 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   }
 
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
-
-#ifndef ENABLE_OPENGL
-  // get drawing info
-  int iskip = 1;
-
-  // attempt to bugfix 100615 polyline glitch with zoom over 33Km
-  // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
-  // != 5 and != 10
-  if (scaleCategory > 10) {
-    if (MapWindow::zoom.RealScale() > 0.25 * scaleThreshold) {
-        iskip = 2;
-    }
-    if (MapWindow::zoom.RealScale() > 0.5 * scaleThreshold) {
-        iskip = 3;
-    }
-    if (MapWindow::zoom.RealScale() > 0.75 * scaleThreshold) {
-        iskip = 4;
-    }
-  }
-
-  typedef RasterPoint ScreenPoint;
-#else
-  typedef FloatPoint ScreenPoint;
-#endif
 
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
   const rectObj screenRect = MapWindow::screenbounds_latlon;
@@ -679,7 +656,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
       case MS_SHAPE_LINE:
         if (checkVisible(shape, screenRect)) {
           for (const lineObj& line : make_array(shape.line, shape.numlines)) {
-            const ScreenPoint ptLabel = shape2Screen(line, 1, _Proj, points);
+            const ScreenPoint ptLabel = shape2Screen<ScreenPoint>(line, _Proj, points);
             Surface.Polyline(points.data(), points.size(), rc);
             cshape->renderSpecial(renderer, Surface, ptLabel.x, ptLabel.y, rc);
           }
@@ -690,17 +667,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
         // if it's a water area (nolabels), print shape up to defaultShape, but print
         // labels only up to custom label levels
         if (checkVisible(shape, screenRect)) {
-#ifdef ENABLE_OPENGL
           shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
-#else
-          for (const lineObj& line : make_array(shape.line, shape.numlines)) {
-            const RasterPoint ptLabel = shape2Screen(line, iskip, _Proj, points);
-            Surface.Polygon(points.data(), points.size(), rc);
-            if (!nolabels) {
-              cshape->renderSpecial(renderer, Surface, ptLabel.x, ptLabel.y, rc);
-            }
-          }
-#endif
         }
         break;
 
