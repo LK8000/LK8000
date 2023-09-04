@@ -209,8 +209,10 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
 
             // Draw an X  on final glide bar if unreachable at current Mc
             if (GlideBarMode == (GlideBarMode_t) gbFinish) {
-                if ((DerivedDrawInfo.TaskTimeToGo > 0.9 * ERROR_TIME) ||
+
+                if (!IsValidTaskTimeToGo(DerivedDrawInfo) ||
                         ((MACCREADY < 0.01) && (DerivedDrawInfo.TaskAltitudeDifference < 0))) {
+
                     Surface.SelectObject(LKPen_White_N2);
                     RasterPoint Cross[4] = {
                         { IBLSCALE(-5 + 9), IBLSCALE(-5 + 9)},

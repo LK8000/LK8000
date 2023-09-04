@@ -186,9 +186,14 @@ void UpdateAnalysis(WndForm* pForm){
     } else
    {
       TCHAR timetext1[100];
+      if (IsValidTaskTimeToGo(CALCULATED_INFO)) {
+        Units::TimeToText(timetext1, CALCULATED_INFO.TaskTimeToGo);
+      } else {
+        _tcscpy(timetext1, _T("--:--"));
+      }
+
       TCHAR timetext2[100];
       if (UseAATTarget()) {
-        Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
         Units::TimeToText(timetext2, (int)CALCULATED_INFO.AATTimeToGo);
 
         if (ScreenLandscape) {
@@ -229,7 +234,6 @@ void UpdateAnalysis(WndForm* pForm){
                     );
         }
       } else {
-        Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
         _stprintf(sTmp, TEXT("%.0f%s %s\r\n\r\n%s: %s\r\n%s: %.0f%s\r\n"),
 			  DISTANCEMODIFY*CALCULATED_INFO.TaskTotalDistance,
 			  Units::GetDistanceName(),

@@ -204,7 +204,7 @@ protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-    if(Calculated->TaskTimeToGo > 0 && Calculated->TaskTimeToGo < ERROR_TIME) {
+    if (!IsValidTaskTimeToGo(*Calculated)) {
       return false;
     }
 

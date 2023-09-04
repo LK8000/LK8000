@@ -1008,14 +1008,12 @@ goto_bearing:
 					}
 			    }
 			} else {
-			    if (ValidTaskPoint(ActiveTaskPoint) && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
-					if (DerivedDrawInfo.TaskTimeToGo > 0) {
-						valid=true;
-						Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime(DrawInfo.Time));
-					} else {
-						_stprintf(BufferValue, TEXT(NULLTIME));
-					}
-			    }
+			    if (IsValidTaskTimeToGo(DerivedDrawInfo) && ValidTaskPoint(ActiveTaskPoint)) {
+					valid=true;
+					Units::TimeToText(BufferValue, DerivedDrawInfo.TaskTimeToGo + LocalTime(DrawInfo.Time));
+				} else {
+					_stprintf(BufferValue, TEXT(NULLTIME));
+				}
 			}
 			_stprintf(BufferUnit, TEXT("h"));
 			break;
@@ -1387,9 +1385,8 @@ goto_bearing:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			_stprintf(BufferUnit,_T("h"));
 			// TODO This is in the wrong place, should be moved to calc thread! 090916
-			double dd;
-			if (UseAATTarget() && ValidTaskPoint(ActiveTaskPoint)) {
-				dd = DerivedDrawInfo.TaskTimeToGo;
+			if (UseAATTarget() && IsValidTaskTimeToGo(DerivedDrawInfo) && ValidTaskPoint(ActiveTaskPoint)) {
+				double dd = DerivedDrawInfo.TaskTimeToGo;
 				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveTaskPoint>0)) {
 					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
 				}
@@ -2898,9 +2895,9 @@ lkfin_ete:
 
             LockTaskData();
 			if (ValidTaskPointFast(ActiveTaskPoint)) {
-				if (DerivedDrawInfo.TaskTimeToGo > 0) { 
+			    if (IsValidTaskTimeToGo(DerivedDrawInfo)) {
 					valid=true;
-					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo)) {
+					if (Units::TimeToTextDown(BufferValue, DerivedDrawInfo.TaskTimeToGo)) {
 						_stprintf(BufferUnit, TEXT("h"));
                     }
 				} else {

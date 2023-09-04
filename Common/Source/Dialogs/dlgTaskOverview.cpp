@@ -149,12 +149,6 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       _stprintf(sTmp, TEXT("  (%s)"), MsgToken(832));
       Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
     } else if ((DrawListIndex == (UpLimit + 1)) && ValidTaskPoint(1)) {
-      int Minutes=  (int)(CALCULATED_INFO.TaskTimeToGo )/60;
-      if(MACCREADY ==0) {
-        Minutes = 24 * 60;
-      }
-      int Hours = (Minutes/60);
-      Minutes = Minutes - (Hours*60);
 
       if (gTaskType!=TSK_AAT) {
         // LKTOKEN  _@M735_ = "Total:"

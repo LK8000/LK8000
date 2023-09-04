@@ -625,7 +625,11 @@ static void UpdateValuesTask(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRemainingTime"));
   if (wp) {
-    Units::TimeToText(Temp, (int)CALCULATED_INFO.TaskTimeToGo);
+    if (IsValidTaskTimeToGo(CALCULATED_INFO)) {
+      Units::TimeToText(Temp, CALCULATED_INFO.TaskTimeToGo);
+    } else {
+      _tcscpy(Temp, _T("--:--"));
+    }
     wp->SetText(Temp);
   }
 
