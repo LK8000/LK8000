@@ -359,7 +359,7 @@ BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
    */
 
-  TCHAR ctemp[80];  
+  TCHAR ctemp[MAX_NMEA_LEN];
   FANET_NAME fanetDevice;
   TCHAR HexDevId[7];
 
@@ -406,7 +406,7 @@ BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
     8bit String (of arbitrary length)  
    */
 
-  TCHAR ctemp[80];
+  TCHAR ctemp[MAX_NMEA_LEN];
   uint32_t ID; //ID of station (3 Bytes)
   TCHAR MSG[80];
   TCHAR HexDevId[7];
@@ -461,7 +461,7 @@ BOOL FanetParseType4Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
    */
 
-  TCHAR ctemp[80];
+  TCHAR ctemp[MAX_NMEA_LEN];
   TCHAR HexDevId[7];
   FANET_WEATHER weather;
 
@@ -542,7 +542,7 @@ using parse_function = BOOL(*)(DeviceDescriptor_t* , TCHAR*, NMEA_INFO*);
 
 template<typename Table>
 BOOL FanetParse(Table& table, DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
-  TCHAR ctemp[80];
+  TCHAR ctemp[MAX_NMEA_LEN];
   NMEAParser::ExtractParameter(String,ctemp,4);
   uint8_t type = _tcstol(ctemp, nullptr, 10);
   parse_function parse = table.get(type, IgnoredMsg);
