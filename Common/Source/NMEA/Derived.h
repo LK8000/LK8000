@@ -245,7 +245,7 @@ struct DERIVED_INFO {
   // JMW note, new items should go at the bottom of this struct before experimental!
 };
 
-constexpr double ERROR_TIME = 1.0e6;
+constexpr double ERROR_TIME = 86400;
 
 inline
 bool IsValidTaskTimeToGo(const DERIVED_INFO& info) {
