@@ -28,6 +28,7 @@
 #include "OS/Sleep.h"
 #include <sstream>
 #include <iomanip>
+#include "utils/charset_helper.h"
 
 #ifdef ANDROID
 #include "Android/Air3/PowerManagerUtils.h"
@@ -369,16 +370,13 @@ BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   uint8_t payloadLen = getByteFromHex(ctemp);
 
   NMEAParser::ExtractParameter(String,ctemp,6);
-  int i;
-  for (i = 0;i < payloadLen;i++){
-    if (i < MAXFANETNAME){
-      // undefined result if _tcslen(ctemp) < (payloadLen*2)
-      fanetDevice.Name[i] = getByteFromHex(&ctemp[i*2]); 
-    }else{
-      break;
-    }    
+  std::string name;
+  for (int i = 0;i < payloadLen;i++){
+    name.push_back(getByteFromHex(&ctemp[i*2]));
   }
-  fanetDevice.Name[i] = 0; //0-termination of String
+
+  from_unknown_charset(name.c_str(), fanetDevice.Name); 
+
   uint32_t flarmId; 
   if (_stscanf(HexDevId, TEXT("%x"), &flarmId) == 1){
     if (AddFlarmLookupItem(flarmId, fanetDevice.Name, true)) { //check, if device is already in flarm-database
