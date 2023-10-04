@@ -192,6 +192,14 @@ std::string to_payload(const std::string& data) {
   return ss.str();
 }
 
+std::string payload_to_string(const TCHAR* data, unsigned len) {
+  std::string name;
+  for (unsigned i = 0;i < len;i++){
+    name.push_back(getByteFromHex(&data[i*2]));
+  }
+  return name;
+}
+
 void UpdateName(FLARM_TRAFFIC& traffic) {
   traffic.UpdateNameFlag = false; // clear flag first
 
@@ -370,10 +378,7 @@ BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   uint8_t payloadLen = getByteFromHex(ctemp);
 
   NMEAParser::ExtractParameter(String,ctemp,6);
-  std::string name;
-  for (int i = 0;i < payloadLen;i++){
-    name.push_back(getByteFromHex(&ctemp[i*2]));
-  }
+  std::string name = payload_to_string(ctemp, payloadLen);
 
   from_unknown_charset(name.c_str(), fanetDevice.Name); 
 
@@ -406,7 +411,6 @@ BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
   TCHAR ctemp[MAX_NMEA_LEN];
   uint32_t ID; //ID of station (3 Bytes)
-  TCHAR MSG[80];
   TCHAR HexDevId[7];
 
   getIdFromMsg(String,HexDevId,&ID);
@@ -415,22 +419,17 @@ BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   uint8_t payloadLen = getByteFromHex(ctemp);
 
   NMEAParser::ExtractParameter(String,ctemp,6);
-  int i;
-  for (i = 1;i < payloadLen;i++){
-    if (i < 80){
-      // undefined result if _tcslen(ctemp) < (payloadLen*2)
-      MSG[i-1] = getByteFromHex(&ctemp[i*2]);
-    }else{
-      break;
-    }    
-  }
-  MSG[i-1] = 0; //0-termination of String
+  std::string msg = payload_to_string(ctemp, payloadLen);
+
 	TCHAR text[150]; // at least (31 + 2 + 80)
   if(!GetFanetName(ID, *pGPS, text)) {
     _tcscpy(text, HexDevId); // no name, use ID
   }
   _tcscat(text, _T("\r\n"));
-  _tcscat(text, MSG);
+
+  TCHAR* Out = text + _tcslen(text);
+  from_unknown_charset(msg.c_str(), Out, Out - text);
+
   PlayResource(TEXT("IDR_WAV_DRIP")); //play sound
   Message::AddMessage(10000, MSG_COMMS, text); // message time 10s
   return TRUE;
