@@ -22,8 +22,6 @@ void ProcessTimer(void)
 {
   static int itimeout = -1;
   itimeout++;
-  static int p_twohzcounter = 0;
-  p_twohzcounter++;
 
   // The ordinary timed stuff..
   CommonProcessTimer();

@@ -233,7 +233,6 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
   int16 ende  = 0;
 //  int32 i;
   lpb p;
-  int pp = 0;
   progress_reset();
 
   memset(puffer, 0xff, maxlen);
@@ -244,7 +243,6 @@ int32 VLA_XFR::readlog(lpb puffer, int32 maxlen) {
     // Zeichen anfordern und darauf warten
     serial_out(ACK);
 
-    pp++;
     serial_in(&c);
     if ((gcs_counter>=maxlen) && (crc16==0)) {
       ende = 1;

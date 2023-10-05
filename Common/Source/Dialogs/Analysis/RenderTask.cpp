@@ -75,8 +75,6 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
 
-  int nwps = 0;
-
   // find scale
   ResetScale();
 
@@ -93,7 +91,6 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
   {
     if (ValidTaskPoint(i))
     {
-      nwps++;
       lat1 = WayPointList[Task[i].Index].Latitude;
       lon1 = WayPointList[Task[i].Index].Longitude;
       x1 = (lon1-lon_c)*fastcosine(lat1);
