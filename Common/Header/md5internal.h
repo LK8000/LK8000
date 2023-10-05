@@ -48,12 +48,6 @@
 # endif
 #endif
 
-#ifndef __attribute__
-# if ! __GNUC_PREREQ (2,8) || __STRICT_ANSI__
-#  define __attribute__(x)
-# endif
-#endif
-
 #ifndef _LIBC
 # define __md5_buffer md5_buffer
 # define __md5_finish_ctx md5_finish_ctx

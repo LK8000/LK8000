@@ -67,7 +67,7 @@ std::string MD5::Final()
 #ifndef DOCTEST_CONFIG_DISABLE
 #include <doctest/doctest.h>
 
-TEST_CASE("ValidFrequency") {
+TEST_CASE("MD5 hash") {
   MD5_Base hash;
   CHECK_EQ(MD5(hash).Final(), "d41d8cd98f00b204e9800998ecf8427e");
 
