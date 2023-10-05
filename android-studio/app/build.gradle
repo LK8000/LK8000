@@ -17,15 +17,15 @@ if (rootProject.file(keystorePropertiesFile).exists()) {
 }
 
 android {
-    compileSdk 33
-    ndkVersion "25.2.9519653"
+    compileSdk 34
+    ndkVersion "26.0.10792818"
 
     namespace "org.LK8000"
 
     defaultConfig {
         applicationId "org.lk8000"
-        minSdkVersion 19 // KitKat
-        targetSdkVersion 33
+        minSdkVersion 21 // Lollipop
+        targetSdkVersion 34
         versionCode 107
         versionName "7.4.7"
         setProperty("archivesBaseName", "LK8000-$versionName")
