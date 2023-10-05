@@ -27,7 +27,7 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
     delete "$rootDir/app/Thirdparty"
     delete "$rootDir/../android-thirdparty"

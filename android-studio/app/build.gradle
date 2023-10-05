@@ -135,7 +135,7 @@ clean() {
            "src/main/assets/DEFAULT_MENU.TXT"
 }
 
-task syncAsset(type: Sync) {
+tasks.register('syncAsset', Sync) {
     from "../../Common/Data/Language",
             "../../Common/Distribution/LK8000/_System/"
     into "src/main/assets"
@@ -147,19 +147,19 @@ task syncAsset(type: Sync) {
     }
     duplicatesStrategy "WARN"
 }
-task syncAssetLanguages(type: Sync) {
+tasks.register('syncAssetLanguages', Sync) {
     from "../../Common/Data/Language/Translations",
             "../../Common/Data/Language"
     into "src/main/assets/language"
     include "*.json"
 }
-task syncAssetPolars(type: Sync) {
+tasks.register('syncAssetPolars', Sync) {
     from "../../Common/Distribution/LK8000/_Polars"
     into "src/main/assets/polars"
     include "*.plr"
     exclude "Example.*"
 }
-task syncAssetSounds(type: Sync) {
+tasks.register('syncAssetSounds', Sync) {
     from "../../Common/Data/Sounds",
             "../../Common/Distribution/LK8000/_System/_Sounds",
             "../../Common/Distribution/LK8000/_System/_Sounds/OPTIONALS"
@@ -168,32 +168,32 @@ task syncAssetSounds(type: Sync) {
             "*.WAV"
     duplicatesStrategy "WARN"
 }
-task syncAssetFonts(type: Sync) {
+tasks.register('syncAssetFonts', Sync) {
     from "../../Common/Data/Fonts"
     into "src/main/assets/fonts"
     include "*.ttf"
 }
-task syncAssetDistribtionMaps(type: Sync) {
+tasks.register('syncAssetDistribtionMaps', Sync) {
     from "../../Common/Distribution/LK8000/_Maps"
     into "src/main/assets/distribution/maps"
 }
-task syncAssetDistribtionWaypoints(type: Sync) {
+tasks.register('syncAssetDistribtionWaypoints', Sync) {
     from "../../Common/Distribution/LK8000/_Waypoints"
     into "src/main/assets/distribution/waypoints"
 }
-task syncAssetDistribtionAirspaces(type: Sync) {
+tasks.register('syncAssetDistribtionAirspaces', Sync) {
     from "../../Common/Distribution/LK8000/_Airspaces"
     into "src/main/assets/distribution/airspaces"
 }
-task syncAssetDistribtionTasks(type: Sync) {
+tasks.register('syncAssetDistribtionTasks', Sync) {
     from "../../Common/Distribution/LK8000/_Tasks"
     into "src/main/assets/distribution/tasks"
 }
-task syncAssetDistribtionLogger(type: Sync) {
+tasks.register('syncAssetDistribtionLogger', Sync) {
     from "../../Common/Distribution/LK8000/_Logger"
     into "src/main/assets/distribution/logger"
 }
-task syncAssetDistribtionConfiguration(type: Sync) {
+tasks.register('syncAssetDistribtionConfiguration', Sync) {
     from "../../Common/Distribution/LK8000/_Configuration"
     into "src/main/assets/distribution/configuration"
     include "DEMO.prf",
@@ -202,7 +202,7 @@ task syncAssetDistribtionConfiguration(type: Sync) {
             "NOTEDEMO.TXT",
             "IDFLARM.TXT"
 }
-task syncAssetDistribtionPolars(type: Sync) {
+tasks.register('syncAssetDistribtionPolars', Sync) {
     from "../../Common/Distribution/LK8000/_Polars"
     into "src/main/assets/distribution/polars"
     include "Example.*"
