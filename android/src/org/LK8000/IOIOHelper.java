@@ -73,9 +73,14 @@ final class IOIOHelper implements IOIOConnectionHolder,
   }
 
   static void onCreateContext(ContextWrapper context) {
-    for (IOIOConnectionBootstrap bootstrap : IOIOConnectionRegistry.getBootstraps())
-      if (bootstrap instanceof ContextWrapperDependent)
-        ((ContextWrapperDependent) bootstrap).onCreate(context);
+    for (IOIOConnectionBootstrap bootstrap : IOIOConnectionRegistry.getBootstraps()) {
+      if (bootstrap instanceof ContextWrapperDependent) {
+        try {
+          ((ContextWrapperDependent) bootstrap).onCreate(context);
+        } catch (SecurityException ignore) {
+        }
+      }
+    }
   }
 
   static void onDestroyContext() {

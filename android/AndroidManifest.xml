@@ -42,6 +42,9 @@
   <!--required for android 13 -->
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
+  <!--required for android 14 -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
 
   <!-- Tell the system this app requires OpenGL ES 2.0. -->
   <uses-feature android:glEsVersion="0x00020000" android:required="true" />

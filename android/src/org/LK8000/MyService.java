@@ -22,6 +22,9 @@
 
 package org.LK8000;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE;
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -35,6 +38,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.ServiceCompat;
 
 /**
  * All this Service implementation does is put itself in foreground.
@@ -99,8 +103,13 @@ public class MyService extends Service {
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .build();
 
-    startForeground(1, notification);
-
+    try {
+      ServiceCompat.startForeground(this, 1, notification,
+              FOREGROUND_SERVICE_TYPE_LOCATION | FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
+    }
+    catch(SecurityException e) {
+      e.printStackTrace();
+    }
     /* We want this service to continue running until it is explicitly
        stopped, so return sticky */
     return START_STICKY;
