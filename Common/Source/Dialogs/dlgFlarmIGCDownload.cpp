@@ -16,7 +16,7 @@
 #include "resource.h"
 #include "dlgFlarmIGCDownload.h"
 #include "utils/tokenizer.h"
-#include "Util/UTF8.hpp"
+#include "utils/printf.h"
 
 #define MAX_FLARM_ANSWER_LEN 640 
       // FLARM Docu does not tell the max. answer len
@@ -732,13 +732,9 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
   if (CN == NULL) {
     CN = empty;
   };
-  int size = _sntprintf(NewElement.Line1, 100, _T("%s (%s  [%5s])"), Filename, Date, Takeoff);
-  if ( size >= 100 ) {
-    #ifndef UNICODE
-    CropIncompleteUTF8(NewElement.Line1);
-    #endif
-  }
-  _stprintf(NewElement.Line2, _T("%s"), Duration);
+
+  lk::snprintf(NewElement.Line1, _T("%s (%s  [%5s])"), Filename, Date, Takeoff);
+  lk::snprintf(NewElement.Line2, _T("%s"), Duration);
   if (Pilot) {
     _tcscat(NewElement.Line2, _T(" "));
     _tcscat(NewElement.Line2, Pilot);

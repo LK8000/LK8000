@@ -16,7 +16,7 @@
 #include <functional>
 #include "resource.h"
 #include "LKStyle.h"
-#include "Util/UTF8.hpp"
+#include "utils/printf.h"
 #include "Library/Utm.h"
 
 using namespace std::placeholders;
@@ -48,10 +48,7 @@ static void UpdateButtons(WndForm* pForm) {
       _stprintf(text,TEXT("%s: %s"), MsgToken(190), MsgToken(7));
     } else {
       // LKTOKEN  _@M190_ = "Comment"
-      _stprintf(text,TEXT("%s: %.30s"), MsgToken(190), global_wpt->Comment);
-#ifndef UNICODE
-      CropIncompleteUTF8(text);
-#endif
+      lk::snprintf(text, _T("%s: %.30s"), MsgToken(190), global_wpt->Comment);
     }
     wndComment->SetCaption(text);
   }
