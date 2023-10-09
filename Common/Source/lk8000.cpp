@@ -125,85 +125,84 @@ bool Startup(const TCHAR* szCmdLine) {
   DebugLog(_T(". DebugLog Enabled"));
   TestLog(_T(". TestLog Enabled"));
 
-  #if TESTBENCH
-    #ifdef __GNUC__
-        #ifdef __MINGW32__
-          StartupStore(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d)"),
-                  __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
-        #else
-          StartupStore(TEXT(". Built with GCC %d.%d.%d"),
-                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
-
-        #endif
-    #endif
-
-    StartupStore(_T(". Compiler options:"));
-    #ifdef ENABLE_OPENGL
-    StartupStore(_T("    + ENABLE_OPENGL"));
-    #endif
-    #ifdef HAVE_GLES
-    StartupStore(_T("    + HAVE_GLES"));
-    #endif
-    #ifdef USE_WAYLAND
-    StartupStore(_T("    + USE_WAYLAND"));
-    #endif
-    #ifdef USE_X11
-    StartupStore(_T("    + USE_X11"));
-    #endif
-    #ifdef USE_CONSOLE
-    StartupStore(_T("    + USE_CONSOLE"));
-    #endif
-    #ifdef ENABLE_SDL
-    StartupStore(_T("    + ENABLE_SDL"));
-    #endif
-    #ifdef USE_EGL
-    StartupStore(_T("    + USE_EGL"));
-    #endif
-    #ifdef USE_FB
-    StartupStore(_T("    + USE_FB"));
-    #endif
-    #ifdef USE_MEMORY_CANVAS
-    StartupStore(_T("    + USE_MEMORY_CANVAS"));
-    #endif
-    #ifdef GREYSCALE
-    StartupStore(_T("    + GREYSCALE"));
-    #endif
-    #ifdef DITHER
-    StartupStore(_T("    + DITHER"));
-    #endif
-    #ifdef USE_ALSA
-    StartupStore(_T("    + USE_ALSA"));
-    #endif
-    #ifdef USE_FREETYPE
-    StartupStore(_T("    + USE_FREETYPE"));
-    #endif
-    #ifdef USE_FULLSCREEN
-    StartupStore(_T("    + USE_FULLSCREEN"));
-    #endif
-    #ifdef POCO_STATIC
-    StartupStore(_T("    + POCO_STATIC"));
-    #endif
-    #ifdef NO_DASH_LINES
-    StartupStore(_T("    + NO_DASH_LINES"));
-    #endif
-
-    StartupStore(TEXT(". TESTBENCH option enabled"));
+#ifdef __clang_version__
+  TestLog(". Built with clang " __clang_version__);
+#elif defined(__GNUC__)
+  #ifdef __MINGW32__
+    TestLog(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d)"),
+            __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
+            __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+  #else
+    TestLog(TEXT(". Built with GCC %d.%d.%d"),
+            __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
   #endif
+#endif
+
+  TestLog(_T(". Compiler options:"));
+#ifdef ENABLE_OPENGL
+  TestLog(_T("    + ENABLE_OPENGL"));
+#endif
+#ifdef HAVE_GLES
+  TestLog(_T("    + HAVE_GLES"));
+#endif
+#ifdef USE_WAYLAND
+  TestLog(_T("    + USE_WAYLAND"));
+#endif
+#ifdef USE_X11
+  TestLog(_T("    + USE_X11"));
+#endif
+#ifdef USE_CONSOLE
+  TestLog(_T("    + USE_CONSOLE"));
+#endif
+#ifdef ENABLE_SDL
+  TestLog(_T("    + ENABLE_SDL"));
+#endif
+#ifdef USE_EGL
+  TestLog(_T("    + USE_EGL"));
+#endif
+#ifdef USE_FB
+  TestLog(_T("    + USE_FB"));
+#endif
+#ifdef USE_MEMORY_CANVAS
+  TestLog(_T("    + USE_MEMORY_CANVAS"));
+#endif
+#ifdef GREYSCALE
+  TestLog(_T("    + GREYSCALE"));
+#endif
+#ifdef DITHER
+  TestLog(_T("    + DITHER"));
+#endif
+#ifdef USE_ALSA
+  TestLog(_T("    + USE_ALSA"));
+#endif
+#ifdef USE_FREETYPE
+  TestLog(_T("    + USE_FREETYPE"));
+#endif
+#ifdef USE_FULLSCREEN
+  TestLog(_T("    + USE_FULLSCREEN"));
+#endif
+#ifdef POCO_STATIC
+  TestLog(_T("    + POCO_STATIC"));
+#endif
+#ifdef NO_DASH_LINES
+  TestLog(_T("    + NO_DASH_LINES"));
+#endif
+
+  TestLog(TEXT(". TESTBENCH option enabled"));
 
   // WE NEED TO KNOW IN RUNTIME WHEN THESE OPTIONS ARE ENABLED, EVEN WITH NO TESTBENCH!
-  #ifndef NDEBUG
+#ifndef NDEBUG
   StartupStore(TEXT(". DEBUG enabled in makefile"));
-  #endif
-  #if YDEBUG
+#endif
+#if YDEBUG
   StartupStore(TEXT(". YDEBUG option enabled"));
-  #endif
-  #if BUGSTOP
+#endif
+#if BUGSTOP
   StartupStore(TEXT(". BUGSTOP option enabled"));
-  #endif
-  #if USELKASSERT
+#endif
+#if USELKASSERT
   StartupStore(TEXT(". USELKASSERT option enabled"));
-  #endif
+#endif
 
 
   Globals_Init();
