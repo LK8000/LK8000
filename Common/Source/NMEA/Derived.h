@@ -245,6 +245,8 @@ struct DERIVED_INFO {
   // JMW note, new items should go at the bottom of this struct before experimental!
 };
 
+static_assert(std::is_trivial_v<DERIVED_INFO>, "mandatory while memset/memcpy is used to init/copy this struct");
+
 constexpr double ERROR_TIME = 86400;
 
 inline
