@@ -121,7 +121,7 @@ dependencies {
     implementation "com.github.brunotl:boost_intrusive:1.81.0"
     implementation "com.github.brunotl:boost_container:1.81.0"
 
-    implementation "com.google.oboe:oboe:1.7.0"
+    implementation "com.google.oboe:oboe:1.8.0"
     implementation "com.google.android.material:material:1.10.0"
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
