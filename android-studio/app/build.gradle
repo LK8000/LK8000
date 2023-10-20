@@ -4,7 +4,7 @@ apply plugin: "com.android.application"
 // Signing config documentation :
 //    https://developer.android.com/studio/publish/app-signing#secure-shared-keystore
 def keystoreProperties = new Properties()
-def keystorePropertiesFile = "keystore.properties";
+def keystorePropertiesFile = "keystore.properties"
 if (rootProject.file(keystorePropertiesFile).exists()) {
     // Load your keystore.properties file into the keystoreProperties object.
     keystoreProperties.load(rootProject.file(keystorePropertiesFile).newDataInputStream())
@@ -18,7 +18,7 @@ if (rootProject.file(keystorePropertiesFile).exists()) {
 
 android {
     compileSdk 34
-    ndkVersion "26.0.10792818"
+    ndkVersion "26.1.10909125"
 
     namespace "org.LK8000"
 
