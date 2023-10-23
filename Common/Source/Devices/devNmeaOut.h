@@ -11,11 +11,19 @@
 
 #include "Devices/DeviceRegister.h"
 
-void nmoInstall(DeviceDescriptor_t* d);
+namespace NmeaOut {
+
+void Install(DeviceDescriptor_t* d);
+
+constexpr const TCHAR* Name = _T("NmeaOut");
 
 inline constexpr
-DeviceRegister_t nmoRegister(void){
-  return devRegister(_T("NmeaOut"), nmoInstall);
+DeviceRegister_t Register(){
+  return devRegister(Name, Install);
 }
+
+BOOL NMEAOut(DeviceDescriptor_t* d, const char* String);
+
+} // NmeaOut
 
 #endif

@@ -7,10 +7,11 @@
 */
 
 #include "externs.h"
+#include "devNmeaOut.h"
 #include <regex>
 
-static 
-BOOL NMEAOut(DeviceDescriptor_t *d, const char* String) {
+
+BOOL NmeaOut::NMEAOut(DeviceDescriptor_t* d, const char* String) {
   if(d) {
     try {
       std::regex re(R"(((?!\r)\n|\r(?!\n)))"); // to fix end of line...
@@ -22,7 +23,7 @@ BOOL NMEAOut(DeviceDescriptor_t *d, const char* String) {
   return TRUE;
 }
 
-void nmoInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, TEXT("NmeaOut"));
+void NmeaOut::Install(DeviceDescriptor_t* d){
+  _tcscpy(d->Name, Name);
   d->NMEAOut = NMEAOut;
 }

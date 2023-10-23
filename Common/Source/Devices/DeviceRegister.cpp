@@ -71,7 +71,7 @@ DeviceRegister_t device_list[] = {
     cai302Register(),
     ewRegister(),
     CDevCAIGpsNav::Register(),
-    nmoRegister(),
+    NmeaOut::Register(),
     pgRegister(),
     b50Register(),
     vlRegister(),
