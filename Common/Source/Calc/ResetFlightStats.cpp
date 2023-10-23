@@ -12,8 +12,6 @@
 
 
 extern double CRUISE_EFFICIENCY;
-extern AATDistance aatdistance;
-
 
 //
 // This is called only by calculations thread, at init, at restart of a replay flight, and also on takeoff

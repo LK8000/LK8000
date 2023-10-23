@@ -8,9 +8,8 @@
 
 #include "externs.h"
 #include "NavFunctions.h"
+#include "AATDistance.h"
 
-
-extern double AATCloseDistance(void);
 extern double AATCloseBearing(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)

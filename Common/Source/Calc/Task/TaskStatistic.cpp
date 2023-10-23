@@ -13,7 +13,6 @@
 #include "NavFunctions.h"
 
 extern double CRUISE_EFFICIENCY;
-extern AATDistance aatdistance;
 
 static 
 void ResetTaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double this_maccready) {
@@ -125,7 +124,7 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     }
   } else if (ActiveTaskPoint > 0) {
     // JMW added correction for distance covered
-    Calculated->TaskDistanceCovered = aatdistance.DistanceCovered(Basic->Longitude, Basic->Latitude, ActiveTaskPoint);
+    Calculated->TaskDistanceCovered = aatdistance.DistanceCovered(cur_pos);
   }
 
   // If it is not a glider, or if it is a glider and it is freeflying with take off since 5 minutes

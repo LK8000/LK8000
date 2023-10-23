@@ -9,55 +9,50 @@
 #ifndef AATDISTANCE_H
 #define AATDISTANCE_H
 
-
-#define MAXNUM_AATDISTANCE 50
-
-class AATDistance {
+class AATDistance final {
 public:
-  AATDistance();
+  AATDistance() = default;
+
   void Reset();
 
-  void AddPoint(double longitude, double latitude, int taskwaypoint);
-  double DistanceCovered(double longitude, double latitude, int taskwaypoint);
-  double LegDistanceAchieved(int taskwaypoint);
-  bool HasEntered(int taskwaypoint);
+  void AddPoint(const GeoPoint& position, int taskwaypoint);
+  double DistanceCovered(const GeoPoint& position);
+  double LegDistanceAchieved(int taskwaypoint) const;
+  bool HasEntered(int taskwaypoint) const;
   void ResetEnterTrigger(int taskwaypoint);
 
 private:
+  double DistanceCovered_internal(const GeoPoint& position, bool insector);
+  double DistanceCovered_inside(const GeoPoint& position);
+  double DistanceCovered_outside(const GeoPoint& position);
+  double distance_achieved(int taskwaypoint, int jbest, const GeoPoint& position);
 
-  double DistanceCovered_internal(double longitude, double latitude,
-                                  bool insector);
-  double DistanceCovered_inside(double longitude, double latitude);
-  double DistanceCovered_outside(double longitude, double latitude);
-  double distance_achieved(int taskwaypoint, int jbest,
-                           double longitude, double latitude);
-
-  void UpdateSearch(int taskwaypoint);
   void ThinData(int taskwaypoint);
 
-  double max_achieved_distance;
+  struct aat_distance {
+    GeoPoint position = {0., 0.};
+    double distance = 0.;
+  };
 
-  bool has_entered[MAXTASKPOINTS];
-  double distancethreshold[MAXTASKPOINTS];
-  double legdistance_achieved[MAXTASKPOINTS];
-  // index to max distance sample to task point n
-  int imax[MAXTASKPOINTS][MAXNUM_AATDISTANCE];
+  constexpr static double DISTANCETHRESHOLD = 500;
 
-  double Dmax[MAXTASKPOINTS][MAXNUM_AATDISTANCE];
+  struct aat_data {
+    double distancethreshold = DISTANCETHRESHOLD;
+    double legdistance_achieved = 0.;
+    bool has_entered = false;
 
-  double lat_points[MAXTASKPOINTS][MAXNUM_AATDISTANCE];
-  double lon_points[MAXTASKPOINTS][MAXNUM_AATDISTANCE];
-  int best[MAXTASKPOINTS];
-  int num_points[MAXTASKPOINTS];
+    std::vector<aat_distance> points = {};
+    size_t best;
+  };
 
-  void ShiftTargetFromBehind(double longitude, double latitude,
-                             int taskwaypoint);
-  void ShiftTargetFromInFront(double longitude, double latitude,
-                              int taskwaypoint);
-  void ShiftTargetOutside(double longitude, double latitude,
-                          int taskwaypoint);
+  std::array<aat_data, MAXTASKPOINTS> aat_datas;
+
+  void ShiftTargetFromBehind(const GeoPoint& position, int taskwaypoint) const;
+  void ShiftTargetFromInFront(const GeoPoint& position, int taskwaypoint) const;
 };
 
-double AATCloseDistance(void);
+extern AATDistance aatdistance;
+
+double AATCloseDistance();
 
 #endif

@@ -49,7 +49,6 @@
 #define MAX_TEXT2EVENTS_COUNT  256
 #define MAX_LABEL NUMBUTTONLABELS
 
-extern AATDistance aatdistance;
 extern bool ForceRenderMap;
 
 // Current modes - map mode to integer (primitive hash)

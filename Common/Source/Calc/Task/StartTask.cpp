@@ -10,9 +10,6 @@
 #include "CalcTask.h"
 #include "AATDistance.h"
 
-extern AATDistance aatdistance;
-
-
 
 void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
 	       const bool do_advance,

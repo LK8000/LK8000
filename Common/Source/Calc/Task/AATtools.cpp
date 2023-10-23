@@ -11,9 +11,6 @@
 #include "CalcTask.h"
 #include "NavFunctions.h"
 
-extern AATDistance aatdistance;
-
-
 void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
   if (taskwaypoint>0) {
     bool insector = InTurnSector(Basic, taskwaypoint);
@@ -23,7 +20,7 @@ void AddAATPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int taskwaypoint) {
     }
 
     if(insector) {
-      aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, taskwaypoint);
+      aatdistance.AddPoint(GetCurrentPosition(*Basic), taskwaypoint);
     }
   }
 }

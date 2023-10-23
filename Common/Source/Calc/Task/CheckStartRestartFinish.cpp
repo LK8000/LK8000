@@ -12,9 +12,6 @@
 #include "CalcTask.h"
 #include "Sound/Sound.h"
 
-extern AATDistance aatdistance;
-
-
 DERIVED_INFO Finish_Derived_Info;
 
 
@@ -105,7 +102,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
   // from outside and we are outside
   if (start_from_inside == Calculated->IsInSector) {
     if (ReadyToStart(Calculated)) {
-      aatdistance.AddPoint(Basic->Longitude, Basic->Latitude, 0);
+      aatdistance.AddPoint(GetCurrentPosition(*Basic), 0);
     }
     if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin)) {
       ReadyToAdvance(Calculated, false, true);
@@ -176,9 +173,7 @@ BOOL CheckRestart(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int *LastStartSect
 void CheckFinish(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (InFinishSector(Basic,Calculated, ActiveTaskPoint)) {
     Calculated->IsInSector = true;
-    aatdistance.AddPoint(Basic->Longitude,
-                         Basic->Latitude,
-                         ActiveTaskPoint);
+    aatdistance.AddPoint(GetCurrentPosition(*Basic), ActiveTaskPoint);
     if (!Calculated->ValidFinish) {
       Calculated->ValidFinish = true;
       if(!ISGAAIRCRAFT) AnnounceWayPointSwitch(Calculated, false);

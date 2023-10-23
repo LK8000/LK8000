@@ -11,7 +11,6 @@
 #include "CalcTask.h"
 #include "NavFunctions.h"
 
-extern AATDistance aatdistance;
 
 namespace {
 
