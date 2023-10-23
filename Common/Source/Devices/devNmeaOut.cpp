@@ -14,7 +14,7 @@
 BOOL NmeaOut::NMEAOut(DeviceDescriptor_t* d, const char* String) {
   if(d) {
     try {
-      std::regex re(R"(((?!\r)\n|\r(?!\n)))"); // to fix end of line...
+      static const std::regex re(R"(((?!\r)\n|\r(?!\n)))"); // to fix end of line...
       d->Com->WriteString(std::regex_replace(String, re, "\r\n").c_str());
     } catch (std::exception& e) {
       StartupStore(_T("NMEAOut : %s"), to_tstring(e.what()).c_str());

@@ -59,6 +59,7 @@
 #include "devLX_EOS_ERA.h"
 #include "devRCFenix.h"
 #include "devXCVario.h"
+#include "devGenericAutopilot.h"
 
 namespace {
 
@@ -112,7 +113,8 @@ DeviceRegister_t device_list[] = {
     GXAirCom::Register(),
     DevRCFenix::Register(),
     Fanet::Register(),
-    XCVario::Register()
+    XCVario::Register(),
+    GenericAutopilot::Register(),
 };
 
 

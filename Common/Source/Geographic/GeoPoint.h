@@ -72,4 +72,6 @@ static_assert(std::is_trivial<AGeoPoint>::value, "type is not trivial");
 double ProjectedDistance(const GeoPoint p1, const GeoPoint p2, const GeoPoint p3,
                          double *xtd, double *crs);
 
+double CrossTrackError(const GeoPoint& from, const GeoPoint& to, const GeoPoint& current);
+
 #endif /* _GEOGRAPHIC_GEOPOINT_H_ */

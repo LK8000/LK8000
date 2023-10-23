@@ -105,7 +105,12 @@ struct DeviceDescriptor_t {
   BOOL (*HeartBeat)(DeviceDescriptor_t* d);
   BOOL (*NMEAOut)(DeviceDescriptor_t* d, const char* String);
   BOOL (*PutTarget)(DeviceDescriptor_t* d, const WAYPOINT& wpt);
- 
+
+  /**
+   * called at the the end of calculation thread loop for each GPS FIX
+   */
+  BOOL (*SendData)(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
+
   bool IsBaroSource;
 
   bool m_bAdvancedMode;
@@ -139,6 +144,9 @@ struct DeviceDescriptor_t {
   BOOL _StationSwap();
   BOOL _PutFreqStandby(unsigned khz, const TCHAR* StationName);
   BOOL _PutTarget(const WAYPOINT& wpt);
+
+  BOOL _SendData(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
+
   BOOL _PutQNH(double NewQNH);
   BOOL _LinkTimeout();
   BOOL _HeartBeat();
@@ -229,5 +237,7 @@ void devWriteNMEA(const TCHAR *Text) {
   static_assert(idx < std::size(DeviceList), "invalid index");
   devWriteNMEAString(&DeviceList[idx], Text);
 }
+
+void SendDataToExternalDevice(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
 #endif

@@ -1210,6 +1210,7 @@ DEVS	:=\
 	$(DEV)/devLX_EOS_ERA.cpp \
 	$(DEV)/devFanet.cpp \
 	$(DEV)/devXCVario.cpp \
+	$(DEV)/devGenericAutopilot.cpp \
 	$(DEV)/DeviceRegister.cpp \
 
 VOLKS	:=\

@@ -148,6 +148,7 @@ public:
             CheckAltitudeAlarms(tmpGPS, tmpCALCULATED);
 
             ExternalDeviceSendTarget();
+            SendDataToExternalDevice(tmpGPS, tmpCALCULATED);
         }
     }
 

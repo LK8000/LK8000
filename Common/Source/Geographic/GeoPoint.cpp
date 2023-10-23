@@ -11,6 +11,8 @@
 
 #include "GeoPoint.h"
 #include "NavFunctions.h"
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 GeoPoint GeoPoint::Direct(double bearing, double distance) const {
   GeoPoint Out;
@@ -36,4 +38,15 @@ double GeoPoint::Bearing(const GeoPoint& point) const {
 
 double ProjectedDistance(const GeoPoint p1, const GeoPoint p2, const GeoPoint p3, double* xtd, double* crs) {
   return ProjectedDistance(p1.longitude, p1.latitude, p2.longitude, p1.latitude, p3.longitude, p1.latitude, xtd, crs);
+}
+
+double CrossTrackError(const GeoPoint& from, const GeoPoint& to, const GeoPoint& current) {
+    // Calculate cross-track distance & azimuths
+    double azi2 = from.Bearing(to);
+
+    double cte, azi1;
+    from.Reverse(current, azi1, cte);
+
+    // Calculate the cross-track error
+    return sin((azi1 - azi2) * M_PI / 180) * cte;
 }

@@ -454,6 +454,10 @@ BOOL DeviceDescriptor_t::_PutTarget(const WAYPOINT& wpt) {
   return PutTarget && PutTarget(this, wpt);
 }
 
+BOOL DeviceDescriptor_t::_SendData(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+  return SendData && SendData(this, Basic, Calculated);
+}
+
 BOOL DeviceDescriptor_t::_PutQNH(double NewQNH) {
   return PutQNH && PutQNH(this, NewQNH);
 }
@@ -1227,4 +1231,17 @@ BOOL IsDirOutput(DataBiIoDir IODir) {
     case BiDirInOut: return true ;  // IN&OUT exchanga data from/to device in both directions (e.g. MC, Radio frequencies)
   }
   return false;
+}
+
+void SendDataToExternalDevice(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+  if (Basic.NAVWarning) {
+    return; // only send data with valid GPS FIX
+  }
+
+  static auto time = Basic.Time;
+  if (std::exchange(time, Basic.Time) == Basic.Time) {
+    return; // only send data if GPS Time change
+  }
+
+  for_all_device(&DeviceDescriptor_t::_SendData, Basic, Calculated);
 }
