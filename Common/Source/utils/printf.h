@@ -50,8 +50,8 @@ namespace lk {
          * returned is len, the number of characters that would have been output if 
          * count was large enough. */
         if(len >= count) {
-            CropIncompleteUTF8(stream);
-            len = ::strlen(stream);
+            char* end = CropIncompleteUTF8(stream);
+            len = std::distance(stream, end);
         }
         return len;
     }
