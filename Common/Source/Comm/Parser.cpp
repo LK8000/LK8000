@@ -23,9 +23,12 @@
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
-extern int NAVWarn(TCHAR c);
 
 namespace {
+
+bool NAVWarn(char c) {
+  return c != 'A';
+}
 
 // minimal speed to use gps bearing
 double GetTrackBearingMinSpeed() {
@@ -202,15 +205,15 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 }
 #endif
 
-BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, TCHAR* String, NMEA_INFO* pGPS) {
+BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, char* String, NMEA_INFO* pGPS) {
 
   auto wait_ack = d.lock_wait_ack();
   if (wait_ack && wait_ack->check(String)) {
     return TRUE;
   }
 
-  TCHAR ctemp[MAX_NMEA_LEN];
-  TCHAR* params[MAX_NMEA_PARAMS];
+  char ctemp[MAX_NMEA_LEN];
+  char* params[MAX_NMEA_PARAMS];
 
   if (String[0] !='$') {
     return FALSE;
@@ -223,67 +226,68 @@ BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, TCHAR* String, 
 
   if (params[0][1] == 'P') {
     // Proprietary String
-    if (_tcscmp(params[0] + 1, TEXT("PTAS1")) == 0) {
+    if (strcmp(params[0] + 1, "PTAS1") == 0) {
       ScopeLock lock(CritSec_FlightData);
       return PTAS1(d, &String[7], params + 1, n_params - 1, pGPS);
     }
-    if (_tcscmp(params[0] + 1, TEXT("PFLAV")) == 0) {
+    if (strcmp(params[0] + 1, "PFLAV") == 0) {
       ScopeLock lock(CritSec_FlightData);
       return PFLAV(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (_tcscmp(params[0] + 1, TEXT("PFLAA")) == 0) {
+    if (strcmp(params[0] + 1, "PFLAA") == 0) {
       ScopeLock lock(CritSec_FlightData);
       return PFLAA(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (_tcscmp(params[0] + 1, TEXT("PFLAU")) == 0) {
+    if (strcmp(params[0] + 1, "PFLAU") == 0) {
       ScopeLock lock(CritSec_FlightData);
       return PFLAU(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (_tcscmp(params[0] + 1, TEXT("PGRMZ")) == 0) {
+    if (strcmp(params[0] + 1, "PGRMZ") == 0) {
       ScopeLock lock(CritSec_FlightData);
       return RMZ(d, &String[7], params + 1, n_params - 1, pGPS);
     }
-    if (_tcscmp(params[0] + 1, TEXT("PLKAS")) == 0) {
+    if (strcmp(params[0] + 1, "PLKAS") == 0) {
       ScopeLock lock(CritSec_FlightData);
       return PLKAS(&String[7], params + 1, n_params - 1, pGPS);
     }
     return FALSE;
   }
 
-  if (_tcscmp(params[0] + 3, TEXT("GSA")) == 0) {
+  if (strcmp(params[0] + 3, "GSA") == 0) {
     ScopeLock lock(CritSec_FlightData);
     return GSA(&String[7], params + 1, n_params - 1, pGPS);
   }
-  if (_tcscmp(params[0] + 3, TEXT("GLL")) == 0) {
+  if (strcmp(params[0] + 3, "GLL") == 0) {
     /*
     ScopeLock lock(CritSec_FlightData);
     return GLL(&String[7], params + 1, n_params-1, pGPS);
     */
     return FALSE;
   }
-  if (_tcscmp(params[0] + 3, TEXT("RMB")) == 0) {
+  if (strcmp(params[0] + 3, "RMB") == 0) {
     /*
     ScopeLock lock(CritSec_FlightData);
     return RMB(&String[7], params + 1, n_params-1, pGPS);
     */
     return FALSE;
   }
-  if (_tcscmp(params[0] + 3, TEXT("RMC")) == 0) {
+  if (strcmp(params[0] + 3, "RMC") == 0) {
     ScopeLock lock(CritSec_FlightData);
     return RMC(&String[7], params + 1, n_params - 1, pGPS);
   }
-  if (_tcscmp(params[0] + 3, TEXT("GGA")) == 0) {
+  if (strcmp(params[0] + 3, "GGA") == 0) {
     ScopeLock lock(CritSec_FlightData);
     return GGA(&String[7], params + 1, n_params - 1, pGPS);
   }
-  if (_tcscmp(params[0] + 3, TEXT("VTG")) == 0) {
+  if (strcmp(params[0] + 3, "VTG") == 0) {
     ScopeLock lock(CritSec_FlightData);
     return VTG(&String[7], params + 1, n_params - 1, pGPS);
   }
-  if (_tcscmp(params[0] + 1, TEXT("HCHDG")) == 0) {
+  if (strcmp(params[0] + 1, "HCHDG") == 0) {
     ScopeLock lock(CritSec_FlightData);
     return HCHDG(&String[7], params + 1, n_params - 1, pGPS);
   }
+
   return FALSE;
 }
 
@@ -293,11 +297,13 @@ void NMEAParser::CheckRMZ() {
   }
 }
 
+namespace {
 //
 // Make time absolute, over 86400seconds when day is changing
 // We need a valid date to use it. We are relying on StartDay.
 //
-double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
+template<typename CharT>
+double TimeModify(const CharT* StrTime, NMEA_INFO* pGPS, int& StartDay) {
     double secs = 0.0;
 
     if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
@@ -322,6 +328,16 @@ double TimeModify(const TCHAR* StrTime, NMEA_INFO* pGPS, int& StartDay) {
         }
     }
     return secs + TimeModify(pGPS, StartDay);
+}
+
+}
+
+double TimeModify(const char* FixTime, NMEA_INFO* info, int& StartDay) {
+  return TimeModify<char>(FixTime, info, StartDay);
+}
+
+double TimeModify(const wchar_t* FixTime, NMEA_INFO* info, int& StartDay) {
+  return TimeModify<wchar_t>(FixTime, info, StartDay);
 }
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay) {
@@ -378,14 +394,14 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   }
 }
 
-BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::GSA(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   return TRUE;
 }
 
 // we need to parse GLL as well because it can mark the start of a new quantum data
 // followed by values with no data, ex. altitude, vario, etc.
-BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::GLL(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 6) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GLL sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -433,14 +449,14 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 
 
-BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMB(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   return TRUE;
 } // END RMB
 
 
 
-BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::VTG(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 5) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid VTG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -474,7 +490,7 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 } // END VTG
 
-BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMC(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 9) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -539,7 +555,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 	}
 
 	// note that Condor sends no date..
-	const size_t size_date = _tcslen(params[8]);
+	const size_t size_date = strlen(params[8]);
 	if (size_date < 6 && !DevIsCondor) {
 		#if TESTBENCH
 		StartupStore(_T(".... RMC date field empty, skip sentence!\n"));
@@ -655,7 +671,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 
 
-BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::GGA(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 11) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u <%s>"),(unsigned)nparams,String));
@@ -785,7 +801,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
   pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
  
-  if (_tcslen(params[10])>0) {
+  if (strlen(params[10])>0) {
     // No real need to parse this value,
     // but we do assume that no correction is required in this case
     // double GeoidSeparation = ParseAltitude(params[10], params[11]);
@@ -812,7 +828,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *p
 
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
-BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PLKAS(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   (void)pGPS;
 
@@ -838,7 +854,7 @@ BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 }
 
 
-BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
   (void)pGPS;
 
@@ -865,7 +881,7 @@ BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_
 
 
 // TASMAN instruments support for Tasman Flight Pack model Fp10
-BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 4) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -896,7 +912,7 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, TCHAR *String, TCHAR **params, siz
 }
 
 
-BOOL NMEAParser::HCHDG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::HCHDG(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 1) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid HCHDG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));

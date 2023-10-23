@@ -11,16 +11,17 @@
 
 #include "options.h"
 #include "wait_ack.h"
+#include <utility>
 
 wait_ack::wait_ack(Mutex& mtx, const char* str) : mutex(mtx), wait_str(str) {
   // remove trailing <CR><LF>
-  tstring_view::size_type n = wait_str.find_last_not_of("\r\n");
-  if (n != tstring_view::npos) {
+  std::string_view::size_type n = wait_str.find_last_not_of("\r\n");
+  if (n != std::string_view::npos) {
     wait_str = wait_str.substr(0, n + 1);
   }
 }
 
-bool wait_ack::check(const TCHAR* str) {
+bool wait_ack::check(const char* str) {
   bool signal = WithLock(mutex, [&]() {
     if (compare_nmea(str)) {
       ready = true;
@@ -42,17 +43,17 @@ bool wait_ack::wait(unsigned timeout_ms) {
   return std::exchange(ready, false);
 }
 
-static TCHAR valid_char(TCHAR c) {
-  return c == _T('\r') || c == ('\n') ? _T('\0') : c;
+static char valid_char(char c) {
+  return (c == '\r' || c == '\n') ? '\0' : c;
 }
 
-bool wait_ack::compare_nmea(const TCHAR* str) {
+bool wait_ack::compare_nmea(const char* str) {
   for (auto c : wait_str) {
     if (c != valid_char(*(str++))) {
       return false;
     }
   }
-  return valid_char(*str) == _T('\0');
+  return valid_char(*str) == '\0';
 }
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -69,10 +70,10 @@ TEST_CASE("testing the wait_ack class") {
     for (auto a : array) {
       wait_ack test(mtx, a);
       for (auto b : array) {
-        CHECK_UNARY(test.check(to_tstring(b).c_str()));
-        CHECK_UNARY(test.check(_T("abcd\r\nef")));  // <CR><LF> is the end of string ...
-        CHECK_UNARY_FALSE(test.check(_T("azerty")));
-        CHECK_UNARY_FALSE(test.check(_T("a")));
+        CHECK_UNARY(test.check(b));
+        CHECK_UNARY(test.check("abcd\r\nef"));  // <CR><LF> is the end of string ...
+        CHECK_UNARY_FALSE(test.check("azerty"));
+        CHECK_UNARY_FALSE(test.check("a"));
       }
     }
   }
@@ -85,7 +86,7 @@ TEST_CASE("testing the wait_ack class") {
     std::thread set_thread([&] {
       ScopeLock lock(mtx);
       std::this_thread::sleep_for(500ms);
-      test.check(_T("abcd"));
+      test.check("abcd");
     });
 
     CHECK_UNARY(test.wait(5000));

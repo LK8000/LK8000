@@ -101,7 +101,7 @@ protected:
 
 private:
 
-    using _NmeaString_t = TCHAR[MAX_NMEA_LEN];
+    using _NmeaString_t = char[MAX_NMEA_LEN];
 
     void Run() override;
 
@@ -109,7 +109,7 @@ private:
     const tstring sPortName;
 
     _NmeaString_t _NmeaString;
-    TCHAR * pLastNmea;
+    char* pLastNmea;
 
     virtual bool Write_Impl(const void *data, size_t size) = 0;
 };

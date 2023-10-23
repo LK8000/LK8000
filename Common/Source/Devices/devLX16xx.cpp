@@ -14,6 +14,7 @@
 #include "Calc/Vario.h"
 #include "Utils.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
 #include "OS/Sleep.h"
 
 int  LX166AltitudeUpdateTimeout =0;
@@ -215,7 +216,7 @@ BOOL LX16xxPutBugs(DeviceDescriptor_t* d, double Bugs){
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX16xx::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX16xx::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   static int i=40;
 
@@ -224,22 +225,22 @@ BOOL DevLX16xx::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* inf
   }
 
   /* configure LX after 30 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+  if (strncmp("$GPGGA", sentence, 6) == 0) {
     if (i++ > 10) {
       SetupLX_Sentence(d);
       i = 0;
     }
   }
 
-  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+  if (strncmp("$LXWP0", sentence, 6) == 0)
     return LXWP0(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+  else if (strncmp("$LXWP1", sentence, 6) == 0)
     return LXWP1(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+  else if (strncmp("$LXWP2", sentence, 6) == 0)
     return LXWP2(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+  else if (strncmp("$LXWP3", sentence, 6) == 0)
     return LXWP3(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+  else if (strncmp("$LXWP4", sentence, 6) == 0)
     return LXWP4(d, sentence + 7, info);
 
   return(false);
@@ -256,7 +257,7 @@ BOOL DevLX16xx::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* inf
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -319,7 +320,7 @@ bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* i
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
+bool DevLX16xx::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -329,44 +330,43 @@ bool DevLX16xx::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGP
   // software version float sw version
   // hardware version float hw version
   // license string (option to store a license of PDA SW into LX1600)
- // ParToDouble(sentence, 1, &MACCREADY);
-//	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
+  // ParToDouble(sentence, 1, &MACCREADY);
+  //	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
 #ifdef DEVICE_SERIAL
-TCHAR ctemp[180];
-static int NoMsg=0;
-static int oldSerial=0;
-if(_tcslen(String) < 180)
+  char ctemp[180];
+  static int NoMsg=0;
+  static int oldSerial=0;
+if (strlen(String) < 180)
   if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
-	NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
+    NoMsg++ ;
+    NMEAParser::ExtractParameter(String, ctemp, 0);
+    from_unknown_charset(ctemp, d->Name);
     lk::snprintf(d->Name, _T("%s"),ctemp);
     StartupStore(_T(". %s\n"),ctemp);
 
-	NMEAParser::ExtractParameter(String,ctemp,1);
-	d->SerialNumber= (int)StrToDouble(ctemp,NULL);
-	oldSerial = d->SerialNumber;
-	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
-	StartupStore(_T(". %s\n"),ctemp);
+    NMEAParser::ExtractParameter(String, ctemp, 1);
+    d->SerialNumber = StrToDouble(ctemp, nullptr);
+    oldSerial = d->SerialNumber;
+	  StartupStore(_T(". %s Serial Number %i"), d->Name, d->SerialNumber);
 
-	NMEAParser::ExtractParameter(String,ctemp,2);
-	d->SoftwareVer= StrToDouble(ctemp,NULL);
-	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
-	StartupStore(_T(". %s\n"),ctemp);
+    NMEAParser::ExtractParameter(String, ctemp, 2);
+    d->SoftwareVer= StrToDouble(ctemp, nullptr);
+    StartupStore(_T(". %s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
 
-	NMEAParser::ExtractParameter(String,ctemp,3);
-    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
-	StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
-    DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
-    DoStatusMessage(ctemp);
+    NMEAParser::ExtractParameter(String, ctemp, 3);
+    d->HardwareId = StrToDouble(ctemp, nullptr) * 10;
+  	StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, d->HardwareId / 10.0);
+
+    TCHAR str[255];
+    _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+    DoStatusMessage(str);
+    _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "), d->SoftwareVer, d->HardwareId / 10.0);
+    DoStatusMessage(str);
   }
   // nothing to do
 #endif
-  return(true);
-
+  return true;
 } // LXWP1()
 
 
@@ -382,7 +382,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
+bool DevLX16xx::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -435,7 +435,7 @@ bool DevLX16xx::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
+bool DevLX16xx::LXWP3(DeviceDescriptor_t*, const char*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -465,7 +465,7 @@ bool DevLX16xx::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 } // LXWP3()
 
 
-bool DevLX16xx::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX16xx::LXWP4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 
 // $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>

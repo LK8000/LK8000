@@ -15,6 +15,7 @@
 #include <time.h>
 #include "externs.h"
 #include "utils/stringext.h"
+#include "utils/charset_helper.h"
 #include "devLXNano3.h"
 #include "Calc/Vario.h"
 #include "dlgTools.h"
@@ -285,7 +286,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 /// @retval true if the sentence has been parsed
 ///
 // static
-BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
   auto wait_ack = d->lock_wait_ack();
   if (wait_ack && wait_ack->check(sentence)) {
     return TRUE;
@@ -295,7 +296,7 @@ BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
 
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
+  if (strncmp("$LXWP2", sentence, 6) == 0) {
     Nano3_bValid = true;
     if (iNano3_RxUpdateTime > 0) {
       iNano3_RxUpdateTime--;
@@ -319,7 +320,7 @@ BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
     }
   }
 
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+  if (strncmp("$GPGGA", sentence, 6) == 0) {
     if (iS_SeriesTimeout-- < 0)
       devSetAdvancedMode(d, false);
 
@@ -347,7 +348,7 @@ BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
     SendNmea(d, szTmp);
   }
 #endif
-  if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0) {
+  if (strncmp("$PLXVC", sentence, 6) == 0) {
     return PLXVC(d, sentence, info);
   }
 
@@ -355,21 +356,21 @@ BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
     return FALSE;
   }
 
-  if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+  if (strncmp("$PLXVF", sentence, 6) == 0)
     return PLXVF(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+  else if (strncmp("$PLXVS", sentence, 6) == 0)
     return PLXVS(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+  else if (strncmp("$PLXV0", sentence, 6) == 0)
     return PLXV0(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+  else if (strncmp("$LXWP2", sentence, 6) == 0)
     return LXWP2(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+  else if (strncmp("$LXWP0", sentence, 6) == 0)
     return LXWP0(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PLXVTARG"), sentence, 9) == 0)
+  else if (strncmp("$PLXVTARG", sentence, 9) == 0)
     return PLXVTARG(d, sentence + 10, info);
-  else if (_tcsncmp(_T("$GPRMB"), sentence, 6) == 0)
+  else if (strncmp("$GPRMB", sentence, 6) == 0)
     return GPRMB(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0) {
+  else if (strncmp("$LXWP1", sentence, 6) == 0) {
     Nano3_bValid = true;
     return LXWP1(d, sentence + 7, info);
   }
@@ -1120,90 +1121,104 @@ BOOL DevLXNanoIII::AbortLX_IGC_FileRead(void)
 }
 
 
-BOOL DevLXNanoIII::PLXVC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
+ /*
+  * $PLXVC,<key>,<type>,<values>*<checksum><cr><lf>
+  */
 
-bool bCRCok = NMEAParser::NMEAChecksum(sentence);
-if (!bCRCok){
-    StartupStore(_T("NANO3: Checksum Error %s %s") ,sentence, NEWLINE);
+  bool bCRCok = NMEAParser::NMEAChecksum(sentence);
 
-}
-
-if (_tcsncmp(_T("$PLXVC"), sentence, 6) == 0)
-{
-  TCHAR Par[10][MAX_NMEA_LEN];
-  TCHAR szCommand[MAX_NMEA_LEN];
-  for(uint i=0; i < 10 ; i++)
-  {
-    NMEAParser::ExtractParameter(sentence,Par[i],i);
+  char ctemp[MAX_NMEA_LEN];
+  char* params[10];
+  size_t n_params = NMEAParser::ExtractParameters(sentence, ctemp, params, 10);
+  if(n_params < 4) {
+    return FALSE;
   }
-  if (_tcsncmp(_T("INFO"), Par[1],4) == 0)
-    return PLXVC_INFO(d,sentence,info);
 
-  if (_tcsncmp(_T("LOGBOOKSIZE"), Par[1],11) == 0)
-  {
-    if( StrTol(Par[3]) > 0) // at least one file exists?
-    {
-      _sntprintf(szCommand,MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"), (unsigned int) StrTol(Par[3])+1);
+  assert(std::string_view(params[1]) != "$PLXVC"); // reponsability of callers...
+
+  std::string_view key(params[1]);
+
+  if (key == "INFO") {
+    return PLXVC_INFO(d, &params[2], n_params - 2, info);
+  }
+
+  if (key == "LOGBOOKSIZE") {
+    unsigned size = strtol(params[3], nullptr, 10);
+    if(size > 0) { // at least one file exists?
+      TCHAR szCommand[MAX_NMEA_LEN];
+      _sntprintf(szCommand,MAX_NMEA_LEN, _T("PLXVC,LOGBOOK,R,1,%u"), size + 1);
       SendNmea(d, szCommand);
     }
+    return TRUE;
   }
-  else
-  {
-    if (_tcsncmp(_T("LOGBOOK"), Par[1],7) == 0)  // PLXVC but not declaration = IGC File transfer
-    {
-      TCHAR Line[2][MAX_NMEA_LEN];
-      lk::snprintf(Line[0], _T("%s"), Par[5]);
-      lk::snprintf(Line[1], _T("%s (%s-%s) %ukB"), Par[6], Par[7], Par[8], (uint)(StrTol(Par[9]))/1024);
-      AddElement(Line[0], Line[1]);
+
+  if(key == "LOGBOOK") {
+    if (n_params < 10) {
+      return FALSE;
     }
-    else
-    {
-      if (IGCDownload() &&(_tcsncmp(_T("FLIGHT"), Par[1],6) == 0))
-      {
-       if( bCRCok) // CRC OK?
-       {
-         if(_tcslen( Par[3]) > 0)
-           StartupStore(_T(">>>> %s %s") ,sentence, NEWLINE);
 
-         for(uint i=0; i < (uint)_tcslen(Par[6]); i++)  {
-           fputc((char)Par[6][i],f); } fputc((char)'\n',f);
-         m_CurLine = (uint) StrTol(Par[4]);
-        uint TotalLines = (uint) StrTol(Par[5]);
-         uint uPercent = 0;
-         if(TotalLines > 0)
-           uPercent = (m_CurLine*100) / TotalLines;
-         lk::snprintf(Par[1], _T("%s: %u%% %s ..."),MsgToken(2400), uPercent,m_Filename); // _@M2400_ "Downloading"
+    tstring Line1 = from_unknown_charset(params[5]);
 
-    #ifdef NANO_PROGRESS_DLG
-         IGCProgressDialogText(Par[1]);
-    #endif
-         if(m_CurLine == TotalLines)  // reach end of file?
-         {
-           if(f != NULL) { fclose(f); f= NULL; }
-           StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
-           IGCDownload( false);
-      //   MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
-    #ifdef NANO_PROGRESS_DLG
-           CloseIGCProgressDialog();
-    #endif
-         }
-       }  // CRC OK?
+    tstring a = from_unknown_charset(params[6]);
+    tstring b = from_unknown_charset(params[7]); 
+    tstring c = from_unknown_charset(params[8]);
+    uint32_t size = strtoul(params[9], nullptr, 10) / 1024;
 
-       if(IGCDownload())
-       {
-         if((m_CurLine % (BLOCK_SIZE)==0) || !bCRCok)
-         {
-             IGCDownload( true );
-           _sntprintf(szCommand, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
-           SendNmea(Device(), szCommand);
-         }
-       }  // if(IGCDownload())
-     }  // FLIGHT
-   }  // Not LOGBOOK
- }  // Not LOGBOOKSIZE
-}  // if $PLXVC
-return(true);
+
+    TCHAR Line2[MAX_NMEA_LEN];
+    _sntprintf(Line2,MAX_NMEA_LEN, _T("%s (%s-%s) %ukB"), a.c_str() ,b.c_str() ,c.c_str(), size);
+    AddElement(Line1.c_str(), Line2);
+    return TRUE;
+  }
+
+  if (key == "FLIGHT" && IGCDownload()) {
+    if( bCRCok) { // CRC OK?
+      std::string_view data(params[6]);
+      for (char c : data) {
+        fputc(c, f); 
+      }
+      fputc('\n',f);
+
+      m_CurLine = strtoul(params[4], nullptr, 10);
+      uint TotalLines = strtoul(params[5], nullptr, 10);
+      uint uPercent = 0;
+      if(TotalLines > 0) {
+        uPercent = (m_CurLine*100) / TotalLines;
+      }
+      TCHAR szString[MAX_NMEA_LEN];
+      _sntprintf(szString, MAX_NMEA_LEN, _T("%s: %u%% %s ..."),MsgToken(2400), uPercent, m_Filename); // _@M2400_ "Downloading"
+
+#ifdef NANO_PROGRESS_DLG
+      IGCProgressDialogText(szString);
+#endif
+      if(m_CurLine == TotalLines) { 
+      // reach end of file?
+        if(f != NULL) { 
+          fclose(f); 
+          f= NULL; 
+        }
+        StartupStore(_T(" ******* NANO3  IGC Download END ***** %s") , NEWLINE);
+        IGCDownload( false);
+  //   MessageBoxX(  MsgToken(2406), MsgToken(2398), mbOk) ;  // // _@M2398_ "IGC Download"
+#ifdef NANO_PROGRESS_DLG
+        CloseIGCProgressDialog();
+#endif
+      }
+    }  // CRC OK?
+
+    if(IGCDownload()) {
+      if((m_CurLine % (BLOCK_SIZE)==0) || !bCRCok) {
+        IGCDownload( true );
+        TCHAR szCommand[MAX_NMEA_LEN];
+        _sntprintf(szCommand, MAX_NMEA_LEN, _T("PLXVC,FLIGHT,R,%s,%u,%u"),m_Filename,m_CurLine+1,m_CurLine+BLOCK_SIZE+1);
+        SendNmea(Device(), szCommand);
+      }
+    }  // if(IGCDownload())
+  }  // FLIGHT
+  
+  return FALSE;
 }
 
 
@@ -1219,7 +1234,7 @@ return(true);
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -1319,7 +1334,7 @@ BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
+BOOL DevLXNanoIII::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -1329,44 +1344,41 @@ BOOL DevLXNanoIII::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* 
   // software version float sw version
   // hardware version float hw version
   // license string (option to store a license of PDA SW into LX1600)
- // ParToDouble(sentence, 1, &MACCREADY);
-//  $LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
+  // ParToDouble(sentence, 1, &MACCREADY);
+  //  $LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
 #ifdef DEVICE_SERIAL
-TCHAR ctemp[MAX_NMEA_LEN];
-static int NoMsg=0;
-static int oldSerial=0;
-if(_tcslen(String) < 180)
-  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
-  {
-    NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
-    if(_tcslen(ctemp) < DEVNAMESIZE)
-      _tcsncpy(d->Name, ctemp, DEVNAMESIZE);
-    StartupStore(_T(". %s\n"),ctemp);
+  char ctemp[MAX_NMEA_LEN];
+  static int NoMsg=0;
+  static int oldSerial=0;
+  if (strlen(String) < 180)
+    if ((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5)) {
+      NoMsg++ ;
+      NMEAParser::ExtractParameter(String, ctemp, 0);
+      from_unknown_charset(ctemp, d->Name);
+      StartupStore(_T(". %s"), d->Name);
 
-    NMEAParser::ExtractParameter(String,ctemp,1);
-    d->SerialNumber= (int)StrToDouble(ctemp,NULL);
-    oldSerial = d->SerialNumber;
-    _stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
-    StartupStore(_T(". %s\n"),ctemp);
+      NMEAParser::ExtractParameter(String, ctemp, 1);
+      d->SerialNumber = StrToDouble(ctemp, nullptr);
+      oldSerial = d->SerialNumber;
+      StartupStore(_T(". %s Serial Number %i"), d->Name, d->SerialNumber);
 
-    NMEAParser::ExtractParameter(String,ctemp,2);
-    d->SoftwareVer= StrToDouble(ctemp,NULL);
-    _stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
-    StartupStore(_T(". %s\n"),ctemp);
+      NMEAParser::ExtractParameter(String, ctemp, 2);
+      d->SoftwareVer= StrToDouble(ctemp, nullptr);
+      StartupStore(_T(". %s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
 
-    NMEAParser::ExtractParameter(String,ctemp,3);
-    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-    _stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
-    StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
-    DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
-    DoStatusMessage(ctemp);
+      NMEAParser::ExtractParameter(String, ctemp, 3);
+      d->HardwareId = StrToDouble(ctemp, nullptr) * 10;
+      StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, d->HardwareId / 10.0);
+
+      TCHAR str[255];
+      _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+      DoStatusMessage(str);
+      _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, d->HardwareId / 10.0);
+      DoStatusMessage(str);
   }
   // nothing to do
 #endif
-  return(true);
+  return true;
 } // LXWP1()
 
 
@@ -1381,7 +1393,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
+BOOL DevLXNanoIII::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -1499,7 +1511,7 @@ BOOL DevLXNanoIII::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXNanoIII::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
+BOOL DevLXNanoIII::LXWP3(DeviceDescriptor_t*, const char*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -1531,7 +1543,7 @@ BOOL DevLXNanoIII::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 
 
 
-BOOL DevLXNanoIII::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::LXWP4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 // $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
 // Sc  float (m/s)
@@ -1549,7 +1561,7 @@ BOOL DevLXNanoIII::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 
 
 
-BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   TCHAR szTmp[MAX_NMEA_LEN];
   double alt=0, airspeed=0;
@@ -1667,7 +1679,7 @@ BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 } // PLXVF()
 
 
-BOOL DevLXNanoIII::PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVS(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   double Batt;
   double OAT;
@@ -1710,25 +1722,25 @@ BOOL DevLXNanoIII::PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 } // PLXVS()
 
 
-BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
-  TCHAR  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
+  char  szTmp1[MAX_NMEA_LEN], szTmp2[MAX_NMEA_LEN];
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
 
   NMEAParser::ExtractParameter(sentence,szTmp1,1);
-  if  (_tcscmp(szTmp1,_T("W"))!=0)  // no write flag received
+  if  (strcmp(szTmp1, "W")!=0)  // no write flag received
     return false;
 
   NMEAParser::ExtractParameter(sentence,szTmp1,0);
-  if  (_tcscmp(szTmp1,_T("BRGPS"))==0)
+  if  (strcmp(szTmp1, "BRGPS") == 0)
   {
     NMEAParser::ExtractParameter(sentence,szTmp2,2);
     iNano3_GPSBaudrate = Nano3Baudrate( (int)( (StrToDouble(szTmp2,NULL))+0.1 ) );
     return true;
   }
 
-  if (_tcscmp(szTmp1,_T("BRPDA"))==0)
+  if (strcmp(szTmp1, "BRPDA") == 0)
   {
     NMEAParser::ExtractParameter(sentence,szTmp2,2);
     iNano3_PDABaudrate = Nano3Baudrate( (int) StrToDouble(szTmp2,NULL));
@@ -1736,17 +1748,18 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
   }
 
   NMEAParser::ExtractParameter(sentence,szTmp1,0);
-  if  (_tcscmp(szTmp1,_T("QNH"))==0)
+  if  (strcmp(szTmp1, "QNH") == 0)
   {
     
     NMEAParser::ExtractParameter(sentence,szTmp2,2);
     double newQNH = StrToDouble(szTmp2,NULL)/100.0;
-	  _sntprintf(szTmp1,MAX_NMEA_LEN, TEXT("%6.1f $PLXV"),newQNH);
-    SetDataText( d, _QNH,   szTmp1);
+    TCHAR szQNH[128];
+    _sntprintf(szQNH,std::size(szQNH), TEXT("%6.1f $PLXV"),newQNH);
+    SetDataText( d, _QNH,   szQNH);
     if(IsDirInput(PortIO.QNHDir))
     {
       UpdateQNH(newQNH);
-      StartupStore(_T("Nano3 QNH: %s"),szTmp1);
+      StartupStore(_T("Nano3 QNH: %s"),szQNH);
     }
     return true;
   }
@@ -1754,7 +1767,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
   /****************************************************************
    * MacCready
    ****************************************************************/
-  if (_tcscmp(szTmp1, _T("MC")) == 0) {
+  if (strcmp(szTmp1, "MC") == 0) {
     double fTmp;
     if (ParToDouble(sentence, 2, &fTmp)) {
       if (Values(d)) {
@@ -1774,7 +1787,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
   /****************************************************************
    * BALlast
    ****************************************************************/
-  if (_tcscmp(szTmp1,_T("BAL"))==0)
+  if (strcmp(szTmp1, "BAL") == 0)
   {
     double fTmp;
     if (ParToDouble(sentence, 2, &fTmp)) {
@@ -1794,7 +1807,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
   /****************************************************************
    * BUGs
    ****************************************************************/
-  if (_tcscmp(szTmp1,_T("BUGS"))==0)
+  if (strcmp(szTmp1, "BUGS") == 0)
   {
     double fTmp;
     if (ParToDouble(sentence, 2, &fTmp)) {
@@ -1811,7 +1824,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
     return false;
   }
 
-  if (_tcscmp(szTmp1,_T("VOL"))==0)
+  if (strcmp(szTmp1, "VOL")==0)
   {
     double fTmp;
     if(ParToDouble(sentence, 2, &fTmp))
@@ -1822,7 +1835,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
   /****************************************************************
    * POLAR
    ****************************************************************/
-  if (_tcscmp(szTmp1,_T("POLAR"))==0)
+  if (strcmp(szTmp1, "POLAR") == 0)
   {
     double fLoad,fWeight,fMaxW, fEmptyW,fPilotW, fa,fb,fc;
     if( (ParToDouble(sentence, 2, &fa)) &&
@@ -1838,7 +1851,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
     return true;
   }
 
-  if (_tcscmp(szTmp1,_T("CONNECTION"))==0)
+  if (strcmp(szTmp1, "CONNECTION") == 0)
   {
     double fTmp;
     if(ParToDouble(sentence, 2, &fTmp))
@@ -1846,7 +1859,7 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
     return true;
   }
 
-  if (_tcscmp(szTmp1,_T("NMEARATE"))==0)
+  if (strcmp(szTmp1, "NMEARATE") == 0)
   {
     double fTmp;
     if(ParToDouble(sentence, 2, &fTmp))
@@ -1976,7 +1989,7 @@ BOOL DevLXNanoIII::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
 
 
 
-BOOL DevLXNanoIII::GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::GPRMB(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
@@ -1999,7 +2012,7 @@ BOOL DevLXNanoIII::GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 }
 
 
-BOOL DevLXNanoIII::PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXNanoIII::PLXVTARG(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
@@ -2007,7 +2020,7 @@ BOOL DevLXNanoIII::PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_I
   if(PortIO.R_TRGTDir != TP_VTARG)
      return false;
 
-  TCHAR  szTmp[MAX_NMEA_LEN];
+  char szTmp[MAX_NMEA_LEN];
 
   double fTmp;
 
@@ -2033,7 +2046,7 @@ BOOL DevLXNanoIII::PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_I
 
 	
   NMEAParser::ExtractParameter(sentence,szTmp,0);
-  tstring tname = FixCharset(szTmp);
+  tstring tname = from_unknown_charset(szTmp);
 
   double Altitude = RESWP_INVALIDNUMBER;
   if (!ParToDouble(sentence, 5, &Altitude)) {
@@ -2052,62 +2065,63 @@ BOOL DevLXNanoIII::PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_I
 
   if(Values(d))
   {
-    _tcsncat(szTmp, _T(" ($PLXVTARG)"), std::size(szTmp) - _tcslen(szTmp));
-    SetDataText( d, _R_TRGT,  szTmp);
+    tname += _T(" ($PLXVTARG)");
+    SetDataText(d, _R_TRGT,  tname.c_str());
   }
   return false;
 }
 
 
 
-BOOL DevLXNanoIII::PLXVC_INFO(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
-{
+BOOL DevLXNanoIII::PLXVC_INFO(DeviceDescriptor_t* d, char** params, size_t size, NMEA_INFO* info) {
+  if (size <= 2) {
+    return FALSE;
+  }
+
+  if  (strcmp(params[2], "A") != 0) {  // no answer flag received
+   return false;
+  }
+
+#ifdef DEVICE_SERIAL     
+  if (size <= 5) {
+    return FALSE;
+  }
+  d->SerialNumber = (int) StrToDouble(params[5],NULL);
+#endif      
+
+  if (size <= 7) {
+    return FALSE;
+  }
+
+  double Batt = StrToDouble(params[7], nullptr);
+  if(Values(d)) {
+    TCHAR  szTmp[MAX_NMEA_LEN];
+    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%3.1fV ($PLXVC_INFO)"),Batt);
+    SetDataText(d, _BAT1, szTmp);
+  }
+
   const auto& Port = PortConfig[d->PortNumber];
   const auto& PortIO = Port.PortIO;
- 
-TCHAR  szTmp[MAX_NMEA_LEN];
 
-  NMEAParser::ExtractParameter(sentence,szTmp,2);
-  if  (_tcscmp(szTmp,_T("A"))!=0)  // no answer flag received
-   return false;
-
-  NMEAParser::ExtractParameter(sentence,szTmp,0);
-  {
-#ifdef DEVICE_SERIAL     
-    NMEAParser::ExtractParameter(sentence,szTmp,5);
-    {
-      d->SerialNumber = (int) StrToDouble(szTmp,NULL);
-    }
-#endif      
-    double Batt;
-    if (ParToDouble(sentence, 7, &Batt))
-    {
-      if(Values(d))
-      {
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV ($PLXVC_INFO)"),Batt);
-        SetDataText( d,_BAT1,  szTmp);
-      }
-      if(IsDirInput(PortIO.BAT1Dir))
-      {
-        info->ExtBatt1_Voltage = Batt;
-      }
-    }
-
-    if (ParToDouble(sentence, 8, &Batt))
-    {
-      if(Values(d))
-      {
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV (&PLXVC_INFO)"),Batt);
-        SetDataText( d, _BAT2,  szTmp);
-      }
-      if(IsDirInput(PortIO.BAT2Dir))
-      {
-        info->ExtBatt2_Voltage = Batt;
-      }
-    }
+  if(IsDirInput(PortIO.BAT1Dir)) {
+    info->ExtBatt1_Voltage = Batt;
   }
-  return true;
 
+  if (size <= 8) {
+    return FALSE;
+  }
+
+  Batt = StrToDouble(params[8], nullptr);
+  if(Values(d)) {
+    TCHAR szTmp[MAX_NMEA_LEN];
+    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fV (&PLXVC_INFO)"),Batt);
+    SetDataText(d, _BAT2,  szTmp);
+  }
+  if(IsDirInput(PortIO.BAT2Dir)) {
+    info->ExtBatt2_Voltage = Batt;
+  }
+
+  return true;
 } // PLXVC
 
     void DevLXNanoIII::Device(DeviceDescriptor_t* d) 

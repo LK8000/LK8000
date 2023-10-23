@@ -163,8 +163,8 @@ void ComPort::ProcessChar(char c) {
 
         if (c == '\n' || c == '\r') {
             // abcd\n , now closing the line also with \r
-            *(pLastNmea++) = _T('\n');
-            *(pLastNmea) = _T('\0'); // terminate string.
+            *(pLastNmea++) = '\n';
+            *(pLastNmea) = '\0'; // terminate string.
             // process only meaningful sentences, avoid processing a single \n \r etc.
             if (std::distance(std::begin(_NmeaString), pLastNmea) > 5) {
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);

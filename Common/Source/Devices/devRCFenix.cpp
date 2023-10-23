@@ -113,7 +113,7 @@ extern BOOL LX_EOS_ERA_bValid;
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevRCFenix::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevRCFenix::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
 
   auto wait_ack = d->lock_wait_ack();
   if (wait_ack && wait_ack->check(sentence)) {
@@ -127,24 +127,22 @@ BOOL DevRCFenix::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* in
   if (!NMEAParser::NMEAChecksum(sentence)){
     return FALSE;
   }
-
-  if (_tcsncmp(_T("$RCDT"), sentence, 5) == 0) {
+  if (strncmp("$RCDT", sentence, 5) == 0) {
     return LXDT(d, sentence + 6, info);
   }
-  if (_tcsncmp(_T("$LXBC"), sentence, 5) == 0) {
+  if (strncmp("$LXBC", sentence, 5) == 0) {
     return LXBC(d, sentence + 6, info);
   }
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
-    LX_EOS_ERA_bValid = false; // workaround to have bidirectional MC/BAL/BUG ...
+  if (strncmp("$LXWP2", sentence, 6) == 0) {
     return LXWP2(d, sentence + 7, info);
   }
-  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0) {
+  if (strncmp("$LXWP0", sentence, 6) == 0) {
     return LXWP0(d, sentence + 7, info);
   }
-  if (_tcsncmp(_T("$GPRMB"), sentence, 6) == 0) {
+  if(strncmp("$GPRMB", sentence, 6) == 0) {
     return GPRMB(d, sentence + 7, info);
   }
-  if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0) {
+  if (strncmp("$LXWP1", sentence, 6) == 0) {
     return LXWP1(d, sentence + 7, info);
   }
 

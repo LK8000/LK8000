@@ -17,7 +17,8 @@
 struct DeviceDescriptor_t;
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay);
-double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
+double TimeModify(const char* FixTime, NMEA_INFO* info, int& StartDay);
+double TimeModify(const wchar_t* FixTime, NMEA_INFO* info, int& StartDay);
 
 class NMEAParser {
  public:
@@ -25,7 +26,7 @@ class NMEAParser {
 
   void Reset();
 
-  BOOL ParseNMEAString_Internal(DeviceDescriptor_t& d, TCHAR *String, NMEA_INFO *GPS_INFO);
+  BOOL ParseNMEAString_Internal(DeviceDescriptor_t& d, char* String, NMEA_INFO *GPS_INFO);
 
   void CheckRMZ();
 
@@ -59,14 +60,16 @@ class NMEAParser {
 public:
 
   // these routines can be used by other parsers.
-  static double ParseAltitude(TCHAR *, const TCHAR *);
-  static size_t ValidateAndExtract(const TCHAR *src, TCHAR *dst, size_t dstsz, TCHAR **arr, size_t arrsz);
-  static size_t ExtractParameters(const TCHAR *src, TCHAR *dst, TCHAR **arr, size_t sz);
-  static BOOL NMEAChecksum(const TCHAR *String);
 
-  static void ExtractParameter(const TCHAR *Source,
-			       TCHAR *Destination,
-			       int DesiredFieldNumber);
+  static double ParseAltitude(const char* value, const char* format);
+  static size_t ValidateAndExtract(const char* src, char* dst, size_t dstsz, char** arr, size_t arrsz);
+  static size_t ExtractParameters(const char* src, char* dst, char** arr, size_t sz);
+  static void ExtractParameter(const char* Source, char* Destination, int DesiredFieldNumber);
+  static BOOL NMEAChecksum(const char* String);
+
+#ifdef UNICODE
+  static void ExtractParameter(const wchar_t* Source, wchar_t* Destination, int DesiredFieldNumber);
+#endif
 
   static uint8_t AppendChecksum(char *String, size_t size);
 
@@ -91,29 +94,29 @@ public:
 
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
 
-  BOOL GLL(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL GGA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL GSA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMC(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL VTG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMB(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMZ(DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL GLL(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL GGA(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL GSA(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMC(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL VTG(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMB(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMZ(DeviceDescriptor_t& d, char* String, char**, size_t, NMEA_INFO *GPS_INFO);
 
-  BOOL WP0(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL WP1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL WP2(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL WP0(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL WP1(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL WP2(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
 
   // Additional sentences
-  BOOL PTAS1(DeviceDescriptor_t& d, TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
+  BOOL PTAS1(DeviceDescriptor_t& d, char* String, char**, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
   // Garmin magnetic compass
-  BOOL HCHDG(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL HCHDG(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active
-  BOOL PLKAS(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PLKAS(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   
   // FLARM sentences
-  BOOL PFLAV(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
-  BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PFLAV(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PFLAU(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PFLAA(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
 
   void UpdateFlarmScale(NMEA_INFO *pGPS);
 
@@ -130,6 +133,6 @@ void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
 int FLARM_FindSlot(NMEA_INFO *GPS_INFO, uint32_t RadioId);
 
 extern bool EnableLogNMEA;
-void LogNMEA(TCHAR* text, int);
+void LogNMEA(char* text, int);
 
 #endif

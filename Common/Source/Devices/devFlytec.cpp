@@ -15,24 +15,20 @@ extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
 
-static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL FLYSEN(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-static BOOL FlytecParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-
-  (void)d;
-
+static
+BOOL FlytecParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
-
-  if(_tcsncmp(TEXT("$FLYSEN"), String, 7)==0)
-    {
-      return FLYSEN(d, &String[8], pGPS);
-    }
+  if(strncmp("$FLYSEN", String, 7)==0) {
+    return FLYSEN(d, &String[8], pGPS);
+  }
 
   return FALSE;
-
 }
 
 
@@ -41,10 +37,11 @@ void FlytecInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = FlytecParseNMEA;
 }
 
-static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static
+BOOL FLYSEN(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   static int offset=-1;
 
   d->nmeaParser.connected = true;
@@ -54,11 +51,11 @@ static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
   // Determine firmware version, assuming it will not change in the session!
   if (offset<0) {
 	NMEAParser::ExtractParameter(String,ctemp,8);
-	if ( (_tcscmp(ctemp,_T("A"))==0) || (_tcscmp(ctemp,_T("V"))==0))
+	if ( (strcmp(ctemp, "A")==0) || (strcmp(ctemp, "V")==0))
 		offset=0;
 	else {
 		NMEAParser::ExtractParameter(String,ctemp,9);
-		if ( (_tcscmp(ctemp,_T("A"))==0) || (_tcscmp(ctemp,_T("V"))==0))
+		if ( (strcmp(ctemp, "A")==0) || (strcmp(ctemp, "V")==0))
 			offset=1;
 		else
 			return TRUE;
@@ -67,7 +64,7 @@ static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 
   // VOID GPS SIGNAL
   NMEAParser::ExtractParameter(String,ctemp,8+offset);
-  if (_tcscmp(ctemp,_T("V"))==0) {
+  if (strcmp(ctemp, "V")==0) {
 	pGPS->NAVWarning=true;
 	// GPSCONNECT=false; // 121127 NO!!
 	goto label_nogps;
@@ -118,13 +115,12 @@ static BOOL FLYSEN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
   // Firmware 3.32 has got the date
   if (offset>0) {
 	NMEAParser::ExtractParameter(String,ctemp,0);
-	long gy, gm, gd;
-	TCHAR *Stop;
-        gy = _tcstol(&ctemp[4], &Stop, 10) + 2000;
-        ctemp[4] = '\0';
-        gm = _tcstol(&ctemp[2], &Stop, 10);
-        ctemp[2] = '\0';
-        gd = _tcstol(&ctemp[0], &Stop, 10);
+
+  long gy = strtol(&ctemp[4], nullptr, 10) + 2000;
+  ctemp[4] = '\0';
+  long gm = strtol(&ctemp[2], nullptr, 10);
+  ctemp[2] = '\0';
+  long gd = strtol(&ctemp[0], nullptr, 10);
 
 	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) {
 		pGPS->Year = gy;

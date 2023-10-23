@@ -18,6 +18,6 @@ DeviceRegister_t LK8EX1Register(void){
   return devRegister( _T("LK8EX1"), LK8EX1Install);
 }
 
-BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS);
 
 #endif

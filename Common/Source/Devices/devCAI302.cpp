@@ -102,25 +102,25 @@ static cai302_OdataNoArgs_t cai302_OdataNoArgs;
 static cai302_OdataPilot_t cai302_OdataPilot;
 
 // Additional sentance for CAI302 support
-static BOOL cai_w(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cai_PCAID(DeviceDescriptor_t* d,TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cai_w(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
+static BOOL cai_PCAIB(const char *String, NMEA_INFO *pGPS);
+static BOOL cai_PCAID(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-BOOL cai302ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai302ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
-  if(_tcsstr(String,TEXT("$PCAIB")) == String){
+  if(strstr(String, "$PCAIB") == String){
     return cai_PCAIB(&String[7], pGPS);
   }
 
-  if(_tcsstr(String,TEXT("$PCAID")) == String){
-    return cai_PCAID(d,&String[7], pGPS);
+  if(strstr(String, "$PCAID") == String){
+    return cai_PCAID(d, &String[7], pGPS);
   }
 
-  if(_tcsstr(String,TEXT("!w")) == String){
+  if(strstr(String, "!w") == String){
     return cai_w(d, &String[3], pGPS);
   }
 
@@ -446,7 +446,7 @@ $PCAIB,<1>,<2>,<CR><LF>
 <2> Destination Navpoint attribute word, format XXXXX (leading zeros will be transmitted)
 */
 
-BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai_PCAIB(const char* String, NMEA_INFO *pGPS){
   (void)pGPS;
   (void)String;
   return TRUE;
@@ -464,9 +464,9 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 
 static bool have_Qnhaltitude=false;
 
-BOOL cai_PCAID(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai_PCAID(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   static short waitinit=3;
 
   if (waitinit>0) {
@@ -507,9 +507,9 @@ BOOL cai_PCAID(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 *hh  Checksum, XOR of all bytes
 */
 
-BOOL cai_w(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
+BOOL cai_w(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
-  TCHAR ctemp[80];
+  char ctemp[80];
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   pGPS->ExternalWindAvailable = TRUE;

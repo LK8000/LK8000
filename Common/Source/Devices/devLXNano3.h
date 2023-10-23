@@ -90,8 +90,7 @@ class DevLXNanoIII : public DevLX
     /// Writes declaration into the logger.
     static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-
-   static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+   static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
    static BOOL Config(DeviceDescriptor_t* d);
    static void OnCloseClicked(WndButton* pWnd);
@@ -99,19 +98,20 @@ class DevLXNanoIII : public DevLX
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL PLXVC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL PLXVC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL PLXVS(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
-   static BOOL LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVTARG(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL PLXVC_INFO(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXWP1(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXWP3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXWP4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL PLXVTARG(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL GPRMB(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL PLXVC_INFO(DeviceDescriptor_t* d, char** params, size_t size, NMEA_INFO* info);
+
    static BOOL Nano3_DirectLink(DeviceDescriptor_t* d, BOOL bLinkEnable);
    static BOOL SetupLX_Sentence(DeviceDescriptor_t* d);
    static BOOL PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt);

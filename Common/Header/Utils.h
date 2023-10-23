@@ -24,7 +24,8 @@ bool SetBacklight();
 BOOL GetFontPath(TCHAR *pPos);
 #endif
 
-double StrToDouble(const TCHAR *str, const TCHAR **endptr);
+double StrToDouble(const wchar_t *str, const wchar_t **endptr);
+double StrToDouble(const char *str, const char **endptr);
 
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);
 
@@ -91,11 +92,11 @@ double TrueAirSpeed( double delta_press, double hr, double temp, double abs_pres
 double TrueAirSpeed( double ias, double qne_altitude);
 double IndicatedAirSpeed( double tas, double qne_altitude);
 
-double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
+double HexStrToDouble(const char *Source, const char **Stop);
 
 // Fast convert from Hex string To integer
-uint8_t HexDigit(TCHAR c);
-int HexStrToInt(const TCHAR *Source);
+uint8_t HexDigit(char c);
+int HexStrToInt(const char *Source);
 
 ///////////////////////////////////////////////////////////////////////
 // Extract H, M, S from string like "HH:MM:SS"

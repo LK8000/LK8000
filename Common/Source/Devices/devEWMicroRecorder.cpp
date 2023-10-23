@@ -54,14 +54,13 @@ BOOL ExpectStringWait(DeviceDescriptor_t* d, const TCHAR *token) {
 
 
 
-BOOL EWMicroRecorderParseNMEA(DeviceDescriptor_t* d,
-                              TCHAR *String, NMEA_INFO *pGPS){
-  TCHAR ctemp[80], *params[5];
+BOOL EWMicroRecorderParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
+  char ctemp[80], *params[5];
   int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
   if (nparams < 1)
     return FALSE;
 
-  if (!_tcscmp(params[0], TEXT("$PGRMZ")) && nparams >= 3) {
+  if (!strcmp(params[0], "$PGRMZ") && nparams >= 3) {
       double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
       UpdateBaroSource( pGPS, d, QNEAltitudeToQNHAltitude(altitude));
 

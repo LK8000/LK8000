@@ -43,19 +43,19 @@ void DevLX::Install(DeviceDescriptor_t* d)
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLX::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
     return FALSE;
   }
 
-  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+  if (strncmp("$LXWP0", sentence, 6) == 0)
       return LXWP0(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+  else if (strncmp("$LXWP1", sentence, 6) == 0)
       return LXWP1(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+  else if (strncmp("$LXWP2", sentence, 6) == 0)
       return LXWP2(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+  else if (strncmp("$LXWP3", sentence, 6) == 0)
       return LXWP3(d, sentence + 7, info);
 
   return(false);
@@ -72,7 +72,7 @@ BOOL DevLX::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -138,7 +138,7 @@ bool DevLX::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
+bool DevLX::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -151,41 +151,40 @@ bool DevLX::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
  // ParToDouble(sentence, 1, &MACCREADY);
 //	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
 #ifdef DEVICE_SERIAL
-TCHAR ctemp[180];
+char ctemp[180];
 static int NoMsg=0;
 static int oldSerial=0;
-if(_tcslen(String) < 180)
+if(strlen(String) < 180)
   if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
-	NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
+    NoMsg++ ;
+    NMEAParser::ExtractParameter(String, ctemp, 0);
+    from_unknown_charset(ctemp, d->Name);
     lk::snprintf(d->Name, _T("%s"), ctemp);
-    StartupStore(_T(". %s\n"),ctemp);
+    StartupStore(_T(". %s\n"), d->Name);
 
-	NMEAParser::ExtractParameter(String,ctemp,1);
-	d->SerialNumber= (int)StrToDouble(ctemp,NULL);
-	oldSerial = d->SerialNumber;
-	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
-	StartupStore(_T(". %s\n"),ctemp);
+    NMEAParser::ExtractParameter(String, ctemp, 1);
+    oldSerial = d->SerialNumber = StrToDouble(ctemp, nullptr);
+    StartupStore(_T(". %s Serial Number %i"), d->Name, d->SerialNumber);
 
-	NMEAParser::ExtractParameter(String,ctemp,2);
-	d->SoftwareVer= StrToDouble(ctemp,NULL);
-	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
-	StartupStore(_T(". %s\n"),ctemp);
+    NMEAParser::ExtractParameter(String, ctemp, 2);
+  	d->SoftwareVer = StrToDouble(ctemp, nullptr);
+    StartupStore(_T(". %s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
 
-	NMEAParser::ExtractParameter(String,ctemp,3);
-    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
-	StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
-    DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
-    DoStatusMessage(ctemp);
+    NMEAParser::ExtractParameter(String, ctemp, 3);
+    d->HardwareId = StrToDouble(ctemp, nullptr) * 10;
+    StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, (d->HardwareId) / 10.0);
+
+    TCHAR str[255];
+    _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+    DoStatusMessage(str);
+
+    _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
+    DoStatusMessage(str);
   }
   // nothing to do
 #endif
-  return(true);
-
+  return true;
 } // LXWP1()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,7 +197,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -229,7 +228,7 @@ bool DevLX::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
+bool DevLX::LXWP3(DeviceDescriptor_t*, const char*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -261,10 +260,10 @@ bool DevLX::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
 
 
 
-bool DevLX::GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLX::GPRMB(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 
-  TCHAR  szTmp[MAX_NMEA_LEN];
+  char  szTmp[MAX_NMEA_LEN];
   double fTmp;
 
   ParToDouble(sentence, 5, &fTmp);
@@ -288,7 +287,7 @@ bool DevLX::GPRMB(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
   }
 	
   NMEAParser::ExtractParameter(sentence,szTmp,4);
-  tstring tname = FixCharset(szTmp);
+  tstring tname = from_unknown_charset(szTmp);
 
   LockTaskData();
   {
@@ -334,18 +333,3 @@ void DevLX::Wide2LxAscii(const TCHAR* input, int outSize, char* output) {
     }
   }
 } // Wide2LxAscii()
-
-tstring DevLX::FixCharset(const TCHAR (&string)[MAX_NMEA_LEN]) {
-#ifdef UNICODE  
-  // 1 - copy back TCHAR to char
-  char  szTmp[MAX_NMEA_LEN];
-  for (size_t i = 0; string[i]; ++i) {
-    szTmp[i] = string[i];
-  }
-#else
-  // TCHAR is alias to char, no need copy back to char.
-  const char* szTmp = string;
-#endif
-  // 2 - detect and fix chatset
-  return from_unknown_charset(szTmp);
-}

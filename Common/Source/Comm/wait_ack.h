@@ -13,11 +13,9 @@
 #define _Comm_wait_ack_h_
 
 #include <memory>
-#include <utility>
+#include <string_view>
 #include "Thread/Cond.hpp"
 #include "Thread/Mutex.hpp"
-#include "tchar.h"
-#include "Util/tstring.hpp"
 
 class wait_ack final {
  public:
@@ -30,7 +28,7 @@ class wait_ack final {
    * return true and set `ready` state if @str is same as string provided to ctor
    * rmq : even if param type is TCHAR, only work for ascci 7bit character on Win32
    */
-  bool check(const TCHAR* str);
+  bool check(const char* str);
 
   /**
    * wait for and reset `ready` state
@@ -41,7 +39,7 @@ class wait_ack final {
   /**
    * compare string ignoring trailing <CR><LF>
    */
-  bool compare_nmea(const TCHAR* str);
+  bool compare_nmea(const char* str);
 
   Mutex& mutex;
 

@@ -40,11 +40,10 @@ protected:
   /// Installs device specific handlers.
   static void Install(DeviceDescriptor_t* d);
 
-
-  static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
   /// Parses POV sentence.
-  static BOOL POV(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+  static BOOL POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
 
   /// Returns device name (max length is @c DEVNAMESIZE).

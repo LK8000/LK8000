@@ -61,7 +61,7 @@ protected:
   /// Writes declaration into the logger.
   static BOOL DeclareTask(DeviceDescriptor_t* d,const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-  static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
 
   static BOOL Config(DeviceDescriptor_t* d);

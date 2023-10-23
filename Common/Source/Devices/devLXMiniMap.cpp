@@ -200,22 +200,22 @@ BOOL DevLXMiniMap::Open(DeviceDescriptor_t* d){
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXMiniMap::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXMiniMap::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
     return FALSE;
   }
 
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
+  if (strncmp("$GPGGA", sentence, 6) == 0)
 	   LXMiniMapOnSysTicker(d);
-  else if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+  else if (strncmp("$LXWP0", sentence, 6) == 0)
       return LXWP0(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+  else if (strncmp("$LXWP1", sentence, 6) == 0)
       return LXWP1(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+  else if (strncmp("$LXWP2", sentence, 6) == 0)
       return LXWP2(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+  else if (strncmp("$LXWP3", sentence, 6) == 0)
       return LXWP3(d, sentence + 7, info);
 
   return(false);
@@ -232,7 +232,7 @@ BOOL DevLXMiniMap::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXMiniMap::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -294,7 +294,7 @@ bool DevLXMiniMap::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXMiniMap::LXWP1(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
+bool DevLXMiniMap::LXWP1(DeviceDescriptor_t*, const char*, NMEA_INFO*)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -343,7 +343,7 @@ double DevLXMiniMap::CalculateBalast(double Factor)
 
 
 
-bool DevLXMiniMap::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -382,7 +382,7 @@ bool DevLXMiniMap::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXMiniMap::LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXMiniMap::LXWP3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 
 

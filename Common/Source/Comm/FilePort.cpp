@@ -183,10 +183,7 @@ int32_t i_skip = 1;
       }
       else
       {
-        TCHAR nmea[MAX_NMEA_LEN];
-        from_utf8(szString, nmea);
-
-        devParseNMEA(GetPortIndex(), nmea, &GPS_INFO);
+        devParseNMEA(GetPortIndex(), szString, &GPS_INFO);
       }
       AddStatTx(nRecv);
       UpdateStatus();

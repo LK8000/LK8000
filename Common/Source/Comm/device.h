@@ -81,7 +81,7 @@ struct DeviceDescriptor_t {
   TCHAR	Name[DEVNAMESIZE+1];
 
   BOOL (*DirectLink)(DeviceDescriptor_t* d, BOOL	bLinkEnable);
-  BOOL (*ParseNMEA)(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *GPS_INFO);
+  BOOL (*ParseNMEA)(DeviceDescriptor_t* d, const char *String, NMEA_INFO *GPS_INFO);
   BOOL (*ParseStream)(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO);
   BOOL (*PutMacCready)(DeviceDescriptor_t	*d,	double McReady);
   BOOL (*PutBugs)(DeviceDescriptor_t* d, double	Bugs);
@@ -103,7 +103,7 @@ struct DeviceDescriptor_t {
   BOOL (*PutVoice)(DeviceDescriptor_t* d, const TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
   BOOL (*HeartBeat)(DeviceDescriptor_t* d);
-  BOOL (*NMEAOut)(DeviceDescriptor_t* d, const TCHAR* String);
+  BOOL (*NMEAOut)(DeviceDescriptor_t* d, const char* String);
   BOOL (*PutTarget)(DeviceDescriptor_t* d, const WAYPOINT& wpt);
  
   bool IsBaroSource;
@@ -191,7 +191,7 @@ BOOL ExpectString(DeviceDescriptor_t* d, const TCHAR *token);
 bool devIsDisabled();
 BOOL devOpen(DeviceDescriptor_t* d);
 BOOL devDirectLink(DeviceDescriptor_t* d,	BOOL bLink);
-void devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
+void devParseNMEA(int portNum, char *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender);
 BOOL devRequestFlarmVersion(DeviceDescriptor_t* d);

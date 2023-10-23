@@ -25,17 +25,6 @@ static int nDeclErrorCode = 0;
 static int ewDecelTpIndex = 0;
 
 
-BOOL EWParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-  (void)d;
-  (void)String;
-  (void)pGPS;
-  // no propriatary sentence
-
-  return FALSE;
-
-}
-
-
 void appendCheckSum(TCHAR *String){
   int i;
   unsigned char CalcCheckSum = 0;
@@ -303,7 +292,6 @@ BOOL EWLinkTimeout(DeviceDescriptor_t* d){
 
 void ewInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("EW Logger"));
-  d->ParseNMEA = EWParseNMEA;
   d->LinkTimeout = EWLinkTimeout;
   d->Declare = EWDeclare;
 }

@@ -11,22 +11,23 @@
 #include "Calc/Vario.h"
 #include "devFlyNet.h"
 
-static BOOL _PRS(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO){
+static
+BOOL _PRS(DeviceDescriptor_t* d, const char* String, NMEA_INFO *_INFO){
 	UpdateBaroSource(_INFO, d, StaticPressureToQNHAltitude(HexStrToInt(String)));
   return TRUE;
 }
 
-static BOOL _BAT(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO){
-	(void)d;
+static
+BOOL _BAT(DeviceDescriptor_t* d, const char *String, NMEA_INFO *_INFO){
 	_INFO->ExtBatt1_Voltage = (String[0]=='*')?999.0:((HexStrToInt(String)*10.0)+1000.0);
 	return TRUE;
 }
 
-BOOL FlyNetParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO){
-  if(_tcsncmp(TEXT("_PRS "), String, 5)==0){
+BOOL FlyNetParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *_INFO){
+  if(strncmp("_PRS ", String, 5)==0){
 	  return _PRS(d, &String[5], _INFO);
   }
-  if(_tcsncmp(TEXT("_BAT "), String, 5)==0){
+  if(strncmp("_BAT ", String, 5)==0){
 	  return _BAT(d, &String[5], _INFO);
   }
   return FALSE;

@@ -11,7 +11,7 @@
 
 #include "Devices/DeviceRegister.h"
 
-BOOL FlyNetParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO);
+BOOL FlyNetParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *_INFO);
 
 void FlyNetInstall(DeviceDescriptor_t* d);
 

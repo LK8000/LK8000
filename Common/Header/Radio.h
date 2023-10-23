@@ -14,7 +14,8 @@
 
 bool ValidFrequency(unsigned khz);
 
-unsigned ExtractFrequency(const TCHAR *text, size_t *start = nullptr, size_t *len = nullptr);
+unsigned ExtractFrequency(const wchar_t *text, size_t *start = nullptr, size_t *len = nullptr);
+unsigned ExtractFrequency(const char *text, size_t *start = nullptr, size_t *len = nullptr);
 
 bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], unsigned khz);
 

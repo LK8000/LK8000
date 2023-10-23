@@ -13,27 +13,27 @@
 #include "MathFunctions.h"
 #include "Comm/UpdateQNH.h"
 
-static BOOL PDGFTL1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL PDGFTL1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
 // Leonardo Pro & Catesio
-static BOOL D(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL D(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-static BOOL DigiflyParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-
-  (void)d;
+static
+BOOL DigiflyParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
 
-  if(_tcsncmp(TEXT("$PDGFTL1"), String, 8)==0)
-    {
-      return PDGFTL1(d, &String[9], pGPS);
-    }
+  if(strncmp("$PDGFTL1", String, 8)==0) {
+    return PDGFTL1(d, &String[9], pGPS);
+  }
 
-  if(_tcsncmp(TEXT("$D"), String, 2) == 0) {
-      return D(d, &String[3], pGPS);
+  if(strncmp("$D", String, 2) == 0) {
+    return D(d, &String[3], pGPS);
   }
 
   return FALSE;
@@ -47,8 +47,8 @@ void DigiflyInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = DigiflyParseNMEA;
 }
 
-static BOOL PDGFTL1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
-{
+static
+BOOL PDGFTL1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
 /*
 	$PDGFTL1		     field     example
 	QNE 1013.25 altitude		0	2025  meters
@@ -67,7 +67,7 @@ static BOOL PDGFTL1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 
 */
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   double vtas, vias;
   double altqne, altqnh;
   static bool initqnh=true;
@@ -130,7 +130,8 @@ static BOOL PDGFTL1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
   return TRUE;
 }
 
-static BOOL D(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+static
+BOOL D(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
 /*
  * 00 : vario ist           in dm/sec
  * 01 : pressure            in cents of mB
@@ -147,7 +148,7 @@ static BOOL D(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
  *
  *   $D,+0,100554,+25,18,+31,,0,-356,+25,+11,115,96*6A
  */
-    TCHAR ctemp[80];
+    char ctemp[80];
 
     // Vario
     NMEAParser::ExtractParameter(String,ctemp,0);

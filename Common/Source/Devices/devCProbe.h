@@ -50,12 +50,12 @@ private:
 
 // Receive data
 private:
-	static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINFO);
+	static BOOL ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pINFO);
 
-	static BOOL ParseData(DeviceDescriptor_t* d, tnmeastring& wiss, NMEA_INFO *pINFO );
-	static BOOL ParseGyro(tnmeastring& wiss, NMEA_INFO *pINFO );
-	static BOOL ParseFW(tnmeastring& wiss, NMEA_INFO *pINFO );
-	static BOOL ParseName(tnmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseGyro(nmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseFW(nmeastring& wiss, NMEA_INFO *pINFO );
+	static BOOL ParseName(nmeastring& wiss, NMEA_INFO *pINFO );
 
 // Send Command
 	static BOOL GetDeviceName(DeviceDescriptor_t* d );

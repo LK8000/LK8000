@@ -11,18 +11,18 @@
 #include "Calc/Vario.h"
 #include "devFlymasterF1.h"
 
-static BOOL VARIO(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL VARIO(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-static BOOL FlymasterF1ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-
-  (void)d;
+static
+BOOL FlymasterF1ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
 
-  if(_tcsncmp(TEXT("$VARIO"), String, 6)==0)
+  if(strncmp("$VARIO", String, 6)==0)
     {
       return VARIO(d, &String[7], pGPS);
     }
@@ -83,11 +83,12 @@ void flymasterInstall(DeviceDescriptor_t* d) {
 // *****************************************************************************
 // local stuff
 
-static BOOL VARIO(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static
+BOOL VARIO(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
   // $VARIO,fPressure,fVario,Bat1Volts,Bat2Volts,BatBank,TempSensor1,TempSensor2*CS
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
   UpdateBaroSource(pGPS, d, StaticPressureToQNHAltitude(ps * 100));

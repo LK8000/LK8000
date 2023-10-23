@@ -20,10 +20,10 @@
 // Source data:
 // $PGCS,1,0EC0,FFF9,0C6E,02*61
 // $PGCS,1,0EC0,FFFA,0C6E,03*18
-BOOL vl_PGCS1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+BOOL vl_PGCS1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   double InternalAltitude;
 
   NMEAParser::ExtractParameter(String,ctemp,2);
@@ -55,15 +55,14 @@ BOOL vl_PGCS1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
   return FALSE;
 }
 
-
-BOOL VLParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-  (void)d;
+static
+BOOL VLParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
-  if(_tcsstr(String,TEXT("$PGCS,")) == String){
+  if(strstr(String, "$PGCS,") == String){
     return vl_PGCS1(d, &String[6], pGPS);
   }
 

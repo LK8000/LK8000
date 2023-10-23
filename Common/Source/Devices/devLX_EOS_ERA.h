@@ -104,26 +104,24 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     /// Writes declaration into the logger.
     static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-   static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
-   static BOOL EOSParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO);
+   static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
    
    static BOOL Config(DeviceDescriptor_t* d);
    static void OnCloseClicked(WndButton* pWnd);
    static void OnIGCDownloadClicked(WndButton* pWnd);
    static void OnValuesClicked(WndButton* pWnd);
 
-   static BOOL LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
- //  static BOOL LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-  static BOOL LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-  static BOOL LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-  // static BOOL LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXWP3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
+   static BOOL GetTarget(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
-   static BOOL GetTarget(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+   static BOOL LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL LXBC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+   static BOOL SENS(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info, int ParNo);
 
-   static BOOL LXDT(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL LXBC(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
-   static BOOL SENS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info, int ParNo);
    static BOOL SetupLX_Sentence(DeviceDescriptor_t* d);
    static BOOL PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt);
 

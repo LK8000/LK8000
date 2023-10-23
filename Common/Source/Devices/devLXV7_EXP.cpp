@@ -14,6 +14,7 @@
 #include "LKInterface.h"
 #include "InputEvents.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
 #include "Comm/UpdateQNH.h"
 #include "OS/Sleep.h"
 
@@ -293,7 +294,7 @@ BOOL  DevLXV7_EXP::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
   static int i = 40;
   TCHAR szTmp[256];
 
@@ -301,7 +302,7 @@ BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* i
     return FALSE;
   }
 
-  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0) {
+  if (strncmp("$LXWP2", sentence, 6) == 0) {
     if (iLXV7_EXP_RxUpdateTime > 0) {
       iLXV7_EXP_RxUpdateTime--;
     } else {
@@ -312,7 +313,7 @@ BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* i
   }
 
   /* configure LX after 10 GPS positions */
-  if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0) {
+  if (strncmp("$GPGGA", sentence, 6) == 0) {
     if (i++ > 4) {
       SetupLX_Sentence(d);
       i = 0;
@@ -343,24 +344,24 @@ BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* i
     d->Com->WriteString(szTmp);
   }
 
-  if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+  if (strncmp("$PLXVF", sentence, 6) == 0)
     return PLXVF(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+  else if (strncmp("$PLXVS", sentence, 6) == 0)
     return PLXVS(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+  else if (strncmp("$PLXV0", sentence, 6) == 0)
     return PLXV0(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+  else if (strncmp("$LXWP2", sentence, 6) == 0)
     return LXWP2(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+  else if (strncmp("$LXWP1", sentence, 6) == 0)
     return LXWP1(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+  else if (strncmp("$LXWP0", sentence, 6) == 0)
     return LXWP0(d, sentence + 7, info);
 #ifdef OLD_LX_SENTENCES
-  else if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+  else if (strncmp("$LXWP1", sentence, 6) == 0)
     return LXWP1(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+  else if (strncmp("$LXWP3", sentence, 6) == 0)
     return LXWP3(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+  else if (strncmp("$LXWP4", sentence, 6) == 0)
     return LXWP4(d, sentence + 7, info);
 #endif
   return (false);
@@ -376,7 +377,7 @@ BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* i
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -417,7 +418,7 @@ bool DevLXV7_EXP::LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* pGPS)
+bool DevLXV7_EXP::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -430,40 +431,39 @@ bool DevLXV7_EXP::LXWP1(DeviceDescriptor_t* d, const TCHAR* String, NMEA_INFO* p
  // ParToDouble(sentence, 1, &MACCREADY);
 //	$LXWP1,LX5000IGC-2,15862,11.1 ,2.0*4A
 #ifdef DEVICE_SERIAL
-TCHAR ctemp[180];
-static int NoMsg=0;
-static int oldSerial=0;
-if(_tcslen(String) < 180)
-  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
-  {
-	NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
-    lk::snprintf(d->Name, _T("%s"),ctemp);
-    StartupStore(_T(". %s\n"),ctemp);
+  char ctemp[180];
+  static int NoMsg=0;
+  static int oldSerial=0;
+  if (strlen(String) < 180) {
+    if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5)) {
+      NoMsg++;
+      NMEAParser::ExtractParameter(String, ctemp, 0);
+      from_unknown_charset(ctemp, d->Name);
+      StartupStore(_T(". %s"), d->Name);
 
-	NMEAParser::ExtractParameter(String,ctemp,1);
-	d->SerialNumber= (int)StrToDouble(ctemp,NULL);
-	oldSerial = d->SerialNumber;
-	_stprintf(ctemp, _T("%s Serial Number %i"), d->Name, d->SerialNumber);
-	StartupStore(_T(". %s\n"),ctemp);
+      NMEAParser::ExtractParameter(String, ctemp, 1);
+      d->SerialNumber = (int)StrToDouble(ctemp, nullptr);
+      oldSerial = d->SerialNumber;
+      StartupStore(_T(". %s Serial Number %i"), d->Name, d->SerialNumber);
 
-	NMEAParser::ExtractParameter(String,ctemp,2);
-	d->SoftwareVer= StrToDouble(ctemp,NULL);
-	_stprintf(ctemp, _T("%s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
-	StartupStore(_T(". %s\n"),ctemp);
+      NMEAParser::ExtractParameter(String, ctemp, 2);
+      d->SoftwareVer = StrToDouble(ctemp, nullptr);
+      StartupStore(_T(". %s Software Vers.: %3.2f"), d->Name, d->SoftwareVer);
 
-	NMEAParser::ExtractParameter(String,ctemp,3);
-    d->HardwareId= (int)(StrToDouble(ctemp,NULL)*10);
-	_stprintf(ctemp, _T("%s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
-	StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
-    DoStatusMessage(ctemp);
-    _stprintf(ctemp, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
-    DoStatusMessage(ctemp);
+      NMEAParser::ExtractParameter(String, ctemp, 3);
+      d->HardwareId = StrToDouble(ctemp, nullptr) * 10;
+      StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, d->HardwareId / 10.0);
+
+      TCHAR str[255];
+      _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+      DoStatusMessage(str);
+      _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, d->HardwareId / 10.0);
+      DoStatusMessage(str);
+    }
   }
   // nothing to do
 #endif  
-  return(true);
+  return true;
 } // LXWP1()
 
 
@@ -478,7 +478,7 @@ if(_tcslen(String) < 180)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*)
+bool DevLXV7_EXP::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -522,7 +522,7 @@ bool DevLXV7_EXP::LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLXV7_EXP::LXWP3(DeviceDescriptor_t* , const TCHAR*, NMEA_INFO*)
+bool DevLXV7_EXP::LXWP3(DeviceDescriptor_t*, const char*, NMEA_INFO*)
 {
 
 
@@ -579,7 +579,7 @@ bool DevLXV7_EXP::LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO*
 
 
 
-bool DevLXV7_EXP::PLXVF(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 
   double alt=0, airspeed=0;
@@ -641,7 +641,7 @@ if(iTmp != iOldVarioSwitch)
 } // PLXVF()
 
 
-bool DevLXV7_EXP::PLXVS(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::PLXVS(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 double Batt;
 double OAT;
@@ -685,19 +685,19 @@ double OAT;
 
 
 
-bool DevLXV7_EXP::PLXV0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7_EXP::PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
-TCHAR  szTmp1[80], szTmp2[80];
+  char szTmp1[80], szTmp2[80];
 
 
 
 
   NMEAParser::ExtractParameter(sentence,szTmp1,1);
-  if  (_tcscmp(szTmp1,_T("W"))!=0)  // no write flag received
+  if  (strcmp(szTmp1,"W")!=0)  // no write flag received
 	 return false;
 
   NMEAParser::ExtractParameter(sentence,szTmp1,0);
-  if  (_tcscmp(szTmp1,_T("BRGPS"))==0)
+  if  (strcmp(szTmp1, "BRGPS") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	LXV7_EXP_iGPSBaudrate = LXV7_EXPBaudrate( (int)( (StrToDouble(szTmp2,NULL))+0.1 ) );
@@ -705,7 +705,7 @@ TCHAR  szTmp1[80], szTmp2[80];
   }
 
 
-  if (_tcscmp(szTmp1,_T("BRPDA"))==0)
+  if (strcmp(szTmp1, "BRPDA") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	LXV7_EXP_iPDABaudrate = LXV7_EXPBaudrate( (int) StrToDouble(szTmp2,NULL));
@@ -713,7 +713,7 @@ TCHAR  szTmp1[80], szTmp2[80];
   }
 
   NMEAParser::ExtractParameter(sentence,szTmp1,0);
-  if  (_tcscmp(szTmp1,_T("QNH"))==0)
+  if  (strcmp(szTmp1, "QNH") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	UpdateQNH((StrToDouble(szTmp2,NULL))/100.0);
@@ -721,21 +721,21 @@ TCHAR  szTmp1[80], szTmp2[80];
   }
 
 #ifdef DEBUG_PARAMETERS
-  if (_tcscmp(szTmp1,_T("MC"))==0)
+  if (strcmp(szTmp1, "MC") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp =(int) StrToDouble(szTmp2,NULL);
 	return true;
   }
 
-  if (_tcscmp(szTmp1,_T("BAL"))==0)
+  if (strcmp(szTmp1, "BAL") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
 	return true;
   }
 
-  if (_tcscmp(szTmp1,_T("BUGS"))==0)
+  if (strcmp(szTmp1, "BUGS") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
@@ -743,28 +743,28 @@ TCHAR  szTmp1[80], szTmp2[80];
   }
 
 
-  if (_tcscmp(szTmp1,_T("VOL"))==0)
+  if (strcmp(szTmp1, "VOL") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
 	return true;
   }
 
-  if (_tcscmp(szTmp1,_T("POLAR"))==0)
+  if (strcmp(szTmp1, "POLAR") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
 	return true;
   }
 
-  if (_tcscmp(szTmp1,_T("CONNECTION"))==0)
+  if (strcmp(szTmp1, "CONNECTION") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
 	return true;
   }
 
-  if (_tcscmp(szTmp1,_T("NMEARATE"))==0)
+  if (strcmp(szTmp1, "NMEARATE") == 0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);

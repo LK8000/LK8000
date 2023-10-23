@@ -12,27 +12,27 @@
 #include "devCondor.h"
 
 
-static BOOL cLXWP0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cLXWP1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL cLXWP2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS);
+static BOOL cLXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS);
+static BOOL cLXWP2(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS);
 
-static BOOL CondorParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-  (void)d;
+static
+BOOL CondorParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
 
-  if(_tcsncmp(TEXT("$LXWP0"), String, 6)==0)
+  if(strncmp("$LXWP0", String, 6)==0)
     {
       return cLXWP0(d, &String[7], pGPS);
     }
-  if(_tcsncmp(TEXT("$LXWP1"), String, 6)==0)
+  if(strncmp("$LXWP1", String, 6)==0)
     {
       return cLXWP1(d, &String[7], pGPS);
     }
-  if(_tcsncmp(TEXT("$LXWP2"), String, 6)==0)
+  if(strncmp("$LXWP2", String, 6)==0)
     {
       return cLXWP2(d, &String[7], pGPS);
     }
@@ -54,7 +54,8 @@ void condorInstall(DeviceDescriptor_t* d) {
 // local stuff
 
 
-static BOOL cLXWP1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static
+BOOL cLXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS)
 {
   //  TCHAR ctemp[80];
   (void)pGPS;
@@ -63,16 +64,18 @@ static BOOL cLXWP1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 }
 
 
-static BOOL cLXWP2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
-  TCHAR ctemp[80];
+static
+BOOL cLXWP2(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
+  char ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   d->RecvMacCready(StrToDouble(ctemp, nullptr));
   return TRUE;
 }
 
 
-static BOOL cLXWP0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
-  TCHAR ctemp[80];
+static
+BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
+  char ctemp[80];
 
   /*
   $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1

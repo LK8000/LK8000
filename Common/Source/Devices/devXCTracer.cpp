@@ -30,8 +30,8 @@
  * @return true if parsed OK and within range
  */
 static bool
-ReadCheckedRange(TCHAR *String, unsigned &value_r, unsigned min, unsigned max) {
-    if (!String || _tcslen(String) == 0) {
+ReadCheckedRange(const char *String, unsigned &value_r, unsigned min, unsigned max) {
+    if (!String || strlen(String) == 0) {
       return false; // empty or empty string
     }
 
@@ -49,8 +49,8 @@ ReadCheckedRange(TCHAR *String, unsigned &value_r, unsigned min, unsigned max) {
 
 /* same helper as above with params of type double */
 static bool
-ReadCheckedRange(TCHAR *String, double &value_r, double min, double max) {
-    if (!String || _tcslen(String) == 0) {
+ReadCheckedRange(const char *String, double &value_r, double min, double max) {
+    if (!String || strlen(String) == 0) {
       return false; // empty or empty string
     }
 
@@ -65,8 +65,8 @@ ReadCheckedRange(TCHAR *String, double &value_r, double min, double max) {
 }
 
 static bool
-ReadChecked(TCHAR *String, double &value_r) {
-    if (!String || _tcslen(String) == 0) {
+ReadChecked(const char *String, double &value_r) {
+    if (!String || strlen(String) == 0) {
         return false; // empty or empty string
     }
     value_r = StrToDouble(String, nullptr);
@@ -81,7 +81,7 @@ ReadChecked(TCHAR *String, double &value_r) {
  * $XCTRC,year,month,day,hour,minute,second,centisecond,latitude,longitude,altitude,speedoverground,
  *      course,climbrate,res,res,res,rawpressure,batteryindication*checksum
  */
-static BOOL XTRC(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS) {
+static BOOL XTRC(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS) {
 
     if (nparams < 19) {
         return FALSE;
@@ -140,7 +140,7 @@ static BOOL XTRC(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INF
         UpdateBaroSource(pGPS, d, StaticPressureToQNHAltitude(abs_press * 100));
 
 
-        pGPS->ExtBatt1_Voltage = _tcstol(params[18], nullptr, 10) + 1000; // batteryindication
+        pGPS->ExtBatt1_Voltage = strtol(params[18], nullptr, 10) + 1000; // batteryindication
 
     } else {
         
@@ -158,7 +158,7 @@ static BOOL XTRC(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INF
     return TRUE;
 }
 
-bool LXWP0(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
     // $LXWP0,logger_stored, airspeed, airaltitude,
     //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -223,16 +223,16 @@ bool LXWP0(DeviceDescriptor_t* d, TCHAR **params, size_t nparams, NMEA_INFO *pGP
     return(true);
 } // LXWP0()
 
-static BOOL XCTracerParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO) {
-    TCHAR ctemp[MAX_NMEA_LEN];
-    TCHAR * params[MAX_NMEA_PARAMS];
+static BOOL XCTracerParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *_INFO) {
+    char ctemp[MAX_NMEA_LEN];
+    char * params[MAX_NMEA_PARAMS];
 
     size_t n_params = NMEAParser::ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
     if (n_params>0) {
-        if(_tcscmp(params[0], TEXT("$XCTRC")) == 0) {
+        if(strcmp(params[0], "$XCTRC") == 0) {
             return XTRC(d, params, n_params, _INFO);
         }
-        if(_tcscmp(params[0], TEXT("$LXWP0")) == 0) {
+        if(strcmp(params[0], "$LXWP0") == 0) {
             return LXWP0(d, params, n_params, _INFO);
         }
     }

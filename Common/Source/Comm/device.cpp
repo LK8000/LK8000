@@ -794,7 +794,7 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
-void devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *pGPS){
+void devParseNMEA(int portNum, char* String, NMEA_INFO *pGPS){
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   DeviceDescriptor_t* d = devGetDeviceOnPort(portNum);

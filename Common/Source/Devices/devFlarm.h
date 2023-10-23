@@ -95,8 +95,8 @@ private:
 // Receive data
 private:
 
-  static BOOL FlarmParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO);
-  static BOOL FlarmParse(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+  static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+  static BOOL FlarmParse(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
   // Send Command
   static BOOL FlarmReboot(DeviceDescriptor_t* d);
 

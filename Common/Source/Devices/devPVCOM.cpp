@@ -210,10 +210,10 @@ BOOL PVCOMRequestAllData(DeviceDescriptor_t* d) {
   return(TRUE);
 }
 
-bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
+bool ParToDouble(const char* sentence, unsigned int parIdx, double* value)
 {
-  TCHAR  temp[80];
-  const TCHAR* stop;
+  char  temp[80];
+  const char* stop;
   LKASSERT(value!=NULL);
 
   NMEAParser::ExtractParameter(sentence, temp, parIdx);
@@ -227,8 +227,8 @@ bool ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
   return(true);
 } // ParToDouble()
 
-
-bool PVCOM_ProcessPEYI(DeviceDescriptor_t* d, const TCHAR *sentence, NMEA_INFO *info)
+static
+bool PVCOM_ProcessPEYI(DeviceDescriptor_t* d, const char *sentence, NMEA_INFO *info)
 {
   TSpaceInfo data = {};
   unsigned fieldIdx = 0;
@@ -299,13 +299,13 @@ static bool TRI_on = false;
 
 
 
-BOOL PVCOMParseString(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *info)
+BOOL PVCOMParseString(DeviceDescriptor_t* d, const char *String, NMEA_INFO *info)
 {
-TCHAR  device[250];
-TCHAR  cmd[220];
-TCHAR  dir[220];
-TCHAR  para1[250];
-TCHAR  para2[250];
+char  device[250];
+char  cmd[220];
+char  dir[220];
+char  para1[250];
+char  para2[250];
 
 
 if (!NMEAParser::NMEAChecksum(String) )
@@ -315,14 +315,14 @@ if (!NMEAParser::NMEAChecksum(String) )
 }
 
 NMEAParser::ExtractParameter(String,device,0);
-    if(_tcsncmp(_T("$PEYI"), device, 5) == 0)
+    if(strncmp("$PEYI", device, 5) == 0)
         return PVCOM_ProcessPEYI(d, String + 6, info);
 
-if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
+if ((strncmp("$PVCOM", device,5) == 0) )
 {
 
 	NMEAParser::ExtractParameter(String,dir,1);
-    if(_tcscmp(_T("A"), dir) == 0)
+    if(strcmp("A", dir) == 0)
 	{
       RadioPara.Changed = TRUE;
       if(RadioPara.Enabled == FALSE)
@@ -335,7 +335,7 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
       }
 
       NMEAParser::ExtractParameter(String,cmd,2);
-      if(_tcscmp(_T("AF"), cmd) == 0)
+      if(strcmp("AF", cmd) == 0)
       {
         NMEAParser::ExtractParameter(String,para1,3);
         RadioPara.ActiveKhz = ExtractFrequency(para1);
@@ -343,7 +343,7 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
         NMEAParser::ExtractParameter(String,para2,4);
         lk::snprintf(RadioPara.ActiveName, _T("%s"),para2);
       } else
-      if(_tcscmp(_T("PF"), cmd) == 0)
+      if(strcmp("PF", cmd) == 0)
       {
         NMEAParser::ExtractParameter(String,para1,3);
         RadioPara.PassiveKhz = ExtractFrequency(para1);
@@ -351,17 +351,17 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
         NMEAParser::ExtractParameter(String,para2,4);
         lk::snprintf(RadioPara.PassiveName, _T("%s"),para2);
       }  else
-      if(_tcscmp(_T("VOL"), cmd) == 0)
+      if(strcmp("VOL", cmd) == 0)
       {
 	NMEAParser::ExtractParameter(String,para1,3);
 	RadioPara.Volume = (int)StrToDouble(para1,NULL);
       }   else
-	  if(_tcscmp(_T("SQL"), cmd) == 0)
+	  if(strcmp("SQL", cmd) == 0)
 	  {
 	     NMEAParser::ExtractParameter(String,para1,3);
 	     RadioPara.Squelch = (int)StrToDouble(para1,NULL);
 	  }  else
-	  if(_tcscmp(_T("CHG"), cmd) == 0)
+	  if(strcmp("CHG", cmd) == 0)
 	  {
       NMEAParser::ExtractParameter(String,para1,3);
       RadioPara.ActiveKhz = ExtractFrequency(para1);
@@ -376,37 +376,37 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
       lk::snprintf(RadioPara.PassiveName,_T("%s"),para2);
 
 	  } else
-      if(_tcscmp(_T("STA"), cmd) == 0)
+      if(strcmp("STA", cmd) == 0)
       {
 	  NMEAParser::ExtractParameter(String,para1,3);
-	  if(_tcsncmp(_T("DUAL_ON"), para1, 7) == 0)
+	  if(strncmp("DUAL_ON", para1, 7) == 0)
 	    RadioPara.Dual = TRUE;
-	  if(_tcsncmp(_T("DUAL_OFF"), para1, 8) == 0)
+	  if(strncmp("DUAL_OFF", para1, 8) == 0)
 		RadioPara.Dual = FALSE;
-	  if(_tcsncmp(_T("8_33KHZ"), para1, 8) == 0)
+	  if(strncmp("8_33KHZ", para1, 8) == 0)
 		RadioPara.Enabled8_33 = TRUE;
-	  if(_tcsncmp(_T("25KHZ"), para1, 8) == 0)
+	  if(strncmp("25KHZ", para1, 8) == 0)
 		RadioPara.Enabled8_33 = FALSE;
 
-	  if(_tcsncmp(_T("8_33KHZ"), para1, 6) == 0)
+	  if(strncmp("8_33KHZ", para1, 6) == 0)
 		RadioPara.Enabled8_33 = TRUE;
-	  if(_tcsncmp(_T("25KHZ"), para1, 4) == 0)
+	  if(strncmp("25KHZ", para1, 4) == 0)
 		RadioPara.Enabled8_33 = FALSE;
 
-	  if(_tcsncmp(_T("BAT_LOW"), para1, 7) == 0)
+	  if(strncmp("BAT_LOW", para1, 7) == 0)
 		RadioPara.lowBAT = TRUE;
-	  if(_tcsncmp(_T("BAT_OK"), para1, 6) == 0)
+	  if(strncmp("BAT_OK", para1, 6) == 0)
 		RadioPara.lowBAT = FALSE;
 
-	  if(_tcsncmp(_T("RX_ON"), para1, 5) == 0)
+	  if(strncmp("RX_ON", para1, 5) == 0)
 		RadioPara.RX = TRUE;
-	  if(_tcsncmp(_T("RX_OFF"), para1, 6) == 0)
+	  if(strncmp("RX_OFF", para1, 6) == 0)
 		RadioPara.RX = FALSE;
 
 
-	  if(_tcsncmp(_T("TX_ON"), para1, 5) == 0)
+	  if(strncmp("TX_ON", para1, 5) == 0)
 		RadioPara.TX = TRUE;
-	  if(_tcsncmp(_T("RX_TX_OFF"), para1, 9) == 0)
+	  if(strncmp("RX_TX_OFF", para1, 9) == 0)
 	  {
 		RadioPara.RX        = FALSE;
 		RadioPara.TX        = FALSE;
@@ -415,11 +415,11 @@ if ((_tcsncmp(_T("$PVCOM"), device,5) == 0) )
 		RadioPara.RX_standy = FALSE;
 	  }
 
-	  if(_tcsncmp(_T("TE_ON"), para1, 5) == 0)
+	  if(strncmp("TE_ON", para1, 5) == 0)
 		RadioPara.TXtimeout = TRUE;
-	  if(_tcsncmp(_T("RX_AF"), para1, 5) == 0)
+	  if(strncmp("RX_AF", para1, 5) == 0)
 		RadioPara.RX_active = TRUE;
-	  if(_tcsncmp(_T("RX_SF"), para1, 5) == 0)
+	  if(strncmp("RX_SF", para1, 5) == 0)
 		RadioPara.RX_standy = TRUE;
 
 

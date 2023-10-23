@@ -11,10 +11,11 @@
 #include "Calc/Vario.h"
 #include "devLK8EX1.h"
 
-static BOOL LK8EX1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL LK8EX1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-  if(_tcsncmp(TEXT("$LK8EX1"), String, 7)==0) {
+BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
+  if(strncmp("$LK8EX1", String, 7)==0) {
     if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
       return FALSE;
     }
@@ -71,10 +72,11 @@ void LK8EX1Install(DeviceDescriptor_t* d){
 
 */
 
-static BOOL LK8EX1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static
+BOOL LK8EX1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   bool havebaro=false;
 
   // HPA from the pressure sensor

@@ -13,24 +13,20 @@
 #include "devIlec.h"
 
 
-static BOOL PILC(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL PILC(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS);
 
-static BOOL IlecParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-
-  (void)d;
-
+static
+BOOL IlecParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS){
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
 
-
-  if(_tcsncmp(TEXT("$PILC"), String, 5)==0)
-    {
+  if(strncmp("$PILC", String, 5)==0) {
       return PILC(d, &String[6], pGPS);
-    }
+  }
 
   return FALSE;
-
 }
 
 
@@ -39,14 +35,15 @@ void IlecInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = IlecParseNMEA;
 }
 
-static BOOL PILC(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static
+BOOL PILC(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS)
 {
 
-  TCHAR ctemp[80];
+  char ctemp[80];
 
   NMEAParser::ExtractParameter(String,ctemp,0);
 
-  if (_tcscmp(ctemp,_T("PDA1"))==0) {
+  if (strcmp(ctemp, "PDA1")==0) {
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
 	UpdateBaroSource( pGPS, d, QNEAltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
@@ -60,7 +57,7 @@ static BOOL PILC(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 	wfrom = StrToDouble(ctemp,NULL); //@ could also be the NMEA checksum!
 	NMEAParser::ExtractParameter(String,ctemp,4); // wind speed kph integer
 
-	if (_tcslen(ctemp)!=0) {
+	if (strlen(ctemp)!=0) {
 
 		#if 1 // 120424 fix correct wind setting
 
@@ -94,7 +91,7 @@ static BOOL PILC(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 	return TRUE;
   }
 
-  if (_tcscmp(ctemp,_T("SET"))==0) {
+  if (strcmp(ctemp, "SET")==0) {
 	NMEAParser::ExtractParameter(String,ctemp,1);
 	UpdateQNH(StrToDouble(ctemp,NULL));
 	// StartupStore(_T("... SET QNH= %.1f\n"),QNH);

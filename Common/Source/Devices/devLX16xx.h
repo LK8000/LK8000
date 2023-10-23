@@ -45,7 +45,7 @@ class DevLX16xx : public DevBase
     static BOOL LX16xxDirectLink(DeviceDescriptor_t* d, BOOL LinkStatus);
 
     /// Parses LXWPn sentences.
-    static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+    static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Returns device name (max length is @c DEVNAMESIZE).
     static constexpr
@@ -54,19 +54,19 @@ class DevLX16xx : public DevBase
     }
 
     /// Parses LXWP0 sentence.
-    static bool LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP1 sentence.
-    static bool LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP1(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP2 sentence.
-    static bool LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP3 sentence.
-    static bool LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP4 sentence.
-    static bool LXWP4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
 }; // DevLX
 

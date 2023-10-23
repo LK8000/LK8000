@@ -36,7 +36,7 @@ void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int 
   }
 }
 
-uint8_t HexDigit(TCHAR c) {
+uint8_t HexDigit(char c) {
 	constexpr size_t digit_table_symbol_count = 256;
 	#define __ 0xFF
 	constexpr uint8_t digit_table[digit_table_symbol_count] = {
@@ -61,7 +61,7 @@ uint8_t HexDigit(TCHAR c) {
 	return digit_table[static_cast<uint8_t>(c)];
 }
 
-int HexStrToInt(const TCHAR *Source) {
+int HexStrToInt(const char *Source) {
 	int nOut=0;
 	while(1) {
 		const unsigned int digit = HexDigit(*Source++);
@@ -88,7 +88,9 @@ int HexStrToInt(const TCHAR *Source) {
  * followed by a sequence of digits, optionally containing a decimal-point character (.), 
  * optionally followed by a sequence of digits.
  */
-double StrToDouble(const TCHAR *str, const TCHAR **endptr) {
+template<typename CharT>
+static
+double StrToDouble(const CharT *str, const CharT **endptr) {
 
   if (!str) {
     return 0.0;
@@ -100,34 +102,34 @@ double StrToDouble(const TCHAR *str, const TCHAR **endptr) {
   int neg = 1;
 
   // skip leading whitespace characters
-  while ((*str == _T(' ')) || (*str == _T('\t'))) {
+  while ((*str == ' ') || (*str == '\t')) {
     ++str;
   }
   // skip explicit '+'
-  if(*str == _T('+')) {
+  if(*str == '+') {
     ++str;
   }
 
-  if(*str == _T('\0')) {
+  if(*str == '\0') {
     // for compatibility with previous version, 
     // we need to return without setting endptr in case of empty string
     return 0.;
   }
 
-  if (*str == _T('-')) {
+  if (*str == '-') {
     neg = -1;
     ++str;
   }
 
-  while ((*str >= _T('0')) && (*str <= _T('9'))) {
-    num = (num * 10) + (*str - _T('0'));
+  while ((*str >= '0') && (*str <= '9')) {
+    num = (num * 10) + (*str - '0');
     ++str;
   }
 
   if (*str == _T('.')) {
     ++str;
-    while ((*str >= _T('0')) && (*str <= _T('9'))) {
-      radix = (radix * 10) + (*str - _T('0'));
+    while ((*str >= '0') && (*str <= '9')) {
+      radix = (radix * 10) + (*str - '0');
       divisor *= 10;
       ++str;
     }
@@ -138,6 +140,14 @@ double StrToDouble(const TCHAR *str, const TCHAR **endptr) {
   }
 
   return (((double) num) + ((double) radix / (double)divisor)) * (double)neg;
+}
+
+double StrToDouble(const char *str, const char **endptr) {
+  return StrToDouble<char>(str, endptr);
+}
+
+double StrToDouble(const wchar_t *str, const wchar_t **endptr) {
+  return StrToDouble<wchar_t>(str, endptr);
 }
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -203,7 +213,8 @@ TEST_CASE("testing the StrToDouble function") {
 		CHECK(StrToDouble(_T(""), &sz) == 0);
 		CHECK(sz == nullptr);
 
-		CHECK(StrToDouble(nullptr, nullptr) == 0);
+		CHECK(StrToDouble<char>(nullptr, nullptr) == 0);
+		CHECK(StrToDouble<wchar_t>(nullptr, nullptr) == 0);
 	}
 }
 
@@ -211,7 +222,7 @@ TEST_CASE("testing the StrToDouble function") {
 
 // RMN: Volkslogger outputs data in hex-strings.  Function copied from StrToDouble
 // Note: Decimal-point and decimals disregarded.  Assuming integer amounts only.
-double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
+double HexStrToDouble(const char *Source, const char **Stop)
 {
   int index = 0;
   int StringLength        = 0;
@@ -219,7 +230,7 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
   int neg = 0;
 
   if (Source==NULL) return 0.0;
-  StringLength = _tcslen(Source);
+  StringLength = strlen(Source);
 
   while((index < StringLength) && ((Source[index] == ' ')||(Source[index]==9)))
     // JMW added skip for tab stop

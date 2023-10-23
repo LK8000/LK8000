@@ -74,16 +74,16 @@ void CDevCProbe::UnlockDeviceData(){
 	}
 }
 
-BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINFO ) {
-	tnmeastring wiss(String);
-	TCHAR* strToken = wiss.GetNextString();
+BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pINFO ) {
+	nmeastring wiss(String);
+	char* strToken = wiss.GetNextString();
 
- 	if(_tcscmp(strToken,TEXT("$PCPROBE"))==0) {
+ 	if(strcmp(strToken, "$PCPROBE")==0) {
 
   		strToken = wiss.GetNextString();
 
   		// this sentence must handled first, also we can't detect end of Compass Calibration.
-		if (_tcscmp(strToken,TEXT("COMPASSCALIBRATION"))==0) {
+		if (strcmp(strToken, "COMPASSCALIBRATION")==0) {
 			// $PCPROBE,COMPASSCALIBRATION
 			//  The calibration of the accelerometers and of the magnetometers is being performed
 
@@ -105,14 +105,14 @@ BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINF
 			UnlockDeviceData();
 		}
 
-  		if (_tcscmp(strToken,TEXT("T"))==0) {
+  		if (strcmp(strToken, "T")==0) {
 			BOOL bOk = ParseData(d, wiss, pINFO);
-			if(!BaroAltitudeAvailable(*pINFO)) {
+			if (!BaroAltitudeAvailable(*pINFO)) {
 				SetBaroOn(d);
 			}
 			return bOk;
 		}
-		if (_tcscmp(strToken,TEXT("GYROCALIBRATION"))==0) {
+		if (strcmp(strToken, "GYROCALIBRATION")==0) {
 
 			LockDeviceData();
 	 		m_bCompassCalOn=FALSE;
@@ -120,7 +120,7 @@ BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINF
 
 			return ParseGyro(wiss, pINFO);
 		}
-		if (_tcscmp(strToken,TEXT("FW"))==0) {
+		if (strcmp(strToken, "FW")==0) {
 
 			LockDeviceData();
 	 		m_bCompassCalOn=FALSE;
@@ -128,7 +128,7 @@ BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINF
 
 			return ParseFW(wiss, pINFO);
 		}
-		if(_tcscmp(strToken,TEXT("NAME"))==0) {
+		if(strcmp(strToken,"NAME")==0) {
 
 			LockDeviceData();
 	 		m_bCompassCalOn=FALSE;
@@ -164,7 +164,7 @@ BOOL CDevCProbe::ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pINF
 // - C: is transmitted only if the C-Probe is being charged. In this case, heat produced by the charging
 //    process is likely to affect the readings of the temperature and humidity sensors.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, tnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	double q0 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
 	double q1 = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
@@ -238,7 +238,7 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, tnmeastring& wiss, NMEA_INFO *
 //  The calibration of the gyroscopes is being performed. "m" is the number of steps required. "n" is the
 //  current step. The percentage of work performed is 100 * n / m.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseGyro( tnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseGyro( nmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int n = HexStrToInt(wiss.GetNextString());
 	unsigned int m = HexStrToInt(wiss.GetNextString());
 
@@ -251,7 +251,7 @@ BOOL CDevCProbe::ParseGyro( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 // $PCPROBE, FW,f
 //  Firmware version. f = 0xNNMM, where NN is the major version number and MM the minor number.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseFW( tnmeastring& wiss, NMEA_INFO *pINFO ) {
+BOOL CDevCProbe::ParseFW( nmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int Version = HexStrToInt(wiss.GetNextString());
 
 	LockDeviceData();
@@ -267,8 +267,8 @@ BOOL CDevCProbe::ParseFW( tnmeastring& wiss, NMEA_INFO *pINFO ) {
 //  For example: $PCPROBE, NAME,Vinc means that the C-Probe will be detected as C-Probe-Vinc.
 //  The name can be set by the user (see below).
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CDevCProbe::ParseName( tnmeastring& wiss, NMEA_INFO *pINFO ) {
-	TCHAR* szName = wiss.GetNextString();
+BOOL CDevCProbe::ParseName( nmeastring& wiss, NMEA_INFO *pINFO ) {
+	const char* szName = wiss.GetNextString();
 
 	StartupStore(TEXT("C-Probe Name : %s"), szName);
 	return TRUE;

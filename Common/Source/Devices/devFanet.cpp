@@ -45,7 +45,8 @@ int from_hex_digit(char hex) {
   return (c >= 'A' ? (c - 'A' + 10) : (c - '0'));
 }
 
-uint8_t getByteFromHex(const TCHAR *in) {
+static
+uint8_t getByteFromHex(const char *in) {
   int tens = 0;
   int digits = 0;
    
@@ -61,25 +62,29 @@ uint8_t getByteFromHex(const TCHAR *in) {
   return tens * 16 + digits;
 }
 
-void fillpaddingZeros(TCHAR *String,TCHAR *String2,int len){
-  int size = _tcslen(String2);
+static
+void fillpaddingZeros(char *String, const char *String2,int len){
+
+
+  int size = strlen(String2);
   if (size < len){
     for (int i = size;i < len;i++){
-      _tcscat(String,_T("0"));
+      strcat(String, "0");
     }
   }
-  _tcscat(String,String2);
+  strcat(String, String2);
 }
 
-void getIdFromMsg(TCHAR *String,TCHAR *cID,uint32_t *id){
-  TCHAR ctemp[10];
+static
+void getIdFromMsg(const char *String, char *cID, uint32_t& id){
+  char ctemp[10];
   cID[0] = 0; //zero-Termination of String;
   NMEAParser::ExtractParameter(String,ctemp,0);
   fillpaddingZeros(cID,ctemp,2);
   NMEAParser::ExtractParameter(String,ctemp,1);
   fillpaddingZeros(cID,ctemp,4);
-  _stscanf(cID, TEXT("%x"), id); //convert HEX-String to long
 
+  id = strtoul(cID, nullptr, 16); //convert HEX-String to long
 }
 
 /*
@@ -192,7 +197,7 @@ std::string to_payload(const std::string& data) {
   return ss.str();
 }
 
-std::string payload_to_string(const TCHAR* data, unsigned len) {
+std::string payload_to_string(const char* data, unsigned len) {
   std::string name;
   for (unsigned i = 0;i < len;i++){
     name.push_back(getByteFromHex(&data[i*2]));
@@ -230,7 +235,7 @@ void UpdateName(FLARM_TRAFFIC& traffic) {
   }
 }
 
-BOOL FanetParseType1Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType1Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   /*
     Tracking (Type = 1)
     [recommended interval: floor((#neighbors/10 + 1) * 5s) ]
@@ -277,8 +282,8 @@ BOOL FanetParseType1Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
     bit 0-6		Value 		in m	  
    */
   uint32_t RadioId;
-  TCHAR HexDevId[7];
-  getIdFromMsg(String, HexDevId, &RadioId);
+  char HexDevId[7];
+  getIdFromMsg(String, HexDevId, RadioId);
 
   int flarm_slot = FLARM_FindSlot(pGPS, RadioId);
   if (flarm_slot < 0) {
@@ -302,7 +307,7 @@ BOOL FanetParseType1Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   traffic.Time_Fix = pGPS->Time;
   traffic.Status = LKT_REAL;
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   NMEAParser::ExtractParameter(String, ctemp, 5);
   uint8_t payload_length = getByteFromHex(ctemp);
   if ((payload_length < 11) || (payload_length > 13)) {
@@ -359,7 +364,7 @@ BOOL FanetParseType1Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
-BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType2Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   /*
     Name (Type = 2)
     [recommended interval: every 4min]
@@ -368,11 +373,12 @@ BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
    */
 
-  TCHAR ctemp[MAX_NMEA_LEN];
+  char ctemp[MAX_NMEA_LEN];
   FANET_NAME fanetDevice;
-  TCHAR HexDevId[7];
+  
+  char HexDevId[7];
 
-  getIdFromMsg(String,HexDevId,&fanetDevice.ID);
+  getIdFromMsg(String, HexDevId, fanetDevice.ID);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -383,14 +389,14 @@ BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   from_unknown_charset(name.c_str(), fanetDevice.Name); 
 
   uint32_t flarmId; 
-  if (_stscanf(HexDevId, TEXT("%x"), &flarmId) == 1){
+  if (sscanf(HexDevId, "%x", &flarmId) == 1){
     if (AddFlarmLookupItem(flarmId, fanetDevice.Name, true)) { //check, if device is already in flarm-database
       int flarm_slot = FLARM_FindSlot(pGPS, flarmId); //check if Flarm is already in List
       if (flarm_slot>=0) {
         pGPS->FLARM_Traffic[flarm_slot].UpdateNameFlag = true;
       }
-      
     }
+    
   }
 
   FanetInsert(fanetDevice, pGPS->FanetName, pGPS->Time);
@@ -398,7 +404,7 @@ BOOL FanetParseType2Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
 }
 
-BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType3Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   /*
     Message (Type = 3)
 
@@ -409,11 +415,11 @@ BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
     8bit String (of arbitrary length)  
    */
 
-  TCHAR ctemp[MAX_NMEA_LEN];
+  char ctemp[MAX_NMEA_LEN];
   uint32_t ID; //ID of station (3 Bytes)
-  TCHAR HexDevId[7];
+  char HexDevId[7];
 
-  getIdFromMsg(String,HexDevId,&ID);
+  getIdFromMsg(String, HexDevId, ID);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -423,7 +429,7 @@ BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
 	TCHAR text[150]; // at least (31 + 2 + 80)
   if(!GetFanetName(ID, *pGPS, text)) {
-    _tcscpy(text, HexDevId); // no name, use ID
+    std::copy_n(HexDevId, 7, text); // no name, use ID
   }
   _tcscat(text, _T("\r\n"));
 
@@ -435,7 +441,7 @@ BOOL FanetParseType3Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
-BOOL FanetParseType4Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL FanetParseType4Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   /*
     Service (Type = 4)
     [recommended interval: 40sec]
@@ -458,11 +464,11 @@ BOOL FanetParseType4Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
 
    */
 
-  TCHAR ctemp[MAX_NMEA_LEN];
-  TCHAR HexDevId[7];
+  char ctemp[MAX_NMEA_LEN];
+  char HexDevId[7];
   FANET_WEATHER weather;
 
-  getIdFromMsg(String,HexDevId,&weather.ID);
+  getIdFromMsg(String, HexDevId, weather.ID);
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
@@ -529,19 +535,18 @@ BOOL FanetParseType4Msg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
-BOOL IgnoredMsg(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
-  DebugLog(_T("Ignored\"%s\""), String);
+BOOL IgnoredMsg(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
   return TRUE;
 }
 
 
-using parse_function = BOOL(*)(DeviceDescriptor_t* , TCHAR*, NMEA_INFO*);
+using parse_function = BOOL(*)(DeviceDescriptor_t* , const char*, NMEA_INFO*);
 
 template<typename Table>
-BOOL FanetParse(Table& table, DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
-  TCHAR ctemp[MAX_NMEA_LEN];
+BOOL FanetParse(Table& table, DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
+  char ctemp[MAX_NMEA_LEN];
   NMEAParser::ExtractParameter(String,ctemp,4);
-  uint8_t type = _tcstol(ctemp, nullptr, 10);
+  uint8_t type = strtol(ctemp, nullptr, 10);
   parse_function parse = table.get(type, IgnoredMsg);
   return parse(d, String, pGPS);
 }
@@ -568,8 +573,8 @@ constexpr auto function_table = lookup_table<uint8_t, parse_function>({
   { 0x04, &FanetParseType4Msg }
 });
 
-BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-  if(pGPS && _tcsncmp(TEXT("#FNF"), String, 4)==0) {
+BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS){
+  if(pGPS && strncmp("#FNF", String, 4)==0) {
     return FanetParse(function_table, d, &String[5], pGPS);      
   }
   if(LK8EX1ParseNMEA(d, String, pGPS)) {
@@ -602,12 +607,12 @@ constexpr auto function_table = lookup_table<uint8_t, parse_function>({
   { 0x04, &FanetParseType4Msg }
 });
 
-BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
   if (!pGPS) {
     return FALSE;
   }
 
-  if(_tcsncmp(TEXT("#FN"), String, 3) == 0) {
+  if(strncmp("#FN", String, 3) == 0) {
     switch (String[3]) {
       case 'F':
         return FanetParse(function_table, d, &String[5], pGPS);
@@ -624,25 +629,25 @@ BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
     return TRUE;
   }
 
-  if(_tcsncmp(TEXT("#DGV"), String, 4) == 0) {
+  if(strncmp("#DGV", String, 4) == 0) {
     // <− #DGV build −201709261354\n
     d->nmeaParser.setFlarmAvailable(pGPS);
     return TRUE;
   }
 
-  if(_tcsncmp(TEXT("#FAX"), String, 4) == 0) {
+  if(strncmp("#FAX", String, 4) == 0) {
     // <− #FAX 118,0,31
     d->nmeaParser.setFlarmAvailable(pGPS);
     return TRUE;
   }
 
-  if(_tcsncmp(TEXT("#DGR"), String, 4) == 0) {
+  if(strncmp("#DGR", String, 4) == 0) {
     // <− #DGR OK\n
     d->nmeaParser.setFlarmAvailable(pGPS);
     return TRUE;
   }
 
-  if(_tcsncmp(TEXT("#FAP"), String, 4) == 0) {
+  if(strncmp("#FAP", String, 4) == 0) {
     // <− #FAP OK\n
     d->nmeaParser.setFlarmAvailable(pGPS);
     return TRUE;

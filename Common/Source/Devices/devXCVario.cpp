@@ -19,23 +19,23 @@ using std::string_view_literals::operator""sv;
 
 namespace {
 
-bool ReadChecked(TCHAR* String, double& value_r) {
-  if (!String || _tcslen(String) == 0) {
+bool ReadChecked(const char* String, double& value_r) {
+  if (!String || strlen(String) == 0) {
     return false;  // empty or empty string
   }
   value_r = StrToDouble(String, nullptr);
   return true;
 }
 
-bool ReadChecked(TCHAR* String, int& value_r) {
-  if (!String || _tcslen(String) == 0) {
+bool ReadChecked(const char* String, int& value_r) {
+  if (!String || strlen(String) == 0) {
     return false;  // empty or empty string
   }
-  value_r = _tcstol(String, nullptr, 10);
+  value_r = strtol(String, nullptr, 10);
   return true;
 }
 
-BOOL PXCV(DeviceDescriptor_t* d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS) {
+BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA_INFO* pGPS) {
   /*
   Sentence has following format:
   $PXCV,
@@ -132,20 +132,20 @@ BOOL PXCV(DeviceDescriptor_t* d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS
   return TRUE;
 }
 
-BOOL XCV(DeviceDescriptor_t* d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS) {
-  if (params[1] == _T("bal-water"sv)) {
+BOOL XCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA_INFO* pGPS) {
+  if (params[1] == "bal-water"sv) {
     double liters;
     if (ReadChecked(params[2], liters)) {
       d->RecvBallast(liters / WEIGHTS[2]);
     }
   } 
-  else if (params[1] == _T("crew-weight"sv)) {
+  else if (params[1] == "crew-weight"sv) {
     double weight;
     if (ReadChecked(params[2], weight)) {
       // TODO : set WEIGHTS[0] ?
     }
   }
-  else if (params[1] == _T("empty-weight"sv)) {
+  else if (params[1] == "empty-weight"sv) {
     double weight;
     if (ReadChecked(params[2], weight)) {
       // TODO : set WEIGHTS[1] ?
@@ -154,19 +154,19 @@ BOOL XCV(DeviceDescriptor_t* d, TCHAR** params, size_t nparams, NMEA_INFO* pGPS)
   return TRUE;
 }
 
-BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* String, NMEA_INFO* pGPS) {
+BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS) {
   if (!pGPS) {
     return FALSE;
   }
-  TCHAR ctemp[MAX_NMEA_LEN];
-  TCHAR* params[MAX_NMEA_PARAMS];
+  char ctemp[MAX_NMEA_LEN];
+  char* params[MAX_NMEA_PARAMS];
 
   size_t n_params = NMEAParser::ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
   if (n_params > 0) {
-    if (params[0] == _T("$PXCV"sv)) {
+    if (params[0] == "$PXCV"sv) {
       return PXCV(d, params, n_params, pGPS);
     }
-    if (params[0] == _T("!xcv"sv)) {
+    if (params[0] == "!xcv"sv) {
       return XCV(d, params, n_params, pGPS);
     }
   }

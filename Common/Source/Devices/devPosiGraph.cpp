@@ -19,13 +19,10 @@
 #include "Baro.h"
 #include "devPosiGraph.h"
 
-static BOOL GPWIN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static
+BOOL GPWIN(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-BOOL PGParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
-  (void)d;
-  (void)String;
-  (void)pGPS;
-
+BOOL PGParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
   if (!NMEAParser::NMEAChecksum(String) || (pGPS == NULL)){
     return FALSE;
   }
@@ -33,7 +30,7 @@ BOOL PGParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
 
   // $GPWIN ... Winpilot proprietary sentance includinh baro altitude
   // $GPWIN ,01900 , 0 , 5159 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 * 6 B , 0 7 * 6 0 E
-  if(_tcsncmp(TEXT("$GPWIN"), String, 6)==0)
+  if(strncmp("$GPWIN", String, 6)==0)
     {
       return GPWIN(d, &String[7], pGPS);
     }
@@ -57,11 +54,9 @@ void pgInstall(DeviceDescriptor_t* d){
 // *****************************************************************************
 // local stuff
 
-static BOOL GPWIN(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL GPWIN(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
-  TCHAR ctemp[80];
-  (void)pGPS;
-  (void)d;
+  char ctemp[80];
 
   NMEAParser::ExtractParameter(String, ctemp, 2);
 

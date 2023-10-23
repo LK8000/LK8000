@@ -10,7 +10,7 @@
 #define _DLGFLXIGCDOWNLOAD_H_
 
   ListElement* dlgLX_IGCSelectListShowModal(  void) ;
-  void AddElement(TCHAR Line1[], TCHAR Line2[]);
+  void AddElement(const TCHAR* Line1, const TCHAR* Line2);
 
 
 

@@ -47,7 +47,7 @@ class DevLXMiniMap : public DevLXNano
     static void Install(DeviceDescriptor_t* d);
 
     /// Parses LXWPn sentences.
-    static BOOL ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info);
+    static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     static BOOL LXMiniMapPutMacCready(DeviceDescriptor_t* d, double MacCready);
     static BOOL LXMiniMapOnSysTicker(DeviceDescriptor_t* d);
@@ -69,16 +69,16 @@ class DevLXMiniMap : public DevLXNano
     }
 
     /// Parses LXWP0 sentence.
-    static bool LXWP0(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP1 sentence.
-    static bool LXWP1(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP1(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP2 sentence.
-    static bool LXWP2(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     /// Parses LXWP3 sentence.
-    static bool LXWP3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info);
+    static bool LXWP3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     static BOOL DeclareTaskMinimap(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 

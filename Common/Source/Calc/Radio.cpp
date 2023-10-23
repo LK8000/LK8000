@@ -44,15 +44,26 @@ bool ValidFrequency(unsigned khz) {
 	return false;
 }
 
-unsigned ExtractFrequency(const TCHAR *text, size_t* start, size_t* len) {
+namespace {
+
+unsigned to_unsigned(const char *_Str, char** _EndPtr) {
+	return strtol(_Str, _EndPtr, 10);
+}
+
+unsigned to_unsigned(const wchar_t *_Str, wchar_t** _EndPtr) {
+	return wcstol(_Str, _EndPtr, 10);
+}
+
+template<typename CharT>
+unsigned ExtractFrequency(const CharT *text, size_t* start, size_t* len) {
 	if (text == nullptr) {
 		return 0;
 	}
 
-	for (const TCHAR* c = text; *c; ++c) {
+	for (const CharT* c = text; *c; ++c) {
 		if (*c == '1') {
-			TCHAR* dot = nullptr;
-			unsigned khz = _tcstol(c, &dot, 10);
+			CharT* dot = nullptr;
+			unsigned khz = to_unsigned(c, &dot);
 			if (khz >= 118 && khz <= 138) {
 				if ((*dot == _T('.')) || (*dot == _T(','))) {
 					++dot;
@@ -69,10 +80,10 @@ unsigned ExtractFrequency(const TCHAR *text, size_t* start, size_t* len) {
 
 			if(ValidFrequency(khz)) {
 				if (start) {
-					*start = std::distance<const TCHAR*>(text, c);
+					*start = std::distance<const CharT*>(text, c);
 				}
 				if (len) {
-					*len = std::distance<const TCHAR*>(c, dot);
+					*len = std::distance<const CharT*>(c, dot);
 				}
 				return khz;
 			}
@@ -81,6 +92,16 @@ unsigned ExtractFrequency(const TCHAR *text, size_t* start, size_t* len) {
 	}
 
 	return 0;
+}
+
+}
+
+unsigned ExtractFrequency(const wchar_t *text, size_t *start, size_t *len) {
+	return ExtractFrequency<wchar_t>(text, start, len);
+}
+
+unsigned ExtractFrequency(const char *text, size_t *start, size_t *len) {
+	return ExtractFrequency<char>(text, start, len);
 }
 
 /**

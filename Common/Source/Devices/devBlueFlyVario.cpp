@@ -45,7 +45,7 @@ public:
             : _Code(), _MinHWVersion(), _Type(), _Factor(), _MinHWVal(), _MaxHWVal(), available() {
     }
 
-    CHardwareParameter(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
+    CHardwareParameter(const std::string& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal)
             : _Code(code), _MinHWVersion(minHWVersion), _Type(type), _Factor(factor), _MinHWVal(minHWVal), _MaxHWVal(maxHWVal), available() {
     }
 
@@ -53,12 +53,12 @@ public:
 
     }
 
-    inline void Value(const tstring& Val) { available = true; _Value = Val; }
-    inline const tstring& Value() const { return _Value; }
+    inline void Value(const std::string& Val) { available = true; _Value = Val; }
+    inline const std::string& Value() const { return _Value; }
 
     inline operator bool ()  const { return !_Code.empty(); }
 
-    inline const tstring& Code() const { return _Code; }
+    inline const std::string& Code() const { return _Code; }
     inline ValueType Type() const { return _Type; }
     inline int MinHwVersion() const { return _MinHWVersion; }
 
@@ -89,11 +89,11 @@ public:
     }
 
     double ValueDouble() const {
-        return _tcstod(_Value.c_str(), NULL) / _Factor;
+        return strtod(_Value.c_str(), NULL) / _Factor;
     }
 
     int ValueInt() const {
-        int val = _tcstol(_Value.c_str(),NULL,10);
+        int val = strtol(_Value.c_str(),NULL,10);
         if(Type() == TYPE_INTOFFSET) {
             val += _Factor;
         } else {
@@ -109,27 +109,27 @@ public:
     bool IsAvailable(int HWVersion) const { return _MinHWVersion <= HWVersion; }
 
     void operator=(double v) {
-        TCHAR szTmp[30] = {0};
-        _stprintf(szTmp, _T("%d"), (int)(v * _Factor));
+        char szTmp[30] = {0};
+        sprintf(szTmp, "%d", (int)(v * _Factor));
         _Value = szTmp;
     }
 
     void operator=(int v) {
-        TCHAR szTmp[30] = {0};
+        char szTmp[30] = {0};
         if(Type() == TYPE_INTOFFSET) {
-            _stprintf(szTmp, _T("%d"), (int)(v - _Factor));
+            sprintf(szTmp, "%d", (int)(v - _Factor));
         } else {
-            _stprintf(szTmp, _T("%d"), (int)(v / _Factor));
+            sprintf(szTmp, "%d", (int)(v / _Factor));
         }
         _Value = szTmp;
     }
 
     void operator=(bool v) {
-        _Value = (v?_T("1"):_T("0"));
+        _Value = (v? "1" : "0");
     }
 
 private:
-    const tstring _Code;
+    const std::string _Code;
     const int _MinHWVersion;
     const ValueType _Type;
     const double _Factor;
@@ -137,11 +137,11 @@ private:
     const int _MaxHWVal;
 
     bool available;
-    tstring _Value;
+    std::string _Value;
 };
 
 class CHardwareParameters {
-    typedef std::map<tstring, CHardwareParameter> ParameterList_t;
+    typedef std::map<std::string, CHardwareParameter> ParameterList_t;
 
 public:
     typedef ParameterList_t::const_iterator const_iterator;
@@ -152,8 +152,8 @@ public:
 
     }
 
-    inline void Add(const tstring& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal) {
-        _ParameterList.insert(std::make_pair(code, CHardwareParameter(code, minHWVersion, type, factor, minHWVal, maxHWVal)));
+    inline void Add(const std::string& code, int minHWVersion, ValueType type, double factor, int minHWVal, int maxHWVal) {
+        _ParameterList.emplace(code, CHardwareParameter(code, minHWVersion, type, factor, minHWVal, maxHWVal));
     }
 
     inline void Clear() { _ParameterList.clear(); }
@@ -162,7 +162,7 @@ public:
     inline iterator begin() { return _ParameterList.begin(); }
     inline iterator end() { return _ParameterList.end(); }
 
-    CHardwareParameter& GetParameter(const tstring& Key) {
+    CHardwareParameter& GetParameter(const std::string& Key) {
         static CHardwareParameter nullParameter;
         iterator It = _ParameterList.find(Key);
         if(It != _ParameterList.end()) {
@@ -171,25 +171,25 @@ public:
         return nullParameter;
     }
 
-    inline void updateHardwareSettingsKeys(TCHAR* line) {
+    inline void updateHardwareSettingsKeys(const char* line) {
         _Keys = line;
     }
 
-    void updateHardwareSettingsValues(TCHAR* line) {
+    void updateHardwareSettingsValues(const char* line) {
         _Values = line;
         if (!_Keys.empty() && !_Values.empty()) {
 
-            tstring::size_type PrevPosKey = 0, PosKey = 0;
-            tstring::size_type PrevPosVal = 0, PosVal = 0;
-            if(((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != tstring::npos)) { //skip first Value
+            std::string::size_type PrevPosKey = 0, PosKey = 0;
+            std::string::size_type PrevPosVal = 0, PosVal = 0;
+            if(((PosVal = _Values.find_first_of(" \n", PosVal)) != std::string::npos)) { //skip first Value
                 PrevPosVal = ++PosVal;
-                while ( ((PosKey = _Keys.find_first_of(_T(" \n"), PosKey)) != tstring::npos)
-                        && ((PosVal = _Values.find_first_of(_T(" \n"), PosVal)) != tstring::npos) )
+                while ( ((PosKey = _Keys.find_first_of(" \n", PosKey)) != std::string::npos)
+                        && ((PosVal = _Values.find_first_of(" \n", PosVal)) != std::string::npos) )
                 {
 
                     if (PosKey > PrevPosKey) {
-                        const tstring key = _Keys.substr(PrevPosKey, PosKey-PrevPosKey);
-                        const tstring value = _Values.substr(PrevPosVal, PosVal-PrevPosVal);
+                        const std::string key = _Keys.substr(PrevPosKey, PosKey-PrevPosKey);
+                        const std::string value = _Values.substr(PrevPosVal, PosVal-PrevPosVal);
 
                         ParameterList_t::iterator It = _ParameterList.find(key);
                         if (It != _ParameterList.end()) {
@@ -203,8 +203,8 @@ public:
         }
     }
 
-    inline void SetHardwareVersion(const TCHAR* line) {
-        _HwVersion = _tcstol(line, NULL, 10);
+    inline void SetHardwareVersion(const char* line) {
+        _HwVersion = strtol(line, nullptr, 10);
     }
 
     inline int GetHardwareVersion() const { return _HwVersion; }
@@ -222,8 +222,8 @@ public:
 private:
     ParameterList_t _ParameterList;
 
-    tstring _Keys;
-    tstring _Values;
+    std::string _Keys;
+    std::string _Values;
     int _HwVersion;
 };
 
@@ -239,7 +239,7 @@ namespace dlgBlueFlyConfig {
     lstPageWnd_t lstPageWnd;
     unsigned CurrentPage = 0;
 
-    typedef std::map<DataField*, tstring> DataField2Parameter_t;
+    typedef std::map<DataField*, std::string> DataField2Parameter_t;
     DataField2Parameter_t AssocFieldParam;
 
     void NextPage(WndForm* wfDlg, int Step) {
@@ -341,7 +341,9 @@ namespace dlgBlueFlyConfig {
         if(!wfDlg) return;
         CHardwareParameter& Param = Val.second;
 
-        WndProperty* pWnd = (WndProperty*)wfDlg->FindByName(Param.Code().c_str());
+        
+
+        WndProperty* pWnd = (WndProperty*)wfDlg->FindByName(utf8_to_tstring(Param.Code()).c_str());
         if(pWnd) {
             DataField* pData = pWnd->GetDataField();
             if(pData) {
@@ -439,37 +441,37 @@ BOOL BlueFlyVarioOpen(DeviceDescriptor_t* d) {
 
     HardwareParameters.Clear();
 
-    HardwareParameters.Add(_T("BQH"), 7, TYPE_INTOFFSET, 80000.0, 0, 65535);
-    HardwareParameters.Add(_T("BFL"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
-    HardwareParameters.Add(_T("BOL"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
-    HardwareParameters.Add(_T("BFS"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
-    HardwareParameters.Add(_T("BOS"), 6, TYPE_DOUBLE, 100.0, 0, 1000);
-    HardwareParameters.Add(_T("BFK"), 6, TYPE_DOUBLE, 1000.0, 10, 10000);
+    HardwareParameters.Add("BQH", 7, TYPE_INTOFFSET, 80000.0, 0, 65535);
+    HardwareParameters.Add("BFL", 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add("BOL", 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add("BFS", 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add("BOS", 6, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add("BFK", 6, TYPE_DOUBLE, 1000.0, 10, 10000);
 
-    HardwareParameters.Add(_T("BFQ"), 6, TYPE_INT, 1.0, 500, 2000);
-    HardwareParameters.Add(_T("BFI"), 6, TYPE_INT, 1.0, 0, 1000);
-    HardwareParameters.Add(_T("BSQ"), 6, TYPE_INT, 1.0, 250, 1000);
-    HardwareParameters.Add(_T("BSI"), 6, TYPE_INT, 1.0, 0, 1000);
-    HardwareParameters.Add(_T("BVL"), 6, TYPE_DOUBLE, 1000.0, 1, 1000);
-    HardwareParameters.Add(_T("BRM"), 6, TYPE_DOUBLE, 100.0, 10, 100);
+    HardwareParameters.Add("BFQ", 6, TYPE_INT, 1.0, 500, 2000);
+    HardwareParameters.Add("BFI", 6, TYPE_INT, 1.0, 0, 1000);
+    HardwareParameters.Add("BSQ", 6, TYPE_INT, 1.0, 250, 1000);
+    HardwareParameters.Add("BSI", 6, TYPE_INT, 1.0, 0, 1000);
+    HardwareParameters.Add("BVL", 6, TYPE_DOUBLE, 1000.0, 1, 1000);
+    HardwareParameters.Add("BRM", 6, TYPE_DOUBLE, 100.0, 10, 100);
 
-    HardwareParameters.Add(_T("BAC"), 6, TYPE_BOOLEAN, 1.0, 0, 1);
-    HardwareParameters.Add(_T("BAD"), 6, TYPE_BOOLEAN, 1.0, 0, 1);
-    HardwareParameters.Add(_T("BTH"), 6, TYPE_INT, 1.0, 0, 10000);
-    HardwareParameters.Add(_T("BOM"), 7, TYPE_INTLIST, 1.0, 0, 3);
-    HardwareParameters.Add(_T("BOF"), 7, TYPE_INT, 20.0, 1, 50);
+    HardwareParameters.Add("BAC", 6, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BAD", 6, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BTH", 6, TYPE_INT, 1.0, 0, 10000);
+    HardwareParameters.Add("BOM", 7, TYPE_INTLIST, 1.0, 0, 3);
+    HardwareParameters.Add("BOF", 7, TYPE_INT, 20.0, 1, 50);
 
-    HardwareParameters.Add(_T("BHV"), 10, TYPE_INT, 1.0, 0, 10000);
-    HardwareParameters.Add(_T("BHT"), 10, TYPE_INT, 1.0, 0, 10000);
-    HardwareParameters.Add(_T("BLD"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
-    HardwareParameters.Add(_T("BBZ"), 10, TYPE_BOOLEAN, 1.0, 0, 1);
-    HardwareParameters.Add(_T("BZT"), 10, TYPE_DOUBLE, 100.0, 0, 1000);
+    HardwareParameters.Add("BHV", 10, TYPE_INT, 1.0, 0, 10000);
+    HardwareParameters.Add("BHT", 10, TYPE_INT, 1.0, 0, 10000);
+    HardwareParameters.Add("BLD", 9, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BBZ", 10, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BZT", 10, TYPE_DOUBLE, 100.0, 0, 1000);
 
-    HardwareParameters.Add(_T("BUP"), 11, TYPE_BOOLEAN, 1.0, 0, 1);
-    HardwareParameters.Add(_T("BRB"), 8, TYPE_INT, 1.0, 0, 655535);
-    HardwareParameters.Add(_T("BR2"), 9, TYPE_INT, 1.0, 0, 655535);
-    HardwareParameters.Add(_T("BPT"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
-    HardwareParameters.Add(_T("BUR"), 9, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BUP", 11, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BRB", 8, TYPE_INT, 1.0, 0, 655535);
+    HardwareParameters.Add("BR2", 9, TYPE_INT, 1.0, 0, 655535);
+    HardwareParameters.Add("BPT", 9, TYPE_BOOLEAN, 1.0, 0, 1);
+    HardwareParameters.Add("BUR", 9, TYPE_BOOLEAN, 1.0, 0, 1);
 
     return TRUE;
 }
@@ -492,12 +494,12 @@ BOOL BlueFlyConfig(DeviceDescriptor_t* d) {
     return FALSE;
 }
 
-BOOL PRS(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *_INFO){
+BOOL PRS(DeviceDescriptor_t* d, const char *String, NMEA_INFO *_INFO){
 	UpdateBaroSource(_INFO, d, StaticPressureToQNHAltitude((HexStrToInt(String)*1.0)));
 	return TRUE;
 }
 
-BOOL BlueFlyVarioParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS) {
+BOOL BlueFlyVarioParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
     if( RequestParamTimer == 1 ) {
         if(!RequestConfig(d)) {
             RequestParamTimer = 10;
@@ -507,7 +509,7 @@ BOOL BlueFlyVarioParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS
         --RequestParamTimer;
     }
 
-    if(_tcsncmp(TEXT("PRS "), String, 4)==0){
+    if(strncmp("PRS ", String, 4)==0){
         return PRS(d, &String[4], pGPS);
     } 
     if(LK8EX1ParseNMEA(d, String, pGPS)) {
@@ -517,13 +519,13 @@ BOOL BlueFlyVarioParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS
         return TRUE;
     }
 
-    if (_tcsncmp(String, _T("BFV "), 4) == 0) {
+    if (strncmp(String, "BFV ", 4) == 0) {
         gHardwareParameters[d].SetHardwareVersion(&String[4]);
         return TRUE;
-    } else if (_tcsncmp(String, _T("BST "), 4) == 0) {
+    } else if (strncmp(String, "BST ", 4) == 0) {
         gHardwareParameters[d].updateHardwareSettingsKeys(&String[4]);
         return TRUE;
-    } else if (_tcsncmp(String, _T("SET "), 4) == 0) {
+    } else if (strncmp(String, "SET ", 4) == 0) {
         gHardwareParameters[d].updateHardwareSettingsValues(&String[4]);
         return TRUE;
     }

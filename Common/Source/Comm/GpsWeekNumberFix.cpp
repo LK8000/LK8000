@@ -101,11 +101,11 @@ static void week_number_rollover_workaround(int32_t &year, int32_t &month, int32
 /**
  * convert character ['0' .. '9'] to uint32_t
  */
-static int32_t to_num(TCHAR c) {
+static int32_t to_num(char c) {
   return (c - _T('0'));
 }
 
-bool parse_rmc_date(const TCHAR *gprmc, size_t gprmc_size, int32_t &year, int32_t &month, int32_t &day) {
+bool parse_rmc_date(const char *gprmc, size_t gprmc_size, int32_t &year, int32_t &month, int32_t &day) {
   if (gprmc_size >= 6) {
     day = 10 * to_num(gprmc[0]) + to_num(gprmc[1]);
     month = 10 * to_num(gprmc[2]) + to_num(gprmc[3]);
@@ -126,11 +126,11 @@ bool parse_rmc_date(const TCHAR *gprmc, size_t gprmc_size, int32_t &year, int32_
 #include <string.h>
 
 // Convert integer date components to NMEA $GPRMC date string
-static const TCHAR* int2gprmc(uint16_t year, uint16_t month, uint16_t day)
+static const char* int2gprmc(uint16_t year, uint16_t month, uint16_t day)
 {
 	assert(year >= 00 && year <= 99 && month >= 1 && month <= 12
 		&& day >= 1 && day <= 31);
-	static TCHAR gprmc[7];
+	static char gprmc[7];
 	gprmc[0] = '0' + (day / 10);
 	gprmc[1] = '0' + (day % 10);
 	gprmc[2] = '0' + (month / 10);
@@ -151,28 +151,28 @@ TEST_CASE("rmc parse date with week rollover workarround") {
 		for (uint16_t year = 0; year <= 99; year++) {
 			for (uint16_t month = 1; month <= 12; month++) {
 				for (uint16_t day = 1; day <= 31; day++) {
-          const TCHAR *gprmc = int2gprmc(year, month, day);
-					CHECK(parse_rmc_date(gprmc, _tcslen(gprmc), _year, _month, _day));
+          const char *gprmc = int2gprmc(year, month, day);
+					CHECK(parse_rmc_date(gprmc, strlen(gprmc), _year, _month, _day));
 				}
 			}
 		}
 
 		SUBCASE("invalid string") {
-			CHECK_FALSE(parse_rmc_date(_T("aabbcc"), 6, _year, _month, _day));
-			CHECK_FALSE(parse_rmc_date(_T("000000"), 6, _year, _month, _day));
-			CHECK_FALSE(parse_rmc_date(_T("999999"), 6, _year, _month, _day));
-			CHECK_FALSE(parse_rmc_date(_T("a"), 1, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date("aabbcc", 6, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date("000000", 6, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date("999999", 6, _year, _month, _day));
+			CHECK_FALSE(parse_rmc_date("a", 1, _year, _month, _day));
 		}
 
 		SUBCASE("valid date  2019-04-07 (with rollover)") {
-            CHECK(parse_rmc_date(_T("220899"), 6, _year, _month, _day));
+            CHECK(parse_rmc_date("220899", 6, _year, _month, _day));
 			CHECK(_year == 2019);
 			CHECK(_month >= 4);
 			CHECK(_day >= 7);
 		}
 
 		SUBCASE("valid date  2019-04-07 (without rollover)") {
-			CHECK(parse_rmc_date(_T("070419"), 6, _year, _month, _day));
+			CHECK(parse_rmc_date("070419", 6, _year, _month, _day));
 			CHECK(_year == 2019);
 			CHECK(_month >= 4);
 			CHECK(_day >= 7);

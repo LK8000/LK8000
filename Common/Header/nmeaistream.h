@@ -9,23 +9,22 @@
 #ifndef NMEAISTREAM_H_
 #define NMEAISTREAM_H_
 
-class tnmeastring
+class nmeastring
 {
 public:
-	inline tnmeastring(TCHAR* szString) : m_szString(szString), m_Char() {
+	inline nmeastring(const char* szString) : string_copy(strdup(szString)) {
+        m_szString = string_copy;
 	}
 
-	~tnmeastring(void) {
+	~nmeastring(void) {
+        free(string_copy);
+	}
+
+	inline char* GetNextString(){
         if(m_Char) {
             *(m_szString-1) = m_Char;
         }
-	}
-
-	inline TCHAR* GetNextString(){
-        if(m_Char) {
-            *(m_szString-1) = m_Char;
-        }
-		TCHAR* szOut = m_szString;
+		char* szOut = m_szString;
 		if(*(m_szString)) {
 			while((*m_szString != 0) && (*m_szString != 10) && (*m_szString != L',')) {
                 ++m_szString;
@@ -37,8 +36,9 @@ public:
 	}
 
 protected:
-	TCHAR *m_szString;
-    TCHAR m_Char;
+    char *string_copy;
+	char *m_szString;
+    char m_Char = '\0';
 };
 
 

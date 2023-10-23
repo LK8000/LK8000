@@ -200,7 +200,7 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 
 
 
-BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PFLAV(char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
 /*
 	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
@@ -251,8 +251,8 @@ BOOL NMEAParser::PFLAV(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 */
 	if(nparams > 3) {
-		pGPS->FLARM_HW_Version = _tcstod(params[1], nullptr);
-		pGPS->FLARM_SW_Version = _tcstod(params[2], nullptr);
+		pGPS->FLARM_HW_Version = strtod(params[1], nullptr);
+		pGPS->FLARM_SW_Version = strtod(params[2], nullptr);
 
 		StartupStore(_T("FLARM  found SW:%4.2f  HW:%4.2f  OBS:%s"),
 					pGPS->FLARM_SW_Version,
@@ -288,7 +288,7 @@ void NMEAParser::setFlarmAvailable(NMEA_INFO *pGPS) {
 	}
 }
 
-BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PFLAU(char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
 /*
 	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
@@ -367,11 +367,11 @@ BOOL NMEAParser::PFLAU(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 	setFlarmAvailable(pGPS);
 
-	pGPS->FLARM_RX = _tcstoul(params[0], nullptr, 10); // number of received FLARM devices
-	pGPS->FLARM_TX = _tcstoul(params[1], nullptr, 10); // Transmit status
-	pGPS->FLARM_GPS = _tcstoul(params[2], nullptr, 10); // GPS status
+	pGPS->FLARM_RX = strtoul(params[0], nullptr, 10); // number of received FLARM devices
+	pGPS->FLARM_TX = strtoul(params[1], nullptr, 10); // Transmit status
+	pGPS->FLARM_GPS = strtoul(params[2], nullptr, 10); // GPS status
 
-	pGPS->FLARM_AlarmLevel = _tcstoul(params[4], nullptr, 10); // Alarm level of FLARM (0-3)
+	pGPS->FLARM_AlarmLevel = strtoul(params[4], nullptr, 10); // Alarm level of FLARM (0-3)
 
 	// process flarm updates
 	if ((pGPS->FLARM_RX) && (old_flarm_rx==0)) {
@@ -503,7 +503,7 @@ void NMEAParser::UpdateFlarmScale( NMEA_INFO *pGPS) {
 	}
 }
 
-BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PFLAA(char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
 /*
 	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
@@ -577,7 +577,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	setFlarmAvailable(pGPS);
 
 	// 5 id, 6 digit hex
-	uint32_t RadioId = _tcstoul(params[5], nullptr, 16);
+	uint32_t RadioId = strtoul(params[5], nullptr, 16);
 
 	int flarm_slot = FLARM_FindSlot(pGPS, RadioId);
 	if (flarm_slot < 0) {
@@ -594,19 +594,19 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	traffic.RadioId = RadioId;
 	traffic.Time_Fix = pGPS->Time;
 
-	traffic.AlarmLevel = _tcstoul(params[0], nullptr, 10);
+	traffic.AlarmLevel = strtoul(params[0], nullptr, 10);
 
-	double RelativeNorth = _tcstod(params[1], nullptr);
-	double RelativeEast = _tcstod(params[2], nullptr);
-	double RelativeAltitude = _tcstod(params[3], nullptr);
+	double RelativeNorth = strtod(params[1], nullptr);
+	double RelativeEast = strtod(params[2], nullptr);
+	double RelativeAltitude = strtod(params[3], nullptr);
 
-	traffic.IDType = _tcstoul(params[4], nullptr, 10);
+	traffic.IDType = strtoul(params[4], nullptr, 10);
 
-	traffic.TrackBearing = _tcstod(params[6], nullptr);
-	traffic.TurnRate = _tcstod(params[7], nullptr);
-	traffic.Speed = _tcstod(params[8], nullptr);
-	traffic.ClimbRate = _tcstod(params[9], nullptr);
-	traffic.Type = _tcstoul(params[10], nullptr, 16);
+	traffic.TrackBearing = strtod(params[6], nullptr);
+	traffic.TurnRate = strtod(params[7], nullptr);
+	traffic.Speed = strtod(params[8], nullptr);
+	traffic.ClimbRate = strtod(params[9], nullptr);
+	traffic.Type = strtoul(params[10], nullptr, 10);
 
 	UpdateFlarmScale(pGPS);
 

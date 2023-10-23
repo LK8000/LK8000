@@ -43,9 +43,9 @@ namespace {
   bool bFLARM_BinMode = false;
 }
 
-BOOL CDevFlarm::FlarmParse(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL CDevFlarm::FlarmParse(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
   if (IsInBinaryMode()) {
-    if (_tcsncmp(_T("$PFLAU"), sentence, 6) == 0) {
+    if (strncmp("$PFLAU", sentence, 6) == 0) {
       StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
       SetBinaryModeFlag(false);
     }

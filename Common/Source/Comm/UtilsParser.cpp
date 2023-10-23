@@ -16,90 +16,123 @@
  * the checksum separator, split into an array of parameters,
  * and return the number of parameters found.
  */
-size_t NMEAParser::ExtractParameters(const TCHAR *src, TCHAR *dst, TCHAR **arr, size_t sz)
-{
-  TCHAR c, *p;
-  size_t i = 0;
+namespace {
 
-  _tcscpy(dst, src);
-  p = _tcschr(dst, _T('*'));
-  if (p)
-    *p = _T('\0');
+template<typename CharT>
+void ExtractParameter(const CharT *Source, CharT *Destination, int DesiredFieldNumber) {
+  if (!Destination || !Source) {
+    return;
+  }
 
-  p = dst;
-  do {
-    arr[i++] = p;
-    p = _tcschr(p, _T(','));
-    if (!p)
-      break;
-    c = *p;
-    *p++ = _T('\0');
-  } while (i != sz && c != _T('\0'));
+  auto isSeparator = [](CharT c) -> bool {
+    return (c == ',' || c == '*');
+  };
 
-  return i;
+  // find start of requested field
+  for (int nField = 0; *Source && nField < DesiredFieldNumber; ) {
+    if (isSeparator(*Source++)) {
+      nField++;
+    }
+  }
+
+  // copy until next field
+  while (*Source && !isSeparator(*Source)) {
+    (*Destination++) = (*Source++);
+  }
+  *Destination = '\0'; // add trailing '\0'
 }
 
+} // namespace
 
-
+void NMEAParser::ExtractParameter(const char* Source, char* Destination, int DesiredFieldNumber) {
+  ::ExtractParameter(Source, Destination, DesiredFieldNumber);
+}
 
 /*
  * Same as ExtractParameters, but also validate the length of
  * the string and the NMEA checksum.
  */
-size_t NMEAParser::ValidateAndExtract(const TCHAR *src, TCHAR *dst, size_t dstsz, TCHAR **arr, size_t arrsz)
-{
-  size_t len = _tcslen(src);
-
-  if (len <= 6 || len >= dstsz)
-    return 0;
+size_t NMEAParser::ValidateAndExtract(const char* src, char* dst, size_t dstsz, char** arr, size_t arrsz) {
   if (!NMEAChecksum(src))
     return 0;
 
   return ExtractParameters(src, dst, arr, arrsz);
 }
 
+size_t NMEAParser::ExtractParameters(const char* src, char* dst, char** arr, size_t sz) {
+  if (!src || !(*src)) {
+    return 0;
+  }
 
+  size_t i = 0;
+  arr[i++] = dst;
 
-
-void NMEAParser::ExtractParameter(const TCHAR *Source, 
-				  TCHAR *Destination, 
-				  int DesiredFieldNumber)
-{
-  int dest_index = 0;
-  int CurrentFieldNumber = 0;
-  int StringLength = _tcslen(Source);
-  const TCHAR *sptr = Source;
-  const TCHAR *eptr = Source+StringLength;
-
-  if (!Destination) return;
-
-  while( (CurrentFieldNumber < DesiredFieldNumber) && (sptr<eptr) )
-    {
-      if (*sptr == ',' || *sptr == '*' )
-        {
-          CurrentFieldNumber++;
-        }
-      ++sptr;
+  while (*src && *src != '*') {
+    if (*src == ',') {
+      *dst = '\0';
+      arr[i++] = dst + 1;
+    } else {
+      *dst = *src;
     }
-
-  Destination[0] = '\0'; // set to blank in case it's not found..
-
-  if ( CurrentFieldNumber == DesiredFieldNumber )
-    {
-      while( (sptr < eptr)    &&
-             (*sptr != ',') &&
-             (*sptr != '*') &&
-             (*sptr != '\0') )
-        {
-          Destination[dest_index] = *sptr;
-          ++sptr; ++dest_index;
-        }
-      Destination[dest_index] = '\0';
-    }
+    ++src;
+    ++dst;
+  }
+  *dst = '\0';
+  return i;
 }
 
+double NMEAParser::ParseAltitude(const char* value, const char* format) {
+  if (!value || !format) {
+    TestLog(_T(".... ParseAltitude: null value or null format!"));
+    BUGSTOP_LKASSERT(0);
+    return 0;
+  }
 
+  double alt = StrToDouble(value, nullptr);
+  if (format[0] == 'f' || format[0] == 'F') {
+    alt /= TOFEET;
+  }
+  return alt;
+}
 
+BOOL NMEAParser::NMEAChecksum(const char *String) {
+  if (!CheckSum) {
+    return TRUE;
+  }
+
+  uint8_t CalcCheckSum = 0;
+  uint8_t ReadCheckSum = 0;
+
+  if (*String && *String == '$') {
+    ++String;
+  }
+
+  while (*String && *String != '*') {
+    CalcCheckSum = (unsigned char)(CalcCheckSum ^ *(String++));
+  }
+
+  if (*String == '*') {
+    while(*String) {
+      uint8_t digit = HexDigit(*(++String));
+      if (0xFF == digit) {
+        break;
+      }
+      ReadCheckSum = (ReadCheckSum << 4)|digit;
+    }
+  } else {
+    return FALSE; // no checksum
+  }
+  
+  return (CalcCheckSum == ReadCheckSum);
+}
+
+#ifdef UNICODE
+
+void NMEAParser::ExtractParameter(const wchar_t* Source, wchar_t* Destination, int DesiredFieldNumber) {
+  ::ExtractParameter(Source, Destination, DesiredFieldNumber);
+}
+
+#endif
 
 double EastOrWest(double in, TCHAR EoW)
 {
@@ -119,39 +152,6 @@ double NorthOrSouth(double in, TCHAR NoS)
     return in;
 }
 
-
-
-int NAVWarn(TCHAR c)
-{
-  if(c=='A')
-    return FALSE;
-  else
-    return TRUE;
-}
-
-
-
-
-double NMEAParser::ParseAltitude(TCHAR *value, const TCHAR *format)
-{
-  if (value==NULL || format==NULL) {
-#if TESTBENCH
-  StartupStore(_T(".... ParseAltitude: null value or null format!\n"));
-#endif
-    BUGSTOP_LKASSERT(0);
-    return 0;
-  }
-
-  double alt = StrToDouble(value, NULL);
-  if (format[0] == _T('f') || format[0] == _T('F')) {
-    alt /= TOFEET;
-  }
-  return alt;
-}
-
-
-
-
 double MixedFormatToDegrees(double mixed)
 {
   double mins, degrees;
@@ -161,63 +161,6 @@ double MixedFormatToDegrees(double mixed)
 
   return degrees+mins;
 }
-
-
-
-
-BOOL NMEAParser::NMEAChecksum(const TCHAR *String)
-{
-  if (!CheckSum) return TRUE;
-  unsigned char CalcCheckSum = 0;
-  unsigned char ReadCheckSum;
-  int End;
-  int i;
-  TCHAR c1,c2;
-  unsigned char v1 = 0,v2 = 0;
-
-  const TCHAR *pEnd = _tcschr(String,_T('*'));
-  if(pEnd == NULL)
-    return FALSE;
-
-  // Fix problem of EW micrologger missing a digit in checksum
-  // now we have *XY 
-  // line is terminating with 0a (\n) so count is 4 not 3!
-  if(_tcslen(pEnd)<4) {
-	// no checksum, only a * ?
-	if (_tcslen(pEnd)==1) {
-		return FALSE;
-	}
-	// try to recover the missing digit
-	c1 = _T('0');
-	c2 = pEnd[1];
-  } else {
-	c1 = pEnd[1], c2 = pEnd[2];
-  }
-
-  if(_istdigit(c1))
-    v1 = (unsigned char)(c1 - '0');
-  if(_istdigit(c2))
-    v2 = (unsigned char)(c2 - '0');
-  if(_istalpha(c1))
-    v1 = (unsigned char)(toupper(c1) - 'A' + 10);
-  if(_istalpha(c2))
-    v2 = (unsigned char)(toupper(c2) - 'A' + 10);
-
-  ReadCheckSum = (unsigned char)((v1<<4) + v2);          
-
-  End =(int)( pEnd - String);
-
-  for(i=1;i<End;i++)
-    {
-      CalcCheckSum = (unsigned char)(CalcCheckSum ^ String[i]);
-    }
-
-  if(CalcCheckSum == ReadCheckSum)
-    return TRUE;
-  else
-    return FALSE;
-}
-
 
 uint8_t NMEAParser::AppendChecksum(char *String, size_t size) {
   constexpr char hex_chars[16] = {

@@ -112,7 +112,7 @@ BOOL VaulterPutBallast(DeviceDescriptor_t* d, double Ballast){
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevVaulter::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevVaulter::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 
 
@@ -121,11 +121,11 @@ BOOL DevVaulter::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* in
   }
 
 
-  if (_tcsncmp(_T("$PITV3"), sentence, 6) == 0)
+  if (strncmp("$PITV3", sentence, 6) == 0)
     return PITV3(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PITV4"), sentence, 6) == 0)
+  else if (strncmp("$PITV4", sentence, 6) == 0)
     return PITV4(d, sentence + 7, info);
-  else if (_tcsncmp(_T("$PITV5"), sentence, 6) == 0)
+  else if (strncmp("$PITV5", sentence, 6) == 0)
     return PITV5(d, sentence + 7, info);
 
 
@@ -143,7 +143,7 @@ BOOL DevVaulter::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* in
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevVaulter::PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 //  $PITV3,20.0,-5.3,280.2,33.0,1.1*44
 //  Feld Beispiel Beschreibung
@@ -200,7 +200,7 @@ bool DevVaulter::PITV3(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevVaulter::PITV4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 //  $PITV4,2.0,2.8,2.2,430.2,460.2,460.4*44
 //  Feld Beispiel Beschreibung
@@ -241,7 +241,7 @@ bool DevVaulter::PITV4(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* 
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevVaulter::PITV5(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info )
+bool DevVaulter::PITV5(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info )
 {
 //  $PITV5,5.0,30.0,0.950,0.15,0,2.30*44
 //  Feld Beispiel Beschreibung

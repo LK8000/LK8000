@@ -57,7 +57,7 @@ class DevBase
     /// Converts parameter from NMEA sentence into double.
     gcc_nonnull(1, 3)
     static bool ParToDouble(
-      const TCHAR* sentence, unsigned int parIdx, double* value);
+      const char* sentence, unsigned int parIdx, double* value);
 
     /// Constant handler returning always @c true.
     gcc_nonnull(1)

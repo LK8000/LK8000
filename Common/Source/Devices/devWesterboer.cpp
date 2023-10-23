@@ -15,9 +15,9 @@
 #include "Comm/UpdateQNH.h"
 
 #define VW_BIDIRECTIONAL
-static BOOL PWES0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL PWES1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
-static BOOL PWES2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
+static BOOL PWES1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
+static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 BOOL devWesterboerPutMacCready(DeviceDescriptor_t* d, double Mc);
 BOOL devWesterboerPutBallast(DeviceDescriptor_t* d, double Ballast);
 BOOL devWesterboerPutBugs(DeviceDescriptor_t* d, double Bus);
@@ -82,7 +82,7 @@ else
 
 
 
-static BOOL WesterboerParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL WesterboerParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -95,7 +95,7 @@ static BOOL WesterboerParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO 
 /* this is for auto MC calculation, because we do not get a notification on changed
  * MC while changed by auto calac                                                     */
 
-if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
+if(strncmp("$PWES0", String, 6) == 0)
 {
   if(iWEST_RxUpdateTime > 0)
   {
@@ -121,13 +121,13 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
 
 
 
-  if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
+  if(strncmp("$PWES0", String, 6) == 0)
     {
 	  RequestInfos(d);
       return PWES0(d, &String[7], pGPS);
     }
   else
-    if(_tcsncmp(TEXT("$PWES1"), String, 6)==0)
+    if(strncmp("$PWES1", String, 6) == 0)
     {
 	  if( iReceiveSuppress > 0)
 	  {
@@ -137,7 +137,7 @@ if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
       return PWES1(d, &String[7], pGPS);
     }
     else
-      if(_tcsncmp(TEXT("$PWES2"), String, 6)==0)
+      if(strncmp("$PWES2", String, 6) == 0)
       {
 	return PWES2(d, &String[7], pGPS);
       }
@@ -155,7 +155,7 @@ void WesterboerInstall(DeviceDescriptor_t* d) {
   d->PutBallast = devWesterboerPutBallast;
 }
 
-static BOOL PWES0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 /*
 	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
@@ -180,7 +180,7 @@ static BOOL PWES0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 
 */
 
-  TCHAR ctemp[180];
+  char ctemp[180];
   double vtas, vias;
   double altqne, altqnh;
   static bool initqnh=true;
@@ -190,24 +190,24 @@ static BOOL PWES0(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 
 
 
-if(_tcslen(String) < 180)
-  if(((d->SerialNumber == 0) || (oldSerial != SerialNumber)) && (NoMsg < 5))
-  {
-	NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
-    d->HardwareId= (int)StrToDouble(ctemp,NULL);
-    switch (d->HardwareId)
-    {
-      case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
-      case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
-      case 23:  _tcscpy(d->Name, TEXT("VW1030")); break;
-      default:  _tcscpy(d->Name, TEXT("Westerboer")); break;
+  if (strlen(String) < 180) {
+    if (((d->SerialNumber == 0) || (oldSerial != SerialNumber)) && (NoMsg < 5)) {
+      NoMsg++ ;
+      NMEAParser::ExtractParameter(String, ctemp, 0);
+      d->HardwareId = StrToDouble(ctemp, nullptr);
+      switch (d->HardwareId) {
+        case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
+        case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
+        case 23:  _tcscpy(d->Name, TEXT("VW1030")); break;
+        default:  _tcscpy(d->Name, TEXT("Westerboer")); break;
+      }
+
+      TCHAR str[255];
+    	_stprintf(str, _T("%s  DETECTED"), d->Name);
+    	oldSerial = d->SerialNumber;
+	    DoStatusMessage(str);
+	    StartupStore(_T(". %s\n"), str);
     }
-	StartupStore(_T(". %s\n"),ctemp);
-	_stprintf(ctemp, _T("%s  DETECTED"), d->Name);
-	oldSerial = d->SerialNumber;
-	DoStatusMessage(ctemp);
-	StartupStore(_T(". %s\n"),ctemp);
   }
 #endif
   // instant vario
@@ -282,7 +282,7 @@ if(_tcslen(String) < 180)
 //GEXTERN double POLARV[POLARSIZE];
 //GEXTERN double POLARLD[POLARSIZE];
 
-static BOOL PWES1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PWES1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 /*
 	Sent by Westerboer VW1150  combining data stream from Flarm and VW1020.
@@ -304,7 +304,7 @@ static BOOL PWES1(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 
 */
 
-  TCHAR ctemp[80];
+  char ctemp[80];
   double fTemp;
 
   // Get MC Ready
@@ -404,7 +404,7 @@ iReceiveSuppress = 1;
 
 }
 
-static BOOL PWES2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 //	$PWES2: Datenausgabe, Ger�teparameter
 //	$PWES2,DD,SSSS,YY,FFFF*CS<CR><LF>
@@ -420,46 +420,43 @@ static BOOL PWES2(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 //	FFFF Firmware * 100 100 .. 9999 101 = 1.01
 //	$PWES2,60,1234,12,3210*22
 #ifdef DEVICE_SERIAL
-TCHAR ctemp[180];
-static int NoMsg=0;
+  char ctemp[180];
+  static int NoMsg=0;
 
-if(_tcslen(String) < 180)
-  if(((d->SerialNumber == 0) || (oldSerial	!= SerialNumber)) && (NoMsg < 5))
-  {
-	NoMsg++ ;
-    NMEAParser::ExtractParameter(String,ctemp,0);
-    d->HardwareId= (int)StrToDouble(ctemp,NULL);
-    switch (d->HardwareId)
-    {
-      case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
-      case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
-      case 23:  _tcscpy(d->Name, TEXT("VW1030")); break;
-      case 60:  _tcscpy(d->Name, TEXT("VW1150")); break;
-      default:  _tcscpy(d->Name, TEXT("Westerboer")); break;
+  if (strlen(String) < 180) {
+    if (((d->SerialNumber == 0) || (oldSerial	!= SerialNumber)) && (NoMsg < 5)) {
+      NoMsg++;
+      NMEAParser::ExtractParameter(String, ctemp, 0);
+      d->HardwareId = StrToDouble(ctemp, nullptr);
+      switch (d->HardwareId) {
+        case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
+        case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
+        case 23:  _tcscpy(d->Name, TEXT("VW1030")); break;
+        case 60:  _tcscpy(d->Name, TEXT("VW1150")); break;
+        default:  _tcscpy(d->Name, TEXT("Westerboer")); break;
+      }
     }
+    NMEAParser::ExtractParameter(String, ctemp, 1);
+    d->SerialNumber = StrToDouble(ctemp, nullptr);
+    SerialNumber = d->SerialNumber;
 
+    NMEAParser::ExtractParameter(String, ctemp, 2);
+    int Year = StrToDouble(ctemp, nullptr);
 
-	NMEAParser::ExtractParameter(String,ctemp,1);
-	d->SerialNumber= (int)StrToDouble(ctemp,NULL);
-	SerialNumber = d->SerialNumber;
+    NMEAParser::ExtractParameter(String, ctemp, 3);
+    d->SoftwareVer = StrToDouble(ctemp, nullptr) / 100.0;
 
-	NMEAParser::ExtractParameter(String,ctemp,2);
-	int Year = (int)(StrToDouble(ctemp,NULL));
+    TCHAR str[255];
+    _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+    DoStatusMessage(str);
+  	StartupStore(_T(". %s"), str);
 
-	NMEAParser::ExtractParameter(String,ctemp,3);
-	d->SoftwareVer= StrToDouble(ctemp,NULL)/100.0;
-
-
-
-    _stprintf(ctemp, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
-    DoStatusMessage(ctemp);
-	StartupStore(_T(". %s\n"),ctemp);
-    _stprintf(ctemp, _T("SW Ver:%3.2f  HW Ver:%i "),  d->SoftwareVer, Year);
-    DoStatusMessage(ctemp);
-	StartupStore(_T(". %s\n"),ctemp);
-	oldSerial	=SerialNumber;
+    _stprintf(str, _T("SW Ver:%3.2f  HW Ver:%i "), d->SoftwareVer, Year);
+    DoStatusMessage(str);
+	  StartupStore(_T(". %s"),ctemp);
+  	oldSerial	=SerialNumber;
   }
   // nothing to do
 #endif
-  return(true);
+  return true;
 } // PWES2()

@@ -86,7 +86,7 @@ BOOL OpenVarioPutBugs(DeviceDescriptor_t* d, double Bugs) {
 /// @retval TRUE if the sentence has been parsed
 ///
 //static
-BOOL DevOpenVario::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* info) {
+BOOL DevOpenVario::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
 
 
   if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)) {
@@ -96,7 +96,7 @@ BOOL DevOpenVario::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
     return FALSE;
   }
 
-  if (_tcsncmp(_T("$POV"), sentence, 4) == 0) {
+  if (strncmp("$POV", sentence, 4) == 0) {
     return POV(d, sentence + 5, info);
   }
 
@@ -105,8 +105,8 @@ BOOL DevOpenVario::ParseNMEA(DeviceDescriptor_t* d, TCHAR* sentence, NMEA_INFO* 
 } // ParseNMEA()
 
 
-BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* info) {
-  TCHAR szTmp1[80];
+BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
+  char szTmp1[80];
 
 
   /*
@@ -123,7 +123,7 @@ BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const TCHAR* sentence, NMEA_INFO* 
   int FieldIndex = 0;
   do {
     NMEAParser::ExtractParameter(sentence, szTmp1, FieldIndex++);
-    if (_tcslen(szTmp1) != 1) {
+    if (strlen(szTmp1) != 1) {
       break; // we are on CRC field or sentence is invalid : stop parsing
     }
     double value = 0;

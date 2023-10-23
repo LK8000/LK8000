@@ -96,7 +96,7 @@ LKIGCReadDlg LX_IGCReadDialog;
 
 BOOL ListUpdate = false;
 
-void AddElement(TCHAR Line1[], TCHAR Line2[]) {
+void AddElement(const TCHAR* Line1, const TCHAR* Line2) {
   ListElementType NewElement;
   _tcscpy(NewElement.Line1, Line1);
   _tcscpy(NewElement.Line2, Line2);

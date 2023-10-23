@@ -11,9 +11,9 @@
 #include "Calc/Vario.h"
 #include "devCompeo.h"
 
-static BOOL VMVABD(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS);
+static BOOL VMVABD(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
 
-static BOOL CompeoParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS){
+static BOOL CompeoParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
   (void)d;
 
@@ -21,14 +21,11 @@ static BOOL CompeoParseNMEA(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGP
     return FALSE;
   }
 
-
-  if(_tcsncmp(TEXT("$VMVABD"), String, 7)==0)
-    {
-      return VMVABD(d, &String[8], pGPS);
-    }
+  if (strncmp("$VMVABD", String, 7)==0) {
+    return VMVABD(d, &String[8], pGPS);
+  }
 
   return FALSE;
-
 }
 
 void CompeoInstall(DeviceDescriptor_t* d) {
@@ -39,7 +36,7 @@ void CompeoInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = CompeoParseNMEA;
 }
 
-static BOOL VMVABD(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
+static BOOL VMVABD(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 {
 /*
 	$VMVABD,
@@ -60,7 +57,7 @@ static BOOL VMVABD(DeviceDescriptor_t* d, TCHAR *String, NMEA_INFO *pGPS)
 	100114 IAS or TAS???
 */
 
-  TCHAR ctemp[80];
+  char ctemp[80];
 
   NMEAParser::ExtractParameter(String,ctemp,0);
   pGPS->Altitude = StrToDouble(ctemp,NULL);

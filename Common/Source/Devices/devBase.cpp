@@ -37,10 +37,10 @@
 /// @retval false either string is empty or cannot be converted
 ///
 //static
-bool DevBase::ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
+bool DevBase::ParToDouble(const char* sentence, unsigned int parIdx, double* value)
 {
-  TCHAR  temp[80];
-  const TCHAR* stop;
+  char temp[80];
+  const char* stop;
   LKASSERT(value!=NULL);
 
   NMEAParser::ExtractParameter(sentence, temp, parIdx);
