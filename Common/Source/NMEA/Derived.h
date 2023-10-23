@@ -226,7 +226,6 @@ struct DERIVED_INFO {
   double TurnRateWind;
   double BankAngle;
   double PitchAngle;
-  double TaskTimeToGoTurningNow;
   double TotalHeightClimb;
   double GliderSinkRate;
   double Gload;

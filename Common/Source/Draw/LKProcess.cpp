@@ -700,28 +700,6 @@ goto_bearing:
 			_stprintf(BufferValue,_T(NULLTIME));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-#if (0)
-			double dd;
-			if (AATEnabled && ValidTaskPoint(ActiveTaskPoint)) {
-				dd = DerivedDrawInfo.TaskTimeToGo;
-				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveTaskPoint>0)) {
-					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
-				}
-				dd= max(0,min(24.0*3600.0,dd))-AATTaskLength*60;
-				if (dd<0) {
-					status = 1; // red
-				} else {
-					if (DerivedDrawInfo.TaskTimeToGoTurningNow > (AATTaskLength+5)*60) {
-						status = 2; // blue
-					} else {
-						status = 0;  // black
-					}
-				}
-			} else {
-				dd = 0;
-				status = 0; // black
-			}
-#endif
 			if (ValidTaskPoint(ActiveTaskPoint) && UseAATTarget() && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
 
 				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.AATTimeToGo);
@@ -1391,17 +1369,6 @@ goto_bearing:
 					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
 				}
 				dd= max(0.0,min(24.0*3600.0,dd))-AATTaskLength*60;
-#if (0)
-				if (dd<0) {
-					status = 1; // red
-				} else {
-					if (DerivedDrawInfo.TaskTimeToGoTurningNow > (AATTaskLength+5)*60) {
-						status = 2; // blue
-					} else {
-						status = 0;  // black
-					}
-				}
-#endif
 				if (dd < (0.9*ERROR_TIME)) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)dd);

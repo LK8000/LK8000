@@ -36,7 +36,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     Calculated->TaskDistanceCovered = 0;
     Calculated->TaskTimeToGo = 0;
     Calculated->LKTaskETE = 0;
-    Calculated->TaskTimeToGoTurningNow = -1;
 
     Calculated->TaskAltitudeRequired = 0;
     Calculated->TaskAltitudeDifference = 0;
@@ -67,7 +66,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
 
   double LegCovered, LegToGo = 0, LegXTD = 0, LegCurrentCourse;
   double LegDistance, LegBearing = 0;
-  bool calc_turning_now;
 
   double w1lat;
   double w1lon;
@@ -83,13 +81,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   }
 
   DistanceBearing(Basic->Latitude, Basic->Longitude, w1lat, w1lon, &LegToGo, &LegBearing);
-
-  if (UseAATTarget() && (ActiveTaskPoint > 0) && ValidTaskPoint(ActiveTaskPoint + 1) && Calculated->IsInSector &&
-      (this_maccready > 0.1)) {
-    calc_turning_now = true;
-  } else {
-    calc_turning_now = false;
-  }
 
   if (ActiveTaskPoint < 1) {
     LegCovered = 0;
@@ -164,7 +155,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   Calculated->TaskDistanceToGo = 0;
   Calculated->TaskTimeToGo = 0;
   Calculated->LKTaskETE = 0;
-  Calculated->TaskTimeToGoTurningNow = 0;
   Calculated->TaskAltitudeArrival = 0;
 
   double LegTime0;
@@ -246,23 +236,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
       StartBestCruiseTrack = NextLegBearing;
     }
 
-    if (calc_turning_now) {
-      if (task_index == ActiveTaskPoint + 1) {
-        double NextLegDistanceTurningNow, NextLegBearingTurningNow;
-        double this_LegTimeToGo_turningnow = 0;
-
-        DistanceBearing(Basic->Latitude, Basic->Longitude, w1lat, w1lon, &NextLegDistanceTurningNow,
-                        &NextLegBearingTurningNow);
-
-        GlidePolar::MacCreadyAltitude(this_maccready, NextLegDistanceTurningNow, NextLegBearingTurningNow,
-                                      Calculated->WindSpeed, Calculated->WindBearing, 0, 0, this_is_final,
-                                      &this_LegTimeToGo_turningnow, height_above_finish, CRUISE_EFFICIENCY);
-        Calculated->TaskTimeToGoTurningNow += this_LegTimeToGo_turningnow;
-      } else {
-        Calculated->TaskTimeToGoTurningNow += this_LegTimeToGo;
-      }
-    }
-
     height_above_finish -= LegAltitude;
 
     task_index--;
@@ -323,12 +296,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
 #ifndef BCT_ALT_FIX
   height_above_finish -= LegAltitude;
 #endif
-
-  if (calc_turning_now) {
-    Calculated->TaskTimeToGoTurningNow += Basic->Time - Calculated->TaskStartTime;
-  } else {
-    Calculated->TaskTimeToGoTurningNow = -1;
-  }
 
   if (ISPARAGLIDER) {
     Calculated->TaskAltitudeRequired = TaskAltitudeRequired;
