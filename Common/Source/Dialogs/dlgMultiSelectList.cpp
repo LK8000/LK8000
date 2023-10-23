@@ -102,76 +102,79 @@ static void OnDownClicked(WndButton* pWnd) {
 }
 
 void dlgAddMultiSelectListDetailsDialog(int Index) {
-    int iLastTaskPoint = 0;
-    while (ValidTaskPoint(iLastTaskPoint))
-        iLastTaskPoint++;
-    iLastTaskPoint--;
+
     if ((Index >= 0) && (Index < iNO_ELEMENTS)) {
-        switch (Elements[Index].type) {
+        const ListElement& el = Elements[Index];
+
+        switch (el.type) {
 
 #ifdef TEAM_CODE_MS
         case IM_TEAM:
             wf->SetTimerNotify(0,NULL);
-            InputEvents::processPopupDetails(InputEvents::PopupTeam,Elements[Index].iIdx);
+            InputEvents::processPopupDetails(InputEvents::PopupTeam,el.iIdx);
             break;
 #endif
 #ifdef ORACLE_MS
         case IM_ORACLE:
             wf->SetTimerNotify(0,NULL);
-            InputEvents::processPopupDetails(InputEvents::PopupOracle,Elements[Index].iIdx);
+            InputEvents::processPopupDetails(InputEvents::PopupOracle,el.iIdx);
             break;
 #endif
 #ifdef OWN_POS_MS
         case IM_OWN_POS:
             wf->SetTimerNotify(0,NULL);
-            InputEvents::processPopupDetails(InputEvents::PopupBasic,Elements[Index].iIdx);
+            InputEvents::processPopupDetails(InputEvents::PopupBasic,el.iIdx);
             break;
 #endif
 #ifdef FLARM_MS
         case IM_FLARM:
             wf->SetTimerNotify(0,NULL);
-            LKASSERT(Elements[Index].iIdx < (int)WayPointList.size());
-            InputEvents::processPopupDetails(InputEvents::PopupTraffic,Elements[Index].iIdx);
+            LKASSERT(el.iIdx < (int)WayPointList.size());
+            InputEvents::processPopupDetails(InputEvents::PopupTraffic,el.iIdx);
             wf->SetTimerNotify(0,NULL);
             break;
 #endif
 #ifdef WEATHERST_MS
         case IM_WEATHERST:
             wf->SetTimerNotify(0,NULL);
-            InputEvents::processPopupDetails(InputEvents::PopupWeatherSt,Elements[Index].iIdx);
+            InputEvents::processPopupDetails(InputEvents::PopupWeatherSt,el.iIdx);
             break;
 #endif
         case IM_AIRSPACE:
             wf->SetTimerNotify(0,NULL);
-            LKASSERT(Elements[Index].ptr);
-            CAirspaceManager::Instance().PopupAirspaceDetail(static_cast<CAirspace*>(Elements[Index].ptr));
+            LKASSERT(el.ptr);
+            CAirspaceManager::Instance().PopupAirspaceDetail(static_cast<CAirspace*>(el.ptr));
             break;
 
         case IM_WAYPOINT:
             wf->SetTimerNotify(0,NULL);
-            LKASSERT(Elements[Index].iIdx < (int)WayPointList.size());
-            SelectedWaypoint = Elements[Index].iIdx;
+            LKASSERT(el.iIdx < (int)WayPointList.size());
+            SelectedWaypoint = el.iIdx;
             wf->SetTimerNotify(0,NULL);
             PopupWaypointDetails();
             break;
 
         case IM_TASK_PT:
             wf->SetTimerNotify(0,NULL);
-            LKASSERT(Elements[Index].iIdx <= MAXTASKPOINTS);
-            LKASSERT(iLastTaskPoint>=0);
+            LKASSERT(el.iIdx <= MAXTASKPOINTS);
+            int iLastTaskPoint = 0;
+            while (ValidTaskPoint(iLastTaskPoint)) {
+                iLastTaskPoint++;
+            }
+            iLastTaskPoint--;
             RealActiveWaypoint = -1;
-            if (Elements[Index].iIdx == 0)
-                dlgTaskWaypointShowModal(Elements[Index].iIdx, 0, false, true);
+            if (el.iIdx == 0)
+                dlgTaskWaypointShowModal(el.iIdx, 0, false, true);
             else {
-                if (Elements[Index].iIdx == iLastTaskPoint)
-                    dlgTaskWaypointShowModal(Elements[Index].iIdx, 2, false, true);
+                if (el.iIdx == iLastTaskPoint)
+                    dlgTaskWaypointShowModal(el.iIdx, 2, false, true);
                 else {
                     if ((UseAATTarget()) && (CALCULATED_INFO.Flying) && (!IsMultiMapNoMain())) {
                         wf->SetModalResult(mrOK);
                         wf->SetVisible(false);
-                        dlgTarget(Elements[Index].iIdx);
+                        dlgTarget(el.iIdx);
                     } else {
-                        dlgTaskWaypointShowModal(Elements[Index].iIdx, 1, false, true);
+                        dlgTaskWaypointShowModal(el.iIdx, 1, false, true);
                     }
                 }
             }
@@ -201,21 +204,19 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
             return;
     }
 
-    if (type == IM_WAYPOINT)
-        if (Idx == RESWP_PANPOS)
-            return;
+    if (type == IM_WAYPOINT && Idx == RESWP_PANPOS) {
+      return;
+    }
 
-    for (int i = 0; i < iNO_ELEMENTS; i++) {
-        LKASSERT(i < MAX_LIST_ITEMS);
-        if (pNew != NULL)
-            if (Elements[i].ptr == pNew)
-                return;
+    for (int i = 0; i < std::min(iNO_ELEMENTS, MAX_LIST_ITEMS); i++) {
+      const ListElement& el = Elements[i];
 
-        if (type != IM_AIRSPACE)
-            if (type == Elements[i].type)
-                if (Idx == Elements[i].iIdx)
-                    return;
-
+      if (pNew != NULL && el.ptr == pNew) {
+        return;
+      }
+      if (type != IM_AIRSPACE && type == el.type && Idx == el.iIdx) {
+        return;
+      }
     } // for
 
     bool full = false;
@@ -278,34 +279,26 @@ void dlgAddMultiSelectListItem(long* pNew, int Idx, char type, double Distance) 
         } // switch
 
         if (full) {
-            for (int i = 0; i < iNO_ELEMENTS; i++) {
-                if (Elements[i].type == type)
-                    if (Distance < Elements[i].Dist) {
-                        Elements[i].ptr = pNew;
-                        Elements[i].type = type;
-                        Elements[i].iIdx = Idx;
-                        Elements[i].Dist = Distance;
-                        return;
-                    }
+          for (int i = 0; i < std::min(iNO_ELEMENTS, MAX_LIST_ITEMS); i++) {
+            ListElement& el = Elements[i];
+            if (el.type == type && el.Dist > Distance) {
+              el = { type, pNew, Idx, Distance, 0};
+              return;
             }
+          }
         } else {
-            int Pos = 0;
-            while ((Elements[Pos].Dist <= Distance) && (Pos < iNO_ELEMENTS))
-                Pos++;
-            LKASSERT(Pos < MAX_LIST_ITEMS);
-            LKASSERT(iNO_ELEMENTS < MAX_LIST_ITEMS);
-            for (int i = iNO_ELEMENTS; i > Pos; i--) {
-                LKASSERT(i > 0);
-                Elements[i].ptr = Elements[i - 1].ptr;
-                Elements[i].type = Elements[i - 1].type;
-                Elements[i].iIdx = Elements[i - 1].iIdx;
-                Elements[i].Dist = Elements[i - 1].Dist;
-            }
-            Elements[Pos].ptr = pNew;
-            Elements[Pos].type = type;
-            Elements[Pos].iIdx = Idx;
-            Elements[Pos].Dist = Distance;
-            iNO_ELEMENTS++;
+          // find element position
+          int Pos = 0;
+          while ((Pos < std::min(iNO_ELEMENTS, MAX_LIST_ITEMS)) && (Elements[Pos].Dist <= Distance)) {
+            Pos++;
+          }
+
+          for (int i = std::min(iNO_ELEMENTS, MAX_LIST_ITEMS); i > Pos; i--) {
+            Elements[i] = Elements[i - 1];
+          }
+
+          Elements[Pos] = { type, pNew, Idx, Distance, 0};
+          iNO_ELEMENTS = std::min(iNO_ELEMENTS + 1, MAX_LIST_ITEMS);
         }
 
     } // if no elements..
@@ -551,11 +544,10 @@ if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken(2382) ,Bas
 static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 #define PICTO_WIDTH 50
     Surface.SetTextColor(RGB_BLACK);
-    if ((DrawListIndex < iNO_ELEMENTS) &&(DrawListIndex >= 0)) {
+    if ((DrawListIndex < std::min(iNO_ELEMENTS, MAX_LIST_ITEMS)) &&(DrawListIndex >= 0)) {
+        const ListElement& el = Elements[DrawListIndex];
 
         static CAirspaceBase airspace_copy;
-        int i = DrawListIndex;
-        LKASSERT(i < MAX_LIST_ITEMS);
         PixelRect rc = {
             0, 
             0, 
@@ -572,14 +564,13 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
         TCHAR Comment[MAX_COMMENT] = {TEXT("")};
         TCHAR Comment1[MAX_COMMENT] = {TEXT("")};
         Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-        LKASSERT(i < MAX_LIST_ITEMS);
 
-        switch (Elements[i].type) {
+        switch (el.type) {
             /************************************************************************************************
              * IM_AIRSPACE
              ************************************************************************************************/
         case IM_AIRSPACE:
-            pAS = (CAirspace*) Elements[i].ptr;
+            pAS = (CAirspace*) el.ptr;
             if (pAS) {
                 /***********************************************************************
                  * here we use a local copy of the airspace, only common property exists
@@ -617,11 +608,11 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_FLARM
              ************************************************************************************************/
         case IM_FLARM:
-            LKASSERT(Elements[i].iIdx  < FLARM_MAX_TRAFFIC);
-            LKASSERT(Elements[i].iIdx  >= 0);
+            LKASSERT(el.iIdx  < FLARM_MAX_TRAFFIC);
+            LKASSERT(el.iIdx  >= 0);
             FLARM_TRAFFIC Target;
             LockFlightData();
-              memcpy( &Target, &GPS_INFO.FLARM_Traffic[Elements[i].iIdx], sizeof(     FLARM_TRAFFIC));
+              memcpy( &Target, &GPS_INFO.FLARM_Traffic[el.iIdx], sizeof(     FLARM_TRAFFIC));
             UnlockFlightData();
 
             BuildFLARMText(&Target,text1,text2);
@@ -640,15 +631,15 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_WEATHERST
              ************************************************************************************************/
         case IM_WEATHERST:
-            LKASSERT(Elements[i].iIdx  < MAXFANETWEATHER);
-            LKASSERT(Elements[i].iIdx  >= 0);
+            LKASSERT(el.iIdx  < MAXFANETWEATHER);
+            LKASSERT(el.iIdx  >= 0);
             FANET_WEATHER Station;
             TCHAR StationName[MAXFANETNAME+1];
             StationName[0] = 0; //zero-termination of String;
             //int stationIndex;
             //stationIndex = -1;
             LockFlightData();
-                memcpy( &Station, &GPS_INFO.FANET_Weather[Elements[i].iIdx], sizeof(FANET_WEATHER));
+                memcpy( &Station, &GPS_INFO.FANET_Weather[el.iIdx], sizeof(FANET_WEATHER));
                 GetFanetName(Station.ID, GPS_INFO, StationName);
             UnlockFlightData();
             BuildWEATHERText(&Station,text1,text2,StationName);
@@ -681,8 +672,8 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              ************************************************************************************************/
         case IM_ORACLE:
           _sntprintf(text1,MAX_LEN,_T("%s"), MsgToken(2058)); //_@M2058_ "Oracle"
-            if(Elements[i].iIdx >= 0)
-              _sntprintf(text2,MAX_LEN,_T("%s: %s"), MsgToken(456), WayPointList[Elements[i].iIdx].Name);// _@M456_ "Near"
+            if(el.iIdx >= 0)
+              _sntprintf(text2,MAX_LEN,_T("%s: %s"), MsgToken(456), WayPointList[el.iIdx].Name);// _@M456_ "Near"
             else
               _sntprintf(text2,MAX_LEN,_T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
             ShowTextEntries(Surface, rc,  text1, text2);
@@ -722,8 +713,8 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
         case IM_WAYPOINT:
             idx = -1;
 
-            if(ValidWayPointFast(Elements[i].iIdx)) {
-                idx = Elements[i].iIdx;
+            if(ValidWayPointFast(el.iIdx)) {
+                idx = el.iIdx;
             }
 
             assert(idx < WayPointList.size());
@@ -754,7 +745,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
             {
               idx = -1;
               LockTaskData(); // protect from external task changes
-              int iTaskIdx = Elements[i].iIdx;
+              int iTaskIdx = el.iIdx;
               if(ValidTaskPointFast(iTaskIdx))
               {
                 idx = Task[iTaskIdx].Index;
