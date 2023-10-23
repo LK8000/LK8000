@@ -74,14 +74,10 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   double w0lat;
   double w0lon;
 
-  if (UseAATTarget() && (ActiveTaskPoint > 0) && (ValidTaskPoint(ActiveTaskPoint))) {
+  if (UseAATTarget()) {
     w1lat = Task[ActiveTaskPoint].AATTargetLat;
     w1lon = Task[ActiveTaskPoint].AATTargetLon;
   } else {
-    LKASSERT(ValidTaskPoint(ActiveTaskPoint));
-    if (!ValidTaskPoint(ActiveTaskPoint)) {
-      return;
-    }
     w1lat = WayPointList[TASKINDEX].Latitude;
     w1lon = WayPointList[TASKINDEX].Longitude;
   }
@@ -103,13 +99,10 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     }
   } else {
     if (UseAATTarget()) {
-      LKASSERT((ActiveTaskPoint - 1) >= 0);
       // TODO accuracy: Get best range point to here...
       w0lat = Task[ActiveTaskPoint - 1].AATTargetLat;
       w0lon = Task[ActiveTaskPoint - 1].AATTargetLon;
     } else {
-      LKASSERT((ActiveTaskPoint - 1) >= 0);
-      LKASSERT(ValidTaskPoint(ActiveTaskPoint - 1));
       w0lat = WayPointList[Task[ActiveTaskPoint - 1].Index].Latitude;
       w0lon = WayPointList[Task[ActiveTaskPoint - 1].Index].Longitude;
     }
