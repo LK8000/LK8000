@@ -153,4 +153,12 @@ void ReverseTask();
 
 int GetTaskBearing();
 
+GeoPoint GetWayPointPosition(const WAYPOINT& p);
+
+GeoPoint GetWaypointPosition(size_t idx);
+
+GeoPoint GetTurnpointTarget(size_t idx);
+
+GeoPoint GetTurnpointPosition(size_t idx);
+
 #endif

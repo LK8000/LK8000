@@ -15,12 +15,8 @@
 extern double CRUISE_EFFICIENCY;
 extern AATDistance aatdistance;
 
-void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double this_maccready) {
-  if (Calculated->ValidFinish) {  // don't update statistics after task finished
-    return;
-  }
-
-  if (!ValidTaskPoint(ActiveTaskPoint) || ((ActiveTaskPoint > 0) && !ValidTaskPoint(ActiveTaskPoint - 1))) {
+static 
+void ResetTaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double this_maccready) {
     Calculated->LegSpeed = 0;
     Calculated->LegDistanceToGo = 0;
     Calculated->LegDistanceCovered = 0;
@@ -56,6 +52,17 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     GlidePolar::MacCreadyAltitude(this_maccready, 100.0, Basic->TrackBearing, Calculated->WindSpeed,
                                   Calculated->WindBearing, &(Calculated->BestCruiseTrack), &(Calculated->VMacCready),
                                   Calculated->FinalGlide, NULL, 1.0e6, CRUISE_EFFICIENCY);
+
+}
+
+
+void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double this_maccready) {
+  if (Calculated->ValidFinish) {  // don't update statistics after task finished
+    return;
+  }
+
+  if (!ValidTaskPoint(ActiveTaskPoint) || ((ActiveTaskPoint > 0) && !ValidTaskPoint(ActiveTaskPoint - 1))) {
+    ResetTaskStatistics(Basic, Calculated, this_maccready);
     return;
   }
 
@@ -65,22 +72,11 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   // First calculate distances for this waypoint
 
   double LegCovered, LegToGo = 0, LegXTD = 0, LegCurrentCourse;
-  double LegDistance, LegBearing = 0;
+  double LegBearing = 0;
 
-  double w1lat;
-  double w1lon;
-  double w0lat;
-  double w0lon;
-
-  if (UseAATTarget()) {
-    w1lat = Task[ActiveTaskPoint].AATTargetLat;
-    w1lon = Task[ActiveTaskPoint].AATTargetLon;
-  } else {
-    w1lat = WayPointList[TASKINDEX].Latitude;
-    w1lon = WayPointList[TASKINDEX].Longitude;
-  }
-
-  DistanceBearing(Basic->Latitude, Basic->Longitude, w1lat, w1lon, &LegToGo, &LegBearing);
+  const GeoPoint cur_pos = GetCurrentPosition(*Basic);
+  const GeoPoint next_pos = GetTurnpointTarget(ActiveTaskPoint);
+  cur_pos.Reverse(next_pos, LegBearing, LegToGo);
 
   if (ActiveTaskPoint < 1) {
     LegCovered = 0;
@@ -89,19 +85,10 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
       LegToGo = 0;
     }
   } else {
-    if (UseAATTarget()) {
-      // TODO accuracy: Get best range point to here...
-      w0lat = Task[ActiveTaskPoint - 1].AATTargetLat;
-      w0lon = Task[ActiveTaskPoint - 1].AATTargetLon;
-    } else {
-      w0lat = WayPointList[Task[ActiveTaskPoint - 1].Index].Latitude;
-      w0lon = WayPointList[Task[ActiveTaskPoint - 1].Index].Longitude;
-    }
-
-    DistanceBearing(w1lat, w1lon, w0lat, w0lon, &LegDistance, NULL);
+    GeoPoint prev_pos = GetTurnpointTarget(ActiveTaskPoint - 1);
 
     LegCovered =
-        ProjectedDistance(w0lon, w0lat, w1lon, w1lat, Basic->Longitude, Basic->Latitude, &LegXTD, &LegCurrentCourse);
+        ProjectedDistance(prev_pos, next_pos, cur_pos, &LegXTD, &LegCurrentCourse);
 
     if ((StartLine == sector_type_t::CIRCLE) && (ActiveTaskPoint == 1)) {
       // Correct speed calculations for radius
@@ -125,19 +112,16 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   }
 
   // Now add distances for start to previous waypoint
-
   if (!UseAATTarget()) {
-    for (int i = 0; i < ActiveTaskPoint - 1; i++) {
-      if (!ValidTaskPoint(i) || !ValidTaskPoint(i + 1))
-        continue;
+    if (ValidTaskPoint(0)) {
+      GeoPoint p0 = GetTurnpointTarget(0);
+      for (int i = 1; i < ActiveTaskPoint && ValidTaskPoint(i); i++) {
+        GeoPoint p1 = GetTurnpointTarget(i);
 
-      w1lat = WayPointList[Task[i].Index].Latitude;
-      w1lon = WayPointList[Task[i].Index].Longitude;
-      w0lat = WayPointList[Task[i + 1].Index].Latitude;
-      w0lon = WayPointList[Task[i + 1].Index].Longitude;
+        Calculated->TaskDistanceCovered += p0.Distance(p1);
 
-      DistanceBearing(w1lat, w1lon, w0lat, w0lon, &LegDistance, NULL);
-      Calculated->TaskDistanceCovered += LegDistance;
+        p0 = p1;
+      }
     }
   } else if (ActiveTaskPoint > 0) {
     // JMW added correction for distance covered
@@ -178,27 +162,15 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   double StartBestCruiseTrack = -1;
 
   while ((task_index > ActiveTaskPoint) && (ValidTaskPoint(task_index))) {
-    double this_LegTimeToGo;
     bool this_is_final = (task_index == FinalWayPoint) || ForceFinalGlide;
 
-    this_is_final = true;  // JMW CHECK FGAMT
-
-    if (UseAATTarget()) {
-      w1lat = Task[task_index].AATTargetLat;
-      w1lon = Task[task_index].AATTargetLon;
-      w0lat = Task[task_index - 1].AATTargetLat;
-      w0lon = Task[task_index - 1].AATTargetLon;
-    } else {
-      w1lat = WayPointList[Task[task_index].Index].Latitude;
-      w1lon = WayPointList[Task[task_index].Index].Longitude;
-      w0lat = WayPointList[Task[task_index - 1].Index].Latitude;
-      w0lon = WayPointList[Task[task_index - 1].Index].Longitude;
-    }
+    GeoPoint p0 = GetTurnpointTarget(task_index -1);
+    GeoPoint p1 = GetTurnpointTarget(task_index);
 
     double NextLegDistance, NextLegBearing;
+    p0.Reverse(p1, NextLegBearing, NextLegDistance);
 
-    DistanceBearing(w0lat, w0lon, w1lat, w1lon, &NextLegDistance, &NextLegBearing);
-
+    double this_LegTimeToGo;
     double LegAltitude = GlidePolar::MacCreadyAltitude(
         this_maccready, NextLegDistance, NextLegBearing, Calculated->WindSpeed, Calculated->WindBearing, 0, 0,
         this_is_final, &this_LegTimeToGo, height_above_finish, CRUISE_EFFICIENCY);

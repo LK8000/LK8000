@@ -181,10 +181,6 @@ struct WAYPOINT
   short Style;
 };
 
-inline
-GeoPoint GetWayPointPosition(const WAYPOINT& p) {
-	return { p.Latitude, p.Longitude };
-}
 
 // This struct is separated from 'WAYPOINT' and will not be used in task files.
 // It is managed by the same functions that manage WayPointList, only add variables here

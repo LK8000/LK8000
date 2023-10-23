@@ -148,6 +148,27 @@ std::unique_ptr<task_sectors> get_task_sectors(int type) {
   }
 }
 
+GeoPoint GetWayPointPosition(const WAYPOINT& p) {
+	return { p.Latitude, p.Longitude };
+}
+
+GeoPoint GetWaypointPosition(size_t idx) {
+    return GetWayPointPosition(WayPointList[idx]);
+}
+
+GeoPoint GetTurnpointPosition(size_t idx) {
+    return GetWaypointPosition(Task[idx].Index);
+}
+
+GeoPoint GetTurnpointTarget(size_t idx) {
+  if (UseAATTarget()) {
+    return {
+      Task[idx].AATTargetLat,
+      Task[idx].AATTargetLon
+    };
+  }
+  return GetTurnpointPosition(idx);
+}
 
 void GetTaskSectorParameter(int TskIdx, sector_type_t* SecType, double* SecRadius) {
   if (TskIdx == 0) {

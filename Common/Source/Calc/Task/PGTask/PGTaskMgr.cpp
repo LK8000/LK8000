@@ -30,11 +30,6 @@
 
 namespace {
 
-    GeoPoint GetTurnpointPosition(size_t idx) {
-        const auto& tp = WayPointList[Task[idx].Index];
-        return GeoPoint(tp.Latitude, tp.Longitude);
-    }
-
     /**
      * T must inherit from PGTaskPt
      */

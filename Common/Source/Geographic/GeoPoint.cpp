@@ -33,3 +33,7 @@ double GeoPoint::Bearing(const GeoPoint& point) const {
   DistanceBearing(latitude, longitude, point.latitude, point.longitude, nullptr, &d);
   return d;
 }
+
+double ProjectedDistance(const GeoPoint p1, const GeoPoint p2, const GeoPoint p3, double* xtd, double* crs) {
+  return ProjectedDistance(p1.longitude, p1.latitude, p2.longitude, p1.latitude, p3.longitude, p1.latitude, xtd, crs);
+}
