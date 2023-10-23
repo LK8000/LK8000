@@ -97,7 +97,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (Basic->Time > (LastSearchBestTime + BESTALTERNATEINTERVAL)) {
 		LastSearchBestTime = Basic->Time;
 		if (SearchBestAlternate(Basic, Calculated)) {
-			AutomaticRadioStation({Basic->Latitude, Basic->Longitude});
+			AutomaticRadioStation(GetCurrentPosition(*Basic));
 		}
 	}
 }

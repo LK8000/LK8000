@@ -39,14 +39,6 @@ double GetTrackBearingMinSpeed() {
 
 } // namespace
 
-GeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
-  LockFlightData();
-  AtScopeExit() {
-    UnlockFlightData(); // to unlock after return...
-  };
-  return { GPS_INFO.Latitude, GPS_INFO.Longitude };
-}
-
 int NMEAParser::StartDay = -1;
 
 

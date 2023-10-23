@@ -108,9 +108,7 @@ bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], unsigned khz) {
 	if(!ValidFrequency(khz))
 		return 0;
 
-	LockFlightData();
-	GeoPoint cur_pos(GPS_INFO.Latitude, GPS_INFO.Longitude);
-	UnlockFlightData();
+	GeoPoint cur_pos = WithLock(CritSec_FlightData, GetCurrentPosition, GPS_INFO);
 
 	LockTaskData();
 	for (size_t i = NUMRESWP; i < WayPointList.size(); ++i) {

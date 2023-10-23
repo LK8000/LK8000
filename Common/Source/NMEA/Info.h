@@ -12,7 +12,7 @@
 #include "tchar.h"
 #include "Flarm.h"
 #include "Fanet.h"
-#include <type_traits>
+#include "Geographic/GeoPoint.h"
 /**
  * used to manage Baro Altitude Source priority
  *   - Flarm device First ordered by port index
@@ -105,5 +105,10 @@ struct NMEA_INFO {
 };
 
 static_assert(std::is_trivial_v<NMEA_INFO>, "mandatory while memset/memcpy is used to init/copy this struct");
+
+inline
+AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
+  return {{ Info.Latitude, Info.Longitude }, Info.Altitude };
+}
 
 #endif //_NMEA_INFO_H_

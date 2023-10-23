@@ -294,8 +294,7 @@ static void OnPassiveFreq(WndButton* pWnd){
 }
 
 static GeoPoint GetCurrentPos() {
-  ScopeLock lock(CritSec_FlightData);
-  return { GPS_INFO.Latitude, GPS_INFO.Longitude };
+  return WithLock(CritSec_FlightData, GetCurrentPosition, GPS_INFO);
 }
 
 static void OnRadioActiveAutoClicked(WndButton* pWnd) {

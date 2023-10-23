@@ -598,7 +598,8 @@ void dlgSelectObject::UpdateList() {
 
 int dlgSelectObject::DoModal() {
 
-  array_info = PrepareData(GetCurrentPosition(GPS_INFO));
+  GeoPoint position = WithLock(CritSec_FlightData, GetCurrentPosition, GPS_INFO);
+  array_info = PrepareData(position);
 
   if (array_info.empty()) {
     return mrCancel;

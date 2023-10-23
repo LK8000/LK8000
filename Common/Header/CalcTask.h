@@ -24,8 +24,8 @@ extern bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool Start
 
 bool InTurnSector(const AGeoPoint& position, int tp_index);
 
-inline bool InTurnSector(NMEA_INFO *Basic, int tp_index) {
-    return InTurnSector({ { Basic->Latitude, Basic->Longitude }, Basic->Altitude }, tp_index);
+inline bool InTurnSector(NMEA_INFO* Basic, int tp_index) {
+  return InTurnSector(GetCurrentPosition(*Basic), tp_index);
 }
 
 extern void CheckFinish(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

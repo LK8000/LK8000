@@ -16,8 +16,6 @@
 
 struct DeviceDescriptor_t;
 
-GeoPoint GetCurrentPosition(const NMEA_INFO& Info);
-
 double TimeModify(NMEA_INFO* pGPS, int& StartDay);
 double TimeModify(const TCHAR* FixTime, NMEA_INFO* info, int& StartDay);
 
