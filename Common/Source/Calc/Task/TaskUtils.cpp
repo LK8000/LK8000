@@ -17,6 +17,8 @@ bool TaskModified = false;
 bool TargetModified = false;
 TCHAR LastTaskFileName[MAX_PATH]= TEXT("\0");
 
+namespace {
+
 constexpr sector_type_t default_start_sectors[] = {
   sector_type_t::CIRCLE,
   sector_type_t::LINE,
@@ -70,13 +72,6 @@ constexpr auto sector_labels_table = lookup_table<sector_type_t, const TCHAR*(*)
   { sector_type_t::ESS_CIRCLE , [] { return MsgToken(2189); } }, // _@M2189_ = "Circle ESS"
 });
 
-const TCHAR* get_sectors_label(sector_type_t type) {
-  auto label = sector_labels_table.get(type, []() {
-    return _T("");
-  });
-  return label();
-}
-
 template<size_t size>
 class task_sectors_adaptor final : public task_sectors {
   using type_array_t = sector_type_t[size];
@@ -110,6 +105,15 @@ private:
 template<size_t size>
 std::unique_ptr<task_sectors> make_task_sectors_adaptor(const sector_type_t (&array)[size]) {
   return std::make_unique<task_sectors_adaptor<size>>(array);
+}
+
+} // namespace
+
+const TCHAR* get_sectors_label(sector_type_t type) {
+  auto label = sector_labels_table.get(type, []() {
+    return _T("");
+  });
+  return label();
 }
 
 std::unique_ptr<task_sectors> get_start_sectors(int type) {
@@ -213,12 +217,6 @@ void ResetTaskWaypoint(int j) {
         LKASSERT(false);
     }
 }
-
-void ResetStartPoint(START_POINT& StartPt) {
-    StartPt.Index = -1;
-}
-
-
 
 void RefreshTaskWaypoint(int i) {
   if(i==0)

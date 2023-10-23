@@ -12,7 +12,14 @@
 
 extern void ResetTaskWpt(TASK_POINT& TaskWpt);
 extern void ResetTaskStat(TASKSTATS_POINT& StatPt);
-extern void ResetStartPoint(START_POINT& StartPt);
+
+namespace {
+
+inline void ResetStartPoint(START_POINT& StartPt) {
+  StartPt.Index = -1;
+}
+
+} // namespace
 
 void ClearTask(void) {
 
