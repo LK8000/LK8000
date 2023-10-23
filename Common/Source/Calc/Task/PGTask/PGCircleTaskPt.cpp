@@ -41,7 +41,7 @@ private:
 PGCircleTaskPt::PGCircleTaskPt(ProjPt&& point, double Radius)
     : PGTaskPt(std::forward<ProjPt>(point)), m_Radius(Radius) { }
 
-void PGCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
+void PGCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
     if(m_Radius == 0.0){
         return;
     }

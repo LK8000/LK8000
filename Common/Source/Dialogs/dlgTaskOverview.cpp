@@ -111,13 +111,8 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
           _stprintf(sTmp, TEXT("%.1f %s"),
                     Task[i].AATCircleRadius*DISTANCEMODIFY, wpName);
         } else {
-          if(Task[i].AATType == sector_type_t::CONE && (gTaskType==TSK_GP)) {
-             _stprintf(sTmp, TEXT("%s %.1f/1"),
-                    wpName, Task[i].PGConeSlope);
-          } else {
-             _stprintf(sTmp, TEXT("%.1f %s"),
-                    Task[i].AATSectorRadius*DISTANCEMODIFY,wpName);
-          }
+          _stprintf(sTmp, TEXT("%.1f %s"),
+                Task[i].AATSectorRadius*DISTANCEMODIFY,wpName);
         }
       } else {
         if (i == 0) // start
@@ -325,7 +320,6 @@ static void OnTaskListEnter(WindowControl * Sender, WndListFrame::ListInfo_t *Li
 			LockTaskData();
 			ResetTaskWaypoint(ItemIndex);
 			Task[ItemIndex].Index = res;
-			Task[ItemIndex].PGConeBase = WayPointList[res].Altitude;
 
 			UnlockTaskData();
 			if (ItemIndex==0) {

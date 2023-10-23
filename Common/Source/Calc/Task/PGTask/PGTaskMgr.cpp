@@ -22,7 +22,6 @@
 #include "PGCircleTaskPt.h"
 #include "PGLineTaskPt.h"
 #include "PGSectorTaskPt.h"
-#include "PGConeTaskPt.h"
 #include "PGEssCircleTaskPt.h"
 #include "NavFunctions.h"
 #include "Geographic/GeoPoint.h"
@@ -94,9 +93,6 @@ void PGTaskMgr::Initialize() {
             case sector_type_t::LINE:
                 AddLine(curwp, Radius);
                 break;
-            case sector_type_t::CONE:
-                AddCone(curwp);
-                break;
             case sector_type_t::ESS_CIRCLE:
                 AddEssCircle(curwp, Radius);
                 break;
@@ -165,41 +161,16 @@ void PGTaskMgr::AddSector(int TskIdx) {
 	//TODO : Handle Sector Turn Point
 }
 
-void PGTaskMgr::AddCone(int TskIdx) {
-    auto pTskPt = getPGTaskPt<PGConeTaskPt>(m_Projection.get(), TskIdx);
-
-    pTskPt->m_Slope = Task[TskIdx].PGConeSlope;
-    pTskPt->m_AltBase = Task[TskIdx].PGConeBase;
-    pTskPt->m_RadiusBase = Task[TskIdx].PGConeBaseRadius;
-
-    m_Task.emplace_back(std::move(pTskPt));
-}
-
 void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (((size_t) ActiveTaskPoint) >= m_Task.size()) {
         return;
     }
     assert(m_Projection);
 
-    GeoPoint prev_position(Basic->Latitude, Basic->Longitude);
-    ProjPt PrevPos = m_Projection->Forward(prev_position);
+    ProjPt PrevPos = m_Projection->Forward(GetCurrentPosition(*Basic));
     
-    double NextAltitude = Basic->Altitude;
     for (size_t i = ActiveTaskPoint; i < m_Task.size(); ++i) {
-        
-        // Calc Arrival Altitude
-        const GeoPoint position = getOptimized(i);
-        double Distance, Bearing;
-        prev_position.Reverse(position, Bearing, Distance);
-        double GrndAlt = AltitudeFromTerrain(position.latitude, position.longitude);
-        if(NextAltitude > GrndAlt) {
-            NextAltitude  -= GlidePolar::MacCreadyAltitude( MACCREADY, Distance, Bearing, Calculated->WindSpeed, Calculated->WindBearing, 0, 0, true, 0);
-        }
 
-        if(NextAltitude < GrndAlt) {
-            NextAltitude = GrndAlt;
-        }
-        
         // Optimize
         const auto& CurrPos = m_Task[i]->getCenter();
         size_t next = i + 1;
@@ -208,14 +179,13 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
         
         if (next < m_Task.size()) {
-            m_Task[i]->Optimize(PrevPos, m_Task[next]->getOptimized(), NextAltitude);
+            m_Task[i]->Optimize(PrevPos, m_Task[next]->getOptimized());
         } else {
-            m_Task[i]->Optimize(PrevPos, {0., 0.}, NextAltitude);
+            m_Task[i]->Optimize(PrevPos, {0., 0.});
         }
 
         // Update previous Position for Next Loop
         PrevPos = m_Task[i]->getOptimized();
-        prev_position = position;
     }
 }
 

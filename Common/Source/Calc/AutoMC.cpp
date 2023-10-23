@@ -17,9 +17,6 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (!Calculated->AutoMacCready) return;
 
     bool is_final_glide = false;
-    bool is_conical_ess = false;
-
-    double ConeSlope = 0.0;
 
     double mc_new = MACCREADY;
     static bool first_mc = true;
@@ -52,17 +49,6 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             is_final_glide = true;
         } else {
             first_mc = true;
-        }
-
-        if (UseAATTarget() && Calculated->NextAltitude > 0.) {
-            // Special case for Conical end of Speed section
-            sector_type_t Type = sector_type_t::CIRCLE;
-            GetTaskSectorParameter(ActiveTaskPoint, &Type, nullptr);
-            ConeSlope = Task[ActiveTaskPoint].PGConeSlope;
-            if (Type == sector_type_t::CONE && ConeSlope > 0.0) {
-                is_final_glide = true;
-                is_conical_ess = true;
-            }
         }
     }
 
@@ -125,14 +111,6 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
                 }
             } else {
                 mc_new = mc_pirker;
-            }
-
-            if (is_conical_ess) {
-                const double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
-                const double eqMC = GlidePolar::EquMC(VOpt);
-                if(mc_new > eqMC) {
-                    mc_new = eqMC;
-                }
             }
 
         } else { // below final glide at zero Mc, never achieved final glide

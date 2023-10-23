@@ -560,11 +560,6 @@ bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
             } else if (strcmp(szType, "DAe") == 0) {
                 Task[idx].AATType = sector_type_t::DAe; // not Used in AAT and PGTask
-            } else if (strcmp(szType, "cone") == 0) {
-                Task[idx].AATType = sector_type_t::CONE; // Only Used in PGTask
-                GetAttribute(node, "base", Task[idx].PGConeBase);
-                GetAttribute(node, "radius", Task[idx].PGConeBaseRadius);
-                GetAttribute(node, "slope", Task[idx].PGConeSlope);
             } else if (strcmp(szType, "ess_circle") == 0) {
                 Task[idx].AATType = sector_type_t::ESS_CIRCLE;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
@@ -981,12 +976,6 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
                 break;
             case sector_type_t::DAe: // not Used in AAT and PGTask
                 SetAttribute(node, "type", "DAe");
-                break;
-            case sector_type_t::CONE:
-                SetAttribute(node, "type", "cone");
-                SetAttribute(node, "base", TaskPt.PGConeBase);
-                SetAttribute(node, "radius", TaskPt.PGConeBaseRadius);
-                SetAttribute(node, "slope", TaskPt.PGConeSlope);
                 break;
             case sector_type_t::ESS_CIRCLE:
                 SetAttribute(node, "type", "ess_circle");

@@ -20,7 +20,7 @@ public:
     PGEssCircleTaskPt() = delete;
     PGEssCircleTaskPt(ProjPt&& point, double Radius);
     
-    void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
+    void Optimize(const ProjPt& prev, const ProjPt& next) override;
 };
 
 #endif /* PGESSCIRCLE_H */

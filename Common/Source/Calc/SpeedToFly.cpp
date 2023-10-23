@@ -17,29 +17,6 @@ extern double CRUISE_EFFICIENCY;
 //
 void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-
-    if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) 
-            && DoOptimizeRoute() && Calculated->NextAltitude > 0.) {
-
-        // Special case for Conical end of Speed section
-        sector_type_t Type = sector_type_t::CIRCLE;
-        double ConeSlope = 0.0;
-        LockTaskData();
-        if (ValidTaskPoint(ActiveTaskPoint)) {
-            GetTaskSectorParameter(ActiveTaskPoint, &Type, nullptr);
-            ConeSlope = Task[ActiveTaskPoint].PGConeSlope;
-        }
-        UnlockTaskData();
-        if (Type == sector_type_t::CONE && ConeSlope > 0.0) {
-            double VOpt = GlidePolar::FindSpeedForSlope(ConeSlope);
-            double eqMC = GlidePolar::EquMC(VOpt);
-            if(eqMC <= MACCREADY ) {
-                Calculated->VOpt = VOpt;
-                return;
-            }
-        }
-    }
-
     double netto; if (Basic->NettoVarioAvailable) netto=Basic->NettoVario; else netto=Calculated->NettoVario;
 
     // calculate maximum efficiency speed to fly

@@ -14,6 +14,6 @@
 PGEssCircleTaskPt::PGEssCircleTaskPt(ProjPt&& point, double Radius)
     : PGCircleTaskPt(std::forward<ProjPt>(point), Radius) { }
 
-void PGEssCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
-    PGCircleTaskPt::Optimize(prev, ProjPt(0.,0.), Alt);
+void PGEssCircleTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
+    PGCircleTaskPt::Optimize(prev, ProjPt(0.,0.));
 }

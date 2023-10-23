@@ -14,7 +14,7 @@
 PGSectorTaskPt::PGSectorTaskPt(ProjPt&& point)
     : PGTaskPt(std::forward<ProjPt>(point)) { }
 
-void PGSectorTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
+void PGSectorTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
     m_Optimized = m_Center;
    
     //TODO : optimize Sector Turn Point

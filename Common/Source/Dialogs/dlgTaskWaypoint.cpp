@@ -62,10 +62,6 @@ static void SetWaypointValues(bool first=false) {
   if(pFrm) {
     pFrm->SetVisible(Task[twItemIndex].AATType == sector_type_t::SECTOR);
   }
-  pFrm = wf->FindByName(_T("frmCone"));
-  if(pFrm) {
-    pFrm->SetVisible(Task[twItemIndex].AATType == sector_type_t::CONE);
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
   if (wp) {
@@ -94,27 +90,6 @@ static void SetWaypointValues(bool first=false) {
     wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATFinishRadial);
     wp->RefreshDisplay();
   }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeSlope);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpConeBase"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(Task[twItemIndex].PGConeBase*ALTITUDEMODIFY);
-    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-    wp->RefreshDisplay();
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpConeRadius"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(round(Task[twItemIndex].PGConeBaseRadius
-                                         *DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
-    wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->RefreshDisplay();
-  }
-
 }
 
 static void UpdateCaption(void) {
@@ -426,25 +401,6 @@ static void GetWaypointValues(void) {
                     round(wp->GetDataField()->GetAsFloat()));
     }  
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpConeSlope"));
-    if (wp) {
-      changed = CHECK_CHANGED(Task[twItemIndex].PGConeSlope,
-                    wp->GetDataField()->GetAsFloat());
-    }
-
-  	wp = (WndProperty*)wf->FindByName(TEXT("prpConeBase"));
-    if (wp) {
-      changed = CHECK_CHANGED(Task[twItemIndex].PGConeBase,
-                    wp->GetDataField()->GetAsFloat() / ALTITUDEMODIFY);
-    }
-  	
-    wp = (WndProperty*)wf->FindByName(TEXT("prpConeRadius"));
-    if (wp) {
-      changed = CHECK_CHANGED(Task[twItemIndex].PGConeBaseRadius,
-                    wp->GetDataField()->GetAsFloat() / DISTANCEMODIFY);
-    }
-
-
     if (changed) {
       TaskModified = true;
     }
@@ -562,7 +518,6 @@ static void OnSelectClicked(WndButton* pWnd) {
         LockTaskData();
         ResetTaskWaypoint(twItemIndex);
         Task[twItemIndex].Index = res;
-        Task[twItemIndex].PGConeBase = WayPointList[res].Altitude;
         TaskModified = true;
         UnlockTaskData();
       }

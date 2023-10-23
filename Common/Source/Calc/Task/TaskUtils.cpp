@@ -56,7 +56,6 @@ constexpr sector_type_t aat_task_sectors[] = {
 constexpr sector_type_t gp_task_sectors[] = {
   sector_type_t::CIRCLE,
   sector_type_t::SECTOR,
-  sector_type_t::CONE,
   sector_type_t::ESS_CIRCLE,
   sector_type_t::DAe,
 };
@@ -68,7 +67,6 @@ constexpr auto sector_labels_table = lookup_table<sector_type_t, const TCHAR*(*)
   { sector_type_t::SECTOR , [] { return MsgToken(274); } }, // _@M274_ = "FAI Sector"
   { sector_type_t::DAe, [] { return LKGetText(_T("DAe 0.5/10")); } },
   { sector_type_t::LINE, [] { return MsgToken(393); } }, // _@M393_ = "Line"
-  { sector_type_t::CONE , [] { return MsgToken(2175); } }, // _@M2175_ = "Conical ESS"
   { sector_type_t::ESS_CIRCLE , [] { return MsgToken(2189); } }, // _@M2189_ = "Circle ESS"
 });
 
@@ -200,9 +198,6 @@ void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.AATCircleRadius = SectorRadius;
     TaskWpt.AATStartRadial = 0;
     TaskWpt.AATFinishRadial = 360;
-    TaskWpt.PGConeBase = 0;
-    TaskWpt.PGConeSlope = 2.5;
-    TaskWpt.PGConeBaseRadius = 0.;
 }
 
 void ResetTaskStat(TASKSTATS_POINT& StatPt) {

@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "NavFunctions.h"
-#include "Calc/Task/PGTask/PGConeTaskPt.h"
 
 namespace {
 
@@ -45,13 +44,6 @@ struct line_data {
   double bisector;
   double inbound;
   // TODO : Line as no radius ?
-};
-
-struct conical_data {
-  GeoPoint center;
-  double slope;
-  double base_altitude;
-  double base_radius;
 };
 
 /**
@@ -127,17 +119,6 @@ struct sector<sector_type_t::CIRCLE, TSK_AAT> {
   }
 };
 
-template <>
-struct sector<sector_type_t::CONE, TSK_GP> {
-  static conical_data get(int tp_index) {
-    return {
-      from_task(tp_index),
-      Task[tp_index].PGConeSlope,
-      Task[tp_index].PGConeBase,
-      Task[tp_index].PGConeBaseRadius
-    };
-  }
-};
 
 /*
  * function to check if current position is inside Turnpoint. 
@@ -190,11 +171,6 @@ bool InSector(const AGeoPoint& position, const line_data& data) {
   }
 }
 
-bool InSector(const AGeoPoint& position, const conical_data& data) {
-  double radius = PGConeTaskPt::ConeRadius(position.altitude, data.base_altitude, data.slope, data.base_radius);
-  return (position.Distance(data.center) < radius);
-}
-
 
 template <sector_type_t type, int task_type>
 bool InSector(const AGeoPoint& position, int tp_index) {
@@ -228,8 +204,6 @@ bool InTurnSector(const AGeoPoint& position, int tp_index) {
       }
     case sector_type_t::LINE:
       return InSector<sector_type_t::LINE, TSK_DEFAULT>(position, tp_index);
-    case sector_type_t::CONE:
-      return InSector<sector_type_t::CONE, TSK_GP>(position, tp_index);
     default:
       assert(false);
       break;

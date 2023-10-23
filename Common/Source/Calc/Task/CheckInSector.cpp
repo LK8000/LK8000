@@ -34,7 +34,6 @@ bool IsCircle(const size_t& idx) {
     // Not Start or Finish
     switch (Task[idx].AATType) {
       case sector_type_t::CIRCLE:
-      case sector_type_t::CONE:
       case sector_type_t::ESS_CIRCLE:
         return true;
       default:

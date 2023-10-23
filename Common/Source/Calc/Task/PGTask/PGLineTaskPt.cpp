@@ -27,7 +27,7 @@ double VectorAngle(const ProjPt& v, const ProjPt& w) {
 PGLineTaskPt::PGLineTaskPt(ProjPt&& point)
     : PGTaskPt(std::forward<ProjPt>(point)) { }
 
-void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next, double Alt) {
+void PGLineTaskPt::Optimize(const ProjPt& prev, const ProjPt& next) {
     //  Fail if either line segment is zero-length.
     if (m_LineBegin == m_LineEnd || prev == next) {
         return;

@@ -41,7 +41,7 @@ public:
      * @next : next optimized target point
      * @Alt : estimated Arrival Altitude
      */
-    virtual void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) = 0;
+    virtual void Optimize(const ProjPt& prev, const ProjPt& next) = 0;
     
     virtual void UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const {};
 

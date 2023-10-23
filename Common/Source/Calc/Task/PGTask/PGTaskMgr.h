@@ -36,7 +36,6 @@ protected:
     void AddCircle(int TpIndex, double Radius);
     void AddLine(int TpIndex, double Radius);
     void AddSector(int TpIndex);
-    void AddCone(int TpIndex);
     void AddEssCircle(int TpIndex, double Radius);
 
     using PGTaskPt_ptr = std::unique_ptr<PGTaskPt>;

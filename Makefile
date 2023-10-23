@@ -1095,7 +1095,6 @@ TASK	:=\
 	$(TSK)/PGTask/PGLineTaskPt.cpp\
 	$(TSK)/PGTask/PGTaskMgr.cpp\
 	$(TSK)/PGTask/PGSectorTaskPt.cpp\
-	$(TSK)/PGTask/PGConeTaskPt.cpp\
 	$(TSK)/PGTask/PGEssCircleTaskPt.cpp\
 
 TERRAIN	:=\

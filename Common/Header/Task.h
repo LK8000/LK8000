@@ -13,7 +13,7 @@ enum class sector_type_t : int {
   SECTOR = 1,
   DAe = 2, // only Exist for not AAT and Not PGTask.
   LINE = 3, // only Used for Save Start and Finish Type in xml file.
-  CONE = 4, // Only Used In PG Optimized Task
+//  CONE = 4, // deleted
   ESS_CIRCLE = 5 // Only Used In PG Optimized Task
 };
 
@@ -67,9 +67,6 @@ struct TASK_POINT
   POINT	 Target;
   bool   AATTargetLocked;
   double AATTargetAltitude;
-  double PGConeSlope; // Slope Ratio for PG Cone Turn point
-  double PGConeBase; // Base Altitude of Cone Turn Point
-  double PGConeBaseRadius; // radius At Base Altitude of Cone Turn Point
 };
 
 typedef TASK_POINT Task_t[MAXTASKPOINTS +1];

@@ -20,7 +20,7 @@ public:
     PGCircleTaskPt() = delete;
     PGCircleTaskPt(ProjPt&& point, double Radius);
 
-    void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
+    void Optimize(const ProjPt& prev, const ProjPt& next) override;
 
 protected: 
     bool CrossPoint(const ProjPt& prev, const ProjPt& next, ProjPt& optimized);

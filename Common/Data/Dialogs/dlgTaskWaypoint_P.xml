@@ -59,17 +59,6 @@
           <DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min="0" Max="360" Step="1"/>
         </WndProperty>
       </WndFrame>
-      <WndFrame Name="frmCone" X="0" Y="23" Width="240" Height="198">
-        <WndProperty Name="prpConeSlope" Caption="_@M2176_" X="2" Y="2" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H1288_" Keyboard="1">
-          <DataField name="" DataType="double" DisplayFormat="%.1f / 1" EditFormat="%.2f" Min="0" Max="500" Step="0.1" />
-        </WndProperty>
-        <WndProperty Name="prpConeBase" Caption="_@M2177_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H1289_" Keyboard="1">
-          <DataField name="" DataType="double" DisplayFormat="%.0f %s AMSL" EditFormat="%.0f" Min="-10000" Max="10000" Step="1" />
-        </WndProperty>
-        <WndProperty Name="prpConeRadius" Caption="_@M2178_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H1291_" Keyboard="1">
-          <DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min="0" Max="500" Step="0.01" />
-        </WndProperty>
-      </WndFrame>
     </WndFrame>
     <WndFrame Name="frmFinish"       X="0" Y="85" Width="240" Height="185" Font="2">
       <WndProperty Name="prpTaskFinishLine" Caption="_@M298_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H513_">

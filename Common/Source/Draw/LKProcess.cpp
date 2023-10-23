@@ -2597,7 +2597,6 @@ olc_score:
           } else {
             switch(Task[ActiveTaskPoint].AATType) {
               case sector_type_t::CIRCLE:
-              case sector_type_t::CONE:
               case sector_type_t::ESS_CIRCLE:
                 value = Distance - Task[ActiveTaskPoint].AATCircleRadius;
                 valid=true;

@@ -20,7 +20,7 @@ public:
     PGLineTaskPt() = delete;
     PGLineTaskPt(ProjPt&& point);
 
-    void Optimize(const ProjPt& prev, const ProjPt& next, double Alt) override;
+    void Optimize(const ProjPt& prev, const ProjPt& next) override;
 
 protected:
     void OptimizeGoal(const ProjPt& prev);

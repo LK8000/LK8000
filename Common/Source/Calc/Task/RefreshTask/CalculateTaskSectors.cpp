@@ -70,7 +70,6 @@ void CalculateTaskSectors(int Idx) {
             } else {
                 switch (TaskPt.AATType) {
                     case sector_type_t::CIRCLE:
-                    case sector_type_t::CONE:
                     case sector_type_t::ESS_CIRCLE:
                         gTaskSectorRenderer.SetCircle(Idx, center, TaskPt.AATCircleRadius);
                         break;

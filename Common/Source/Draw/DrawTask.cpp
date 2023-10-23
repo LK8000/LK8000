@@ -109,18 +109,6 @@ GetTaskSectorParameter( TaskIdx, &SecType, &SecRadius);
                 }
                 Surface.Polygon(track, std::size(track));
             }
-       break;
-        case sector_type_t::CONE:
-            if (gTaskType==TSK_GP) {
-
-                int radius = width-2;
-                Surface.DrawCircle(center_x, center_y, radius, true);
-                const auto prevPen = Surface.SelectObject(LK_BLACK_PEN);
-                for( int i = 1; i < 4 && radius > (width/5); ++i) {
-                    Surface.DrawCircle(center_x, center_y, radius -= width/5, false);
-                }
-                Surface.SelectObject(prevPen);
-            }
             break;
     }
 UnlockTaskData();
