@@ -20,17 +20,19 @@
 class PGTaskMgr final {
 public:
     PGTaskMgr() = default;
+    PGTaskMgr(const PGTaskMgr&) = delete;
+    PGTaskMgr(PGTaskMgr&&) = delete;
 
     void Initialize();
     void Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
-    inline size_t Count() const {
+    size_t Count() const {
       return m_Task.size();
     }
 
     void UpdateTaskPoint(size_t i, TASK_POINT& TskPt) const;
 
-protected:
+private:
     GeoPoint  getOptimized(size_t i) const;
 
     void AddCircle(int TpIndex, double Radius);

@@ -28,16 +28,22 @@ bool ValidNotResWayPoint(int i) { // 091213
 }
 
 // 100929 A waypoint is valid here only if it is virtual, and with a valid content
-bool ValidResWayPoint(int i) { // 091213
-  bool retval = true;
-  LockTaskData();
-  if ( (i<0) || (i>RESWP_END) )
-	retval = false;
-  else {
-	if (WayPointList[i].Latitude == RESWP_INVALIDNUMBER) retval=false;
+bool ValidResWayPointFast(int i) { // 091213
+  if (i < 0) {
+    return false;
   }
-  UnlockTaskData();
-  return retval;
+  if (i>RESWP_END) {
+	  return false;
+  }
+	if (WayPointList[i].Latitude == RESWP_INVALIDNUMBER) {
+    return false;
+  }
+  return true;
+}
+
+bool ValidResWayPoint(int i) { // 091213
+  ScopeLock lock(CritSec_TaskData);
+  return ValidResWayPointFast(i);
 }
 
 bool ValidTaskPoint(int i) {

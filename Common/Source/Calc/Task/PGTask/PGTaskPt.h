@@ -28,21 +28,21 @@ public:
     PGTaskPt(ProjPt&& point) : m_Center(std::forward<ProjPt>(point)) { };
     virtual ~PGTaskPt() {};
 
-    inline const ProjPt& getOptimized() const {
+    const ProjPt& getOptimized() const {
         return IsNull(m_Optimized) ? m_Center : m_Optimized;
     }
 
-    inline const ProjPt& getCenter() const {
+    const ProjPt& getCenter() const {
         return m_Center;
     }
-    
+
     /*
      * @prev : previous optimized Target point
      * @next : next optimized target point
      * @Alt : estimated Arrival Altitude
      */
     virtual void Optimize(const ProjPt& prev, const ProjPt& next) = 0;
-    
+
     virtual void UpdateTaskPoint(size_t idx, TASK_POINT& TskPt ) const {};
 
 protected:

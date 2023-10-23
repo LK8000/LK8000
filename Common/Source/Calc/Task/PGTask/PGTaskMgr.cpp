@@ -54,22 +54,24 @@ void PGTaskMgr::Initialize() {
 
     // build Mercator Reference Grid
     // find center of Task
-    double minlat = WayPointList[Task[0].Index].Latitude;
-    double maxlat = minlat;
-    double minlon = WayPointList[Task[0].Index].Longitude;
-    double maxlon = minlon;
+    GeoPoint min = GetTurnpointPosition(0);
+    GeoPoint max = min;
 
     for (; ValidTaskPointFast(tp_count); ++tp_count) {
-        const auto& tp = WayPointList[Task[tp_count].Index];
+        GeoPoint pos = GetTurnpointPosition(tp_count);
 
-        minlat = std::min(minlat, tp.Latitude);
-        maxlat = std::max(maxlat, tp.Latitude);
+        min.latitude = std::min(min.latitude, pos.latitude);
+        min.longitude = std::min(min.longitude, pos.longitude);
 
-        minlon = std::min(minlon, tp.Longitude);
-        maxlon = std::max(maxlon, tp.Longitude);
+        max.latitude = std::max(max.latitude, pos.latitude);
+        max.longitude = std::max(max.longitude, pos.longitude);
     }
 
-    const GeoPoint center((minlat + maxlat) / 2, (minlon + maxlon) / 2);
+    const GeoPoint center = {
+        (min.latitude + max.latitude) / 2,
+        (min.longitude + max.longitude) / 2
+    };
+
     m_Projection = std::make_unique<TransverseMercator>(center);
 
     // build task point list
@@ -162,9 +164,21 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
     assert(m_Projection);
 
-    ProjPt PrevPos = m_Projection->Forward(GetCurrentPosition(*Basic));
-    
-    for (size_t i = ActiveTaskPoint; i < m_Task.size(); ++i) {
+    GeoPoint prev_position;
+    if (ValidWayPointFast(HomeWaypoint)) {
+        prev_position = GetWaypointPosition(HomeWaypoint);
+    } else if (ValidResWayPointFast(RESWP_TAKEOFF)) {
+        prev_position = GetWaypointPosition(RESWP_TAKEOFF);
+    } else {
+        prev_position = GetTurnpointPosition(0);
+    }
+    ProjPt PrevPos = m_Projection->Forward(prev_position);
+
+    for (size_t i = 0; i < m_Task.size(); ++i) {
+
+        if (i == static_cast<size_t>(ActiveTaskPoint)) {
+            PrevPos = m_Projection->Forward(GetCurrentPosition(*Basic));
+        }
 
         // Optimize
         const auto& CurrPos = m_Task[i]->getCenter();

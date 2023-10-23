@@ -110,8 +110,13 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     Calculated->LegSpeed = Calculated->LegDistanceCovered / (Basic->Time - Calculated->LegStartTime);
   }
 
-  // Now add distances for start to previous waypoint
-  if (!UseAATTarget()) {
+  // Now add distances from start to previous waypoint
+  if (gTaskType == TSK_AAT) {
+    if (ActiveTaskPoint > 0) {
+      // JMW added correction for distance covered
+      Calculated->TaskDistanceCovered = aatdistance.DistanceCovered(cur_pos);
+    }
+  } else {
     if (ValidTaskPoint(0)) {
       GeoPoint p0 = GetTurnpointTarget(0);
       for (int i = 1; i < ActiveTaskPoint && ValidTaskPoint(i); i++) {
@@ -122,9 +127,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
         p0 = p1;
       }
     }
-  } else if (ActiveTaskPoint > 0) {
-    // JMW added correction for distance covered
-    Calculated->TaskDistanceCovered = aatdistance.DistanceCovered(cur_pos);
   }
 
   // If it is not a glider, or if it is a glider and it is freeflying with take off since 5 minutes

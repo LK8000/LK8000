@@ -124,6 +124,7 @@ bool ValidTaskPoint(int i);
 bool ValidWayPoint(int i);
 bool ValidNotResWayPoint(int i);
 bool ValidResWayPoint(int i);
+bool ValidResWayPointFast(int i);
 bool ValidStartPoint(size_t i);
 
 void GetTaskSectorParameter(int TskIdx, sector_type_t* SecType, double* SecRadius);
