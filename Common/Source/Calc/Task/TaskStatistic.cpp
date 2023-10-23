@@ -60,8 +60,7 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     return;
   }
 
-  //  LockFlightData();
-  LockTaskData();
+  ScopeLock lock(CritSec_TaskData);
 
   // Calculate Task Distances
   // First calculate distances for this waypoint
@@ -81,7 +80,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   } else {
     LKASSERT(ValidTaskPoint(ActiveTaskPoint));
     if (!ValidTaskPoint(ActiveTaskPoint)) {
-      UnlockTaskData();
       return;
     }
     w1lat = WayPointList[TASKINDEX].Latitude;
@@ -163,8 +161,9 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   }
 
   // If it is not a glider, or if it is a glider and it is freeflying with take off since 5 minutes
-  if (!(ISGLIDER || ISPARAGLIDER) || (Calculated->FreeFlying && Calculated->FlightTime > (60 * 5)))
+  if (!(ISGLIDER || ISPARAGLIDER) || (Calculated->FreeFlying && Calculated->FlightTime > (60 * 5))) {
     CheckTransitionFinalGlide(Basic, Calculated);
+  }
 
   // accumulators
   double TaskAltitudeRequired = 0;
@@ -390,6 +389,4 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   CheckGlideThroughTerrain(Basic, Calculated);
 
   CheckForceFinalGlide(Basic, Calculated);
-
-  UnlockTaskData();
 }
