@@ -99,7 +99,6 @@ struct DeviceDescriptor_t {
   
   BOOL (*PutQNH)(DeviceDescriptor_t* d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t* d);
-  BOOL (*PutVoice)(DeviceDescriptor_t* d, const TCHAR *Sentence);
   BOOL (*Config)(DeviceDescriptor_t	*d);
   BOOL (*HeartBeat)(DeviceDescriptor_t* d);
   BOOL (*NMEAOut)(DeviceDescriptor_t* d, const char* String);

@@ -372,7 +372,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     PutQNH = nullptr;
     OnSysTicker = nullptr;
-    PutVoice = nullptr;
     Config = nullptr;
     HeartBeat = nullptr;
     NMEAOut = nullptr;
