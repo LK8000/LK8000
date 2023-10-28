@@ -20,10 +20,6 @@ constexpr uint8_t ACK = 0x06; /* acknolage hex code                           */
 constexpr uint8_t NAK = 0x15; /* not acknolage hex code                       */
 //#define RESEND_ON_NAK       /* switch for command retry on transmission fail  */
 
-BOOL KRT2IsRadio(DeviceDescriptor_t* d) {
-  return TRUE;
-}
-
 bool device_found = false; 
 
 BOOL OpenClose(DeviceDescriptor_t* d) {
@@ -533,7 +529,7 @@ void KRT2Install(DeviceDescriptor_t* d){
   d->Open = OpenClose;
   d->Close = OpenClose;
 
-  d->IsRadio        = KRT2IsRadio;
+  d->IsRadio        = true;
   d->PutVolume      = KRT2PutVolume;
   d->PutSquelch     = KRT2PutSquelch;
   d->PutFreqActive  = KRT2PutFreqActive;

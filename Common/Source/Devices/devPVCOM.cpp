@@ -82,15 +82,6 @@ LKASSERT(szStrg != NULL);
   return iCheckSum;
 }
 
-
-
-
-BOOL PVCOMIsRadio(DeviceDescriptor_t* d){
-  (void)d;
-
-  return(TRUE);
-}
-
 BOOL PVCOMRadioMode(DeviceDescriptor_t* d, int mode) {
 	  TCHAR  szTmp[255];
 	  if(mode == 0)
@@ -439,7 +430,7 @@ return  RadioPara.Changed;
 void PVCOMInstall(DeviceDescriptor_t* d){
 
   _tcscpy(d->Name, TEXT("PVCOM"));
-  d->IsRadio = PVCOMIsRadio;
+  d->IsRadio = true;
   d->PutVolume = PVCOMPutVolume;
   d->PutSquelch = PVCOMPutSquelch;
   d->PutFreqActive = PVCOMPutFreqActive;

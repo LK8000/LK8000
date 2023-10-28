@@ -48,7 +48,6 @@ unsigned int uiEOSDebugLevel = 1;
 
 BOOL DevLX_EOS_ERA::m_bShowValues = false;
 BOOL DevLX_EOS_ERA::bIGC_Download = false;
-BOOL DevLX_EOS_ERA::m_bRadioEnabled = true;
 BOOL DevLX_EOS_ERA::m_bTriggered = false;
 
 #define TIMEOUTCHECK
@@ -138,7 +137,6 @@ void DevLX_EOS_ERA::Install(DeviceDescriptor_t* d) {
 
   d->Config       = Config;
 
-  d->IsRadio        = EOSRadioEnabled;
   d->PutVolume      = EOSPutVolume;
   d->PutSquelch     = EOSPutSquelch;
   d->PutFreqActive  = EOSPutFreqActive;
@@ -1346,7 +1344,11 @@ BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
   NMEAParser::ExtractParameter(sentence, szTmp, 1);  // Command?
   if(strncmp(szTmp, "RADIO", 5) == 0)
   {
-    m_bRadioEnabled = true;
+    d->IsRadio = true;
+    if (!RadioPara.Enabled) {
+      RadioPara.Enabled = true;
+    }
+
     NMEAParser::ExtractParameter(sentence, szTmp, 2);  // Active frequency
     RadioPara.ActiveKhz = ExtractFrequency(szTmp);
 
@@ -1454,7 +1456,7 @@ BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
     NMEAParser::ExtractParameter(sentence, szTmp, 2);
     if(strncmp(szTmp, "Radio not enabled", 17) == 0)  
     {
-      m_bRadioEnabled = false;
+      d->IsRadio = false;
     }
     else
     {
@@ -1775,90 +1777,110 @@ BOOL DevLX_EOS_ERA::GetTarget(DeviceDescriptor_t* d, const char* sentence, NMEA_
 
 BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(DeviceDescriptor_t* d)
 {
-  if(!EOSRadioEnabled(d)) return false;
-  Poco::Thread::sleep(50);
-  SendNmea(d, _T("LXDT,GET,RADIO"));
-  return true;
+  if (d && d->IsRadio) {
+    Poco::Thread::sleep(50);
+    SendNmea(d, _T("LXDT,GET,RADIO"));
+    return TRUE;
+  } 
+  return FALSE;
 }
 
 BOOL DevLX_EOS_ERA::EOSPutVolume(DeviceDescriptor_t* d, int Volume) {
-  if(!EOSRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
-  SendNmea(d,szTmp);
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS Volume  %i%s"), Volume,NEWLINE);
-  RadioPara.Volume = Volume;
-  EOSRequestRadioInfo(d);
-  return(TRUE);
+  if (d && d->IsRadio) {
+    TCHAR  szTmp[255];
+    _stprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
+    SendNmea(d,szTmp);
+    if(uiEOSDebugLevel) {
+      StartupStore(_T(". EOS Volume  %i"), Volume);
+    }
+    RadioPara.Volume = Volume;
+    EOSRequestRadioInfo(d);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 
 
 
 BOOL DevLX_EOS_ERA::EOSPutSquelch(DeviceDescriptor_t* d, int Squelch) {
-  if(!EOSRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,RADIO,,,,%i,,"),Squelch)  ;
-  SendNmea(d,szTmp);
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS Squelch  %i%s"), Squelch,NEWLINE);
-  RadioPara.Squelch = Squelch;
-  EOSRequestRadioInfo(d);
-  return(TRUE);
+  if (d && d->IsRadio) {
+    TCHAR  szTmp[255];
+    _stprintf(szTmp,_T("LXDT,SET,RADIO,,,,%i,,"),Squelch)  ;
+    SendNmea(d,szTmp);
+    if(uiEOSDebugLevel) {
+      StartupStore(_T(". EOS Squelch  %i"), Squelch);
+    }
+    RadioPara.Squelch = Squelch;
+    EOSRequestRadioInfo(d);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 
 
 BOOL DevLX_EOS_ERA::EOSPutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
-  if(!EOSRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"), khz / 1000.);
-  SendNmea(d,szTmp);
-  EOSRequestRadioInfo(d);
-  RadioPara.ActiveKhz = khz;
-  if(StationName) {
-    _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
+  if (d && d->IsRadio) {
+    TCHAR  szTmp[255];
+    _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"), khz / 1000.);
+    SendNmea(d,szTmp);
+    EOSRequestRadioInfo(d);
+    RadioPara.ActiveKhz = khz;
+    if(StationName) {
+      _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
+    }
+    if(uiEOSDebugLevel) {
+      StartupStore(_T(". EOS Active Station %7.3fMHz %s"), khz / 1000., StationName);
+    } 
+    return TRUE;
   }
-  if(uiEOSDebugLevel) {
-    StartupStore(_T(". EOS Active Station %7.3fMHz %s"), khz / 1000., StationName);
-  } 
-
-  return(TRUE);
+  return FALSE;
 }
 
 
 BOOL DevLX_EOS_ERA::EOSPutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName) {
-  if(!EOSRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"), khz / 1000.);
-  SendNmea(d,szTmp);
-  EOSRequestRadioInfo(d);
-  RadioPara.PassiveKhz = khz;
-  if(StationName != NULL)
-    _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS Standby Station %7.3fMHz %s%s"), khz / 1000., StationName,NEWLINE);
-
-  return(TRUE);
+  if (d && d->IsRadio) {
+    TCHAR  szTmp[255];
+    _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"), khz / 1000.);
+    SendNmea(d,szTmp);
+    EOSRequestRadioInfo(d);
+    RadioPara.PassiveKhz = khz;
+    if(StationName) {
+      _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
+    }
+    if(uiEOSDebugLevel) {
+      StartupStore(_T(". EOS Standby Station %7.3fMHz %s"), khz / 1000., StationName);
+    }
+    return TRUE;
+  }
+  return FALSE;
 }
 
 
 BOOL DevLX_EOS_ERA::EOSStationSwap(DeviceDescriptor_t* d) {
-   if(!EOSRadioEnabled(d)) return false;
-  SendNmea(d,_T("LXDT,SET,R_SWITCH"));
-
-  EOSRequestRadioInfo(d);
-
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS  station swap %s"), NEWLINE);
-
-  return(TRUE);
+  if (d && d->IsRadio) {
+    SendNmea(d,_T("LXDT,SET,R_SWITCH"));
+    EOSRequestRadioInfo(d);
+    if(uiEOSDebugLevel) {
+      StartupStore(_T(". EOS  station swap"));
+    }
+    return TRUE;
+  }
+  return FALSE;
 }
 
 
 BOOL DevLX_EOS_ERA::EOSRadioMode(DeviceDescriptor_t* d, int mode) {
-  if(!EOSRadioEnabled(d)) return false;
-  TCHAR  szTmp[255];
-  _stprintf(szTmp,_T("LXDT,SET,R_DUAL,%i"),mode);
-  SendNmea(d, szTmp);
-  EOSRequestRadioInfo(d);
-  if(uiEOSDebugLevel) StartupStore(_T(". EOS  Dual Mode: %i %s"), mode, NEWLINE);
-  return(TRUE);
+  if (d && d->IsRadio) {
+    TCHAR  szTmp[255];
+    _stprintf(szTmp,_T("LXDT,SET,R_DUAL,%i"),mode);
+    SendNmea(d, szTmp);
+    EOSRequestRadioInfo(d);
+    if(uiEOSDebugLevel) {
+      StartupStore(_T(". EOS  Dual Mode: %i"), mode);
+    }
+    return TRUE;
+  }
+  return FALSE;
 }

@@ -45,10 +45,6 @@ IntConvertStruct sStatus;
 volatile BOOL bSending = false;
 
 
-BOOL AR620xIsRadio(DeviceDescriptor_t* d) {
-  return TRUE;
-}
-
 int SendCommand(DeviceDescriptor_t* d, uint8_t szTmp[], uint16_t len) {
 
   bSending = true;
@@ -474,7 +470,7 @@ BOOL AR620xParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *
 
 void AR620xInstall(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("Dittel AR620x"));
-  d->IsRadio        = AR620xIsRadio;
+  d->IsRadio        = true;
   d->PutVolume      = AR620xPutVolume;
   d->PutSquelch     = AR620xPutSquelch;
   d->PutFreqActive  = AR620xPutFreqActive;

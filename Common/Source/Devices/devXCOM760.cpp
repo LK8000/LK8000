@@ -12,13 +12,6 @@
 #include "devXCOM760.h"
 
 
-
-static BOOL XCOM760IsRadio(DeviceDescriptor_t* d){
-  (void)d;
-  return(TRUE);
-}
-
-
 static BOOL XCOM760PutVolume(DeviceDescriptor_t* d, int Volume) {
   TCHAR  szTmp[32];
   _stprintf(szTmp, TEXT("$RVOL=%d\r\n"), Volume);
@@ -47,7 +40,6 @@ static BOOL XCOM760PutFreqStandby(DeviceDescriptor_t* d, unsigned Freq,  const T
 
 void XCOM760Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, TEXT("XCOM760"));
-  d->IsRadio = XCOM760IsRadio;
   d->PutVolume = XCOM760PutVolume;
   d->PutFreqActive = XCOM760PutFreqActive;
   d->PutFreqStandby = XCOM760PutFreqStandby;

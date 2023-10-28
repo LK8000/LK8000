@@ -134,10 +134,8 @@ class DevLX_EOS_ERA : public DevLXNanoIII
 
    static BOOL bIGC_Download ;
    static BOOL m_bShowValues;
-   static BOOL m_bRadioEnabled;
    static BOOL m_bTriggered;
 
-   static BOOL EOSRadioEnabled(DeviceDescriptor_t* d) { return m_bRadioEnabled;};
    static BOOL EOSPutMacCready(DeviceDescriptor_t* d, double MacCready);
    static BOOL EOSPutBallast(DeviceDescriptor_t* d, double Ballast);
    static BOOL EOSPutBugs(DeviceDescriptor_t* d, double Bugs);

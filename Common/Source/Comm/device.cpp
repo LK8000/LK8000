@@ -370,7 +370,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     LinkTimeout = nullptr;
     Declare = nullptr;
 
-    IsRadio = nullptr;
     PutQNH = nullptr;
     OnSysTicker = nullptr;
     PutVoice = nullptr;
@@ -381,6 +380,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
     Disabled = true;
 
     IsBaroSource = false;
+    IsRadio = false;
 
     Status = CPS_UNUSED; // 100210
     HB = 0; // counter
@@ -974,10 +974,7 @@ BOOL devIsBaroSource(const DeviceDescriptor_t& d) {
  * used only in devInit() : already under LockComm ...
  */
 BOOL devIsRadio(DeviceDescriptor_t* d) {
-  if (d && d->IsRadio) {
-    return d->IsRadio(d);
-  }
-  return false;
+  return d && d->IsRadio;
 }
 
 

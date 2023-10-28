@@ -97,7 +97,6 @@ struct DeviceDescriptor_t {
   BOOL (*LinkTimeout)(DeviceDescriptor_t* d);
   BOOL (*Declare)(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
   
-  BOOL (*IsRadio)(DeviceDescriptor_t* d);
   BOOL (*PutQNH)(DeviceDescriptor_t* d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t* d);
   BOOL (*PutVoice)(DeviceDescriptor_t* d, const TCHAR *Sentence);
@@ -112,6 +111,7 @@ struct DeviceDescriptor_t {
   BOOL (*SendData)(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
   bool IsBaroSource;
+  bool IsRadio;
 
   bool m_bAdvancedMode;
   int iSharedPort;

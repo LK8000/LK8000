@@ -44,13 +44,6 @@ int  iATR833DebugLevel = 1;
 #endif
 
 
-BOOL ATR833IsRadio(DeviceDescriptor_t* d){
-  (void)d;
-  return(TRUE);
-}
-
-
-
 bool Send_Command(DeviceDescriptor_t* d, uint8_t Command, uint8_t Length, uint8_t *uiArg)
 {
 uint8_t szTmp[128] ;
@@ -530,7 +523,7 @@ int ATR833_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len)
 
 void ATR833Install(DeviceDescriptor_t* d){
   _tcscpy(d->Name, TEXT("f.u.n.k.e. ATR833"));
-  d->IsRadio        = ATR833IsRadio;
+  d->IsRadio        = true;
   d->PutVolume      = ATR833PutVolume;
   d->PutSquelch     = ATR833PutSquelch;
   d->PutFreqActive  = ATR833PutFreqActive;
