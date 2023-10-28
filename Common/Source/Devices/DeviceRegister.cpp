@@ -60,6 +60,7 @@
 #include "devRCFenix.h"
 #include "devXCVario.h"
 #include "devGenericAutopilot.h"
+#include "devAirControlDisplay.h"
 
 namespace {
 
@@ -115,6 +116,7 @@ DeviceRegister_t device_list[] = {
     Fanet::Register(),
     XCVario::Register(),
     GenericAutopilot::Register(),
+    AirControlDisplay::Register(),
 };
 
 
