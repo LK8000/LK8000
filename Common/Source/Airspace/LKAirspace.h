@@ -38,50 +38,68 @@ class MD5;
 // Will be permanent in the future.
 #define LKAIRSP_INFOBOX_USE_SELECTED
 
+enum AirspaceAltBase_t {
+  abUndef = 0,
+  abMSL,
+  abAGL,
+  abFL
+};
 
-typedef enum {abUndef=0, abMSL, abAGL, abFL} AirspaceAltBase_t;
-
-typedef struct _AIRSPACE_ALT
-{
+struct AIRSPACE_ALT {
   double Altitude;
   double FL;
   double AGL;
   AirspaceAltBase_t Base;
-} AIRSPACE_ALT;
+};
 
 #ifdef HAVE_GLES
-typedef std::vector<FloatPoint> ScreenPointList;
+using ScreenPointList = std::vector<FloatPoint>;
 #else
-typedef std::vector<RasterPoint> ScreenPointList;
+using ScreenPointList = std::vector<RasterPoint>;
 #endif
-typedef std::vector<RasterPoint> RasterPointList;
+using RasterPointList = std::vector<RasterPoint>;
 
 
 //Airspace warning and ack levels
-typedef enum {awNone=0, awYellow, awRed} AirspaceWarningLevel_t;
+enum AirspaceWarningLevel_t {
+  awNone=0,
+  awYellow,
+  awRed
+};
 //Airspace warning events
-typedef enum { aweNone,
-                //for FLY zones
-                aweMovingInsideFly,
-                awePredictedLeavingFly,
-                aweLeavingFly,
-                awePredictedEnteringFly,
-                aweEnteringFly,
-                aweMovingOutsideFly,
-                aweNearOutsideFly,
+enum  AirspaceWarningEvent { 
+  aweNone,
+  //for FLY zones
+  aweMovingInsideFly,
+  awePredictedLeavingFly,
+  aweLeavingFly,
+  awePredictedEnteringFly,
+  aweEnteringFly,
+  aweMovingOutsideFly,
+  aweNearOutsideFly,
 
-                //for NON-FLY zones
-                aweMovingOutsideNonfly,
-                awePredictedEnteringNonfly,
-                aweEnteringNonfly,
-                aweMovingInsideNonfly,
-                aweLeavingNonFly,
-                aweNearInsideNonfly
-} AirspaceWarningEvent;
+  //for NON-FLY zones
+  aweMovingOutsideNonfly,
+  awePredictedEnteringNonfly,
+  aweEnteringNonfly,
+  aweMovingInsideNonfly,
+  aweLeavingNonFly,
+  aweNearInsideNonfly
+};
 //Airspace drawstyles
-typedef enum {adsHidden, adsOutline, adsFilled ,adsDisabled} AirspaceDrawStyle_t;
+enum AirspaceDrawStyle_t {
+  adsHidden,
+  adsOutline,
+  adsFilled,
+  adsDisabled
+};
 //Airspace warning drawstyles
-typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t;
+enum AirspaceWarningDrawStyle_t {
+  awsHidden,
+  awsBlack,
+  awsAmber,
+  awsRed
+};
 
 //
 // AIRSPACE BASE CLASS
@@ -89,33 +107,7 @@ typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t
 class CAirspaceBase
 {
 public:
-  CAirspaceBase() :
-            _name(),
-            _type( 0 ),
-            _base(),
-            _top(),
-            _bounds(),
-            _flyzone(false),
-            _drawstyle(adsHidden),
-            _warninglevel(awNone),
-            _warninglevelold(awNone),
-            _warningacklevel(awNone),
-            _pos_inside_last(false),
-            _pos_inside_now(false),
-            _warnevent(aweNone),
-            _warneventold(aweNone),
-            _warnacktimeout(0),
-            _distances_ready(false),
-            _vdistance(0),
-            _hdistance(0),
-            _3ddistance(0),
-            _bearing(0),
-            _labelpriority(0),
-            _vwarninglabel_hide(false),
-            _hwarninglabel_hide(false),
-            _enabled(true),
-            _selected(false)
-            {}
+  CAirspaceBase() = default;
   virtual ~CAirspaceBase() {}
 
 
@@ -129,7 +121,7 @@ public:
   // Set ack validity timeout according to config prameter
   void SetAckTimeout();
   // check if airspace was already acknolaged
-  bool Acknowledged(void) const;
+  bool Acknowledged() const;
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
   bool GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const;
   // get warning point coordinates, returns true if airspace has valid distances calculated
@@ -141,9 +133,9 @@ public:
   // Initialize instance attributes
   void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment = NULL);
 
-  const TCHAR* TypeName(void) const;
-  const LKColor& TypeColor(void) const;
-  const LKBrush& TypeBrush(void) const;
+  const TCHAR* TypeName() const;
+  const LKColor& TypeColor() const;
+  const LKBrush& TypeBrush() const;
 
   const TCHAR* Name() const { return _name; }
   const TCHAR* Comment() const { return _shared_comment.get(); }
@@ -210,38 +202,39 @@ public:
 #endif
 
 protected:
-  TCHAR _name[NAME_SIZE + 1];                    // Name
+  TCHAR _name[NAME_SIZE + 1] = {};                    // Name
 
-  std::shared_ptr <TCHAR> _shared_comment ;       // extended airspace informations e.g. for Notams
+  std::shared_ptr<TCHAR> _shared_comment ;       // extended airspace informations e.g. for Notams
 
-  int _type;                                    // type (class) of airspace
-  AIRSPACE_ALT _base;                            // base altitude
-  AIRSPACE_ALT _top;                            // top altitude
-  rectObj _bounds;                                // airspace bounds
-  bool _flyzone;                                // true if this is a normally fly zone (leaving generates warning)
-  AirspaceDrawStyle_t _drawstyle;                // draw mode
+  int _type = 0;                                    // type (class) of airspace
+  AIRSPACE_ALT _base = {};                            // base altitude
+  AIRSPACE_ALT _top = {};                            // top altitude
+  rectObj _bounds = {};                                // airspace bounds
+  bool _flyzone = false;                                // true if this is a normally fly zone (leaving generates warning)
+  AirspaceDrawStyle_t _drawstyle = adsHidden;                // draw mode
 
   // Warning system data
   int _warn_repeat_time;                          // time when repeat warning message if not acked
-  AirspaceWarningLevel_t _warninglevel;            // actual warning level
-  AirspaceWarningLevel_t _warninglevelold;        // warning level in last cycle
-  AirspaceWarningLevel_t _warningacklevel;        // actual ack level
-  bool _pos_inside_last;                        // last horizontal inside saved for calculations
-  bool _pos_inside_now;                            // inside now  saved for calculations
-  AirspaceWarningEvent _warnevent;                // calculated warning event
-  AirspaceWarningEvent _warneventold;            // last calculated warning event
-  int _warnacktimeout;                            // ack expiring time
+  int _warn_ack_timeout;                          // ack expiring time
+
+  AirspaceWarningLevel_t _warninglevel = awNone;            // actual warning level
+  AirspaceWarningLevel_t _warninglevelold = awNone;        // warning level in last cycle
+  AirspaceWarningLevel_t _warningacklevel = awNone;        // actual ack level
+  bool _pos_inside_last = false;                        // last horizontal inside saved for calculations
+  bool _pos_inside_now = false;                            // inside now  saved for calculations
+  AirspaceWarningEvent _warnevent = aweNone;                // calculated warning event
+  AirspaceWarningEvent _warneventold = aweNone;            // last calculated warning event
   // Values used by different dialog boxes, like dlgLKAirspace, dlgAirspace, and warning system also
-  bool _distances_ready;        // Distances calculated on this airspace
-  int _vdistance;                // vertical distance to actual position
-  int _hdistance;                // horizontal distance to actual position
-  int _3ddistance;               // 3d distance to actual position
-  int _bearing;                    // bearing from actual position
-  short int _labelpriority;            // warning label drawing priority to sequence labels on map
-  bool _vwarninglabel_hide;     // Hide vertical warning label
-  bool _hwarninglabel_hide;     // Hide horizontal warning label
-  bool _enabled;                // Airspace enabled for operations
-  bool _selected;               // Airspace selected (for distance calc infoboxes)
+  bool _distances_ready = false;        // Distances calculated on this airspace
+  int _vdistance = 0;                // vertical distance to actual position
+  int _hdistance = 0;                // horizontal distance to actual position
+  int _3ddistance = 0;               // 3d distance to actual position
+  int _bearing = 0;                    // bearing from actual position
+  short int _labelpriority = 0;            // warning label drawing priority to sequence labels on map
+  bool _vwarninglabel_hide = false;     // Hide vertical warning label
+  bool _hwarninglabel_hide = false;     // Hide horizontal warning label
+  bool _enabled = true;                // Airspace enabled for operations
+  bool _selected = false;               // Airspace selected (for distance calc infoboxes)
 
   bool _except_saturday = false; // airspace disabled saturday
   bool _except_sunday = false; // airspace disabled sunday
@@ -336,8 +329,7 @@ protected:
     static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
 
-typedef struct
-{
+struct AirSpaceSideViewSTRUCT {
   RECT rc;
   POINT apPolygon[GC_MAX_POLYGON_PTS];
   int iNoPolyPts;
@@ -351,17 +343,16 @@ typedef struct
   BOOL bEnabled;
   TCHAR szAS_Name[NAME_SIZE + 1];
   CAirspace *psAS;
-} AirSpaceSideViewSTRUCT;
+};
 
 #define VERTICAL    false
 #define HORIZONZTAL true
-typedef struct
-{
+struct AirSpaceSonarLevelStruct {
   int iDistantrance;      /* distance to airspace      */
   int iSoundDelay;        /* delaytime  for repetition */
   bool bV_H_switch;       /* vert / horiz switch       */
   TCHAR szSoundFilename[80];
-} AirSpaceSonarLevelStruct;
+};
 
 
 
@@ -371,7 +362,7 @@ typedef struct
 //
 class CAirspace_Area: public CAirspace {
 public:
-  CAirspace_Area(CPoint2DArray &&Area_Points);
+  explicit CAirspace_Area(CPoint2DArray &&Area_Points);
   ~CAirspace_Area() {};
 
   // Check if a point horizontally inside in this airspace
@@ -436,17 +427,16 @@ protected:
 //
 // AIRSPACE MANAGER HELPERS
 //
-typedef std::deque<CAirspace*> CAirspaceList;
+using CAirspaceList = std::deque<CAirspace*>;
 
 //Warning system generated message
-typedef struct _AirspaceWarningMessage
-{
+struct AirspaceWarningMessage {
   CAirspace *originator;                // airspace instance
   AirspaceWarningEvent event;            // message cause
   AirspaceWarningLevel_t warnlevel;        // warning level
-} AirspaceWarningMessage;
+};
 // Warning message queue
-typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
+using AirspaceWarningMessageList = std::deque<AirspaceWarningMessage>;
 
 namespace rapidxml { 
   // Forward declarations
@@ -486,8 +476,8 @@ public:
 
   CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;
-  void SortAirspaces(void);
-  bool ValidAirspaces(void) const;
+  void SortAirspaces();
+  bool ValidAirspaces() const;
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const;
@@ -526,9 +516,6 @@ public:
   //Sideview
   CAirspace* GetNearestAirspaceForSideview() { return _sideview_nearest; }     // Get nearest instace for sideview drawing (use instance ptr as key only to asp manager (mutex!))
 
-  //Attributes
-  unsigned int NumberofAirspaces() { ScopeLock guard(_csairspaces); return _airspaces.size(); }
-
   //Locking
   Mutex& MutexRef() const { return _csairspaces; }
 
@@ -553,8 +540,8 @@ private:
   CAirspaceList _airspaces;             // ALL
   CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page
-  CAirspace *_selected_airspace;         // Selected airspace
-  CAirspace *_sideview_nearest;         // Neasrest asp instance for sideview
+  CAirspace *_selected_airspace = nullptr;         // Selected airspace
+  CAirspace *_sideview_nearest = nullptr;         // Neasrest asp instance for sideview
 
   unsigned last_day_of_week = ~0; // used for auto disable airspace SAT/SUN
 
@@ -564,7 +551,7 @@ private:
   CAirspaceList _airspaces_of_interest;
 
   // Airspaces detail system data
-  CAirspace * _detail_current;
+  CAirspace * _detail_current = nullptr;
   CAirspaceList _detail_queue;
 
   //Openair parsing functions, internal use
@@ -594,14 +581,14 @@ private:
 
 
 //dlgAirspaceWarning
-int dlgAirspaceWarningInit(void);
-int dlgAirspaceWarningDeInit(void);
+int dlgAirspaceWarningInit();
+int dlgAirspaceWarningDeInit();
 
 short ShowAirspaceWarningsToUser();
 
 
 //Data struct for nearest airspace pages
-typedef struct {
+struct LKAirspace_Nearest_Item {
   bool Valid;                               // Struct item is valid
   TCHAR Name[NAME_SIZE+1];                  // 1)  Name of airspace . We shall use only 15 to 25 characters max in any case
   TCHAR Type[5];                            // 2)  Type of airspace    like CTR   A B C etc.    we use 3-4 chars
@@ -614,7 +601,7 @@ typedef struct {
   AirspaceWarningLevel_t WarningAckLevel;   // 9)  Actual ack level fro this airspace
 
   CAirspace *Pointer;                       // 10) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
-} LKAirspace_Nearest_Item;
+};
 
 
 #endif

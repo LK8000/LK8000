@@ -610,7 +610,7 @@ bool CAirspace::FinishWarning() {
     }
 
     //ACK Step back, if ack time ellapsed and warningstate below ack state
-    if ((_warningacklevel > _warninglevel) && (_now > _warnacktimeout)) _warningacklevel = _warninglevel;
+    if ((_warningacklevel > _warninglevel) && (_now > _warn_ack_timeout)) _warningacklevel = _warninglevel;
 
     _warninglevelold = _warninglevel;
 
@@ -620,7 +620,7 @@ bool CAirspace::FinishWarning() {
 // Set ack timeout to configured value
 
 void CAirspaceBase::SetAckTimeout() {
-    _warnacktimeout = _now + AcknowledgementTime;
+    _warn_ack_timeout = _now + AcknowledgementTime;
 }
 
 bool  CAirspaceBase::Acknowledged(void) const {
