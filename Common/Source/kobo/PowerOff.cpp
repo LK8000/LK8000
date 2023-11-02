@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
 
   /* now we can power off the Kobo; the picture remains on the
      screen */
-  if (DetectKoboModel() == KoboModel::GLOHD)
+  if (DetectKoboModel() == KoboModel::GLO_HD)
     //The GloHD needs -f to not clear screen
     execl("/sbin/poweroff", "poweroff", "-f", nullptr);
   else

@@ -55,13 +55,20 @@ static constexpr struct {
   const char *id;
   KoboModel model;
 } kobo_model_ids[] = {
+  { "SN-N514", KoboModel::AURA },
+  { "SN-N236", KoboModel::AURA2 },
   { "SN-N705", KoboModel::MINI },
   { "SN-N905", KoboModel::TOUCH },
+  { "SN-N587", KoboModel::TOUCH2 },
   { "SN-613A4", KoboModel::GLO },
-  { "SN-N437", KoboModel::GLOHD },
-  { "SN-N5875", KoboModel::TOUCH2 },
-  { "SN-N514", KoboModel::AURA },
-  { "SN-N2498", KoboModel::CLARAHD }
+  { "SN-R13A5", KoboModel::GLO },
+  { "SN-N437", KoboModel::GLO_HD },
+  { "SN-RN437", KoboModel::GLO_HD },
+  { "SN-N249", KoboModel::CLARA_HD },
+  { "SN-N506", KoboModel::CLARA_2E },
+  { "SN-N306", KoboModel::NIA },
+  { "SN-N418", KoboModel::LIBRA2 },
+  { "SN-N873", KoboModel::LIBRA_H2O },
 };
 
 static KoboModel
@@ -84,4 +91,18 @@ DetectKoboModel()
   	  StartupStore(_T(".. Detected Kobo Model <%s>%s"),buffer,,NEWLINE);
 #endif
   return DetectKoboModel(buffer);
+}
+
+const char *
+GetKoboWifiInterface()
+{
+  switch (DetectKoboModel())
+  {
+    case KoboModel::LIBRA2:
+      return "wlan0";
+    case KoboModel::CLARA_2E:
+      return "mlan0";
+    default:
+      return "eth0";
+  }
 }

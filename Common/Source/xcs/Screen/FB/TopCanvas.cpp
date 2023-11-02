@@ -206,9 +206,9 @@ TopCanvas::Create(PixelSize new_size,
       case KoboModel::GLO:
         frame_sync = false;
         break;
-      case KoboModel::GLOHD:
+      case KoboModel::GLO_HD:
       case KoboModel::TOUCH2:
-      case KoboModel::CLARAHD:
+      case KoboModel::CLARA_HD:
       case KoboModel::AURA2:
 
         frame_sync = true;
