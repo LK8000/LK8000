@@ -30,16 +30,24 @@ enum class KoboModel {
   UNKNOWN,
   MINI,
   TOUCH,
-  GLO,
-  GLOHD,
   TOUCH2,
   AURA,
   AURA2,
-  CLARAHD,
+  GLO,
+  GLO_HD,
+  CLARA_HD,
+  CLARA_2E,
+  NIA,
+  LIBRA2,
+  LIBRA_H2O,
 };
 
 gcc_const
 KoboModel
 DetectKoboModel();
+
+gcc_const
+const char *
+GetKoboWifiInterface();
 
 #endif

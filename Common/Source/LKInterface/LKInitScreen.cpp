@@ -355,8 +355,8 @@ int GetScreenDensity(void) {
 
 #ifdef KOBO
     switch (DetectKoboModel()) {
-        case KoboModel::GLOHD:
-        case KoboModel::CLARAHD:
+        case KoboModel::GLO_HD:
+        case KoboModel::CLARA_HD:
             return 300;
         case KoboModel::TOUCH2:
             return 167;
@@ -415,7 +415,7 @@ unsigned int TerrainQuantization(void) {
   KoboModel model = DetectKoboModel();
   switch(model) {
      case KoboModel::GLO:
-     case KoboModel::GLOHD:
+     case KoboModel::GLO_HD:
         dtquant = 4;
         break;
      case KoboModel::MINI:

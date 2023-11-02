@@ -35,6 +35,7 @@ Copyright_License {
 #include <cstdlib>
 #include <sys/mount.h>
 #include <errno.h>
+#include "Model.hpp"
 
 template<typename... Args>
 static bool
@@ -117,12 +118,55 @@ bool
 KoboExportUSBStorage()
 {
 #ifdef KOBO
+  bool result = false;
+
   RmMod("g_ether");
   RmMod("g_file_storage");
 
-  InsMod("/drivers/current/usb/gadget/arcotg_udc.ko");
-  return InsMod("/drivers/current/usb/gadget/g_file_storage.ko",
-                "file=/dev/mmcblk0p3", "stall=0");
+  switch (DetectKoboModel())
+  {
+  case KoboModel::UNKNOWN: // Let unknown try the old device
+  case KoboModel::MINI:
+  case KoboModel::TOUCH:
+  case KoboModel::AURA:
+  case KoboModel::GLO: // TODO: is this correct?
+    InsMod("/drivers/ntx508/usb/gadget/arcotg_udc.ko");
+    result = InsMod("/drivers/ntx508/usb/gadget/g_file_storage.ko",
+                    "file=/dev/mmcblk0p3", "stall=0", "removable=1",
+                    "product_id=Kobo");
+    break;
+
+  case KoboModel::TOUCH2:
+  case KoboModel::GLO_HD:
+  case KoboModel::AURA2:
+    InsMod("/drivers/mx6sl-ntx/usb/gadget/arcotg_udc.ko");
+    result = InsMod("/drivers/mx6sl-ntx/usb/gadget/g_file_storage.ko",
+                    "file=/dev/mmcblk0p3", "stall=0", "removable=1",
+                    "product_id=Kobo");
+    break;
+
+  case KoboModel::CLARA_HD:
+  case KoboModel::CLARA_2E:
+  case KoboModel::LIBRA2:
+  case KoboModel::LIBRA_H2O:
+    InsMod("/drivers/mx6sll-ntx/usb/gadget/configfs.ko");
+    InsMod("/drivers/mx6sll-ntx/usb/gadget/libcomposite.ko");
+    InsMod("/drivers/mx6sll-ntx/usb/gadget/usb_f_mass_storage.ko");
+    result = InsMod("/drivers/mx6sll-ntx/usb/gadget/g_file_storage.ko",
+                    "file=/dev/mmcblk0p3", "stall=0", "removable=1",
+                    "product_id=Kobo");
+    break;
+
+  case KoboModel::NIA:
+    InsMod("/drivers/mx6ull-ntx/usb/gadget/configfs.ko");
+    InsMod("/drivers/mx6ull-ntx/usb/gadget/libcomposite.ko");
+    InsMod("/drivers/mx6ull-ntx/usb/gadget/usb_f_mass_storage.ko");
+    result = InsMod("/drivers/mx6ull-ntx/usb/gadget/g_file_storage.ko",
+                    "file=/dev/mmcblk0p3", "stall=0", "removable=1",
+                    "product_id=Kobo");
+    break;
+  }
+  return result;
 #else
   return true;
 #endif
@@ -132,9 +176,21 @@ void
 KoboUnexportUSBStorage()
 {
 #ifdef KOBO
-  RmMod("g_ether");
-  RmMod("g_file_storage");
-  RmMod("arcotg_udc");
+  KoboModel kobo_model = DetectKoboModel();
+  if(kobo_model == KoboModel::CLARA_HD || kobo_model == KoboModel::CLARA_2E
+      || kobo_model == KoboModel::LIBRA2 || kobo_model == KoboModel::LIBRA_H2O)
+  {
+    RmMod("g_file_storage");
+    RmMod("usb_f_mass_storage");
+    RmMod("libcomposite");
+    RmMod("configfs");
+  }
+  else
+  {
+    RmMod("g_ether");
+    RmMod("g_file_storage");
+    RmMod("arcotg_udc");
+  }
 #endif
 }
 
@@ -142,15 +198,9 @@ bool
 IsKoboWifiOn()
 {
 #ifdef KOBO
-  const char* szInterface = std::getenv("INTERFACE");
-  if(!szInterface) {
-    szInterface = "eth0";
-  }
-  
-  char szPath[250];
-  sprintf(szPath, "/sys/class/net/%s", szInterface);
-  
-  return Directory::Exists(szPath);
+  char path[64];
+  sprintf(path, "/sys/class/net/%s", GetKoboWifiInterface());
+  return Directory::Exists(path);
 #else
   return false;
 #endif
@@ -160,32 +210,69 @@ bool
 KoboWifiOn()
 {
 #ifdef KOBO
-  InsMod("/drivers/current/wifi/sdio_wifi_pwr.ko");
 
-  const char * szModule = std::getenv("WIFI_MODULE_PATH");
-  if(!szModule) {
-    szModule = "/drivers/current/wifi/dhd.ko";
+  switch (DetectKoboModel())
+  {
+  case KoboModel::UNKNOWN: // Let unknown try the old device
+  case KoboModel::MINI:
+  case KoboModel::TOUCH:
+  case KoboModel::AURA:
+  case KoboModel::GLO: // TODO: is this correct?
+    InsMod("/drivers/ntx508/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/ntx508/wifi/dhd.ko");
+    break;
+
+  case KoboModel::TOUCH2:
+  case KoboModel::GLO_HD:
+    InsMod("/drivers/mx6sl-ntx/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/mx6sl-ntx/wifi/dhd.ko");
+    break;
+
+  case KoboModel::AURA2:
+    InsMod("/drivers/mx6sl-ntx/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/mx6sl-ntx/wifi/8189fs.ko");
+    break;
+
+  case KoboModel::CLARA_HD:
+  case KoboModel::LIBRA_H2O:
+    InsMod("/drivers/mx6sll-ntx/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/mx6sll-ntx/wifi/8189fs.ko");
+    break;
+
+  case KoboModel::NIA:
+    InsMod("/drivers/mx6ull-ntx/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/mx6ull-ntx/wifi/8189fs.ko");
+    break;
+
+  case KoboModel::LIBRA2:
+    InsMod("/drivers/mx6sll-ntx/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/mx6sll-ntx/wifi/8723ds.ko");
+    break;
+
+  case KoboModel::CLARA_2E:
+    InsMod("/drivers/mx6sll-ntx/wifi/sdio_wifi_pwr.ko");
+    InsMod("/drivers/mx6sll-ntx/wifi/mlan.ko");
+    InsMod("/drivers/mx6sll-ntx/wifi/moal.ko", "mod_para=nxp/wifi_mod_para_sd8987.conf");
+    break;
   }
-  InsMod(szModule);
 
   Sleep(2000);
-  
-  const char* szInterface = std::getenv("INTERFACE");
-  if(!szInterface) {
-    szInterface = "eth0";
-  }
 
+  const char *interface = GetKoboWifiInterface();
+  const char *driver = (DetectKoboModel() == KoboModel::LIBRA2
+    || DetectKoboModel() == KoboModel::CLARA_2E) ? "nl80211" : "wext";
 
-  Run("/sbin/ifconfig", szInterface, "up");
-  Run("/sbin/iwconfig", szInterface, "power", "off");
-  Run("/bin/wlarm_le", "-i", szInterface, "up");
-  Run("/bin/wpa_supplicant","-D","wext","-i", szInterface,
+  Run("/sbin/ifconfig", interface, "up");
+  Run("/sbin/iwconfig", interface, "power", "off");
+  if (DetectKoboModel() != KoboModel::CLARA_2E)
+    Run("/bin/wlarm_le", "-i", interface, "up");
+  Run("/bin/wpa_supplicant", "-i", interface,
       "-c", "/etc/wpa_supplicant/wpa_supplicant.conf",
-      "-C", "/var/run/wpa_supplicant", "-B");
+      "-C", "/var/run/wpa_supplicant", "-B", "-D", driver);
 
   Sleep(2000);
 
-  Start("/sbin/udhcpc", "-S", "-i", szInterface,
+  Start("/sbin/udhcpc", "-S", "-i", interface,
         "-s", "/etc/udhcpc.d/default.script",
         "-t15", "-T10", "-A3", "-f", "-q");
 
@@ -199,20 +286,14 @@ bool
 KoboWifiOff()
 {
 #ifdef KOBO
-  const char* szInterface = std::getenv("INTERFACE");
-  if(!szInterface) {
-    szInterface = "eth0";
-  }
-    
+  const char *interface =  GetKoboWifiInterface();
   Run("/usr/bin/killall", "wpa_supplicant", "udhcpc");
-  Run("/bin/wlarm_le", "-i", szInterface, "down");
-  Run("/sbin/ifconfig", szInterface, "down");
-  
-  const char * szModule = std::getenv("WIFI_MODULE");
-  if(!szModule) {
-      szModule = "dhd";
-  } 
-  RmMod(szModule);
+  if (DetectKoboModel() != KoboModel::CLARA_2E)
+    Run("/bin/wlarm_le", "-i", interface, "down");
+  Run("/sbin/ifconfig", interface, "down");
+
+  RmMod("dhd");
+  RmMod("8189fs");
   RmMod("sdio_wifi_pwr");
 
   return true;
