@@ -54,6 +54,12 @@ KoboWifiOn();
 bool
 KoboWifiOff();
 
+bool
+KoboBleOn();
+
+bool
+KoboBleOff();
+
 void
 KoboExecNickel();
 

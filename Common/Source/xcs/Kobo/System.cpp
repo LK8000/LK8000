@@ -302,6 +302,44 @@ KoboWifiOff()
 #endif
 }
 
+bool
+KoboBleOn()
+{
+#ifdef KOBO
+switch (DetectKoboModel())
+  {
+  case KoboModel::UNKNOWN: // Let unknown try the old device
+  case KoboModel::MINI:
+  case KoboModel::TOUCH:
+  case KoboModel::AURA:
+  case KoboModel::GLO:
+  case KoboModel::TOUCH2:
+  case KoboModel::GLO_HD:
+  case KoboModel::AURA2:
+  case KoboModel::CLARA_HD:
+  break;
+  case KoboModel::LIBRA_H2O:
+  case KoboModel::NIA:
+  case KoboModel::LIBRA2:
+  case KoboModel::CLARA_2E:
+    InsMod("/drivers/mx6sll-ntx/wifi/sdio_bt_pwr.ko");
+    break;
+  }
+  return true;  
+#else
+  return false;
+#endif
+}
+
+bool
+KoboBleOff()
+{
+#ifdef KOBO
+  return true;
+#else
+  return false;
+#endif
+}
 void
 KoboExecNickel()
 {
