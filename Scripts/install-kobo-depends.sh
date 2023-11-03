@@ -29,7 +29,7 @@ BUILD_FLAGS="-O3 -march=armv7-a -mfpu=neon -ftree-vectorize -mvectorize-with-neo
 
 
 # install zlib ( 1.2.13 - 2022-10-13 )
-[ ! -f zlib-1.2.13.tar.gz ] && wget https://zlib.net/zlib-1.2.13.tar.gz
+[ ! -f zlib-1.2.13.tar.gz ] && wget https://zlib.net/fossils/zlib-1.2.13.tar.gz
 [ -d zlib-1.2.13 ] && rm -rf zlib-1.2.13
 tar -xvzf zlib-1.2.13.tar.gz
 cd zlib-1.2.13
