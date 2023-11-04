@@ -233,8 +233,11 @@ bool UpdateMonitor() {
     GPS_INFO.FLARM_SW_Version =0.0;
   }
 
+#ifdef DEBUGNPM
   short invalidGps = 0;
   short invalidBaro = 0;
+#endif
+
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
   for (auto& dev : DeviceList) {
@@ -253,6 +256,7 @@ bool UpdateMonitor() {
         StartupStore(_T("... GPS Port %d no hearthbeats, but still gpsValid: forced invalid  %s"), dev.PortNumber, WhatTimeIsIt());
       }
 
+#ifdef DEBUGNPM
       invalidGps++;
       // We want to be sure that if this device is silent, and it was providing Baro altitude,
       // now it is set to off.
@@ -261,6 +265,7 @@ bool UpdateMonitor() {
           invalidBaro++;
         }
       }
+#endif      
 
       dev.nmeaParser.Reset();
 
