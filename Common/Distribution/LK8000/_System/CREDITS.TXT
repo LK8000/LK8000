@@ -10,6 +10,21 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.8]
+* fix :
+ - Fix topology polygon drawing (#1628)
+ - Don't reset TimeGates setting on task clear
+ - Allow to disable audio vario without restarting
+ - Fix task covered calculation
+ - Fanet Driver : fix device name charset
+ - Remove obsolete Conical turnpoint type
+ - Android 14 compatibility
+ - Wifi On/Off support on newer kobo models
+* new :
+ - Android USB : add SoftRF Ham and Midi
+ - Generic Autopilot output driver
+ - Air Control Display ACD-57 driver
+
 [version 7.4.6]
 * fix :
  - segfault at shutdown on kobo.
