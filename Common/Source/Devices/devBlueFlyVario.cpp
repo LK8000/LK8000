@@ -25,6 +25,7 @@
 #include <iterator>
 #include <functional>
 #include "resource.h"
+#include "utils/printf.h"
 
 namespace { // unamed namespaces
 
@@ -211,8 +212,8 @@ public:
 
     void UpdateDevice(const CHardwareParameter& Param, ComPort* Com) const {
         if(Param.MinHwVersion() <= _HwVersion) {
-            TCHAR szTmp[35] = {0};
-            _stprintf(szTmp, _T("$%s %s*"), Param.Code().c_str(), Param.Value().c_str());
+            char szTmp[35] = {0};
+            lk::snprintf(szTmp, "$%s %s*", Param.Code().c_str(), Param.Value().c_str());
             Com->WriteString(szTmp);
         }
     }
@@ -324,7 +325,7 @@ namespace dlgBlueFlyConfig {
     void OnReset(WndButton* pWnd) {
         ScopeLock Lock(CritSec_Comm);
         if(dlgBlueFlyConfig::pDevice && dlgBlueFlyConfig::pDevice->Com) {
-            dlgBlueFlyConfig::pDevice->Com->WriteString("$RSX*\n\r");
+            dlgBlueFlyConfig::pDevice->Com->WriteString("$RSX*\r\n");
         }
     }
 
