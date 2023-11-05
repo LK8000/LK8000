@@ -229,17 +229,17 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
   }
 
   d->Com->SetRxTimeout(500);
-  d->Com->WriteString(TEXT("\x03"));
+  d->Com->WriteString("\x03");
   ExpectString(d, TEXT("$$$"));  // empty rx buffer (searching for
                                  // pattern that never occure)
 
-  d->Com->WriteString(TEXT("\x03"));
+  d->Com->WriteString("\x03");
   if (!ExpectString(d, TEXT("cmd>"))){
     nDeclErrorCode = 1;
     return(FALSE);
   }
 
-  d->Com->WriteString(TEXT("upl 1\r"));
+  d->Com->WriteString("upl 1\r");
   if (!ExpectString(d, TEXT("up>"))){
     nDeclErrorCode = 1;
     return(FALSE);
@@ -247,7 +247,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
 
   ExpectString(d, TEXT("$$$"));
 
-  d->Com->WriteString(TEXT("O\r"));
+  d->Com->WriteString("O\r");
   Sleep(500); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataNoArgs, sizeof(cai302_OdataNoArgs));
 
@@ -256,7 +256,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
     return(FALSE);
   }
 
-  d->Com->WriteString(TEXT("O 0\r"));  // 0=active pilot
+  d->Com->WriteString("O 0\r");  // 0=active pilot
   Sleep(1000); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataPilot, min(sizeof(cai302_OdataPilot), (size_t)cai302_OdataNoArgs.PilotRecordSize+3));
   if (!ExpectString(d, TEXT("up>"))){
@@ -275,13 +275,13 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
 
   d->Com->SetRxTimeout(1500);
 
-  d->Com->WriteString(TEXT("\x03"));
+  d->Com->WriteString("\x03");
   if (!ExpectString(d, TEXT("cmd>"))){
     nDeclErrorCode = 1;
     return(FALSE);
   }
 
-  d->Com->WriteString(TEXT("dow 1\r"));
+  d->Com->WriteString("dow 1\r");
   if (!ExpectString(d, TEXT("dn>"))){
     nDeclErrorCode = 1;
     return(FALSE);
@@ -357,10 +357,10 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
 
   d->Com->SetRxTimeout(500);
 
-  d->Com->WriteString(TEXT("\x03"));
+  d->Com->WriteString("\x03");
   ExpectString(d, TEXT("cmd>"));
 
-  d->Com->WriteString(TEXT("LOG 0\r"));
+  d->Com->WriteString("LOG 0\r");
 
   d->Com->SetRxTimeout(RXTIMEOUT);
   d->Com->StartRxThread();
