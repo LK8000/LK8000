@@ -77,7 +77,7 @@ BOOL EWMicroRecorderTryConnect(DeviceDescriptor_t* d) {
 
   while (--retries){
 
-    d->Com->WriteString(TEXT("\x02"));         // send IO Mode command
+    d->Com->WriteString("\x02");         // send IO Mode command
 
     user_size = 0;
     bool started = false;
@@ -90,7 +90,7 @@ BOOL EWMicroRecorderTryConnect(DeviceDescriptor_t* d) {
       }
       if (started) {
         if (ch == 0x13) {
-          d->Com->WriteString(TEXT("\x16"));
+          d->Com->WriteString("\x16");
           user_data[user_size] = 0;
           // found end of file
           return TRUE;
@@ -191,7 +191,7 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
   // LKTOKEN  _@M1403_ = "Sending  declaration"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1403));
   CreateProgressDialog(buffer);
-  d->Com->WriteString(TEXT("\x18"));         // start to upload file
+  d->Com->WriteString("\x18");         // start to upload file
   d->Com->WriteString(user_data);
 
   TCHAR EWRecord[128];
@@ -204,7 +204,7 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
   _stprintf(EWRecord, TEXT("Aircraft ID:    %s\r\n"), decl->AircraftRego);
   d->Com->WriteString(EWRecord);
 
-  d->Com->WriteString(TEXT("Description:      Declaration\r\n"));
+  d->Com->WriteString("Description:      Declaration\r\n");
 
   for (int i = 0; i < 11; i++) {
     wp = decl->waypoint[i];
@@ -214,7 +214,7 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
     } else if (i + 1 < decl->num_waypoints) {
       EWMicroRecorderWriteWayPoint(d, wp, TEXT("TP LatLon:        "));
     } else {
-      d->Com->WriteString(TEXT("TP LatLon:        0000000N00000000E TURN POINT\r\n"));
+      d->Com->WriteString("TP LatLon:        0000000N00000000E TURN POINT\r\n");
     }
   }
 
@@ -222,7 +222,7 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
   EWMicroRecorderWriteWayPoint(d, wp, TEXT("Finish LatLon:    "));
   EWMicroRecorderWriteWayPoint(d, wp, TEXT("Land LatLon:      "));
 
-  d->Com->WriteString(TEXT("\x03"));         // finish sending user file
+  d->Com->WriteString("\x03");         // finish sending user file
 
   if (!ExpectStringWait(d, TEXT("uploaded successfully"))) {
     // error!
@@ -235,7 +235,7 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
   // LKTOKEN  _@M1402_ = "Disabling declaration mode"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken(1400), MsgToken(1402));
   CreateProgressDialog(buffer);
-  d->Com->WriteString(TEXT("!!\r\n"));         // go back to NMEA mode
+  d->Com->WriteString("!!\r\n");         // go back to NMEA mode
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
