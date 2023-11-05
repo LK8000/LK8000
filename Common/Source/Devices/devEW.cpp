@@ -44,7 +44,7 @@ BOOL EWTryConnect(DeviceDescriptor_t* d) {
   int retries=10;
   while (--retries){
 
-    d->Com->WriteString(TEXT("##\r\n"));         // send IO Mode command
+    d->Com->WriteString("##\r\n");         // send IO Mode command
     if (ExpectString(d, TEXT("IO Mode.\r")))
       return TRUE;
 
@@ -163,7 +163,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
   for (int j = 0; j < decl->num_waypoints; j++)
     EWDeclAddWayPoint(d, decl->waypoint[j]);
 
-  d->Com->WriteString(TEXT("NMEA\r\n"));         // switch to NMEA mode
+  d->Com->WriteString("NMEA\r\n");         // switch to NMEA mode
 
   d->Com->SetBaudrate(lLastBaudrate);            // restore baudrate
 
@@ -283,7 +283,7 @@ BOOL EWDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
 BOOL EWLinkTimeout(DeviceDescriptor_t* d){
   if(d && d->Com) {
     if (!fDeclarationPending) {
-      d->Com->WriteString(TEXT("NMEA\r\n"));
+      d->Com->WriteString("NMEA\r\n");
     }
   }
   return(TRUE);
