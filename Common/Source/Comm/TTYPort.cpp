@@ -182,6 +182,10 @@ bool TTYPort::IsReady() {
 }
 
 size_t TTYPort::Read(void *szString, size_t size) {
+    if(_tty < 0) {
+        return 0;
+    }
+
     struct timespec timeout;
     timeout.tv_sec = _Timeout / 1000;
     timeout.tv_nsec = (_Timeout % 1000)*1000;
@@ -235,6 +239,10 @@ bool TTYPort::Close() {
 }
 
 bool TTYPort::Write_Impl(const void *data, size_t size) {
+    if(_tty < 0) {
+        return 0;
+    }
+
     struct timeval timeout;
     fd_set writefs;
     timeout.tv_sec = _Timeout / 1000;
