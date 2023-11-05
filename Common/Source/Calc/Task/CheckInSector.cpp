@@ -24,6 +24,10 @@ void AdvanceToNext(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
     // Update 'IsInSector' is required because ActiveTaskPoint has changed !
     Calculated->IsInSector = InTurnSector(Basic, ActiveTaskPoint);
   }
+
+  if (Calculated->Flying) {
+    Calculated->ValidFinish = false;
+  }
 }
 
 bool IsCircle(const size_t& idx) {
@@ -62,10 +66,14 @@ void CheckInSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
     }
   }
 
+  if (gTaskType != TSK_AAT) {
+    if (Calculated->IsInSector) {
+      AdvanceToNext(Basic, Calculated);
+      return;
+    }
+  }
+
   if (aatdistance.HasEntered(ActiveTaskPoint)) {
     AdvanceToNext(Basic, Calculated);
-    if (Calculated->Flying) {
-      Calculated->ValidFinish = false;
-    }
   }
 }
