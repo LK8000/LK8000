@@ -276,30 +276,30 @@ BOOL CDevCProbe::ParseName( nmeastring& wiss, NMEA_INFO *pINFO ) {
 
 BOOL CDevCProbe::SetBaroOn(DeviceDescriptor_t* d ){
     if (d && d->Com) {
-    	d->Com->WriteString(TEXT("$PCPILOT,C,BAROON\r\n"));
+    	d->Com->WriteString("$PCPILOT,C,BAROON\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetBaroOff(DeviceDescriptor_t* d ){
     if (d && d->Com) {
-    	d->Com->WriteString(TEXT("$PCPILOT,C,BAROOFF\r\n"));
+    	d->Com->WriteString("$PCPILOT,C,BAROOFF\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::GetDeviceName(DeviceDescriptor_t* d ){
     if (d && d->Com) {
-    	d->Com->WriteString(TEXT("$PCPILOT,C,GETNAME\r\n"));
+    	d->Com->WriteString("$PCPILOT,C,GETNAME\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetDeviceName(DeviceDescriptor_t* d, const tstring& strName ){
 	if (d && d->Com && strName.size() <= 15) {
-		d->Com->WriteString(TEXT("$PCPILOT,C,SET,"));
+		d->Com->WriteString("$PCPILOT,C,SET,");
 		d->Com->WriteString(strName.c_str());
-		d->Com->WriteString(TEXT("\r\n"));
+		d->Com->WriteString("\r\n");
 		return GetDeviceName(d);
 	}
 	return FALSE;
@@ -307,35 +307,35 @@ BOOL CDevCProbe::SetDeviceName(DeviceDescriptor_t* d, const tstring& strName ){
 
 BOOL CDevCProbe::GetFirmwareVersion(DeviceDescriptor_t* d) {
     if (d && d->Com) {
-        d->Com->WriteString(TEXT("$PCPILOT,C,GETFW\r\n"));
+        d->Com->WriteString("$PCPILOT,C,GETFW\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetZeroDeltaPressure(DeviceDescriptor_t* d) {
     if (d && d->Com) {
-        d->Com->WriteString(TEXT("$PCPILOT,C,CALZERO\r\n"));
+        d->Com->WriteString("$PCPILOT,C,CALZERO\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetCompassCalOn(DeviceDescriptor_t* d) {
     if (d && d->Com) {
-        d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALON\r\n"));
+        d->Com->WriteString("$PCPILOT,C,COMPCALON\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetCompassCalOff(DeviceDescriptor_t* d) {
     if (d && d->Com) {
-        d->Com->WriteString(TEXT("$PCPILOT,C,COMPCALOFF\r\n"));
+        d->Com->WriteString("$PCPILOT,C,COMPCALOFF\r\n");
     }
 	return TRUE;
 }
 
 BOOL CDevCProbe::SetCalGyro(DeviceDescriptor_t* d) {
     if (d && d->Com) {
-        d->Com->WriteString(TEXT("$PCPILOT,C,CALGYRO\r\n"));
+        d->Com->WriteString("$PCPILOT,C,CALGYRO\r\n");
     }
 	return TRUE;
 }
