@@ -58,7 +58,7 @@ namespace {
 
   void EmptyRXBuffer(DeviceDescriptor_t* d)
   {
-    d->Com->WriteString(TEXT("\x03"));
+    d->Com->WriteString("\x03");
     ExpectString(d, TEXT("$$$"));  // empty rx buffer (searching for
                                    // pattern that never occure)
   }
@@ -76,7 +76,7 @@ namespace {
   bool CAICommandMode(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     // enter command mode
-    d->Com->WriteString(TEXT("\x03"));
+    d->Com->WriteString("\x03");
     return CAICommandModeExpect(d, errBufSize, errBuf);
   }
 
@@ -85,12 +85,12 @@ namespace {
     if(!CAICommandMode(d, errBufSize, errBuf))
       return false;
 
-    d->Com->WriteString(TEXT("NMEA\r"));
+    d->Com->WriteString("NMEA\r");
 
     // This is for a slightly different mode, that
     // apparently outputs pressure info too...
-    //(d->Com.WriteString)(TEXT("PNP\r\n"));
-    //(d->Com.WriteString)(TEXT("LOG 0\r\n"));
+    //d->Com.WriteString("PNP\r\n");
+    //d->Com.WriteString("LOG 0\r\n");
 
     return true;
   }
@@ -111,7 +111,7 @@ namespace {
       return false;
 
     // enter upload mode
-    d->Com->WriteString(TEXT("upl 1\r"));
+    d->Com->WriteString("upl 1\r");
     return CAIUploadModeExpect(d, errBufSize, errBuf);
   }
 
@@ -131,14 +131,14 @@ namespace {
       return false;
 
     // enter upload mode
-    d->Com->WriteString(TEXT("dow 1\r"));
+    d->Com->WriteString("dow 1\r");
     return CAIDownloadModeExpect(d, errBufSize, errBuf);
   }
 
   bool WaypointsClear(DeviceDescriptor_t* d, unsigned errBufSize, TCHAR errBuf[])
   {
     // clear old points
-    d->Com->WriteString(TEXT("cle poi\r"));
+    d->Com->WriteString("cle poi\r");
 
     // wait for command prompt
     if(!CAICommandModeExpect(d, errBufSize, errBuf))
@@ -271,7 +271,7 @@ namespace {
       return false;
 
     // request active configuration
-    d->Com->WriteString(TEXT("x\r"));
+    d->Com->WriteString("x\r");
 
     // get active configuration
     TCAIRecordX recordX;
@@ -315,14 +315,14 @@ namespace {
 BOOL CDevCAIGpsNav::Open(DeviceDescriptor_t* d)
 {
   if(!SIMMODE) {
-    d->Com->WriteString(TEXT("\x03"));
+    d->Com->WriteString("\x03");
     Sleep(500);
-    d->Com->WriteString(TEXT("NMEA\r"));
+    d->Com->WriteString("NMEA\r");
 
     // This is for a slightly different mode, that
     // apparently outputs pressure info too...
-    //(d->Com.WriteString)(TEXT("PNP\r\n"));
-    //(d->Com.WriteString)(TEXT("LOG 0\r\n"));
+    //d->Com.WriteString("PNP\r\n");
+    //d->Com.WriteString("LOG 0\r\n");
   }
 
   return true;
