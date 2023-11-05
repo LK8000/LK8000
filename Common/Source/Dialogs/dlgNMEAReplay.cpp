@@ -103,6 +103,35 @@ static void OnRateData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
+static void OnSyncNMEAModified(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  if (Sender) {
+
+    if(Sender->getCount() == 0) {
+      Sender->addEnumList({
+          MsgToken(2482),	// _@M2334_ "In flight only (default)"
+          _T("$GPRMC"),
+          _T("$GPGGA")
+        });
+    }
+
+    auto& Port = PortConfig[SelectedDevice];
+
+    switch (Mode) {
+    case DataField::daGet:
+      Sender->Set(Port.ReplaySync);
+      break;
+    case DataField::daPut:
+    case DataField::daChange:
+      Port.ReplaySync = Sender->GetAsInteger();
+      break;
+    case DataField::daInc:
+    case DataField::daDec:
+    case DataField::daSpecial:
+    default:
+      break;
+    }
+  }
+}
 
 
 
@@ -111,7 +140,7 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnStartClicked),
   DataAccessCallbackEntry(OnRateData),
   ClickNotifyCallbackEntry(OnCloseClicked),
-
+  DataAccessCallbackEntry(OnSyncNMEAModified),
   EndCallBackEntry()
 };
 
@@ -145,17 +174,6 @@ void dlgNMEAReplayShowModal(){
       wp->GetDataField()->Set(  Port.RawByteData );
       wp->RefreshDisplay();
     }      
-
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSyncNMEA"));
-    if (wp) {
-      DataField* dfe = wp->GetDataField();
-      dfe->addEnumText(MsgToken (2482)); //       
-      dfe->addEnumText(_T("$PGRMC")); // 
-      dfe->addEnumText(_T("$GPGGA")); // 
-     
-      dfe->Set( Port.ReplaySync);
-      wp->RefreshDisplay();
-  }
       
     wf->ShowModal();
 
@@ -167,13 +185,6 @@ void dlgNMEAReplayShowModal(){
       }
     }
     
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSyncNMEA"));
-    if (wp) {
-      if (Port.ReplaySync != wp->GetDataField()->GetAsInteger()) {
-        Port.ReplaySync = wp->GetDataField()->GetAsInteger();
-      }
-    }
-        
     delete wf;
   }
   wf = NULL;
