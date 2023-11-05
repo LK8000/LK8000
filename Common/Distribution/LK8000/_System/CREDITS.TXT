@@ -10,6 +10,10 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.9]
+ - fix turnpoint autoadvance : broken in 7.4.8
+ - updated polish translation
+
 [version 7.4.8]
 * fix :
  - Fix topology polygon drawing (#1628)
