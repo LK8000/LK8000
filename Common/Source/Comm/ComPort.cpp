@@ -54,35 +54,25 @@ namespace {
 
 // this is used by all functions to send data out
 bool ComPort::Write(const void *data, size_t size) {
-    bool success = Write_Impl(data, size);
+    if (size > 0) {
+        bool success = Write_Impl(data, size);
 
-    DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),
-                success ? _T("success"): _T("failed"),
-                thread_name().c_str(),
-                data_string(data, size).c_str());
+        DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),
+                    success ? _T("success"): _T("failed"),
+                    thread_name().c_str(),
+                    data_string(data, size).c_str());
 
-    return success;
+        return success;
+    }
+    return false;
 }
 
 #ifdef  _UNICODE
 // this should be deprecated
 bool ComPort::WriteString(const wchar_t* Text) {
-    const std::string data = to_utf8(Text);
-    if (!data.empty()) {
-        // don't write trailing '\0' to device
-        return Write(data.data(), data.size());
-    }
-    return false;
+    return WriteString(to_utf8(Text));
 }
 #endif
-
-bool ComPort::WriteString(const char* Text) {
-    const size_t length = strlen(Text);
-    if(length > 0) {
-        return Write(Text, length);
-    }
-    return false;
-}
 
 int ComPort::GetChar() {
     char c = EOF;

@@ -64,7 +64,10 @@ public:
 #ifdef UNICODE
     bool WriteString(const wchar_t* Text) gcc_nonnull_all;
 #endif
-    bool WriteString(const char* Text) gcc_nonnull_all;
+
+    bool WriteString(const std::string_view& str) {
+        return Write(str.data(), str.size());
+    }
 
     virtual size_t Read(void* data, size_t size) = 0;
 
