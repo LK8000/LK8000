@@ -58,11 +58,32 @@ bool SetSoundVolume() {
     return false;
 }
 
+namespace {
+
+class pcm_hw_params {
+ public: 
+  pcm_hw_params() {
+    snd_pcm_hw_params_malloc(&params);
+  }
+  
+  ~pcm_hw_params() {
+    snd_pcm_hw_params_free(params);
+  }
+
+  operator snd_pcm_hw_params_t* () {
+    return params;
+  }
+
+ private:
+  snd_pcm_hw_params_t *params;
+};
+
+} // namespace
+
 void alsa_play(SNDFILE* infile, SF_INFO& sfinfo) {
 
     /* Allocate parameters object and fill it with default values*/
-    snd_pcm_hw_params_t *params;
-    snd_pcm_hw_params_alloca(&params);
+    pcm_hw_params params;
     snd_pcm_hw_params_any(pcm_handle, params);
     /* Set parameters */
     snd_pcm_hw_params_set_access(pcm_handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
@@ -77,7 +98,7 @@ void alsa_play(SNDFILE* infile, SF_INFO& sfinfo) {
     int dir;
     /* Allocate buffer to hold single period */
     snd_pcm_hw_params_get_period_size(params, &frames, &dir);
-    std::unique_ptr<int16_t[]> buf(new int16_t[frames * sfinfo.channels]);
+    auto buf = std::make_unique<int16_t[]>(frames * sfinfo.channels);
     int readcount;
     while ((readcount = sf_readf_short(infile, buf.get(), frames)) > 0) {
 
