@@ -205,7 +205,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 }
 #endif
 
-BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, char* String, NMEA_INFO* pGPS) {
+BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* String, NMEA_INFO* pGPS) {
 
   auto wait_ack = d.lock_wait_ack();
   if (wait_ack && wait_ack->check(String)) {
@@ -394,14 +394,14 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   }
 }
 
-BOOL NMEAParser::GSA(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::GSA(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   return TRUE;
 }
 
 // we need to parse GLL as well because it can mark the start of a new quantum data
 // followed by values with no data, ex. altitude, vario, etc.
-BOOL NMEAParser::GLL(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::GLL(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 6) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GLL sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -449,14 +449,14 @@ BOOL NMEAParser::GLL(char* String, char** params, size_t nparams, NMEA_INFO *pGP
 
 
 
-BOOL NMEAParser::RMB(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMB(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   return TRUE;
 } // END RMB
 
 
 
-BOOL NMEAParser::VTG(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 5) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid VTG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -490,7 +490,7 @@ BOOL NMEAParser::VTG(char* String, char** params, size_t nparams, NMEA_INFO *pGP
 
 } // END VTG
 
-BOOL NMEAParser::RMC(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 9) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -671,7 +671,7 @@ BOOL NMEAParser::RMC(char* String, char** params, size_t nparams, NMEA_INFO *pGP
 
 
 
-BOOL NMEAParser::GGA(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 11) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u <%s>"),(unsigned)nparams,String));
@@ -828,7 +828,7 @@ BOOL NMEAParser::GGA(char* String, char** params, size_t nparams, NMEA_INFO *pGP
 
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
-BOOL NMEAParser::PLKAS(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PLKAS(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   (void)pGPS;
 
@@ -854,7 +854,7 @@ BOOL NMEAParser::PLKAS(char* String, char** params, size_t nparams, NMEA_INFO *p
 }
 
 
-BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, const char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
   (void)pGPS;
 
@@ -881,7 +881,7 @@ BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, char* String, char **params, size_t 
 
 
 // TASMAN instruments support for Tasman Flight Pack model Fp10
-BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 4) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -912,7 +912,7 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, char* String, char **params, size_
 }
 
 
-BOOL NMEAParser::HCHDG(char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::HCHDG(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 1) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid HCHDG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));

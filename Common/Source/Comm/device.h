@@ -198,7 +198,7 @@ BOOL ExpectString(DeviceDescriptor_t* d, const TCHAR *token);
 bool devIsDisabled();
 BOOL devOpen(DeviceDescriptor_t* d);
 BOOL devDirectLink(DeviceDescriptor_t* d,	BOOL bLink);
-void devParseNMEA(int portNum, char *String,	NMEA_INFO	*GPS_INFO);
+void devParseNMEA(int portNum, const char *String,	NMEA_INFO	*GPS_INFO);
 BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender);
 BOOL devRequestFlarmVersion(DeviceDescriptor_t* d);

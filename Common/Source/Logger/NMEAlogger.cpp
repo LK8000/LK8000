@@ -16,7 +16,7 @@ bool	EnableLogNMEA = false;
 
 
 // New LogNMEA
-void LogNMEA(char* text, int PortNum) {
+void LogNMEA(const char* text, int PortNum) {
 
 static FILE *logfpall = NULL;
 static FILE *logfsingle[NUMDEV]= {NULL,NULL,NULL,NULL,NULL,NULL};

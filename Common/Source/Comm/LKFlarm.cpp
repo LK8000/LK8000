@@ -200,7 +200,7 @@ void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 
 
 
-BOOL NMEAParser::PFLAV(char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PFLAV(const char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
 /*
 	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
@@ -288,7 +288,7 @@ void NMEAParser::setFlarmAvailable(NMEA_INFO *pGPS) {
 	}
 }
 
-BOOL NMEAParser::PFLAU(char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PFLAU(const char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
 /*
 	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf
@@ -503,7 +503,7 @@ void NMEAParser::UpdateFlarmScale( NMEA_INFO *pGPS) {
 	}
 }
 
-BOOL NMEAParser::PFLAA(char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PFLAA(const char *String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
 /*
 	http://delta-omega.com/download/EDIA/FLARM_DataportManual_v3.02E.pdf

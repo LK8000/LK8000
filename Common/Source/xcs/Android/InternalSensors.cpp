@@ -355,10 +355,5 @@ Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnm
     device->Rx += strlen(c_nmea);
   }
 
-  char* nmea = strdup(c_nmea);
-  AtScopeExit(&) {
-    free(nmea);
-  };
-
-  devParseNMEA(index, nmea, &GPS_INFO);
+  devParseNMEA(index, c_nmea, &GPS_INFO);
 }

@@ -26,7 +26,7 @@ class NMEAParser {
 
   void Reset();
 
-  BOOL ParseNMEAString_Internal(DeviceDescriptor_t& d, char* String, NMEA_INFO *GPS_INFO);
+  BOOL ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* String, NMEA_INFO *GPS_INFO);
 
   void CheckRMZ();
 
@@ -94,29 +94,29 @@ public:
 
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
 
-  BOOL GLL(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL GGA(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL GSA(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMC(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL VTG(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMB(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL RMZ(DeviceDescriptor_t& d, char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL GLL(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL GGA(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL GSA(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMC(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL VTG(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMB(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL RMZ(DeviceDescriptor_t& d, const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
 
-  BOOL WP0(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL WP1(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL WP2(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL WP0(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL WP1(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL WP2(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
 
   // Additional sentences
-  BOOL PTAS1(DeviceDescriptor_t& d, char* String, char**, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
+  BOOL PTAS1(DeviceDescriptor_t& d, const char* String, char**, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
   // Garmin magnetic compass
-  BOOL HCHDG(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL HCHDG(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active
-  BOOL PLKAS(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PLKAS(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   
   // FLARM sentences
-  BOOL PFLAV(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL PFLAU(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
-  BOOL PFLAA(char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PFLAV(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PFLAU(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PFLAA(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
 
   void UpdateFlarmScale(NMEA_INFO *pGPS);
 
@@ -133,6 +133,6 @@ void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
 int FLARM_FindSlot(NMEA_INFO *GPS_INFO, uint32_t RadioId);
 
 extern bool EnableLogNMEA;
-void LogNMEA(char* text, int);
+void LogNMEA(const char* text, int);
 
 #endif
