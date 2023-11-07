@@ -294,7 +294,7 @@ TextCache::Get(const Font &font, const char *text)
 #endif
   }
 
-  uint8_t *buffer = new uint8_t[buffer_size];
+  uint8_t *buffer = new(std::nothrow) uint8_t[buffer_size];
   if (buffer == nullptr) {
 #ifdef ENABLE_OPENGL
     return nullptr;
