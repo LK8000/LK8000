@@ -782,7 +782,7 @@ static void InfoBoxPropName(TCHAR *name, int item, int mode) {
     _tcscat(name,TEXT("Aux"));
     break;
   }
-  TCHAR buf[3];
+  TCHAR buf[12];
   _stprintf(buf,TEXT("%1d"), item);
   _tcscat(name,buf);
 }
