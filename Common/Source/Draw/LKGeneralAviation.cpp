@@ -39,7 +39,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	LKASSERT(AircraftPos.x == rc.right/2);
 
 	// Print current heading
-	TCHAR textBuffer[11];
+	TCHAR textBuffer[12];
 	const auto oldfont = Surface.SelectObject(LK8InfoNormalFont); // always remember to save object or we miss font
 	const int hdg = (int)round(DrawInfo.TrackBearing);
 	_stprintf(textBuffer,_T("%03d"), hdg);
