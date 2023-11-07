@@ -25,7 +25,7 @@ Copyright_License {
 #include "UncompressedImage.hpp"
 
 #include <png.h>
-
+#include <memory>
 #include <assert.h>
 #include <string.h>
 
@@ -104,25 +104,23 @@ LoadPNG(png_structp png_ptr, png_infop info_ptr,
   const unsigned num_channels = png_get_channels(png_ptr, info_ptr);
   const unsigned pitch = (num_channels * bit_depth) / 8 * width;
 
-  uint8_t *uncompressed = new uint8_t[pitch * height];
-  if (uncompressed == nullptr)
-    return UncompressedImage::Invalid();
+  try {
+    auto uncompressed = std::make_unique<uint8_t[]>(pitch * height);
+    auto rows = std::make_unique<png_bytep[]>(height);
 
-  png_bytep *rows = new png_bytep[height];
-  if (rows == nullptr) {
-    delete[] uncompressed;
-    return UncompressedImage::Invalid();
+    for (unsigned i = 0; i < height; ++i) {
+      rows[i] = &uncompressed[i * pitch];
+    }
+
+    /* uncompress and import into an OpenGL texture */
+    png_read_image(png_ptr, rows.get());
+
+    return UncompressedImage(format, pitch, width, height, uncompressed.release());
   }
-
-  for (unsigned i = 0; i < height; ++i)
-    rows[i] = uncompressed + i * pitch;
-
-  /* uncompress and import into an OpenGL texture */
-
-  png_read_image(png_ptr, rows);
-  delete[] rows;
-
-  return UncompressedImage(format, pitch, width, height, uncompressed);
+  catch(std::bad_alloc& e) {
+    fprintf(stderr, e.what());
+  }
+  return UncompressedImage::Invalid();
 }
 
 UncompressedImage
