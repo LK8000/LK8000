@@ -398,7 +398,7 @@ unsigned SerialPort::RxThread() {
                     // Read the data from the serial port.
                     dwBytesTransferred = ComPort::Read(szString);
                     if (dwBytesTransferred > 0) {
-                        std::for_each(std::begin(szString), std::next(szString, dwBytesTransferred), GetProcessCharHandler());
+                        ProcessData(szString, dwBytesTransferred);
                     } else {
                         dwBytesTransferred = 0;
                     }

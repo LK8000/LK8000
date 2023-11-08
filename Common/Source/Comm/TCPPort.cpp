@@ -305,7 +305,7 @@ unsigned UDPServerPort::RxThread() {
 			ScopeLock Lock(CritSec_Comm);
 			UpdateStatus();
 			if (nRecv > 0) {
-				std::for_each(std::begin(szString), std::next(szString, nRecv), GetProcessCharHandler());
+                ProcessData(szString, nRecv);
 			}
 		}
 	}

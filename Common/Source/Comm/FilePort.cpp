@@ -179,7 +179,7 @@ int32_t i_skip = 1;
     {
       if (Port.RawByteData)
       {
-        std::for_each(std::begin(szString), std::next(szString, nRecv), GetProcessCharHandler());
+        ProcessData(szString, nRecv);
       }
       else
       {

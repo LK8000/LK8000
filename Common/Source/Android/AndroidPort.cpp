@@ -150,7 +150,7 @@ size_t AndroidPort::Read(void *szString, size_t size) {
     const auto src_begin = buffer.begin();
     const auto src_end = std::next(src_begin, consume_size);
 
-    uint8_t *dst_data = static_cast<uint8_t*>(szString);
+    auto dst_data = static_cast<char*>(szString);
 
     std::copy(src_begin, src_end, dst_data);
 
@@ -240,7 +240,7 @@ unsigned AndroidPort::RxThread() {
             ScopeUnlock unlock(mutex); // workaround to prevent deadlock on shutdown
 
             WithLock(CritSec_Comm, [&]() {
-                std::for_each(std::begin(rxthread_buffer), std::end(rxthread_buffer), GetProcessCharHandler());
+                ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
             });
         }
     }

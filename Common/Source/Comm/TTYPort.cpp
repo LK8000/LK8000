@@ -287,7 +287,7 @@ unsigned TTYPort::RxThread() {
         UpdateStatus();
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {
-            std::for_each(std::begin(szString), std::next(szString, nRecv), GetProcessCharHandler());
+            ProcessData(szString, nRecv);
         }
     }
 

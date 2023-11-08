@@ -61,8 +61,8 @@ protected:
 
     // use vector to reduce swap overhead
     //  -> only swap few internal pointer instead of all contents
-    std::vector<uint8_t> buffer;
-    std::vector<uint8_t> rxthread_buffer;
+    std::vector<char> buffer;
+    std::vector<char> rxthread_buffer;
 
 public:
     /* override Datahandler */

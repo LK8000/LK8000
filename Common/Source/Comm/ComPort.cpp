@@ -168,6 +168,12 @@ void ComPort::ProcessChar(char c) {
     pLastNmea = std::begin(_NmeaString);
 }
 
+void ComPort::ProcessData(const char* string, size_t size) {
+    for (auto c : std::string_view(string, size)) {
+        ProcessChar(c);
+    }
+}
+
 void ComPort::AddStatRx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
         DeviceList[GetPortIndex()].Rx += dwBytes;

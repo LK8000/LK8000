@@ -94,11 +94,7 @@ protected:
 
     void ProcessChar(char c);
 
-    auto GetProcessCharHandler() {
-        return [&](char c) {
-            ProcessChar(c);
-        };
-    }
+    void ProcessData(const char* data, size_t size);
 
     Poco::Event StopEvt;
 
