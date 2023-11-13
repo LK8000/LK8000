@@ -13,55 +13,48 @@
 #include "Android/SoundUtil.hpp"
 #include "Android/Context.hpp"
 #include "Android/Main.hpp"
+#include "utils/lookup_table.h"
+
 /*
  * Sound can be play from more than one thread, so we need use mutex for protect audioChunkCache.
  */
-static Mutex mutex_sound;
 
+namespace {
 
-static const struct {
-    const TCHAR* szName;
-    const TCHAR* szFile;
-} _resourceToWav[] = {
-        { _T("IDR_WAV_MM0"), _T("MM0.WAV") },
-        { _T("IDR_WAV_MM1"), _T("MM1.WAV") },
-        { _T("IDR_WAV_MM2"), _T("MM2.WAV") },
-        { _T("IDR_WAV_MM3"), _T("MM3.WAV") },
-        { _T("IDR_WAV_MM4"), _T("MM4.WAV") },
-        { _T("IDR_WAV_MM5"), _T("MM5.WAV") },
-        { _T("IDR_WAV_MM6"), _T("MM6.WAV") },
-        { _T("IDR_WAV_DRIP"), _T("LKbeep-drip.wav") },
-        { _T("IDR_WAV_CLICK"), _T("LK_SHORTERCLICKM.WAV") },
-        { _T("IDR_WAV_HIGHCLICK"), _T("LK_CLICKH.WAV") },
-        { _T("IDR_WAV_TONE1"), _T("LK_T1.WAV") },
-        { _T("IDR_WAV_TONE2"), _T("LK_T2.WAV") },
-        { _T("IDR_WAV_TONE3"), _T("LK_T3.WAV") },
-        { _T("IDR_WAV_TONE4"), _T("LK_T4.WAV") },
-        { _T("IDR_WAV_TONE7"), _T("LK_T8.WAV") },
-        { _T("IDR_WAV_BTONE2"), _T("LK_B2b.wav") },
-        { _T("IDR_WAV_BTONE4"), _T("LK_B4.wav") },
-        { _T("IDR_WAV_BTONE5"), _T("LK_B5.wav") },
-        { _T("IDR_WAV_BTONE6"), _T("LK_B5b.wav") },
-        { _T("IDR_WAV_BTONE7"), _T("LK_B8.wav") },
-        { _T("IDR_WAV_OVERTONE0"), _T("LK_S0.WAV") },
-        { _T("IDR_WAV_OVERTONE1"), _T("LK_S1.WAV") },
-        { _T("IDR_WAV_OVERTONE2"), _T("LK_S2.WAV") },
-        { _T("IDR_WAV_OVERTONE3"), _T("LK_S3.WAV") },
-        { _T("IDR_WAV_OVERTONE4"), _T("LK_S4.WAV") },
-        { _T("IDR_WAV_OVERTONE5"), _T("LK_S5.WAV") },
-        { _T("IDR_WAV_OVERTONE6"), _T("LK_S6.WAV") },
-        { _T("IDR_WAV_OVERTONE7"), _T("LK_S6b.WAV") },
-};
+Mutex mutex_sound;
 
-static
-const TCHAR* FindWave(const TCHAR* szName) {
-    for (const auto &Resource : _resourceToWav) {
-        if (_tcscmp(Resource.szName, szName) == 0) {
-            return Resource.szFile;
-        }
-    }
-    return nullptr;
-}
+constexpr auto _resourceToWav = lookup_table<std::string_view, const char*>({
+    {"IDR_WAV_MM0", "MM0.WAV"},
+    {"IDR_WAV_MM1", "MM1.WAV"},
+    {"IDR_WAV_MM2", "MM2.WAV"},
+    {"IDR_WAV_MM3", "MM3.WAV"},
+    {"IDR_WAV_MM4", "MM4.WAV"},
+    {"IDR_WAV_MM5", "MM5.WAV"},
+    {"IDR_WAV_MM6", "MM6.WAV"},
+    {"IDR_WAV_DRIP", "LKbeep-drip.wav"},
+    {"IDR_WAV_CLICK", "LK_SHORTERCLICKM.WAV"},
+    {"IDR_WAV_HIGHCLICK", "LK_CLICKH.WAV"},
+    {"IDR_WAV_TONE1", "LK_T1.WAV"},
+    {"IDR_WAV_TONE2", "LK_T2.WAV"},
+    {"IDR_WAV_TONE3", "LK_T3.WAV"},
+    {"IDR_WAV_TONE4", "LK_T4.WAV"},
+    {"IDR_WAV_TONE7", "LK_T8.WAV"},
+    {"IDR_WAV_BTONE2", "LK_B2b.wav"},
+    {"IDR_WAV_BTONE4", "LK_B4.wav"},
+    {"IDR_WAV_BTONE5", "LK_B5.wav"},
+    {"IDR_WAV_BTONE6", "LK_B5b.wav"},
+    {"IDR_WAV_BTONE7", "LK_B8.wav"},
+    {"IDR_WAV_OVERTONE0", "LK_S0.WAV"},
+    {"IDR_WAV_OVERTONE1", "LK_S1.WAV"},
+    {"IDR_WAV_OVERTONE2", "LK_S2.WAV"},
+    {"IDR_WAV_OVERTONE3", "LK_S3.WAV"},
+    {"IDR_WAV_OVERTONE4", "LK_S4.WAV"},
+    {"IDR_WAV_OVERTONE5", "LK_S5.WAV"},
+    {"IDR_WAV_OVERTONE6", "LK_S6.WAV"},
+    {"IDR_WAV_OVERTONE7", "LK_S6b.WAV"},
+});
+
+} // namespace
 
 SoundGlobalInit::SoundGlobalInit() {
 }
@@ -93,17 +86,14 @@ void LKSound(const TCHAR *lpName) {
 
 
 void PlayResource (const TCHAR* lpName) {
-    LKASSERT(lpName);
-
     if(!lpName || !EnableSoundModes) {
         return;
     }
 
-    const TCHAR* szName =  FindWave(lpName);
+    const char* szName = _resourceToWav.get(lpName, nullptr);
     if ( szName != nullptr ) {
         LKSound(szName);
     } else {
-        StartupStore(_T("Sound : Missing resource '%s'" NEWLINE), lpName);
+        StartupStore("Sound : Missing resource '%s'", lpName);
     }
 }
-
