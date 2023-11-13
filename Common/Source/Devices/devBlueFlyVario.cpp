@@ -479,8 +479,7 @@ BOOL BlueFlyVarioOpen(DeviceDescriptor_t* d) {
 
 bool RequestConfig(DeviceDescriptor_t* d) {
     // Request device Config
-    const char szRequest[] = "$BST*";
-    return d->Com->Write(szRequest, sizeof (szRequest));
+    return d->Com->WriteString("$BST*");
 }
 
 BOOL BlueFlyVarioClose(DeviceDescriptor_t* d) {
