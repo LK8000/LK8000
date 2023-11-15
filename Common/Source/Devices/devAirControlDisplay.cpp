@@ -17,6 +17,8 @@
 #include "utils/printf.h"
 #include "Radio.h"
 #include "Util/Clamp.hpp"
+#include "Comm/UpdateQNH.h"
+#include "Baro.h"
 
 using std::string_view_literals::operator""sv;
 
@@ -190,9 +192,28 @@ BOOL ParseCOM(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
 }
 
 BOOL ParseALT(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
-  DebugLog(_T("ACD unknown : $PAAVS,ALT,%s"), to_tstring(String).c_str());
+  /* $PAAVS,ALT,<ALTQNE>,<ALTQNH>,<QNH>
+    Field    Description                       Values
+    
+    ALTQNE   Current QNE altitude in meters.   Decimal number with two decimal places.
+    
+    ALTQNH   Current QNH altitude in meters.   Decimal number with two decimalplaces.
+    
+    QNH      Current QNH setting in pascal.    Unsigned integer values (e.g.101325).
+  */
 
-  // TODO :
+  char szTmp[MAX_NMEA_LEN];
+
+  NMEAParser::ExtractParameter(String, szTmp, 2);  // QNH
+  if (szTmp[0]) { // string not empty
+    UpdateQNH(StrToDouble(szTmp, nullptr) / 100.);
+  }
+
+  NMEAParser::ExtractParameter(String, szTmp, 0);  // ALTQNE
+  if (szTmp[0]) { // string not empty
+    UpdateBaroSource( GPS_INFO, d, StrToDouble(szTmp, nullptr));
+  }
+
   return TRUE;
 }
 
