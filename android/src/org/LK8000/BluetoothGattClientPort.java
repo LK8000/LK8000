@@ -35,6 +35,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.util.UUID;
 
 /**
@@ -210,12 +212,7 @@ public class BluetoothGattClientPort
   public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = 20; // default mtu - 3
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        gatt.requestMtu(85); // Max NMEA length is 82 -> mtu = 82 + 3
-      }
-      else {
-        configureCharacteristics(gatt);
-      }
+      gatt.requestMtu(85); // Max NMEA length is 82 -> mtu = 82 + 3
     } else {
       Log.e(TAG, "Discovering GATT services failed");
       portState = STATE_FAILED;
@@ -239,8 +236,7 @@ public class BluetoothGattClientPort
         BluetoothGattDescriptor descriptor =
           dataCharacteristic.getDescriptor(RX_TX_DESCRIPTOR_UUID);
         if(descriptor != null) {
-          descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-          gatt.writeDescriptor(descriptor);
+          writeDescriptor(gatt, descriptor);
         } else {
           Log.e(TAG, "Could not get RX_TX_DESCRIPTOR_UUID Descriptor");
         }
@@ -253,6 +249,16 @@ public class BluetoothGattClientPort
       portState = STATE_FAILED;
     }
     stateChanged();
+  }
+
+  @SuppressLint("MissingPermission")
+  private void writeDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+      gatt.writeDescriptor(descriptor);
+    } else {
+      gatt.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    }
   }
 
   @Override
@@ -285,6 +291,15 @@ public class BluetoothGattClientPort
         if (data.length > 0) {
           listener.dataReceived(data, data.length);
         }
+      }
+    }
+  }
+
+  @Override
+  public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
+    if (listener != null) {
+      if (dataCharacteristic.getUuid().equals(characteristic.getUuid())) {
+        listener.dataReceived(value, value.length);
       }
     }
   }
