@@ -78,47 +78,127 @@ class pcm_hw_params {
   snd_pcm_hw_params_t *params;
 };
 
-void alsa_play(SNDFILE* infile, SF_INFO& sfinfo) {
+class pcm_sw_params {
+ public: 
+  pcm_sw_params() {
+    snd_pcm_sw_params_malloc(&params);
+  }
+  
+  ~pcm_sw_params() {
+    snd_pcm_sw_params_free(params);
+  }
 
-    /* Allocate parameters object and fill it with default values*/
-    pcm_hw_params params;
-    snd_pcm_hw_params_any(pcm_handle, params);
-    /* Set parameters */
-    snd_pcm_hw_params_set_access(pcm_handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
-    snd_pcm_hw_params_set_format(pcm_handle, params, SND_PCM_FORMAT_S16_LE);
-    snd_pcm_hw_params_set_channels(pcm_handle, params, sfinfo.channels);
-    snd_pcm_hw_params_set_rate(pcm_handle, params, sfinfo.samplerate, 0);
+  operator snd_pcm_sw_params_t* () {
+    return params;
+  }
 
-    unsigned int buffer_length_usec = 1000000;
-    snd_pcm_hw_params_set_buffer_time_near(pcm_handle, params, &buffer_length_usec, nullptr);
+ private:
+  snd_pcm_sw_params_t *params;
+};
 
-    /* set hw parameters and prepare */
-    snd_pcm_hw_params(pcm_handle, params);
+void init_hw_params(const SF_INFO& sfinfo) {
+  /* Allocate parameters object and fill it with default values*/
+  pcm_hw_params hw_params;
+  snd_pcm_hw_params_any(pcm_handle, hw_params);
+  /* Set parameters */
+  snd_pcm_hw_params_set_access(pcm_handle, hw_params, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+  snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_S16_LE);
+  snd_pcm_hw_params_set_channels(pcm_handle, hw_params, sfinfo.channels);
+  snd_pcm_hw_params_set_rate(pcm_handle, hw_params, sfinfo.samplerate, 0);
 
-    try {
-        snd_pcm_uframes_t frames;
-        /* Allocate buffer to hold sound */
-        snd_pcm_hw_params_get_buffer_size(params, &frames);
-        auto buf = std::make_unique<int16_t[]>(frames);
-        int readcount;
-        while ((readcount = sf_readf_short(infile, buf.get(), frames)) > 0) {
+  /* Makes sure buffer frames is even, or snd_pcm_hw_params will return invalid argument error. */
+  snd_pcm_uframes_t buffer_frames;
+  snd_pcm_hw_params_get_buffer_size_max(hw_params, &buffer_frames);
+  buffer_frames &= ~0x01;
+  snd_pcm_hw_params_set_buffer_size_max(pcm_handle, hw_params, &buffer_frames);
 
-            int pcmrc = snd_pcm_writei(pcm_handle, buf.get(), readcount);
-            if (pcmrc == -EPIPE) {
-                fprintf(stderr, "PCM write underrun!\n");
-                snd_pcm_prepare(pcm_handle);
-            } else if (pcmrc < 0) {
-                fprintf(stderr, "Error writing to PCM device: %s\n", snd_strerror(pcmrc));
-            } else if (pcmrc != readcount) {
-                fprintf(stderr, "PCM write differs from PCM read.\n");
-            }
-        }
-        snd_pcm_drain(pcm_handle);
+  /* set hw parameters and prepare */
+  snd_pcm_hw_params(pcm_handle, hw_params);
+}
+
+void init_sw_params() {
+  pcm_sw_params sw_params;
+  snd_pcm_sw_params_current(pcm_handle, sw_params);
+  snd_pcm_uframes_t boundary;
+  snd_pcm_sw_params_get_boundary(sw_params, &boundary);
+  snd_pcm_sw_params_set_stop_threshold(pcm_handle, sw_params, boundary);
+  snd_pcm_sw_params_set_start_threshold(pcm_handle, sw_params, boundary);
+  snd_pcm_sw_params_set_period_event(pcm_handle, sw_params, 0);
+  snd_pcm_sw_params(pcm_handle, sw_params);
+}
+
+void wait_for_poll(snd_pcm_t* handle, struct pollfd* ufds, unsigned int count) {
+  unsigned short revents;
+  while (1) {
+    poll(ufds, count, -1);
+    snd_pcm_poll_descriptors_revents(handle, ufds, count, &revents);
+    if (revents & POLLERR) {
+      throw std::runtime_error("poll error");
     }
-    catch(std::exception& e) {
-        fprintf(stderr, "PCM failed to allocate buffer : %s\n", e.what());
+    if (revents & POLLOUT) {
+      return;
     }
-    snd_pcm_hw_free(pcm_handle);
+  }
+}
+
+int snd_recovery(snd_pcm_t* handle, int err) {
+  if (err == -EPIPE) { /* under-run */
+    err = snd_pcm_prepare(handle);
+  }
+  if (err < 0) {
+    throw std::runtime_error(std::string("Can't recovery : ") + snd_strerror(err));
+  }
+  return err;
+}
+
+void alsa_play(SNDFILE* infile, const SF_INFO& sfinfo) {
+  init_hw_params(sfinfo);
+  init_sw_params();
+
+  snd_pcm_prepare(pcm_handle);
+  snd_pcm_start(pcm_handle);
+
+  try {
+    int count = snd_pcm_poll_descriptors_count(pcm_handle);
+    auto ufds = std::make_unique<pollfd[]>(count);
+    snd_pcm_poll_descriptors(pcm_handle, ufds.get(), count);
+
+    snd_pcm_uframes_t to_write = sfinfo.frames;
+    while (to_write > 0) {
+      wait_for_poll(pcm_handle, ufds.get(), count);
+
+      auto available = snd_pcm_avail(pcm_handle);
+      if (available < 0) {
+        available = snd_recovery(pcm_handle, available);
+      }
+      if (available <= 0) {
+        continue;
+      }
+
+      const snd_pcm_channel_area_t* areas;
+      snd_pcm_uframes_t offset;
+      snd_pcm_uframes_t frames = to_write;
+      int err = snd_pcm_mmap_begin(pcm_handle, &areas, &offset, &frames);
+      if (err < 0) {
+        err = snd_recovery(pcm_handle, available);
+      }
+      if (err < 0) {
+        continue;
+      }
+
+      auto buff = static_cast<int16_t*>(areas->addr);
+      ssize_t buffsize = snd_pcm_frames_to_bytes(pcm_handle, frames) / sizeof(int16_t);
+      ssize_t buffoffset = snd_pcm_frames_to_bytes(pcm_handle, offset) / sizeof(int16_t);
+
+      int readcount = sf_readf_short(infile, buff + buffoffset, buffsize);
+      snd_pcm_mmap_commit(pcm_handle, offset, readcount);
+      to_write -= readcount;
+    }
+    snd_pcm_drain(pcm_handle);
+  } catch (std::exception& e) {
+    fprintf(stderr, "PCM %s\n", e.what());
+  }
+  snd_pcm_hw_free(pcm_handle);
 }
 
 ////////////////////////////////////////////////////////////////////
