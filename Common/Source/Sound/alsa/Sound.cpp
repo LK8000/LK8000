@@ -15,50 +15,16 @@
 #include "resource_data.h"
 #include <alsa/asoundlib.h>
 #include <sndfile.h>
+#include <optional>
+#include "Thread/Thread.hpp"
+#include "Thread/Cond.hpp"
 
 #define PCM_DEVICE "default"
 
-static bool bSoundFile = false; // this is true only if "_System/_Sounds" directory exists.
-static snd_pcm_t *pcm_handle = nullptr;
-
-SoundGlobalInit::SoundGlobalInit() {
-
-    TCHAR srcfile[MAX_PATH];
-    SystemPath(srcfile, TEXT(LKD_SOUNDS), TEXT("_SOUNDS"));
-    if (lk::filesystem::exist(srcfile)) {
-        bSoundFile = true;
-    } else {
-        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>") NEWLINE, srcfile);
-    }
-
-    /* Open the PCM device in playback mode */
-    int pcmrc = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0);
-    if (pcmrc < 0) {
-        StartupStore(_T("failed to open PCM device <%s>") NEWLINE, snd_strerror(pcmrc));
-        pcm_handle = nullptr;
-    }
-
-    if(!pcm_handle) {
-        StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!") NEWLINE);
-    }
-}
-
-SoundGlobalInit::~SoundGlobalInit() {
-    if (pcm_handle) {
-        snd_pcm_close(pcm_handle);
-    }
-    snd_config_update_free_global();
-}
-
-bool IsSoundInit() {
-    return pcm_handle;
-}
-
-bool SetSoundVolume() {
-    return false;
-}
-
 namespace {
+
+bool bSoundFile = false;  // this is true only if "_System/_Sounds" directory exists.
+snd_pcm_t* pcm_handle = nullptr;
 
 class pcm_hw_params {
  public: 
@@ -279,45 +245,169 @@ SF_VIRTUAL_IO VirtualIO = {
     &vio_tell
 };
 
-} // namespace
+void play_file(const std::string& name) {
+  TCHAR srcfile[MAX_PATH];
+  SystemPath(srcfile, TEXT(LKD_SOUNDS), name.c_str());
 
-void PlayResource(const TCHAR* lpName) {
-    if (!lpName || !EnableSoundModes || !pcm_handle) {
-        return;
-    }
-
-    ConstBuffer<void> sndBuffer = GetNamedResource(lpName);
-    if (!sndBuffer.IsEmpty()) {
-
-        // Initialize the memory data
-        MemoryInfos Memory = {
-            static_cast<const uint8_t*> (sndBuffer.data),
-            static_cast<const uint8_t*> (sndBuffer.data),
-            static_cast<sf_count_t> (sndBuffer.size)
-        };
-
-        // Open the sound file
-        SF_INFO sfinfo= {};
-        SNDFILE* infile = sf_open_virtual(&VirtualIO, SFM_READ, &sfinfo, &Memory);
-        if (infile) {
-            alsa_play(infile, sfinfo);
-            sf_close(infile);
-        }
-    }
+  SF_INFO sfinfo = {};
+  SNDFILE* infile = sf_open(srcfile, SFM_READ, &sfinfo);
+  if (infile) {
+    alsa_play(infile, sfinfo);
+    sf_close(infile);
+  }
 }
 
-void LKSound(const TCHAR *lpName) {
-    if (!lpName || !bSoundFile || !EnableSoundModes || !pcm_handle) {
-        return;
-    }
+void play_resource(const std::string& name) {
+  ConstBuffer<void> sndBuffer = GetNamedResource(name.c_str());
+  if (!sndBuffer.IsEmpty()) {
+    // Initialize the memory data
+    MemoryInfos Memory = {
+      static_cast<const uint8_t*>(sndBuffer.data),
+      static_cast<const uint8_t*>(sndBuffer.data),
+      static_cast<sf_count_t>(sndBuffer.size)
+    };
 
-    TCHAR srcfile[MAX_PATH];
-    SystemPath(srcfile, TEXT(LKD_SOUNDS), lpName);
-
+    // Open the sound file
     SF_INFO sfinfo = {};
-    SNDFILE* infile = sf_open(srcfile, SFM_READ, &sfinfo);
+    SNDFILE* infile = sf_open_virtual(&VirtualIO, SFM_READ, &sfinfo, &Memory);
     if (infile) {
-        alsa_play(infile, sfinfo);
-        sf_close(infile);
+      alsa_play(infile, sfinfo);
+      sf_close(infile);
     }
+  }
+}
+
+enum class sound_type {
+  ressource,
+  file
+};
+
+struct sound_item {
+  sound_type type; 
+  std::string name;
+};
+
+void play_sound(const sound_item& item) {
+  switch (item.type) {
+    case sound_type::file:
+      play_file(item.name);
+      break;
+    case sound_type::ressource:
+      play_resource(item.name);
+      break;
+  }
+}
+
+class ThreadSound : public Thread {
+public:
+  ThreadSound() : Thread("Sound") {}
+
+  bool Start() override {
+    thread_stop = false;
+    return Thread::Start();
+  }
+
+  void Queue(sound_type type, std::string name) {
+    WithLock(queue_mtx, [&]() {
+      queue = { type, std::move(name) };
+    });
+    queue_cv.Broadcast();
+  }
+
+  void Stop() {
+    WithLock(queue_mtx, [&]() {
+      thread_stop = true;
+    });
+    queue_cv.Broadcast();
+  }
+
+private:
+  bool thread_stop = false;
+  std::optional<sound_item> queue;
+  Mutex queue_mtx;
+  Cond queue_cv;
+
+  void Run() override {
+    while (true) {
+      // get copy of queue
+      auto sound = WithLock(queue_mtx, [&]() {
+        return std::exchange(queue, std::nullopt);
+      });
+
+      if (!sound) {
+        ScopeLock lock(queue_mtx);
+        // no sound check for stop request
+        if (thread_stop) {
+          return;  // stop requested...
+        }
+        // wait for stop or sound
+        queue_cv.Wait(queue_mtx);
+      } else {
+        play_sound(sound.value());
+      }
+    }
+  }
+};
+
+ThreadSound thread_sound;
+
+}  // namespace
+
+void PlayResource(const TCHAR* lpName) {
+  if (!lpName || !EnableSoundModes || !pcm_handle) {
+    return;
+  }
+  thread_sound.Queue(sound_type::ressource, lpName);
+}
+
+void LKSound(const TCHAR* lpName) {
+  if (!lpName || !bSoundFile || !EnableSoundModes || !pcm_handle) {
+    return;
+  }
+  thread_sound.Queue(sound_type::file, lpName);
+}
+
+SoundGlobalInit::SoundGlobalInit() {
+  TCHAR srcfile[MAX_PATH];
+  SystemPath(srcfile, TEXT(LKD_SOUNDS), TEXT("_SOUNDS"));
+  if (lk::filesystem::exist(srcfile)) {
+    bSoundFile = true;
+  } else {
+    StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>") NEWLINE, srcfile);
+  }
+
+  /* Open the PCM device in playback mode */
+  int pcmrc = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0);
+  if (pcmrc < 0) {
+    StartupStore(_T("failed to open PCM device <%s>") NEWLINE, snd_strerror(pcmrc));
+    pcm_handle = nullptr;
+  }
+
+  if (pcm_handle) {
+    thread_sound.Start();
+  }
+
+  if (!pcm_handle) {
+    StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!") NEWLINE);
+  }
+}
+
+SoundGlobalInit::~SoundGlobalInit() {
+  if (thread_sound.IsDefined()) {
+    thread_sound.Stop();
+    thread_sound.Join();
+  }
+
+  if (pcm_handle) {
+    snd_pcm_close(pcm_handle);
+  }
+  snd_config_update_free_global();
+}
+
+bool IsSoundInit() {
+  return pcm_handle;
+}
+
+bool SetSoundVolume() {
+  return false;
 }
