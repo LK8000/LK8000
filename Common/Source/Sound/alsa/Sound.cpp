@@ -78,8 +78,6 @@ class pcm_hw_params {
   snd_pcm_hw_params_t *params;
 };
 
-} // namespace
-
 void alsa_play(SNDFILE* infile, SF_INFO& sfinfo) {
 
     /* Allocate parameters object and fill it with default values*/
@@ -91,56 +89,47 @@ void alsa_play(SNDFILE* infile, SF_INFO& sfinfo) {
     snd_pcm_hw_params_set_channels(pcm_handle, params, sfinfo.channels);
     snd_pcm_hw_params_set_rate(pcm_handle, params, sfinfo.samplerate, 0);
 
-    /* Write parameters */
+    unsigned int buffer_length_usec = 1000000;
+    snd_pcm_hw_params_set_buffer_time_near(pcm_handle, params, &buffer_length_usec, nullptr);
+
+    /* set hw parameters and prepare */
     snd_pcm_hw_params(pcm_handle, params);
 
-    snd_pcm_uframes_t frames;
-    int dir;
-    /* Allocate buffer to hold single period */
-    snd_pcm_hw_params_get_period_size(params, &frames, &dir);
-    auto buf = std::make_unique<int16_t[]>(frames * sfinfo.channels);
-    int readcount;
-    while ((readcount = sf_readf_short(infile, buf.get(), frames)) > 0) {
+    try {
+        snd_pcm_uframes_t frames;
+        /* Allocate buffer to hold sound */
+        snd_pcm_hw_params_get_buffer_size(params, &frames);
+        auto buf = std::make_unique<int16_t[]>(frames);
+        int readcount;
+        while ((readcount = sf_readf_short(infile, buf.get(), frames)) > 0) {
 
-        int pcmrc = snd_pcm_writei(pcm_handle, buf.get(), readcount);
-        if (pcmrc == -EPIPE) {
-            fprintf(stderr, "PCM write underrun!\n");
-            snd_pcm_prepare(pcm_handle);
-        } else if (pcmrc < 0) {
-            fprintf(stderr, "Error writing to PCM device: %s\n", snd_strerror(pcmrc));
-        } else if (pcmrc != readcount) {
-            fprintf(stderr, "PCM write differs from PCM read.\n");
+            int pcmrc = snd_pcm_writei(pcm_handle, buf.get(), readcount);
+            if (pcmrc == -EPIPE) {
+                fprintf(stderr, "PCM write underrun!\n");
+                snd_pcm_prepare(pcm_handle);
+            } else if (pcmrc < 0) {
+                fprintf(stderr, "Error writing to PCM device: %s\n", snd_strerror(pcmrc));
+            } else if (pcmrc != readcount) {
+                fprintf(stderr, "PCM write differs from PCM read.\n");
+            }
         }
+        snd_pcm_drain(pcm_handle);
     }
-
-    snd_pcm_drain(pcm_handle);
-}
-
-void LKSound(const TCHAR *lpName) {
-    if (!lpName || !bSoundFile || !EnableSoundModes || !pcm_handle) {
-        return;
+    catch(std::exception& e) {
+        fprintf(stderr, "PCM failed to allocate buffer : %s\n", e.what());
     }
-
-    TCHAR srcfile[MAX_PATH];
-    SystemPath(srcfile, TEXT(LKD_SOUNDS), lpName);
-
-    SF_INFO sfinfo = {};
-    SNDFILE* infile = sf_open(srcfile, SFM_READ, &sfinfo);
-    if (infile) {
-        alsa_play(infile, sfinfo);
-        sf_close(infile);
-    }
+    snd_pcm_hw_free(pcm_handle);
 }
 
 ////////////////////////////////////////////////////////////////////
 /// Functions for implementing custom read and write to memory files
 ////////////////////////////////////////////////////////////////////
 
-typedef struct {
+struct MemoryInfos {
     const uint8_t* DataStart;
     const uint8_t* DataPtr;
     sf_count_t TotalSize;
-} MemoryInfos;
+};
 
 sf_count_t vio_get_filelen(void* UserData) {
     MemoryInfos* Memory = static_cast<MemoryInfos*> (UserData);
@@ -202,13 +191,15 @@ sf_count_t vio_write(const void*, sf_count_t, void*) {
 }
 
 // Define the I/O custom functions for reading from memory
-static SF_VIRTUAL_IO VirtualIO = {
+SF_VIRTUAL_IO VirtualIO = {
     &vio_get_filelen,
     &vio_seek,
     &vio_read,
     &vio_write,
     &vio_tell
 };
+
+} // namespace
 
 void PlayResource(const TCHAR* lpName) {
     if (!lpName || !EnableSoundModes || !pcm_handle) {
@@ -232,5 +223,21 @@ void PlayResource(const TCHAR* lpName) {
             alsa_play(infile, sfinfo);
             sf_close(infile);
         }
+    }
+}
+
+void LKSound(const TCHAR *lpName) {
+    if (!lpName || !bSoundFile || !EnableSoundModes || !pcm_handle) {
+        return;
+    }
+
+    TCHAR srcfile[MAX_PATH];
+    SystemPath(srcfile, TEXT(LKD_SOUNDS), lpName);
+
+    SF_INFO sfinfo = {};
+    SNDFILE* infile = sf_open(srcfile, SFM_READ, &sfinfo);
+    if (infile) {
+        alsa_play(infile, sfinfo);
+        sf_close(infile);
     }
 }
