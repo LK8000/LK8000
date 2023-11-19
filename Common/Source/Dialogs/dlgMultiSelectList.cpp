@@ -22,6 +22,7 @@
 #include "Asset.hpp"
 #include "Util/TruncateString.hpp"
 #include "Library/Utm.h"
+#include "utils/printf.h"
 
 #define MAX_LEN 200
 #define MAX_COMMENT 80
@@ -315,28 +316,28 @@ int BuildFLARMText(FLARM_TRAFFIC* pFlarm, TCHAR (&text1)[MAX_LEN],TCHAR (&text2)
   double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pFlarm->Latitude,  pFlarm->Longitude, &Distance, &Bear);
   if(_tcscmp(pFlarm->Name,_T("?")) ==0)
-    _sntprintf(text1,MAX_LEN, TEXT("%X"), pFlarm->RadioId);
+    lk::snprintf(text1, _T("%X"), pFlarm->RadioId);
   else
-    _sntprintf(text1,MAX_LEN, TEXT("[%s] %X"),pFlarm->Name, pFlarm->RadioId);
+    lk::snprintf(text1, _T("[%s] %X"),pFlarm->Name, pFlarm->RadioId);
 
   const FlarmId* flarmId = LookupFlarmId(pFlarm->RadioId);
   if(flarmId != NULL)
   {
     if(flarmId->freq[3] != ' ')
-      _sntprintf(Comment,MAX_COMMENT, TEXT("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
+      lk::snprintf(Comment, _T("%s  %s %s"), flarmId->type     // FLARMID_SIZE_TYPE   22
                                             , flarmId->freq     // FLARMID_SIZE_FREQ   8    r
                                             , flarmId->name);   // FLARMID_SIZE_NAME   22 => max 52 char
     else
-      _sntprintf(Comment,MAX_COMMENT, TEXT("%s %s"), flarmId->type            // FLARMID_SIZE_TYPE   22
+      lk::snprintf(Comment, _T("%s %s"), flarmId->type            // FLARMID_SIZE_TYPE   22
                                      , flarmId->name);          // FLARMID_SIZE_NAME   22 => max 52 char
 
-    _sntprintf(text1,MAX_LEN, TEXT("%s [%s] %s "), 
+    lk::snprintf(text1, _T("%s [%s] %s "), 
                                     pFlarm->Cn,  // 4
                                     pFlarm->Name // 31
                                     , Comment); // 80 => Total 121
   }
 
-  _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s  (%i%s  %3.1f%s  %i°) %s"), Distance*DISTANCEMODIFY                   //        6
+  lk::snprintf(text2, _T("%3.1f%s  (%i%s  %3.1f%s  %i°) %s"), Distance*DISTANCEMODIFY                   //        6
                                                           , Units::GetDistanceName()                          // 2+3=   5
                                                           , (int)(pFlarm->Altitude * ALTITUDEMODIFY)  //        5
                                                           , Units::GetAltitudeName()                          // 3+2=   5
@@ -360,27 +361,27 @@ int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR (&text1)[MAX_LEN],TCHAR (&te
   float press = pWeather->pressure;
   if (PressureHg){
     press /= TOHPA;
-    _stprintf(Comment, _T("%d° %d|%d %3.3finHg"), 
-  			(int)round(pWeather->windDir), 
+    lk::snprintf(Comment, _T("%d° %d|%d %3.3finHg"), 
+            (int)round(pWeather->windDir), 
             (int)round(pWeather->windSpeed*SPEEDMODIFY), 
-  			(int)round(pWeather->windGust*SPEEDMODIFY),
+            (int)round(pWeather->windGust*SPEEDMODIFY),
             press);      
   }else{
-    _stprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
-  			(int)round(pWeather->windDir), 
+    lk::snprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
+            (int)round(pWeather->windDir), 
             (int)round(pWeather->windSpeed*SPEEDMODIFY), 
-  			(int)round(pWeather->windGust*SPEEDMODIFY),
+            (int)round(pWeather->windGust*SPEEDMODIFY),
             press);      
   }
   if(_tcslen(name) == 0)
-    _sntprintf(text1,MAX_LEN, TEXT("%X %s"),pWeather->ID,Comment);
+    lk::snprintf(text1, _T("%X %s"),pWeather->ID,Comment);
   else
-    _sntprintf(text1,MAX_LEN, TEXT("%s %s"),name,Comment);
+    lk::snprintf(text1, _T("%s %s"),name,Comment);
 
-  _sntprintf(Comment,MAX_COMMENT, TEXT("%d°C %d%% %d%%"), (int)round(pWeather->temp)
+  lk::snprintf(Comment, _T("%d°C %d%% %d%%"), (int)round(pWeather->temp)
                                             , (int)round(pWeather->hum)
                                             , (int)round(pWeather->Battery));
-  _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s (%i°) %s"), Distance*DISTANCEMODIFY
+  lk::snprintf(text2, _T("%3.1f%s (%i°) %s"), Distance*DISTANCEMODIFY
                                                           , Units::GetDistanceName()
                                                           , (int) Bear
                                                           , Comment);
@@ -405,23 +406,23 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
 
   if (iTaskIdx == 0) {
      // _@M2301_  "S"    # S = Start Task point
-    _sntprintf(text1, MAX_LEN, TEXT("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
-    _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
+    lk::snprintf(text1, _T("%s: (%s)"), MsgToken(2301), WayPointList[idx].Name);
+    lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
                StartRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                Units::GetAltitudeName());
   } else {
      if (iTaskIdx == iLastTaskPoint) {
          //  _@M2303_  "F"                 // max 30         30 => max 60 char
-         _sntprintf(text1,MAX_LEN, TEXT("%s: (%s) "), MsgToken(2303),
+         lk::snprintf(text1, _T("%s: (%s) "), MsgToken(2303),
                    WayPointList[idx].Name);
-         _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
+         lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
                    FinishRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                    (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                    Units::GetAltitudeName());
      } else {
          //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
-         _sntprintf(text1,MAX_LEN,  TEXT("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
+         lk::snprintf(text1, _T("%s%i: (%s) "), MsgToken(2302), iTaskIdx,
                    WayPointList[idx].Name);
          double SecRadius = 0;
 
@@ -433,7 +434,7 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
                  SecRadius = Task[iTaskIdx].AATCircleRadius;
          }
 
-         _sntprintf(text2, MAX_LEN, TEXT("Radius %3.1f%s (%i%s)"),
+         lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
                    SecRadius * DISTANCEMODIFY, Units::GetDistanceName(),
                    (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                    Units::GetAltitudeName());
@@ -475,23 +476,23 @@ int BuildLandableText(int idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (
               WayPointList[idx].Freq[CUPSIZE_FREQ - j] = '\0';
 
       if (_tcslen(WayPointList[idx].Freq) > 2)
-        _sntprintf(text1, MAX_LEN, TEXT("%s %s"), WayPointList[idx].Name,
+        lk::snprintf(text1, _T("%s %s"), WayPointList[idx].Name,
                     WayPointList[idx].Freq);
       else
-        _sntprintf(text1,MAX_LEN, TEXT("%s"), WayPointList[idx].Name);
+        lk::snprintf(text1, _T("%s"), WayPointList[idx].Name);
   } else {
       if( WayPointList[idx].Style ==  STYLE_THERMAL)
-        _sntprintf(text1, MAX_LEN, TEXT("%s: %s"), MsgToken(905), WayPointList[idx].Name);
+        lk::snprintf(text1, _T("%s: %s"), MsgToken(905), WayPointList[idx].Name);
       else
       if (WayPointList[idx].Comment != NULL)
-        _sntprintf(text1, MAX_LEN, TEXT("%s %s"), WayPointList[idx].Name, Comment);
+        lk::snprintf(text1, _T("%s %s"), WayPointList[idx].Name, Comment);
       else
-        _sntprintf(text1, MAX_LEN,TEXT("%s"), WayPointList[idx].Name);
+        lk::snprintf(text1, _T("%s"), WayPointList[idx].Name);
   }
 
   if ((WayPointList[idx].RunwayLen >= 10) ||
       (WayPointList[idx].RunwayDir > 0)) {
-      _sntprintf(text2, MAX_LEN,TEXT("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
+      lk::snprintf(text2, _T("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
                 Distance * DISTANCEMODIFY, Units::GetDistanceName(),
                 (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                 Units::GetAltitudeName(),
@@ -501,7 +502,7 @@ int BuildLandableText(int idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (
                 (int) ((double) WayPointList[idx].RunwayLen * ALTITUDEMODIFY),
                 Units::GetAltitudeName());
   } else {
-      _sntprintf(text2,MAX_LEN, TEXT("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
+      lk::snprintf(text2, _T("%3.1f%s (%i%s) "), Distance * DISTANCEMODIFY,
                 Units::GetDistanceName(),
                 (int) (WayPointList[idx].Altitude * ALTITUDEMODIFY),
                 Units::GetAltitudeName());
@@ -579,17 +580,17 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
 
                 // airspace type already in name?
                 if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-                    _sntprintf(text1, MAX_LEN, TEXT("%s"), airspace_copy.Name()); // yes, take name only
+                    lk::snprintf(text1, _T("%s"), airspace_copy.Name()); // yes, take name only
                 } else {
                     // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
-                    _sntprintf(text1, MAX_LEN, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
+                    lk::snprintf(text1, _T("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
                 }
 
                 CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment, sizeof (Comment) / sizeof (Comment[0]), airspace_copy.Top());
                 CAirspaceManager::Instance().GetSimpleAirspaceAltText(Comment1, sizeof (Comment1) / sizeof (Comment1[0]), airspace_copy.Base());
 
                 CAirspaceManager::Instance().AirspaceCalculateDistance((CAirspace*) pAS, &HorDist, &Bearing, &VertDist);
-                _sntprintf(text2, MAX_LEN, TEXT("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
+                lk::snprintf(text2, _T("%3.1f%s (%s - %s)"), (double) HorDist*DISTANCEMODIFY, Units::GetDistanceName(), Comment1, Comment); //8 + 8+3   21
 
                 /****************************************************************
                  * for drawing the airspace pictorial, we need the original data.
@@ -656,8 +657,8 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_TEAM
              ************************************************************************************************/
         case IM_TEAM:
-          _sntprintf(text1,MAX_LEN,_T("%s:"),MsgToken(700)); //_@M700_ "Team code"
-          _sntprintf(text2,MAX_LEN,_T("%s"), CALCULATED_INFO.OwnTeamCode );
+          lk::snprintf(text1, _T("%s:"),MsgToken(700)); //_@M700_ "Team code"
+          lk::snprintf(text2, _T("%s"), CALCULATED_INFO.OwnTeamCode );
             ShowTextEntries(Surface, rc,  text1, text2);
             if(Appearance.UTF8Pictorials)
               UTF8Pictorial( Surface,  rc, MsgToken(2380), RGB_VDARKRED);  // _@M2380_ "⚑"
@@ -671,11 +672,11 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_ORACLE
              ************************************************************************************************/
         case IM_ORACLE:
-          _sntprintf(text1,MAX_LEN,_T("%s"), MsgToken(2058)); //_@M2058_ "Oracle"
+          lk::snprintf(text1, _T("%s"), MsgToken(2058)); //_@M2058_ "Oracle"
             if(el.iIdx >= 0)
-              _sntprintf(text2,MAX_LEN,_T("%s: %s"), MsgToken(456), WayPointList[el.iIdx].Name);// _@M456_ "Near"
+              lk::snprintf(text2, _T("%s: %s"), MsgToken(456), WayPointList[el.iIdx].Name);// _@M456_ "Near"
             else
-              _sntprintf(text2,MAX_LEN,_T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
+              lk::snprintf(text2, _T("%s"), MsgToken(1690)); //_@M1690_ "THE LK8000 ORACLE"
             ShowTextEntries(Surface, rc,  text1, text2);
             if(Appearance.UTF8Pictorials)
               UTF8Pictorial( Surface,  rc, MsgToken(2381),RGB_BLUE);  // _@M2381_ "♕"
@@ -688,19 +689,19 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              * IM_OWN_POS
              ************************************************************************************************/
           case IM_OWN_POS:
-            _sntprintf(text1,MAX_LEN,_T("%s [%s]"), AircraftRego_Config,AircraftType_Config);
+            lk::snprintf(text1, _T("%s [%s]"), AircraftRego_Config,AircraftType_Config);
              if (ISPARAGLIDER || ISCAR)
              {
                int utmzone; char utmchar;
                double easting, northing;
                LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
-               _sntprintf(text2,MAX_LEN,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+               lk::snprintf(text2, _T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
              }
              else
              {
                LockFlightData();
                Units::CoordinateToString( GPS_INFO.Longitude,GPS_INFO.Latitude, Comment, sizeof(text2)-1);
-               _sntprintf(text2,MAX_LEN,TEXT("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
+               lk::snprintf(text2, _T("%s %6.0f%s"),Comment, GPS_INFO.Altitude*TOFEET,Units::GetUnitName(unFeet));
                UnlockFlightData();
              }
              ShowTextEntries(Surface, rc,  text1, text2);
