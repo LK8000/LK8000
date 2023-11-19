@@ -471,99 +471,104 @@ passthrough:
 
 }
 
-
+namespace {
 //
 // Some labels already exist for buttons. Some other are missing.
 // We assign msg tokens in index array, since they are not in order.
 // Order is strictly the one in Enums.h for customkeys
 //
-
-struct KeyLabel {
-	const unsigned Name; // used by Config dialog
-	const unsigned MenuLabel;
+struct KeyLabel_t {
+	MsgToken_t Name; // used by Config dialog
+	MsgToken_t MenuLabel;
 };
+
+template<unsigned name_id, unsigned label_id>
+KeyLabel_t KeyLabel() {
+	return { MsgToken<name_id>, MsgToken<label_id> };
+}
 
 // Careful, order must respect the enum list in LKInterface.h CustomKeyMode_t
 
-static const KeyLabel _CustomKeyLabel[] = {
-	{ 239, 2200 },	// { Disabled, ---- }  - note: never shown since label not printed at all
-	{ 435, 2201 },	// { Menu, Menu }
-	{ 517, 2202 },	// { Page Back, Page\nBack }
-	{ 725, 2203 },	// { Toggle Map<>current page, Toggle\nMap }
-	{ 723, 2204 },	// { Toggle Map<>Landables, Toggle\nLandb }
-	{ 385, 2205 },	// { Landables, Landables }
-	{ 722, 2206 },	// { Toggle Map<>Commons, Toggle\nCommon }
-	{ 192, 2207 },	// { Commons, Commons }
-	{ 724, 2208 },	// { Toggle Map<>Traffic, Toggle\nTraffic }
-	{ 738, 2209 },	// { Traffic, Traffic }
-	{ 363, 2036 },	// { Invert colors, invert text }
-	{ 1532, 2071 },	// { TrueWind, TrueWind\nCalc }
-	{ 726, 2079 },	// { Overlays toggle, Overlays }
-	{ 1533, 2210 },	// { AutoZoom On/Off, Auto\nZoom }
-	{ 982, 982 },	// (reserved)
-	{ 426, 2070 },	// { Mark Location, Location\nMarker }
-	{ 513, 2024 },	// { Time Gates, Time\nGates }
-	{ 1535, 2211 },	// { Thermal Booster, Therm\nSound }
-	{ 329, 2212 },	// { Goto Home, Goto\nHome }
-	{ 519, 2213 },	// { Panorama trigger, Zoom\nOut20 }
-	{ 448, 2214 },	// { Multitarget rotate, Multi\nTarg+ } 
-	{ 447, 2025 },	// { Multitarget menu, Multi\nTarget }
-	{ 700, 2021 },	// { Team code, Team\nCode }
-	{ 767, 2215 },	// { Use HBar on/off, Use\nHBAR }
-	{ 130, 2042 },	// { Basic Setup menu, Setup\nBasic } 
-	{ 1536, 2216 },	// { SIMulation menu, SIM\nMENU }
-	{ 1652, 2217 },	// { Airspace Analysis, Airsp\nAnalys }
-	{ 1653, 2218 },	// { Toggle Map<>Airspace infopage, Toggle\nAirsp }
-	{ 1657, 2001 },	// { Zoom In, Zoom\nin }
-	{ 1658, 2002 },	// { Zoom Out, Zoom\nout }
-	{ 1659, 2219 },	// { Zoom In More, Zoom\nin++ }
-	{ 1660, 2220 },	// { Zoom Out More, Zoom\nout++ }
-	{ 1687, 2221 },	// { Optimized route toggle, Route\nOptim }
-	{ 1688, 966 },	// { Screen Lock, LOCK\nSCREEN }
-	{ 1689, 2058 },	// { Oracle, Oracle }
-	{ 1666, 2115 },	// { TotalEnergy toggle, TEnergy }
-	{ 2063, 2063 },	// Notepad
-	{ 1693, 2223 },	// { Change+ Terrain Colors, Color+\nterrain }
-	{ 871, 2060 },	// { Nearest airspace, Nearest\nAirspace }
-	{ 1740, 2222 },	// { OLC analysis, OLC\nAnalys }
-	{ 1774, 2224 },	// { Change- Terrain Colors, Color-\nterrain }
-	{ 1754, 2225 },	// { Free Flight start, Free\nFlight }
-	{ 1787, 2131 },	// { Custom Menu, Custom\nMenu }
-	{ 685, 2013 },	// { Task Calculator, Task\nCalc }
-	{ 684, 2020 },	// { Target, Target }
-	{ 1791, 2226 },	// { Arm toggle advance, Arm toggle }
-	{ 2064, 2064 },	// Message Repeat
-	{ 2015, 2015 },	// Waypoint lookup
-	{ 2082, 2082 },	// PAN
-	{ 2227, 2227 },	// Toggle windrose
-	{ 2228, 2228 },	// Flarm radar
-	{ 2143, 2143 },	// Device A Config
-	{ 2144, 2144 },	// Device B Config
-	{ 2229, 2229 },	// Reset Odometer
-	{ 2230, 2230 },	// Force landing
-	{ 2236, 2236 },	// ResetTripComputer
-	{ 2237, 2237 },	// Sonar toggle
-	{ 2246, 2246 },	// Reset view
-	{ 2038, 2038 },	// Map Orientation
-	{ 928, 928 },	// Restarting Comm Ports
-	{ 2249, 2249 },	// DspMode
-	{ 2390, 2390 },	// Toggle Draw XC
-	{ 2337, 2337 },	// Airspace lookup
-	{ 2393, 2393 },	// Device C Config
-	{ 2394, 2394 },	// Device D Config
-	{ 2395, 2395 },	// Device E Config
-	{ 2396, 2396 },	// Device F Config
-	{ 2307, 2307 },	// Radio Settings
-	{ 844, 844}, // MacCready setting
+const KeyLabel_t _CustomKeyLabel[] = {
+	KeyLabel< 239, 2200>(),	// { Disabled, ---- }  - note: never shown since label not printed at all
+	KeyLabel< 435, 2201>(),	// { Menu, Menu }
+	KeyLabel< 517, 2202>(),	// { Page Back, Page\nBack }
+	KeyLabel< 725, 2203>(),	// { Toggle Map<>current page, Toggle\nMap }
+	KeyLabel< 723, 2204>(),	// { Toggle Map<>Landables, Toggle\nLandb }
+	KeyLabel< 385, 2205>(),	// { Landables, Landables }
+	KeyLabel< 722, 2206>(),	// { Toggle Map<>Commons, Toggle\nCommon }
+	KeyLabel< 192, 2207>(),	// { Commons, Commons }
+	KeyLabel< 724, 2208>(),	// { Toggle Map<>Traffic, Toggle\nTraffic }
+	KeyLabel< 738, 2209>(),	// { Traffic, Traffic }
+	KeyLabel< 363, 2036>(),	// { Invert colors, invert text }
+	KeyLabel<1532, 2071>(),	// { TrueWind, TrueWind\nCalc }
+	KeyLabel< 726, 2079>(),	// { Overlays toggle, Overlays }
+	KeyLabel<1533, 2210>(),	// { AutoZoom On/Off, Auto\nZoom }
+	KeyLabel< 982,  982>(),	// (reserved)
+	KeyLabel< 426, 2070>(),	// { Mark Location, Location\nMarker }
+	KeyLabel< 513, 2024>(),	// { Time Gates, Time\nGates }
+	KeyLabel<1535, 2211>(),	// { Thermal Booster, Therm\nSound }
+	KeyLabel< 329, 2212>(),	// { Goto Home, Goto\nHome }
+	KeyLabel< 519, 2213>(),	// { Panorama trigger, Zoom\nOut20 }
+	KeyLabel< 448, 2214>(),	// { Multitarget rotate, Multi\nTarg+ } 
+	KeyLabel< 447, 2025>(),	// { Multitarget menu, Multi\nTarget }
+	KeyLabel< 700, 2021>(),	// { Team code, Team\nCode }
+	KeyLabel< 767, 2215>(),	// { Use HBar on/off, Use\nHBAR }
+	KeyLabel< 130, 2042>(),	// { Basic Setup menu, Setup\nBasic } 
+	KeyLabel<1536, 2216>(),	// { SIMulation menu, SIM\nMENU }
+	KeyLabel<1652, 2217>(),	// { Airspace Analysis, Airsp\nAnalys }
+	KeyLabel<1653, 2218>(),	// { Toggle Map<>Airspace infopage, Toggle\nAirsp }
+	KeyLabel<1657, 2001>(),	// { Zoom In, Zoom\nin }
+	KeyLabel<1658, 2002>(),	// { Zoom Out, Zoom\nout }
+	KeyLabel<1659, 2219>(),	// { Zoom In More, Zoom\nin++ }
+	KeyLabel<1660, 2220>(),	// { Zoom Out More, Zoom\nout++ }
+	KeyLabel<1687, 2221>(),	// { Optimized route toggle, Route\nOptim }
+	KeyLabel<1688,  966>(),	// { Screen Lock, LOCK\nSCREEN }
+	KeyLabel<1689, 2058>(),	// { Oracle, Oracle }
+	KeyLabel<1666, 2115>(),	// { TotalEnergy toggle, TEnergy }
+	KeyLabel<2063, 2063>(),	// Notepad
+	KeyLabel<1693, 2223>(),	// { Change+ Terrain Colors, Color+\nterrain }
+	KeyLabel< 871, 2060>(),	// { Nearest airspace, Nearest\nAirspace }
+	KeyLabel<1740, 2222>(),	// { OLC analysis, OLC\nAnalys }
+	KeyLabel<1774, 2224>(),	// { Change- Terrain Colors, Color-\nterrain }
+	KeyLabel<1754, 2225>(),	// { Free Flight start, Free\nFlight }
+	KeyLabel<1787, 2131>(),	// { Custom Menu, Custom\nMenu }
+	KeyLabel< 685, 2013>(),	// { Task Calculator, Task\nCalc }
+	KeyLabel< 684, 2020>(),	// { Target, Target }
+	KeyLabel<1791, 2226>(),	// { Arm toggle advance, Arm toggle }
+	KeyLabel<2064, 2064>(),	// Message Repeat
+	KeyLabel<2015, 2015>(),	// Waypoint lookup
+	KeyLabel<2082, 2082>(),	// PAN
+	KeyLabel<2227, 2227>(),	// Toggle windrose
+	KeyLabel<2228, 2228>(),	// Flarm radar
+	KeyLabel<2143, 2143>(),	// Device A Config
+	KeyLabel<2144, 2144>(),	// Device B Config
+	KeyLabel<2229, 2229>(),	// Reset Odometer
+	KeyLabel<2230, 2230>(),	// Force landing
+	KeyLabel<2236, 2236>(),	// ResetTripComputer
+	KeyLabel<2237, 2237>(),	// Sonar toggle
+	KeyLabel<2246, 2246>(),	// Reset view
+	KeyLabel<2038, 2038>(),	// Map Orientation
+	KeyLabel< 928,  928>(),	// Restarting Comm Ports
+	KeyLabel<2249, 2249>(),	// DspMode
+	KeyLabel<2390, 2390>(),	// Toggle Draw XC
+	KeyLabel<2337, 2337>(),	// Airspace lookup
+	KeyLabel<2393, 2393>(),	// Device C Config
+	KeyLabel<2394, 2394>(),	// Device D Config
+	KeyLabel<2395, 2395>(),	// Device E Config
+	KeyLabel<2396, 2396>(),	// Device F Config
+	KeyLabel<2307, 2307>(),	// Radio Settings
+	KeyLabel< 844,  844>()    // MacCready setting
 };
 
 static_assert(ckTOP == std::size(_CustomKeyLabel), "invalid _CustomKeyLabel array size");
 
+} // namespace
 
 
 const TCHAR* CustomKeyLabel(unsigned key) {
 	if (key < std::size(_CustomKeyLabel)) {
-		return MsgToken(_CustomKeyLabel[key].MenuLabel);
+		return _CustomKeyLabel[key].MenuLabel();
 	}
 	return nullptr;
 }
@@ -574,7 +579,7 @@ void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, unsigned value) {
 		DataField* dfe = pWnd->GetDataField();
 		if (dfe->getCount() == 0) {
 			for (auto& item : _CustomKeyLabel) {
-				dfe->addEnumText(MsgToken(item.Name));
+				dfe->addEnumText(item.Name());
 			}
 			dfe->Sort();
 		}
