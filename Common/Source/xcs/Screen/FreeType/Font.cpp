@@ -33,6 +33,7 @@ Copyright_License {
 #include "Screen/Custom/Files.hpp"
 #include "Init.hpp"
 #include "Asset.hpp"
+#include <cstdint>
 
 #ifndef ENABLE_OPENGL
 #include "Thread/Mutex.hpp"
