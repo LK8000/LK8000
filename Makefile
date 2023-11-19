@@ -541,6 +541,10 @@ ifeq ($(CONFIG_LINUX),y)
 
   $(eval $(call pkg-config-library,PNG,libpng))
   CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
+
+  $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
+  CE_DEFS += $(GEOGRAPHIC_CPPFLAGS)
+
 endif
 
 ifeq ($(CONFIG_WIN32),y)
@@ -688,7 +692,8 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_LINUX),y)
- LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm -lGeographic
+ LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm
+ LDLIBS += $(subst @lib_postfix@,,$(GEOGRAPHIC_LDLIBS))
  LDLIBS += $(PNG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
  LDLIBS += $(ZLIB_LDLIBS)

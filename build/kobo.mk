@@ -24,14 +24,23 @@ KOBO_SYS_LIB_NAMES = \
 	libc.so.6 \
 	libgcc_s.so.1 \
 	librt.so.1 \
-	libpthread.so.0	\
+	libpthread.so.0 \
 
 KOBO_SYS_LIB_PATHS = $(addprefix $(SYSROOT)/lib/,$(KOBO_SYS_LIB_NAMES))
 
-KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libz.so.1
-KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libpng16.so.16
-KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libfreetype.so.6
-KOBO_SYS_LIB_PATHS += $(KOBO)/lib/libGeographic.so.19
+KOBO_LIB_PATHS = \
+	$(KOBO)/lib/libz.so.1 \
+	$(KOBO)/lib/libpng16.so.16 \
+	$(KOBO)/lib/libfreetype.so.6 \
+
+# depending of version libGeographic have different name.
+#  we push all in the list and remove the non-existent files later
+KOBO_LIB_PATHS += \
+	$(KOBO)/lib/libGeographic.so.19 \
+	$(KOBO)/lib/libGeographicLib.so.26 \
+
+# let only the existing file in the list
+KOBO_SYS_LIB_PATHS += $(filter $(KOBO_LIB_PATHS), $(wildcard $(KOBO)/lib/*))
 
 KOBO_POWER_OFF_BIN = PowerOff
 
