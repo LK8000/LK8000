@@ -31,6 +31,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <cstdint>
 
 /**
 * RFC 4648 §4: base64 (standard)
