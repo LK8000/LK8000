@@ -168,15 +168,6 @@ const TCHAR *LKGetText(const TCHAR *TextIn) {
   return TextIn;
 }
 
-/// Direct token access, with range check, faster than LKGetText
-// return empty string if token is not found
-const TCHAR *MsgToken(unsigned index) {
-  if (index < std::size(LKMessages) && LKMessages[index]) {
-    return LKMessages[index];
-  }
-  return _T("");
-}
-
 void LKLoadLanguageFile() {
 
   LKUnloadLanguageFile();
