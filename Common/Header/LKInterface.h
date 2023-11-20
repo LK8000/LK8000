@@ -17,11 +17,14 @@ void    InitLKScreen();
 void    InitLK8000();
 void    InitModeTable();
 
-bool	CustomKeyHandler(unsigned key);
-const TCHAR* CustomKeyLabel(unsigned key);
-void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, unsigned value);
-void GetCustomKey(WndForm* pForm, const TCHAR* WndName, unsigned short& value);
+bool	CustomKeyHandler(CustomKeyMode_t key);
+
+const TCHAR* CustomKeyLabel(CustomKeyMode_t key);
+void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, CustomKeyMode_t value);
+void GetCustomKey(WndForm* pForm, const TCHAR* WndName, CustomKeyMode_t& value);
 void GetCustomKey(WndForm* pForm, const TCHAR* WndName, int& value);
+
+CustomKeyMode_t CustomKeyFromMenu(unsigned pos);
 
 void	BottomBarChange(bool advance);
 void	InfoPageChange(bool advance);
@@ -49,8 +52,19 @@ int ProcessVirtualKey(int x, int y, long keytime, short vkmode);
 
 void BottomSounds();
 
+// ScreenKey identifiers.. it was time to do it!
+enum class ScreenKey : uint8_t {
+  CKI_BOTTOMCENTER = 0,
+  CKI_BOTTOMLEFT,
+  CKI_BOTTOMRIGHT,
+  CKI_BOTTOMICON,
+  CKI_TOPLEFT,
+  CKI_TOPRIGHT
+};
 
-typedef enum{
+bool ScreenKeyHandler(ScreenKey key);
+
+enum class CustomKeyMode_t : uint16_t {
 	ckDisabled=0,
 	ckMenu,
 	ckBackMode,
@@ -121,7 +135,6 @@ typedef enum{
     ckRadioDlg,
 	ckMCSetting,
 	ckTOP
-} CustomKeyMode_t;
-
+};
 
 #endif // LK8000_LKINTERFACE_H

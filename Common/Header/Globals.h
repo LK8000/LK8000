@@ -156,13 +156,16 @@ GEXTERN double GPSAltitudeOffset; 	// VENTA3
 GEXTERN bool PressureHg;
 //GEXTERN bool ShortcutIbox;
 GEXTERN int  CustomKeyTime;
-GEXTERN int  CustomKeyModeCenter;
-GEXTERN int  CustomKeyModeLeft;
-GEXTERN int  CustomKeyModeRight;
-GEXTERN int  CustomKeyModeAircraftIcon;
-GEXTERN int  CustomKeyModeLeftUpCorner;
-GEXTERN int  CustomKeyModeRightUpCorner;
-GEXTERN int  CustomKeyModeCenterScreen;
+
+enum class CustomKeyMode_t : uint16_t;
+
+GEXTERN CustomKeyMode_t CustomKeyModeCenter;
+GEXTERN CustomKeyMode_t CustomKeyModeLeft;
+GEXTERN CustomKeyMode_t CustomKeyModeRight;
+GEXTERN CustomKeyMode_t CustomKeyModeAircraftIcon;
+GEXTERN CustomKeyMode_t CustomKeyModeLeftUpCorner;
+GEXTERN CustomKeyMode_t CustomKeyModeRightUpCorner;
+
 GEXTERN double QFEAltitudeOffset; // VENTA3
 
 // used by auto QFE: do not reset QFE if previously in flight. So you can check QFE
@@ -614,16 +617,16 @@ GEXTERN bool ConfIP31;
 GEXTERN bool ConfIP32;
 GEXTERN bool ConfIP33;
 
-GEXTERN unsigned short CustomMenu1;
-GEXTERN unsigned short CustomMenu2;
-GEXTERN unsigned short CustomMenu3;
-GEXTERN unsigned short CustomMenu4;
-GEXTERN unsigned short CustomMenu5;
-GEXTERN unsigned short CustomMenu6;
-GEXTERN unsigned short CustomMenu7;
-GEXTERN unsigned short CustomMenu8;
-GEXTERN unsigned short CustomMenu9;
-GEXTERN unsigned short CustomMenu10;
+GEXTERN CustomKeyMode_t CustomMenu1;
+GEXTERN CustomKeyMode_t CustomMenu2;
+GEXTERN CustomKeyMode_t CustomMenu3;
+GEXTERN CustomKeyMode_t CustomMenu4;
+GEXTERN CustomKeyMode_t CustomMenu5;
+GEXTERN CustomKeyMode_t CustomMenu6;
+GEXTERN CustomKeyMode_t CustomMenu7;
+GEXTERN CustomKeyMode_t CustomMenu8;
+GEXTERN CustomKeyMode_t CustomMenu9;
+GEXTERN CustomKeyMode_t CustomMenu10;
 
 void Reset_CustomMenu();
 

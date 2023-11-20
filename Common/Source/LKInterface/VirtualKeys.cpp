@@ -132,7 +132,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				// standard configurable mode
 				if (keytime >=CustomKeyTime) {
 					// 2 is right key
-					if (CustomKeyHandler(CKI_BOTTOMRIGHT)) return 0;
+					if (ScreenKeyHandler(ScreenKey::CKI_BOTTOMRIGHT)) return 0;
 				}
 				#ifdef DEBUG_PROCVK
 				_stprintf(buf,_T("RIGHT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
@@ -146,7 +146,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			if ( X<s_xleft ) { // following is ugly
 				if (keytime >=CustomKeyTime) {
 					// 1 is left key
-					if (CustomKeyHandler(CKI_BOTTOMLEFT)) return 0;
+					if (ScreenKeyHandler(ScreenKey::CKI_BOTTOMLEFT)) return 0;
 				}
 
 				#ifdef DEBUG_PROCVK
@@ -244,7 +244,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// standard configurable mode
 			if (keytime >=CustomKeyTime) {
 				// 0 is center key
-				if (CustomKeyHandler(CKI_BOTTOMCENTER)) return 0;
+				if (ScreenKeyHandler(ScreenKey::CKI_BOTTOMCENTER)) return 0;
 			}
 			#endif
 

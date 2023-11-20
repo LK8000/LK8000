@@ -1260,53 +1260,15 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 }
 }
 
-void InputEvents::eventMyMenu(const TCHAR *misc) {
-
-  unsigned int i, ckeymode;
-  i=_tcstoul(misc, NULL, 10);
-  LKASSERT(i>0 && i<11);
-
-  // test mode only!
-  switch(i) {
-	case 1:
-		ckeymode=CustomMenu1;
-                break;
-        case 2:
-                ckeymode=CustomMenu2;
-                break;
-        case 3:
-                ckeymode=CustomMenu3;
-                break;
-        case 4:
-                ckeymode=CustomMenu4;
-                break;
-        case 5:
-                ckeymode=CustomMenu5;
-                break;
-        case 6:
-                ckeymode=CustomMenu6;
-                break;
-        case 7:
-                ckeymode=CustomMenu7;
-                break;
-	case 8:
-		ckeymode=CustomMenu8;
-		break;
-	case 9:
-		ckeymode=CustomMenu9;
-		break;
-	case 10:
-		ckeymode=CustomMenu10;
-		break;
-	default:
-		ckeymode=ckDisabled;
-		break;
+void InputEvents::eventMyMenu(const TCHAR* misc) {
+  unsigned int i = _tcstoul(misc, nullptr, 10);
+  if (i > 0 && i < 11) {
+    CustomKeyHandler(CustomKeyFromMenu(i));
   }
-  CustomKeyHandler(ckeymode+1000);
-  return;
-
+  else {
+    assert(false);
+  }
 }
-
 
 // StatusMessage
 // Displays a user defined status message.
@@ -1958,7 +1920,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("AIRSPACELU")) == 0) {
-    CustomKeyHandler(ckAirspaceLookup+1000); // passthrough mode
+    CustomKeyHandler(CustomKeyMode_t::ckAirspaceLookup); // passthrough mode
     return;
   }
 
@@ -2111,13 +2073,13 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("DRAWXC")) == 0) {
-	  CustomKeyHandler(ckDrawXCToggle+1000); // passthrough mode
+	  CustomKeyHandler(CustomKeyMode_t::ckDrawXCToggle); // passthrough mode
 	return;
   }
 
 
   if (_tcscmp(misc, TEXT("SONAR")) == 0) {
-	CustomKeyHandler(ckSonarToggle+1000); // passthrough mode
+	CustomKeyHandler(CustomKeyMode_t::ckSonarToggle); // passthrough mode
 	return;
   }
 

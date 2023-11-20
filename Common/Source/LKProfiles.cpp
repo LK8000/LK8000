@@ -197,7 +197,6 @@ const char szRegistryConfIP31[] = "ConfIP31";
 const char szRegistryConfIP32[] = "ConfIP32";
 const char szRegistryConfIP33[] = "ConfIP33";
 const char szRegistryCustomKeyModeAircraftIcon[] = "CustomKeyModeAircraftIcon";
-const char szRegistryCustomKeyModeCenterScreen[] = "CustomKeyModeCenterScreen";
 const char szRegistryCustomKeyModeCenter[] = "CustomKeyModeCenter";
 const char szRegistryCustomKeyModeLeftUpCorner[] = "CustomKeyModeLeftUpCorner";
 const char szRegistryCustomKeyModeLeft[] = "CustomKeyModeLeft";

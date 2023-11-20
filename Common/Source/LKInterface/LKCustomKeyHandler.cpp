@@ -24,85 +24,63 @@ extern void ShowMenu();
 //
 // Passthrough mode for keys>=1000 (custom menu keys)
 //
-bool CustomKeyHandler(unsigned key) {
-
-  int ckeymode;
-  static bool doinit=true;
-  static int oldModeIndex;
-
-  if (doinit) {
-	oldModeIndex=LKMODE_INFOMODE;;
-	doinit=false;
+bool ScreenKeyHandler(ScreenKey key) {
+  switch (key) {
+    case ScreenKey::CKI_BOTTOMCENTER:
+      return CustomKeyHandler(CustomKeyModeCenter);
+    case ScreenKey::CKI_BOTTOMLEFT:
+      return CustomKeyHandler(CustomKeyModeLeft);
+    case ScreenKey::CKI_BOTTOMRIGHT:
+      return CustomKeyHandler(CustomKeyModeRight);
+    case ScreenKey::CKI_BOTTOMICON:
+      return CustomKeyHandler(CustomKeyModeAircraftIcon);
+    case ScreenKey::CKI_TOPLEFT:
+      return CustomKeyHandler(CustomKeyModeLeftUpCorner);
+    case ScreenKey::CKI_TOPRIGHT:
+      return CustomKeyHandler(CustomKeyModeRightUpCorner);
+    default:
+      DoStatusMessage(_T("ERR-725 UNKNOWN Screen Key"));
+      break;
   }
+  return false;
+}
 
-  if (key>=1000) {
-	ckeymode=key-1000;
-	LKASSERT((ckeymode>=0 && ckeymode<ckTOP));
-	goto passthrough;
+bool CustomKeyHandler(CustomKeyMode_t key) {
+  static int oldModeIndex = LKMODE_INFOMODE;
+  static bool doinit = true;
+  if (doinit) {
+	oldModeIndex = LKMODE_INFOMODE;
+	doinit = false;
   }
 
   switch(key) {
-	case CKI_BOTTOMCENTER:
-		ckeymode=CustomKeyModeCenter;
+	case CustomKeyMode_t::ckDisabled:
 		break;
-	case CKI_BOTTOMLEFT:
-		ckeymode=CustomKeyModeLeft;
-		break;
-	case CKI_BOTTOMRIGHT:
-		ckeymode=CustomKeyModeRight;
-		break;
-	case CKI_BOTTOMICON:
-		ckeymode=CustomKeyModeAircraftIcon;
-		break;
-	case CKI_TOPLEFT:
-		ckeymode=CustomKeyModeLeftUpCorner;
-		break;
-	case CKI_TOPRIGHT:
-		ckeymode=CustomKeyModeRightUpCorner;
-		break;
-	case CKI_CENTERSCREEN:
-		ckeymode=CustomKeyModeCenterScreen;
-		break;
-	default:
-		DoStatusMessage(_T("ERR-725 UNKNOWN CUSTOMKEY"));
-		return false;
-		break;
-  }
-
-passthrough:
-
-  switch(ckeymode) {
-	case ckDisabled:
-		break;
-	case ckZoomIn:
+	case CustomKeyMode_t::ckZoomIn:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(1);
 		return true;
-		break;
-	case ckZoomInMore:
+	case CustomKeyMode_t::ckZoomInMore:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(2);
 		return true;
-		break;
-	case ckZoomOut:
+	case CustomKeyMode_t::ckZoomOut:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(-1);
 		return true;
-		break;
-	case ckZoomOutMore:
+	case CustomKeyMode_t::ckZoomOutMore:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		MapWindow::zoom.EventScaleZoom(-2);
 		return true;
-		break;
-	case ckMenu:
+	case CustomKeyMode_t::ckMenu:
 		ShowMenu();
 		return true;
-	case ckBackMode:
+	case CustomKeyMode_t::ckBackMode:
 		PreviousModeIndex();
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckToggleMap: //TODO
+	case CustomKeyMode_t::ckToggleMap: //TODO
 		if (ModeIndex==LKMODE_MAP)
 			SetModeIndex(oldModeIndex);
 		else {
@@ -113,22 +91,22 @@ passthrough:
 		SoundModeIndex();
 		return true;
 
-	case ckTrueWind:
+	case CustomKeyMode_t::ckTrueWind:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("TrueWind"));
 		return true;
 
-	case ckTeamCode:
+	case CustomKeyMode_t::ckTeamCode:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("Teamcode"));
 		return true;
 
-	case ckToggleOverlays:
+	case CustomKeyMode_t::ckToggleOverlays:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		ToggleMultimapOverlays();
 		return true;
 
-	case ckToggleMapLandable:
+	case CustomKeyMode_t::ckToggleMapLandable:
 		if (ModeIndex==LKMODE_MAP)
 			SetModeIndex(LKMODE_WP);
 		else
@@ -136,12 +114,12 @@ passthrough:
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckLandables:
+	case CustomKeyMode_t::ckLandables:
 		SetModeIndex(LKMODE_WP);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckToggleMapCommons:
+	case CustomKeyMode_t::ckToggleMapCommons:
 		if (ModeIndex==LKMODE_MAP)
 			SetModeIndex(LKMODE_NAV);
 		else
@@ -149,12 +127,12 @@ passthrough:
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckCommons:
+	case CustomKeyMode_t::ckCommons:
 		SetModeIndex(LKMODE_NAV);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckToggleMapTraffic:
+	case CustomKeyMode_t::ckToggleMapTraffic:
 		if (ModeIndex==LKMODE_MAP)
 			SetModeIndex(LKMODE_TRF);
 		else
@@ -162,35 +140,35 @@ passthrough:
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckTraffic:
+	case CustomKeyMode_t::ckTraffic:
 		SetModeIndex(LKMODE_TRF);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckInvertColors:
+	case CustomKeyMode_t::ckInvertColors:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventInvertColor(NULL);
 		return true;
-	case ckTimeGates:
+	case CustomKeyMode_t::ckTimeGates:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventTimeGates(NULL);
 		return true;
-	case ckMarkLocation:
+	case CustomKeyMode_t::ckMarkLocation:
 		InputEvents::eventMarkLocation(_T(""));
 		return true;
-	case ckAutoZoom:
+	case CustomKeyMode_t::ckAutoZoom:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventZoom(_T("auto toggle"));
 		InputEvents::eventZoom(_T("auto show"));
 		return true;
-	case ckActiveMap:
+	case CustomKeyMode_t::ckActiveMap:
                 // NO MORE USED (reserved)
 		return true;
-	case ckBooster:
+	case CustomKeyMode_t::ckBooster:
 		DoStatusMessage(_T("FEEL THE THERMAL"));
 		LKSound(_T("LK_BOOSTER.WAV"));
 		return true;
-	case ckGoHome:
+	case CustomKeyMode_t::ckGoHome:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (ValidWayPoint(HomeWaypoint)) {
 			if ( (ValidTaskPoint(ActiveTaskPoint)) && (Task[ActiveTaskPoint].Index == HomeWaypoint )) {
@@ -203,7 +181,7 @@ passthrough:
 	// LKTOKEN  _@M465_ = "No Home to go!"
 			DoStatusMessage(MsgToken<465>());
 		return true;
-	case ckPanorama:
+	case CustomKeyMode_t::ckPanorama:
 		if (PGZoomTrigger==false)
 			PGZoomTrigger=true;
 		else
@@ -211,27 +189,27 @@ passthrough:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		return true;
 
-	case ckMultitargetRotate:
+	case CustomKeyMode_t::ckMultitargetRotate:
 		RotateOvertarget();
 		MapWindow::RefreshMap();
 		return true;
 
-	case ckMultitargetMenu:
+	case CustomKeyMode_t::ckMultitargetMenu:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("MTarget"));
 		return true;
-	case ckBaroToggle:
+	case CustomKeyMode_t::ckBaroToggle:
 		ToggleBaroAltitude();
 		return true;
-	case ckBasicSetup:
+	case CustomKeyMode_t::ckBasicSetup:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("Basic"));
 		return true;
-	case ckSimMenu:
+	case CustomKeyMode_t::ckSimMenu:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("SIMMENU"));
 		return true;
-	case ckToggleMapAirspace:
+	case CustomKeyMode_t::ckToggleMapAirspace:
 		if (ModeIndex==LKMODE_MAP)
 			SetModeType(LKMODE_WP,WP_AIRSPACES);
 		else
@@ -239,51 +217,51 @@ passthrough:
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckAirspaceAnalysis:
+	case CustomKeyMode_t::ckAirspaceAnalysis:
 		SetModeType(LKMODE_MAP,MP_MAPASP);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckOptimizeRoute:
+	case CustomKeyMode_t::ckOptimizeRoute:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		TskOptimizeRoute=!TskOptimizeRoute;
 		if(gTaskType==TSK_GP) {
             ClearOptimizedTargetPos();
 		}
 		return true;
-	case ckLockScreen:
+	case CustomKeyMode_t::ckLockScreen:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("LOCKMODE"));
 		return true;
-	case ckWhereAmI:
+	case CustomKeyMode_t::ckWhereAmI:
 		// no sound here, chime is played by service event
 		InputEvents::eventService(_T("ORACLE"));
 		return true;
-	case ckUseTotalEnergy:
+	case CustomKeyMode_t::ckUseTotalEnergy:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("TOTALEN"));
 		return true;
-	case ckNotepad:
+	case CustomKeyMode_t::ckNotepad:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventChecklist(_T(""));
 		return true;
-	case ckTerrainColors:
+	case CustomKeyMode_t::ckTerrainColors:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("TERRCOL"));
 		return true;
-	case ckNearestAirspace:
+	case CustomKeyMode_t::ckNearestAirspace:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventNearestAirspaceDetails(NULL);
 		return true;
-	case ckOlcAnalysis:
+	case CustomKeyMode_t::ckOlcAnalysis:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("OlcAnalysis"));
 		return true;
-	case ckTerrainColorsBack:
+	case CustomKeyMode_t::ckTerrainColorsBack:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventService(_T("TERRCOLBACK"));
 		return true;
-	case ckForceFreeFlightRestart:
+	case CustomKeyMode_t::ckForceFreeFlightRestart:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (!CALCULATED_INFO.Flying) {
 			DoStatusMessage(MsgToken<922>()); // NOT FLYING
@@ -293,67 +271,67 @@ passthrough:
 			}
 		}
 		return true;
-	case ckCustomMenu1:
+	case CustomKeyMode_t::ckCustomMenu1:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventMode(_T("MYMODE"));
 		return true;
-	case ckTaskCalc:
+	case CustomKeyMode_t::ckTaskCalc:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventCalculator(NULL);
 		return true;
-	case ckTaskTarget:
+	case CustomKeyMode_t::ckTaskTarget:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventSetup(_T("Target"));
 		return true;
-	case ckArmAdvance:
+	case CustomKeyMode_t::ckArmAdvance:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventArmAdvance(_T("toggle"));
 		InputEvents::eventArmAdvance(_T("show"));
 		return true;
 
-	case ckMessageRepeat:
+	case CustomKeyMode_t::ckMessageRepeat:
 		InputEvents::eventRepeatStatusMessage(NULL);
                 return true;
 
-	case ckWaypointLookup:
+	case CustomKeyMode_t::ckWaypointLookup:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventWaypointDetails(_T("select"));
 		return true;
 
-	case ckPan:
+	case CustomKeyMode_t::ckPan:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::eventPan(_T("toggle"));
 		return true;
 
-	case ckWindRose:
+	case CustomKeyMode_t::ckWindRose:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		UseWindRose=!UseWindRose;
 		return true;
 
-	case ckFlarmRadar:
+	case CustomKeyMode_t::ckFlarmRadar:
 		SetModeType(LKMODE_MAP,MP_RADAR);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
 		return true;
-	case ckDeviceA:
+	case CustomKeyMode_t::ckDeviceA:
 		return devConfig<0>();
-	case ckDeviceB:
+	case CustomKeyMode_t::ckDeviceB:
 		return devConfig<1>();
-	case ckDeviceC:
+	case CustomKeyMode_t::ckDeviceC:
 		return devConfig<2>();
-	case ckDeviceD:
+	case CustomKeyMode_t::ckDeviceD:
 		return devConfig<3>();
-	case ckDeviceE:
+	case CustomKeyMode_t::ckDeviceE:
 		return devConfig<4>();
-	case ckDeviceF:
+	case CustomKeyMode_t::ckDeviceF:
 		return devConfig<5>();
-	case ckResetOdometer:
+	case CustomKeyMode_t::ckResetOdometer:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (MessageBoxX(MsgToken<2229>(), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetOdometer=true;
 		}
 		return true;
-	case ckForceLanding:
+	case CustomKeyMode_t::ckForceLanding:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if ( !CALCULATED_INFO.Flying ) {
 			DoStatusMessage(MsgToken<922>()); // NOT FLYING
@@ -367,13 +345,13 @@ passthrough:
 			}
 		}
 		return true;
-	case ckResetTripComputer:
+	case CustomKeyMode_t::ckResetTripComputer:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		if (MessageBoxX(MsgToken<2236>(), _T(""), mbYesNo) == IdYes) {
 			LKSW_ResetTripComputer=true;
 		}
 		return true;
-	case ckSonarToggle:
+	case CustomKeyMode_t::ckSonarToggle:
 		SonarWarning = !SonarWarning;
 		TCHAR sonarmsg[60];
 		_stprintf(sonarmsg,_T("%s "),MsgToken<1293>()); // SONAR
@@ -387,7 +365,7 @@ passthrough:
         else
             LKSound(TEXT("LK_TONEDOWN.WAV"));
 		return true;
-    case ckDrawXCToggle:
+    case CustomKeyMode_t::ckDrawXCToggle:
       Flags_DrawXC = !Flags_DrawXC;
       if (EnableSoundModes) {
         if (!Flags_DrawXC)
@@ -396,7 +374,7 @@ passthrough:
           LKSound(TEXT("LK_TONEDOWN.WAV"));
       }
       return true;
-	case ckResetView:
+	case CustomKeyMode_t::ckResetView:
 		ModeType[LKMODE_MAP]    =       MP_MOVING;
 		ModeType[LKMODE_INFOMODE]=      IM_CRUISE;
 		ModeType[LKMODE_WP]     =       WP_AIRPORTS;
@@ -409,7 +387,7 @@ passthrough:
 
 		return true;
 
-	case  ckMapOrient:
+	case  CustomKeyMode_t::ckMapOrient:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 
 		TCHAR MapOrientMsg[60];
@@ -439,36 +417,63 @@ passthrough:
 	    }
 
 		return true;
-    case ckResetComm:
+    case CustomKeyMode_t::ckResetComm:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
         InputEvents::eventRestartCommPorts(NULL);
         return true;
 
-    case ckDspMode:
+    case CustomKeyMode_t::ckDspMode:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		InputEvents::setMode(_T("Display3"));
 		return true;
 
-    case ckAirspaceLookup:
+    case CustomKeyMode_t::ckAirspaceLookup:
         PlayResource(TEXT("IDR_WAV_CLICK"));
         dlgSelectAirspace();
         return true;
-    case  ckRadioDlg:
+    case  CustomKeyMode_t::ckRadioDlg:
         PlayResource(TEXT("IDR_WAV_CLICK"));
         dlgRadioSettingsShowModal();
         return true;
-	case ckMCSetting:
+	case CustomKeyMode_t::ckMCSetting:
         PlayResource(TEXT("IDR_WAV_CLICK"));
         dlgMacCready::DoModal();
         return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
-		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"),ckeymode);
+		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"), static_cast<int>(key));
 		break;
   }
 
   return false;
 
+}
+
+CustomKeyMode_t CustomKeyFromMenu(unsigned pos) {
+  switch (pos) {
+    case 1:
+      return CustomMenu1;
+    case 2:
+      return CustomMenu2;
+    case 3:
+      return CustomMenu3;
+    case 4:
+      return CustomMenu4;
+    case 5:
+      return CustomMenu5;
+    case 6:
+      return CustomMenu6;
+    case 7:
+      return CustomMenu7;
+    case 8:
+      return CustomMenu8;
+    case 9:
+      return CustomMenu9;
+    case 10:
+      return CustomMenu10;
+    default:
+      return CustomKeyMode_t::ckDisabled;
+  }
 }
 
 namespace {
@@ -561,43 +566,53 @@ const KeyLabel_t _CustomKeyLabel[] = {
 	KeyLabel< 844,  844>()    // MacCready setting
 };
 
-static_assert(ckTOP == std::size(_CustomKeyLabel), "invalid _CustomKeyLabel array size");
+size_t to_label_index(CustomKeyMode_t key) {
+	auto index = static_cast<size_t>(key);
+	if ( index < std::size(_CustomKeyLabel)) {
+		return index;
+	}
+	return 0;
+}
+
+static_assert(CustomKeyMode_t::ckTOP == static_cast<CustomKeyMode_t>(std::size(_CustomKeyLabel)), "invalid _CustomKeyLabel array size");
+
+template<typename TypeT>
+void GetCustomKey(WndForm* pForm, const TCHAR* WndName, TypeT& value) {
+	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
+	if (pWnd) {
+		DataField* dfe = pWnd->GetDataField();
+		if (dfe) {
+			value = static_cast<TypeT>(dfe->GetAsInteger());
+		}
+	}
+}
 
 } // namespace
 
 
-const TCHAR* CustomKeyLabel(unsigned key) {
-	if (key < std::size(_CustomKeyLabel)) {
-		return _CustomKeyLabel[key].MenuLabel();
-	}
-	return nullptr;
+const TCHAR* CustomKeyLabel(CustomKeyMode_t key) {
+	return _CustomKeyLabel[to_label_index(key)].MenuLabel();
 }
 
-void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, unsigned value) {
+void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, CustomKeyMode_t value) {
 	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
 	if (pWnd) {
 		DataField* dfe = pWnd->GetDataField();
-		if (dfe->getCount() == 0) {
-			for (auto& item : _CustomKeyLabel) {
-				dfe->addEnumText(item.Name());
+		if (dfe) {
+			if (dfe->getCount() == 0) {
+				for (auto& item : _CustomKeyLabel) {
+					dfe->addEnumText(item.Name());
+				}
+				dfe->Sort();
 			}
-			dfe->Sort();
+			dfe->Set(static_cast<unsigned>(value));
 		}
-		dfe->Set(value);
 		pWnd->RefreshDisplay();
 	}
 }
 
-template<typename TypeT>
-static void GetCustomKey(WndForm* pForm, const TCHAR* WndName, TypeT& value) {
-	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
-	if (pWnd) {
-		value = pWnd->GetDataField()->GetAsInteger();
-	}
-}
-
-void GetCustomKey(WndForm* pForm, const TCHAR* WndName, unsigned short& value) {
-	GetCustomKey<unsigned short>(pForm, WndName, value);
+void GetCustomKey(WndForm* pForm, const TCHAR* WndName, CustomKeyMode_t& value) {
+	GetCustomKey<CustomKeyMode_t>(pForm, WndName, value);
 }
 
 void GetCustomKey(WndForm* pForm, const TCHAR* WndName, int& value) {

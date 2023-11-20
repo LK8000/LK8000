@@ -122,7 +122,6 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryConfIP32, ConfIP32);
   write_settings(szRegistryConfIP33, ConfIP33);
   write_settings(szRegistryCustomKeyModeAircraftIcon, CustomKeyModeAircraftIcon);
-  write_settings(szRegistryCustomKeyModeCenterScreen, CustomKeyModeCenterScreen);
   write_settings(szRegistryCustomKeyModeCenter, CustomKeyModeCenter);
   write_settings(szRegistryCustomKeyModeLeftUpCorner, CustomKeyModeLeftUpCorner);
   write_settings(szRegistryCustomKeyModeLeft, CustomKeyModeLeft);

@@ -225,13 +225,13 @@ void Globals_Init(void) {
   PressureHg=false;
 
   CustomKeyTime=700;
-  CustomKeyModeCenter=(CustomKeyMode_t)ckDisabled;
-  CustomKeyModeLeft=(CustomKeyMode_t)ckDisabled;
-  CustomKeyModeRight=(CustomKeyMode_t)ckDisabled;
-  CustomKeyModeAircraftIcon=(CustomKeyMode_t)ckDisabled;
-  CustomKeyModeLeftUpCorner=(CustomKeyMode_t)ckDisabled;
-  CustomKeyModeRightUpCorner=(CustomKeyMode_t)ckDisabled;
-  CustomKeyModeCenterScreen=(CustomKeyMode_t)ckDisabled;
+
+  CustomKeyModeCenter = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeLeft = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeRight = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeAircraftIcon = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeLeftUpCorner = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeRightUpCorner = CustomKeyMode_t::ckDisabled;
 
   QFEAltitudeOffset = 0;
   WasFlying = false;
@@ -690,14 +690,14 @@ void Globals_Init(void) {
 
 
 void Reset_CustomMenu() {
-	CustomMenu1  = ckForceLanding;			// Landscape: 1st on top right
-	CustomMenu2  = ckForceFreeFlightRestart;
-	CustomMenu3  = ckResetTripComputer;
-	CustomMenu4  = ckResetOdometer;
-	CustomMenu5  = ckTrueWind;			// Landscape: 1st on the bottom left
-	CustomMenu6  = ckWindRose;
-	CustomMenu7  = ckUseTotalEnergy;
-	CustomMenu8  = ckLockScreen;
-	CustomMenu9  = ckDisabled;			// Landscape> 1st top left
-	CustomMenu10 = ckDisabled;
+	CustomMenu1  = CustomKeyMode_t::ckForceLanding;			// Landscape: 1st on top right
+	CustomMenu2  = CustomKeyMode_t::ckForceFreeFlightRestart;
+	CustomMenu3  = CustomKeyMode_t::ckResetTripComputer;
+	CustomMenu4  = CustomKeyMode_t::ckResetOdometer;
+	CustomMenu5  = CustomKeyMode_t::ckTrueWind;			// Landscape: 1st on the bottom left
+	CustomMenu6  = CustomKeyMode_t::ckWindRose;
+	CustomMenu7  = CustomKeyMode_t::ckUseTotalEnergy;
+	CustomMenu8  = CustomKeyMode_t::ckLockScreen;
+	CustomMenu9  = CustomKeyMode_t::ckDisabled;			// Landscape> 1st top left
+	CustomMenu10 = CustomKeyMode_t::ckDisabled;
 }

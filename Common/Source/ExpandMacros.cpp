@@ -729,60 +729,23 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
-	short i;
-	i= *(a+4)-48;
-        LKASSERT(i>=0 && i<11);
-	// get the label for the custom menu item here
-	// Decide if invalid=true or if no label at all, setting Replace to empty string
+    short i = *(a+4)-48;
+    if (i == 0) {
+      i = 10;
+    }
+    LKASSERT(i> 0 && i <11);
+    // get the label for the custom menu item here
+    // Decide if invalid=true or if no label at all, setting Replace to empty string
 
-	unsigned int ckeymode;
-	// test mode only
-	switch(i) {
-	      case 1:
-	              ckeymode=CustomMenu1;
-	              break;
-	      case 2:
-	              ckeymode=CustomMenu2;
-	              break;
-	      case 3:
-	              ckeymode=CustomMenu3;
-	              break;
-	      case 4:
-	              ckeymode=CustomMenu4;
-	              break;
-	      case 5:
-	              ckeymode=CustomMenu5;
-	              break;
-	      case 6:
-	              ckeymode=CustomMenu6;
-	              break;
-	      case 7:
-	              ckeymode=CustomMenu7;
-	              break;
-	      case 8:
-	              ckeymode=CustomMenu8;
-	              break;
-	      case 9:
-	              ckeymode=CustomMenu9;
-	              break;
-	      case 0:
-	              ckeymode=CustomMenu10;
-	              break;
-	      default:
-		        ckeymode=0;
-		        break;
-	}
-
-	const TCHAR* label = CustomKeyLabel(ckeymode);
-	if (label) {
-		_tcscpy(OutBuffer, label);
-	} else {
-		invalid=true;			// non selectable
-		_tcscpy(OutBuffer, _T(""));	// make it invisible
-	}
-  } // MM
-
-
+    // test mode only
+    CustomKeyMode_t key = CustomKeyFromMenu(i);
+    if (key != CustomKeyMode_t::ckDisabled) {
+      _tcscpy(OutBuffer, CustomKeyLabel(key));
+    } else {
+      invalid = true;              // non selectable
+      _tcscpy(OutBuffer, _T(""));  // make it invisible
+    }                              // MM
+  }
 label_ret:
 
   return invalid;

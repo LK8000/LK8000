@@ -234,14 +234,13 @@ void LKProfileResetDefault() {
   PressureHg = 0;
 
   CustomKeyTime = 700;
-  CustomKeyModeCenter = (CustomKeyMode_t)ckToggleMap;
 
-  CustomKeyModeLeft = (CustomKeyMode_t)ckDisabled;
-  CustomKeyModeRight = (CustomKeyMode_t)ckDisabled;
-  CustomKeyModeAircraftIcon = (CustomKeyMode_t)ckDisabled;
-  CustomKeyModeLeftUpCorner = (CustomKeyMode_t)ckMultitargetRotate;
-  CustomKeyModeRightUpCorner = (CustomKeyMode_t)ckToggleOverlays;
-  CustomKeyModeCenterScreen = (CustomKeyMode_t)ckWhereAmI;
+  CustomKeyModeCenter = CustomKeyMode_t::ckToggleMap;
+  CustomKeyModeLeft = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeRight = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeAircraftIcon = CustomKeyMode_t::ckDisabled;
+  CustomKeyModeLeftUpCorner = CustomKeyMode_t::ckMultitargetRotate;
+  CustomKeyModeRightUpCorner = CustomKeyMode_t::ckToggleOverlays;
 
   MapBox = (MapBox_t)mbBoxed;
 

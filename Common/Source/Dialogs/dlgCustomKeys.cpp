@@ -35,7 +35,6 @@ static void setVariables(WndForm* pForm) {
   AddCustomKeyList(pForm, _T("prpCustomKeyModeLeftUpCorner"), CustomKeyModeLeftUpCorner);
   AddCustomKeyList(pForm, _T("prpCustomKeyModeRightUpCorner"), CustomKeyModeRightUpCorner);
   AddCustomKeyList(pForm, _T("prpCustomKeyModeCenter"), CustomKeyModeCenter);
-  AddCustomKeyList(pForm, _T("prpCustomKeyModeCenterScreen"), CustomKeyModeCenterScreen);
   AddCustomKeyList(pForm, _T("prpCustomKeyModeLeft"), CustomKeyModeLeft);
   AddCustomKeyList(pForm, _T("prpCustomKeyModeRight"), CustomKeyModeRight);
   AddCustomKeyList(pForm, _T("prpCustomKeyModeAircraftIcon"), CustomKeyModeAircraftIcon);
@@ -45,7 +44,6 @@ static void getVariables(WndForm* pForm) {
   GetCustomKey(pForm, _T("prpCustomKeyModeLeftUpCorner"), CustomKeyModeLeftUpCorner);
   GetCustomKey(pForm, _T("prpCustomKeyModeRightUpCorner"), CustomKeyModeRightUpCorner);
   GetCustomKey(pForm, _T("prpCustomKeyModeCenter"), CustomKeyModeCenter);
-  GetCustomKey(pForm, _T("prpCustomKeyModeCenterScreen"), CustomKeyModeCenterScreen);
   GetCustomKey(pForm, _T("prpCustomKeyTime"), CustomKeyTime);
   GetCustomKey(pForm, _T("prpCustomKeyModeLeft"), CustomKeyModeLeft);
   GetCustomKey(pForm, _T("prpCustomKeyModeRight"), CustomKeyModeRight);

@@ -252,9 +252,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryCustomKeyModeAircraftIcon, CustomKeyModeAircraftIcon)) {
     return;
   }
-  if (settings::read(sname, svalue, szRegistryCustomKeyModeCenterScreen, CustomKeyModeCenterScreen)) {
-    return;
-  }
   if (settings::read(sname, svalue, szRegistryCustomKeyModeCenter, CustomKeyModeCenter)) return;
   if (settings::read(sname, svalue, szRegistryCustomKeyModeLeftUpCorner, CustomKeyModeLeftUpCorner)) {
     return;

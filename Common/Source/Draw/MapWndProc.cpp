@@ -577,7 +577,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 } else {
                     // We are here in any case only when dwInterval is <VKLONGCLICK
                     if (dwInterval >= CustomKeyTime) {
-                        if (!CustomKeyHandler(CKI_BOTTOMICON)) {
+                        if (!ScreenKeyHandler(ScreenKey::CKI_BOTTOMICON)) {
                             ShowMenu();
                         }
                         #ifdef TRACEKEY
@@ -620,7 +620,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             if (NOTANYPAN && IsMultiMapShared()) {
                 if ((Pos.x <= P_UngestureLeft.x) && (Pos.y <= P_UngestureLeft.y)) {
 
-                    if (!CustomKeyHandler(CKI_TOPLEFT)) {
+                    if (!ScreenKeyHandler(ScreenKey::CKI_TOPLEFT)) {
                         // we click in any case to let the user have a response feeling
                         PlayResource(TEXT("IDR_WAV_CLICK"));
                         MapWindow::zoom.EventScaleZoom(1);
@@ -667,7 +667,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             // change in 2.3q: we let paragliders use the CK as well
             {
                 if ((Pos.x > P_UngestureRight.x) && (Pos.y <= P_UngestureRight.y)) {
-                    if (!CustomKeyHandler(CKI_TOPRIGHT)) {
+                    if (!ScreenKeyHandler(ScreenKey::CKI_TOPRIGHT)) {
                         // we click in any case to let the user have a response feeling
                         PlayResource(TEXT("IDR_WAV_CLICK"));
                         MapWindow::zoom.EventScaleZoom(1);
@@ -1110,25 +1110,25 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             break;
 
         case KEY_1: // TopLeft
-            CustomKeyHandler(CustomMenu1 + 1000);
+            CustomKeyHandler(CustomMenu1);
             break;
         case KEY_2: // TopLeft (long)
-            CustomKeyHandler(CustomMenu2 + 1000);
+            CustomKeyHandler(CustomMenu2);
             break;
         case KEY_3: // TopRight
-            CustomKeyHandler(CustomMenu3 + 1000);
+            CustomKeyHandler(CustomMenu3);
             break;
         case KEY_4: // TopRight (long)
-            CustomKeyHandler(CustomMenu4 + 1000);
+            CustomKeyHandler(CustomMenu4);
             break;
         case KEY_5: // Center (long)
-            CustomKeyHandler(CustomMenu5 + 1000);
+            CustomKeyHandler(CustomMenu5);
             break;
         case KEY_6: // BottomRight (long)
-            CustomKeyHandler(CustomMenu6 + 1000);
+            CustomKeyHandler(CustomMenu6);
             break;
         case KEY_7: // center (double click)
-            CustomKeyHandler(CustomMenu7 + 1000);
+            CustomKeyHandler(CustomMenu7);
             break;
         default:
             break;
@@ -1174,7 +1174,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
           InputEvents::setMode(_T("default"));
           return;
         }
-        if (!CustomKeyHandler(CKI_BOTTOMLEFT)) {
+        if (!ScreenKeyHandler(ScreenKey::CKI_BOTTOMLEFT)) {
           InputEvents::setMode(_T("Menu"));
           return;
         }
@@ -1187,14 +1187,14 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
           InputEvents::triggerSelectedButton();
           return;
         }
-        if (CustomKeyHandler(CKI_BOTTOMCENTER)) {
+        if (ScreenKeyHandler(ScreenKey::CKI_BOTTOMCENTER)) {
           PlayResource(TEXT("IDR_WAV_CLICK"));
           return;
         }
         break;
 
       case KEY_MENU: // press rotary knop (left buttom)
-        if (CustomKeyHandler(CKI_BOTTOMRIGHT)) {
+        if (ScreenKeyHandler(ScreenKey::CKI_BOTTOMRIGHT)) {
           PlayResource(TEXT("IDR_WAV_CLICK"));
           return;
         }
@@ -1615,34 +1615,34 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         #endif
         switch (KeyCode) {
             case KEY_1:
-                CustomKeyHandler(CustomMenu1 + 1000);
+                CustomKeyHandler(CustomMenu1);
                 return;
             case KEY_2:
-                CustomKeyHandler(CustomMenu2 + 1000);
+                CustomKeyHandler(CustomMenu2);
                 return;
             case KEY_3:
-                CustomKeyHandler(CustomMenu3 + 1000);
+                CustomKeyHandler(CustomMenu3);
                 return;
             case KEY_4:
-                CustomKeyHandler(CustomMenu4 + 1000);
+                CustomKeyHandler(CustomMenu4);
                 return;
             case KEY_5:
-                CustomKeyHandler(CustomMenu5 + 1000);
+                CustomKeyHandler(CustomMenu5);
                 return;
             case KEY_6:
-                CustomKeyHandler(CustomMenu6 + 1000);
+                CustomKeyHandler(CustomMenu6);
                 break;
             case KEY_7:
-                CustomKeyHandler(CustomMenu7 + 1000);
+                CustomKeyHandler(CustomMenu7);
                 return;
             case KEY_8:
-                CustomKeyHandler(CustomMenu8 + 1000);
+                CustomKeyHandler(CustomMenu8);
                 return;
             case KEY_9:
-                CustomKeyHandler(CustomMenu9 + 1000);
+                CustomKeyHandler(CustomMenu9);
                 return;
             case KEY_0:
-                CustomKeyHandler(CustomMenu10 + 1000);
+                CustomKeyHandler(CustomMenu10);
                 return;
             default:
                 break;
@@ -1664,61 +1664,61 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             case KEY_2:
             case KEY_Q:
             case KEY_W:
-                CustomKeyHandler(CustomMenu1 + 1000);
+                CustomKeyHandler(CustomMenu1);
                 return;
             case KEY_3:
             case KEY_4:
             case KEY_E:
             case KEY_R:
-                CustomKeyHandler(CustomMenu2 + 1000);
+                CustomKeyHandler(CustomMenu2);
                 return;
             case KEY_5:
             case KEY_6:
             case KEY_T:
             case KEY_Y:
-                CustomKeyHandler(CustomMenu3 + 1000);
+                CustomKeyHandler(CustomMenu3);
                 return;
             case KEY_7:
             case KEY_8:
             case KEY_U:
             case KEY_I:
-                CustomKeyHandler(CustomMenu4 + 1000);
+                CustomKeyHandler(CustomMenu4);
                 return;
             case KEY_9:
             case KEY_0:
             case KEY_O:
             case KEY_P:
-                CustomKeyHandler(CustomMenu5 + 1000);
+                CustomKeyHandler(CustomMenu5);
                 return;
             case KEY_A:
             case KEY_Z:
             case KEY_S:
             case KEY_X:
-                CustomKeyHandler(CustomMenu6 + 1000);
+                CustomKeyHandler(CustomMenu6);
                 return;
             case KEY_D:
             case KEY_F:
             case KEY_C:
             case KEY_V:
-                CustomKeyHandler(CustomMenu7 + 1000);
+                CustomKeyHandler(CustomMenu7);
                 return;
             case KEY_G:
             case KEY_H:
             case KEY_B:
             case KEY_N:
-                CustomKeyHandler(CustomMenu8 + 1000);
+                CustomKeyHandler(CustomMenu8);
                 return;
             case KEY_J:
             case KEY_K:
             case KEY_M:
             case 188: // VK_OEM_COMMA
-                CustomKeyHandler(CustomMenu9 + 1000);
+                CustomKeyHandler(CustomMenu9);
                 return;
             case KEY_RETURN: // enter
             case KEY_BACK: // Del
             case KEY_L:
             case 190: // VK_OEM_PERIOD
-                CustomKeyHandler(CustomMenu10 + 1000);
+                CustomKeyHandler(CustomMenu10);
                 return;
             default:
                 break;
@@ -1796,36 +1796,35 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
 			//key_gesture_up()
 			
 			case KEY_Q: // Custom Key 1
-				CustomKeyHandler(CustomMenu1 + 1000);
+				CustomKeyHandler(CustomMenu1);
 				return;
 			case KEY_W: // Custom Key 2
-				CustomKeyHandler(CustomMenu2 + 1000);
+				CustomKeyHandler(CustomMenu2);
 				return;
 			case KEY_E: // Custom Key 3
-				CustomKeyHandler(CustomMenu3 + 1000);
+				CustomKeyHandler(CustomMenu3);
 				return;
 			case KEY_R: // Custom Key 4
-				CustomKeyHandler(CustomMenu4 + 1000);
+				CustomKeyHandler(CustomMenu4);
 				return;
 			case KEY_T: // Custom Key 5
-				CustomKeyHandler(CustomMenu5 + 1000);
+				CustomKeyHandler(CustomMenu5);
 				return;
 			case KEY_Y: // Custom Key 6
-				CustomKeyHandler(CustomMenu6 + 1000);
+				CustomKeyHandler(CustomMenu6);
 				return;
 			case KEY_U: // Custom Key 7
-				CustomKeyHandler(CustomMenu7 + 1000);
+				CustomKeyHandler(CustomMenu7);
 				return;
 			case KEY_I: // Custom Key 8
-				CustomKeyHandler(CustomMenu8 + 1000);
+				CustomKeyHandler(CustomMenu8);
 				return;
 			case KEY_O: // Custom Key 9
-				CustomKeyHandler(CustomMenu9 + 1000);
+				CustomKeyHandler(CustomMenu9);
 				return;
 			case KEY_P: // Custom Key 10
-				CustomKeyHandler(CustomMenu10 + 1000);
+				CustomKeyHandler(CustomMenu10);
 				return;
- 
 			default:
 				break;
         }
@@ -1883,7 +1882,7 @@ void MapWindow::key_topleft() {
         MapWindow::RefreshMap();
     } else {
         if (NOTANYPAN && IsMultiMapShared()) {
-            CustomKeyHandler(CKI_TOPLEFT);
+            ScreenKeyHandler(ScreenKey::CKI_TOPLEFT);
         }
         if (isListPage()) {
             key_gesture_down();
@@ -1897,7 +1896,7 @@ void MapWindow::key_topright() {
         MapWindow::RefreshMap();
     } else {
         if (NOTANYPAN && IsMultiMapShared()) {
-            CustomKeyHandler(CKI_TOPRIGHT);
+            ScreenKeyHandler(ScreenKey::CKI_TOPRIGHT);
         }
         if (isListPage()) {
             key_gesture_down();
@@ -1914,14 +1913,6 @@ void MapWindow::key_enter() {
             MapWindow::RefreshMap();
         }
     }
-#if 0 // no center screen ck anymore
-    else {
-        if (CustomKeyHandler(CKI_CENTERSCREEN)) {
-            PlayResource(TEXT("IDR_WAV_CLICK"));
-        }
-        // MapWindow::RefreshMap();
-    }
-#endif
 }
 
 void MapWindow::key_gesture_down() {
