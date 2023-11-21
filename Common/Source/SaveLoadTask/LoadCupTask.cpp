@@ -606,9 +606,9 @@ TCHAR szString[READLINE_LENGTH + 1];
       TCHAR file_name[180];
       const TCHAR * pToken = lk::tokenizer<TCHAR>(szTaskStrings[TaskIndex]).Next({_T(',')});
       if((pToken) && (_tcslen (pToken)>1)) {
-          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken<891>(), pToken ); // Clear old task and load taskname
+          lk::snprintf(file_name, _T("%s %s ?"), MsgToken<891>(), pToken); // Clear old task and load taskname
       } else {
-          _sntprintf(file_name,180, TEXT("%s %s ?"), MsgToken<891>(), MsgToken<907>()); // Clear old task and load task
+          lk::snprintf(file_name, _T("%s %s ?"), MsgToken<891>(), MsgToken<907>()); // Clear old task and load task
       }
       if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdYes) {
           LoadCupTaskSingle(szFileName,szString, TaskIndex); // load new task
