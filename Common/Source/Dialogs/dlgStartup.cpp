@@ -34,7 +34,6 @@
 #define RGBAMBER     (IsDithered() ? RGB_WHITENOREV : RGB_AMBER)
 
 #ifdef KOBO
-#warning "Temporary : remove when we have KoboMenu"
 bool RestartToNickel = true; // default to true, mandatory for avoid to brick device in case of abnormal termination.
 #endif
 
