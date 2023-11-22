@@ -26,6 +26,10 @@ KOBO_SYS_LIB_NAMES = \
 	librt.so.1 \
 	libpthread.so.0 \
 
+ifeq ($(SNDFILE)$(ALSA),yy)
+ KOBO_SYS_LIB_NAMES += libdl.so.2
+endif
+
 KOBO_SYS_LIB_PATHS = $(addprefix $(SYSROOT)/lib/,$(KOBO_SYS_LIB_NAMES))
 
 KOBO_LIB_PATHS = \
@@ -38,6 +42,13 @@ KOBO_LIB_PATHS = \
 KOBO_LIB_PATHS += \
 	$(KOBO)/lib/libGeographic.so.19 \
 	$(KOBO)/lib/libGeographicLib.so.26 \
+
+ifeq ($(SNDFILE)$(ALSA),yy)
+ KOBO_LIB_PATHS += \
+	$(KOBO)/lib/libasound.so.2 \
+	$(KOBO)/lib/libsndfile.so.1 \
+
+endif
 
 # let only the existing file in the list
 KOBO_SYS_LIB_PATHS += $(filter $(KOBO_LIB_PATHS), $(wildcard $(KOBO)/lib/*))
@@ -119,7 +130,7 @@ Kobo-install.zip: $(BIN)/std/.kobo/KoboRoot.tgz
 # /etc/init.d/rcS, extracted to / on each boot; we can use it to
 # install LK8000
 $(BIN)/std/.kobo/KoboRoot.tgz: $(OUTPUTS) $(KOBO_MENU_BIN) $(KOBO_POWER_OFF_BIN) \
-	$(SYSTEM_FILES) $(BITMAP_FILES) \
+	$(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
 	$(FONTS_FILES) $(POLAR_FILES) $(LANGUAGE_FILES) \
 	$(CONFIG_FILES)  kobo/inittab kobo/rcS
 	@$(NQ)echo "  TAR     $@"

@@ -1,6 +1,8 @@
 
-SOUND_FILES = $(wildcard Common/Distribution/LK8000/_System/_Sounds/*.WAV)
-SOUND_FILES += Common/Distribution/LK8000/_System/_Sounds/_SOUNDS
+ifneq ($(USE_SOUND_EXTDEV), y)
+ SOUND_FILES = $(wildcard Common/Distribution/LK8000/_System/_Sounds/*.WAV)
+ SOUND_FILES += Common/Distribution/LK8000/_System/_Sounds/_SOUNDS
+endif
 
 SYSTEM_FILES = $(wildcard Common/Distribution/LK8000/_Configuration/_System/*.TXT)
 SYSTEM_FILES += Common/Distribution/LK8000/_System/_SYSTEM

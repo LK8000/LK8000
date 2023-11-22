@@ -325,7 +325,7 @@ ifeq ($(TARGET_IS_KOBO),y)
  GREYSCALE :=y
  DITHER    :=y
  OPENGL    :=n
- USE_SOUND_EXTDEV := y
+ USE_SOUND_EXTDEV ?= y
  USE_LIBINPUT :=n
  CE_DEFS += -DKOBO
  CE_DEFS += -DUSE_MEMORY_CANVAS
@@ -480,8 +480,10 @@ ifeq ($(CONFIG_LINUX),y)
    CE_DEFS += -DUSE_LINUX_INPUT
   endif
 
-  SNDFILE := $(shell $(PKG_CONFIG) --exists sndfile && echo y)
-  ALSA := $(shell $(PKG_CONFIG) --exists alsa && echo y)
+  ifneq ($(USE_SOUND_EXTDEV), y)
+   SNDFILE := $(shell $(PKG_CONFIG) --exists sndfile && echo y)
+   ALSA := $(shell $(PKG_CONFIG) --exists alsa && echo y)
+  endif
  endif
 
  ifeq ($(OPENGL),y)
