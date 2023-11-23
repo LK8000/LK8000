@@ -62,12 +62,12 @@ constexpr sector_type_t gp_task_sectors[] = {
 
 
 constexpr auto sector_labels_table = lookup_table<sector_type_t, const TCHAR*(*)()>({
-  { sector_type_t::CIRCLE , [] { return MsgToken<210>(); } }, // _@M210_ = "Cylinder"
-  { sector_type_t::SECTOR , [] { return MsgToken<590>(); } }, // _@M590_ = "Sector"
-  { sector_type_t::SECTOR , [] { return MsgToken<274>(); } }, // _@M274_ = "FAI Sector"
+  { sector_type_t::CIRCLE, MsgToken<210> }, // _@M210_ = "Cylinder"
+  { sector_type_t::SECTOR, MsgToken<590> }, // _@M590_ = "Sector"
+//  { sector_type_t::FAI_SECTOR, MsgToken<274> }, // _@M274_ = "FAI Sector"
   { sector_type_t::DAe, [] { return LKGetText(_T("DAe 0.5/10")); } },
-  { sector_type_t::LINE, [] { return MsgToken<393>(); } }, // _@M393_ = "Line"
-  { sector_type_t::ESS_CIRCLE , [] { return MsgToken<2189>(); } }, // _@M2189_ = "Circle ESS"
+  { sector_type_t::LINE, MsgToken<393> }, // _@M393_ = "Line"
+  { sector_type_t::ESS_CIRCLE , MsgToken<2189> }, // _@M2189_ = "Circle ESS"
 });
 
 template<size_t size>
