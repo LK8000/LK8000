@@ -13,9 +13,6 @@
 #define TASKRENDERERCIRCLE_H
 
 #include "TaskRenderer.h"
-#include "Geographic/GeoPoint.h"
-#include "Screen/Point.hpp"
-#include <array>
 
 class TaskRendererCircle : public TaskRenderer {
 public:

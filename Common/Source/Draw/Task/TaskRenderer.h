@@ -20,11 +20,9 @@ class LKSurface;
 class TaskRenderer {
 public:
 
-    TaskRenderer() : _Visible() {
-    }
+    TaskRenderer() = default;
 
-    virtual ~TaskRenderer() {
-    }
+    virtual ~TaskRenderer() { }
 
     TaskRenderer(const TaskRenderer&) = delete;
     TaskRenderer& operator=(const TaskRenderer&) = delete;
@@ -42,19 +40,19 @@ public:
 #endif
 
 #ifdef HAVE_GLES
-  typedef FloatPoint ScreenPoint;
+    using ScreenPoint = FloatPoint;
 #else
-  typedef RasterPoint ScreenPoint;
-#endif	
-	
+    using ScreenPoint = RasterPoint;
+#endif
+
 protected:
-    typedef std::vector<GeoPoint> GeoPoints_t;
-    typedef std::vector<ScreenPoint> ScreenPoints_t;
+    using GeoPoints_t = std::vector<GeoPoint>;
+    using ScreenPoints_t = std::vector<ScreenPoint>;
 
     GeoPoints_t _GeoPoints;
     ScreenPoints_t _ScreenPoints;
 
-    bool _Visible;
+    bool _Visible = false;
     rectObj _bounds;
 };
 

@@ -13,7 +13,6 @@
 #define TASKRENDERERSTARTSECTOR_H
 
 #include "TaskRenderer.h"
-#include "Geographic/GeoPoint.h"
 
 class TaskRendererStartSector : public TaskRenderer {
 public:

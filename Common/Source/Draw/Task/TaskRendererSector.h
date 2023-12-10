@@ -13,16 +13,13 @@
 #define TASKRENDERERSECTOR_H
 
 #include "TaskRenderer.h"
-#include "Geographic/GeoPoint.h"
-#include "Screen/Point.hpp"
-#include <vector>
 
 class TaskRendererSector : public TaskRenderer {
 public:
     TaskRendererSector(const GeoPoint& center, double radius, double start, double end);
 
-    bool IsPolygon() const override { 
-        return (_GeoPoints.size() > 2); 
+    bool IsPolygon() const override {
+        return _GeoPoints.size() > 2;
     }
 };
 

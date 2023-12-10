@@ -13,7 +13,6 @@
 #define TASKRENDERERLINE_H
 
 #include "TaskRenderer.h"
-#include "Geographic/GeoPoint.h"
 
 class TaskRendererLine : public TaskRenderer {
 public:
