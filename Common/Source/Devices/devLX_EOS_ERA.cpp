@@ -703,23 +703,18 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
   {
     FormatTP(DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
 
-    double SecRadius;
-    sector_type_t Type = sector_type_t::CIRCLE;
-
-    GetTaskSectorParameter(ii, &Type, &SecRadius);
-    switch(Type)
-    {
-      case sector_type_t::LINE  : isline=1; r1= SecRadius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
-      case sector_type_t::SECTOR: isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
-      case sector_type_t::CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
-      case sector_type_t::DAe   : isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
+    sector_param param = GetTaskSectorParameter(ii);
+    switch(param.type) {
+      case sector_type_t::LINE  : isline=1; r1= param.radius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::SECTOR: isline=0; r1= param.radius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::CIRCLE: isline=0; r1= param.radius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::DAe   : isline=0; r1= param.radius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
       default:
         assert(false);
         break;
     }
 
     elev = WayPointList[HomeWaypoint].Altitude;
-    r1=(int)SecRadius;
     _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
     num++;
   }

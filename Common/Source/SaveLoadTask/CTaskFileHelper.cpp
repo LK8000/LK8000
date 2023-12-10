@@ -956,33 +956,31 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
     SetAttribute(node, "name", WayPointList[TaskPt.Index].Name);
 
     if (UseAATTarget()) {
-        sector_type_t Type = sector_type_t::CIRCLE;
-        double Radius;
-        GetTaskSectorParameter(idx, &Type, &Radius);
-        switch (Type) {
+        sector_param param = GetTaskSectorParameter(idx);
+        switch (param.type) {
             case sector_type_t::CIRCLE:
                 SetAttribute(node, "type", "circle");
-                SetAttribute(node, "radius", Radius);
+                SetAttribute(node, "radius", param.radius);
                 break;
             case sector_type_t::SECTOR:
                 SetAttribute(node, "type", "sector");
-                SetAttribute(node, "radius", Radius);
+                SetAttribute(node, "radius", param.radius);
                 SetAttribute(node, "start-radial", TaskPt.AATStartRadial);
                 SetAttribute(node, "end-radial", TaskPt.AATFinishRadial);
                 break;
             case sector_type_t::LINE:
                 SetAttribute(node, "type", "line");
-                SetAttribute(node, "radius", Radius);
+                SetAttribute(node, "radius", param.radius);
                 break;
             case sector_type_t::DAe: // not Used in AAT and PGTask
                 SetAttribute(node, "type", "DAe");
                 break;
             case sector_type_t::ESS_CIRCLE:
                 SetAttribute(node, "type", "ess_circle");
-                SetAttribute(node, "radius", Radius);
+                SetAttribute(node, "radius", param.radius);
                 break;
             default:
-                LKASSERT(false);
+                assert(false);
                 break;
         }
 

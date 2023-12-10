@@ -170,44 +170,29 @@ GeoPoint GetTurnpointTarget(size_t idx) {
   return GetTurnpointPosition(idx);
 }
 
-void GetTaskSectorParameter(int TskIdx, sector_type_t* SecType, double* SecRadius) {
+sector_param GetTaskSectorParameter(int TskIdx) {
   if (TskIdx == 0) {
-    if (SecType) {
-      *SecType = StartLine;
-    }
-    if (SecRadius) {
-      *SecRadius = StartRadius;
-    }
-  } else if (!ValidTaskPoint(TskIdx + 1)) {
-    if (SecType) {
-      *SecType = FinishLine;
-    }
-    if (SecRadius) {
-      *SecRadius = FinishRadius;
-    }
-  } else if (UseAATTarget()) {
+    // start ...
+    return { StartLine, StartRadius };
+  }
+
+  if (!ValidTaskPoint(TskIdx + 1)) {
+    // finish
+    return { FinishLine, FinishRadius };
+  }
+
+  if (UseAATTarget()) { 
+    // GP or AAT task 
     LKASSERT(ValidTaskPoint(TskIdx));  // could be -1
-    if (SecType) {
-      *SecType = Task[TskIdx].AATType;
-    }
-    if (SecRadius) {
-      if (Task[TskIdx].AATType == sector_type_t::SECTOR) {
-        *SecRadius = Task[TskIdx].AATSectorRadius;
-      }
-      else {
-        *SecRadius = Task[TskIdx].AATCircleRadius;
-      }
-    }
-  } else {
-    if (SecType) {
-      *SecType = SectorType;
-    }
-    if (SecRadius) {
-      *SecRadius = SectorRadius;
+    if (Task[TskIdx].AATType == sector_type_t::SECTOR) {
+      return { Task[TskIdx].AATType, Task[TskIdx].AATSectorRadius };
+    } else {
+      return { Task[TskIdx].AATType, Task[TskIdx].AATCircleRadius };
     }
   }
-}
 
+  return { SectorType, SectorRadius };
+}
 
 void ResetTaskWpt(TASK_POINT& TaskWpt) {
     TaskWpt.Index = -1;

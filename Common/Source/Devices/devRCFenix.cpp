@@ -284,9 +284,6 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
   TCHAR DeclStrings[totalLines][256];
   INT i = 0;
 
-  double SecRadius;
-  sector_type_t Type;
-
   _stprintf(DeclStrings[i++], _T("RCDT,SET,PILOT,%s,%s"), PilotName, PilotSurName);
   _stprintf(DeclStrings[i++], _T("RCDT,SET,GLIDER,%s,%s,%s,%s"), 
                               AircraftType, AircraftReg, AircraftCompID, AircraftClass);
@@ -313,20 +310,19 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
   for (int ii = 0; ii < wpCount; ii++) {
     FormatTP(DeclStrings[i++], num, wpCount, lkDecl->waypoint[ii]);   //  Task waypoints
 
-    GetTaskSectorParameter(ii, &Type, &SecRadius);
-    switch (Type) {
-      case sector_type_t::LINE  : isline=1; r1= SecRadius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
-      case sector_type_t::SECTOR: isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
-      case sector_type_t::CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
-      case sector_type_t::DAe   : isline=0; r1= SecRadius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
-      case sector_type_t::ESS_CIRCLE: isline=0; r1= SecRadius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
+    sector_param param = GetTaskSectorParameter(ii);
+    switch (param.type) {
+      case sector_type_t::LINE  : isline=1; r1=param.radius; a1 = 0  ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::SECTOR: isline=0; r1=param.radius; a1 = 45 ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::CIRCLE: isline=0; r1=param.radius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
+      case sector_type_t::DAe   : isline=0; r1=param.radius; a1 = 45 ; a2=180; r2=500; a21 =0; break;
+      case sector_type_t::ESS_CIRCLE: isline=0; r1=param.radius; a1 =180 ; a2=180; r2=0  ; a21 =0; break;
       default:
         assert(false);
         break;
     }
 
     elev = WayPointList[HomeWaypoint].Altitude;
-    r1 = SecRadius;
     _stprintf(DeclStrings[i++], _T("RCDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),
                 num, dir, autonxt, isline, a1, a2, a21, r1, r2, elev);
     num++;

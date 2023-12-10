@@ -76,22 +76,20 @@ void PGTaskMgr::Initialize() {
 
     // build task point list
     for (int curwp = 0; ValidTaskPointFast(curwp); ++curwp) {
-        sector_type_t TpType = sector_type_t::CIRCLE;
-        double Radius;
-        GetTaskSectorParameter(curwp, &TpType, &Radius);
-        switch (TpType) {
+        sector_param param = GetTaskSectorParameter(curwp);
+        switch (param.type) {
             case sector_type_t::CIRCLE:
-                AddCircle(curwp, Radius);
+                AddCircle(curwp, param.radius);
                 break;
             case sector_type_t::SECTOR:
             case sector_type_t::DAe:
                 AddSector(curwp);
                 break;
             case sector_type_t::LINE:
-                AddLine(curwp, Radius);
+                AddLine(curwp, param.radius);
                 break;
             case sector_type_t::ESS_CIRCLE:
-                AddEssCircle(curwp, Radius);
+                AddEssCircle(curwp, param.radius);
                 break;
         }
     }

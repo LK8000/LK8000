@@ -127,7 +127,12 @@ bool ValidResWayPoint(int i);
 bool ValidResWayPointFast(int i);
 bool ValidStartPoint(size_t i);
 
-void GetTaskSectorParameter(int TskIdx, sector_type_t* SecType, double* SecRadius);
+struct sector_param {
+  sector_type_t type;
+  double radius;
+};
+
+sector_param GetTaskSectorParameter(int TskIdx);
 
 double FindInsideAATSectorRange(double latitude,
                                 double longitude,

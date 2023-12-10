@@ -118,8 +118,6 @@ start_search:
 
 
     // TASK MULTISELECT
-    sector_type_t SecType = sector_type_t::DAe;
-    double SecRadius =0;
     double Bear=0;
     bool Angleinside = false;
 
@@ -130,13 +128,15 @@ start_search:
             WayPointList[Task[i].Index].Latitude,
             WayPointList[Task[i].Index].Longitude, &Dist, &Bear);
 
-        GetTaskSectorParameter(i, &SecType, &SecRadius);
+        sector_param param = GetTaskSectorParameter(i);
 
         Angleinside = true;
-        if( SecRadius < (dyn_range)) SecRadius =dyn_range;
+        if (param.radius < dyn_range) {
+          param.radius = dyn_range;
+        }
 
-        if((Dist < SecRadius) && Angleinside) {
-	    dlgAddMultiSelectListItem(NULL,i, IM_TASK_PT, Dist);
+        if ((Dist < param.radius) && Angleinside) {
+          dlgAddMultiSelectListItem(NULL, i, IM_TASK_PT, Dist);
         }
     }
     UnlockTaskData();
