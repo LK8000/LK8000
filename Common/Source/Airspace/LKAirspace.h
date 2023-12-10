@@ -452,7 +452,10 @@ class CAirspaceManager
   using xml_node = class rapidxml::xml_node<char>;
 
 public:
-  static CAirspaceManager& Instance() { return _instance; }
+  static CAirspaceManager& Instance() {
+    static CAirspaceManager _instance;
+    return _instance;
+  }
 
   //HELPER FUNCTIONS
   static bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top);
@@ -529,7 +532,7 @@ public:
   void AutoDisable(const NMEA_INFO& info);
 
 private:
-  static CAirspaceManager _instance;
+
   CAirspaceManager() { _selected_airspace = NULL; _sideview_nearest = NULL; }
   CAirspaceManager(const CAirspaceManager&) = delete;
   CAirspaceManager& operator=(const CAirspaceManager&) = delete;

@@ -95,10 +95,6 @@ static const int k_nAreaType[k_nAreaCount] = {
     GLIDERSECT
 };
 
-
-// CAirspaceManager class attributes
-CAirspaceManager CAirspaceManager::_instance;
-
 // CAirspace class attributes
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED
 int CAirspace::_nearesthdistance = 0; // for infobox
