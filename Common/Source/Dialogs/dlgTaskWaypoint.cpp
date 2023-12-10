@@ -625,7 +625,7 @@ static void OnTaskPointPicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
         const RECT rc = wPicto->GetClientRect();
 
         MapWindow::DrawWaypointPictoBg(Surface, rc);
-        MapWindow::DrawTaskPicto(Surface, twItemIndex, rc, 2000);
+        MapWindow::DrawTaskPicto(Surface, twItemIndex, rc);
     }
 }
 

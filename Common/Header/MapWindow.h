@@ -564,7 +564,7 @@ class MapWindow {
  */
   static void DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& rc, const ScreenProjection* _Proj,  double fScaleFact, BOOL Picto = false);
 
-  static void DrawTaskPicto(LKSurface& Surface, int TaskIdx, const RECT& rc, double fScaleFact);
+  static void DrawTaskPicto(LKSurface& Surface, int TaskIdx, const RECT& rc);
   static void DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc);
   static void DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp);
   static void DrawFlarmPicto(LKSurface& hDC, const RECT& rc, FLARM_TRAFFIC*);

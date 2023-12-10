@@ -30,7 +30,7 @@ extern LKColor taskcolor;
 //
 // THIS FUNCTION IS THREAD SAFE, but not using optimized clipping
 //
-void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc, double fScaleFact)
+void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc)
 {
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;

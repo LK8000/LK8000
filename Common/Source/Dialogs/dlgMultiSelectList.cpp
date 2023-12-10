@@ -756,7 +756,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
               {
                 BuildTaskPointText( iTaskIdx,  text1, text2);
                 ShowTextEntries(Surface, rc,  text1, text2);
-                MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc, 3000);
+                MapWindow::DrawTaskPicto(Surface, iTaskIdx, rc);
               }
               UnlockTaskData(); // protect from external task changes
             }

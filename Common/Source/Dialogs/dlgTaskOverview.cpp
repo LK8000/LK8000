@@ -100,7 +100,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   
   if (DrawListIndex < UpLimit){
     int i = LowLimit + DrawListIndex;
-    MapWindow::DrawTaskPicto(Surface, DrawListIndex,  rc, 2500);
+    MapWindow::DrawTaskPicto(Surface, DrawListIndex,  rc);
     if (Task[i].Index>=0) {
       _stprintf(wpName, TEXT("%s%s"),
                 WayPointList[Task[i].Index].Name,
