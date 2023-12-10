@@ -1103,6 +1103,7 @@ TASK	:=\
 	$(TSK)/PGTask/PGTaskMgr.cpp\
 	$(TSK)/PGTask/PGSectorTaskPt.cpp\
 	$(TSK)/PGTask/PGEssCircleTaskPt.cpp\
+	$(TSK)/task_zone.cpp \
 
 TERRAIN	:=\
 	$(TER)/OpenCreateClose.cpp	\

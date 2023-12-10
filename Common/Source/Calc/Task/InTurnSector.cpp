@@ -6,125 +6,16 @@
    $Id$
 */
 
-#include "externs.h"
+#include "task_zone.h"
 #include "NavFunctions.h"
 
 namespace {
-
-GeoPoint from_task(int tp) {
-  return {
-    WayPointList[Task[tp].Index].Latitude,
-    WayPointList[Task[tp].Index].Longitude
-  };
-}
-
-/**
- *  struct to store data required to check if current position is inside Turnpoint.
- */
-
-struct sector_data {
-  GeoPoint center;
-  double start_radial;
-  double end_radial;
-  double max_radius;
-};
-
-struct circle_data {
-  GeoPoint center;
-  double radius;
-};
-
-struct dae_data {
-  GeoPoint center;
-  double bisector;
-};
-
-struct line_data {
-  GeoPoint center;
-  double bisector;
-  double inbound;
-  // TODO : Line as no radius ?
-};
-
-/**
- *  helper to get sector data struct from Task definition.
- */
-
-template <sector_type_t type, int task_type>
-struct sector;
-
-template <>
-struct sector<sector_type_t::SECTOR, TSK_DEFAULT> {
-  static sector_data get(int tp_index) {
-    return {
-      from_task(tp_index),
-      Task[tp_index].Bisector - 45.,
-      Task[tp_index].Bisector + 45.,
-      SectorRadius
-    };
-  }
-};
-
-template <>
-struct sector<sector_type_t::CIRCLE, TSK_DEFAULT> {
-  static circle_data get(int tp_index) {
-    return {
-      from_task(tp_index),
-      SectorRadius
-    };
-  }
-};
-
-template <int task_type>
-struct sector<sector_type_t::DAe, task_type> {
-  static dae_data get(int tp_index) {
-    return {
-      from_task(tp_index),
-      Task[tp_index].Bisector
-    };
-  }
-};
-
-template <>
-struct sector<sector_type_t::LINE, TSK_DEFAULT> {
-  static line_data get(int tp_index) {
-    return {
-      from_task(tp_index),
-      Task[tp_index].Bisector,
-      Task[tp_index].InBound
-    };
-  }
-};
-
-template <>
-struct sector<sector_type_t::SECTOR, TSK_AAT> {
-  static sector_data get(int tp_index) {
-    return {
-        from_task(tp_index), 
-        Task[tp_index].AATStartRadial,
-        Task[tp_index].AATFinishRadial,
-        Task[tp_index].AATSectorRadius
-        // TODO : implement AAT min radius
-    };
-  }
-};
-
-template <>
-struct sector<sector_type_t::CIRCLE, TSK_AAT> {
-  static circle_data get(int tp_index) {
-    return {
-      from_task(tp_index),
-      Task[tp_index].AATCircleRadius
-    };
-  }
-};
-
 
 /*
  * function to check if current position is inside Turnpoint. 
  */
 
-bool InSector(const AGeoPoint& position, const sector_data&& data) {
+bool InSector(const AGeoPoint& position, const task::sector_data&& data) {
   double distance;
   double bearing;
 
@@ -136,11 +27,11 @@ bool InSector(const AGeoPoint& position, const sector_data&& data) {
   return false;
 }
 
-bool InSector(const AGeoPoint& position, const circle_data& data) {
+bool InSector(const AGeoPoint& position, const task::circle_data& data) {
   return (position.Distance(data.center) < data.radius);
 }
 
-bool InSector(const AGeoPoint& position, const dae_data& data) {
+bool InSector(const AGeoPoint& position, const task::dae_data& data) {
   double distance;
   double bearing;
 
@@ -158,7 +49,7 @@ bool InSector(const AGeoPoint& position, const dae_data& data) {
   return false;
 }
 
-bool InSector(const AGeoPoint& position, const line_data& data) {
+bool InSector(const AGeoPoint& position, const task::line_data& data) {
   double bearing = position.Bearing(data.center);
 
   // TODO : check for radius ?
@@ -173,40 +64,34 @@ bool InSector(const AGeoPoint& position, const line_data& data) {
 
 
 template <sector_type_t type, int task_type>
-bool InSector(const AGeoPoint& position, int tp_index) {
-  return InSector(position, sector<type, task_type>::get(tp_index));
+bool InSector(int tp_index, const AGeoPoint& position) {
+  return InSector(position, task::zone_data<type, task_type>::get(tp_index));
 }
+
+template <sector_type_t type>
+bool InSector(int tp_index, const AGeoPoint& position) {
+  if (UseAATTarget()) {
+    return InSector<type, TSK_AAT>(tp_index, position);
+  } else {
+    return InSector<type, TSK_DEFAULT>(tp_index, position);
+  }
+}
+
+struct InSector_t {
+  using result_type = bool;
+
+  static bool invalid() {
+    return false;
+  }
+
+  template <sector_type_t type>
+  static bool invoke(int tp_index, const AGeoPoint& position) {
+    return InSector<type>(tp_index, position);
+  }
+};
 
 } // namespace
 
 bool InTurnSector(const AGeoPoint& position, int tp_index) {
-  ScopeLock lock(CritSec_TaskData);
-  if (!ValidTaskPointFast(tp_index)) {
-    return false;
-  }
-
-  sector_type_t type = (UseAATTarget() ? Task[tp_index].AATType : SectorType);
-  switch (type) {
-    case sector_type_t::ESS_CIRCLE:
-    case sector_type_t::CIRCLE:
-      if (UseAATTarget()) {
-        return InSector<sector_type_t::CIRCLE, TSK_AAT>(position, tp_index);
-      } else {
-        return InSector<sector_type_t::CIRCLE, TSK_DEFAULT>(position, tp_index);
-      }
-    case sector_type_t::DAe:
-      return InSector<sector_type_t::DAe, TSK_DEFAULT>(position, tp_index);
-    case sector_type_t::SECTOR:
-      if (UseAATTarget()) {
-        return InSector<sector_type_t::SECTOR, TSK_AAT>(position, tp_index);
-      } else {
-        return InSector<sector_type_t::SECTOR, TSK_DEFAULT>(position, tp_index);
-      }
-    case sector_type_t::LINE:
-      return InSector<sector_type_t::LINE, TSK_DEFAULT>(position, tp_index);
-    default:
-      assert(false);
-      break;
-  }
-  return false;
+  return task::invoke_for_task_point<InSector_t, const AGeoPoint&>(tp_index, position);
 }

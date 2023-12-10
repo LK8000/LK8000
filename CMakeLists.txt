@@ -542,6 +542,7 @@ add_library( LK8000 SHARED
     Common/Source/Calc/Task/PGTask/PGTaskMgr.cpp
     Common/Source/Calc/Task/PGTask/PGSectorTaskPt.cpp
     Common/Source/Calc/Task/PGTask/PGEssCircleTaskPt.cpp
+    Common/Source/Calc/Task/task_zone.cpp
 
     Common/Source/Terrain/OpenCreateClose.cpp
     Common/Source/Terrain/RasterTerrain.cpp
