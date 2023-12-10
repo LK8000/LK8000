@@ -85,43 +85,6 @@ const TCHAR *CContestMgr::XCRuleToString(CContestMgr::ContestRule rule) {
 }
 
 /** 
- * @brief Constructor
- */
-CContestMgr::CContestMgr():
-  _handicap(DEFAULT_HANDICAP),
-  _trace(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
-  _traceSprint(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM)),
-  _traceFreeTriangle(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
-  _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
-  _prevFAIFront(), _prevFAIBack(),
-  _prevFAIPredictedFront(), _prevFAIPredictedBack(),
-  _prevFreeTriangleFront(),_prevFreeTriangleBack(),
-  _bestXCType(XCFlightType::XC_INVALID),
-  _bestXCTriangleType(XCFlightType::XC_INVALID),
-  _XCFAIStatus(XCTriangleStatus::INVALID),
-  _XCFTStatus(XCTriangleStatus::INVALID),
-  _XCTriangleClosurePercentage(0),
-  _XCTriangleClosureDistance(0),
-  _XCTriangleDistance(0),
-  _XCMeanSpeed(0),
-  _pgpsFreeTriangleClosePoint(0,0,0,0),
-  _fFreeTriangleTogo(0),
-  _fFreeTriangleBestTogo(0),
-  _pgpsFAITriangleClosePoint(0, 0, 0, 0),
-  _fFAITriangleTogo(0),
-  _fFAITriangleBestTogo(0),
-  _bFAI(false),
-  _maxFAILeg(nullptr),
-  _bLooksLikeAFAITriangle(false),
-  _dFAITriangleClockwise(0)
-{
-  _resultFREETriangle = CResult();
-  ScopeLock guard(_resultsCS);
-  for(unsigned i=0; i<TYPE_NUM; i++)
-    _resultArray.push_back(CResult());
-}
-
-/** 
  * @brief Resets Contest Manager
  * 
  * @param handicap Glider handicap
@@ -137,12 +100,12 @@ void CContestMgr::Reset(unsigned handicap) {
   _traceFreeTriangle = std::make_unique<CTrace>(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
   _traceLoop = std::make_unique<CTrace>(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
 
-  _prevFAIFront.reset(0);
-  _prevFAIBack.reset(0);
-  _prevFAIPredictedFront.reset(0);
-  _prevFAIPredictedBack.reset(0);
-  _prevFreeTriangleFront.reset(0);
-  _prevFreeTriangleBack.reset(0);
+  _prevFAIFront = nullptr;
+  _prevFAIBack = nullptr;
+  _prevFAIPredictedFront = nullptr;
+  _prevFAIPredictedBack = nullptr;
+  _prevFreeTriangleFront = nullptr;
+  _prevFreeTriangleBack = nullptr;
   _bestXCType = XCFlightType::XC_INVALID;
   _bestXCTriangleType = XCFlightType::XC_INVALID;
   _XCFAIStatus = XCTriangleStatus::INVALID;
@@ -700,13 +663,14 @@ void CContestMgr::SolveFREETriangle(const CTrace &trace,const CPointGPS *prevFro
             break;
 
           if ( total_distance > _resultFREETriangle.PredictedDistance() ) {
-            CPointGPSArray pointArray;
-            pointArray.push_back(trace.Front()->GPS());
-            pointArray.push_back(point1st->GPS());
-            pointArray.push_back(point2nd->GPS());
-            pointArray.push_back(point3rd->GPS());
-            pointArray.push_back(trace.Back()->GPS());
-            _resultFREETriangle.UpdateDistancesAndArray(total_distance, total_distance, pointArray);
+            CPointGPSArray pointArray = {
+              trace.Front()->GPS(),
+              point1st->GPS(),
+              point2nd->GPS(),
+              point3rd->GPS(),
+              trace.Back()->GPS()
+            };
+            _resultFREETriangle.UpdateDistancesAndArray(total_distance, total_distance, std::move(pointArray));
           }
         }
       }
@@ -781,9 +745,9 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
   // STEP 2 - Solve FAI-OLC
   if (step % STEPS_NUM == 2 && AdditionalContestRule == ContestRule::OLC) {
     if (_traceLoop->Size()) {
-      SolveFAITriangle(*_traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
-      _prevFAIFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
-      _prevFAIBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
+      SolveFAITriangle(*_traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);      
+      _prevFAIFront = std::make_unique<CPointGPS>(_traceLoop->Front()->GPS());
+      _prevFAIBack = std::make_unique<CPointGPS>(_traceLoop->Back()->GPS());
       SolveOLCPlus(false);
     }
   }
@@ -805,8 +769,8 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
   if (step % STEPS_NUM == 5  ) {
     if (_traceLoop->Size()) {
       SolveFAITriangle(*_traceLoop, _prevFAIPredictedFront.get(), _prevFAIPredictedBack.get(), true);
-      _prevFAIPredictedFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
-      _prevFAIPredictedBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
+      _prevFAIPredictedFront = std::make_unique<CPointGPS>(_traceLoop->Front()->GPS());
+      _prevFAIPredictedBack = std::make_unique<CPointGPS>(_traceLoop->Back()->GPS());
     }
     if (AdditionalContestRule == ContestRule::OLC) {
       SolveOLCPlus(true);
@@ -835,8 +799,8 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
   if (step % STEPS_NUM == 8) {
     if (_traceFreeTriangle->Size()) {
       SolveFREETriangle(*_traceFreeTriangle, _prevFreeTriangleFront.get(), _prevFreeTriangleBack.get());
-      _prevFreeTriangleFront.reset(_traceFreeTriangle->Size() ? new CPointGPS(_traceFreeTriangle->Front()->GPS()) : 0);
-      _prevFreeTriangleBack.reset(_traceFreeTriangle->Size() ? new CPointGPS(_traceFreeTriangle->Back()->GPS()) : 0);
+      _prevFreeTriangleFront = std::make_unique<CPointGPS>(_traceFreeTriangle->Front()->GPS());
+      _prevFreeTriangleBack = std::make_unique<CPointGPS>(_traceFreeTriangle->Back()->GPS());
     }
     SolveXC();
   }

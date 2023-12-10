@@ -113,19 +113,19 @@ public:
    */
   class CResult {
     friend class CContestMgr;
-    TType          _type;                         /**< @brief The type of the contest (TYPE_INVALID if result invalid) */
-    bool           _predicted;                    /**< @brief @c true if a result is based on prediction */
-    unsigned       _distance;                     /**< @brief Contest covered distance in meters 0 for XC if invalid triangle*/
-    unsigned       _current_distance;             /**< @brief Contest covered current distance in meters even if invalid*/
-    unsigned       _predicted_distance;           /**< @brief Contest closed maximum distance in meters */
-    float          _score;                        /**< @brief Contest score (if exists) */
-    unsigned       _duration;                     /**< @brief Contest duration */
-    float          _speed;                        /**< @brief Contest speed */
-    CPointGPSArray _pointArray;                   /**< @brief The list of contest result points */
+    TType          _type = TYPE_INVALID;    /**< @brief The type of the contest (TYPE_INVALID if result invalid) */
+    bool           _predicted = false;      /**< @brief @c true if a result is based on prediction */
+    unsigned       _distance = 0;           /**< @brief Contest covered distance in meters 0 for XC if invalid triangle*/
+    unsigned       _current_distance = 0;   /**< @brief Contest covered current distance in meters even if invalid*/
+    unsigned       _predicted_distance = 0; /**< @brief Contest closed maximum distance in meters */
+    float          _score = 0;              /**< @brief Contest score (if exists) */
+    unsigned       _duration = 0;           /**< @brief Contest duration */
+    float          _speed = 0;              /**< @brief Contest speed */
+    CPointGPSArray _pointArray;             /**< @brief The list of contest result points */
 
     void Update();
   public:
-    CResult();
+    CResult() = default;
     CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray);
     CResult(TType type, bool predicted, unsigned distance, unsigned current_distance, unsigned predicted_distance ,float score, const CPointGPSArray &pointArray);
     CResult(TType type, const CResult &ref);
@@ -145,11 +145,11 @@ public:
       _speed = _pointArray.empty() ? 0 : ((float)current_distance / _duration);
     }
     // used only by TYPE_XC_FREE_TRIANGLE
-    void UpdateDistancesAndArray( unsigned current_distance, unsigned predicted_distance, const CPointGPSArray &pointArray ){
+    void UpdateDistancesAndArray( unsigned current_distance, unsigned predicted_distance, CPointGPSArray &&pointArray ){
       _type = TYPE_XC_FREE_TRIANGLE;
       _current_distance=current_distance;
       _predicted_distance=predicted_distance;
-      _pointArray = CPointGPSArray(pointArray);
+      std::swap(_pointArray, pointArray);      
       _duration = _pointArray.empty() ? 0 : (_pointArray.back().TimeDelta(_pointArray.front()));
       _speed = _pointArray.empty() ? 0 : ((float)_current_distance / _duration);
     };
@@ -184,11 +184,15 @@ private:
   static constexpr unsigned DEFAULT_HANDICAP = 100;
 
   static CContestMgr _instance;                       /**< @brief Singleton */
-  unsigned _handicap;                                 /**< @brief Glider handicap */
-  CTracePtr _trace;                                   /**< @brief Main trace */
-  CTracePtr _traceSprint;                             /**< @brief Trace for OLC-League */
-  CTracePtr _traceFreeTriangle;                       /**< @brief Trace for XContest Free Triangle */
-  CTracePtr _traceLoop;                               /**< @brief Trace for OLC-League */
+  unsigned _handicap = DEFAULT_HANDICAP;              /**< @brief Glider handicap */
+  CTracePtr _trace = std::make_unique<CTrace>(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM); /**< @brief Main trace */
+  CTracePtr _traceSprint = std::make_unique<CTrace>(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT,
+                                                    COMPRESSION_ALGORITHM); /**< @brief Trace for OLC-League */
+  CTracePtr _traceFreeTriangle = std::make_unique<CTrace>(
+      TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM); /**< @brief Trace for XContest Free Triangle */
+  CTracePtr _traceLoop =
+      std::make_unique<CTrace>(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM); /**< @brief Trace for OLC-League */
+
   std::unique_ptr<CPointGPS> _prevFAIFront;           /**< @brief Last reviewed OLC-FAI loop end points */
   std::unique_ptr<CPointGPS> _prevFAIBack;            /**< @brief Last reviewed OLC-FAI loop end points */
   std::unique_ptr<CPointGPS> _prevFAIPredictedFront;  /**< @brief Last reviewed OLC-FAI Predicted loop end points */
@@ -196,37 +200,37 @@ private:
   std::unique_ptr<CPointGPS> _prevFreeTriangleFront;  /**< @brief Last reviewed XContest Free Triangle loop end points */
   std::unique_ptr<CPointGPS> _prevFreeTriangleBack;   /**< @brief Last reviewed XContest Free Triangle loop end points */
 
-  XCFlightType     _bestXCType;                        /**< @brief the XC type that has maximum scoring */
-  XCFlightType     _bestXCTriangleType;               // Best triangle type ( FAI and FT )
-  XCTriangleStatus  _XCFAIStatus;                     // Status of the current FAI best triangle ( INVALID,VALID,CLOSED)
-  XCTriangleStatus  _XCFTStatus;                      // Status of the current FREE best triangle ( INVALID,VALID,CLOSED)
+  XCFlightType     _bestXCType = XCFlightType::XC_INVALID;         /**< @brief the XC type that has maximum scoring */
+  XCFlightType     _bestXCTriangleType = XCFlightType::XC_INVALID; // Best triangle type ( FAI and FT )
+  XCTriangleStatus _XCFAIStatus = XCTriangleStatus::INVALID;       // Status of the current FAI best triangle ( INVALID,VALID,CLOSED)
+  XCTriangleStatus _XCFTStatus = XCTriangleStatus::INVALID;        // Status of the current FREE best triangle ( INVALID,VALID,CLOSED)
 
   // Precalculated XC infobox values
-  double _XCTriangleClosurePercentage;                // Percentage to go for  the current best XC triangle
-  double _XCTriangleClosureDistance;                  // Distance to go for  the current best XC triangle
-  double _XCTriangleDistance;                         // Total predicted distance for  the current best XC triangle
-  double _XCMeanSpeed;                                // XC  mean speed calculater on 3TP ( Like XCTrack does )
+  double _XCTriangleClosurePercentage = 0.;             // Percentage to go for  the current best XC triangle
+  double _XCTriangleClosureDistance = 0.;               // Distance to go for  the current best XC triangle
+  double _XCTriangleDistance = 0.;                      // Total predicted distance for  the current best XC triangle
+  double _XCMeanSpeed = 0.;                             // XC  mean speed calculater on 3TP ( Like XCTrack does )
 
-  CPointGPS _pgpsFreeTriangleClosePoint;                /**< @brief Point to close the Free Triangle on track*/
-  double _fFreeTriangleTogo     ;                       /**< @brief current closing distance for XContest FREE TRIANGLE*/
-  double _fFreeTriangleBestTogo ;                      /**< @brief best achieved closing distance for XContest FREE TRIANGLE*/
-  CPointGPS _pgpsFAITriangleClosePoint;                /**< @brief Point to close the FAI Triangle on track*/
-  double _fFAITriangleTogo     ;                        /**< @brief current closing distance for XContest FAI TRIANGLE*/
-  double _fFAITriangleBestTogo ;                        /**< @brief best achieved closing distance for XContest FAI TRIANGLE*/
+  CPointGPS _pgpsFreeTriangleClosePoint = {0, 0, 0, 0}; /**< @brief Point to close the Free Triangle on track*/
+  double _fFreeTriangleTogo = 0.;                       /**< @brief current closing distance for XContest FREE TRIANGLE*/
+  double _fFreeTriangleBestTogo = 0.;                   /**< @brief best achieved closing distance for XContest FREE TRIANGLE*/
+  CPointGPS _pgpsFAITriangleClosePoint = {0, 0, 0, 0};  /**< @brief Point to close the FAI Triangle on track*/
+  double _fFAITriangleTogo = 0.;                        /**< @brief current closing distance for XContest FAI TRIANGLE*/
+  double _fFAITriangleBestTogo = 0.;                    /**< @brief best achieved closing distance for XContest FAI TRIANGLE*/
 
-  bool _bFAI;                                           /**< @brief is the FREE Triangle a FAI one ?*/
+  bool _bFAI = false;                                   /**< @brief is the FREE Triangle a FAI one ?*/
 
-  TriangleLeg* _maxFAILeg;                                   // pointer to the longest current leg of the triangle to be promoted into a FAI one
-  bool _bLooksLikeAFAITriangle;                          /**< @brief does the  FREE Triangle looks like a FAI attempt ?*/
-  int _dFAITriangleClockwise;                           /**< @brief 1 clockwise. 1 counter clockwise*/
+  TriangleLeg* _maxFAILeg = nullptr;                    // pointer to the longest current leg of the triangle to be promoted into a FAI one
+  bool _bLooksLikeAFAITriangle = false;                 /**< @brief does the  FREE Triangle looks like a FAI attempt ?*/
+  int _dFAITriangleClockwise = 0;                       /**< @brief 1 clockwise. 1 counter clockwise*/
 
-  mutable Mutex _mainCS;                                  /**< @brief Main critical section that prevents Reset() and Add() at the same time */
-  mutable Mutex _traceCS;                                  /**< @brief Main trace critical section for returning _trace points */
-  mutable Mutex _resultsCS;                               /**< @brief Contests results critical section for returning results */
+  mutable Mutex _mainCS;                                /**< @brief Main critical section that prevents Reset() and Add() at the same time */
+  mutable Mutex _traceCS;                               /**< @brief Main trace critical section for returning _trace points */
+  mutable Mutex _resultsCS;                             /**< @brief Contests results critical section for returning results */
 
-  CResultArray _resultArray;                                  /**< @brief Array of results */
-  std::array<TriangleLeg,3> _faiAssistantTriangleLegs;       // To store data and speedup rendering of the FAI Assistant
-  CResult _resultFREETriangle;                                /**< @brief private results for  XContest Free Triangle */
+  std::array<CResult, TYPE_NUM> _resultArray;           /**< @brief Array of results */
+  std::array<TriangleLeg, 3> _faiAssistantTriangleLegs; /** To store data and speedup rendering of the FAI Assistant */
+  CResult _resultFREETriangle = {};                     /**< @brief private results for  XContest Free Triangle */
 
   // member functions
   bool BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
@@ -253,7 +257,7 @@ private:
 
  public:
 
-  CContestMgr();
+  CContestMgr() = default;
 
   TriangleLeg* GetFAIAssistantMaxLeg() {return _maxFAILeg;};
   TriangleLeg* GetFAIAssistantLeg(int i) {return &_faiAssistantTriangleLegs[i];};
@@ -300,17 +304,6 @@ private:
 };
 
 extern CContestMgr::ContestRule AdditionalContestRule;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
-
-/** 
- * @brief Default constructor
- * 
- * Constructor to create dummy invalid contest result object.
- */
-inline CContestMgr::CResult::CResult():
-  _type(TYPE_INVALID), _predicted(0), _distance(0), _current_distance(0), _predicted_distance(0), _score(0), _duration(0), _speed(0)
-
-{
-}
 
 /** 
  * @brief Primary constructor
