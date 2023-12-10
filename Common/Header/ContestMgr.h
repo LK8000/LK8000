@@ -183,7 +183,6 @@ private:
   // Other
   static constexpr unsigned DEFAULT_HANDICAP = 100;
 
-  static CContestMgr _instance;                       /**< @brief Singleton */
   unsigned _handicap = DEFAULT_HANDICAP;              /**< @brief Glider handicap */
   CTracePtr _trace = std::make_unique<CTrace>(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM); /**< @brief Main trace */
   CTracePtr _traceSprint = std::make_unique<CTrace>(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT,
@@ -264,7 +263,12 @@ private:
   bool LooksLikeAFAITriangleAttempt() { return _bLooksLikeAFAITriangle;};
   int isFAITriangleClockwise() { return _dFAITriangleClockwise;};
   bool hasValidPath(TType type);
-  static CContestMgr &Instance() { return _instance; }
+
+  static CContestMgr &Instance() {
+    static CContestMgr _instance; /**< @brief Singleton */
+    return _instance;
+  }
+
   static const TCHAR *TypeToString(TType type);
   static const TCHAR *XCRuleToString(ContestRule type);
 

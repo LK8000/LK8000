@@ -15,10 +15,6 @@
 #include "NavFunctions.h"
 #include "RasterTerrain.h"
 
-
-//#define MAX_EARTH_DIST_IN_M   40000000.0
-CContestMgr CContestMgr::_instance;
-
 CContestMgr::ContestRule AdditionalContestRule = CContestMgr::ContestRule::OLC;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
 
 /** 
