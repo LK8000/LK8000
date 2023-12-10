@@ -48,9 +48,9 @@ void Statistics::Reset() {
     LegStartTime[j] = -1;
   }
 
-  if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::OLC)) {
+  if (AdditionalContestRule == CContestMgr::ContestRule::OLC) {
     contestType = CContestMgr::TType::TYPE_OLC_CLASSIC;
-  } else if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::FAI_ASSISTANT)) {
+  } else if (AdditionalContestRule == CContestMgr::ContestRule::FAI_ASSISTANT) {
     contestType = CContestMgr::TType::TYPE_OLC_FAI_PREDICTED;
   } else {
     contestType = CContestMgr::TType::TYPE_XC_FREE_TRIANGLE;
@@ -243,16 +243,16 @@ static void OnCalcClicked(WndButton* pWnd){
   }
   if (analysis_page==ANALYSIS_PAGE_CONTEST) {
 
-    if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::NONE))
+    if (AdditionalContestRule == CContestMgr::ContestRule::NONE)
       return;
 
     CContestMgr::TType t_start;
     CContestMgr::TType t_end;
 
-    if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::OLC)) {
+    if (AdditionalContestRule == CContestMgr::ContestRule::OLC) {
       t_start = CContestMgr::TType::TYPE_OLC_CLASSIC;
       t_end = CContestMgr::TType::TYPE_FAI_ASSISTANT;
-    } else if (AdditionalContestRule == static_cast<int>(CContestMgr::ContestRule::FAI_ASSISTANT)) {
+    } else if (AdditionalContestRule == CContestMgr::ContestRule::FAI_ASSISTANT) {
       t_start = CContestMgr::TType::TYPE_FAI_ASSISTANT;
       t_end = CContestMgr::TType::TYPE_FAI_ASSISTANT;
     } else {

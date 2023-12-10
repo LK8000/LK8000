@@ -484,7 +484,7 @@ void LKProfileResetDefault() {
   Overlay_RightMid=1;
   Overlay_RightBottom=1;
 
-  AdditionalContestRule= 2;  // OLC by default
+  AdditionalContestRule = CContestMgr::ContestRule::OLC;  // OLC by default
 
 
 #ifdef _WGS84

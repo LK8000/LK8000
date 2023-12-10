@@ -346,7 +346,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4], &qrow[3],&qrow[4],&qrow[2],&BmpValue);
 			break;
 		case IM_CONTEST:
-		    if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+		    if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FF_DIST, true, BufferValue, BufferUnit, BufferTitle);
 		    else
 			  showunit=LKFormatValue(LK_OLC_CLASSIC_DIST, true, BufferValue, BufferUnit, BufferTitle);
@@ -376,7 +376,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[9],&qcolumn[8], &qrow[3],&qrow[4],&qrow[2]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FT_DIST, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_FAI_DIST, true, BufferValue, BufferUnit, BufferTitle);
@@ -412,7 +412,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12], &qrow[3],&qrow[4],&qrow[2]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FAI_DIST, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_LEAGUE_DIST, false, BufferValue, BufferUnit, BufferTitle);
@@ -449,7 +449,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_DIST, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_3TPS_DIST, false, BufferValue, BufferUnit, BufferTitle);
@@ -490,7 +490,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FF_SCORE, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_CLASSIC_PREDICTED_DIST, false, BufferValue, BufferUnit, BufferTitle);
@@ -522,7 +522,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[9], &qcolumn[8], &qrow[6],&qrow[7],&qrow[5]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FT_SCORE, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_FAI_PREDICTED_DIST, true , BufferValue, BufferUnit, BufferTitle);
@@ -555,7 +555,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_LD_CRUISE, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FAI_SCORE, true, BufferValue, BufferUnit, BufferTitle);
             else {
               _tcscpy(BufferValue, _T(""));
@@ -587,7 +587,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_LD_INST, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_SCORE, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_3TPS_PREDICTED_DIST, false, BufferValue, BufferUnit, BufferTitle);
@@ -622,7 +622,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_FIN_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) ) {
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
 				showunit=LKFormatValue(LK_XC_MEAN_SPEED, false, BufferValue, BufferUnit, BufferTitle);
 			} else {
 				showunit = LKFormatValue(LK_OLC_CLASSIC_SPEED, false, BufferValue, BufferUnit, BufferTitle);
@@ -658,7 +658,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) ){
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
 				_tcscpy(BufferValue, _T(""));
 				_tcscpy(BufferTitle, _T(""));
 			} else
@@ -694,7 +694,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_TASK_DISTCOV, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) ){
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
               _tcscpy(BufferValue, _T(""));
               _tcscpy(BufferTitle, _T(""));
             } else
@@ -729,7 +729,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_FIN_GR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) ){
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
               _tcscpy(BufferValue, _T(""));
               _tcscpy(BufferTitle, _T(""));
             } else
@@ -770,7 +770,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-            if ( static_cast<int>(AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC)) ){
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
               showunit=LKFormatValue(LK_XC_PREDICTED_DIST, true, BufferValue, BufferUnit, BufferTitle);
 			} else
               showunit=LKFormatValue(LK_OLC_PLUS_SCORE, false, BufferValue, BufferUnit, BufferTitle);
@@ -808,7 +808,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[9], &qcolumn[9],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) ){
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
               showunit=LKFormatValue(LK_XC_CLOSURE_PERC, true, BufferValue, BufferUnit, BufferTitle);
 			} else
               showunit=LKFormatValue(LK_OLC_PLUS_PREDICTED_SCORE, false, BufferValue, BufferUnit, BufferTitle);
@@ -846,7 +846,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[13], &qcolumn[13],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) )
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_CLOSURE_DIST, true, BufferValue, BufferUnit, BufferTitle);
             else
               showunit=LKFormatValue(LK_OLC_LEAGUE_SCORE, false, BufferValue, BufferUnit, BufferTitle);
@@ -879,7 +879,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			showunit=LKFormatValue(LK_MC, true, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-            if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::OLC) ){
+            if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
               _tcscpy(BufferValue, _T(""));
               _tcscpy(BufferTitle, _T(""));
             } else {

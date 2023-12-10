@@ -77,7 +77,7 @@ public:
     CFD,
     LEONARDO_XC,
     UK_NATIONAL_LEAGUE,
-    NUM_OF_XC_RULES
+    NUM_OF_XC_RULES // must be the last !
   };
 
   enum class XCTriangleStatus : uint8_t {
@@ -262,7 +262,7 @@ private:
   bool hasValidPath(TType type);
   static CContestMgr &Instance() { return _instance; }
   static const TCHAR *TypeToString(TType type);
-  static const TCHAR *XCRuleToString(int type);
+  static const TCHAR *XCRuleToString(ContestRule type);
 
   // Used by old OLC functions and now just call XC function ( to be refactor . Tony  2019) )
   CPointGPS GetClosingPoint(void )         {return GetFAITriangleClosingPoint();};
@@ -298,6 +298,8 @@ private:
   double GetXCMeanSpeed(){return _XCMeanSpeed;};
   CPointGPS GetXCTriangleClosingPoint();
 };
+
+extern CContestMgr::ContestRule AdditionalContestRule;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
 
 /** 
  * @brief Default constructor

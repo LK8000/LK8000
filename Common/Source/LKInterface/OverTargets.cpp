@@ -174,7 +174,7 @@ _tryagain:
 
   	// Skip Cross Country triangle closing if no Addition Contest active or not valid optimized point ...
   if( OvertargetMode==OVT_XC &&
-      ( AdditionalContestRule==static_cast<int>(CContestMgr::ContestRule::NONE)  || !ValidResWayPoint(RESWP_FAIOPTIMIZED))) {
+      (AdditionalContestRule == CContestMgr::ContestRule::NONE  || !ValidResWayPoint(RESWP_FAIOPTIMIZED))) {
 		goto _tryagain;
   }
 

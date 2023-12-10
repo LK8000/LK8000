@@ -262,7 +262,7 @@ _skip_stuff:
         }
     }
 
-    if ( AdditionalContestRule!=static_cast<int>(CContestMgr::ContestRule::NONE) &&
+    if (AdditionalContestRule != CContestMgr::ContestRule::NONE &&
         ( OvertargetMode ==  OVT_XC || Flags_DrawXC ) ) {   // if we target the XC closing point we also draw the current best XC triangle if available
       DrawXC(Surface, DrawRect, _Proj, Orig_Aircraft);
     }

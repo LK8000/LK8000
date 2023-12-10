@@ -3136,13 +3136,14 @@ DataField* dfe = wp->GetDataField();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalContestRule"));
-  if (wp)
-  {
+  if (wp) {
     DataField* dfe = wp->GetDataField();
-    for (int i=0; i<static_cast<int>(CContestMgr::ContestRule::NUM_OF_XC_RULES); i++) {
-      dfe->addEnumText(CContestMgr::XCRuleToString(i));
+    if (dfe) {
+      for (int i = 0; i < static_cast<int>(CContestMgr::ContestRule::NUM_OF_XC_RULES); i++) {
+        dfe->addEnumText(CContestMgr::XCRuleToString(static_cast<CContestMgr::ContestRule>(i)));
+      }
+      dfe->Set(static_cast<int>(AdditionalContestRule));
     }
-    dfe->Set(AdditionalContestRule);
     wp->RefreshDisplay();
   }
 
@@ -4472,7 +4473,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalContestRule"));
   if (wp) {
-      AdditionalContestRule = wp->GetDataField()->GetAsInteger();
+      AdditionalContestRule = static_cast<CContestMgr::ContestRule>(wp->GetDataField()->GetAsInteger());
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));

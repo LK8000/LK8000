@@ -19,6 +19,8 @@
 //#define MAX_EARTH_DIST_IN_M   40000000.0
 CContestMgr CContestMgr::_instance;
 
+CContestMgr::ContestRule AdditionalContestRule = CContestMgr::ContestRule::OLC;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
+
 /** 
  * @brief Returns the string representation of contest type
  * 
@@ -55,20 +57,31 @@ const TCHAR *CContestMgr::TypeToString(TType type)
  *
  * @return String representation of current contest rule . No need to translate here
  */
-const TCHAR *CContestMgr::XCRuleToString(int rule)
-{
-  const TCHAR *typeStr[] = {          // No need to translate here
-      _T("OFF"),
-      _T("Only FAI assistant"),
-      _T("OLC"),
-      _T("XContest 2018"),
-      _T("XContest 2019"),
-      _T("French CDF ligue"),
-      _T("Leonardo XC"),
-      _T("UK National League"),
-      _T("[INVALID]")                 // Never use this. Used for iterate over rules
-  };
-  return typeStr[rule];
+const TCHAR *CContestMgr::XCRuleToString(CContestMgr::ContestRule rule) {
+
+  switch (rule) {
+    case ContestRule::NUM_OF_XC_RULES:
+      break;
+    case ContestRule::NONE:
+      return _T("OFF");
+    case ContestRule::OLC:
+      return _T("Only FAI assistant");
+    case ContestRule::FAI_ASSISTANT:
+      return _T("OLC");
+    case ContestRule::XContest2018:
+      return _T("XContest 2018");
+    case ContestRule::XContest2019:
+      return _T("XContest 2019");
+    case ContestRule::CFD:
+      return _T("French CDF ligue");
+    case ContestRule::LEONARDO_XC:
+      return _T("Leonardo XC");
+    case ContestRule::UK_NATIONAL_LEAGUE:
+      return _T("UK National League");
+  }
+
+  assert(false);
+  return _T("INVALID TYPE");
 }
 
 /** 
@@ -321,25 +334,29 @@ bool CContestMgr::FREETriangleEdgeCheck(unsigned length1, unsigned length2, unsi
   bool valid = false;
 
   switch (AdditionalContestRule) {
-    case static_cast<int>(ContestRule::OLC):
+    case ContestRule::NUM_OF_XC_RULES:
+    case ContestRule::NONE:
+      valid = false;
+      break;
+    case ContestRule::OLC:
       valid= true;            // No constrain on edge here
       break;
-    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+    case ContestRule::FAI_ASSISTANT:
       valid= true;            // No constrain on edge here
       break;
-    case static_cast<int>(ContestRule::XContest2018):
+    case ContestRule::XContest2018:
       valid= true;            // No constrain on edge here
       break;
-    case static_cast<int>(ContestRule::XContest2019):
+    case ContestRule::XContest2019:
       valid= true;            // No constrain on edge here
       break;
-    case static_cast<int>(ContestRule::CFD):
+    case ContestRule::CFD:
       valid= true;            // No constrain on edge here
       break;
-    case static_cast<int>(ContestRule::LEONARDO_XC):
+    case ContestRule::LEONARDO_XC:
       valid= true;            // No constrain on edge here
       break;
-    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
+    case ContestRule::UK_NATIONAL_LEAGUE:
       valid= true;            // and check
       const unsigned length = length1 + length2 + length3;
       const unsigned lengthMin = std::min(length1, std::min(length2, length3));
@@ -724,7 +741,7 @@ void CContestMgr::SolveOLCPlus(bool predicted)
  */
 void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
 
-  if ( AdditionalContestRule == static_cast<int>(ContestRule::NONE) ) {
+  if (AdditionalContestRule == ContestRule::NONE) {
     return;
   }
 
@@ -749,20 +766,20 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
   }
 
   // STEP 0 - Solve OLC-Classic and FAI 3TPs
-  if (step % STEPS_NUM == 0 && AdditionalContestRule!=static_cast<int>(ContestRule::FAI_ASSISTANT) ) {
+  if (step % STEPS_NUM == 0 && AdditionalContestRule != ContestRule::FAI_ASSISTANT) {
     SolvePoints(*_trace, false, false);
     SolveOLCPlus(false);
   }
 
   // STEP 1 - Find FAI-OLC loop
-  if (step % STEPS_NUM == 1 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+  if (step % STEPS_NUM == 1 && AdditionalContestRule == ContestRule::OLC) {
     _traceLoop->Clear();
     if (!BiggestLoopFind(*_trace, *_traceLoop, false))
       _traceLoop->Clear();
   }
 
   // STEP 2 - Solve FAI-OLC
-  if (step % STEPS_NUM == 2 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+  if (step % STEPS_NUM == 2 && AdditionalContestRule == ContestRule::OLC) {
     if (_traceLoop->Size()) {
       SolveFAITriangle(*_traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
       _prevFAIFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
@@ -772,7 +789,7 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
   }
 
   // STEP 3 - Solve OLC-Classic and FAI 3TPs for predicted path
-  if (step % STEPS_NUM == 3 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+  if (step % STEPS_NUM == 3 && AdditionalContestRule == ContestRule::OLC) {
     SolvePoints(*_trace, false, true);
     SolveOLCPlus(true);
   }
@@ -791,17 +808,17 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
       _prevFAIPredictedFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
       _prevFAIPredictedBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
     }
-    if (AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+    if (AdditionalContestRule == ContestRule::OLC) {
       SolveOLCPlus(true);
     }
   }
 
   // STEP 6 - OLC-League
-  if (AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+  if (AdditionalContestRule == ContestRule::OLC) {
     // Update sprint trace
     _traceSprint->Push(gps);
     _traceSprint->Compress();
-    if (step % STEPS_NUM == 6 && AdditionalContestRule==static_cast<int>(ContestRule::OLC)) {
+    if (step % STEPS_NUM == 6 && AdditionalContestRule == ContestRule::OLC) {
       // Solve OLC-Sprint
       SolvePoints(*_traceSprint, true, false);
     }
@@ -1088,28 +1105,29 @@ double CContestMgr::ScoreXC(double current_distance,double total_distance ,CCont
 
   double score = 0;
   switch (AdditionalContestRule) {
-    case static_cast<int>(ContestRule::OLC):
+    case ContestRule::NUM_OF_XC_RULES:
+    case ContestRule::NONE:
+      break;
+    case ContestRule::OLC:
       score =  ScoreFAI(current_distance, total_distance, type, update_status);
       break;
-    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+    case ContestRule::FAI_ASSISTANT:
       score =  ScoreFAI(current_distance, total_distance, type, update_status);
       break;
-    case static_cast<int>(ContestRule::XContest2018):
+    case ContestRule::XContest2018:
       score =  ScoreXContest2018(current_distance, total_distance, type, update_status);
       break;
-    case static_cast<int>(ContestRule::XContest2019):
+    case ContestRule::XContest2019:
       score =  ScoreXContest2019(current_distance, total_distance, type, update_status);
       break;
-    case static_cast<int>(ContestRule::CFD):
+    case ContestRule::CFD:
       score =   ScoreCDF(current_distance, total_distance, type, update_status);
       break;
-    case static_cast<int>(ContestRule::LEONARDO_XC):
+    case ContestRule::LEONARDO_XC:
       score =   ScoreLEONARDO_XC(current_distance, total_distance, type, update_status);
       break;
-    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
+    case ContestRule::UK_NATIONAL_LEAGUE:
       score =   ScoreUK_NATIONAL_LEAGUE(current_distance, total_distance, type, update_status);
-      break;
-    default:
       break;
   }
   return score;
@@ -1425,28 +1443,29 @@ CPointGPS CContestMgr::GetXCTriangleClosingPoint() {
 
   double radius = 0;
   switch (AdditionalContestRule) {
-    case static_cast<int>(ContestRule::OLC):
+    case ContestRule::NUM_OF_XC_RULES:
+    case ContestRule::NONE:
+      break;
+    case ContestRule::OLC:
       radius= 1000.0;
       break;
-    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+    case ContestRule::FAI_ASSISTANT:
       radius= 1000.0;
       break;
-    case static_cast<int>(ContestRule::XContest2018):
+    case ContestRule::XContest2018:
       radius = _XCTriangleDistance * 0.20;
       break;
-    case static_cast<int>(ContestRule::XContest2019):
+    case ContestRule::XContest2019:
       radius = _XCTriangleDistance * 0.20;
       break;
-    case static_cast<int>(ContestRule::CFD):
+    case ContestRule::CFD:
       radius = _XCTriangleDistance * 0.05;
       break;
-    case static_cast<int>(ContestRule::LEONARDO_XC):
+    case ContestRule::LEONARDO_XC:
       radius = _XCTriangleDistance * 0.20;
       break;
-    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
+    case ContestRule::UK_NATIONAL_LEAGUE:
       radius = _XCTriangleDistance * 0.20;
-      break;
-    default:
       break;
   }
   return radius;
@@ -1459,28 +1478,29 @@ double CContestMgr::GetXCClosedRadius() {
 
   double radius = 0;
   switch (AdditionalContestRule) {
-    case static_cast<int>(ContestRule::OLC):
+    case ContestRule::NUM_OF_XC_RULES:
+    case ContestRule::NONE:
+      break;
+    case ContestRule::OLC:
       radius= 1000.0;
       break;
-    case static_cast<int>(ContestRule::FAI_ASSISTANT):
+    case ContestRule::FAI_ASSISTANT:
       radius= 1000.0;
       break;
-    case static_cast<int>(ContestRule::XContest2018):
+    case ContestRule::XContest2018:
       radius = 0;
       break;
-    case static_cast<int>(ContestRule::XContest2019):
+    case ContestRule::XContest2019:
       radius =_XCTriangleDistance* 0.05;
       break;
-    case static_cast<int>(ContestRule::CFD):
+    case ContestRule::CFD:
       radius = 3000.0;
       break;
-    case static_cast<int>(ContestRule::LEONARDO_XC):
+    case ContestRule::LEONARDO_XC:
       radius = 0;
       break;
-    case static_cast<int>(ContestRule::UK_NATIONAL_LEAGUE):
+    case ContestRule::UK_NATIONAL_LEAGUE:
       radius = 0;
-      break;
-    default:
       break;
   }
   return radius;

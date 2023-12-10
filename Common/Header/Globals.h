@@ -696,7 +696,6 @@ GEXTERN int TeamFlarmIdTarget;    // FlarmId of the glider to track
 
 GEXTERN bool DisableAutoLogger;
 
-GEXTERN int AdditionalContestRule;  	// Enum to Rules to use for the addition contest CContestMgr::ContestRule
 
 
 GEXTERN short TerrainContrast;
