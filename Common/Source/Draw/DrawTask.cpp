@@ -23,6 +23,7 @@ $Id$
 #include "ScreenGeometry.h"
 #include "LKObjects.h"
 #include "DrawFAIOpti.h"
+#include "../Calc/Task/task_zone.h"
 
 extern LKColor taskcolor;
 
@@ -33,7 +34,7 @@ void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc, do
 {
 int center_x = (rc.right-rc.left)/2;
 int center_y = (rc.bottom-rc.top)/2;
-sector_type_t SecType = SectorType;
+
 int width = center_x-2;
 const auto oldbrush = Surface.SelectObject(UseAATTarget()
                                            ? LKBrush_LightGrey
@@ -69,12 +70,9 @@ LockTaskData(); // protect from external task changes
 double StartRadial = Task[TaskIdx].AATStartRadial;
 double FinishRadial = Task[TaskIdx].AATFinishRadial;
 
-double LineBrg;
-double SecRadius;
-GetTaskSectorParameter( TaskIdx, &SecType, &SecRadius);
-
-    switch (SecType)
-    {
+    double LineBrg;
+    sector_type_t type = task::get_zone_type(TaskIdx);
+    switch (type) {
         case sector_type_t::ESS_CIRCLE:
         case sector_type_t::CIRCLE:
             Surface.DrawCircle(center_x, center_y, width-2, true);

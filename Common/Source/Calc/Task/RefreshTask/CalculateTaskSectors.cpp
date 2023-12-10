@@ -6,119 +6,71 @@
    $Id$
 */
 
-#include "externs.h"
+#include "../task_zone.h"
 #include "Draw/Task/TaskRendererMgr.h"
 #include "Geographic/GeoPoint.h"
 
+namespace {
 
-
-void CalculateTaskSectors(int Idx) {
-
-    double SectorBearing = .0;
-
-    const TASK_POINT &TaskPt = Task[Idx];
-    if (ValidWayPointFast(TaskPt.Index)) {
-        const WAYPOINT &TaskWpt = WayPointList[TaskPt.Index];
-        const GeoPoint center(TaskWpt.Latitude, TaskWpt.Longitude);
-
-        if (Idx == 0) {
-            SectorBearing = TaskPt.OutBound + 180;
-
-            // start turnpoint sector
-            switch (StartLine) {
-                case sector_type_t::CIRCLE:
-                    gTaskSectorRenderer.SetCircle(Idx, center, StartRadius);
-                    break;
-                case sector_type_t::LINE:
-                    gTaskSectorRenderer.SetLine(Idx, center, StartRadius, SectorBearing);
-                    break;
-                case sector_type_t::SECTOR:
-                    gTaskSectorRenderer.SetStartSector(Idx, center, StartRadius,
-                                                       SectorBearing - 45,
-                                                       SectorBearing + 45);
-                    break;
-                default:
-                    assert(false);
-                    break;
-            }
-        } else if (ValidTaskPointFast(Idx + 1)) {
-            if (gTaskType == TSK_DEFAULT) {
-                // normal turnpoint sector
-                SectorBearing = TaskPt.Bisector;
-
-                switch (SectorType) {
-                    case sector_type_t::CIRCLE:
-                        gTaskSectorRenderer.SetCircle(Idx, center, SectorRadius);
-                        break;
-                    case sector_type_t::SECTOR:
-                        gTaskSectorRenderer.SetSector(Idx, center, SectorRadius,
-                                                      SectorBearing - 45,
-                                                      SectorBearing + 45);
-                        break;
-                    case sector_type_t::DAe:
-                        gTaskSectorRenderer.SetDae(Idx, center,
-                                                   SectorBearing - 45,
-                                                   SectorBearing + 45);
-                        break;
-                    case sector_type_t::LINE:
-                        gTaskSectorRenderer.SetLine(Idx, center, SectorRadius, SectorBearing + 90);
-                        break;
-                    default:
-                        assert(false);
-                        break;
-                }
-            } else {
-                switch (TaskPt.AATType) {
-                    case sector_type_t::CIRCLE:
-                    case sector_type_t::ESS_CIRCLE:
-                        gTaskSectorRenderer.SetCircle(Idx, center, TaskPt.AATCircleRadius);
-                        break;
-                    case sector_type_t::SECTOR:
-                        gTaskSectorRenderer.SetSector(Idx, center, TaskPt.AATSectorRadius,
-                                                      TaskPt.AATStartRadial,
-                                                      TaskPt.AATFinishRadial);
-                        break;
-                    case sector_type_t::DAe:
-                        gTaskSectorRenderer.SetDae(Idx, center,
-                                                   TaskPt.Bisector - 45,
-                                                   TaskPt.Bisector + 45);
-                        break;
-                    default:
-                        assert(false);
-                        break;
-                }
-            }
-        } else {
-            SectorBearing = TaskPt.InBound;
-
-            switch (FinishLine) {
-                case sector_type_t::CIRCLE:
-                    gTaskSectorRenderer.SetCircle(Idx, center, FinishRadius);
-                    break;
-                case sector_type_t::LINE:
-                    gTaskSectorRenderer.SetLine(Idx, center, FinishRadius, SectorBearing);
-                    break;
-                case sector_type_t::SECTOR:
-                    gTaskSectorRenderer.SetStartSector(Idx, center, FinishRadius,
-                                                       SectorBearing - 45,
-                                                       SectorBearing + 45);
-                    break;
-                default:
-                    assert(false);
-                    break;
-            }
-        }
-        if (!UseAATTarget()) {
-            /** this initialise AAT sector
-             * maybe bad idea, because if you disable/enable AAT that override previous Values ...
-             */
-            Task[Idx].AATStartRadial = AngleLimit360(SectorBearing - 45);
-            Task[Idx].AATFinishRadial = AngleLimit360(SectorBearing + 45);
-        }
-    }
+void SetSectorRenderer(int tp_index, const task::circle_data& data) {
+  gTaskSectorRenderer.SetCircle(tp_index, data.center, data.radius);
 }
 
-void CalculateTaskSectors(void) {
+void SetSectorRenderer(int tp_index, const task::sector_data& data) {
+  if (tp_index == 0) {
+    gTaskSectorRenderer.SetStartSector(tp_index, data.center, data.max_radius, data.start_radial, data.end_radial);
+  } else {
+    gTaskSectorRenderer.SetSector(tp_index, data.center, data.max_radius, data.start_radial, data.end_radial);
+  }
+}
+
+void SetSectorRenderer(int tp_index, const task::dae_data& data) {
+  gTaskSectorRenderer.SetDae(tp_index, data.center, data.bisector - 45, data.bisector + 45);
+}
+
+void SetSectorRenderer(int tp_index, const task::line_data& data) {
+  if (tp_index == 0) {
+    gTaskSectorRenderer.SetLine(tp_index, data.center, data.radius, data.outbound + 180);
+  } else if (ValidTaskPointFast(tp_index + 1)) {
+    gTaskSectorRenderer.SetLine(tp_index, data.center, data.radius, data.bisector + 90);
+  } else {
+    gTaskSectorRenderer.SetLine(tp_index, data.center, data.radius, data.inbound);
+  }
+}
+
+template <sector_type_t type, int task_type>
+void SetSectorRenderer(int tp_index) {
+  SetSectorRenderer(tp_index, task::zone_data<type, task_type>::get(tp_index));
+}
+
+template <sector_type_t type>
+void SetSectorRenderer(int tp_index) {
+  if (UseAATTarget()) {
+    SetSectorRenderer<type, TSK_AAT>(tp_index);
+  } else {
+    SetSectorRenderer<type, TSK_DEFAULT>(tp_index);
+  }
+}
+
+struct SetSectorRenderer_t {
+  using result_type = void;
+
+  static void invalid() {}
+
+  template <sector_type_t type>
+  static void invoke(int tp_index) {
+    SetSectorRenderer<type>(tp_index);
+  }
+};
+
+
+}  // namespace
+
+void CalculateTaskSectors(int tp_index) {
+  task::invoke_for_task_point<SetSectorRenderer_t>(tp_index);
+}
+
+void CalculateTaskSectors() {
 
     LockTaskData();
 

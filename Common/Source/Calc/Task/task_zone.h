@@ -23,6 +23,7 @@ sector_type_t get_zone_type(int tp_index);
 /**
  *  struct to store data required to :
  *    - check if current position is inside Turnpoint.
+ *    - drawing zone on map 
  */
 struct sector_data {
   GeoPoint center;
@@ -46,6 +47,7 @@ struct line_data {
   double radius;
   double bisector;
   double inbound;
+  double outbound;
 };
 
 
@@ -122,7 +124,8 @@ struct zone_data<sector_type_t::LINE, task_type> {
       from_task(tp_index),
       zone_radius<sector_type_t::LINE, task_type>::get(tp_index),
       Task[tp_index].Bisector,
-      Task[tp_index].InBound
+      Task[tp_index].InBound,
+      Task[tp_index].OutBound
     };
   }
 };
