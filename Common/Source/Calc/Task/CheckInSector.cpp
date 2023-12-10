@@ -10,6 +10,7 @@
 #include "AATDistance.h"
 #include "CalcTask.h"
 #include "NavFunctions.h"
+#include "task_zone.h"
 
 
 namespace {
@@ -30,20 +31,36 @@ void AdvanceToNext(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   }
 }
 
-bool IsCircle(const size_t& idx) {
-  assert(gTaskType == TSK_GP);
-  ScopeLock lock(CritSec_FlightData);
-  if (idx > 0 && ValidTaskPointFast(idx + 1)) { 
-    // Not Start or Finish
-    switch (Task[idx].AATType) {
-      case sector_type_t::CIRCLE:
-      case sector_type_t::ESS_CIRCLE:
-        return true;
-      default:
-        return false;
-    }
+template<sector_type_t type>
+struct is_circle {
+  constexpr static bool value = false;
+};
+
+template<>
+struct is_circle<sector_type_t::CIRCLE> {
+  constexpr static bool value = true;
+};
+
+template<>
+struct is_circle<sector_type_t::ESS_CIRCLE> {
+  constexpr static bool value = true;
+};
+
+struct is_circle_t {
+  using result_type = bool;
+
+  static bool invalid() {
+    return false;
   }
-  return false;
+
+  template<sector_type_t type>
+  static bool invoke(int tp_index) {
+    return is_circle<type>::value;
+  }
+};
+
+bool IsCircle(int tp_index) {
+  return task::invoke_for_task_point<is_circle_t>(tp_index);
 }
 
 }  // namespace
