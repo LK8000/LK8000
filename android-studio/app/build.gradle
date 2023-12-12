@@ -42,6 +42,7 @@ android {
     buildFeatures {
         prefab true
         viewBinding true
+        buildConfig true
     }
     sourceSets {
         main {
