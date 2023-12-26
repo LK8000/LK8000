@@ -295,30 +295,6 @@ Units_t Units::GetUserWindSpeedUnit() {
   return UserWindSpeedUnit;
 }
 
-Units_t Units::GetUserUnitByGroup(UnitGroup_t UnitGroup){
-  switch(UnitGroup){
-    case ugNone:
-    return unUndef;
-    case ugDistance:
-    return GetUserDistanceUnit();
-    case ugAltitude:
-    return GetUserAltitudeUnit();
-    case ugHorizontalSpeed:
-    return GetUserHorizontalSpeedUnit();
-    case ugVerticalSpeed:
-    return GetUserVerticalSpeedUnit();
-    case ugWindSpeed:
-    return GetUserWindSpeedUnit();
-    case ugTaskSpeed:
-    return GetUserTaskSpeedUnit();
-    case ugInvAltitude:
-    return GetUserInvAltitudeUnit();
-    default:
-      return unUndef;
-  }
-}
-
-
 void Units::NotifyUnitChanged() {
   switch (SpeedUnit_Config) {
     case 0 :

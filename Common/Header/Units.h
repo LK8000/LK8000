@@ -40,18 +40,6 @@ enum Units_t {
   unLastUnit // must be the last
 };
 
-
-enum UnitGroup_t {
-  ugNone,
-  ugDistance,
-  ugAltitude,
-  ugHorizontalSpeed,
-  ugVerticalSpeed,
-  ugWindSpeed,
-  ugTaskSpeed,
-  ugInvAltitude		// 100126
-};
-
 namespace Units {
 
   CoordinateFormats_t GetUserCoordinateFormat() gcc_pure;
@@ -63,8 +51,6 @@ namespace Units {
   Units_t GetUserTaskSpeedUnit() gcc_pure;
   Units_t GetUserVerticalSpeedUnit() gcc_pure;
   Units_t GetUserWindSpeedUnit() gcc_pure;
-
-  Units_t GetUserUnitByGroup(UnitGroup_t UnitGroup) gcc_pure;
 
   void LongitudeToDMS(double Longitude, int *dd, int *mm, int *ss, bool *east) gcc_nonnull(2,3,4,5);
   void LatitudeToDMS(double Latitude, int *dd, int *mm, int *ss, bool *north) gcc_nonnull(2,3,4,5);
