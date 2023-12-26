@@ -2709,13 +2709,15 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
     return found;
 }
 
-inline bool airspace_sorter(const CAirspace *a, const CAirspace *b) {
+struct airspace_sorter {
+  bool operator()(const CAirspace *a, const CAirspace *b) {
     assert(a);
     assert(a->Top());
     assert(b);
     assert(b->Top());
     return (a->Top()->Altitude < b->Top()->Altitude);
-}
+  }
+};
 
 void CAirspaceManager::SortAirspaces(void) {
 #if TESTBENCH
@@ -2724,7 +2726,7 @@ void CAirspaceManager::SortAirspaces(void) {
 
     // Sort by top altitude for drawing
     ScopeLock guard(_csairspaces);
-    std::sort(_airspaces.begin(), _airspaces.end(), airspace_sorter);
+    std::sort(_airspaces.begin(), _airspaces.end(), airspace_sorter());
 }
 
 bool CAirspaceManager::ValidAirspaces(void) const {
@@ -2987,16 +2989,17 @@ const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
 }
 
 // Comparer to sort airspaces based on label priority for drawing labels
-
-inline bool airspace_label_priority_sorter(const CAirspace *a, const CAirspace *b) {
+struct airspace_label_priority_sorter {
+  bool operator()(const CAirspace *a, const CAirspace *b) {
     return a->LabelPriority() > b->LabelPriority();
-}
+  }
+};
 
 // Get airspaces list for label drawing
 
 const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels() {
     ScopeLock guard(_csairspaces);
-    if (_airspaces_of_interest.size() > 1) std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter);
+    std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter());
     return _airspaces_of_interest;
 }
 
@@ -3038,9 +3041,11 @@ bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDist
     return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
 
-inline bool warning_queue_sorter(const AirspaceWarningMessage& a, const AirspaceWarningMessage& b) {
+struct warning_queue_sorter {
+  bool operator()(const AirspaceWarningMessage& a, const AirspaceWarningMessage& b) {
     return (a.warnlevel > b.warnlevel);
-}
+  }
+};
 
 
 // Gets an airspace warning message to show
@@ -3052,7 +3057,7 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
     if(_user_warning_queue.empty()) {
       return false;
     }
-    std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
+    std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter());
     *msg = _user_warning_queue.front();
     _user_warning_queue.pop_front(); // remove message from fifo
     return true;

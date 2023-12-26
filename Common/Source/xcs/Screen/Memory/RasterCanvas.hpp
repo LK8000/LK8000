@@ -507,7 +507,7 @@ public:
     auto edge_end = edge_start+n_edges;
 
     // sort array by y value (top best), then x value (left best)
-    std::sort(edge_start, edge_end, BresenhamIterator::CompareVerticalHorizontal);
+    std::sort(edge_start, edge_end, BresenhamIterator::CompareVerticalHorizontal());
 
     // perform scans
 
@@ -530,7 +530,7 @@ public:
 
       if (changed) {
 //        printf("re-sort\n");
-        std::sort(edge_start, edge_end, BresenhamIterator::CompareHorizontal);
+        std::sort(edge_start, edge_end, BresenhamIterator::CompareHorizontal());
 
         while ((edge_start != edge_end) && (!edge_start->count)) {
 //          printf("skipping forward\n");

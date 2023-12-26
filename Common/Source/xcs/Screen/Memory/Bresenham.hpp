@@ -145,29 +145,33 @@ public:
     return count == 0;
   }
 
-  static bool CompareHorizontal(const BresenhamIterator& i1,
-                                const BresenhamIterator& i2) {
-    if ((i2.count>0) && (i1.count==0))
-      return true; // shift finished lines to left
-    if ((i1.count>0) && (i2.count==0))
-      return false; // shift finished lines to left
-    
-    if (i1.x < i2.x)
-      return true;
-    if (i2.x < i1.x)
-      return false;
-    
-    return false; // TODO slope difference
-  }
+  struct CompareHorizontal {
+    bool operator()(const BresenhamIterator& i1,
+                    const BresenhamIterator& i2) {
+      if ((i2.count>0) && (i1.count==0))
+        return true; // shift finished lines to left
+      if ((i1.count>0) && (i2.count==0))
+        return false; // shift finished lines to left
 
-  static bool CompareVerticalHorizontal(const BresenhamIterator& i1,
-                                        const BresenhamIterator& i2) {
-    if (i1.y < i2.y) 
-      return true;
-    if (i1.y > i2.y)
-      return false;
-    return CompareHorizontal(i1, i2);
-  }
+      if (i1.x < i2.x)
+        return true;
+      if (i2.x < i1.x)
+        return false;
+
+      return false; // TODO slope difference
+    }
+  };
+
+  struct CompareVerticalHorizontal {
+    bool operator()(const BresenhamIterator& i1,
+                    const BresenhamIterator& i2) {
+      if (i1.y < i2.y) 
+        return true;
+      if (i1.y > i2.y)
+        return false;
+      return CompareHorizontal()(i1, i2);
+    }
+  };
 
 };
 
