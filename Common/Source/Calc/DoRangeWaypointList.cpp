@@ -33,6 +33,8 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    StartupStore(_T(".... >> DoRangeWaypointList is running! <<\n"));
    #endif
 
+   ScopeLock lock(CritSec_TaskData);
+   
    if (WayPointList.empty()) {
 	return false;
    }
@@ -88,8 +90,6 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    #if 0
    DoStatusMessage(_T("WAIT RECALCULATING WAYPOINTS"));
    #endif
-
-   LockTaskData();
 
    int scx_aircraft, scy_aircraft;
    LatLon2Flat(Basic->Longitude, Basic->Latitude, &scx_aircraft, &scy_aircraft);
@@ -292,7 +292,6 @@ LabelLandables:
   if (RangeAirportNumber>MAXRANGELANDABLE) RangeAirportNumber=MAXRANGELANDABLE;
   if (RangeLandableNumber>MAXRANGELANDABLE) RangeLandableNumber=MAXRANGELANDABLE;
 
-  UnlockTaskData();
   return true;
 }
 
