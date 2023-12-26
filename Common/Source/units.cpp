@@ -18,13 +18,15 @@
 #include "Library/Utm.h"
 #include "utils/printf.h"
 
+namespace {
+
 struct UnitDescriptor_t {
   const TCHAR * const Name;
   double  ToUserFact;
   double  ToUserOffset;
 };
 
-static UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
+UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
     {_T(""),   1.0,                       0},    // unUndef
     {_T("km"), 0.001,                     0},    // unKiloMeter
     {_T("nm"), 1.0 / 1852,                0},    // unNauticalMiles
@@ -44,13 +46,15 @@ static UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
     {_T(""),   1.0,                       0},    // unLastUnit
 };
 
-static CoordinateFormats_t CoordinateFormat;
-static Units_t UserDistanceUnit = unKiloMeter;
-static Units_t UserAltitudeUnit = unMeter;
-static Units_t UserHorizontalSpeedUnit = unKiloMeterPerHour;
-static Units_t UserVerticalSpeedUnit = unMeterPerSecond;
-static Units_t UserWindSpeedUnit = unKiloMeterPerHour;
-static Units_t UserTaskSpeedUnit = unKiloMeterPerHour;
+CoordinateFormats_t CoordinateFormat;
+Units_t UserDistanceUnit = unKiloMeter;
+Units_t UserAltitudeUnit = unMeter;
+Units_t UserHorizontalSpeedUnit = unKiloMeterPerHour;
+Units_t UserVerticalSpeedUnit = unMeterPerSecond;
+Units_t UserWindSpeedUnit = unKiloMeterPerHour;
+Units_t UserTaskSpeedUnit = unKiloMeterPerHour;
+
+} // namespace
 
 void Units::LongitudeToDMS(double Longitude,
                            int *dd,
@@ -66,17 +70,15 @@ void Units::LongitudeToDMS(double Longitude,
   *mm = (int)(Longitude);
   Longitude = (Longitude - (*mm)) * 60.0;
   *ss = (int)(Longitude + 0.5);
-  if (*ss >= 60)
-    {
-      (*mm)++;
-      (*ss) -= 60;
-    }
-  if ((*mm) >= 60)
-    {
-      (*dd)++;
-      (*mm)-= 60;
-    }
-  *east = (sign==1);
+  if (*ss >= 60) {
+    (*mm)++;
+    (*ss) -= 60;
+  }
+  if ((*mm) >= 60) {
+    (*dd)++;
+    (*mm) -= 60;
+  }
+  *east = (sign == 1);
 }
 
 
@@ -111,7 +113,7 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 		char utmchar=0;
 		double easting=0, northing=0;
 		LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, Latitude, Longitude );
-		_sntprintf(Buffer, size, _T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+		lk::snprintf(Buffer, size, _T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
 	} else {
 		TCHAR sLongitude[16];
 		TCHAR sLatitude[16];
@@ -119,7 +121,7 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 		Units::LongitudeToString(Longitude, sLongitude);
 		Units::LatitudeToString(Latitude, sLatitude);
 
-		_sntprintf(Buffer,size,_T("%s  %s"), sLatitude, sLongitude);
+		lk::snprintf(Buffer,size,_T("%s  %s"), sLatitude, sLongitude);
 	}
 	return true;
 }
@@ -127,7 +129,7 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 
 bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
 
-  TCHAR EW[] = TEXT("WE");
+  TCHAR EW[] = _T("WE");
   int dd, mm, ss;
 
   int sign = Longitude<0 ? 0 : 1;
@@ -140,39 +142,37 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
       mm = (int)(Longitude);
       Longitude = (Longitude - mm) * 60.0;
       ss = (int)(Longitude + 0.5);
-      if (ss >= 60)
-        {
-          mm++;
-          ss -= 60;
-        }
-      if (mm >= 60)
-        {
-          dd++;
-          mm -= 60;
-        }
-      _sntprintf(Buffer, size, TEXT("%c%03d%s%02d'%02d\""), EW[sign], dd, MsgToken<2179>(), mm, ss);
-    break;
+      if (ss >= 60) {
+        mm++;
+        ss -= 60;
+      }
+      if (mm >= 60) {
+        dd++;
+        mm -= 60;
+      }
+      lk::snprintf(Buffer, size, _T("%c%03d°%02d'%02d\""), EW[sign], dd, mm, ss);
+      break;
     case cfDDMMSSss:
       dd = (int)Longitude;
       Longitude = (Longitude - dd) * 60.0;
       mm = (int)(Longitude);
       Longitude = (Longitude - mm) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%03d%s%02d'%05.2f\""), EW[sign], dd, MsgToken<2179>(), mm, Longitude);
+      lk::snprintf(Buffer, size, _T("%c%03d°%02d'%05.2f\""), EW[sign], dd, mm, Longitude);
     break;
     case cfDDMMmmm:
       dd = (int)Longitude;
       Longitude = (Longitude - dd) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%03d%s%06.3f'"), EW[sign], dd, MsgToken<2179>(), Longitude);
+      lk::snprintf(Buffer, size, _T("%c%03d°%06.3f'"), EW[sign], dd, Longitude);
     break;
     case cfDDdddd:
-      _sntprintf(Buffer, size, TEXT("%c%08.4f%s"), EW[sign], Longitude, MsgToken<2179>());
+      lk::snprintf(Buffer, size, _T("%c%08.4f°"), EW[sign], Longitude);
     break;
     case cfUTM:
-	_tcscpy(Buffer,_T(""));
-	break;
+      _tcscpy(Buffer,_T(""));
+      break;
     default:
-	LKASSERT(0);
-    break;
+      assert(false);
+      break;
   }
 
   return true;
@@ -181,7 +181,7 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
 
 
 bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
-  TCHAR EW[] = TEXT("SN");
+  TCHAR EW[] = _T("SN");
   int dd, mm, ss;
 
   int sign = Latitude<0 ? 0 : 1;
@@ -202,28 +202,28 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
         dd++;
         mm -= 60;
       }
-      _sntprintf(Buffer, size, TEXT("%c%02d%s%02d'%02d\""), EW[sign], dd, MsgToken<2179>(), mm, ss);
+      lk::snprintf(Buffer, size, _T("%c%02d°%02d'%02d\""), EW[sign], dd, mm, ss);
     break;
     case cfDDMMSSss:
       dd = (int)Latitude;
       Latitude = (Latitude - dd) * 60.0;
       mm = (int)(Latitude);
       Latitude = (Latitude - mm) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%02d%s%02d'%05.2f\""), EW[sign], dd, MsgToken<2179>(), mm, Latitude);
+      lk::snprintf(Buffer, size, _T("%c%02d°%02d'%05.2f\""), EW[sign], dd, mm, Latitude);
     break;
     case cfDDMMmmm:
       dd = (int)Latitude;
       Latitude = (Latitude - dd) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%02d%s%06.3f'"), EW[sign], dd, MsgToken<2179>(), Latitude);
+      lk::snprintf(Buffer, size, _T("%c%02d°%06.3f'"), EW[sign], dd, Latitude);
     break;
     case cfDDdddd:
-      _sntprintf(Buffer, size, TEXT("%c%07.4f%s"), EW[sign], Latitude, MsgToken<2179>());
+      lk::snprintf(Buffer, size, _T("%c%07.4f°"), EW[sign], Latitude);
     break;
     case cfUTM:
-	_tcscpy(Buffer,_T(""));
-	break;
+      _tcscpy(Buffer,_T(""));
+    break;
     default:
-	LKASSERT(0);
+      assert(false);
     break;
   }
 
@@ -232,35 +232,9 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
 }
 
 const TCHAR *Units::GetUnitName(Units_t Unit) {
-    // JMW adjusted this because units are pretty standard internationally
-    // so don't need different names in different languages.
-    const TCHAR *szName = nullptr;
-
-    // switch is used to check "Unit" is in the enum range...
-    //   tips : no default to have warning if value is missing.
-    switch (Unit) {
-        case unUndef:
-        case unKiloMeter:
-        case unNauticalMiles:
-        case unStatuteMiles:
-        case unKiloMeterPerHour:
-        case unKnots:
-        case unStatuteMilesPerHour:
-        case unMeterPerSecond:
-        case unFeetPerMinutes:
-        case unMeter:
-        case unFeet:
-        case unFligthLevel:
-        case unKelvin:
-        case unGradCelcius:
-        case unGradFahrenheit:
-        case unFeetPerSecond:
-        case unLastUnit:
-            szName = UnitDescriptors[Unit].Name;
-            break;
-    }
-    assert(szName);
-    return (szName ? szName : _T(""));
+  // JMW adjusted this because units are pretty standard internationally
+  // so don't need different names in different languages.
+  return UnitDescriptors[Unit].Name;
 }
 
 CoordinateFormats_t Units::GetUserCoordinateFormat() {
@@ -386,7 +360,7 @@ void Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
 }
 
 void Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-  lk::snprintf(Buffer, size, TEXT("%.0f%s"), ToInvUserAltitude(Altitude), GetInvAltitudeName());
+  lk::snprintf(Buffer, size, _T("%.0f%s"), ToInvUserAltitude(Altitude), GetInvAltitudeName());
 }
 
 void Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
@@ -440,7 +414,6 @@ void Units::FormatUserMapScale(double Distance, TCHAR *Buffer, size_t size){
   } else if (value >= 0.999) {
     prec = 1;
   } else {
-    prec = 2;
     if (UnitIdx == unKiloMeter){
       prec = 0;
       UnitIdx = unMeter;
@@ -449,6 +422,8 @@ void Units::FormatUserMapScale(double Distance, TCHAR *Buffer, size_t size){
       prec = 0;
       UnitIdx = unFeet;
       value = ToUser(UnitIdx, Distance);
+    } else {
+      prec = 2;
     }
   }
 
@@ -462,46 +437,41 @@ double Units::ToUser(Units_t unit, double value) {
   return value * pU->ToUserFact + pU->ToUserOffset;
 }
 
-
 double Units::ToSys(Units_t unit, double value)  {
   const UnitDescriptor_t *pU = &UnitDescriptors[unit];
   return (value - pU->ToUserOffset) / pU->ToUserFact;
 }
 
 void Units::TimeToText(TCHAR* text, size_t cb, int d) {
-  int hours, mins;
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
   hours = hours % 24;
 
-  lk::snprintf(text, cb, TEXT("%s%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins);
+  lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins);
 }
 
 void Units::TimeToTextSimple(TCHAR* text, size_t cb, int d) {
-  int hours, mins;
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
   hours = hours % 24;
 
-  lk::snprintf(text, cb, TEXT("%s%02d%02d"), (negative ? _T("-") : _T("")), hours, mins);
+  lk::snprintf(text, cb, _T("%s%02d%02d"), (negative ? _T("-") : _T("")), hours, mins);
 }
 
 // Not for displaying a clock time, good for a countdown
 // will display either
 // Returns true if hours, false if minutes
 bool Units::TimeToTextDown(TCHAR* text, size_t cb, int d) {
-  int hours, mins, seconds;
   bool negative = (d < 0);
   int dd = abs(d) % (3600 * 24);
-
-  hours = (dd / 3600);
-  mins = (dd / 60 - hours * 60);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
   hours = hours % 24;
-  seconds = (dd - mins * 60 - hours * 3600);
+  int seconds = (dd - mins * 60 - hours * 3600);
 
   if (hours == 0) {
     lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), mins, seconds);
@@ -514,11 +484,11 @@ bool Units::TimeToTextDown(TCHAR* text, size_t cb, int d) {
 
 // LK8000
 void Units::TimeToTextS(TCHAR* text, size_t cb, int d) {
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  int hours = (dd/3600);
-  int mins = (dd/60-hours*60);
-  int seconds = (dd-mins*60-hours*3600);
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
+  int seconds = (dd - mins * 60 - hours * 3600);
   hours = hours % 24;
 
   lk::snprintf(text, cb, _T("%s%d:%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins, seconds);

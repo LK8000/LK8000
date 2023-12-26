@@ -9,6 +9,9 @@
 #if !defined(__UNITS_H)
 #define __UNITS_H
 
+#include "Compiler.h"
+#include "tchar.h"
+
 // inHg to hPa
 #define TOHPA 33.86417
 
