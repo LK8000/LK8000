@@ -265,7 +265,7 @@ public:
     }
 
     /* outer loop, stepping perpendicular to line */
-    int ml1x, ml1y, ml2x, ml2y, ml1bx, ml1by, ml2bx, ml2by;
+    int ml1x = 0, ml1y = 0, ml2x = 0, ml2y = 0, ml1bx = 0, ml1by = 0, ml2bx = 0, ml2by = 0;
     for (unsigned q = 0; dd < tk; q++) {
 
       /* call to inner loop - right edge */
