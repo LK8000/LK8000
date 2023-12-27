@@ -493,3 +493,36 @@ void Units::TimeToTextS(TCHAR* text, size_t cb, int d) {
 
   lk::snprintf(text, cb, _T("%s%d:%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins, seconds);
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("Units") {
+
+  #define CHECK_APPROX_EQ(x, y) CHECK_EQ(x, doctest::Approx(y))
+
+  SUBCASE("Length") {
+    CHECK_EQ(Units::From(unFeet, 1), Units::From(unMeter, 0.3048));
+    CHECK_EQ(Units::From(unNauticalMiles, 1), Units::From(unMeter, 1852));
+    CHECK_EQ(Units::From(unStatuteMiles, 1), Units::From(unMeter, 1609.344));
+    CHECK_EQ(Units::From(unKiloMeter, 1), Units::From(unMeter, 1000));
+    CHECK_APPROX_EQ(Units::From(unFligthLevel, 125), Units::From(unFeet, 12500));
+  }
+
+  SUBCASE("Speed") {
+    CHECK_EQ(Units::From(unKiloMeterPerHour, 3.6), Units::From(unMeterPerSecond, 1));
+    CHECK_EQ(Units::From(unKnots, 1), Units::From(unKiloMeterPerHour, 1.852));
+    CHECK_APPROX_EQ(Units::From(unStatuteMilesPerHour, 1), Units::From(unMeterPerSecond, 0.44704));
+    CHECK_EQ(Units::From(unFeetPerMinutes, 1), Units::From(unMeterPerSecond, 0.00508));
+    CHECK_EQ(Units::From(unFeetPerSecond, 1), Units::From(unMeterPerSecond, 0.3048));
+  }
+
+  SUBCASE("Temp") {
+    CHECK_APPROX_EQ(Units::From(unGradFahrenheit, 0), Units::From(unKelvin, 255.37222222));
+    CHECK_APPROX_EQ(Units::From(unGradFahrenheit, 10), Units::From(unKelvin, 260.92777778));
+    CHECK_EQ(Units::From(unGradCelcius, 1), Units::From(unKelvin, 274.15));
+  }
+
+  #undef CHECK_APPROX_EQ
+}
+#endif
