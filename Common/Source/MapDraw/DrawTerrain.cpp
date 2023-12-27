@@ -373,7 +373,7 @@ public:
 
         const double PanLatitude = MapWindow::GetPanLatitude();
         const double PanLongitude = MapWindow::GetPanLongitude();
-        const double InvDrawScale = MapWindow::GetInvDrawScale() / 1024.0;
+        const double InvDrawScale = MapWindow::GetAlternateDrawScale() / 1024.0;
         const double DisplayAngle = MapWindow::GetDisplayAngle();
 
         const int cost = ifastcosine(DisplayAngle);
@@ -858,7 +858,7 @@ public:
         assert(height_buffer && height_buffer->GetBuffer());
         assert(screen_buffer && screen_buffer->GetBuffer());
 
-        const double current_scale = Units::ToUserDistance(MapWindow::zoom.Scale());
+        const double current_scale = Units::ToDistance(MapWindow::zoom.Scale());
         if (current_scale >= 15000 || current_scale <= 100) {
             // No Iso line if zoom are too small or too huge
             return;

@@ -100,7 +100,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 4: // MacCreadyValue + 2078
-			_stprintf(tbuf,_T("%2.1lf"), iround(Units::ToUserVerticalSpeed(MACCREADY*10))/10.0);
+			_stprintf(tbuf,_T("%2.1lf"), iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0);
 			_stprintf(OutBuffer, _T("%s\n%s"), MsgToken<2078>(), tbuf);
 			break;
 
@@ -131,7 +131,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				// LKTOKEN _@M1201_ "Man"
 				_stprintf(tbuf,_T("%s"), MsgToken<1201>());
 			}
-			_stprintf(OutBuffer,_T("Mc %s\n%2.1lf"), tbuf,iround(Units::ToUserVerticalSpeed(MACCREADY*10))/10.0);
+			_stprintf(OutBuffer,_T("Mc %s\n%2.1lf"), tbuf,iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0);
 
 			break;
 
@@ -632,20 +632,20 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   if (_tcsstr(OutBuffer, TEXT("$(WCSpeed)"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f%s"), Units::ToUserHorizontalSpeed(WindCalcSpeed), Units::GetHorizontalSpeedName());
+	_stprintf(tbuf,_T("%.0f%s"), Units::ToHorizontalSpeed(WindCalcSpeed), Units::GetHorizontalSpeedName());
 	ReplaceInString(OutBuffer, TEXT("$(WCSpeed)"), tbuf, Size);
 	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(GS"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f%s"), Units::ToUserHorizontalSpeed(GPS_INFO.Speed), Units::GetHorizontalSpeedName());
+	_stprintf(tbuf,_T("%.0f%s"), Units::ToHorizontalSpeed(GPS_INFO.Speed), Units::GetHorizontalSpeedName());
 	ReplaceInString(OutBuffer, TEXT("$(GS)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }
   if (_tcsstr(OutBuffer, TEXT("$(HGPS"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f%s"), Units::ToUserAltitude(GPS_INFO.Altitude), Units::GetAltitudeName());
+	_stprintf(tbuf,_T("%.0f%s"), Units::ToAltitude(GPS_INFO.Altitude), Units::GetAltitudeName());
 	ReplaceInString(OutBuffer, TEXT("$(HGPS)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }

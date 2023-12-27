@@ -89,7 +89,7 @@ static void RefreshCalculator(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(Units::ToUserDistance(d1));
+    wp->GetDataField()->SetAsFloat(Units::ToDistance(d1));
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -103,7 +103,7 @@ static void RefreshCalculator(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpEffectiveMacCready"));
   if (wp) {
     wp->GetDataField()->SetUnits(Units::GetVerticalSpeedName());
-    wp->GetDataField()->SetAsFloat(Units::ToUserVerticalSpeed(emc));
+    wp->GetDataField()->SetAsFloat(Units::ToVerticalSpeed(emc));
     wp->RefreshDisplay();
   }
 
@@ -129,14 +129,14 @@ static void RefreshCalculator(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedRemaining"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(Units::ToUserTaskSpeed(v1));
+    wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(v1));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedAchieved"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(Units::ToUserTaskSpeed(CALCULATED_INFO.TaskSpeed));
+    wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }
@@ -225,16 +225,16 @@ static void OnMacCreadyData(DataField *Sender, DataField::DataAccessKind_t Mode)
   case DataField::daSpecial:
     if (CALCULATED_INFO.timeCircling>0) {
       CheckSetMACCREADY(CALCULATED_INFO.TotalHeightClimb /CALCULATED_INFO.timeCircling, nullptr);
-      Sender->Set(Units::ToUserVerticalSpeed(MACCREADY));
+      Sender->Set(Units::ToVerticalSpeed(MACCREADY));
       RefreshCalculator();
     }
     break;
   case DataField::daGet:
-    Sender->Set(Units::ToUserVerticalSpeed(MACCREADY));
+    Sender->Set(Units::ToVerticalSpeed(MACCREADY));
     break;
   case DataField::daPut:
   case DataField::daChange:
-    CheckSetMACCREADY(Units::ToSysVerticalSpeed(Sender->GetAsFloat()), nullptr);
+    CheckSetMACCREADY(Units::FromVerticalSpeed(Sender->GetAsFloat()), nullptr);
     RefreshCalculator();
     break;
   case DataField::daInc:

@@ -58,7 +58,7 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
 
         const GeoPoint current = GetCurrentPosition(Basic);
         current.Reverse(next_pos, bearing, distance);
-        distance =  Units::ToUser(unNauticalMiles, distance);
+        distance =  Units::To(unNauticalMiles, distance);
 
         if (ValidWayPointFast(prev_index)) {
           const WAYPOINT& prev_tp = WayPointList[prev_index];
@@ -76,9 +76,9 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
     return {};
   }
 
-  double speed = Units::ToUser(unKnots, Basic.Speed);
+  double speed = Units::To(unKnots, Basic.Speed);
   char dir = (xtd < 0) ? 'R' : 'L';
-  xtd = std::min(9.9, std::abs(Units::ToUser(unNauticalMiles, xtd)));
+  xtd = std::min(9.9, std::abs(Units::To(unNauticalMiles, xtd)));
 
   /*
   eg1. $GPRMB,A,0.66,L,003,004,4917.24,N,12309.57,W,001.3,052.5,000.5,V*0B

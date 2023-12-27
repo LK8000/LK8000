@@ -553,8 +553,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
             if (IsSafetyAltitudeInUse(OverTargetIndex)&&!isOverlayCustom(Overlay_RightBottom)) {
                 Surface.SelectObject(LK8OverlaySmallFont);
-                _stprintf(BufferValue, _T(" + %.0f %s "), Units::ToUserAltitude(SAFETYALTITUDEARRIVAL / 10),
-                        Units::GetUnitName(Units::GetUserAltitudeUnit()));
+                _stprintf(BufferValue, _T(" + %.0f %s "), Units::ToAltitude(SAFETYALTITUDEARRIVAL / 10),
+                        Units::GetName(Units::GetAltitudeUnit()));
                 LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
             }
             _skip_glider_RightBottom: ;
@@ -635,8 +635,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             //
             if (IsSafetyAltitudeInUse(GetOvertargetIndex())&&!isOverlayCustom(Overlay_RightBottom)) {
                 Surface.SelectObject(LK8OverlaySmallFont);
-                _stprintf(BufferValue, _T(" + %.0f %s "), Units::ToUserAltitude(SAFETYALTITUDEARRIVAL / 10),
-                        Units::GetUnitName(Units::GetUserAltitudeUnit()));
+                _stprintf(BufferValue, _T(" + %.0f %s "), Units::ToAltitude(SAFETYALTITUDEARRIVAL / 10),
+                        Units::GetName(Units::GetAltitudeUnit()));
                 LKWriteBoxedText(Surface, rc, BufferValue, rcx, yAltSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
 
             }
@@ -682,8 +682,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
             if (!isOverlayCustom(Overlay_RightTop) && IsSafetyMacCreadyInUse(OverTargetIndex) && GlidePolar::SafetyMacCready > 0) {
                 Surface.SelectObject(LK8OverlaySmallFont);
-                _stprintf(BufferValue, _T(" %.1f %s "), Units::ToUserVerticalSpeed(GlidePolar::SafetyMacCready),
-                    Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
+                _stprintf(BufferValue, _T(" %.1f %s "), Units::ToVerticalSpeed(GlidePolar::SafetyMacCready),
+                    Units::GetName(Units::GetVerticalSpeedUnit()));
                 LKWriteBoxedText(Surface, rc, BufferValue, right_m, yMcSafety, WTALIGN_RIGHT, RGB_WHITE, RGB_WHITE);
             }
 

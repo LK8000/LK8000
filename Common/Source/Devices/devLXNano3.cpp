@@ -1266,7 +1266,7 @@ BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       }
       if(IsDirInput(PortIO.SPEEDDir  ))
       {
-        airspeed = Units::ToSys(unKiloMeterPerHour, fTmp);
+        airspeed = Units::From(unKiloMeterPerHour, fTmp);
         info->IndicatedAirspeed = airspeed;
         info->AirspeedAvailable = TRUE;
       }
@@ -1314,7 +1314,7 @@ BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
     if(IsDirInput(PortIO.WINDDir  ))
     {
       info->ExternalWindDirection = fDir;
-      info->ExternalWindSpeed =  Units::ToSys(unKiloMeterPerHour, fTmp);
+      info->ExternalWindSpeed =  Units::From(unKiloMeterPerHour, fTmp);
       info->ExternalWindAvailable = TRUE;
     }
   }
@@ -1597,7 +1597,7 @@ BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
   {
     if(Values(d))
     {
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0fkm/h ($PLXVF)"), Units::ToUser(unKiloMeterPerHour, airspeed));
+      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0fkm/h ($PLXVF)"), Units::To(unKiloMeterPerHour, airspeed));
       SetDataText( d, _SPEED,  szTmp);
     }
 //  airspeed = 135.0/TOKPH;

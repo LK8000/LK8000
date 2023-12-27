@@ -73,7 +73,7 @@ static BOOL VMVABD(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,8);
   if (ctemp[0] != '\0') { // 100209
     // we store m/s  , so we convert it from kmh
-    pGPS->IndicatedAirspeed = Units::ToSys(unKiloMeterPerHour, StrToDouble(ctemp, nullptr));
+    pGPS->IndicatedAirspeed = Units::From(unKiloMeterPerHour, StrToDouble(ctemp, nullptr));
     pGPS->TrueAirspeed = TrueAirSpeed(pGPS->IndicatedAirspeed, QneAltitude);
     pGPS->AirspeedAvailable = (pGPS->IndicatedAirspeed >0);
   } else {

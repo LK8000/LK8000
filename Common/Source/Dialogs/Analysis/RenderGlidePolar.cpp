@@ -24,20 +24,20 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   ScaleXFromValue(rc, minSpeed);
   ScaleXFromValue(rc, maxSpeed);
   double gridtick = 20;
-  if( Units::ToUserHorizontalSpeed(maxSpeed-minSpeed) < 150)  {
+  if( Units::ToHorizontalSpeed(maxSpeed-minSpeed) < 150)  {
 	  gridtick = 10;
   }
 
-  DrawXGrid(Surface, rc,  Units::ToSysHorizontalSpeed(gridtick), 0, STYLE_THINDASHPAPER, gridtick, true);
+  DrawXGrid(Surface, rc,  Units::FromHorizontalSpeed(gridtick), 0, STYLE_THINDASHPAPER, gridtick, true);
 
   gridtick = 0.5;
-  if(Units::ToUserVerticalSpeed(GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed)) > 5)  {
+  if(Units::ToVerticalSpeed(GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed)) > 5)  {
 	  gridtick = 1.0;
   }
-  if(Units::ToUserVerticalSpeed(GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed)) > 20)  {
+  if(Units::ToVerticalSpeed(GlidePolar::SinkRate(minSpeed)-GlidePolar::SinkRate(maxSpeed)) > 20)  {
 	  gridtick = 5.0;
   }
-  DrawYGrid_cor(Surface, rc,  Units::ToSysVerticalSpeed(gridtick), 0, STYLE_THINDASHPAPER, gridtick, true);
+  DrawYGrid_cor(Surface, rc,  Units::FromVerticalSpeed(gridtick), 0, STYLE_THINDASHPAPER, gridtick, true);
 
   double sinkrate0, sinkrate1;
   double v0=0, v1;
@@ -118,15 +118,15 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
   _stprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
 		MsgToken<140>(), // Best LD
                   GlidePolar::bestld,
-                  Units::ToUserHorizontalSpeed(GlidePolar::Vbestld()),
+                  Units::ToHorizontalSpeed(GlidePolar::Vbestld()),
                   Units::GetHorizontalSpeedName());
   Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(70), text);
 
   _stprintf(text, TEXT("%s: %3.2f %s @ %3.0f %s"),
                   MsgToken<437>(), // Min sink
-                  Units::ToUserVerticalSpeed(GlidePolar::minsink),
+                  Units::ToVerticalSpeed(GlidePolar::minsink),
                   Units::GetVerticalSpeedName(),
-                  Units::ToUserHorizontalSpeed(GlidePolar::Vminsink()),
+                  Units::ToHorizontalSpeed(GlidePolar::Vminsink()),
                   Units::GetHorizontalSpeedName());
   Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(50), text);
 

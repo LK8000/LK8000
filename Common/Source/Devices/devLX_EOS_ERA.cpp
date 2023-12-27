@@ -989,7 +989,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
       }
       if(IsDirInput(PortIO.SPEEDDir  ))
       {
-        airspeed = Units::ToSys(unKiloMeterPerHour, fTmp);
+        airspeed = Units::From(unKiloMeterPerHour, fTmp);
         info->TrueAirspeed = airspeed;
         info->AirspeedAvailable = TRUE;
       }
@@ -1037,7 +1037,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
     if(IsDirInput(PortIO.WINDDir  ))
     {
       info->ExternalWindDirection = fDir;
-      info->ExternalWindSpeed =  Units::ToSys(unKiloMeterPerHour, fTmp);
+      info->ExternalWindSpeed =  Units::From(unKiloMeterPerHour, fTmp);
       info->ExternalWindAvailable = TRUE;
     }
   }

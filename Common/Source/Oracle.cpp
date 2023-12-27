@@ -83,7 +83,7 @@ TCHAR *OracleFormatDistance(const TCHAR *name,const TCHAR *ntype,const double di
   // 5km west of  the city <abcd>
   if (dist>dist_near) {
 	_stprintf(ttmp,_T("%.0f %s %s %s %s <%s>"),
-						Units::ToUserDistance(dist),
+						Units::ToDistance(dist),
 						Units::GetDistanceName(),
 						DegreesToText(brg),
 						MsgToken<1711>(),ntype,name); // of
@@ -198,7 +198,7 @@ void WhereAmI::Run() {
 		// 2km South of city
 		//
 		_stprintf(ttmp,_T("%.0f %s %s %s "),
-		    Units::ToUserDistance(dist), Units::GetDistanceName(), DegreesToText(brg),
+		    Units::ToDistance(dist), Units::GetDistanceName(), DegreesToText(brg),
 			MsgToken<1715>());	// of the city
 		_tcscat(toracle,ttmp);
 
@@ -263,7 +263,7 @@ void WhereAmI::Run() {
 			//
 			// 2km North of lake
 			//
-			_stprintf(ttmp,_T("%.0f %s %s "), Units::ToUserDistance(NearestWaterArea.Distance), Units::GetDistanceName(), DegreesToText(brg));
+			_stprintf(ttmp,_T("%.0f %s %s "), Units::ToDistance(NearestWaterArea.Distance), Units::GetDistanceName(), DegreesToText(brg));
 			_tcscat(toracle,ttmp);
 			_stprintf(ttmp,_T("%s <%s>"), MsgToken<1711>(),NearestWaterArea.Name); // of
 			_tcscat(toracle,ttmp);
@@ -364,7 +364,7 @@ _dowp:
 	// 2km South of city
 	// and/over lake
 	// 4 km SW of waypoint
-	_stprintf(ttmp,_T("\n%.0f %s %s "), Units::ToUserDistance(wpdist), Units::GetDistanceName(), DegreesToText(brg));
+	_stprintf(ttmp,_T("\n%.0f %s %s "), Units::ToDistance(wpdist), Units::GetDistanceName(), DegreesToText(brg));
 	_tcscat(toracle,ttmp);
 
 	 lk::snprintf(ttmp,_T("%s %s<%s>"), MsgToken<1711>(),wptype,WayPointList[j].Name); // of

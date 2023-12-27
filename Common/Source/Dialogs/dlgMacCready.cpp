@@ -27,7 +27,7 @@ void Refresh(WndForm* pForm) {
   if(pWnd) {
     TCHAR sTmp[32];
     _stprintf(sTmp, _T("%3.1f%s"),
-              Units::ToUserVerticalSpeed(MACCREADY),
+              Units::ToVerticalSpeed(MACCREADY),
               Units::GetVerticalSpeedName());
 
     pWnd->SetCaption(sTmp);
@@ -36,7 +36,7 @@ void Refresh(WndForm* pForm) {
 
 void OnUp(WndForm* pForm) {
   CALCULATED_INFO.AutoMacCready = false; // disable AutoMacCready when changing MC values
-  CheckSetMACCREADY(Units::ToUserVerticalSpeed(MACCREADY + 0.1), nullptr);
+  CheckSetMACCREADY(Units::ToVerticalSpeed(MACCREADY + 0.1), nullptr);
 
   Refresh(pForm);
 }
@@ -49,7 +49,7 @@ void OnUpClick(WndButton* pWnd) {
 
 void OnDown(WndForm* pForm) {
   CALCULATED_INFO.AutoMacCready = false; // disable AutoMacCready when changing MC values
-  CheckSetMACCREADY(Units::ToUserVerticalSpeed(MACCREADY - 0.1), nullptr);
+  CheckSetMACCREADY(Units::ToVerticalSpeed(MACCREADY - 0.1), nullptr);
 
   Refresh(pForm);
 }

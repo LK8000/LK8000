@@ -173,7 +173,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         // REQUIRED ALTITUDE DIFFERENCE
         //
-        if (Units::GetUserAltitudeUnit() == unFeet)
+        if (Units::GetAltitudeUnit() == unFeet)
             _stprintf(Buffer, TEXT("-99999"));
         else
             _stprintf(Buffer, TEXT("-9999"));
@@ -829,7 +829,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 CharUpper(Buffer);
                 _tcscpy(Buffer1[i][curpage], Buffer);
 
-                value = Units::ToUserDistance(WayPointCalc[rli].Distance);
+                value = Units::ToDistance(WayPointCalc[rli].Distance);
                 if (usetwolines)
                     _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
                 else
@@ -862,7 +862,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                     _stprintf(Buffer4[i][curpage], _T("%s"), text);
                 }
 
-                value = Units::ToUserAltitude(WayPointCalc[rli].AltArriv[AltArrivMode]);
+                value = Units::ToAltitude(WayPointCalc[rli].AltArriv[AltArrivMode]);
                 if (value <-9999 || value > 9999)
                     _tcscpy(text, _T("----"));
                 else
@@ -943,7 +943,7 @@ _KeepOldCommonsValues:
                 //
                 switch (LKAirspaces[rli].WarningLevel) {
                     case awYellow:
-                        value = Units::ToUserDistance(LKAirspaces[rli].Distance);
+                        value = Units::ToDistance(LKAirspaces[rli].Distance);
                         if (usetwolines)
                             _stprintf(Buffer3[i][curpage], TEXT("%0.1lf%s!"), value, Units::GetDistanceName());
                         else
@@ -953,7 +953,7 @@ _KeepOldCommonsValues:
                         _stprintf(Buffer3[i][curpage], TEXT("IN"));
                         break;
                     default:
-                        value = Units::ToUserDistance(LKAirspaces[rli].Distance);
+                        value = Units::ToDistance(LKAirspaces[rli].Distance);
                         if (usetwolines)
                             _stprintf(Buffer3[i][curpage], TEXT("%0.1lf%s"), value, Units::GetDistanceName());
                         else
@@ -1041,7 +1041,7 @@ _KeepOldAirspacesValues:
                 CopyTruncateString(pOut, s_maxnlname[curmapspace], CopyThermalHistory[rli].Name);
 
                 // Distance
-                value = Units::ToUserDistance(CopyThermalHistory[rli].Distance);
+                value = Units::ToDistance(CopyThermalHistory[rli].Distance);
                 if (usetwolines)
                     _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
                 else
@@ -1070,7 +1070,7 @@ _KeepOldAirspacesValues:
 
 
                 // Average lift
-                value = Units::ToUserVerticalSpeed(CopyThermalHistory[rli].Lift);
+                value = Units::ToVerticalSpeed(CopyThermalHistory[rli].Lift);
                 if (value<-99 || value > 99)
                     _stprintf(Buffer4[i][curpage], _T("----"));
                 else {
@@ -1078,7 +1078,7 @@ _KeepOldAirspacesValues:
                 }
 
                 // Altitude
-                value = Units::ToUserAltitude(CopyThermalHistory[rli].Arrival);
+                value = Units::ToAltitude(CopyThermalHistory[rli].Arrival);
                 if (value<-1000 || value > 45000)
                     _stprintf(Buffer5[i][curpage], _T("----"));
                 else {
@@ -1154,7 +1154,7 @@ _KeepOldAirspacesValues:
 #endif
 
                 // Distance
-                value = Units::ToUserDistance(LKTraffic[rli].Distance);
+                value = Units::ToDistance(LKTraffic[rli].Distance);
                 if (usetwolines)
                     _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
                 else
@@ -1184,7 +1184,7 @@ _KeepOldAirspacesValues:
 
 
                 // Vario
-                value = Units::ToUserVerticalSpeed(LKTraffic[rli].Average30s);
+                value = Units::ToVerticalSpeed(LKTraffic[rli].Average30s);
                 if (value<-6 || value > 6)
                     _tcscpy(Buffer4[i][curpage], _T("----"));
                 else {
@@ -1192,7 +1192,7 @@ _KeepOldAirspacesValues:
                 }
 
                 // Altitude
-                value = Units::ToUserAltitude(LKTraffic[rli].Altitude);
+                value = Units::ToAltitude(LKTraffic[rli].Altitude);
                 if (value<-1000 || value > 45000)
                     _tcscpy(Buffer5[i][curpage], _T("----"));
                 else {

@@ -289,9 +289,9 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic.Altitude             );// GPS_INFO.Altitude;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic.BaroAltitude         );// GPS_INFO.BaroAltitude;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Calculated.AltitudeAGL );// CALCULATED_INFO.AltitudeAGL;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Units::ToUser(unKiloMeterPerHour, Basic.IndicatedAirspeed));// GPS_INFO.IndicatedAirspeed;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::ToUser(unKiloMeterPerHour, Basic.TrueAirspeed));// GPS_INFO.TrueAirspeed
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Units::ToUser(unKiloMeterPerHour, Basic.Speed));// GPS_INFO.Speed;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Units::To(unKiloMeterPerHour, Basic.IndicatedAirspeed));// GPS_INFO.IndicatedAirspeed;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::To(unKiloMeterPerHour, Basic.TrueAirspeed));// GPS_INFO.TrueAirspeed
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Units::To(unKiloMeterPerHour, Basic.Speed));// GPS_INFO.Speed;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic.TrackBearing         );// GPS_INFO.TrackBearing;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.Vario                );// GPS_INFO.Vario;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.NettoVario           );// GPS_INFO.NettoVario;
@@ -308,9 +308,9 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",   Basic.Bugs *100.0         );// GPS_INFO.Bugs
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",   Basic.MacReady            );// GPS_INFO.MacReady
 #endif
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::ToUser(unKiloMeterPerHour, Basic.ExternalWindSpeed));// GPS_INFO.ExternalWindSpeed
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::To(unKiloMeterPerHour, Basic.ExternalWindSpeed));// GPS_INFO.ExternalWindSpeed
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic.ExternalWindDirection);// GPS_INFO.ExternalWindDirection
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::ToUser(unKiloMeterPerHour, Calculated.WindSpeed));// GPS_INFO.WindSpeed
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::To(unKiloMeterPerHour, Calculated.WindSpeed));// GPS_INFO.WindSpeed
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Calculated.WindBearing );// GPS_INFO.WindBearing
 
 
@@ -360,8 +360,8 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
   fValue[i++] = Basic.BaroAltitude;
   fValue[i++] = Calculated.AltitudeAGL;
   fValue[i++] = Basic.IndicatedAirspeed   ;
-  fValue[i++] = Units::ToUser(unKiloMeterPerHour, Basic.TrueAirspeed);
-  fValue[i++] = Units::ToUser(unKiloMeterPerHour, Basic.Speed);
+  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.TrueAirspeed);
+  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.Speed);
 
   fValue[i++] = Basic.TrackBearing;
   fValue[i++] = Basic.Vario;
@@ -380,9 +380,9 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
   fValue[i++] = Basic.MacReady;
 #endif
 
-  fValue[i++] = Units::ToUser(unKiloMeterPerHour, Basic.ExternalWindSpeed);
+  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.ExternalWindSpeed);
   fValue[i++] = Basic.ExternalWindDirection ;
-  fValue[i++] = Units::ToUser(unKiloMeterPerHour, Calculated.WindSpeed);
+  fValue[i++] = Units::To(unKiloMeterPerHour, Calculated.WindSpeed);
   fValue[i++] = Calculated.WindBearing ;
 
   //

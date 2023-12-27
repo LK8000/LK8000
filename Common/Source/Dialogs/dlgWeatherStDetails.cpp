@@ -67,16 +67,16 @@ void dlgWeatherStDetails(int indexid) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f %s"), Units::ToUserDistance(Distance), Units::GetDistanceName());
+    _stprintf(buffer,_T("%.1f %s"), Units::ToDistance(Distance), Units::GetDistanceName());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpWSpeed"));
   if (wp) {
     _stprintf(buffer,_T("%.1f | %.1f %s"),
-                Units::ToUserWindSpeed(Station.windSpeed),
-                Units::ToUserWindSpeed(Station.windGust),
-                Units::GetUnitName(Units::GetUserHorizontalSpeedUnit()));
+                Units::ToWindSpeed(Station.windSpeed),
+                Units::ToWindSpeed(Station.windGust),
+                Units::GetName(Units::GetHorizontalSpeedUnit()));
 
     wp->SetText(buffer);
     wp->RefreshDisplay();

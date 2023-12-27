@@ -109,18 +109,18 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       if (UseAATTarget() && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType == sector_type_t::CIRCLE || Task[i].AATType == sector_type_t::ESS_CIRCLE) {
           _stprintf(sTmp, TEXT("%.1f %s"),
-                    Units::ToUserDistance(Task[i].AATCircleRadius), wpName);
+                    Units::ToDistance(Task[i].AATCircleRadius), wpName);
         } else {
           _stprintf(sTmp, TEXT("%.1f %s"),
-                    Units::ToUserDistance(Task[i].AATSectorRadius),wpName);
+                    Units::ToDistance(Task[i].AATSectorRadius),wpName);
         }
       } else {
         if (i == 0) // start
-          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToUserDistance(StartRadius), wpName);
+          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(StartRadius), wpName);
         else if (i == (UpLimit - 1)) //Finish
-          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToUserDistance(FinishRadius), wpName);
+          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(FinishRadius), wpName);
         else // turnpoint
-          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToUserDistance(SectorRadius), wpName);
+          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(SectorRadius), wpName);
       }
 
       Surface.SetBackgroundTransparent();
@@ -128,7 +128,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       Surface.DrawTextClip(rc.right + DLGSCALE(2), TextMargin, sTmp, p1-DLGSCALE(4));
 
       _stprintf(sTmp, TEXT("%.0f %s"),
-                Units::ToUserDistance(Task[i].Leg),
+                Units::ToDistance(Task[i].Leg),
                 Units::GetDistanceName());
       Surface.DrawText(rc.right+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
@@ -150,7 +150,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       if (gTaskType!=TSK_AAT) {
         // LKTOKEN  _@M735_ = "Total:"
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken<735>());
-        _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""), Units::ToUserDistance(lengthtotal), Units::GetDistanceName());
+        _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""), Units::ToDistance(lengthtotal), Units::GetDistanceName());
         Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
       }
       else
@@ -167,8 +167,8 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
                   MsgToken<735>(),
                   (int)AATTaskLength/60,
                   (int)AATTaskLength%60,
-                  Units::ToUserDistance(lengthtotal),
-                  Units::ToUserDistance(d1),
+                  Units::ToDistance(lengthtotal),
+                  Units::ToDistance(d1),
                   Units::GetDistanceName());
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
       }
@@ -180,7 +180,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
           }
           dd= min(24.0*60.0,dd/60.0);
           int idd = (int) (dd+0.5);
-          _stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken<247>(), MsgToken<1022>(), Units::ToUserVerticalSpeed(MACCREADY), Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
+          _stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken<247>(), MsgToken<1022>(), Units::ToVerticalSpeed(MACCREADY), Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
           Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
      }
   }

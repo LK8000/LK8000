@@ -189,10 +189,10 @@ void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *base
 
 void CAirspaceBase::QnhChangeNotify() {
     if (_top.Base == abFL) {
-        _top.Altitude = QNEAltitudeToQNHAltitude(Units::ToSys(unFligthLevel, _top.FL));
+        _top.Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, _top.FL));
     }
     if (_base.Base == abFL) {
-        _base.Altitude = QNEAltitudeToQNHAltitude(Units::ToSys(unFligthLevel, _base.FL));
+        _base.Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, _base.FL));
     }
 }
 
@@ -1275,7 +1275,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
             double d = StrToDouble(pToken, &Stop);
             if (Alt->Base == abFL) {
                 Alt->FL = d;
-                Alt->Altitude = QNEAltitudeToQNHAltitude(Units::ToSys(unFligthLevel, Alt->FL));
+                Alt->Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, Alt->FL));
             } else if (Alt->Base == abAGL) {
                 Alt->AGL = d;
             } else {
@@ -1324,7 +1324,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
         }
         else if ((_tcscmp(pToken, TEXT("FT")) == 0)
                 || (_tcscmp(pToken, TEXT("F")) == 0)) {
-            Alt->Altitude = Units::ToSys(unFeet, Alt->Altitude);
+            Alt->Altitude = Units::From(unFeet, Alt->Altitude);
             fHasUnit = true;
         }
         else if ((_tcscmp(pToken, TEXT("MSL")) == 0)
@@ -1345,8 +1345,8 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
                 // warning! multiple base tags
             }
             Alt->Base = abFL;
-            Alt->FL = Units::ToUser(unFligthLevel, Alt->Altitude);
-            Alt->Altitude = QNEAltitudeToQNHAltitude(Units::ToSys(unFligthLevel, Alt->FL));
+            Alt->FL = Units::To(unFligthLevel, Alt->Altitude);
+            Alt->Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, Alt->FL));
 
         }
         else if ((_tcsncmp(pToken, TEXT("UNL"), 3) == 0))  {
@@ -1361,9 +1361,9 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
 
     if (!fHasUnit && (Alt->Base != abFL)) {
         // ToDo warning! no unit defined use feet or user alt unit
-        // Alt->Altitude = Units::ToSysAltitude(Alt->Altitude);
-        Alt->Altitude = Units::ToSys(unFeet, Alt->Altitude);
-        Alt->AGL = Units::ToSys(unFeet, Alt->AGL);
+        // Alt->Altitude = Units::FromAltitude(Alt->Altitude);
+        Alt->Altitude = Units::From(unFeet, Alt->Altitude);
+        Alt->AGL = Units::From(unFeet, Alt->AGL);
     }
 
     if (Alt->Base == abUndef) {
@@ -1483,7 +1483,7 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     double lat = 0, lon = 0;
 
     // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!
-    double Radius = Units::ToSys(unNauticalMiles, StrToDouble(Text, &Stop));
+    double Radius = Units::From(unNauticalMiles, StrToDouble(Text, &Stop));
     if(!Stop) {
         return false;
     }
@@ -1923,7 +1923,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
                         p++;
                         Radius = StrToDouble(p, NULL);
-                        Radius = Units::ToSys(unNauticalMiles, Radius);
+                        Radius = Units::From(unNauticalMiles, Radius);
                         Center = { CenterY, CenterX };
                         if(!InsideMap) {
                           if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
@@ -2122,20 +2122,20 @@ bool CAirspaceManager::ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *A
         case 'M': // MSL Main sea level
             if(dataStr[1]=='S' && dataStr[2]=='L') {
                 Alt->Base=abMSL;
-                Alt->Altitude= Units::ToSys(alt_unit, value);
+                Alt->Altitude= Units::From(alt_unit, value);
             }
             break;
         case 'S': //STD Standard atmosphere
             if(dataStr[1]=='T' && dataStr[2]=='D') {
                 Alt->Base=abFL;
                 Alt->FL = value;
-                Alt->Altitude = QNEAltitudeToQNHAltitude(Units::ToSys(alt_unit, value));
+                Alt->Altitude = QNEAltitudeToQNHAltitude(Units::From(alt_unit, value));
             }
             break;
         case 'G': // GND Ground
             if(dataStr[1]=='N' && dataStr[2]=='D') {
                 Alt->Base=abAGL;
-                Alt->AGL = value > 0 ? Units::ToSys(alt_unit, value) : -1;
+                Alt->AGL = value > 0 ? Units::From(alt_unit, value) : -1;
             }
             break;
         default:
@@ -3304,19 +3304,19 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
         return;
     }
 
-    Units::FormatUserAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
-    Units::FormatAlternateUserAltitude(alt->Altitude, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
+    Units::FormatAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
+    Units::FormatAlternateAltitude(alt->Altitude, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
 
     switch (alt->Base) {
         case abUndef:
-            if (Units::GetUserAltitudeUnit() == unMeter) {
+            if (Units::GetAltitudeUnit() == unMeter) {
                 _stprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
             } else {
                 _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
             }
             break;
         case abMSL:
-            if (Units::GetUserAltitudeUnit() == unMeter) {
+            if (Units::GetAltitudeUnit() == unMeter) {
                 _stprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
             } else {
                 _stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
@@ -3326,9 +3326,9 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             if (alt->AGL <= 0)
             	CopyTruncateString(intbuf, BUF_LEN, MsgToken<2387>()); // _@M2387_ "GND"
             else {
-                Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
-                Units::FormatAlternateUserAltitude(alt->AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
-                if (Units::GetUserAltitudeUnit() == unMeter) {
+                Units::FormatAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
+                Units::FormatAlternateAltitude(alt->AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
+                if (Units::GetAltitudeUnit() == unMeter) {
                     _stprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
                 } else {
                     _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
@@ -3336,10 +3336,10 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             }
             break;
         case abFL:
-            if (Units::GetUserAltitudeUnit() == unMeter) {
-                _stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, Units::ToUser(unMeter, alt->Altitude), Units::ToUser(unFeet, alt->Altitude));
+            if (Units::GetAltitudeUnit() == unMeter) {
+                _stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, Units::To(unMeter, alt->Altitude), Units::To(unFeet, alt->Altitude));
             } else {
-                _stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, Units::ToUser(unFeet, alt->Altitude));
+                _stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, Units::To(unFeet, alt->Altitude));
             }
             break;
     }
@@ -3350,7 +3350,7 @@ void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, co
     TCHAR sUnitBuffer[24];
     TCHAR intbuf[128];
 
-    Units::FormatUserAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
+    Units::FormatAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
 
     switch (alt->Base) {
         case abUndef:
@@ -3364,15 +3364,15 @@ void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, co
             if (alt->AGL <= 0)
             	CopyTruncateString(intbuf, BUF_LEN, MsgToken<2387>()); // _@M2387_ "GND"
             else {
-                Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
+                Units::FormatAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
                 _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
             }
             break;
         case abFL:
-            if (Units::GetUserAltitudeUnit() == unMeter) {
-                _stprintf(intbuf, TEXT("%.0fm"), Units::ToUser(unMeter, alt->Altitude));
+            if (Units::GetAltitudeUnit() == unMeter) {
+                _stprintf(intbuf, TEXT("%.0fm"), Units::To(unMeter, alt->Altitude));
             } else {
-                _stprintf(intbuf, TEXT("%.0fft"), Units::ToUser(unFeet, alt->Altitude));
+                _stprintf(intbuf, TEXT("%.0fft"), Units::To(unFeet, alt->Altitude));
             }
             break;
     }

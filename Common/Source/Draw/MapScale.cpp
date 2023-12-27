@@ -21,7 +21,7 @@ double MapWindow::LimitMapScale(double value) {
       minreasonable = MapWindow::zoom.GetZoomInitValue(MaxAutoZoom) * 1000;
   }
 
-  minreasonable = Units::ToUserDistance(minreasonable);
+  minreasonable = Units::ToDistance(minreasonable);
 
   // return value in user distance units!!!
   if (ScaleListCount>0) {
@@ -95,7 +95,7 @@ void MapWindow::FillScaleListForEngineeringUnits() {
 
   auto apply_scale = std::bind(std::divides<double>(), _1, scalefactor);
 
-  switch (Units::GetUserDistanceUnit()) {
+  switch (Units::GetDistanceUnit()) {
     default:
       std::transform(std::begin(ScaleListArrayMeters), std::end(ScaleListArrayMeters),
                      std::begin(ScaleList), apply_scale);

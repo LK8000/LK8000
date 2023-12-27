@@ -52,8 +52,8 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
 
   ScaleYFromData(rc, &windstats_mag);
 
-  DrawXGrid(Surface, rc, iround(Units::ToSysWindSpped(5)), 0, STYLE_THINDASHPAPER, 5.0, true);
-  DrawYGrid(Surface, rc, iround(Units::ToSysAltitude(1000)), 0, STYLE_THINDASHPAPER, 1000.0, true);
+  DrawXGrid(Surface, rc, iround(Units::FromWindSpped(5)), 0, STYLE_THINDASHPAPER, 5.0, true);
+  DrawYGrid(Surface, rc, iround(Units::FromAltitude(1000)), 0, STYLE_THINDASHPAPER, 1000.0, true);
 
   DrawLineGraph(Surface, rc, &windstats_mag,
                 STYLE_MEDIUMBLACK);

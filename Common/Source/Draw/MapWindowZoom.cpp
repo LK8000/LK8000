@@ -28,7 +28,7 @@ MapWindow::Zoom::Zoom():
 void MapWindow::Zoom::CalculateTargetPanZoom()
 {
   // set scale exactly so that waypoint distance is the zoom factor across the screen
-  *_requestedScale = LimitMapScale(Units::ToUserDistance(TargetZoomDistance / 6.0));
+  *_requestedScale = LimitMapScale(Units::ToDistance(TargetZoomDistance / 6.0));
 }
 
 
@@ -50,7 +50,7 @@ void MapWindow::Zoom::CalculateAutoZoom() {
             && mode.Is(Mode::MODE_CIRCLING))) {
       AutoZoomFactor = 2.5;
     }
-    _modeScale[SCALE_CRUISE] = LimitMapScale(Units::ToUserDistance(wpd) / AutoZoomFactor);
+    _modeScale[SCALE_CRUISE] = LimitMapScale(Units::ToDistance(wpd) / AutoZoomFactor);
   } else {
     _modeScale[SCALE_CRUISE] = GetZoomInitValue(CruiseZoom);
   }
@@ -62,7 +62,7 @@ double MapWindow::Zoom::GetZoomInitValue(int parameter_number) const {
   // Values are given in user units, km or mi what is selected.
   // These values used to select the best available mapscale from scalelist. See MapWindow::FillScaleListForEngineeringUnits(
 
-  switch (Units::GetUserDistanceUnit()) {
+  switch (Units::GetDistanceUnit()) {
     default:
       return ScaleListArrayMeters[parameter_number];
     case unStatuteMiles:
@@ -87,7 +87,7 @@ void MapWindow::Zoom::Reset()
 
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
-  _realscale = Units::ToSysDistance(*_requestedScale)/1000;
+  _realscale = Units::FromDistance(*_requestedScale)/1000;
 
   _inited = true;
   SwitchMode();
@@ -287,13 +287,13 @@ void MapWindow::Zoom::ModifyMapScale()
   }
 
   const double mapFactor = GetMapResolutionFactor();
-  const double scaleOverDistanceModify = Units::ToSysDistance(*_requestedScale);
+  const double scaleOverDistanceModify = Units::FromDistance(*_requestedScale);
 
   _resScaleOverDistanceModify = mapFactor / scaleOverDistanceModify;
   _drawScale = mapFactor / (scaleOverDistanceModify / 111194); // what is this const value ?
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
-  _realscale = Units::ToSysDistance(*_requestedScale) / 1000;
+  _realscale = Units::FromDistance(*_requestedScale) / 1000;
 }
 
 
@@ -302,7 +302,7 @@ void MapWindow::Zoom::GetInitMapScaleText(int init_parameter, TCHAR *out, size_t
   double mapscale = GetZoomInitValue(init_parameter);
   // Get nearest discrete value
   double ms = MapWindow::FindMapScale(mapscale);
-  Units::FormatUserMapScale(Units::ToSysDistance(ms), out, size);
+  Units::FormatMapScale(Units::FromDistance(ms), out, size);
 }
 
 

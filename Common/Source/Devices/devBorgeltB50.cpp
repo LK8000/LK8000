@@ -75,16 +75,16 @@ BOOL PBB50(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   char ctemp[MAX_NMEA_LEN];
 
   NMEAParser::ExtractParameter(String,ctemp,0);
-  vtas = Units::ToSys(unKnots, StrToDouble(ctemp,NULL));
+  vtas = Units::From(unKnots, StrToDouble(ctemp,NULL));
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  wnet = Units::ToSys(unKnots, StrToDouble(ctemp,NULL));
+  wnet = Units::From(unKnots, StrToDouble(ctemp,NULL));
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  d->RecvMacCready(Units::ToSys(unKnots, StrToDouble(ctemp,NULL)));
+  d->RecvMacCready(Units::From(unKnots, StrToDouble(ctemp,NULL)));
 
   NMEAParser::ExtractParameter(String,ctemp,3);
-  vias = Units::ToSys(unKnots, sqrt(StrToDouble(ctemp,NULL)));
+  vias = Units::From(unKnots, sqrt(StrToDouble(ctemp,NULL)));
 
   // inclimb/incruise 1=cruise,0=climb, OAT
   NMEAParser::ExtractParameter(String,ctemp,6);

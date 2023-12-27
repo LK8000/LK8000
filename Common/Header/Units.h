@@ -45,15 +45,15 @@ enum Units_t {
 
 namespace Units {
 
-  CoordinateFormats_t GetUserCoordinateFormat() gcc_pure;
+  CoordinateFormats_t GetCoordinateFormat() gcc_pure;
 
-  Units_t GetUserDistanceUnit() gcc_pure;
-  Units_t GetUserAltitudeUnit() gcc_pure;
-  Units_t GetUserInvAltitudeUnit() gcc_pure; // 100126
-  Units_t GetUserHorizontalSpeedUnit() gcc_pure;
-  Units_t GetUserTaskSpeedUnit() gcc_pure;
-  Units_t GetUserVerticalSpeedUnit() gcc_pure;
-  Units_t GetUserWindSpeedUnit() gcc_pure;
+  Units_t GetDistanceUnit() gcc_pure;
+  Units_t GetAltitudeUnit() gcc_pure;
+  Units_t GetAlternateAltitudeUnit() gcc_pure; // 100126
+  Units_t GetHorizontalSpeedUnit() gcc_pure;
+  Units_t GetTaskSpeedUnit() gcc_pure;
+  Units_t GetVerticalSpeedUnit() gcc_pure;
+  Units_t GetWindSpeedUnit() gcc_pure;
 
   void LongitudeToDMS(double Longitude, int *dd, int *mm, int *ss, bool *east) gcc_nonnull(2,3,4,5);
   void LatitudeToDMS(double Latitude, int *dd, int *mm, int *ss, bool *north) gcc_nonnull(2,3,4,5);
@@ -84,107 +84,109 @@ namespace Units {
 
   void NotifyUnitChanged();
 
+  const TCHAR *GetName(Units_t Unit) gcc_pure;
+  
   inline const TCHAR* GetHorizontalSpeedName() {
-    return GetUnitName(GetUserHorizontalSpeedUnit());
+    return GetName(GetHorizontalSpeedUnit());
   }
 
   inline const TCHAR* GetVerticalSpeedName() {
-    return GetUnitName(GetUserVerticalSpeedUnit());
+    return GetName(GetVerticalSpeedUnit());
   }
 
   inline const TCHAR* GetDistanceName() {
-    return GetUnitName(GetUserDistanceUnit());
+    return GetName(GetDistanceUnit());
   }
 
   inline const TCHAR* GetAltitudeName() {
-    return GetUnitName(GetUserAltitudeUnit());
+    return GetName(GetAltitudeUnit());
   }
 
-  inline const TCHAR* GetInvAltitudeName() {
-    return GetUnitName(GetUserInvAltitudeUnit());
+  inline const TCHAR* GetAlternateAltitudeName() {
+    return GetName(GetAlternateAltitudeUnit());
   }
 
   inline const TCHAR* GetTaskSpeedName() {
-    return GetUnitName(GetUserTaskSpeedUnit());
+    return GetName(GetTaskSpeedUnit());
   }
 
   inline const TCHAR* GetWindSpeedName() {
-    return GetUnitName(GetUserWindSpeedUnit());
+    return GetName(GetWindSpeedUnit());
   }
 
-  void FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
-  void FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
-  void FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2); // VENTA3
-  void FormatUserDistance(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
-  void FormatUserMapScale(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  void FormatAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  void FormatAlternateAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  void FormatArrival(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2); // VENTA3
+  void FormatDistance(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
+  void FormatMapScale(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
 
 
   /**
    * convert value from System Unit to @unit
    */
-  double ToUser(Units_t unit, double value) gcc_pure;
+  double To(Units_t unit, double value) gcc_pure;
 
   /**
    * convert value from System Unit to User Unit
    */
-  inline double ToUserAltitude(double Altitude) {
-    return ToUser(GetUserAltitudeUnit(), Altitude); 
+  inline double ToAltitude(double Altitude) {
+    return To(GetAltitudeUnit(), Altitude); 
   }
 
-  inline double ToInvUserAltitude(double Altitude) {
-    return ToUser(GetUserInvAltitudeUnit(), Altitude);
+  inline double ToAlternateAltitude(double Altitude) {
+    return To(GetAlternateAltitudeUnit(), Altitude);
   }
 
-  inline double ToUserDistance(double Distance) {
-    return ToUser(GetUserDistanceUnit(), Distance);
+  inline double ToDistance(double Distance) {
+    return To(GetDistanceUnit(), Distance);
   }
 
-  inline double ToUserWindSpeed(double speed) {
-    return ToUser(GetUserWindSpeedUnit(), speed);
+  inline double ToWindSpeed(double speed) {
+    return To(GetWindSpeedUnit(), speed);
   }
 
-  inline double ToUserHorizontalSpeed(double speed) {
-    return ToUser(GetUserHorizontalSpeedUnit(), speed);
+  inline double ToHorizontalSpeed(double speed) {
+    return To(GetHorizontalSpeedUnit(), speed);
   }
 
-  inline double ToUserVerticalSpeed(double speed) {
-    return ToUser(GetUserVerticalSpeedUnit(), speed);
+  inline double ToVerticalSpeed(double speed) {
+    return To(GetVerticalSpeedUnit(), speed);
   }
 
-  inline double ToUserTaskSpeed(double speed) {
-    return ToUser(GetUserTaskSpeedUnit(), speed);
+  inline double ToTaskSpeed(double speed) {
+    return To(GetTaskSpeedUnit(), speed);
   }
 
   /**
    * convert value from @unit to System Unit
    */
-  double ToSys(Units_t unit, double value) gcc_pure;
+  double From(Units_t unit, double value) gcc_pure;
 
   /**
    * convert value from User Unit to System Unit
    */
-  inline double ToSysAltitude(double Altitude) {
-    return ToSys(GetUserAltitudeUnit(), Altitude);
+  inline double FromAltitude(double Altitude) {
+    return From(GetAltitudeUnit(), Altitude);
   }
 
-  inline double ToSysDistance(double Distance) {
-    return ToSys(GetUserDistanceUnit(), Distance);
+  inline double FromDistance(double Distance) {
+    return From(GetDistanceUnit(), Distance);
   }
 
-  inline double ToSysWindSpped(double speed) {
-    return ToSys(GetUserWindSpeedUnit(), speed);
+  inline double FromWindSpped(double speed) {
+    return From(GetWindSpeedUnit(), speed);
   }
 
-  inline double ToSysHorizontalSpeed(double speed) {
-    return ToSys(GetUserHorizontalSpeedUnit(), speed);
+  inline double FromHorizontalSpeed(double speed) {
+    return From(GetHorizontalSpeedUnit(), speed);
   }
 
-  inline double ToSysVerticalSpeed(double speed) {
-    return ToSys(GetUserVerticalSpeedUnit(), speed);
+  inline double FromVerticalSpeed(double speed) {
+    return From(GetVerticalSpeedUnit(), speed);
   }
 
-  inline double ToSysTaskSpeed(double speed) {
-    return ToSys(GetUserTaskSpeedUnit(), speed);
+  inline double FromTaskSpeed(double speed) {
+    return From(GetTaskSpeedUnit(), speed);
   }
 
 

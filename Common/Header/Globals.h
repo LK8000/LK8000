@@ -803,7 +803,7 @@ GEXTERN bool  DevIsCondor;
 GEXTERN unsigned SpeedUnit_Config;
 GEXTERN unsigned TaskSpeedUnit_Config;
 GEXTERN unsigned DistanceUnit_Config;
-GEXTERN unsigned LiftUnit_Config;
+GEXTERN unsigned VerticalSpeedUnit_Config;
 GEXTERN unsigned AltitudeUnit_Config;
 GEXTERN unsigned LatLonUnits_Config;
 

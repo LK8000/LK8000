@@ -32,7 +32,7 @@ void ResetNearestTopology(void) {
 
 
 void ChangeWindCalcSpeed(const int newspeed) {
-  WindCalcSpeed += Units::ToSysHorizontalSpeed(newspeed);
+  WindCalcSpeed += Units::FromHorizontalSpeed(newspeed);
 }
 
 #ifdef _WIN32
@@ -328,8 +328,8 @@ void TaskStartMessage() {
   TCHAR TempTime[40];
   TCHAR TempAlt[40];
   TCHAR TempSpeed[40];
-  Units::TimeToText(TempTime, LocalTime(CALCULATED_INFO.TaskStartTime));  _stprintf(TempAlt, TEXT("%.0f %s"), Units::ToUserAltitude(CALCULATED_INFO.TaskStartAltitude), Units::GetAltitudeName());
-  _stprintf(TempSpeed, TEXT("%.0f %s"), Units::ToUserTaskSpeed(CALCULATED_INFO.TaskStartSpeed), Units::GetTaskSpeedName());
+  Units::TimeToText(TempTime, LocalTime(CALCULATED_INFO.TaskStartTime));  _stprintf(TempAlt, TEXT("%.0f %s"), Units::ToAltitude(CALCULATED_INFO.TaskStartAltitude), Units::GetAltitudeName());
+  _stprintf(TempSpeed, TEXT("%.0f %s"), Units::ToTaskSpeed(CALCULATED_INFO.TaskStartSpeed), Units::GetTaskSpeedName());
 
   TCHAR TempAll[300];
   _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
@@ -356,9 +356,9 @@ void TaskFinishMessage() {
   TCHAR TempTskSpeed[40];
 
   Units::TimeToText(TempTime, LocalTime());
-  _stprintf(TempAlt, TEXT("%.0f %s"), Units::ToUserAltitude(CALCULATED_INFO.NavAltitude), Units::GetAltitudeName());
-  _stprintf(TempSpeed, TEXT("%.0f %s"), Units::ToUserTaskSpeed(GPS_INFO.Speed), Units::GetTaskSpeedName());
-  _stprintf(TempTskSpeed, TEXT("%.2f %s"), Units::ToUserTaskSpeed(CALCULATED_INFO.TaskSpeedAchieved), Units::GetTaskSpeedName());
+  _stprintf(TempAlt, TEXT("%.0f %s"), Units::ToAltitude(CALCULATED_INFO.NavAltitude), Units::GetAltitudeName());
+  _stprintf(TempSpeed, TEXT("%.0f %s"), Units::ToTaskSpeed(GPS_INFO.Speed), Units::GetTaskSpeedName());
+  _stprintf(TempTskSpeed, TEXT("%.2f %s"), Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeedAchieved), Units::GetTaskSpeedName());
 
   TCHAR TempAll[300];
 

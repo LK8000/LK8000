@@ -274,7 +274,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     if (wp) {
       TCHAR stmp2[40];
       if (distances_ready) {
-        Units::FormatUserDistance((double)abs(hdist),stmp, 10);
+        Units::FormatDistance((double)abs(hdist),stmp, 10);
         if (hdist<0) {
           // LKTOKEN _@M1257_ "to leave"
           _stprintf(stmp2, TEXT("%s %s"), stmp, MsgToken<1257>());
@@ -295,7 +295,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     if (wp) {
         TCHAR stmp2[40];
       if (distances_ready) {
-        Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
+        Units::FormatAltitude((double)abs(vdist),stmp, 10);
         if (vdist<0) {
           // LKTOKEN _@M1260_ "below"
           _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken<1260>());

@@ -743,7 +743,7 @@ private:
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
-  static double GetInvDrawScale() { return zoom.InvDrawScale(); }
+  static double GetAlternateDrawScale() { return zoom.InvDrawScale(); }
   static double GetDrawScale() { return zoom.DrawScale(); }
   static double GetDisplayAngle() { return DisplayAngle; }
   static void SetAutoOrientation();

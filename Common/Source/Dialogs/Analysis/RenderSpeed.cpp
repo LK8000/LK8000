@@ -43,10 +43,10 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
             0.5, flightstats.Task_Speed.x_min,
             STYLE_THINDASHPAPER, 0.5, true);
 
-  if(Units::GetUserHorizontalSpeedUnit() == unStatuteMilesPerHour) {
-    DrawYGrid(Surface, rc, Units::ToSysTaskSpeed(5.0), 0, STYLE_THINDASHPAPER, 5.0, true);
+  if(Units::GetHorizontalSpeedUnit() == unStatuteMilesPerHour) {
+    DrawYGrid(Surface, rc, Units::FromTaskSpeed(5.0), 0, STYLE_THINDASHPAPER, 5.0, true);
   } else {
-    DrawYGrid(Surface, rc, Units::ToSysTaskSpeed(10), 0, STYLE_THINDASHPAPER, 10, true);
+    DrawYGrid(Surface, rc, Units::FromTaskSpeed(10), 0, STYLE_THINDASHPAPER, 10, true);
   }
 
   DrawLineGraph(Surface, rc, &flightstats.Task_Speed,STYLE_MEDIUMBLACK);

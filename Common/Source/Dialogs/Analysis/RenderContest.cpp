@@ -249,39 +249,39 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
     double fTic;
     if (!CContestMgr::Instance().LooksLikeAFAITriangleAttempt()) {
       // Does not look like a FAI attempt. Just draw both FAI sectors on longest leg.
-      fTic = Units::ToSysDistance(10);
-      if (max_leg->LegDist > Units::ToSysDistance(5)) fTic = Units::ToSysDistance(20);
-      if (max_leg->LegDist > Units::ToSysDistance(50)) fTic = Units::ToSysDistance(50);
-      if (max_leg->LegDist > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(100);
-      if (max_leg->LegDist > Units::ToSysDistance(500)) fTic = Units::ToSysDistance(250);
+      fTic = Units::FromDistance(10);
+      if (max_leg->LegDist > Units::FromDistance(5)) fTic = Units::FromDistance(20);
+      if (max_leg->LegDist > Units::FromDistance(50)) fTic = Units::FromDistance(50);
+      if (max_leg->LegDist > Units::FromDistance(100)) fTic = Units::FromDistance(100);
+      if (max_leg->LegDist > Units::FromDistance(500)) fTic = Units::FromDistance(250);
       ContestFAISector[0].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 0);
       ContestFAISector[0].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTYELLOW);
       ContestFAISector[1].CalcSectorCache(max_leg->Lat1, max_leg->Lon1, max_leg->Lat2, max_leg->Lon2, fTic, 1);
       ContestFAISector[1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTYELLOW);
     } else {
       if (leg0->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
-        fTic = Units::ToSysDistance(10);
-        if (leg0->LegDist > Units::ToSysDistance(5)) fTic = Units::ToSysDistance(20);
-        if (leg0->LegDist > Units::ToSysDistance(50)) fTic = Units::ToSysDistance(50);
-        if (leg0->LegDist > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(100);
+        fTic = Units::FromDistance(10);
+        if (leg0->LegDist > Units::FromDistance(5)) fTic = Units::FromDistance(20);
+        if (leg0->LegDist > Units::FromDistance(50)) fTic = Units::FromDistance(50);
+        if (leg0->LegDist > Units::FromDistance(100)) fTic = Units::FromDistance(100);
         // Draw the yellow sector on the best current direction.
         ContestFAISector[1].CalcSectorCache(leg0->Lat1, leg0->Lon1, leg0->Lat2, leg0->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
         ContestFAISector[1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_YELLOW);
       }
       // If a valid second leg (or a leg that belong to the current best FAI triangle ) draw it in the correct direction
       if (leg1->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
-        fTic = Units::ToSysDistance(10);
-        if (leg1->LegDist > Units::ToSysDistance(5)) fTic = Units::ToSysDistance(20);
-        if (leg1->LegDist > Units::ToSysDistance(50)) fTic = Units::ToSysDistance(50);
-        if (leg1->LegDist > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(100);
+        fTic = Units::FromDistance(10);
+        if (leg1->LegDist > Units::FromDistance(5)) fTic = Units::FromDistance(20);
+        if (leg1->LegDist > Units::FromDistance(50)) fTic = Units::FromDistance(50);
+        if (leg1->LegDist > Units::FromDistance(100)) fTic = Units::FromDistance(100);
         ContestFAISector[3].CalcSectorCache(leg1->Lat1, leg1->Lon1, leg1->Lat2, leg1->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
         ContestFAISector[3].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_CYAN);
       }
       if (leg2->LegDist > FAI_MIN_DISTANCE_THRESHOLD) {
-        fTic = Units::ToSysDistance(10);
-        if (leg2->LegDist > Units::ToSysDistance(5)) fTic = Units::ToSysDistance(20);
-        if (leg2->LegDist > Units::ToSysDistance(50)) fTic = Units::ToSysDistance(50);
-        if (leg2->LegDist > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(100);
+        fTic = Units::FromDistance(10);
+        if (leg2->LegDist > Units::FromDistance(5)) fTic = Units::FromDistance(20);
+        if (leg2->LegDist > Units::FromDistance(50)) fTic = Units::FromDistance(50);
+        if (leg2->LegDist > Units::FromDistance(100)) fTic = Units::FromDistance(100);
         ContestFAISector[3].CalcSectorCache(leg2->Lat1, leg2->Lon1, leg2->Lat2, leg2->Lon2, fTic, CContestMgr::Instance().isFAITriangleClockwise());
         ContestFAISector[3].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_GREEN);
       }

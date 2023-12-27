@@ -27,10 +27,10 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
 
   RECT rci = rc;
   rci.top += BORDER_Y;
-  if(Units::GetUserInvAltitudeUnit() == unFeet) {
-    DrawYGrid(Surface, rci, Units::ToSysVerticalSpeed(0.5), 0, STYLE_THINDASHPAPER, 0.5, true);
+  if(Units::GetAlternateAltitudeUnit() == unFeet) {
+    DrawYGrid(Surface, rci, Units::FromVerticalSpeed(0.5), 0, STYLE_THINDASHPAPER, 0.5, true);
   } else {
-    DrawYGrid(Surface, rci, Units::ToSysVerticalSpeed(1.0), 0, STYLE_THINDASHPAPER, 1.0, true);
+    DrawYGrid(Surface, rci, Units::FromVerticalSpeed(1.0), 0, STYLE_THINDASHPAPER, 1.0, true);
   }
 
   DrawBarChart(Surface, rc, &flightstats.ThermalAverage);

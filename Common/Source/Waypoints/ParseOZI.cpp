@@ -125,7 +125,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	if ((pToken = tok.Next({_T(',')})) == NULL)
 		return false;
 
-	Temp->Altitude = Units::ToSys(unFeet, StrToDouble(pToken, nullptr));
+	Temp->Altitude = Units::From(unFeet, StrToDouble(pToken, nullptr));
 	if(Temp->Altitude <= 0) {
 		WaypointAltitudeFromTerrain(Temp);
 	}

@@ -405,7 +405,7 @@ void dlgWayPointDetailsShowModal(short mypage){
 		}
 		if ( WPLSEL.RunwayLen>0 )  {
 			// we use Altitude instead of distance, to keep meters and feet
-			_stprintf(ttmp,_T("%.0f%s"),Units::ToUserAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
+			_stprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
 			_tcscat(sTmp, ttmp);
 		}
   } else {
@@ -455,7 +455,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   // Waypoint Altitude
   //
-  Units::FormatUserAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
+  Units::FormatAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
   wp = ((WndProperty *)wf->FindByName(TEXT("prpAltitude")));
   LKASSERT(wp);
   wp->SetText(sTmp);
@@ -482,18 +482,18 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   TCHAR DistanceText[MAX_PATH];
   if (ScreenLandscape) {
-      Units::FormatUserDistance(distance, DistanceText, 10);
+      Units::FormatDistance(distance, DistanceText, 10);
 
-      if ( Units::GetUserDistanceUnit() == unNauticalMiles ||
-           Units::GetUserDistanceUnit() == unStatuteMiles ) {
+      if ( Units::GetDistanceUnit() == unNauticalMiles ||
+           Units::GetDistanceUnit() == unStatuteMiles ) {
 
-          _stprintf(sTmp,_T("  (%.1fkm)"), Units::ToUser(unKiloMeter, distance));
+          _stprintf(sTmp,_T("  (%.1fkm)"), Units::To(unKiloMeter, distance));
       } else {
-	  _stprintf(sTmp,_T("  (%.1fnm)"), Units::ToUser(unNauticalMiles, distance));
+	  _stprintf(sTmp,_T("  (%.1fnm)"), Units::To(unNauticalMiles, distance));
       }
       _tcscat(DistanceText,sTmp);
   } else {
-      Units::FormatUserDistance(distance, DistanceText, 10);
+      Units::FormatDistance(distance, DistanceText, 10);
   }
   ((WndProperty *)wf->FindByName(TEXT("prpDistance")))->SetText(DistanceText);
 
@@ -523,7 +523,7 @@ void dlgWayPointDetailsShowModal(short mypage){
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
   _stprintf(sTmp, TEXT("%.0f %s"),
-            Units::ToUserAltitude(alt),
+            Units::ToAltitude(alt),
             Units::GetAltitudeName());
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc0")));
@@ -546,7 +546,7 @@ void dlgWayPointDetailsShowModal(short mypage){
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
   _stprintf(sTmp, TEXT("%.0f %s"),
-            Units::ToUserAltitude(alt),
+            Units::ToAltitude(alt),
             Units::GetAltitudeName());
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc2")));

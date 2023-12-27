@@ -64,7 +64,7 @@ void LKProfileResetDefault() {
   SpeedUnit_Config = 2;         // default is kmh
   TaskSpeedUnit_Config = 2;     // default is kph
   DistanceUnit_Config = 2;      // default is km
-  LiftUnit_Config = 1;          // default m/s
+  VerticalSpeedUnit_Config = 1;          // default m/s
   AltitudeUnit_Config = 1;      // default m
   LatLonUnits_Config = 0;       // default is  DDMMSS;
   

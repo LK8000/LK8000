@@ -201,7 +201,7 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryLKVarioVal, LKVarioVal);
   write_settings(szRegistryLanguageCode, szLanguageCode);
   write_settings(szRegistryLatLonUnits, LatLonUnits_Config);
-  write_settings(szRegistryLiftUnitsValue, LiftUnit_Config);
+  write_settings(szRegistryVerticalSpeedUnit, VerticalSpeedUnit_Config);
   write_settings(szRegistryLockSettingsInFlight, LockSettingsInFlight);
   write_settings(szRegistryLoggerShort, LoggerShortName);
   write_settings(szRegistryMapBox, MapBox);

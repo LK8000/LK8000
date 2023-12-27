@@ -177,7 +177,7 @@ void CheckAltitudeAlarms(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated)
               MsgToken<1650>(),
               active_alarm,
               MsgToken<1651>(),  // ALARM ALTITUDE
-              iround(Units::ToUserAltitude(LKalarms[active_alarm-1].triggervalue)));
+              iround(Units::ToAltitude(LKalarms[active_alarm-1].triggervalue)));
 
 		Message::AddMessage(12000, MSG_ALARM, textalarm); // Message for 12 sec.
 

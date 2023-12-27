@@ -250,27 +250,27 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             // A task is made of at least 2 tps, otherwise its a goto
             if (((GlideBarMode == (GlideBarMode_t) gbFinish) && ValidTaskPoint(1))) {
                 if (ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
-                    if (Units::ToUserAltitude(DerivedDrawInfo.TaskAltitudeArrival) < ALTDIFFLIMIT) //@ 091114
+                    if (Units::ToAltitude(DerivedDrawInfo.TaskAltitudeArrival) < ALTDIFFLIMIT) //@ 091114
                         _stprintf(Value, TEXT("---"));
                     else
-                        _stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(DerivedDrawInfo.TaskAltitudeArrival));
+                        _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(DerivedDrawInfo.TaskAltitudeArrival));
                 } else {
-                    if (Units::ToUserAltitude(DerivedDrawInfo.TaskAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
+                    if (Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
                         _stprintf(Value, TEXT("---"));
                     else
-                        _stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(DerivedDrawInfo.TaskAltitudeDifference));
+                        _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference));
                 }
             } else {
-                if (Units::ToUserAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
+                if (Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
                     _stprintf(Value, TEXT("---"));
                 else
-                    _stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
+                    _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
             }
         } else {
-            if (Units::ToUserAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
+            if (Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
                 _stprintf(Value, TEXT("---"));
             else
-                _stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
+                _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
         }
 
 _skipout:

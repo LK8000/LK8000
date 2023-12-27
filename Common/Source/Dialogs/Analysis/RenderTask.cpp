@@ -209,12 +209,12 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 
             double fTic,fDist_c, fAngle ;
             DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
-			fTic= Units::ToSysDistance(1);
-			if(fDist_c > Units::ToSysDistance(5))   fTic = Units::ToSysDistance(10);
-			if(fDist_c > Units::ToSysDistance(50))  fTic = Units::ToSysDistance(25);
-			if(fDist_c > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(50);
+			fTic= Units::FromDistance(1);
+			if(fDist_c > Units::FromDistance(5))   fTic = Units::FromDistance(10);
+			if(fDist_c > Units::FromDistance(50))  fTic = Units::FromDistance(25);
+			if(fDist_c > Units::FromDistance(100)) fTic = Units::FromDistance(50);
 			//  if(fDist_c > 200/DISTANCEMODIFY) fTic = 100/DISTANCEMODIFY;
-			if(fDist_c > Units::ToSysDistance(500)) fTic = Units::ToSysDistance(250);
+			if(fDist_c > Units::FromDistance(500)) fTic = Units::FromDistance(250);
 
 
 		  if (!IsDithered()) {
@@ -242,11 +242,11 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 	  lon2 = WayPointList[Task[1].Index].Longitude;
             double fTic,fDist_c, fAngle ;
             DistanceBearing(lat1, lon1, lat2, lon2, &fDist_c, &fAngle);
-			fTic= Units::ToSysDistance(1);
-			if(fDist_c > Units::ToSysDistance(5))   fTic = Units::ToSysDistance(10);
-			if(fDist_c > Units::ToSysDistance(50))  fTic = Units::ToSysDistance(25);
-			if(fDist_c > Units::ToSysDistance(100)) fTic = Units::ToSysDistance(50);
-			if(fDist_c > Units::ToSysDistance(500)) fTic = Units::ToSysDistance(250);
+			fTic= Units::FromDistance(1);
+			if(fDist_c > Units::FromDistance(5))   fTic = Units::FromDistance(10);
+			if(fDist_c > Units::FromDistance(50))  fTic = Units::FromDistance(25);
+			if(fDist_c > Units::FromDistance(100)) fTic = Units::FromDistance(50);
+			if(fDist_c > Units::FromDistance(500)) fTic = Units::FromDistance(250);
 
 
 // RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );

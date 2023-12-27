@@ -18,15 +18,15 @@
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
-#define IAS		Units::ToUser(Units_t::unKiloMeterPerHour, CALCULATED_INFO.IndicatedAirspeedEstimated)
+#define IAS		Units::To(Units_t::unKiloMeterPerHour, CALCULATED_INFO.IndicatedAirspeedEstimated)
 #define BEARING		GPS_INFO.TrackBearing
 #define ALTITUDE	GPS_INFO.Altitude
-#define GS		Units::ToUser(Units_t::unKiloMeterPerHour, GPS_INFO.Speed)
+#define GS		Units::To(Units_t::unKiloMeterPerHour, GPS_INFO.Speed)
 #define FLYING		CALCULATED_INFO.Flying
 #define THERMALLING	CALCULATED_INFO.Circling
 
-//#define MINSPEED	Units::ToUser(Units_t::unKiloMeterPerHour, GlidePolar::Vminsink())
-#define STALLSPEED	Units::ToUser(Units_t::unKiloMeterPerHour, GlidePolar::Vminsink())*0.6
+//#define MINSPEED	Units::To(Units_t::unKiloMeterPerHour, GlidePolar::Vminsink())
+#define STALLSPEED	Units::To(Units_t::unKiloMeterPerHour, GlidePolar::Vminsink())*0.6
 
 extern void SimFlarmTraffic(uint32_t RadioId, double offset);
 

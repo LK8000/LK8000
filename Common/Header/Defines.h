@@ -37,7 +37,7 @@
 #define ALTERNATE_MAXVALIDGR MAXEFFICIENCYSHOW
 
 // Below this altitude alt diffs are not shown
-#define ALTDIFFLIMIT	(Units::ToUserAltitude(-3000))
+#define ALTDIFFLIMIT	(Units::ToAltitude(-3000))
 
 
 /*

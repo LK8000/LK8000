@@ -338,11 +338,11 @@ int BuildFLARMText(FLARM_TRAFFIC* pFlarm, TCHAR (&text1)[MAX_LEN],TCHAR (&text2)
   }
 
   lk::snprintf(text2, TEXT("%3.1f%s  (%i%s  %3.1f%s  %i°) %s")
-            , Units::ToUserDistance(Distance)                   //        6
+            , Units::ToDistance(Distance)                   //        6
             , Units::GetDistanceName()                          // 2+3=   5
-            , (int)Units::ToUserAltitude(pFlarm->Altitude)      //        5
+            , (int)Units::ToAltitude(pFlarm->Altitude)      //        5
             , Units::GetAltitudeName()                          // 3+2=   5
-            , Units::ToUserVerticalSpeed(pFlarm->Average30s)    //        5
+            , Units::ToVerticalSpeed(pFlarm->Average30s)    //        5
             , Units::GetVerticalSpeedName()                     // 3+2=   5
             , (int) Bear
             , (flarmId ? flarmId->airfield : _T("")) );         //FLARMID_SIZE_AIRFIELD           22  =>  53 char
@@ -364,14 +364,14 @@ int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR (&text1)[MAX_LEN],TCHAR (&te
     press /= TOHPA;
     lk::snprintf(Comment, _T("%d° %d|%d %3.3finHg"), 
             (int)round(pWeather->windDir),
-            (int)round(Units::ToUserWindSpeed(pWeather->windSpeed)),
-            (int)round(Units::ToUserWindSpeed(pWeather->windGust)),
+            (int)round(Units::ToWindSpeed(pWeather->windSpeed)),
+            (int)round(Units::ToWindSpeed(pWeather->windGust)),
             press);
   }else{
     lk::snprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
             (int)round(pWeather->windDir), 
-            (int)round(Units::ToUserWindSpeed(pWeather->windSpeed)), 
-            (int)round(Units::ToUserWindSpeed(pWeather->windGust)),
+            (int)round(Units::ToWindSpeed(pWeather->windSpeed)), 
+            (int)round(Units::ToWindSpeed(pWeather->windGust)),
             press);      
   }
   if(_tcslen(name) == 0)
@@ -383,7 +383,7 @@ int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR (&text1)[MAX_LEN],TCHAR (&te
                                             , (int)round(pWeather->hum)
                                             , (int)round(pWeather->Battery));
   lk::snprintf(text2, _T("%3.1f%s (%i°) %s"),
-            Units::ToUserDistance(Distance),
+            Units::ToDistance(Distance),
             Units::GetDistanceName(),
             (int) Bear , Comment);
   return 0;
@@ -409,8 +409,8 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
      // _@M2301_  "S"    # S = Start Task point
     lk::snprintf(text1, _T("%s: (%s)"), MsgToken<2301>(), WayPointList[idx].Name);
     lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
-               Units::ToUserDistance(StartRadius), Units::GetDistanceName(),
-               (int) Units::ToUserAltitude(WayPointList[idx].Altitude),
+               Units::ToDistance(StartRadius), Units::GetDistanceName(),
+               (int) Units::ToAltitude(WayPointList[idx].Altitude),
                Units::GetAltitudeName());
   } else {
      if (iTaskIdx == iLastTaskPoint) {
@@ -418,8 +418,8 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
          lk::snprintf(text1, _T("%s: (%s) "), MsgToken<2303>(),
                    WayPointList[idx].Name);
          lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
-                   Units::ToUserDistance(FinishRadius), Units::GetDistanceName(),
-                   (int) Units::ToUserAltitude(WayPointList[idx].Altitude),
+                   Units::ToDistance(FinishRadius), Units::GetDistanceName(),
+                   (int) Units::ToAltitude(WayPointList[idx].Altitude),
                    Units::GetAltitudeName());
      } else {
          //   _@M2302_  "T"    # F = Finish point            // max 30         30 => max 60 char
@@ -436,8 +436,8 @@ int BuildTaskPointText(int iTaskIdx, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX
          }
 
          lk::snprintf(text2, _T("Radius %3.1f%s (%i%s)"),
-                   Units::ToUserDistance(SecRadius), Units::GetDistanceName(),
-                   (int) Units::ToUserAltitude(WayPointList[idx].Altitude),
+                   Units::ToDistance(SecRadius), Units::GetDistanceName(),
+                   (int) Units::ToAltitude(WayPointList[idx].Altitude),
                    Units::GetAltitudeName());
      }
   }
@@ -494,19 +494,19 @@ int BuildLandableText(int idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (
   if ((WayPointList[idx].RunwayLen >= 10) ||
       (WayPointList[idx].RunwayDir > 0)) {
       lk::snprintf(text2, _T("%3.1f%s (%i%s  %02i/%02i  %i%s)"),
-                Units::ToUserDistance(Distance), Units::GetDistanceName(),
-                (int) Units::ToUserAltitude(WayPointList[idx].Altitude),
+                Units::ToDistance(Distance), Units::GetDistanceName(),
+                (int) Units::ToAltitude(WayPointList[idx].Altitude),
                 Units::GetAltitudeName(),
                 (int) (WayPointList[idx].RunwayDir / 10.0 + 0.5),
                 (int) (AngleLimit360(WayPointList[idx].RunwayDir + 180.0) /
                        10.0 + 0.5),
-                (int) Units::ToUserAltitude(WayPointList[idx].RunwayLen),
+                (int) Units::ToAltitude(WayPointList[idx].RunwayLen),
                 Units::GetAltitudeName());
   } else {
       lk::snprintf(text2, _T("%3.1f%s (%i%s) "),
-                Units::ToUserDistance(Distance),
+                Units::ToDistance(Distance),
                 Units::GetDistanceName(),
-                (int) Units::ToUserAltitude(WayPointList[idx].Altitude),
+                (int) Units::ToAltitude(WayPointList[idx].Altitude),
                 Units::GetAltitudeName());
   }
   return 0;
@@ -593,7 +593,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
 
                 CAirspaceManager::Instance().AirspaceCalculateDistance((CAirspace*) pAS, &HorDist, &Bearing, &VertDist);
                 lk::snprintf(text2, _T("%3.1f%s (%s - %s)"),
-                          Units::ToUserDistance(HorDist),
+                          Units::ToDistance(HorDist),
                           Units::GetDistanceName(),
                           Comment1, Comment); //8 + 8+3   21
 
@@ -706,7 +706,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
              {
                LockFlightData();
                Units::CoordinateToString( GPS_INFO.Longitude,GPS_INFO.Latitude, Comment, sizeof(text2)-1);
-               lk::snprintf(text2, _T("%s %6.0f%s"),Comment, Units::ToUser(unFeet, GPS_INFO.Altitude), Units::GetUnitName(unFeet));
+               lk::snprintf(text2, _T("%s %6.0f%s"),Comment, Units::To(unFeet, GPS_INFO.Altitude), Units::GetName(unFeet));
                UnlockFlightData();
              }
              ShowTextEntries(Surface, rc,  text1, text2);

@@ -105,7 +105,7 @@ protected:
 
       auto ToSelectInfo = [&](CAirspace* pAsp) -> ObjectSelectInfo_t {
         double direction = 0;
-        double distance = std::max(0., Units::ToUserDistance(pAsp->Range(position, direction)));
+        double distance = std::max(0., Units::ToDistance(pAsp->Range(position, direction)));
         return { distance, direction, std::make_unique<AirspaceInfo_t>(pAsp) };
       };
 

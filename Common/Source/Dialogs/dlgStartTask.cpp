@@ -63,7 +63,7 @@ void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double A
     wp = (WndProperty*)wf->FindByName(TEXT("prpSpeed"));
     if (wp) {
       _stprintf(Temp, TEXT("%.0f %s"),
-                   Units::ToUserTaskSpeed(Speed),
+                   Units::ToTaskSpeed(Speed),
                    Units::GetTaskSpeedName());
       wp->SetText(Temp);
     }
@@ -71,7 +71,7 @@ void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double A
     wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
     if (wp) {
       _stprintf(Temp, TEXT("%.0f %s"),
-                Units::ToUserAltitude(Altitude),
+                Units::ToAltitude(Altitude),
                 Units::GetAltitudeName());
       wp->SetText(Temp);
     }

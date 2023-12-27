@@ -270,7 +270,7 @@ bool ReadWinPilotPolar(void) {
 	        PExtractParameter(TempString, ctemp, i);
 	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);
 			if (GlidePolar::FlapsPos[currentFlapsPos] > 0) {
-			  GlidePolar::FlapsPos[currentFlapsPos] = Units::ToSys(unKiloMeterPerHour, GlidePolar::FlapsPos[currentFlapsPos]);
+			  GlidePolar::FlapsPos[currentFlapsPos] = Units::From(unKiloMeterPerHour, GlidePolar::FlapsPos[currentFlapsPos]);
 			}
 	        PExtractParameter(TempString, ctemp, i+1);
 		ctemp[MAXFLAPSNAME]='\0';

@@ -97,7 +97,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     if (inpanmode) {
       if (DerivedDrawInfo.TerrainValid) {
         RasterTerrain::Lock();
-        double alt = Units::ToUserAltitude(RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()));
+        double alt = Units::ToAltitude(RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()));
         RasterTerrain::Unlock();
         if (alt == TERRAIN_INVALID) {
           alt = 0.0;
@@ -114,15 +114,15 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     	if( DerivedDrawInfo.TaskFAI)
     	{
     	  Dist = DerivedDrawInfo.TaskFAIDistance;
-          _stprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"), Units::ToUserDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
+          _stprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
     	}
         else
-    	  _stprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"), Units::ToUserDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
+    	  _stprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
     }
     else
     {
 
-	  _stprintf(Scale2, _T(" %.1f%s %s %.0f%s "), Units::ToUserDistance(pandistance), Units::GetDistanceName(),Scale1, panbearing, MsgToken<2179>() );
+	  _stprintf(Scale2, _T(" %.1f%s %s %.0f%s "), Units::ToDistance(pandistance), Units::GetDistanceName(),Scale1, panbearing, MsgToken<2179>() );
     }
 
 	goto _skip1;
@@ -235,9 +235,9 @@ _skip2:
         Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), Scale);
         _tcscat(Scale, _T(" "));
     }
-    double mapScale=Units::ToSysDistance(zoom.Scale());
-    // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
-    Units::FormatUserMapScale(mapScale, Scale1, std::size(Scale1));
+    double mapScale=Units::FromDistance(zoom.Scale());
+    // zoom.Scale() gives user units, but FormatMapScale() needs system distance units
+    Units::FormatMapScale(mapScale, Scale1, std::size(Scale1));
     _tcscat(Scale,Scale1);
 
     SIZE tsize;

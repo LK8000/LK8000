@@ -50,7 +50,7 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   // Paint wind value only while circling
   if ( (mode.Is(Mode::MODE_CIRCLING)) ) {
 
-    _stprintf(sTmp, _T("%d"), iround(Units::ToUserWindSpeed(DerivedDrawInfo.WindSpeed)));
+    _stprintf(sTmp, _T("%d"), iround(Units::ToWindSpeed(DerivedDrawInfo.WindSpeed)));
 
     TextInBoxMode_t TextInBoxMode = {};
     TextInBoxMode.AlligneCenter = true;   // { 16 | 32 }; // JMW test {2 | 16};

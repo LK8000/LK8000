@@ -285,7 +285,7 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
   if (wp) {
 	_stprintf(buffer,_T("%.1f %s"),
-						Units::ToUserDistance(LKTraffic[indexid].Distance),
+						Units::ToDistance(LKTraffic[indexid].Distance),
 						Units::GetDistanceName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
@@ -294,7 +294,7 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
 	_stprintf(buffer,_T("%.0f %s"),
-	                    Units::ToUserAltitude(LKTraffic[indexid].Altitude),
+	                    Units::ToAltitude(LKTraffic[indexid].Altitude),
 	                    Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
@@ -303,7 +303,7 @@ static void SetValues(int indexid) {
   if (wp) {
 	// this has to be reverted, because it is a relative altitude to us
 	_stprintf(buffer,_T("%+.0f %s"),
-	                    Units::ToUserAltitude(CALCULATED_INFO.NavAltitude - LKTraffic[indexid].Altitude)*-1,
+	                    Units::ToAltitude(CALCULATED_INFO.NavAltitude - LKTraffic[indexid].Altitude)*-1,
 	                    Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
@@ -311,7 +311,7 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpSpeed"));
   if (wp) {
 	_stprintf(buffer,_T("%.0f %s"),
-	                    Units::ToUserHorizontalSpeed(LKTraffic[indexid].Speed),
+	                    Units::ToHorizontalSpeed(LKTraffic[indexid].Speed),
 	                    Units::GetHorizontalSpeedName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
@@ -319,7 +319,7 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
   if (wp) {
 	_stprintf(buffer,_T("%+.1f %s"),
-	                    Units::ToUserVerticalSpeed(LKTraffic[indexid].Average30s),
+	                    Units::ToVerticalSpeed(LKTraffic[indexid].Average30s),
 	                    Units::GetVerticalSpeedName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();

@@ -162,7 +162,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 			wpt->Latitude,
 			wpt->Longitude,
 			comment,
-			iround(Units::ToUser(unFeet, wpt->Altitude)));
+			iround(Units::To(unFeet, wpt->Altitude)));
 
   }
 
