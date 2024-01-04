@@ -1563,8 +1563,9 @@ include build/kobo.mk
 
 ####### dependency handling
 
-DEPFILE		=$(dir $@).$(notdir $@).d
-DEPFLAGS	=-Wp,-MD,$(DEPFILE)
+DEPDIR := $(BIN)/.deps
+DEPFLAGS = -MT $@ -MD -MP -MF $(DEPDIR)/$*.d
+
 dirtarget	=$(subst \\,_,$(subst /,_,$(dir $@)))
 cc-flags	=$(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
 cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
@@ -1703,23 +1704,23 @@ $(BIN)/poco.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(POCO)) $(patsubst $(SRC)%.c,$(
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
-$(BIN)/%.o: $(SRC)/%.c
+$(BIN)/%.o: $(SRC)/%.c $(DEPDIR)/%.d
 	@$(NQ)echo "  CC      $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CC) $(cc-flags) -c $(OUTPUT_OPTION) $<
-	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-$(BIN)/%.o: $(SRC)/%.cpp
+$(BIN)/%.o: $(SRC)/%.cpp $(DEPDIR)/%.d
+	@$(NQ)echo "  CPP     $@"
+	$(Q)$(MKDIR)  $(dir $@)
+	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
+
+$(BIN)/%.o: $(SRC)/%.cxx $(DEPDIR)/%.d
 	@$(NQ)echo "  CXX     $@"
 	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
-	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-$(BIN)/%.o: $(SRC)/%.cxx
-	@$(NQ)echo "  CXX     $@"
+$(DEPDIR)/%.d:
 	$(Q)$(MKDIR) $(dir $@)
-	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
-	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
 $(BIN)/resource.a: $(BIN)/Resource/resource_wave.o $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o $(BITMAP_RES_O) 
 	@$(NQ)echo "  AR      $@"
@@ -1761,7 +1762,6 @@ $(BIN)/%.rsc: $(BIN)/%.min.rc
 	$(Q)$(WINDRES) $(WINDRESFLAGS) $< $@
 
 $(BIN)/%.min.rc: $(SRC)/%.rc $(patsubst Common/Data/Dialogs/%.xml,$(BIN)/Data/Dialogs/%.min.xml,$(DIALOG_XML))
-	@echo "$@: $< " `sed -nr 's|^.*"\.\./(Data[^"]+)".*$$|Common/\1|gp' $<` > $(DEPFILE)
 	@$(NQ)echo "  build $@"
 	@sed -r 's|(^.*")\.\./(Data/Dialogs[^"]+)(.xml".*)$$|\1$(BIN)/\2.min\3|g' $< > $@
 
@@ -1793,23 +1793,13 @@ else
 	$(Q)convert $^ PNG24:$@	
 endif
 
-.PRECIOUS: $(BIN)/Data/Dialogs/%.min.xml \
-	$(BIN)/lk8000.min.rc
-
 ####### include depends files
 
-ifneq ($(wildcard $(BIN)/.*.d),)
-include $(wildcard $(BIN)/.*.d)
-endif
-ifneq ($(wildcard $(BIN)/*/.*.d),)
-include $(wildcard $(BIN)/*/.*.d)
-endif
-ifneq ($(wildcard $(BIN)/*/*/.*.d),)
-include $(wildcard $(BIN)/*/*/.*.d)
-endif
-ifneq ($(wildcard $(BIN)/*/*/*/.*.d),)
-include $(wildcard $(BIN)/*/*/*/.*.d)
-endif
-ifneq ($(wildcard $(BIN)/*/*/*/*/.*.d),)
-include $(wildcard $(BIN)/*/*/*/*/.*.d)
-endif
+DEPFILES := $(patsubst $(SRC)%.c,$(DEPDIR)%.d,$(patsubst $(SRC)%.cpp,$(DEPDIR)%.d,$(patsubst $(SRC)%.cxx,$(DEPDIR)%.d,$(SRC_FILES))))
+DEPFILES += $(patsubst $(SRC)%.cpp,$(DEPDIR)%.d,$(POCO))
+DEPFILES += $(patsubst $(SRC)%.c,$(DEPDIR)%.d,$(ZZIP))
+DEPFILES += $(patsubst $(SRC)%.c,$(DEPDIR)%.d,$(GLU))
+
+$(DEPFILES):
+
+include $(wildcard $(DEPFILES))
