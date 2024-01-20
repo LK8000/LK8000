@@ -519,10 +519,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   if (GPS_INFO.AirspeedAvailable && averias>0 && !DevIsCondor ) iaspeed=averias;
   #endif
 
-#warning "this is right way for calculate TAS from IAS"
-//  double tas = Units::To(unKiloMeterPerHour, iaspeed * AirDensityRatio(QNHAltitudeToQNEAltitude(averaltitude)));
-          
-  double tas = Units::To(unKiloMeterPerHour, iaspeed) * (1+0.02*(averaltitude/0.328/1000));
+  double tas = Units::To(unKiloMeterPerHour, iaspeed * AirDensityRatio(QNHAltitudeToQNEAltitude(averaltitude)));
 
   double magvar=CalculateMagneticVariation();
 
