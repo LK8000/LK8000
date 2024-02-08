@@ -168,7 +168,7 @@ void bottom_bar::draw_lkvalues_data(LKSurface& Surface, unsigned box_num, short 
     TCHAR Value[LKSIZEBUFFERVALUE];
     TCHAR Unit[LKSIZEBUFFERUNIT];
     TCHAR Title[LKSIZEBUFFERTITLE];
-    DrawBmp_t Bmp;
+    DrawBmp_t Bmp = BmpNone;
 
     bool valid = MapWindow::LKFormatValue(value_id, true, Value, Unit, Title, &Bmp);
     if (custom_title) {
