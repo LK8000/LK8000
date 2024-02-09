@@ -92,7 +92,7 @@ bool DevLX::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 
   if (ParToDouble(sentence, 1, &airspeed))
   {
-    airspeed /= TOKPH;
+    airspeed = Units::From(unKiloMeterPerHour, airspeed);
     info->TrueAirspeed = airspeed;
     info->AirspeedAvailable = TRUE;
   }
@@ -120,7 +120,8 @@ bool DevLX::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
   {
-	info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
+    /* convert to m/s */
+    info->ExternalWindSpeed = Units::From(unKiloMeterPerHour, info->ExternalWindSpeed);
     info->ExternalWindAvailable = TRUE;
   }
 

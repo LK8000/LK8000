@@ -502,7 +502,7 @@ int ival;
           }
           else
           {
-            wp->GetDataField()->SetAsFloat(iround(GearWarningAltitude*ALTITUDEMODIFY/1000));
+            wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(GearWarningAltitude / 1000.0)));
             wp->GetDataField()->SetUnits(Units::GetAltitudeName());
             wp->SetVisible(true);
             wp->SetReadOnly(false);
@@ -1874,14 +1874,14 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ClipAltitude*ALTITUDEMODIFY/10));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(ClipAltitude / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
     
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AltWarningMargin*ALTITUDEMODIFY/10));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AltWarningMargin / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -2003,14 +2003,14 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDEARRIVAL/10));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(SAFETYALTITUDEARRIVAL / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDETERRAIN/10));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(SAFETYALTITUDETERRAIN / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -2130,7 +2130,7 @@ DataField* dfe = wp->GetDataField();
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
-      MapWindow::zoom.GetInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]));
+      MapWindow::zoom.GetInitMapScaleText(i, buf1);
       dfe->addEnumText(buf1);
     }
     dfe->Set(ClimbZoom);
@@ -2141,19 +2141,15 @@ DataField* dfe = wp->GetDataField();
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
-      if (MapWindow::zoom.GetInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
-	dfe->addEnumText(buf1);
-      } else {
-	_stprintf(buf1,TEXT("%d"),i);
-	dfe->addEnumText(buf1);
-      }
+      MapWindow::zoom.GetInitMapScaleText(i, buf1);
+	    dfe->addEnumText(buf1);
     }
     dfe->Set(CruiseZoom);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoomThreshold"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(DISTANCEMODIFY*AutoZoomThreshold);
+    wp->GetDataField()->SetAsFloat(Units::ToDistance(AutoZoomThreshold));
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -2163,12 +2159,8 @@ DataField* dfe = wp->GetDataField();
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
-      if (MapWindow::zoom.GetInitMapScaleText(i,buf1,sizeof(buf1) / sizeof(buf1[0]))) {
-        dfe->addEnumText(buf1);
-      } else {
-        _stprintf(buf1,TEXT("%d"),i);
-        dfe->addEnumText(buf1);
-      }
+      MapWindow::zoom.GetInitMapScaleText(i, buf1);
+      dfe->addEnumText(buf1);
     }
     dfe->Set(MaxAutoZoom);
     wp->RefreshDisplay();
@@ -2202,7 +2194,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("DDMM.mmm"));
     dfe->addEnumText(TEXT("DD.dddd"));
     dfe->addEnumText(TEXT("UTM"));
-    dfe->Set(Units::CoordinateFormat);
+    dfe->Set(LatLonUnits_Config);
     wp->RefreshDisplay();
   }
 
@@ -2247,7 +2239,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("knots"));
     dfe->addEnumText(TEXT("m/s"));
     dfe->addEnumText(TEXT("ft/min"));
-    dfe->Set(LiftUnit_Config);
+    dfe->Set(VerticalSpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -2308,7 +2300,7 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));
   if (wp) {
-    wp->GetDataField()->Set(GlidePolar::SafetyMacCready*LIFTMODIFY);
+    wp->GetDataField()->Set(Units::ToVerticalSpeed(GlidePolar::SafetyMacCready));
     wp->GetDataField()->SetUnits(Units::GetVerticalSpeedName());
     wp->RefreshDisplay();
   }
@@ -2342,14 +2334,14 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(SPEEDMODIFY*SAFTEYSPEED));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToHorizontalSpeed(SAFTEYSPEED)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcSpeed")); // 100112
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(SPEEDMODIFY*WindCalcSpeed));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToHorizontalSpeed(WindCalcSpeed)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
@@ -3036,7 +3028,7 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(FinishRadius*DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToDistance(FinishRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -3056,7 +3048,7 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(StartRadius*DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToDistance(StartRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -3076,7 +3068,7 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(round(SectorRadius*DISTANCEMODIFY*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
+    wp->GetDataField()->SetAsFloat(round(Units::ToDistance(SectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
@@ -3094,32 +3086,32 @@ DataField* dfe = wp->GetDataField();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpGPSAltitudeOffset"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(GPSAltitudeOffset*ALTITUDEMODIFY/1000)); // 100429
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(GPSAltitudeOffset / 1000.0))); // 100429
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude1"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AlarmMaxAltitude1*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmMaxAltitude1 / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude2"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AlarmMaxAltitude2*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmMaxAltitude2 / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude3"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AlarmMaxAltitude3*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmMaxAltitude3 / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmTakeoffSafety"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(AlarmTakeoffSafety*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmTakeoffSafety / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -3168,7 +3160,7 @@ wp->RefreshDisplay();
 	}
 	else
 	{
-      wp->GetDataField()->SetAsFloat(iround(GearWarningAltitude*ALTITUDEMODIFY/1000));
+      wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(GearWarningAltitude / 1000.0)));
       wp->GetDataField()->SetUnits(Units::GetAltitudeName());
 	  wp->SetVisible(true);
       wp->RefreshDisplay();
@@ -3476,7 +3468,7 @@ void dlgConfigurationShowModal(short mode){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));
   if (wp) {
-    val = wp->GetDataField()->GetAsFloat()/LIFTMODIFY;
+    val = Units::FromVerticalSpeed(wp->GetDataField()->GetAsFloat());
     if (GlidePolar::SafetyMacCready != val) {
       GlidePolar::SafetyMacCready = val;
     }
@@ -3557,7 +3549,7 @@ void dlgConfigurationShowModal(short mode){
   double dval;
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoomThreshold"));
   if (wp) {
-    dval = wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY;
+    dval = Units::FromDistance(wp->GetDataField()->GetAsFloat());
     if (AutoZoomThreshold != dval) {
       AutoZoomThreshold = dval;
     }
@@ -3777,7 +3769,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) * 10);
     if (ClipAltitude != ival) {
       ClipAltitude = ival;
     }
@@ -3785,7 +3777,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (AltWarningMargin != ival) {
       AltWarningMargin = ival;
     }
@@ -3823,7 +3815,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (SAFETYALTITUDEARRIVAL != ival) {
       SAFETYALTITUDEARRIVAL = ival;
     }
@@ -3831,7 +3823,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY*10);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (SAFETYALTITUDETERRAIN != ival) {
       SAFETYALTITUDETERRAIN = ival;
     }
@@ -3938,8 +3930,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLatLon"));
   if (wp) {
-    if ((int)Units::CoordinateFormat != wp->GetDataField()->GetAsInteger()) {
-      Units::CoordinateFormat = (CoordinateFormats_t)wp->GetDataField()->GetAsInteger();
+    if ((int)LatLonUnits_Config != wp->GetDataField()->GetAsInteger()) {
+      LatLonUnits_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }
@@ -3963,8 +3955,8 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
   if (wp) {
-    if ((int)LiftUnit_Config != wp->GetDataField()->GetAsInteger()) {
-      LiftUnit_Config = wp->GetDataField()->GetAsInteger();
+    if ((int)VerticalSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      VerticalSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }
@@ -4045,9 +4037,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcSpeed"));
   if (wp) {
-	ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
-	WindCalcSpeed = ival;
-	WindCalcSpeed=ival/1000.0;
+    WindCalcSpeed = iround(Units::FromHorizontalSpeed(wp->GetDataField()->GetAsInteger())*1000.0) / 1000;
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
@@ -4062,7 +4052,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
+    ival = iround(Units::FromDistance(wp->GetDataField()->GetAsFloat()));
     if ((int)FinishRadius != ival) {
       FinishRadius = ival;
       taskchanged = true;
@@ -4081,7 +4071,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
+    ival = iround(Units::FromDistance(wp->GetDataField()->GetAsFloat()));
     if ((int)StartRadius != ival) {
       StartRadius = ival;
       taskchanged = true;
@@ -4100,7 +4090,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
+    ival = iround(Units::FromDistance(wp->GetDataField()->GetAsFloat()));
     if ((int)SectorRadius != ival) {
       SectorRadius = ival;
       taskchanged = true;
@@ -4306,7 +4296,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpGPSAltitudeOffset")); 
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0);
+    ival = iround( Units::FromAltitude(wp->GetDataField()->GetAsInteger())*1000.0);
     if(((int) GPSAltitudeOffset) != ival) {
       GPSAltitudeOffset = ival;
     }
@@ -4429,7 +4419,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude1"));
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    ival = iround( Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmMaxAltitude1 != ival) {
       AlarmMaxAltitude1 = ival;
       LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
@@ -4438,7 +4428,7 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude2"));
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmMaxAltitude2 != ival) {
       AlarmMaxAltitude2 = ival;
       LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;
@@ -4447,7 +4437,7 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude3"));
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmMaxAltitude3 != ival) {
       AlarmMaxAltitude3 = ival;
       LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
@@ -4456,7 +4446,7 @@ int ival;
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmTakeoffSafety"));
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmTakeoffSafety != ival) {
       AlarmTakeoffSafety = ival;
     }
@@ -4478,7 +4468,7 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmGearAltitude"));
   if (wp) {
-	  unsigned tmp = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+	  unsigned tmp = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if (GearWarningAltitude != tmp)
     {
     	GearWarningAltitude = tmp;
@@ -4622,7 +4612,7 @@ void UpdateAircraftConfig(void){
 
  wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
-    ival = iround((wp->GetDataField()->GetAsFloat()/SPEEDMODIFY)*1000.0);
+    ival = iround(Units::FromHorizontalSpeed(wp->GetDataField()->GetAsFloat())*1000.0);
     if ((int)(SAFTEYSPEED*1000) != (int)iround(ival)) {
         SAFTEYSPEED=ival/1000.0;
       GlidePolar::SetBallast();

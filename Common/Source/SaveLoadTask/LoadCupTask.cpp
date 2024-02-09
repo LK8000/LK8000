@@ -584,15 +584,15 @@ TCHAR szString[READLINE_LENGTH + 1];
       if(bClosedTask)
       {
           if (gTaskType == TSK_AAT)
-              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M699_ "Task"
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[AAT %.1f%s] %s"), Units::ToDistance(lengthtotal), Units::GetDistanceName(), szString); // _@M699_ "Task"
           else if (CALCULATED_INFO.TaskFAI)
-              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken<2432>(), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[FAI %s %.1f%s] %s"), MsgToken<2432>(), Units::ToDistance(lengthtotal), Units::GetDistanceName(), szString); // _@M2432_ "Triangle"
           else
-              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), TaskTypeLabel(NoPts), lengthtotal * DISTANCEMODIFY, Units::GetDistanceName(), szString);
+              lk::snprintf(szTaskStrings[iNO_Tasks], READLINE_LENGTH, _T("[%s %.1f%s] %s"), TaskTypeLabel(NoPts), Units::ToDistance(lengthtotal), Units::GetDistanceName(), szString);
       }
       else
       {
-        lk::snprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH,_T("[%s %.1f%s] %s") , MsgToken<2429>() ,lengthtotal*DISTANCEMODIFY,Units::GetDistanceName(), szString); // MsgToken<2432>()   ,
+        lk::snprintf(szTaskStrings[ iNO_Tasks] ,READLINE_LENGTH, _T("[%s %.1f%s] %s"), MsgToken<2429>() ,Units::ToDistance(lengthtotal), Units::GetDistanceName(), szString);
       }
     }
     UnlockTaskData();

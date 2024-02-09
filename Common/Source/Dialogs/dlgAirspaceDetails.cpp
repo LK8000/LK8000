@@ -233,7 +233,7 @@ static void SetValues(WndForm* wf) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
   if (wp) {
-    Units::FormatUserDistance(abs(hdist), buffer, 20);
+    Units::FormatDistance(abs(hdist), buffer, 20);
     if (inside) {
      // LKTOKEN  _@M359_ = "Inside" 
       wp->SetCaption(MsgToken<359>());

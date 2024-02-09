@@ -144,7 +144,7 @@ TCHAR  szTmp[254];
     if(iQNH != oldQNH)
     {
 	  oldQNH  = iQNH;
-      _stprintf(szTmp, TEXT("$PFLX3,%i,,,,,,,,,,,,"),(int)((QFEAltitudeOffset-  (double)LX16xxAlt) *TOFEET));
+      _stprintf(szTmp, TEXT("$PFLX3,%i,,,,,,,,,,,,"), (int)Units::To(unFeet, QFEAltitudeOffset-(double)LX16xxAlt) );
       LX16xxNMEAddCheckSumStrg(szTmp);
       LX166AltitudeUpdateTimeout = 5;
       d->Com->WriteString(szTmp);
@@ -277,7 +277,7 @@ bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* in
 
   if (ParToDouble(sentence, 1, &airspeed))
   {
-    airspeed /= TOKPH;
+    airspeed = Units::From(unKiloMeterPerHour, airspeed);
     info->TrueAirspeed = airspeed;
     info->AirspeedAvailable = TRUE;
   }
@@ -301,7 +301,7 @@ bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* in
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
   {
-    info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
+    info->ExternalWindSpeed = Units::From(unKiloMeterPerHour, info->ExternalWindSpeed);  /* convert to m/s */
     info->ExternalWindAvailable = TRUE;
   }
 

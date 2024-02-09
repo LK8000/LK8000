@@ -448,8 +448,8 @@ static void UpdateValuesFlight(void) {
         }
       }
     }
-    _stprintf(Temp, TEXT("%.0f%s (%s)"),
-                    CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY,
+    _stprintf(Temp, _T("%.0f%s (%s)"),
+                    Units::ToAltitude(CALCULATED_INFO.NavAltitude),
                     Units::GetAltitudeName(),
                     sBaroDevice);
     wp->SetText(Temp);
@@ -458,7 +458,7 @@ static void UpdateValuesFlight(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpMaxHeightGain"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
-              CALCULATED_INFO.MaxHeightGain*ALTITUDEMODIFY,
+              Units::ToAltitude(CALCULATED_INFO.MaxHeightGain),
               Units::GetAltitudeName());
     wp->SetText(Temp);
   }
@@ -486,7 +486,7 @@ static void UpdateValuesFlight(void) {
     wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
     if (wp) {
       TCHAR DistanceText[MAX_PATH];
-      Units::FormatUserDistance(distance,DistanceText, 10);
+      Units::FormatDistance(distance,DistanceText, 10);
       wp->SetText(DistanceText);
     }
 
@@ -547,7 +547,7 @@ static void UpdateValuesRules(void) {
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
       _stprintf(Temp, TEXT("%.0f %s"),
-                TASKSPEEDMODIFY*CALCULATED_INFO.TaskStartSpeed,
+                Units::ToTaskSpeed(CALCULATED_INFO.TaskStartSpeed),
                 Units::GetTaskSpeedName());
       wp->SetText(Temp);
     } else {
@@ -577,7 +577,7 @@ static void UpdateValuesRules(void) {
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
       _stprintf(Temp, TEXT("%.0f %s"),
-                (CALCULATED_INFO.TaskStartAltitude)*ALTITUDEMODIFY,
+                Units::ToAltitude(CALCULATED_INFO.TaskStartAltitude),
                 Units::GetAltitudeName());
       wp->SetText(Temp);
     } else {
@@ -589,7 +589,7 @@ static void UpdateValuesRules(void) {
   if (wp) {
     double finish_min = FAIFinishHeight(&GPS_INFO, &CALCULATED_INFO, -1);
     _stprintf(Temp, TEXT("%.0f %s"),
-              finish_min*ALTITUDEMODIFY,
+              Units::ToAltitude(finish_min),
               Units::GetAltitudeName());
     wp->SetText(Temp);
   }
@@ -635,9 +635,8 @@ static void UpdateValuesTask(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskDistance"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"), DISTANCEMODIFY*
-              (CALCULATED_INFO.TaskDistanceToGo
-               +CALCULATED_INFO.TaskDistanceCovered),
+    _stprintf(Temp, TEXT("%.0f %s"),
+              Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo +CALCULATED_INFO.TaskDistanceCovered),
               Units::GetDistanceName());
     wp->SetText(Temp);
   }
@@ -646,11 +645,11 @@ static void UpdateValuesTask(void) {
   if (wp) {
     if (UseAATTarget()) {
       _stprintf(Temp, TEXT("%.0f %s"),
-                DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance,
+                Units::ToDistance(CALCULATED_INFO.AATTargetDistance),
                 Units::GetDistanceName());
     } else {
       _stprintf(Temp, TEXT("%.0f %s"),
-                DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo,
+                Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo),
                 Units::GetDistanceName());
     }
     wp->SetText(Temp);
@@ -665,14 +664,14 @@ static void UpdateValuesTask(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpEstimatedSpeed"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
-              TASKSPEEDMODIFY*d1, Units::GetTaskSpeedName());
+              Units::ToTaskSpeed(d1), Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAverageSpeed"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
-              TASKSPEEDMODIFY*CALCULATED_INFO.TaskSpeed,
+              Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed),
               Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }

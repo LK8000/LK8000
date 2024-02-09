@@ -168,7 +168,7 @@ extern const char szRegistryLKVarioBar[];
 extern const char szRegistryLKVarioVal[];
 extern const char szRegistryLanguageCode[];
 extern const char szRegistryLatLonUnits[];
-extern const char szRegistryLiftUnitsValue[];
+extern const char szRegistryVerticalSpeedUnit[];
 extern const char szRegistryLockSettingsInFlight[];
 extern const char szRegistryLoggerShort[];
 extern const char szRegistryMapBox[];

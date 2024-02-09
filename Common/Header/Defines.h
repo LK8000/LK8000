@@ -37,7 +37,7 @@
 #define ALTERNATE_MAXVALIDGR MAXEFFICIENCYSHOW
 
 // Below this altitude alt diffs are not shown
-#define ALTDIFFLIMIT	(-3000*ALTITUDEMODIFY)
+#define ALTDIFFLIMIT	(Units::ToAltitude(-3000))
 
 
 /*
@@ -898,21 +898,6 @@ static const double PI = (4*atan(1));
 #define DEG_TO_RAD  (PI / 180)
 #define RAD_TO_DEG  (180 / PI)
 #endif
-
-#define NAUTICALMILESTOMETRES (double)1851.96
-#define KNOTSTOMETRESSECONDS (double)0.5144
-
-#define TOKNOTS (double)1.944
-#define TOFEETPERMINUTE (double)196.9
-#define TOMPH   (double)2.237
-#define TOKPH   (double)3.6
-
-// meters to.. conversion
-#define TONAUTICALMILES (1.0 / 1852.0)
-#define TOMILES         (1.0 / 1609.344)
-#define TOKILOMETER     (0.001)
-#define TOFEET          (1.0 / 0.3048)
-#define TOMETER         (1.0)
 
 // Pressures
 #define PRESSURE_STANDARD	1013.25		// hPa

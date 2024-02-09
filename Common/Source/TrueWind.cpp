@@ -78,7 +78,7 @@ FILE *fp;
 
 
 	// We store GS in kmh, simply.
-	buf->speed[buf->start] = (int)(speed*TOKPH);
+	buf->speed[buf->start] = (int)Units::To(unKiloMeterPerHour,speed);
 	// we use track+180 in order to be always over 0 in range calculations
 	// we want track north to be 0, not 360
 	if (track==360) track=0;
@@ -519,7 +519,10 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   if (GPS_INFO.AirspeedAvailable && averias>0 && !DevIsCondor ) iaspeed=averias;
   #endif
 
-  double tas=(iaspeed*TOKPH)*(1+0.02*(averaltitude/0.328/1000));
+#warning "this is right way for calculate TAS from IAS"
+//  double tas = Units::To(unKiloMeterPerHour, iaspeed * AirDensityRatio(QNHAltitudeToQNEAltitude(averaltitude)));
+          
+  double tas = Units::To(unKiloMeterPerHour, iaspeed) * (1+0.02*(averaltitude/0.328/1000));
 
   double magvar=CalculateMagneticVariation();
 

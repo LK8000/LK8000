@@ -66,7 +66,7 @@ static void Update()
   wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
   if (wp) {
 	if (TeammateCodeValid)
-		wp->GetDataField()->SetAsFloat(teammateRange*DISTANCEMODIFY);
+		wp->GetDataField()->SetAsFloat(Units::ToDistance(teammateRange));
 	else
 		wp->GetDataField()->SetAsFloat(0);
 	wp->RefreshDisplay();

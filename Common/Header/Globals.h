@@ -505,13 +505,6 @@ GEXTERN int GearWarningMode;
 GEXTERN NMEA_INFO GPS_INFO;
 GEXTERN DERIVED_INFO CALCULATED_INFO;
 
-// units
-GEXTERN double SPEEDMODIFY;
-GEXTERN double LIFTMODIFY;
-GEXTERN double DISTANCEMODIFY;
-GEXTERN double ALTITUDEMODIFY;
-GEXTERN double TASKSPEEDMODIFY;
-
 // polar info
 GEXTERN double BUGS;
 GEXTERN double BUGS_Config;
@@ -810,8 +803,10 @@ GEXTERN bool  DevIsCondor;
 GEXTERN unsigned SpeedUnit_Config;
 GEXTERN unsigned TaskSpeedUnit_Config;
 GEXTERN unsigned DistanceUnit_Config;
-GEXTERN unsigned LiftUnit_Config;
+GEXTERN unsigned VerticalSpeedUnit_Config;
 GEXTERN unsigned AltitudeUnit_Config;
+GEXTERN unsigned LatLonUnits_Config;
+
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];

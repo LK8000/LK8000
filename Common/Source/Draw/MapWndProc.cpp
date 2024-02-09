@@ -969,12 +969,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                     case KEY_PRIOR: // VK_PRIOR PAGE UP
                         PlayResource(TEXT("IDR_WAV_CLICK"));
                         if (GetShiftKeyState()) {
-                            if (Units::GetUserAltitudeUnit() == unFeet)
+                            if (Units::GetAltitudeUnit() == unFeet)
                                 GPS_INFO.Altitude += 45.71999999 * 10;
                             else
                                 GPS_INFO.Altitude += 10 * 10;
                         } else {
-                            if (Units::GetUserAltitudeUnit() == unFeet)
+                            if (Units::GetAltitudeUnit() == unFeet)
                                 GPS_INFO.Altitude += 45.71999999;
                             else
                                 GPS_INFO.Altitude += 10;
@@ -984,12 +984,12 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
                     case KEY_NEXT: // VK_NEXT PAGE DOWN
                         PlayResource(TEXT("IDR_WAV_CLICK"));
                         if (GetShiftKeyState()) {
-                            if (Units::GetUserAltitudeUnit() == unFeet)
+                            if (Units::GetAltitudeUnit() == unFeet)
                                 GPS_INFO.Altitude -= 45.71999999 * 10;
                             else
                                 GPS_INFO.Altitude -= 10 * 10;
                         } else {
-                            if (Units::GetUserAltitudeUnit() == unFeet)
+                            if (Units::GetAltitudeUnit() == unFeet)
                                 GPS_INFO.Altitude -= 45.71999999;
                             else
                                 GPS_INFO.Altitude -= 10;

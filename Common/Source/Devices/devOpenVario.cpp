@@ -167,7 +167,7 @@ BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
 
       case 'S':
         // 2018-03-13 : this value is never sent by sensord
-        info->TrueAirspeed = value / TOKPH;
+        info->TrueAirspeed = Units::From(unKiloMeterPerHour, value);
         info->AirspeedAvailable = TRUE;
         {
           const double AltQNH = (BaroAltitudeAvailable(*info) ? info->BaroAltitude : info->Altitude);

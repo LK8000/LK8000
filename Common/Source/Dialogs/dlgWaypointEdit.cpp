@@ -80,7 +80,7 @@ static void OnCommentClicked(WndButton* pWnd) {
 
 static void SetUnits(WndForm* wf) {
   WndProperty* wp;
-  switch (Units::CoordinateFormat) {
+  switch (Units::GetCoordinateFormat()) {
   case cfDDMMSS: // ("DDMMSS");
   case cfDDMMSSss: // ("DDMMSS.ss");
     wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudeDDDD"));
@@ -149,7 +149,7 @@ static void SetUnits(WndForm* wf) {
     break;
   }
 
-  if(Units::CoordinateFormat == cfDDMMSSss) {
+  if(Units::GetCoordinateFormat() == cfDDMMSSss) {
     // change DisplayFormat, EditFormat and Step of DataField for allow imput of desimal seconds
     for(const auto name : { TEXT("prpLongitudeS"), TEXT("prpLatitudeS") } ) {
       wp = (WndProperty*)wf->FindByName(name);
@@ -190,7 +190,7 @@ int YZoneToenum(char c){
 
 static void SetValues(WndForm* wf) {
   WndProperty* wp;
-  if(Units::CoordinateFormat==cfUTM) {
+  if(Units::GetCoordinateFormat()==cfUTM) {
 	  int utmXZone;
 	  char utmYZone;
 	  double easting, northing;
@@ -243,7 +243,7 @@ static void SetValues(WndForm* wf) {
 		wp->RefreshDisplay();
 	  }
 
-	  switch (Units::CoordinateFormat) {
+	  switch (Units::GetCoordinateFormat()) {
 	  case cfDDMMSS: // ("DDMMSS");
 	  case cfDDMMSSss: // ("DDMMSS.ss");
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudeM"));
@@ -297,7 +297,7 @@ static void SetValues(WndForm* wf) {
 		wp->RefreshDisplay();
 	  }
 
-	  switch (Units::CoordinateFormat) {
+	  switch (Units::GetCoordinateFormat()) {
 	  case cfDDMMSS: // ("DDMMSS");
 	  case cfDDMMSSss: // ("DDMMSS.ss");
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLatitudeM"));
@@ -337,9 +337,7 @@ static void SetValues(WndForm* wf) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(
-				   iround(global_wpt->Altitude
-					  *ALTITUDEMODIFY));
+    wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(global_wpt->Altitude)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -370,7 +368,7 @@ static void GetValues(WndForm* wf) {
   WndProperty* wp;
   double num=0, mm = 0, ss = 0; // mm,ss are numerators (division) so don't want to lose decimals
 
-  if(Units::CoordinateFormat==cfUTM) {
+  if(Units::GetCoordinateFormat()==cfUTM) {
 	  int utmXZone=0;
 	  char utmYZone='\0';;
 	  double easting=0, northing=0;
@@ -409,7 +407,7 @@ static void GetValues(WndForm* wf) {
 		dd = wp->GetDataField()->GetAsInteger();
 	  }
 
-	  switch (Units::CoordinateFormat) {
+	  switch (Units::GetCoordinateFormat()) {
 	  case cfDDMMSS: // ("DDMMSS");
 	  case cfDDMMSSss: // ("DDMMSS.ss");
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLongitudeM"));
@@ -460,7 +458,7 @@ static void GetValues(WndForm* wf) {
 		dd = wp->GetDataField()->GetAsInteger();
 	  }
 
-	  switch (Units::CoordinateFormat) {
+	  switch (Units::GetCoordinateFormat()) {
 	  case cfDDMMSS: // ("DDMMSS");
 	  case cfDDMMSSss: // ("DDMMSS.ss");
 		wp = (WndProperty*)wf->FindByName(TEXT("prpLatitudeM"));
@@ -509,7 +507,7 @@ static void GetValues(WndForm* wf) {
     if (ss==0) {
       WaypointAltitudeFromTerrain(global_wpt);
     } else {
-      global_wpt->Altitude = ss/ALTITUDEMODIFY;
+      global_wpt->Altitude = Units::FromAltitude(ss);
     }
   }
 
@@ -578,7 +576,7 @@ void dlgWaypointEditShowModal(WAYPOINT *wpt) {
 
   unsigned XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDIT_L:IDR_XML_WAYPOINTEDIT_P;
 
-  if(Units::CoordinateFormat == cfUTM) {
+  if(Units::GetCoordinateFormat() == cfUTM) {
 	  XmlResID = ScreenLandscape?IDR_XML_WAYPOINTEDITUTM_L:IDR_XML_WAYPOINTEDITUTM_P;
   }
 

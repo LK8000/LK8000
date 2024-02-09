@@ -174,7 +174,7 @@ BOOL D(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
     // airspeed
     NMEAParser::ExtractParameter(String,ctemp,3);
     if (ctemp[0] != '\0') {
-        pGPS->TrueAirspeed = StrToDouble(ctemp,NULL) / TOKPH;
+        pGPS->TrueAirspeed = Units::From(unKiloMeterPerHour, StrToDouble(ctemp, nullptr));
         pGPS->IndicatedAirspeed = IndicatedAirSpeed(pGPS->TrueAirspeed, QNHAltitudeToQNEAltitude(pGPS->Altitude));
         pGPS->AirspeedAvailable = true;
     } else {

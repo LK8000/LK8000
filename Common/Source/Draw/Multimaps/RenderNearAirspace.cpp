@@ -404,16 +404,16 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     Surface.SetBackgroundTransparent();
     Surface.SetTextColor(txtCol);
     Surface.SelectObject(LK8PanelUnitFont);
-    _stprintf(text, TEXT("%s"), Units::GetUnitName(Units::GetUserDistanceUnit()));
+    _stprintf(text, TEXT("%s"), Units::GetName(Units::GetDistanceUnit()));
 
     switch (GetMMNorthUp(getsideviewpage)) {
         case NORTHUP:
         default:
-            DrawXGrid(Surface, rc, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
+            DrawXGrid(Surface, rc, Units::FromDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
             break;
 
         case TRACKUP:
-            DrawXGrid(Surface, rci, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
+            DrawXGrid(Surface, rci, Units::FromDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, RGB_BLACK, &sDia, text);
             break;
     }
 
@@ -427,13 +427,13 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     if (fHeight > 4000.0) ytick = 2000.0;
     if (fHeight > 8000.0) ytick = 4000.0;
 
-    if (Units::GetUserAltitudeUnit() == unFeet)
+    if (Units::GetAltitudeUnit() == unFeet)
         ytick = ytick * FEET_FACTOR;
 
-    _stprintf(text, TEXT("%s"), Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    _stprintf(text, TEXT("%s"), Units::GetAltitudeName());
     if (sDia.fYMin < GC_SEA_LEVEL_TOLERANCE)
         rc.bottom -= SV_BORDER_Y; /* scale witout sea  */
-    DrawYGrid(Surface, rc, ytick / ALTITUDEMODIFY, ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
+    DrawYGrid(Surface, rc, Units::FromAltitude(ytick), ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
 
 
     Surface.SetBkColor(RGB_WHITE);
@@ -445,7 +445,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
      ****************************************************************************************************/
     if (calc_altitudeagl - sDia.fYMin > 500) {
         Surface.SetTextColor(LIGHTBLUE_COL);
-        Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
+        Units::FormatAltitude(calc_altitudeagl, buffer, 7);
         LK_tcsncpy(text, MsgToken<1742>(), TBSIZE - _tcslen(buffer)); // AGL:
         _tcscat(text, buffer);
         Surface.GetTextSize(text, &tsize);
@@ -464,7 +464,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     Surface.SetTextColor(RGB_BLACK);
     int x, y;
     if ((calc_terrainalt - sDia.fYMin) > 0) {
-        Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
+        Units::FormatAltitude(calc_terrainalt, buffer, 7);
         LK_tcsncpy(text, MsgToken<1743>(), TBSIZE - _tcslen(buffer)); // ELV:
         _tcscat(text, buffer);
         Surface.GetTextSize(text, &tsize);
@@ -539,7 +539,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
             bLeft = true;
 
         _tcscpy(text, _T(" "));
-        Units::FormatUserDistance(iABS_AS_HorDistance, text + 1, 7);
+        Units::FormatDistance(iABS_AS_HorDistance, text + 1, 7);
         Surface.GetTextSize(text, &tsize); 
 
         if ((GPSalt - sDia.fYMin /*-calc_terrainalt */) < 300)
@@ -571,7 +571,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         #endif
 
         _tcscpy(text, _T(" "));
-        Units::FormatUserAltitude((double) abs(iAS_VertDistance), text + 1, 7);
+        Units::FormatAltitude((double) abs(iAS_VertDistance), text + 1, 7);
         Surface.GetTextSize(text, &tsize);
 
         if (bLeft)

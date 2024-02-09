@@ -184,7 +184,7 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
 
     if (ReadChecked(params[2], TrueAirSpeed))
     {
-        TrueAirSpeed /= TOKPH;
+        TrueAirSpeed = Units::From(unKiloMeterPerHour, TrueAirSpeed);
         AirspeedAvailable = TRUE;
         pGPS->TrueAirspeed = TrueAirSpeed;
         pGPS->AirspeedAvailable = AirspeedAvailable;
@@ -216,7 +216,7 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
             ReadChecked(params[12], pGPS->ExternalWindSpeed))
     {
         pGPS->ExternalWindDirection = AngleLimit360(pGPS->ExternalWindDirection + 180);
-        pGPS->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
+        pGPS->ExternalWindSpeed = Units::From(unKiloMeterPerHour, pGPS->ExternalWindSpeed);  /* convert to system unit */
         pGPS->ExternalWindAvailable = TRUE;
     }
 

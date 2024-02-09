@@ -60,7 +60,7 @@ static void OnQnhData(DataField* Sender, DataField::DataAccessKind_t Mode) {
       }
       auto wp = dynamic_cast<WndProperty*>(wf->FindByName(TEXT("prpAltitude")));
       if (wp) {
-        wp->GetDataField()->SetAsFloat(Units::ToUserAltitude(GPS_INFO.BaroAltitude));
+        wp->GetDataField()->SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude));
         wp->RefreshDisplay();
       }
     } break;
@@ -76,7 +76,7 @@ static void OnAltitudeData(DataField* Sender, DataField::DataAccessKind_t Mode) 
     case DataField::daPut:
     case DataField::daChange: {
       double newalt = Sender->GetAsFloat();
-      double newqnh = FindQNH(GPS_INFO.BaroAltitude, Units::ToSysAltitude(newalt));  // 100411
+      double newqnh = FindQNH(GPS_INFO.BaroAltitude, Units::FromAltitude(newalt));  // 100411
       auto wp = dynamic_cast<WndProperty*>(wf->FindByName(TEXT("prpQNH")));
       if (wp) {
         if (PressureHg) {
@@ -152,7 +152,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
     wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->
-	SetAsFloat(Units::ToUserAltitude(GPS_INFO.BaroAltitude));
+	SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude));
       wp->RefreshDisplay();
     }
   }
@@ -300,7 +300,7 @@ void dlgBasicSettingsShowModal(void){
     wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->SetAsFloat(
-	       Units::ToUserAltitude(GPS_INFO.BaroAltitude));
+	       Units::ToAltitude(GPS_INFO.BaroAltitude));
       wp->GetDataField()->SetUnits(Units::GetAltitudeName());
       if (!BaroAltitudeAvailable(GPS_INFO)) {
         wp->SetReadOnly(true);

@@ -1299,11 +1299,11 @@ void MacCreadyProcessing(int UpDown) {
 
   if (UpDown == 1) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY + 0.1 / LIFTMODIFY, nullptr); // BUGFIX 100102
+    CheckSetMACCREADY(MACCREADY + Units::FromVerticalSpeed(0.1), nullptr); // BUGFIX 100102
   }
   else if(UpDown == -1) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY - 0.1 / LIFTMODIFY, nullptr); // 100102
+    CheckSetMACCREADY(MACCREADY - Units::FromVerticalSpeed(0.1), nullptr); // 100102
   }
   else if (UpDown == 0) {
     CALCULATED_INFO.AutoMacCready = !CALCULATED_INFO.AutoMacCready;
@@ -1317,11 +1317,11 @@ void MacCreadyProcessing(int UpDown) {
   }
   else if (UpDown == 3) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY + 0.5 / LIFTMODIFY, nullptr); // 100102
+    CheckSetMACCREADY(MACCREADY + Units::FromVerticalSpeed(0.5), nullptr); // 100102
   }
   else if (UpDown == -3) {
     CALCULATED_INFO.AutoMacCready = false;  // 091214 disable AutoMacCready when changing MC values
-    CheckSetMACCREADY(MACCREADY - 0.5 / LIFTMODIFY, nullptr); // 100102
+    CheckSetMACCREADY(MACCREADY - Units::FromVerticalSpeed(0.5), nullptr); // 100102
   }
   else if (UpDown == -5) {
     CALCULATED_INFO.AutoMacCready = true;
@@ -1378,7 +1378,7 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
-    _stprintf(Temp,TEXT("%0.1f"),MACCREADY*LIFTMODIFY);
+    _stprintf(Temp,TEXT("%0.1f"),Units::ToVerticalSpeed(MACCREADY));
     DoStatusMessage(TEXT("MacCready "), Temp);
   }
 }
@@ -1689,7 +1689,9 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
   }
 
   _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"),
-	wspeed/3.6*SPEEDMODIFY, Units::GetHorizontalSpeedName(), wfrom, MsgToken<2179>());
+        Units::ToHorizontalSpeed(wspeed / 3.6), 
+        Units::GetHorizontalSpeedName(), 
+        wfrom, MsgToken<2179>());
 
 #if 0
   if (reswp<80) _stprintf(ttmp,_T("TrueWind! Quality: low"));
@@ -1759,7 +1761,7 @@ void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 	// LKTOKEN  _@M559_ = "Reset zero QFE"
 		MsgToken<559>(),
 		mbYesNo) == IdYes) {
-			QFEAltitudeOffset=ALTITUDEMODIFY*CALCULATED_INFO.NavAltitude; // 100211
+			QFEAltitudeOffset=Units::ToAltitude(CALCULATED_INFO.NavAltitude); // 100211
 	}
 
 }
@@ -2645,14 +2647,14 @@ void InputEvents::eventChangeTurn(const TCHAR *misc) {
 
 void InputEvents::eventChangeHGPS(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("up")) == 0){
-	if (Units::GetUserAltitudeUnit() == unFeet)
+	if (Units::GetAltitudeUnit() == unFeet)
 		GPS_INFO.Altitude += 45.71999999;
 	else
 		GPS_INFO.Altitude += 50;
 	return;
   }
   if (_tcscmp(misc, TEXT("down")) == 0){
-	if (Units::GetUserAltitudeUnit() == unFeet)
+	if (Units::GetAltitudeUnit() == unFeet)
 		GPS_INFO.Altitude -= 45.71999999;
 	else
 		GPS_INFO.Altitude -= 50;
@@ -2692,11 +2694,11 @@ double InputEvents::getIncStep(double step, int *count, int *otherCount) {
 // 10 Kmh
 void InputEvents::eventChangeGS(const TCHAR *misc) {
 double step=0;
-  if (Units::GetUserHorizontalSpeedUnit() == unKnots)
+  if (Units::GetHorizontalSpeedUnit() == unKnots)
 	step=0.514444; //@ 1 knot, 1.8kmh  (1 knot is 1 nautical mile per hour)
-  if (Units::GetUserHorizontalSpeedUnit() == unKiloMeterPerHour)
+  if (Units::GetHorizontalSpeedUnit() == unKiloMeterPerHour)
 	step=0.27778; //@ 1 kmh 0.27777  has a rounding error
-  if (Units::GetUserHorizontalSpeedUnit() == unStatuteMilesPerHour)
+  if (Units::GetHorizontalSpeedUnit() == unStatuteMilesPerHour)
 	step=0.44704; //@ 1 mph = 1.6kmh
 
 step = getIncStep(misc, step);
@@ -3032,11 +3034,12 @@ void	WindDirectionProcessing(int UpDown)
 
 void	WindSpeedProcessing(int UpDown)
 {
-	if(UpDown==1)
-		CALCULATED_INFO.WindSpeed += (1/SPEEDMODIFY);
+	if(UpDown==1) {
+		CALCULATED_INFO.WindSpeed += Units::FromWindSpeed(1);
+  }
 	else if (UpDown== -1)
 	{
-		CALCULATED_INFO.WindSpeed -= (1/SPEEDMODIFY);
+		CALCULATED_INFO.WindSpeed -= Units::FromWindSpeed(1);
 		if(CALCULATED_INFO.WindSpeed < 0)
 			CALCULATED_INFO.WindSpeed = 0;
 	}

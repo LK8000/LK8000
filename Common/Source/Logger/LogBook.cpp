@@ -164,7 +164,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
         lk::snprintf(line,_T("%s: %s  @%.0f%s QNH"),
             MsgToken<1754>(),
             Temp,
-            ALTITUDEMODIFY*CALCULATED_INFO.FreeFlightStartQNH,
+            Units::ToAltitude(CALCULATED_INFO.FreeFlightStartQNH),
             Units::GetAltitudeName());
         file.WriteLn(line);
 
@@ -172,7 +172,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
         lk::snprintf(line,_T("%s: %s  @%.0f%s QFE"),
             MsgToken<1755>(),
             Temp,
-            ALTITUDEMODIFY*(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE),
+            Units::ToAltitude(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE),
             Units::GetAltitudeName());
         file.WriteLn(line);
         file.WriteLn();
@@ -185,7 +185,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     //
     ivalue=CContestMgr::TYPE_OLC_CLASSIC;
     if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-        _stprintf(Temp, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
+        _stprintf(Temp, TEXT("%5.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
         lk::snprintf(line,_T("%s: %s %s"),
             MsgToken<1455>(),
             Temp,
@@ -198,32 +198,41 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     //
     ivalue=CContestMgr::TYPE_OLC_FAI;
     if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-        _stprintf(Temp, TEXT("%5.0f"), DISTANCEMODIFY*OlcResults[ivalue].Distance());
-        lk::snprintf(line,_T("%s: %s %s"),MsgToken<1457>(),
-            Temp,
-            Units::GetDistanceName());
+        _stprintf(Temp, TEXT("%5.0f"), Units::ToDistance(OlcResults[ivalue].Distance()));
+        lk::snprintf(line,_T("%s: %s %s"),
+                MsgToken<1457>(),
+                Temp,
+                Units::GetDistanceName());
         file.WriteLn(line);
     }
 
     //
     // Max Altitude gained
     //
-    _stprintf(line,_T("%s: %.0f %s"),MsgToken<1769>(),
-        ALTITUDEMODIFY*CALCULATED_INFO.MaxHeightGain,
-        Units::GetAltitudeName());
+    _stprintf(line,_T("%s: %.0f %s"),
+              MsgToken<1769>(),
+              Units::ToAltitude(CALCULATED_INFO.MaxHeightGain),
+              Units::GetAltitudeName());
     file.WriteLn(line);
   }
 
   //
   // Max Altitude reached
   //
-  _stprintf(line,_T("%s: %.0f %s"),MsgToken<1767>(),ALTITUDEMODIFY*CALCULATED_INFO.MaxAltitude,Units::GetAltitudeName());
+  _stprintf(line,_T("%s: %.0f %s"),
+          MsgToken<1767>(),
+          Units::ToAltitude(CALCULATED_INFO.MaxAltitude),
+          Units::GetAltitudeName());
   file.WriteLn(line);
 
   //
   // Odometer, add a spare CR LF to separate next logfield
   //
-  _stprintf(line,_T("%s: %.0f %s"),MsgToken<1167>(),DISTANCEMODIFY*CALCULATED_INFO.Odometer,Units::GetDistanceName());
+  _stprintf(line,_T("%s: %.0f %s"),
+          MsgToken<1167>(),
+          Units::ToDistance(CALCULATED_INFO.Odometer),
+          Units::GetDistanceName());
+
   file.WriteLn(line);
   file.WriteLn();
 
@@ -273,7 +282,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 
   ivalue=CContestMgr::TYPE_OLC_CLASSIC;
   if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-    _stprintf(solcdist, _T("%.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
+    _stprintf(solcdist, _T("%.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
   } else {
     _tcscpy(solcdist, _T("---"));
   }
@@ -291,7 +300,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   int towaltitude=0;
   if (ISGLIDER && (CALCULATED_INFO.FreeFlightStartTime>0)) {
     Units::TimeToTextS(towtime, (int)(CALCULATED_INFO.FreeFlightStartTime-CALCULATED_INFO.TakeOffTime) );
-    towaltitude=(int) (ALTITUDEMODIFY*(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE));
+    towaltitude=(int) Units::ToAltitude(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE);
   }
 
   lk::snprintf(line,_T("%04d,%02d,%02d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%d,%s,%s%s"),
@@ -306,7 +315,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
     towaltitude,
     Units::GetAltitudeName(),
     sflighttime,
-    (int)(DISTANCEMODIFY*CALCULATED_INFO.Odometer),
+    (int)Units::ToDistance(CALCULATED_INFO.Odometer),
     solcdist,
     Units::GetDistanceName(),
     simmode

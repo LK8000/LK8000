@@ -24,10 +24,11 @@ double ReadAltitude(const TCHAR *temp)
 			case 'M':				// meter's nothing to do
 			case 'm':
 			case '\0':
+				Altitude = Units::From(unMeter, Altitude);
 				break;
 			case 'F':				// feet, convert to meter
 			case 'f':
-				Altitude = Altitude / TOFEET;
+				Altitude = Units::From(unFeet, Altitude);
 				break;
 			default:				// anything else is a syntax error
 				Altitude = -9999;

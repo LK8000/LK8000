@@ -349,7 +349,7 @@ bool DevLXV7::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
   {
-    info->ExternalWindSpeed /=  TOKPH;
+    info->ExternalWindSpeed = Units::From(unKiloMeterPerHour, info->ExternalWindSpeed);
     info->ExternalWindAvailable = TRUE;
   }
 

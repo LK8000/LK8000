@@ -620,8 +620,8 @@ void AlertBestAlternate(short soundmode) {
 				LKSound(_T("LK_GREEN.WAV"));
 
 				_stprintf(mbuf,_T("%s %s  @%.0f%s"), MsgToken<1840>(), WayPointList[BestAlternate].Name,
-				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
-				(Units::GetDistanceName()) );
+				Units::ToDistance(WayPointCalc[BestAlternate].Distance),
+				Units::GetDistanceName());
 				Message::AddMessage(2000, 3, mbuf);
 				break;
 			case 2: 

@@ -16,33 +16,45 @@
 
 #include "externs.h"
 #include "Library/Utm.h"
+#include "utils/printf.h"
 
-CoordinateFormats_t Units::CoordinateFormat;
+namespace {
 
-UnitDescriptor_t Units::UnitDescriptors[unLastUnit] ={
-  {NULL,       1,          0},
-  {TEXT("km"), 0.001,      0},
-  {TEXT("nm"), 0.00053996, 0},
-  {TEXT("mi"), 0.0006214,  0},
-  {TEXT("kh"), 0.0036,     0}, // 091219
-  {TEXT("kt"), 0.001944,   0},
-  {TEXT("mh"), 0.002237,   0},
-  {TEXT("ms"), 1.0,        0},
-  {TEXT("fm"), 3.281*60.0, 0},
-  {TEXT("m"),  1.0,        0},
-  {TEXT("ft"), 3.281,      0},
-  {TEXT("K"),  1,          0},
-  {NULL,       1.0,        -273.15}, // name is contruct by GetUnitName()
-  {NULL,       1.8,        -459.67}, // name is contruct by GetUnitName()
-  {TEXT("fs"), 3.281,      0} // 100128
+struct UnitDescriptor_t {
+  const TCHAR * const Name;
+  double  ToUserFact;
+  double  ToUserOffset;
 };
 
-Units_t Units::UserDistanceUnit = unKiloMeter;
-Units_t Units::UserAltitudeUnit = unMeter;
-Units_t Units::UserHorizontalSpeedUnit = unKiloMeterPerHour;
-Units_t Units::UserVerticalSpeedUnit = unMeterPerSecond;
-Units_t Units::UserWindSpeedUnit = unKiloMeterPerHour;
-Units_t Units::UserTaskSpeedUnit = unKiloMeterPerHour;
+UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
+    {_T(""),   1.0,                       0},    // unUndef
+    {_T("km"), 0.001,                     0},    // unKiloMeter
+    {_T("nm"), 1.0 / 1852,                0},    // unNauticalMiles
+    {_T("mi"), 1.0 / 1609.344,            0},    // unStatuteMiles
+    {_T("kh"), 3.6,                       0},    // unKiloMeterPerHour
+    {_T("kt"), 1.0 / (1852.0 / 3600.0),   0},    // unKnots
+    {_T("mh"), 1.0 / (1609.344 / 3600.0), 0},    // unStatuteMilesPerHour
+    {_T("ms"), 1.0                      , 0},    // unMeterPerSecond
+    {_T("fm"), 1.0 / 0.3048 * 60.0,       0},    // unFeetPerMinutes
+    {_T("m"),  1.0,                       0},    // unMeter
+    {_T("ft"), 1.0 / 0.3048,              0},    // unFeet
+    {_T("FL"), 1.0 / 0.3048 / 100,        0},    // unFligthLevel
+    {_T("K"),  1.0,                       0},    // unKelvin
+    {_T("°C"), 1.0,                    -273.15}, // unGradCelcius
+    {_T("°F"), 9.0 / 5.0,              -459.67}, // unGradFahrenheit
+    {_T("fs"), 1.0 / 0.3048,              0},    // unFeetPerSecond
+    {_T(""),   1.0,                       0},    // unLastUnit
+};
+
+CoordinateFormats_t CoordinateFormat;
+Units_t DistanceUnit = unKiloMeter;
+Units_t AltitudeUnit = unMeter;
+Units_t HorizontalSpeedUnit = unKiloMeterPerHour;
+Units_t VerticalSpeedUnit = unMeterPerSecond;
+Units_t WindSpeedUnit = unKiloMeterPerHour;
+Units_t TaskSpeedUnit = unKiloMeterPerHour;
+
+} // namespace
 
 void Units::LongitudeToDMS(double Longitude,
                            int *dd,
@@ -58,17 +70,15 @@ void Units::LongitudeToDMS(double Longitude,
   *mm = (int)(Longitude);
   Longitude = (Longitude - (*mm)) * 60.0;
   *ss = (int)(Longitude + 0.5);
-  if (*ss >= 60)
-    {
-      (*mm)++;
-      (*ss) -= 60;
-    }
-  if ((*mm) >= 60)
-    {
-      (*dd)++;
-      (*mm)-= 60;
-    }
-  *east = (sign==1);
+  if (*ss >= 60) {
+    (*mm)++;
+    (*ss) -= 60;
+  }
+  if ((*mm) >= 60) {
+    (*dd)++;
+    (*mm) -= 60;
+  }
+  *east = (sign == 1);
 }
 
 
@@ -103,7 +113,7 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 		char utmchar=0;
 		double easting=0, northing=0;
 		LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, Latitude, Longitude );
-		_sntprintf(Buffer, size, _T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+		lk::snprintf(Buffer, size, _T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
 	} else {
 		TCHAR sLongitude[16];
 		TCHAR sLatitude[16];
@@ -111,7 +121,7 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 		Units::LongitudeToString(Longitude, sLongitude);
 		Units::LatitudeToString(Latitude, sLatitude);
 
-		_sntprintf(Buffer,size,_T("%s  %s"), sLatitude, sLongitude);
+		lk::snprintf(Buffer,size,_T("%s  %s"), sLatitude, sLongitude);
 	}
 	return true;
 }
@@ -119,7 +129,7 @@ bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer,
 
 bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
 
-  TCHAR EW[] = TEXT("WE");
+  TCHAR EW[] = _T("WE");
   int dd, mm, ss;
 
   int sign = Longitude<0 ? 0 : 1;
@@ -132,48 +142,46 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
       mm = (int)(Longitude);
       Longitude = (Longitude - mm) * 60.0;
       ss = (int)(Longitude + 0.5);
-      if (ss >= 60)
-        {
-          mm++;
-          ss -= 60;
-        }
-      if (mm >= 60)
-        {
-          dd++;
-          mm -= 60;
-        }
-      _sntprintf(Buffer, size, TEXT("%c%03d%s%02d'%02d\""), EW[sign], dd, MsgToken<2179>(), mm, ss);
-    break;
+      if (ss >= 60) {
+        mm++;
+        ss -= 60;
+      }
+      if (mm >= 60) {
+        dd++;
+        mm -= 60;
+      }
+      lk::snprintf(Buffer, size, _T("%c%03d°%02d'%02d\""), EW[sign], dd, mm, ss);
+      break;
     case cfDDMMSSss:
       dd = (int)Longitude;
       Longitude = (Longitude - dd) * 60.0;
       mm = (int)(Longitude);
       Longitude = (Longitude - mm) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%03d%s%02d'%05.2f\""), EW[sign], dd, MsgToken<2179>(), mm, Longitude);
+      lk::snprintf(Buffer, size, _T("%c%03d°%02d'%05.2f\""), EW[sign], dd, mm, Longitude);
     break;
     case cfDDMMmmm:
       dd = (int)Longitude;
       Longitude = (Longitude - dd) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%03d%s%06.3f'"), EW[sign], dd, MsgToken<2179>(), Longitude);
+      lk::snprintf(Buffer, size, _T("%c%03d°%06.3f'"), EW[sign], dd, Longitude);
     break;
     case cfDDdddd:
-      _sntprintf(Buffer, size, TEXT("%c%08.4f%s"), EW[sign], Longitude, MsgToken<2179>());
+      lk::snprintf(Buffer, size, _T("%c%08.4f°"), EW[sign], Longitude);
     break;
     case cfUTM:
-	_tcscpy(Buffer,_T(""));
-	break;
+      _tcscpy(Buffer,_T(""));
+      break;
     default:
-	LKASSERT(0);
-    break;
+      assert(false);
+      break;
   }
 
-  return(true);
+  return true;
 
 }
 
 
 bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
-  TCHAR EW[] = TEXT("SN");
+  TCHAR EW[] = _T("SN");
   int dd, mm, ss;
 
   int sign = Latitude<0 ? 0 : 1;
@@ -194,572 +202,327 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
         dd++;
         mm -= 60;
       }
-      _sntprintf(Buffer, size, TEXT("%c%02d%s%02d'%02d\""), EW[sign], dd, MsgToken<2179>(), mm, ss);
+      lk::snprintf(Buffer, size, _T("%c%02d°%02d'%02d\""), EW[sign], dd, mm, ss);
     break;
     case cfDDMMSSss:
       dd = (int)Latitude;
       Latitude = (Latitude - dd) * 60.0;
       mm = (int)(Latitude);
       Latitude = (Latitude - mm) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%02d%s%02d'%05.2f\""), EW[sign], dd, MsgToken<2179>(), mm, Latitude);
+      lk::snprintf(Buffer, size, _T("%c%02d°%02d'%05.2f\""), EW[sign], dd, mm, Latitude);
     break;
     case cfDDMMmmm:
       dd = (int)Latitude;
       Latitude = (Latitude - dd) * 60.0;
-      _sntprintf(Buffer, size, TEXT("%c%02d%s%06.3f'"), EW[sign], dd, MsgToken<2179>(), Latitude);
+      lk::snprintf(Buffer, size, _T("%c%02d°%06.3f'"), EW[sign], dd, Latitude);
     break;
     case cfDDdddd:
-      _sntprintf(Buffer, size, TEXT("%c%07.4f%s"), EW[sign], Latitude, MsgToken<2179>());
+      lk::snprintf(Buffer, size, _T("%c%07.4f°"), EW[sign], Latitude);
     break;
     case cfUTM:
-	_tcscpy(Buffer,_T(""));
-	break;
+      _tcscpy(Buffer,_T(""));
+    break;
     default:
-	LKASSERT(0);
+      assert(false);
     break;
   }
 
-  return(true);
+  return true;
 
 }
 
-const TCHAR *Units::GetUnitName(Units_t Unit) {
-    //  return(LKGetText(UnitDescriptors[Unit].Name));
-    // JMW adjusted this because units are pretty standard internationally
-    // so don't need different names in different languages.
-
-    const TCHAR *szName = nullptr;
-    switch (Unit) {
-        case unUndef:
-        case unKiloMeter:
-        case unNauticalMiles:
-        case unStatuteMiles:
-        case unKiloMeterPerHour:
-        case unKnots:
-        case unStatuteMilesPerHour:
-        case unMeterPerSecond:
-        case unFeetPerMinutes:
-        case unMeter:
-        case unFeet:
-        case unFligthLevel:
-        case unKelvin:
-            szName = UnitDescriptors[Unit].Name;
-            break;
-        case unGradCelcius:
-            szName = MsgToken<2180>();
-            break;
-        case unGradFahrenheit:
-            szName = MsgToken<2181>();
-            break;
-        case unLastUnit:
-            break;
-    }
-    assert(szName);
-    return (szName ? szName : _T(""));
+const TCHAR *Units::GetName(Units_t Unit) {
+  // JMW adjusted this because units are pretty standard internationally
+  // so don't need different names in different languages.
+  return UnitDescriptors[Unit].Name;
 }
 
-Units_t Units::GetUserDistanceUnit(void){
-  return(UserDistanceUnit);
+CoordinateFormats_t Units::GetCoordinateFormat() {
+  return CoordinateFormat;
 }
 
-Units_t Units::SetUserDistanceUnit(Units_t NewUnit){
-  Units_t last = UserDistanceUnit;
-  if (UserDistanceUnit != NewUnit){
-    UserDistanceUnit = NewUnit;
-  }
-  return(last);
+Units_t Units::GetDistanceUnit() {
+  return DistanceUnit;
 }
 
-Units_t Units::GetUserAltitudeUnit(void){
-  return(UserAltitudeUnit);
+Units_t Units::GetAltitudeUnit() {
+  return AltitudeUnit;
 }
 
-Units_t Units::GetUserInvAltitudeUnit(void){ // 100126
-  return(UserAltitudeUnit==unFeet?unMeter:unFeet);
+Units_t Units::GetAlternateAltitudeUnit() { // 100126
+  return AltitudeUnit==unFeet?unMeter:unFeet;
 }
 
-Units_t Units::SetUserAltitudeUnit(Units_t NewUnit){
-  Units_t last = UserAltitudeUnit;
-  if (UserAltitudeUnit != NewUnit){
-    UserAltitudeUnit = NewUnit;
-  }
-  return(last);
+Units_t Units::GetHorizontalSpeedUnit() {
+  return HorizontalSpeedUnit;
 }
 
-Units_t Units::GetUserHorizontalSpeedUnit(void){
-  return(UserHorizontalSpeedUnit);
+Units_t Units::GetTaskSpeedUnit() {
+  return TaskSpeedUnit;
 }
 
-Units_t Units::SetUserHorizontalSpeedUnit(Units_t NewUnit){
-  Units_t last = UserHorizontalSpeedUnit;
-  if (UserHorizontalSpeedUnit != NewUnit){
-    UserHorizontalSpeedUnit = NewUnit;
-  }
-  return(last);
+Units_t Units::GetVerticalSpeedUnit() {
+  return VerticalSpeedUnit;
 }
 
-Units_t Units::GetUserTaskSpeedUnit(void){
-  return(UserTaskSpeedUnit);
+Units_t Units::GetWindSpeedUnit() {
+  return WindSpeedUnit;
 }
 
-Units_t Units::SetUserTaskSpeedUnit(Units_t NewUnit){
-  Units_t last = UserTaskSpeedUnit;
-  if (UserTaskSpeedUnit != NewUnit){
-    UserTaskSpeedUnit = NewUnit;
-  }
-  return(last);
-}
-
-Units_t Units::GetUserVerticalSpeedUnit(void){
-  return(UserVerticalSpeedUnit);
-}
-
-Units_t Units::SetUserVerticalSpeedUnit(Units_t NewUnit){
-  Units_t last = UserVerticalSpeedUnit;
-  if (UserVerticalSpeedUnit != NewUnit){
-    UserVerticalSpeedUnit = NewUnit;
-  }
-  return(last);
-}
-
-Units_t Units::GetUserWindSpeedUnit(void){
-  return(UserWindSpeedUnit);
-}
-
-Units_t Units::SetUserWindSpeedUnit(Units_t NewUnit){
-  Units_t last = UserWindSpeedUnit;
-  if (UserWindSpeedUnit != NewUnit){
-    UserWindSpeedUnit = NewUnit;
-  }
-  return(last);
-}
-
-Units_t Units::GetUserUnitByGroup(UnitGroup_t UnitGroup){
-  switch(UnitGroup){
-    case ugNone:
-    return(unUndef);
-    case ugDistance:
-    return(GetUserDistanceUnit());
-    case ugAltitude:
-    return(GetUserAltitudeUnit());
-    case ugHorizontalSpeed:
-    return(GetUserHorizontalSpeedUnit());
-    case ugVerticalSpeed:
-    return(GetUserVerticalSpeedUnit());
-    case ugWindSpeed:
-    return(GetUserWindSpeedUnit());
-    case ugTaskSpeed:
-    return(GetUserTaskSpeedUnit());
-    case ugInvAltitude:
-    return(GetUserInvAltitudeUnit());
-    default:
-      return(unUndef);
-  }
-}
-
-
-void Units::NotifyUnitChanged(void){
-  // todo
-
+void Units::NotifyUnitChanged() {
   switch (SpeedUnit_Config) {
     case 0 :
-      SPEEDMODIFY = TOMPH;
-      SetUserHorizontalSpeedUnit(unStatuteMilesPerHour);
-      SetUserWindSpeedUnit(unStatuteMilesPerHour);
+      HorizontalSpeedUnit = unStatuteMilesPerHour;
+      WindSpeedUnit = unStatuteMilesPerHour;
       break;
     case 1 :
-      SPEEDMODIFY = TOKNOTS;
-      SetUserHorizontalSpeedUnit(unKnots);
-      SetUserWindSpeedUnit(unKnots);
+      HorizontalSpeedUnit = unKnots;
+      WindSpeedUnit = unKnots;
       break;
     case 2 :
     default:
-      SPEEDMODIFY = TOKPH;
-      SetUserHorizontalSpeedUnit(unKiloMeterPerHour);
-      SetUserWindSpeedUnit(unKiloMeterPerHour);
+      HorizontalSpeedUnit = unKiloMeterPerHour;
+      WindSpeedUnit = unKiloMeterPerHour;
       break;
   }
 
   switch(DistanceUnit_Config) {
     case 0 :
-      DISTANCEMODIFY = TOMILES;
-      SetUserDistanceUnit(unStatuteMiles);
+      DistanceUnit = unStatuteMiles;
       break;
     case 1 :
-      DISTANCEMODIFY = TONAUTICALMILES;
-      SetUserDistanceUnit(unNauticalMiles);
+      DistanceUnit = unNauticalMiles;
       break;
     default:
     case 2 :
-      DISTANCEMODIFY = TOKILOMETER;
-      SetUserDistanceUnit(unKiloMeter);
+      DistanceUnit = unKiloMeter;
       break;
   }
 
   switch(AltitudeUnit_Config) {
     case 0 :
-      ALTITUDEMODIFY = TOFEET;
-      SetUserAltitudeUnit(unFeet);
+      AltitudeUnit = unFeet;
       break;
     default:
     case 1 :
-      SetUserAltitudeUnit(unMeter);
-      ALTITUDEMODIFY = TOMETER;
+      AltitudeUnit = unMeter;
       break;
   }
 
-  switch(LiftUnit_Config) {
+  switch(VerticalSpeedUnit_Config) {
     case 0 :
-      LIFTMODIFY = TOKNOTS;
-      SetUserVerticalSpeedUnit(unKnots);
+      VerticalSpeedUnit = unKnots;
       break;
     default:
     case 1 :
-      LIFTMODIFY = TOMETER;
-      SetUserVerticalSpeedUnit(unMeterPerSecond);
+      VerticalSpeedUnit = unMeterPerSecond;
       break;
     case 2 :
-      LIFTMODIFY = TOFEETPERMINUTE;
-      SetUserVerticalSpeedUnit(unFeetPerMinutes);
+      VerticalSpeedUnit = unFeetPerMinutes;
       break;
   }
 
   switch(TaskSpeedUnit_Config) {
     case 0 :
-      TASKSPEEDMODIFY = TOMPH;
-      SetUserTaskSpeedUnit(unStatuteMilesPerHour);
+      TaskSpeedUnit = unStatuteMilesPerHour;
       break;
     case 1 :
-      TASKSPEEDMODIFY = TOKNOTS;
-      SetUserTaskSpeedUnit(unKnots);
+      TaskSpeedUnit = unKnots;
       break;
     case 2 :
     default:
-      TASKSPEEDMODIFY = TOKPH;
-      SetUserTaskSpeedUnit(unKiloMeterPerHour);
+      TaskSpeedUnit = unKiloMeterPerHour;
+      break;
+  }
+  
+  switch(LatLonUnits_Config) {
+    case 0:
+    default:
+      CoordinateFormat = cfDDMMSS;
+      break;
+    case 1:
+      CoordinateFormat = cfDDMMSSss;
+      break;
+    case 2:
+      CoordinateFormat = cfDDMMmmm;
+      break;
+    case 3:
+      CoordinateFormat = cfDDdddd;
+      break;
+    case 4:
+      CoordinateFormat = cfUTM;
       break;
   }
 }
 
-const TCHAR *Units::GetHorizontalSpeedName(){
-  return(GetUnitName(GetUserHorizontalSpeedUnit()));
+void Units::FormatAltitude(double Altitude, TCHAR *Buffer, size_t size){
+  lk::snprintf(Buffer, size, _T("%.0f%s"), ToAltitude(Altitude), GetAltitudeName());
 }
 
-const TCHAR *Units::GetVerticalSpeedName(){
-  return(GetUnitName(GetUserVerticalSpeedUnit()));
+void Units::FormatAlternateAltitude(double Altitude, TCHAR *Buffer, size_t size){
+  lk::snprintf(Buffer, size, _T("%.0f%s"), ToAlternateAltitude(Altitude), GetAlternateAltitudeName());
 }
 
-const TCHAR *Units::GetDistanceName(){
-  return(GetUnitName(GetUserDistanceUnit()));
+void Units::FormatArrival(double Altitude, TCHAR *Buffer, size_t size){
+  FormatAltitude(Altitude, Buffer, size);
 }
 
-const TCHAR *Units::GetAltitudeName(){
-  return(GetUnitName(GetUserAltitudeUnit()));
-}
+void Units::FormatDistance(double Distance, TCHAR *Buffer, size_t size) {
+  int prec = 0;
 
-const TCHAR *Units::GetInvAltitudeName(){ // 100126
-  return(GetUnitName(GetUserInvAltitudeUnit()));
-}
-
-const TCHAR *Units::GetTaskSpeedName(){
-  return(GetUnitName(GetUserTaskSpeedUnit()));
-}
-
-bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-
-  int prec;
-  TCHAR sTmp[512];
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
-
-  Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
-
-//  prec = 4-log10(Altitude);
-//  prec = max(prec, 0);
-  prec = 0;
-
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, Altitude, GetUnitName(UserAltitudeUnit));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return(true);
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return(false);
-  }
-
-}
-
-#if 100126
-// I don't think it is a good idea to change, even if for a short time, a global variable at all effect here,
-// just to be able to call the function above with a parameter missing!
-bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-  Units_t useUnit;
-  TCHAR sTmp[512];
-
-  if (UserAltitudeUnit == unMeter)
-	useUnit=unFeet;
-  else
-	useUnit=unMeter;
-
-  UnitDescriptor_t *pU = &UnitDescriptors[useUnit];
-  Altitude = Altitude * pU->ToUserFact;
-  _stprintf(sTmp, TEXT("%.*f%s"), 0, Altitude, GetUnitName(useUnit));
-
-  if (_tcslen(sTmp) < size-1){
-	_tcscpy(Buffer, sTmp);
-	return(true);
-  } else {
-	LK_tcsncpy(Buffer, sTmp, size-1);
-	return(false);
-  }
-}
-
-#else
-bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
-  Units_t saveUnit = UserAltitudeUnit;
-  bool res;
-
-  if (saveUnit == unMeter)
-    UserAltitudeUnit = unFeet;
-  if (saveUnit == unFeet)
-    UserAltitudeUnit = unMeter;
-
-  res = FormatUserAltitude(Altitude, Buffer, size);
-
-  UserAltitudeUnit = saveUnit;
-
-  return(res);
-
-}
-#endif
-
-bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
-
-  int prec;
-  TCHAR sTmp[512];
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
-
-  Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
-
-//  prec = 4-log10(Altitude);
-//  prec = max(prec, 0);
-  prec = 0;
-
-  _stprintf(sTmp, TEXT("%+.*f%s"), prec, Altitude, GetUnitName(UserAltitudeUnit));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return(true);
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return(false);
-  }
-
-}
-
-bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
-
-  int prec;
-  TCHAR sTmp[512];
-
-  Units_t Unit = UserDistanceUnit;
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
-  double value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
-
-  if (value >= 100)
+  Units_t UnitIdx = GetDistanceUnit();
+  double value = To(UnitIdx, Distance);
+  if (value >= 100) {
     prec = 0;
-  else if (value > 10)
+  } else if (value > 10) {
     prec = 1;
-  else if (value > 1)
+  } else if (value > 1) {
     prec = 2;
-  else {
+  } else {
     prec = 3;
-    if (UserDistanceUnit == unKiloMeter){
+    if (UnitIdx == unKiloMeter) {
       prec = 0;
-      Unit = unMeter;
-      pU = &UnitDescriptors[unMeter];
-      value = Distance * pU->ToUserFact;
+      UnitIdx = unMeter;
+      value = To(UnitIdx, Distance);
     }
-    if (UserDistanceUnit == unNauticalMiles
-            || UserDistanceUnit == unStatuteMiles) {
+    if (UnitIdx == unNauticalMiles
+            || UnitIdx == unStatuteMiles) {
 
-      Unit = unFeet;
-      pU = &UnitDescriptors[unFeet];
-      value = Distance * pU->ToUserFact;
-      if (value<1000) {
+      const double ftValue = To(unFeet, Distance);  
+      if (value < 1000) {
         prec = 0;
+        UnitIdx = unFeet;
+        value = ftValue;
       } else {
         prec = 1;
-        Unit = UserDistanceUnit;
-        pU = &UnitDescriptors[UserDistanceUnit];
-        value = Distance* pU->ToUserFact;
       }
     }
   }
 
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(Unit));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return(true);
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return(false);
-  }
-
+  lk::snprintf(Buffer, size, _T("%.*f%s"), prec, value, GetName(UnitIdx));
 }
 
-bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, size_t size){
+void Units::FormatMapScale(double Distance, TCHAR *Buffer, size_t size){
 
-  int prec;
-  double value;
-  TCHAR sTmp[512];
-  Units_t UnitIdx = UserDistanceUnit;
-  UnitDescriptor_t *pU = &UnitDescriptors[UnitIdx];
+  int prec = 0;
+  Units_t UnitIdx = GetDistanceUnit();
 
-  value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
+  double value = To(UnitIdx, Distance);
 
   if (value >= 9.999) {
     prec = 0;
   } else if (value >= 0.999) {
     prec = 1;
   } else {
-    prec = 2;
-    if (UserDistanceUnit == unKiloMeter){
+    if (UnitIdx == unKiloMeter){
       prec = 0;
       UnitIdx = unMeter;
-    } else if ((UserDistanceUnit == unNauticalMiles || UserDistanceUnit == unStatuteMiles) && (value < 0.160)) {
+      value = To(UnitIdx, Distance);
+    } else if ((UnitIdx == unNauticalMiles || UnitIdx == unStatuteMiles) && (value < 0.160)) {
       prec = 0;
       UnitIdx = unFeet;
+      value = To(UnitIdx, Distance);
+    } else {
+      prec = 2;
     }
   }
 
-  if (Unit != NULL) {
-    *Unit = UnitIdx;
-  }
-
-  pU = &UnitDescriptors[UnitIdx];
-  value = Distance * pU->ToUserFact;
-
-  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, GetUnitName(UnitIdx));
-
-  if (_tcslen(sTmp) < size-1){
-    _tcscpy(Buffer, sTmp);
-    return(true);
-  } else {
-    LK_tcsncpy(Buffer, sTmp, size-1);
-    return(false);
-  }
-
+  lk::snprintf(Buffer, size, _T("%.*f%s"), prec, value, GetName(UnitIdx));
 }
 
 
-double Units::ToUserAltitude(double Altitude){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
-  Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Altitude);
+double Units::To(Units_t unit, double value) {
+  const UnitDescriptor_t *pU = &UnitDescriptors[unit];
+  return value * pU->ToUserFact + pU->ToUserOffset;
 }
 
-double Units::ToSysAltitude(double Altitude){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
-
-  Altitude = Altitude / pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Altitude);
+double Units::From(Units_t unit, double value)  {
+  const UnitDescriptor_t *pU = &UnitDescriptors[unit];
+  return (value - pU->ToUserOffset) / pU->ToUserFact;
 }
 
-
-double Units::ToUserDistance(double Distance){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
-
-  Distance = Distance * pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Distance);
-}
-
-double Units::ToSysDistance(double Distance){
-  UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
-
-  Distance = Distance / pU->ToUserFact; // + pU->ToUserOffset;
-
-  return(Distance);
-}
-
-void Units::TimeToText(TCHAR* text, int d) {
-  int hours, mins;
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
+void Units::TimeToText(TCHAR* text, size_t cb, int d) {
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
   hours = hours % 24;
-  if (negative) {
-    _stprintf(text, TEXT("-%02d:%02d"),
-              hours, mins);
-  } else {
-    _stprintf(text, TEXT("%02d:%02d"),
-              hours, mins);
-  }
+
+  lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins);
 }
 
-void Units::TimeToTextSimple(TCHAR* text, int d) {
-  int hours, mins;
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
+void Units::TimeToTextSimple(TCHAR* text, size_t cb, int d) {
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
   hours = hours % 24;
-  if (negative) {
-    _stprintf(text, TEXT("-%02d%02d"),
-              hours, mins);
-  } else {
-    _stprintf(text, TEXT("%02d%02d"),
-              hours, mins);
-  }
+
+  lk::snprintf(text, cb, _T("%s%02d%02d"), (negative ? _T("-") : _T("")), hours, mins);
 }
 
 // Not for displaying a clock time, good for a countdown
 // will display either
 // Returns true if hours, false if minutes
-bool Units::TimeToTextDown(TCHAR* text, int d) {
-  int hours, mins, seconds;
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  bool ishours;
-  hours = (dd/3600);
-  mins = (dd/60-hours*60);
+bool Units::TimeToTextDown(TCHAR* text, size_t cb, int d) {
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
   hours = hours % 24;
-  seconds = (dd-mins*60-hours*3600);
+  int seconds = (dd - mins * 60 - hours * 3600);
 
-  if (hours==0) {
-	_stprintf(text, TEXT("%02d:%02d"), mins, seconds);
-	ishours=false;
+  if (hours == 0) {
+    lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), mins, seconds);
+    return false;
   } else {
-	_stprintf(text, TEXT("%02d:%02d"), hours, mins);
-	ishours=true;
+    lk::snprintf(text, cb, _T("%s%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins);
+    return true;
   }
-
-  if (negative) {
-	TCHAR t[20];
-	_stprintf(t,TEXT("-%s"),text);
-	_tcscpy(text,t);
-  }
-  return ishours;
-
 }
 
 // LK8000
-void Units::TimeToTextS(TCHAR* text, int d) {
-  bool negative = (d<0);
-  int dd = abs(d) % (3600*24);
-  int hours = (dd/3600);
-  int mins = (dd/60-hours*60);
-  int seconds = (dd-mins*60-hours*3600);
+void Units::TimeToTextS(TCHAR* text, size_t cb, int d) {
+  bool negative = (d < 0);
+  int dd = abs(d) % (3600 * 24);
+  int hours = (dd / 3600);
+  int mins = (dd / 60 - hours * 60);
+  int seconds = (dd - mins * 60 - hours * 3600);
   hours = hours % 24;
-  if (negative) {
-    _stprintf(text, TEXT("-%d:%02d:%02d"),  hours, mins, seconds);
-  } else {
-    _stprintf(text, TEXT("%d:%02d:%02d"),  hours, mins, seconds);
-  }
+
+  lk::snprintf(text, cb, _T("%s%d:%02d:%02d"), (negative ? _T("-") : _T("")), hours, mins, seconds);
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("Units") {
+
+  #define CHECK_APPROX_EQ(x, y) CHECK_EQ(x, doctest::Approx(y))
+
+  SUBCASE("Length") {
+    CHECK_EQ(Units::From(unFeet, 1), Units::From(unMeter, 0.3048));
+    CHECK_EQ(Units::From(unNauticalMiles, 1), Units::From(unMeter, 1852));
+    CHECK_EQ(Units::From(unStatuteMiles, 1), Units::From(unMeter, 1609.344));
+    CHECK_EQ(Units::From(unKiloMeter, 1), Units::From(unMeter, 1000));
+    CHECK_APPROX_EQ(Units::From(unFligthLevel, 125), Units::From(unFeet, 12500));
+  }
+
+  SUBCASE("Speed") {
+    CHECK_EQ(Units::From(unKiloMeterPerHour, 3.6), Units::From(unMeterPerSecond, 1));
+    CHECK_EQ(Units::From(unKnots, 1), Units::From(unKiloMeterPerHour, 1.852));
+    CHECK_APPROX_EQ(Units::From(unStatuteMilesPerHour, 1), Units::From(unMeterPerSecond, 0.44704));
+    CHECK_EQ(Units::From(unFeetPerMinutes, 1), Units::From(unMeterPerSecond, 0.00508));
+    CHECK_EQ(Units::From(unFeetPerSecond, 1), Units::From(unMeterPerSecond, 0.3048));
+  }
+
+  SUBCASE("Temp") {
+    CHECK_APPROX_EQ(Units::From(unGradFahrenheit, 0), Units::From(unKelvin, 255.37222222));
+    CHECK_APPROX_EQ(Units::From(unGradFahrenheit, 10), Units::From(unKelvin, 260.92777778));
+    CHECK_EQ(Units::From(unGradCelcius, 1), Units::From(unKelvin, 274.15));
+  }
+
+  #undef CHECK_APPROX_EQ
+}
+#endif

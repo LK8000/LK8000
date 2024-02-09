@@ -103,21 +103,21 @@ static void SetValues(int indexid) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHTop"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),ThermalHistory[indexid].HTop*ALTITUDEMODIFY, Units::GetAltitudeName());
+	_stprintf(buffer,_T("%.0f %s"),Units::ToAltitude(ThermalHistory[indexid].HTop), Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHBase"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),ThermalHistory[indexid].HBase*ALTITUDEMODIFY, Units::GetAltitudeName());
+	_stprintf(buffer,_T("%.0f %s"),Units::ToAltitude(ThermalHistory[indexid].HBase), Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLift"));
   if (wp) {
-	_stprintf(buffer,_T("%+.1f %s"),ThermalHistory[indexid].Lift*LIFTMODIFY, Units::GetVerticalSpeedName());
+	_stprintf(buffer,_T("%+.1f %s"),Units::ToVerticalSpeed(ThermalHistory[indexid].Lift), Units::GetVerticalSpeedName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }

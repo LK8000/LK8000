@@ -284,33 +284,43 @@ static void SetValues(int indexid) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
   if (wp) {
-	_stprintf(buffer,_T("%.1f %s"),LKTraffic[indexid].Distance*DISTANCEMODIFY, Units::GetDistanceName());
+	_stprintf(buffer,_T("%.1f %s"),
+						Units::ToDistance(LKTraffic[indexid].Distance),
+						Units::GetDistanceName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),LKTraffic[indexid].Altitude*ALTITUDEMODIFY, Units::GetAltitudeName());
+	_stprintf(buffer,_T("%.0f %s"),
+	                    Units::ToAltitude(LKTraffic[indexid].Altitude),
+	                    Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltDiff"));
   if (wp) {
 	// this has to be reverted, because it is a relative altitude to us
-	_stprintf(buffer,_T("%+.0f %s"),(CALCULATED_INFO.NavAltitude - LKTraffic[indexid].Altitude)*ALTITUDEMODIFY*-1, Units::GetAltitudeName());
+	_stprintf(buffer,_T("%+.0f %s"),
+	                    Units::ToAltitude(CALCULATED_INFO.NavAltitude - LKTraffic[indexid].Altitude)*-1,
+	                    Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpSpeed"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),LKTraffic[indexid].Speed*SPEEDMODIFY, Units::GetHorizontalSpeedName());
+	_stprintf(buffer,_T("%.0f %s"),
+	                    Units::ToHorizontalSpeed(LKTraffic[indexid].Speed),
+	                    Units::GetHorizontalSpeedName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
   if (wp) {
-	_stprintf(buffer,_T("%+.1f %s"),LKTraffic[indexid].Average30s*LIFTMODIFY, Units::GetVerticalSpeedName());
+	_stprintf(buffer,_T("%+.1f %s"),
+	                    Units::ToVerticalSpeed(LKTraffic[indexid].Average30s),
+	                    Units::GetVerticalSpeedName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }

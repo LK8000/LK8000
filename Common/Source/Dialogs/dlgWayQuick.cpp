@@ -205,7 +205,7 @@ short dlgWayQuickShowModal(void){
                 }
                 if ( WPLSEL.RunwayLen>0 )  {
                         // we use Altitude instead of distance, to keep meters and feet
-                        _stprintf(ttmp,_T("%.0f%s"),Units::ToUserAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
+                        _stprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
                         _tcscat(sTmp, ttmp);
                 }
   } else {

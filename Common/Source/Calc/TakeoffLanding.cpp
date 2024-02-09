@@ -194,7 +194,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		Calculated->OnGround = true;
 		DoAutoQNH(Basic, Calculated);
 		// Do not reset QFE after landing.
-		if (!WasFlying) QFEAltitudeOffset=ALTITUDEMODIFY*Calculated->NavAltitude;
+		if (!WasFlying) QFEAltitudeOffset=Units::ToAltitude(Calculated->NavAltitude);
 	}
   } else {
 	// detect landing

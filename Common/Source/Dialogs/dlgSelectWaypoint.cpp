@@ -135,7 +135,7 @@ protected:
           double distance = 0;
           position.Reverse({Tp.Latitude, Tp.Longitude}, direction, distance);
          
-          data.push_back({DISTANCEMODIFY *distance, direction, std::make_unique<WaypointInfo_t>(i, Tp)});
+          data.push_back({Units::ToDistance(distance), direction, std::make_unique<WaypointInfo_t>(i, Tp)});
         }
       }
 

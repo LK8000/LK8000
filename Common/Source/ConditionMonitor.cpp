@@ -107,10 +107,10 @@ protected:
 
     double mag_change = fabs(wind_mag - last_wind_mag);
     double dir_change = fabs(AngleLimit180(wind_bearing-last_wind_bearing));
-    if (mag_change > 5/TOKNOTS) {
+    if (mag_change > Units::From(unKnots, 5)) {
       return true;
     }
-    if ((wind_mag>10/TOKNOTS) && (dir_change > 45)) {
+    if ((wind_mag > Units::From(unKnots, 10)) && (dir_change > 45)) {
       return true;
     }
     return false;

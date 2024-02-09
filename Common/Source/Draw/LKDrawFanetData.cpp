@@ -178,8 +178,8 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	sc_av = sc_name;
 
 	_stprintf(lbuffer, _T("%d|%d"), 
-					(int)round(DrawInfo.FANET_Weather[i].windSpeed*SPEEDMODIFY), 
-					(int)round(DrawInfo.FANET_Weather[i].windGust*SPEEDMODIFY));
+					(int)round(Units::ToWindSpeed(DrawInfo.FANET_Weather[i].windSpeed)), 
+					(int)round(Units::ToWindSpeed(DrawInfo.FANET_Weather[i].windGust)));
 	displaymode.Border=1;
 	TextInBox(Surface, &rc, lbuffer, sc.x+tscaler, sc.y+tscaler , &displaymode, false);
 

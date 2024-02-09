@@ -96,7 +96,7 @@ BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
   double airspeed, wspeed, wfrom;
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  airspeed = StrToDouble(ctemp,NULL)/TOKPH;
+  airspeed = Units::From(unKiloMeterPerHour, StrToDouble(ctemp,NULL));
 
   NMEAParser::ExtractParameter(String,ctemp,2);
   double QneAltitude = StrToDouble(ctemp,NULL);

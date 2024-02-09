@@ -332,7 +332,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
 			if (wp->Altitude >0) {
 				TCHAR tAlt[20];
-				_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
+				_stprintf(tAlt,_T("%.0f %s"), Units::ToAltitude(wp->Altitude), Units::GetAltitudeName());
 				MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center.x + offset, Center.y + offset, WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
 			}
 

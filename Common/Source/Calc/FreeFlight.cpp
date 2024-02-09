@@ -365,7 +365,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             _sntprintf(Comment, 99, _T("%s: %s  @%.0f%s QNH"),
                     MsgToken<1754>(), // Free flight start
                     Temp,
-                    ALTITUDEMODIFY * Calculated->FreeFlightStartQNH,
+                    Units::ToAltitude(Calculated->FreeFlightStartQNH),
                     Units::GetAltitudeName());
             Comment[99] = _T('\0'); // for safety
             SetWaypointComment(WayPointList[RESWP_FREEFLY], Comment);

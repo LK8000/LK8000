@@ -853,8 +853,8 @@ DiagrammStruct sDia;
   RECT rc34 = rc;
   rc34.top += (rct.top-rct.bottom)/2;
 
-  _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
-  DrawXGrid(Surface, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+  _stprintf(text, TEXT("%s"),Units::GetName(Units::GetDistanceUnit()));
+  DrawXGrid(Surface, rc34, Units::FromDistance(xtick), xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
 
   /****************************************************************************************************
@@ -905,7 +905,7 @@ double scl = xtick;
 	double fCScale =(double)( rct.right-rct.left)/((sDia.fXMax-sDia.fXMin ));
 	for ( int i = 0; i < (sDia.fXMax /scl); i++)
 	{
-	  iCircleRadius =(int) (fRing* fCScale / (DISTANCEMODIFY*1000.0f));
+    iCircleRadius =(int) (fRing* fCScale / Units::ToDistance(1000.0f));
 	  Surface.DrawCircle(x_middle, y_middle, iCircleRadius, rcc, false );
 	  fRing = fRing + scl;
 	}
@@ -919,7 +919,7 @@ double scl = xtick;
 	if((sDia.fXMax /xtick)  < 3)
 	  for (int i = 0; i < (sDia.fXMax /xtick); i++)
 	  {
-	    iCircleRadius = (int) (fRing * fCScale / (DISTANCEMODIFY*1000.0f));
+      iCircleRadius =(int) (fRing* fCScale / Units::ToDistance(1000.0f));
 	    Surface.DrawCircle(x_middle, y_middle, iCircleRadius, rcc, false);
 	    fRing = fRing + xtick;
 	  }
@@ -1095,7 +1095,7 @@ if(SPLITSCREEN_FACTOR >0)
 		    /*************************************************************************
 		     * draw label
 		     *************************************************************************/
-		   _stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*LKTraffic[i].Average30s);
+		   _stprintf(lbuffer,_T("%3.1f"),Units::ToVerticalSpeed(LKTraffic[i].Average30s));
 
 		    Surface.SetBackgroundTransparent();
 		    if (_tcslen(lbuffer)>0) {
@@ -1144,7 +1144,7 @@ if(SPLITSCREEN_FACTOR >0)
   Surface.SetTextColor(rgbDrawColor);
   Surface.Rectangle(rc.left , rc.bottom+5 ,rc.right, rc.top);
   Surface.SelectObject(LKBrush_Hollow);
-  DrawXGrid(Surface, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+  DrawXGrid(Surface, rc34, Units::FromDistance(xtick), xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
 
   /*********************************************************************************
@@ -1186,13 +1186,13 @@ if(SPLITSCREEN_FACTOR >0)
   if (fHeight >2000.0) ytick = 1000.0;
   if (fHeight >4000.0) ytick = 2000.0;
   if (fHeight >8000.0) ytick = 4000.0;
-  if(Units::GetUserAltitudeUnit() == unFeet)
+  if(Units::GetAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
  // sDia.rc = rc34;
   if(bSideview)
   {
-    _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
-    DrawYGrid(Surface, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
+    _stprintf(text, TEXT("%s"),Units::GetAltitudeName());
+    DrawYGrid(Surface, rc, Units::FromAltitude(ytick), ytick, 0,TEXT_UNDER_RIGHT , rgbGridColor, &sDia, text);
   }
 
 /*************************************************************************

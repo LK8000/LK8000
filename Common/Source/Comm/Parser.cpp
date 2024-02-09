@@ -137,7 +137,7 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
         GPSData.Longitude = loc.dblLongitude;
     }
     if (loc.dwValidFields & GPS_VALID_SPEED) {
-        GPSData.Speed = KNOTSTOMETRESSECONDS * loc.flSpeed;
+        GPSData.Speed = Units::From(unKnots, loc.flSpeed);
     }
     if (loc.dwValidFields & GPS_VALID_HEADING) {
       	if (GPSData.Speed > GetTrackBearingMinSpeed()) {
@@ -472,7 +472,7 @@ BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INF
   // if no valid fix, we dont get speed either!
   if (gpsValid) {
     double speed = StrToDouble(params[4], NULL);
-    pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
+    pGPS->Speed = Units::From(unKnots, speed);
 
     if (ISCAR) {
       if (pGPS->Speed > GetTrackBearingMinSpeed()) {
@@ -611,7 +611,7 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
 		pGPS->Longitude = tmplon;
 	}
   
-	pGPS->Speed = KNOTSTOMETRESSECONDS * speed;
+	pGPS->Speed = Units::From(unKnots, speed);;
   
 	if (pGPS->Speed > GetTrackBearingMinSpeed()) {
 		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
@@ -890,16 +890,16 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params,
   }
 
   if(*params[0] != _T('\0')) {
-    double wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
+    const double wnet = Units::From(unKnots, (StrToDouble(params[0],NULL) - 200.0) / 10);
     UpdateVarioSource(*pGPS, d, wnet);
   }
 
   if(*params[2] != _T('\0')) {
-    double qne_altitude = (StrToDouble(params[2],NULL)-2000)/TOFEET;
+    double qne_altitude = Units::From(unFeet, StrToDouble(params[2],NULL) - 2000);
     UpdateBaroSource(pGPS, &d,  QNEAltitudeToQNHAltitude(qne_altitude));
 
     if(*params[3] != _T('\0')) {
-      double vtas = StrToDouble(params[3],NULL)/TOKNOTS;
+      const double vtas = Units::From(unKnots, StrToDouble(params[3],NULL));
       pGPS->AirspeedAvailable = TRUE;
       pGPS->TrueAirspeed = vtas;
       pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);

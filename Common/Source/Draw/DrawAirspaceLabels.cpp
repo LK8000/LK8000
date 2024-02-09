@@ -41,7 +41,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
               const POINT sc = _Proj.ToRasterPoint(lat, lon);
               hAirspaceWarning.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));              
               
-              Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+              Units::FormatAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());
               _tcscat(hbuf, TEXT(" "));
               _tcscat(hbuf, vDistanceText);
@@ -76,7 +76,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
           // Vertical warning point
           if (distances_ready && vlabeldrawstyle > awsHidden) {
 
-              Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+              Units::FormatAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());
               _tcscat(hbuf, TEXT(" "));
               _tcscat(hbuf, vDistanceText);

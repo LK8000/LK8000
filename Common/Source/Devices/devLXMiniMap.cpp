@@ -254,7 +254,7 @@ bool DevLXMiniMap::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
 
   if (ParToDouble(sentence, 1, &airspeed))
   {
-    airspeed /= TOKPH;
+    airspeed = Units::From(unKiloMeterPerHour, airspeed);
     info->TrueAirspeed = airspeed;
     info->AirspeedAvailable = TRUE;
   }

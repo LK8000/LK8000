@@ -515,17 +515,17 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     Surface.SetBackgroundTransparent();
     Surface.SetTextColor(txtCol);
 
-    _stprintf(text, TEXT("%s"), Units::GetUnitName(Units::GetUserDistanceUnit()));
+    _stprintf(text, TEXT("%s"), Units::GetName(Units::GetDistanceUnit()));
 
     if (Current_Multimap_SizeY < SIZE4)
         switch (GetMMNorthUp(getsideviewpage)) {
             case NORTHUP:
             default:
-                DrawXGrid(Surface, rc, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
+                DrawXGrid(Surface, rc, Units::FromDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
                 break;
 
             case TRACKUP:
-                DrawXGrid(Surface, rci, xtick / DISTANCEMODIFY, xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
+                DrawXGrid(Surface, rci, Units::FromDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, Sideview_TextColor, &sDia, text);
                 break;
         }
     Surface.SetTextColor(Sideview_TextColor);
@@ -538,14 +538,14 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     if (fHeight > 4000.0) ytick = 2000.0;
     if (fHeight > 8000.0) ytick = 4000.0;
 
-    if (Units::GetUserAltitudeUnit() == unFeet)
+    if (Units::GetAltitudeUnit() == unFeet)
         ytick = ytick * FEET_FACTOR;
 
-    _stprintf(text, TEXT("%s"), Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    _stprintf(text, TEXT("%s"), Units::GetAltitudeName());
 
     // Draw only if topview is not fullscreen
     if (Current_Multimap_SizeY < SIZE4)
-        DrawYGrid(Surface, rcc, ytick / ALTITUDEMODIFY, ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
+        DrawYGrid(Surface, rcc, Units::FromAltitude(ytick), ytick, 0, TEXT_UNDER_RIGHT, Sideview_TextColor, &sDia, text);
 
     POINT line[4];
 
@@ -684,7 +684,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         // Print current Elevation
         Surface.SetTextColor(RGB_BLACK);
         if ((calc_terrainalt - hmin) > 0) {
-            Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
+            Units::FormatAltitude(calc_terrainalt, buffer, 7);
             LK_tcsncpy(text, MsgToken<1743>(), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
             Surface.GetTextSize(text, &tsize);
@@ -699,7 +699,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         // Print arrival Elevation
         Surface.SetTextColor(RGB_BLACK);
         if ((wpt_altitude - hmin) > 0) {
-            Units::FormatUserAltitude(wpt_altitude, buffer, 7);
+            Units::FormatAltitude(wpt_altitude, buffer, 7);
             LK_tcsncpy(text, MsgToken<1743>(), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
             Surface.GetTextSize(text, &tsize);
@@ -725,7 +725,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
             _tcscat(text, _T(" "));
         else
             _tcscat(text, _T("  "));
-        Units::FormatUserDistance(wpt_dist, text2, 7);
+        Units::FormatDistance(wpt_dist, text2, 7);
         _tcscat(text, text2);
 
         Surface.GetTextSize(text, &tsize);
@@ -765,9 +765,9 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
         if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
 
-        _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY * fMC0));
+        _stprintf(text, TEXT("Mc %3.1f: "), Units::ToVerticalSpeed(fMC0));
         if (wpt_altarriv_mc0 > ALTDIFFLIMIT) {
-            Units::FormatUserArrival(wpt_altarriv_mc0, buffer, 7);
+            Units::FormatArrival(wpt_altarriv_mc0, buffer, 7);
             _tcscat(text, buffer);
         } else {
             _tcscat(text, TEXT("---"));
@@ -795,7 +795,7 @@ _skip_mc0:
             altarriv = wpt_altarriv;
             if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
             if (altarriv > 100) {
-                Units::FormatUserAltitude(altarriv, buffer, 7);
+                Units::FormatAltitude(altarriv, buffer, 7);
                 LK_tcsncpy(text, MsgToken<1742>(), TBSIZE - _tcslen(buffer));
                 _tcscat(text, buffer);
                 Surface.GetTextSize(text, &tsize);
@@ -814,9 +814,9 @@ _skip_mc0:
         // ALTITUDE ARRIVAL AT CURRENT MACCREADY
         //
 
-        _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY * MACCREADY));
+        _stprintf(text, TEXT("Mc %3.1f: "), Units::ToVerticalSpeed(MACCREADY));
         if (wpt_altarriv > ALTDIFFLIMIT) {
-            Units::FormatUserArrival(wpt_altarriv, buffer, 7);
+            Units::FormatArrival(wpt_altarriv, buffer, 7);
             _tcscat(text, buffer);
         } else {
             _tcscat(text, TEXT("---"));
@@ -851,7 +851,10 @@ _skip_mc0:
   if(bConicalFinal) {
     double mc = (Sink * Slope + VOpt) / Slope;
     if( fabs(mc-MACCREADY) > 0.05 ) {
-      _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),(LIFTMODIFY*mc), SPEEDMODIFY*VOpt, (Units::GetHorizontalSpeedName()));
+      _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),
+                Units::ToVerticalSpeed(mc),
+                Units::ToHorizontalSpeed(VOpt),
+                Units::GetHorizontalSpeedName());
 
       x = BestReach.x - tsize.cx - NIBLSCALE(5);
       if (bDrawRightSide) {
@@ -909,8 +912,10 @@ _skip_mc0:
                     NULL, 1.0e6, 1.0);
 
 
-            _stprintf(text, TEXT("Mc %3.1f @%.0f%s"), (LIFTMODIFY * mc_pirker), SPEEDMODIFY*mcspeed,
-                    (Units::GetHorizontalSpeedName()));
+            _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),
+                      Units::ToVerticalSpeed(mc_pirker),
+                      Units::ToHorizontalSpeed(mcspeed),
+                      Units::GetHorizontalSpeedName());
 
             x = line[0].x - tsize.cx - NIBLSCALE(5);
             if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
@@ -962,7 +967,7 @@ _after_additionals:
             } else {
                 Surface.SetTextColor(RGB_BLACK);
             }
-            Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
+            Units::FormatAltitude(calc_altitudeagl, buffer, 7);
             LK_tcsncpy(text, MsgToken<1742>(), TBSIZE - _tcslen(buffer));
             _tcscat(text, buffer);
             Surface.GetTextSize(text, &tsize);

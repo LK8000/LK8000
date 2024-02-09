@@ -346,7 +346,7 @@ BOOL FanetParseType1Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pG
   if (speed & 0x80) {
     speed = (speed & 0x007F) * 5;
   }
-  traffic.Speed = speed * 0.5 / TOKPH;
+  traffic.Speed = Units::From(unKiloMeterPerHour, speed * 0.5);
 
   auto climb = static_cast<uint8_t>(msg[9]);
   auto climb2 = static_cast<int8_t>((climb & 0x7F) | (climb & (1 << 6)) << 1); //create 2-complement
@@ -712,7 +712,7 @@ BOOL HeartBeat(DeviceDescriptor_t* d) {
     ss << GPS_INFO.Latitude << ",";
     ss << GPS_INFO.Longitude << ",";
     ss << GPS_INFO.Altitude << ",";
-    ss << GPS_INFO.Speed * TOKPH << ",";
+    ss << Units::To(unKiloMeterPerHour, GPS_INFO.Speed) << ",";
     ss << CALCULATED_INFO.Heading << ",";
     ss << GPS_INFO.Vario << ",";
     ss << GPS_INFO.Year - 1900 << ",";

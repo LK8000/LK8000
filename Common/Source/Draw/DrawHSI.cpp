@@ -50,8 +50,8 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     } compassMarks[72][10]; //72 compass marks (one every 5 degrees), 10 possible cases
     static POINT hdgMark[4]; //Coordinates of heading marker (red triangle on the top of compass rose)
 
-    static const double fiveNauticalMiles=(5.0*NAUTICALMILESTOMETRES); //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
-    static const double smallCDIscale=(0.3*NAUTICALMILESTOMETRES); //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
+    static const double fiveNauticalMiles = Units::From(unNauticalMiles, 5.0); //Large Course Deviation Indicator scale: 5 nautical miles (9260 m)
+    static const double smallCDIscale = Units::From(unNauticalMiles, 0.3); //Narrow (zoomed) CDI scale: 0.3 nautical miles (557 m)
 
     static const TCHAR* label[]= { //labels of the compass rose
             TEXT("N"),
@@ -261,7 +261,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
         double deviation = DerivedDrawInfo.LegCrossTrackError;
         if(finalWP==currentWP) { //if we are flying to the final destination
             approach=true;
-            const double varioFtMin=DerivedDrawInfo.Vario*TOFEETPERMINUTE; //Convert vertical speed to Ft/min
+            const double varioFtMin=Units::To(unFeetPerMinutes, DerivedDrawInfo.Vario); //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
             _tcscpy(Buffer,MsgToken<784>()); //"Vario"
@@ -533,12 +533,12 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
             double xtk=fabs(deviation); //here is in meters
             if(DistanceUnit_Config==2) { //Km
                 if(xtk>1000) {
-                     xtk*=TOKILOMETER;
+                     xtk = Units::To(unKiloMeter, xtk);
                      if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f km"),xtk);
                      else _stprintf(Buffer,TEXT("%d km"),(int)round(xtk));
                  } else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
             } else { //Miles or Nautical miles
-                xtk*=DISTANCEMODIFY;
+                xtk = Units::ToDistance(xtk);
                 if(xtk<1) _stprintf(Buffer, TEXT("%.2f %s"),xtk,Units::GetDistanceName());
                 else if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f %s"),xtk,Units::GetDistanceName());
                 else _stprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());
@@ -631,9 +631,11 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     if(!usingQFU && !landing && validPreviousWP) { //... only if not using glide slope and not lading
         //Calculate expected altitude in route
         double expectedAlt=WPaltitude;
-        if(WPleg>0 && WPaltitude!=prevWPaltitude) expectedAlt=(WPaltitude-prevWPaltitude)/WPleg*DerivedDrawInfo.LegDistanceCovered+prevWPaltitude;
-        expectedAlt*=TOFEET;
-        const double diff=(DrawInfo.Altitude*TOFEET)-expectedAlt; //difference with current altitude
+        if(WPleg>0 && WPaltitude!=prevWPaltitude) {
+            expectedAlt=(WPaltitude-prevWPaltitude)/WPleg*DerivedDrawInfo.LegDistanceCovered+prevWPaltitude;
+        }
+        
+        const double diff = Units::To(unFeet, DrawInfo.Altitude-expectedAlt); //difference with current altitude
 
         //Find out a proper scale to display the difference on the VSI bar
         double scale=fabs(diff);
@@ -651,7 +653,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
         //Draw VSI background
         if(DerivedDrawInfo.TerrainValid) {
-            const double altAGLft=DerivedDrawInfo.AltitudeAGL*TOFEET;
+            const double altAGLft = Units::To(unFeet, DerivedDrawInfo.AltitudeAGL);
             int groundLevel=VSIscaleInPixel;
             if(fabs(altAGLft)<scale) groundLevel=(int)round(altAGLft*pixelPerFeet);
             else if(altAGLft<0) groundLevel=-VSIscaleInPixel;

@@ -181,8 +181,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
 #else
     // Set the vertical range
     double vscale;
-    if (Units::GetUserAltitudeUnit() == unFeet)
-        vscale = (1000 / TOFEET);
+    if (Units::GetAltitudeUnit() == unFeet)
+        vscale = Units::From(unFeet, 1000);
     else
         vscale = 300.0;
 #endif
@@ -372,7 +372,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
         TCHAR value[40], unit[30];
         TCHAR line2[140], line3[50];
         TCHAR name[NAME_SIZE + 1];
-        double ar = (WayPointCalc[wp].AltArriv[AltArrivMode] * ALTITUDEMODIFY);
+        double ar = Units::ToAltitude(WayPointCalc[wp].AltArriv[AltArrivMode]);
         _tcscpy(name, WayPointList[wp].Name);
         CharUpper(name);
 

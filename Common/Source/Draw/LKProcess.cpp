@@ -74,7 +74,7 @@ static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR *BufferValue, 
 		// even though this is a valid waypoint, if arrival below waypoint altitue, 
 		// then valid = false so that set Amber color to get attention of user
 		valid = (value >= WayPointList[TpIndex].Altitude); 
-		value *= ALTITUDEMODIFY; // convert to user altitude Unit		
+		value = Units::ToAltitude(value);
 		_stprintf(BufferValue, TEXT("%d"), int(value));
 	} else {
 		// could be e.g. if display Alternate 1 QNH arr, but no Alternate 1 is defined
@@ -118,7 +118,11 @@ void MapWindow::LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *Bmp,TCHAR *Buffer
 //
 // Keep this list sorted, so that the compiler can use a jump (branch) table 
 //
-bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,DrawBmp_t *BmpValue,DrawBmp_t *BmpTitle) {
+bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, 
+			TCHAR (&BufferValue)[LKSIZEBUFFERVALUE],
+			TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT],
+			TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE],
+			DrawBmp_t *BmpValue, DrawBmp_t *BmpTitle) {
 
   int	index=-1;
   double value;
@@ -131,10 +135,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
-  if (BmpValue != NULL) *BmpValue = BmpNone;
-  if (BmpTitle != NULL) *BmpTitle = BmpNone;
-
-  const TCHAR* varformat = (LIFTMODIFY==TOFEETPERMINUTE) ? TEXT("%+.0f") : TEXT("%+0.1f");
+  
+  const TCHAR* varformat = (Units::GetVerticalSpeedUnit() == unFeetPerMinutes) ? TEXT("%+.0f") : TEXT("%+0.1f");
 
 
 	_tcscpy(BufferValue,_T(""));
@@ -156,7 +158,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_tcscpy(BufferTitle, MsgToken<1002>());
 			else
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
-			value=ALTITUDEMODIFY*DerivedDrawInfo.NavAltitude;
+			value=Units::ToAltitude(DerivedDrawInfo.NavAltitude);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -176,7 +178,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				valid=false;
 				break;
 			}
-			value=ALTITUDEMODIFY*DerivedDrawInfo.AltitudeAGL;
+			value=Units::ToAltitude(DerivedDrawInfo.AltitudeAGL);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -184,7 +186,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B02 091221
 		case LK_TC_30S:
-			value=LIFTMODIFY*DerivedDrawInfo.Average30s;
+			value=Units::ToVerticalSpeed(DerivedDrawInfo.Average30s);
 			if (value==0)
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			else { 
@@ -281,7 +283,7 @@ goto_bearing:
 			break;
 		// B06
 		case LK_GNDSPEED:
-			value=SPEEDMODIFY*DrawInfo.Speed;
+			value=Units::ToHorizontalSpeed(DrawInfo.Speed);
 			valid=true;
 			if (value<0||value>9999) value=0; else valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
@@ -296,7 +298,7 @@ goto_bearing:
 
 		// B07  091221
 		case LK_TL_AVG:
-			value= LIFTMODIFY*DerivedDrawInfo.LastThermalAverage;
+			value= Units::ToVerticalSpeed(DerivedDrawInfo.LastThermalAverage);
 			if (value==0)
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			else { 
@@ -314,7 +316,7 @@ goto_bearing:
 
 		// B08 091216 091221
 		case LK_TL_GAIN:
-			value=ALTITUDEMODIFY*DerivedDrawInfo.LastThermalGain;
+			value=Units::ToAltitude(DerivedDrawInfo.LastThermalGain);
 			if (value==0)
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			else { 
@@ -349,7 +351,7 @@ goto_bearing:
 
 		// B10
 		case LK_MC:
-			value = iround(LIFTMODIFY*MACCREADY*10)/10.0;
+			value = iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0;
 			valid=true;
 			_stprintf(BufferValue, TEXT("%2.1lf"),value);
 			if (!DerivedDrawInfo.AutoMacCready) {
@@ -372,7 +374,7 @@ goto_bearing:
 		case LK_NEXT_DIST:
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 			   if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) {
-				value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
+				value=Units::ToDistance(WayPointCalc[RESWP_OPTIMIZED].Distance);
 				valid=true;
 				if (value>99)
 					_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -389,7 +391,7 @@ goto_bearing:
 			   } else {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value=DerivedDrawInfo.WaypointDistance*DISTANCEMODIFY;
+					value=Units::ToDistance(DerivedDrawInfo.WaypointDistance);
 					valid=true;
 					if (value>99 || value==0)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -433,7 +435,7 @@ goto_bearing:
 				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					// don't use current MC...
-					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
+					value=Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
 						_stprintf(BufferValue,TEXT("%+1.0f"), value);
@@ -458,7 +460,7 @@ goto_bearing:
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value=ALTITUDEMODIFY*WayPointCalc[index].AltReqd[AltArrivMode];
+					value=Units::ToAltitude(WayPointCalc[index].AltReqd[AltArrivMode]);
 					if (value<10000 && value >-10000) {
 						_stprintf(BufferValue,TEXT("%1.0f"), value);
 						valid=true;
@@ -488,9 +490,9 @@ goto_bearing:
 				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
                     if(ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
-                        value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeArrival;
+                        value=Units::ToAltitude(DerivedDrawInfo.TaskAltitudeArrival);
                     } else {
-    					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference;
+    					value=Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference);
                     }
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
@@ -514,7 +516,7 @@ goto_bearing:
 			if (ValidTaskPoint(ActiveTaskPoint)) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeRequired;
+					value=Units::ToAltitude(DerivedDrawInfo.TaskAltitudeRequired);
 					if (value<10000 && value >-10000) {
 						_stprintf(BufferValue,TEXT("%1.0f"), value);
 						valid=true;
@@ -535,7 +537,7 @@ goto_bearing:
 			value=0;
 			if ( ActiveTaskPoint >=1) {
 				if ( ValidTaskPoint(ActiveTaskPoint) ) {
-					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeed;
+					value = Units::ToTaskSpeed(DerivedDrawInfo.TaskSpeed);
 					if (value<=0||value>999) value=0; else valid=true;
 					if (value<99)
 						_stprintf(BufferValue, TEXT("%.1f"),value);
@@ -553,9 +555,9 @@ goto_bearing:
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if (DerivedDrawInfo.ValidFinish) {
-						value = DISTANCEMODIFY*DerivedDrawInfo.WaypointDistance;
+						value = Units::ToDistance(DerivedDrawInfo.WaypointDistance);
 					} else {
-						value = DISTANCEMODIFY*DerivedDrawInfo.TaskDistanceToGo;
+						value = Units::ToDistance(DerivedDrawInfo.TaskDistanceToGo);
 					}
 					valid=true;
 					if (value>99)
@@ -585,7 +587,7 @@ goto_bearing:
 		case LK_HGND:
                         _stprintf(BufferValue,_T(NULLLONG));
 			if (DerivedDrawInfo.TerrainValid) {
-				value=ALTITUDEMODIFY*DerivedDrawInfo.TerrainAlt;
+				value=Units::ToAltitude(DerivedDrawInfo.TerrainAlt);
 				valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 			}
@@ -600,7 +602,7 @@ goto_bearing:
 
 		// B21 091221
 		case LK_TC_AVG:
-			value= LIFTMODIFY*DerivedDrawInfo.AverageThermal;
+			value= Units::ToVerticalSpeed(DerivedDrawInfo.AverageThermal);
 			if (value==0)
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			else { 
@@ -618,7 +620,7 @@ goto_bearing:
 
 		// B22 091221
 		case LK_TC_GAIN:
-			value=ALTITUDEMODIFY*DerivedDrawInfo.ThermalGain;
+			value=Units::ToAltitude(DerivedDrawInfo.ThermalGain);
 			if (value==0)
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			else { 
@@ -650,9 +652,9 @@ goto_bearing:
 		// B24
 		case LK_VARIO:
 			if (VarioAvailable(DrawInfo)) {
-				value = LIFTMODIFY*DrawInfo.Vario;
+				value = Units::ToVerticalSpeed(DrawInfo.Vario);
 			} else {
-				value = LIFTMODIFY*DerivedDrawInfo.Vario;
+				value = Units::ToVerticalSpeed(DerivedDrawInfo.Vario);
 			}
 			valid=true;
 			_stprintf(BufferValue,varformat,value);
@@ -668,9 +670,9 @@ goto_bearing:
 		// B25
 		case LK_WIND_SPEED:
 			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
-			_stprintf(BufferUnit, TEXT("%s"),Units::GetHorizontalSpeedName());
+			_stprintf(BufferUnit, TEXT("%s"),Units::GetWindSpeedName());
 			
-			value=DerivedDrawInfo.WindSpeed*SPEEDMODIFY;
+			value=Units::ToWindSpeed(DerivedDrawInfo.WindSpeed);
 			if (value>=1 ) {
 				_stprintf(BufferValue,TEXT("%1.0f"), value );
 				valid=true;
@@ -683,7 +685,7 @@ goto_bearing:
 		// B26
 		case LK_WIND_BRG:
 			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
-			if (DerivedDrawInfo.WindSpeed*SPEEDMODIFY>=1) {
+			if (Units::ToWindSpeed(DerivedDrawInfo.WindSpeed)>=1) {
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
 				if (value==360) value=0;
@@ -717,9 +719,9 @@ goto_bearing:
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_DISTMAX )
-						value = DISTANCEMODIFY*DerivedDrawInfo.AATMaxDistance ;
+						value = Units::ToDistance(DerivedDrawInfo.AATMaxDistance);
 					else
-						value = DISTANCEMODIFY*DerivedDrawInfo.AATMinDistance ;
+						value = Units::ToDistance(DerivedDrawInfo.AATMinDistance);
 					valid=true;
 					if (value>99)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -744,9 +746,9 @@ goto_bearing:
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_SPEEDMAX )
-						value = TASKSPEEDMODIFY*DerivedDrawInfo.AATMaxSpeed;
+						value = Units::ToTaskSpeed(DerivedDrawInfo.AATMaxSpeed);
 					else
-						value = TASKSPEEDMODIFY*DerivedDrawInfo.AATMinSpeed;
+						value = Units::ToTaskSpeed(DerivedDrawInfo.AATMinSpeed);
 
 					valid=true;
 					_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -769,12 +771,12 @@ goto_bearing:
 					_tcscpy(BufferTitle, MsgToken<1066>());
 				else
 					_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
-				value=SPEEDMODIFY*DrawInfo.IndicatedAirspeed;
+				value=Units::ToHorizontalSpeed(DrawInfo.IndicatedAirspeed);
 				if (value<0||value>999) value=0; else valid=true;
 			} else {
 				// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
 				_stprintf(BufferTitle, TEXT("e%s"), MsgToken<1066>());
-				value=SPEEDMODIFY*DerivedDrawInfo.IndicatedAirspeedEstimated;
+				value=Units::ToHorizontalSpeed(DerivedDrawInfo.IndicatedAirspeedEstimated);
 				if (value<0||value>999) value=0; else valid=true;
 			}
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
@@ -785,7 +787,7 @@ goto_bearing:
 		// B33
 		case LK_HBARO:
 			if (BaroAltitudeAvailable(DrawInfo)) {
-				value=ALTITUDEMODIFY*DrawInfo.BaroAltitude;
+				value=Units::ToAltitude(DrawInfo.BaroAltitude);
 				valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 			} else
@@ -797,7 +799,7 @@ goto_bearing:
 
 		// B34
 		case LK_SPEED_MC:
-			value=SPEEDMODIFY*DerivedDrawInfo.VMacCready;
+			value=Units::ToHorizontalSpeed(DerivedDrawInfo.VMacCready);
 			valid=true;
 			if (value<=0||value>999) value=0; else valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
@@ -949,7 +951,7 @@ goto_bearing:
 
 		// B43 AKA STF
 		case LK_SPEED_DOLPHIN:
-			value=SPEEDMODIFY*DerivedDrawInfo.VOpt;
+			value=Units::ToHorizontalSpeed(DerivedDrawInfo.VOpt);
 			if (value<0||value>999) value=0; else valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)round(value));
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
@@ -959,14 +961,14 @@ goto_bearing:
 
 		// B44
 		case LK_NETTO:
-			value=LIFTMODIFY*DerivedDrawInfo.NettoVario;
+			value=Units::ToVerticalSpeed(DerivedDrawInfo.NettoVario);
 			if (value<-100||value>100) value=0; else valid=true;
 			_stprintf(BufferValue,varformat,value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetVerticalSpeedName()));
 			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
-				
+
 		// B45
 		case LK_FIN_ETA:
 			_stprintf(BufferValue,_T(NULLLONG));
@@ -1103,7 +1105,7 @@ goto_bearing:
 			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value = DISTANCEMODIFY*DerivedDrawInfo.AATTargetDistance ;
+					value = Units::ToDistance(DerivedDrawInfo.AATTargetDistance);
 					valid=true;
 					if (value>99)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -1125,7 +1127,7 @@ goto_bearing:
 			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value = TASKSPEEDMODIFY*DerivedDrawInfo.AATTargetSpeed;
+					value = Units::ToTaskSpeed(DerivedDrawInfo.AATTargetSpeed);
 					valid=true;
 					_stprintf(BufferValue, TEXT("%.0f"),value);
 				} else {
@@ -1165,7 +1167,7 @@ goto_bearing:
 					_tcscpy(BufferTitle, MsgToken<1110>());
 				else
 					_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
-				value=SPEEDMODIFY*DrawInfo.TrueAirspeed;
+				value=Units::ToHorizontalSpeed(DrawInfo.TrueAirspeed);
 				if (value<0||value>999) {
 					_stprintf(BufferValue, TEXT("%s"),NULLMEDIUM);
 				} else {
@@ -1175,7 +1177,7 @@ goto_bearing:
 			} else {
 				// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
 				_stprintf(BufferTitle, TEXT("e%s"), MsgToken<1110>());
-				value=SPEEDMODIFY*DerivedDrawInfo.TrueAirspeedEstimated;
+				value=Units::ToHorizontalSpeed(DerivedDrawInfo.TrueAirspeedEstimated);
 				if (value<0||value>999) {
 					_stprintf(BufferValue, TEXT("%s"),NULLMEDIUM);
 				} else {
@@ -1258,7 +1260,7 @@ goto_bearing:
 		// B58 091216 Team Range Distance
 		case LK_TEAM_DIST:
 			if ( TeammateCodeValid ) {
-				value=DISTANCEMODIFY*DerivedDrawInfo.TeammateRange;
+				value=Units::ToDistance(DerivedDrawInfo.TeammateRange);
 				valid=true;
 				if (value>99)
 					_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -1288,7 +1290,7 @@ goto_bearing:
 			value=0;
 			if ( ActiveTaskPoint >=1) {
 				if ( ValidTaskPoint(ActiveTaskPoint) ) {
-					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedInstantaneous;
+					value = Units::ToTaskSpeed(DerivedDrawInfo.TaskSpeedInstantaneous);
 					if (value<=0||value>999) value=0; else valid=true;
 					if (value<99)
 						_stprintf(BufferValue, TEXT("%.1f"),value);
@@ -1303,9 +1305,10 @@ goto_bearing:
 		case LK_HOME_DISTNM:
 			if (HomeWaypoint>=0) {
 				if ( ValidWayPoint(HomeWaypoint) != false ) {
-					value=DerivedDrawInfo.HomeDistance*DISTANCEMODIFY;
 					if (lkindex == LK_HOME_DISTNM)
-						value=DerivedDrawInfo.HomeDistance*TONAUTICALMILES;
+						value = Units::To(unNauticalMiles, DerivedDrawInfo.HomeDistance);
+					else 
+						value = Units::ToDistance(DerivedDrawInfo.HomeDistance);
 
 					valid=true;
 					if (value>99)
@@ -1345,7 +1348,7 @@ goto_bearing:
 			value=0;
 			if ( ActiveTaskPoint >=1) {
 				if ( ValidTaskPoint(ActiveTaskPoint) ) {
-					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedAchieved;
+					value = Units::ToTaskSpeed(DerivedDrawInfo.TaskSpeedAchieved);
 					if (value<0||value>999) value=0; else valid=true;
 					if (value<99)
 						_stprintf(BufferValue, TEXT("%.1f"),value);
@@ -1382,7 +1385,7 @@ goto_bearing:
 				//value=0.0;
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			else {
-				value = LIFTMODIFY*DerivedDrawInfo.TotalHeightClimb /DerivedDrawInfo.timeCircling;
+				value = Units::ToVerticalSpeed(DerivedDrawInfo.TotalHeightClimb /DerivedDrawInfo.timeCircling);
 				if (value<20)
 					_stprintf(BufferValue, TEXT("%+.1lf"),value);
 				else
@@ -1570,7 +1573,7 @@ goto_bearing:
 
 		// B70
 		case LK_QFE:
-			value=ALTITUDEMODIFY*DerivedDrawInfo.NavAltitude-QFEAltitudeOffset;;
+			value=Units::ToAltitude(DerivedDrawInfo.NavAltitude-QFEAltitudeOffset);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -1645,9 +1648,9 @@ goto_bearing:
 			// Cant use NavAltitude, because FL should use Baro if available, despite
 			// user settings.
 			if (BaroAltitudeAvailable(DrawInfo))
-				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
+				value = Units::To(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude));
 			else
-				value=(TOFEET*(QNHAltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
+				value = Units::To(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.Altitude));
 
 			if (value>=1) {
 				valid=true;
@@ -1662,7 +1665,7 @@ goto_bearing:
 		// B74
 		case LK_TASK_DISTCOV:
 			if ( (ActiveTaskPoint >=1) && ( ValidTaskPoint(ActiveTaskPoint) )) {
-				value = DISTANCEMODIFY*DerivedDrawInfo.TaskDistanceCovered;
+				value = Units::ToDistance(DerivedDrawInfo.TaskDistanceCovered);
 				valid=true;
 				_stprintf(BufferValue, TEXT("%.0f"),value); // l o f?? TODO CHECK
 			} else {
@@ -1739,15 +1742,15 @@ goto_bearing:
 			}
 			switch (lkindex) {
 				case LK_ALTERN1_ARRIV:
-					if ( ValidWayPoint(Alternate1) ) value=ALTITUDEMODIFY*WayPointCalc[Alternate1].AltArriv[AltArrivMode];
+					if ( ValidWayPoint(Alternate1) ) value=Units::ToAltitude(WayPointCalc[Alternate1].AltArriv[AltArrivMode]);
 					else value=INVALID_DIFF;
 					break;
 				case LK_ALTERN2_ARRIV:
-					if ( ValidWayPoint(Alternate2) ) value=ALTITUDEMODIFY*WayPointCalc[Alternate2].AltArriv[AltArrivMode];
+					if ( ValidWayPoint(Alternate2) ) value=Units::ToAltitude(WayPointCalc[Alternate2].AltArriv[AltArrivMode]);
 					else value=INVALID_DIFF;
 					break;
 				case LK_BESTALTERN_ARRIV:
-					if ( ValidWayPoint(BestAlternate) ) value=ALTITUDEMODIFY*WayPointCalc[BestAlternate].AltArriv[AltArrivMode];
+					if ( ValidWayPoint(BestAlternate) ) value=Units::ToAltitude(WayPointCalc[BestAlternate].AltArriv[AltArrivMode]);
 					else value=INVALID_DIFF;
 					break;
 				default:
@@ -1803,7 +1806,7 @@ goto_bearing:
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 
-			value = fabs(DISTANCEMODIFY*NearestAirspaceHDist);
+			value = fabs(Units::ToDistance(NearestAirspaceHDist));
 
 			if (value < 1.0) {
 				_stprintf(BufferValue, TEXT("%1.3f"),value);
@@ -1860,7 +1863,7 @@ goto_bearing:
 		// B83
 		case LK_ODOMETER:
 			if (DerivedDrawInfo.Odometer>0) {
-				value=DerivedDrawInfo.Odometer*DISTANCEMODIFY;
+				value=Units::ToDistance(DerivedDrawInfo.Odometer);
 				valid=true;
 				if (value>99)
 					_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -1884,13 +1887,11 @@ goto_bearing:
 				_tcscpy(BufferTitle, MsgToken<1170>());
 			else
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
-			if (ALTITUDEMODIFY==TOMETER)
-				value=TOFEET*DerivedDrawInfo.NavAltitude;
-			else
-				value=TOMETER*DerivedDrawInfo.NavAltitude;
+
+			value=Units::ToAlternateAltitude(DerivedDrawInfo.NavAltitude);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetInvAltitudeName()));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAlternateAltitudeName()));
 			break;
 
 		// B85  100126
@@ -1902,17 +1903,14 @@ goto_bearing:
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
 			if (!DerivedDrawInfo.TerrainValid) { //@ 101013
 				_stprintf(BufferValue, TEXT(NULLLONG));
-				_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+				_stprintf(BufferUnit, TEXT("%s"),(Units::GetAlternateAltitudeName()));
 				valid=false;
 				break;
 			}
-			if (ALTITUDEMODIFY==TOMETER)
-				value=TOFEET*DerivedDrawInfo.AltitudeAGL;
-			else
-				value=TOMETER*DerivedDrawInfo.AltitudeAGL;
+			value=Units::ToAlternateAltitude(DerivedDrawInfo.AltitudeAGL);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetInvAltitudeName()));
+			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAlternateAltitudeName()));
 			break;
 
 
@@ -1927,7 +1925,7 @@ goto_bearing:
 				_stprintf(BufferValue, TEXT(NULLLONG));
 				valid=false;
 			} else {
-				value=ALTITUDEMODIFY*DrawInfo.Altitude;
+				value=Units::ToAltitude(DrawInfo.Altitude);
 				valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 				_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -1942,7 +1940,7 @@ goto_bearing:
 			if ( DerivedDrawInfo.Circling || DerivedDrawInfo.EqMc<0 || DerivedDrawInfo.OnGround) {
 				_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-				value = iround(LIFTMODIFY*DerivedDrawInfo.EqMc*10)/10.0;
+				value = iround(Units::ToVerticalSpeed(DerivedDrawInfo.EqMc*10))/10.0;
 				valid=true;
 				_stprintf(BufferValue, TEXT("%2.1lf"),value);
 			}
@@ -1994,7 +1992,7 @@ olc_dist:
 			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
 				_stprintf(BufferValue,_T(NULLMEDIUM));
 			else {
-				_stprintf(BufferValue, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
+				_stprintf(BufferValue, TEXT("%5.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
 				valid=true;
 			}
 			break;
@@ -2030,7 +2028,7 @@ olc_speed:
 				if ( OlcResults[ivalue].Speed() >999 ) {
 					_stprintf(BufferValue,_T(NULLMEDIUM));
 				} else {
-					_stprintf(BufferValue, TEXT("%3.1f"),SPEEDMODIFY*OlcResults[ivalue].Speed());
+					_stprintf(BufferValue, TEXT("%3.1f"),Units::ToHorizontalSpeed(OlcResults[ivalue].Speed()));
 					valid=true;
 				}
 			}
@@ -2095,7 +2093,7 @@ olc_score:
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
 
 			if (NearestAirspaceVDist != 0 && (fabs(NearestAirspaceVDist)<=9999) ) { // 9999 m or ft is ok
-				value = ALTITUDEMODIFY*NearestAirspaceVDist;
+				value = Units::ToAltitude(NearestAirspaceVDist);
 				_stprintf(BufferValue, TEXT("%.0f"),value);
 				valid = true;
 			} else {
@@ -2118,7 +2116,7 @@ olc_score:
 				_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
       
 			if ( ValidWayPoint(HomeWaypoint) != false ) {
-				value=WayPointCalc[HomeWaypoint].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
+				value=Units::ToAltitude(WayPointCalc[HomeWaypoint].AltArriv[AltArrivMode]);
 				if ( value > ALTDIFFLIMIT ) {
 					valid=true;
 					_stprintf(BufferValue,TEXT("%+1.0f"), value);
@@ -2230,7 +2228,7 @@ olc_score:
 					else
 						BufferTitle[8] = '\0';  // FIX TUNING
 				}
-				value=DISTANCEMODIFY*WayPointCalc[index].Distance;
+				value=Units::ToDistance(WayPointCalc[index].Distance);
 				valid=true;
 			}
 
@@ -2256,7 +2254,7 @@ olc_score:
 
 		// B122
 		case LK_MAXALT:
-			value=ALTITUDEMODIFY*DerivedDrawInfo.MaxAltitude;
+			value=Units::ToAltitude(DerivedDrawInfo.MaxAltitude);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -2265,7 +2263,7 @@ olc_score:
 
 		// B123
 		case LK_MAXHGAINED:
-			value=ALTITUDEMODIFY*DerivedDrawInfo.MaxHeightGain;
+			value=Units::ToAltitude(DerivedDrawInfo.MaxHeightGain);
 			valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
@@ -2276,10 +2274,10 @@ olc_score:
 		// B124
 		case LK_HEADWINDSPEED:
 			_tcscpy(BufferTitle, DataOptionsTitle(lkindex));
-			_tcscpy(BufferUnit, Units::GetHorizontalSpeedName());
+			_tcscpy(BufferUnit, Units::GetWindSpeedName());
 
 			if (DerivedDrawInfo.HeadWind != -999) {
-				value = DerivedDrawInfo.HeadWind * SPEEDMODIFY;
+				value=Units::ToWindSpeed(DerivedDrawInfo.HeadWind);
 				if (std::abs(value) >= 1) {
 					_stprintf(BufferValue,TEXT("%+1.0f"), value);
 					valid=true;
@@ -2293,7 +2291,7 @@ olc_score:
 		// B125
 		case LK_OLC_FAI_CLOSE:
 			bFAI = CContestMgr::Instance().FAI();
-			fTogo =DISTANCEMODIFY*CContestMgr::Instance().GetClosingPointDist();
+			fTogo =Units::ToDistance(CContestMgr::Instance().GetClosingPointDist());
 			if(fTogo >0)
 			{
 				if (fTogo>99)
@@ -2460,7 +2458,7 @@ olc_score:
 					else
 						BufferTitle[8] = '\0';  // FIX TUNING
 				}
-				value=TONAUTICALMILES*WayPointCalc[index].Distance;
+				value= Units::To(unNauticalMiles, WayPointCalc[index].Distance);
 				valid=true;
 			}
 
@@ -2484,7 +2482,7 @@ olc_score:
 
 		// B133 Speed of maximum efficiency
 		case LK_SPEED_ME:
-			value=SPEEDMODIFY*DerivedDrawInfo.Vme;
+			value=Units::ToHorizontalSpeed(DerivedDrawInfo.Vme);
 			if (value<0||value>999) value=0; else valid=true;
 			_stprintf(BufferValue, TEXT("%d"),(int)value);
 			_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
@@ -2563,7 +2561,7 @@ olc_score:
       }
 
       if(valid) {
-        value=Units::ToUserDistance(value);
+        value=Units::ToDistance(value);
         if (value>99 || value==0)
           _stprintf(BufferValue, TEXT("%.0f"),value);
         else {
@@ -2592,7 +2590,7 @@ olc_score:
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          _stprintf(BufferValue, TEXT("%5.0f"), Units::ToDistance(OlcResults[ivalue].Distance()));
           valid = true;
         }
         break;
@@ -2616,7 +2614,7 @@ olc_score:
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          _stprintf(BufferValue, TEXT("%5.0f"), Units::ToDistance(OlcResults[ivalue].Distance()));
           valid = true;
         }
         break;
@@ -2641,7 +2639,7 @@ olc_score:
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * OlcResults[ivalue].Distance());
+          _stprintf(BufferValue, TEXT("%5.0f"), Units::ToDistance(OlcResults[ivalue].Distance()));
           valid = true;
         }
         break;
@@ -2665,7 +2663,7 @@ olc_score:
         if (OlcResults[ivalue].Type() == CContestMgr::TYPE_INVALID)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          value = DISTANCEMODIFY * OlcResults[ivalue].Distance();
+          value = Units::ToDistance(OlcResults[ivalue].Distance());
           if (value >= 100){
             _stprintf(BufferValue, TEXT("%.0f"), value);
           }else{
@@ -2712,7 +2710,7 @@ olc_score:
           _stprintf(BufferValue, _T(NULLMEDIUM));
         }
         else {
-          const double dist =    DISTANCEMODIFY * CContestMgr::Instance().GetXCTriangleClosureDistance() ;
+          const double dist = Units::ToDistance(CContestMgr::Instance().GetXCTriangleClosureDistance());
           _stprintf(BufferValue, TEXT("%5.1f"), dist);
           valid = true;
         }
@@ -2738,7 +2736,7 @@ olc_score:
         if (CContestMgr::Instance().GetXCTriangleDistance() == 0)
           _stprintf(BufferValue, _T(NULLMEDIUM));
         else {
-          _stprintf(BufferValue, TEXT("%5.0f"), DISTANCEMODIFY * CContestMgr::Instance().GetXCTriangleDistance() );
+          _stprintf(BufferValue, TEXT("%5.0f"), Units::ToDistance(CContestMgr::Instance().GetXCTriangleDistance()));
           valid = true;
         }
         break;
@@ -2750,7 +2748,7 @@ olc_score:
 		if (CContestMgr::Instance().GetXCMeanSpeed() == 0)
 			_stprintf(BufferValue, _T(NULLMEDIUM));
 		else {
-			_stprintf(BufferValue, TEXT("%5.0f"), SPEEDMODIFY * CContestMgr::Instance().GetXCMeanSpeed() );
+			_stprintf(BufferValue, TEXT("%5.0f"), Units::ToHorizontalSpeed(CContestMgr::Instance().GetXCMeanSpeed()));
 			valid = true;
 		}
 		break;
@@ -2759,20 +2757,20 @@ olc_score:
 		case LK_WIND:
 			// LKTOKEN  _@M1185_ = "Wind"
 			_tcscpy(BufferTitle, MsgToken<1185>());
-			if (DerivedDrawInfo.WindSpeed*SPEEDMODIFY>=1) {
+			if (Units::ToWindSpeed(DerivedDrawInfo.WindSpeed)>=1) {
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
 				if (UseWindRose) {
 					_stprintf(BufferValue,TEXT("%s/%1.0f"), 
-						AngleToWindRose(value), SPEEDMODIFY*DerivedDrawInfo.WindSpeed);
+						AngleToWindRose(value), Units::ToWindSpeed(DerivedDrawInfo.WindSpeed));
 				} else {
 					if (value==360) value=0;
 					if (HideUnits)
 						_stprintf(BufferValue,TEXT("%03.0f/%1.0f"), 
-							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+							value, Units::ToWindSpeed(DerivedDrawInfo.WindSpeed));
 					else
 						_stprintf(BufferValue,TEXT("%03.0f%s/%1.0f"), 
-							value, MsgToken<2179>(), SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+							value, MsgToken<2179>(), Units::ToWindSpeed(DerivedDrawInfo.WindSpeed));
 				}
 			} else {
 				_stprintf(BufferValue,TEXT("--/--"));
@@ -2793,7 +2791,7 @@ olc_score:
 			if (ValidTaskPoint(ActiveTaskPoint)) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference0;
+					value=Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference0);
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
 						_stprintf(BufferValue,TEXT("%+1.0f"), value);
@@ -2871,7 +2869,7 @@ lkfin_ete:
 				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value=ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference0;
+					value=Units::ToAltitude(DerivedDrawInfo.NextAltitudeDifference0);
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
 						_stprintf(BufferValue,TEXT("%+1.0f"), value);
@@ -2898,7 +2896,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 					// get values
-	                value=DISTANCEMODIFY*LKTraffic[LKTargetIndex].Distance;
+	                value=Units::ToDistance(LKTraffic[LKTargetIndex].Distance);
 					if (value>99) {
 						_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					} else {
@@ -2974,7 +2972,7 @@ lkfin_ete:
 	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
-					value=SPEEDMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Speed;
+					value=Units::ToHorizontalSpeed(DrawInfo.FLARM_Traffic[LKTargetIndex].Speed);
 					if (value<0||value>9999) value=0; else valid=true;
 					_stprintf(BufferValue, TEXT("%d"),(int)value);
 				}
@@ -3008,7 +3006,7 @@ lkfin_ete:
                 if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
-					value=ALTITUDEMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude;
+					value=Units::ToAltitude(DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude);
 					valid=true;
 					_stprintf(BufferValue, TEXT("%d"),(int)value);
 				}
@@ -3028,7 +3026,7 @@ lkfin_ete:
                 if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
-					value=ALTITUDEMODIFY*(DerivedDrawInfo.NavAltitude-DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude)*-1;
+					value=Units::ToAltitude(DerivedDrawInfo.NavAltitude-DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude)*-1;
 					valid=true;
 					_stprintf(BufferValue, TEXT("%+d"),(int)value);
 				}
@@ -3048,7 +3046,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 				} else {
-					value = LIFTMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].ClimbRate;
+					value = Units::ToVerticalSpeed(DrawInfo.FLARM_Traffic[LKTargetIndex].ClimbRate);
 					valid=true;
 					_stprintf(BufferValue,varformat,value);
 					_stprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
@@ -3068,7 +3066,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 					_tcscpy(BufferUnit, _T(""));
 				} else {
-					value = LIFTMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Average30s;
+					value = Units::ToVerticalSpeed(DrawInfo.FLARM_Traffic[LKTargetIndex].Average30s);
 					valid=true;
 					_stprintf(BufferValue,varformat,value);
 					_stprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
@@ -3090,7 +3088,7 @@ lkfin_ete:
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 				} else {
 
-					value=ALTITUDEMODIFY*LKTraffic[LKTargetIndex].AltArriv;
+					value=Units::ToAltitude(LKTraffic[LKTargetIndex].AltArriv);
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
 						_stprintf(BufferValue,TEXT("%+1.0f"), value);
@@ -3134,7 +3132,7 @@ lkfin_ete:
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-				value=SPEEDMODIFY*LKTraffic[LKTargetIndex].EIAS;
+				value=Units::ToHorizontalSpeed(LKTraffic[LKTargetIndex].EIAS);
 				if (value<0||value>999) value=0; else valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 				_stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
@@ -3146,7 +3144,7 @@ lkfin_ete:
 		case LK_START_DIST:
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
 				if((ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute())&& ActiveTaskPoint == 0) {
-					value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
+					value=Units::ToDistance(WayPointCalc[RESWP_OPTIMIZED].Distance);
 					if (value>99 || value==0)
 						_stprintf(BufferValue, TEXT("%.0f"),value);
 					else {
@@ -3159,7 +3157,7 @@ lkfin_ete:
 				else {
 					index = Task[0].Index;
 					if (index>=0) {
-						value=(DerivedDrawInfo.WaypointDistance-StartRadius)*DISTANCEMODIFY;
+						value=Units::ToDistance(DerivedDrawInfo.WaypointDistance-StartRadius);
 						if (value<0) value*=-1; // 101112 BUGFIX
 						valid=true;
 						if (value>99 || value==0)
@@ -3194,7 +3192,7 @@ lkfin_ete:
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
 					// don't use current MC...
-					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];
+					value=Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
 					if ( value > ALTDIFFLIMIT ) {
 						valid=true;
 						_stprintf(BufferValue,TEXT("%+1.0f"), value);
@@ -3236,7 +3234,7 @@ lkfin_ete:
                 if (gatechrono > 0) {
                     const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
                     const double SpeedToGate = DistToGate / gatechrono;
-                    const int RoundedSpeed = iround(SPEEDMODIFY*SpeedToGate);
+                    const int RoundedSpeed = iround(Units::ToHorizontalSpeed(SpeedToGate));
                     if (SpeedToGate > 300) {
                         // ignore too fast speed
                         _tcscpy(BufferValue, infinity);
@@ -3256,7 +3254,7 @@ lkfin_ete:
 
 		// B253
 		case LK_START_ALT:
-			value = ALTITUDEMODIFY * DerivedDrawInfo.TaskStartAltitude;
+			value = Units::ToAltitude(DerivedDrawInfo.TaskStartAltitude);
 			if (value > 0) {
 				_stprintf(BufferValue, TEXT("%d"), (int)value);
 				_stprintf(BufferUnit, TEXT("%s"), (Units::GetAltitudeName()));
@@ -3329,7 +3327,7 @@ lkfin_ete:
 			{
 				int totime = (int)(Trip_Steady_Time + Trip_Moving_Time);
 				if (totime > 0) {
-					_stprintf(BufferValue, _T("%.1f"), (DerivedDrawInfo.Odometer * SPEEDMODIFY) / totime);
+					_stprintf(BufferValue, _T("%.1f"), Units::ToHorizontalSpeed(DerivedDrawInfo.Odometer) / totime);
 					_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
 					valid = true;
 				} else {
@@ -3370,7 +3368,7 @@ lkfin_ete:
 			break;
 
 		case LK_SPEED_AVG:
-			_stprintf(BufferValue, _T("%.1f"), SPEEDMODIFY * Rotary_Speed);
+			_stprintf(BufferValue, _T("%.1f"), Units::ToHorizontalSpeed(Rotary_Speed));
 			_stprintf(BufferTitle, _T("AvgSpd"));
 			_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
 			valid = true;
@@ -3378,7 +3376,7 @@ lkfin_ete:
 
 		case LK_DIST_AVG:
 			if (Rotary_Distance < 100000) {
-				_stprintf(BufferValue, _T("%.2f"), DISTANCEMODIFY * Rotary_Distance);
+				_stprintf(BufferValue, _T("%.2f"), Units::ToDistance(Rotary_Distance));
 			} else {
 				_stprintf(BufferValue, _T("%.2f"), 0.0);
 			}
@@ -3448,7 +3446,7 @@ void MapWindow::LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *Buffe
   int index = GetValidWayPointIndex(wpindex);
 
   if (index>=0) {
-	double value=WayPointCalc[index].Distance*DISTANCEMODIFY;
+	double value=Units::ToDistance(WayPointCalc[index].Distance);
 	if (value<0.001) value=0;
 	if (value>99 || value==0)
 		_stprintf(BufferValue, TEXT("%.0f"),value);
@@ -3535,7 +3533,7 @@ void MapWindow::LKFormatAltDiff(const int wpindex, TCHAR *BufferValue, TCHAR *Bu
 
   double value;
   if (index>=0) {
-	value=WayPointCalc[index].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
+	value=Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
   } else {
 	value=INVALID_DIFF;
   }

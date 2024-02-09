@@ -90,7 +90,7 @@ double NMEAParser::ParseAltitude(const char* value, const char* format) {
 
   double alt = StrToDouble(value, nullptr);
   if (format[0] == 'f' || format[0] == 'F') {
-    alt /= TOFEET;
+    alt = Units::From(unFeet, alt);
   }
   return alt;
 }

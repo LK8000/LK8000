@@ -131,7 +131,7 @@ BOOL cai302ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 static BOOL cai302PutMacCready(DeviceDescriptor_t* d, double MacCready) {
   TCHAR szTmp[32];
 
-  _stprintf(szTmp, TEXT("!g,m%d\r"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5));
+  _stprintf(szTmp, TEXT("!g,m%d\r"), static_cast<int>(round(Units::To(unKnots, MacCready) * 10.0)));
   d->Com->WriteString(szTmp);
   return (TRUE);
 }
@@ -321,8 +321,8 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
             GliderType,
             GliderID,
             (int)GlidePolar::bestld,
-            (int)(GlidePolar::Vbestld() * TOKPH),
-            (int)(GlidePolar::FindSpeedForSinkRateAccurate(-2.0) * TOKPH),
+            (int)Units::To(unKiloMeterPerHour, GlidePolar::Vbestld()),
+            (int)Units::To(unKiloMeterPerHour, GlidePolar::FindSpeedForSinkRateAccurate(-2.0)),
             (int)(WEIGHTS[0] + WEIGHTS[1]),
             (int)WEIGHTS[2],
             0,
@@ -546,11 +546,11 @@ BOOL cai_w(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 
 
   NMEAParser::ExtractParameter(String,ctemp,7);
-  double Vario = ((StrToDouble(ctemp,NULL) - 200.0) / 10.0) * KNOTSTOMETRESSECONDS;
+  double Vario = Units::From(unKnots, (StrToDouble(ctemp,NULL) - 200.0) / 10.0);;
   UpdateVarioSource(*pGPS, *d, Vario);
 
   NMEAParser::ExtractParameter(String,ctemp,10);
-  d->RecvMacCready((StrToDouble(ctemp, nullptr) / 10.0) * KNOTSTOMETRESSECONDS);
+  d->RecvMacCready(Units::From(unKnots, StrToDouble(ctemp, nullptr) / 10.0));
 
   NMEAParser::ExtractParameter(String,ctemp,11);
   d->RecvBallast(StrToDouble(ctemp, nullptr) / 100.0);
