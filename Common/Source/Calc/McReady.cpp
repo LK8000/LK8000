@@ -543,14 +543,11 @@ double GlidePolar::FindSpeedForSinkRate(double w) {
 double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
   // find the highest speed that provides a sink rate less than
   // the specified sink rate
-  double vbest= Vminsink();
-  const int start_speed = Units::To(unKiloMeterPerHour, Vminsink());
-  const int stop_speed = Units::To(unKiloMeterPerHour, SAFTEYSPEED);
-  
-  for (int v=start_speed; v<stop_speed; v++) {
-    const double vms = Units::From(unKiloMeterPerHour, v);
-    const double wthis = SinkRate(polar_a,polar_b,polar_c,0,0,vms);
-    if (wthis>w) {
+  double vbest = Vminsink();
+  const double step = Units::From(unKiloMeterPerHour, 1);
+  for (double vms = vbest; vms < SAFTEYSPEED; vms += step) {
+    const double wthis = SinkRate(polar_a, polar_b, polar_c, 0, 0, vms);
+    if (wthis < w) {
       vbest = vms;
     }
   }
