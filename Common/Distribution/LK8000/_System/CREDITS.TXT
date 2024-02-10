@@ -10,6 +10,12 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.11]
+ - updated keyboard layout
+ - improved flarm radar drawing
+ - updated "Air Control Display" device driver
+ - minor bug fix and improvement
+
 [version 7.4.9]
  - fix turnpoint autoadvance : broken in 7.4.8
  - updated polish translation
