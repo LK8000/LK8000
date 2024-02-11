@@ -10,19 +10,23 @@
 #ifndef _UTILS_BACK_INSERT_ITERATOR_H_
 #define _UTILS_BACK_INSERT_ITERATOR_H_
 
+#include <cstddef>
+
 template <class _Tp>
 class array_back_insert_iterator final {
 protected:
   _Tp *array;
   size_t size;
-  size_t elements;
-  size_t overflow;
+  size_t elements = {};
+  size_t overflow = {};
 
 public:
   typedef _Tp value_type;
 
+  array_back_insert_iterator() = delete;
+
   explicit array_back_insert_iterator(_Tp *_array, size_t _size)
-      : array(_array), size(_size), elements(0), overflow() {}
+      : array(_array), size(_size) {}
 
   size_t length() const { return elements; }
 

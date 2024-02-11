@@ -29,6 +29,12 @@
 #ifndef ARRAY_ADAPTOR_H
 #define	ARRAY_ADAPTOR_H
 
+#include <cstddef>
+#include <iterator>
+
+/**
+ * A simple adaptor for arrays.
+ */
 template <typename T>
 class array_adaptor {
 public:
@@ -116,18 +122,18 @@ protected:
 };
 
 template <typename T>
+array_adaptor<T> make_array(T* begin, T* end) {
+    return array_adaptor<T>(begin, end);
+}
+
+template <typename T>
 array_adaptor<T> make_array(T* array, size_t size) {
-    return array_adaptor<T>(array, std::next(array, size));
+    return make_array<T>(array, std::next(array, size));
 }
 
 template <typename T, std::size_t size>
 array_adaptor<T> make_array(T(&array)[size]) {
     return make_array<T>(array, size);
-}
-
-template <typename T>
-array_adaptor<T> make_array(T* begin, T* end) {
-    return array_adaptor<T>(begin, end);
 }
 
 #endif	/* ARRAY_ADAPTOR_H */
