@@ -68,7 +68,6 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryAlternate1, Alternate1);
   write_settings(szRegistryAlternate2, Alternate2);
 
-  write_settings(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
   write_settings(szRegistryAppIndLandable, Appearance.IndLandable);
   write_settings(szRegistryUTF8Symbolsl, Appearance.UTF8Pictorials);
 
@@ -148,7 +147,6 @@ void LKProfileSave(const TCHAR *szFile) {
   } else {
     write_settings(szRegistryDisplayUpValue, DisplayOrientation_Config);
   }
-  write_settings(szRegistryDistanceUnitsValue, DistanceUnit_Config);
   write_settings(szRegistryEnableFLARMMap, EnableFLARMMap);
   write_settings(szRegistryEnableNavBaroAltitude, EnableNavBaroAltitude_Config);
   write_settings(szRegistryFAIFinishHeight, EnableFAIFinishHeight);
@@ -200,8 +198,6 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryLKVarioBar, LKVarioBar);
   write_settings(szRegistryLKVarioVal, LKVarioVal);
   write_settings(szRegistryLanguageCode, szLanguageCode);
-  write_settings(szRegistryLatLonUnits, LatLonUnits_Config);
-  write_settings(szRegistryVerticalSpeedUnit, VerticalSpeedUnit_Config);
   write_settings(szRegistryLockSettingsInFlight, LockSettingsInFlight);
   write_settings(szRegistryLoggerShort, LoggerShortName);
   write_settings(szRegistryMapBox, MapBox);
@@ -239,7 +235,6 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistrySnailTrail, TrailActive_Config);
   write_settings(szRegistrySnailScale, SnailScale);
 
-  write_settings(szRegistrySpeedUnitsValue, SpeedUnit_Config);
   write_settings(szRegistryStartHeightRef, StartHeightRef);
   write_settings(szRegistryStartLine, StartLine);
   write_settings(szRegistryStartMaxHeightMargin,
@@ -249,7 +244,6 @@ void LKProfileSave(const TCHAR *szFile) {
              StartMaxSpeedMargin); // saved *1000, /1000 when used
   write_settings(szRegistryStartMaxSpeed, StartMaxSpeed); // saved *1000, /1000 when used
   write_settings(szRegistryStartRadius, StartRadius);
-  write_settings(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
   write_settings(szRegistryTeamcodeRefWaypoint, TeamCodeRefWaypoint);
   write_settings(szRegistryTerrainBrightness, TerrainBrightness);
   write_settings(szRegistryTerrainContrast, TerrainContrast);
@@ -429,6 +423,8 @@ void LKAircraftSave(const TCHAR *szFile) {
   write_settings(szRegistryAircraftRego, AircraftRego_Config);
   write_settings(szRegistryCompetitionClass, CompetitionClass_Config);
   write_settings(szRegistryCompetitionID, CompetitionID_Config);
+
+  Units::SaveSettings(write_settings);
 }
 
 

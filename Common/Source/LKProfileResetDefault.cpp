@@ -58,15 +58,7 @@ void LKProfileResetDefault() {
   StartupStore(TEXT("... ProfileResetDefault%s"),NEWLINE);
   #endif
 
-
-
-  // Units
-  SpeedUnit_Config = 2;         // default is kmh
-  TaskSpeedUnit_Config = 2;     // default is kph
-  DistanceUnit_Config = 2;      // default is km
-  VerticalSpeedUnit_Config = 1;          // default m/s
-  AltitudeUnit_Config = 1;      // default m
-  LatLonUnits_Config = 0;       // default is  DDMMSS;
+  Units::ResetSettings();
   
   //
   // Default infobox groups configuration

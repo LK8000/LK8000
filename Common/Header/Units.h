@@ -12,6 +12,10 @@
 #include "Compiler.h"
 #include "tchar.h"
 
+namespace settings {
+    class writer;
+}
+
 // inHg to hPa
 #define TOHPA 33.86417
 
@@ -44,6 +48,19 @@ enum Units_t {
 };
 
 namespace Units {
+
+  // Units configurable in system config
+  extern int SpeedUnit_Config;
+  extern int TaskSpeedUnit_Config;
+  extern int DistanceUnit_Config;
+  extern int VerticalSpeedUnit_Config;
+  extern int AltitudeUnit_Config;
+  extern int LatLonUnits_Config;
+
+
+  void ResetSettings();
+  bool LoadSettings(const char *key, const char *value);
+  void SaveSettings(settings::writer& write_settings);
 
   CoordinateFormats_t GetCoordinateFormat() gcc_pure;
 

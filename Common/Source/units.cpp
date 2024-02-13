@@ -17,6 +17,8 @@
 #include "externs.h"
 #include "Library/Utm.h"
 #include "utils/printf.h"
+#include "Settings/read.h"
+#include "Settings/write.h"
 
 namespace {
 
@@ -54,7 +56,49 @@ Units_t VerticalSpeedUnit = unMeterPerSecond;
 Units_t WindSpeedUnit = unKiloMeterPerHour;
 Units_t TaskSpeedUnit = unKiloMeterPerHour;
 
+const char szRegistrySpeedUnitsValue[] = "SpeedUnits";
+const char szRegistryTaskSpeedUnitsValue[] = "TaskSpeedUnits";
+const char szRegistryVerticalSpeedUnit[] = "LiftUnits";
+const char szRegistryAltitudeUnitsValue[] = "AltitudeUnits";
+const char szRegistryDistanceUnitsValue[] = "DistanceUnits";
+const char szRegistryLatLonUnits[] = "LatLonUnits";
+
 } // namespace
+
+// Units configurable in system config
+int Units::SpeedUnit_Config = 2;		      // default is kmh
+int Units::TaskSpeedUnit_Config = 2;	    // default is kph
+int Units::DistanceUnit_Config = 2;	    // default is km
+int Units::VerticalSpeedUnit_Config = 1; // default m/s
+int Units::AltitudeUnit_Config = 1;	    // default m
+int Units::LatLonUnits_Config = 0;       // default is  DDMMSS;
+
+void Units::ResetSettings() {
+  SpeedUnit_Config = 2;		      // default is kmh
+  TaskSpeedUnit_Config = 2;	    // default is kph
+  DistanceUnit_Config = 2;	    // default is km
+  VerticalSpeedUnit_Config = 1; // default m/s
+  AltitudeUnit_Config = 1;	    // default m
+  LatLonUnits_Config = 0;       // default is  DDMMSS;
+}
+
+bool Units::LoadSettings(const char *key, const char *value) {
+  return settings::read(key, value, szRegistrySpeedUnitsValue, SpeedUnit_Config)
+      || settings::read(key, value, szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config)
+      || settings::read(key, value, szRegistryVerticalSpeedUnit, VerticalSpeedUnit_Config)
+      || settings::read(key, value, szRegistryAltitudeUnitsValue, AltitudeUnit_Config)
+      || settings::read(key, value, szRegistryDistanceUnitsValue, DistanceUnit_Config)
+      || settings::read(key, value, szRegistryLatLonUnits, LatLonUnits_Config);
+}
+
+void Units::SaveSettings(settings::writer& write_settings) {
+  write_settings(szRegistrySpeedUnitsValue, SpeedUnit_Config);
+  write_settings(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
+  write_settings(szRegistryVerticalSpeedUnit, VerticalSpeedUnit_Config);
+  write_settings(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
+  write_settings(szRegistryDistanceUnitsValue, DistanceUnit_Config);
+  write_settings(szRegistryLatLonUnits, LatLonUnits_Config);
+}
 
 void Units::LongitudeToDMS(double Longitude,
                            int *dd,

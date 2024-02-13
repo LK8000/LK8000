@@ -577,12 +577,7 @@ void Globals_Init(void) {
 
   InitDefaultComPort();
 
-  // Units
-  SpeedUnit_Config = 2;		// default is kmh
-  TaskSpeedUnit_Config = 2;	// default is kph
-  DistanceUnit_Config = 2;	// default is km
-  VerticalSpeedUnit_Config = 1;		// default m/s
-  AltitudeUnit_Config = 1;	// default m
+  Units::ResetSettings();
 
   // Logger
   PilotName_Config[0]=_T('\0');

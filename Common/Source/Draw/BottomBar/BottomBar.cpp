@@ -201,7 +201,7 @@ void bottom_bar::draw_hgt_data(LKSurface& Surface) const {
   std::array<short, 10> array = {{LK_HGPS, LK_HBARO, LK_QFE,     LK_HAGL, LK_FL,
                                  LK_AQNH, LK_HGND,  LK_AALTAGL, LK_IAS,  LK_SPEED_MC}};
 
-  if (AltitudeUnit_Config == 1) {
+  if (Units::GetAltitudeUnit() == unMeter) {
     std::swap(array[4], array[5]);  // swap LK_FL and LK_AQNH
   }
   draw_lkvalues_data(Surface, array);

@@ -179,7 +179,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   if (settings::read(sname, svalue, szRegistryAlternate1, Alternate1)) return;
   if (settings::read(sname, svalue, szRegistryAlternate2, Alternate2)) return;
-  if (settings::read(sname, svalue, szRegistryAltitudeUnitsValue, AltitudeUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryAppIndLandable, Appearance.IndLandable)) return;
   if (settings::read(sname, svalue, szRegistryUTF8Symbolsl, Appearance.UTF8Pictorials)) return;
 
@@ -279,7 +278,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryDisableAutoLogger, DisableAutoLogger)) return;
   if (settings::read(sname, svalue, szRegistryDisplayText, DisplayTextType)) return;
   if (settings::read(sname, svalue, szRegistryDisplayUpValue, DisplayOrientation_Config)) return;
-  if (settings::read(sname, svalue, szRegistryDistanceUnitsValue, DistanceUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryEnableFLARMMap, EnableFLARMMap)) return;
   if (settings::read(sname, svalue, szRegistryEnableNavBaroAltitude, EnableNavBaroAltitude_Config)) {
     return;
@@ -380,9 +378,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryLanguageCode, szLanguageCode)) {
     return;
   }
-  if (settings::read(sname, svalue, szRegistryLatLonUnits, LatLonUnits_Config)) return;
 
-  if (settings::read(sname, svalue, szRegistryVerticalSpeedUnit, VerticalSpeedUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryLockSettingsInFlight, LockSettingsInFlight)) return;
   if (settings::read(sname, svalue, szRegistryLoggerShort, LoggerShortName)) return;
   if (settings::read(sname, svalue, szRegistryMapBox, MapBox)) return;
@@ -584,7 +580,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryIsoLine, IsoLine_Config)) return;
   if (settings::read(sname, svalue, szRegistrySnailTrail, TrailActive_Config)) return;
   if (settings::read(sname, svalue, szRegistrySnailScale, SnailScale)) return;
-  if (settings::read(sname, svalue, szRegistrySpeedUnitsValue, SpeedUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryStartHeightRef, StartHeightRef)) return;
   if (settings::read(sname, svalue, szRegistryStartLine, StartLine)) return;
   if (settings::read(sname, svalue, szRegistryStartMaxHeightMargin, StartMaxHeightMargin)) return;
@@ -592,7 +587,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryStartMaxSpeedMargin, StartMaxSpeedMargin)) return;
   if (settings::read(sname, svalue, szRegistryStartMaxSpeed, StartMaxSpeed)) return;
   if (settings::read(sname, svalue, szRegistryStartRadius, StartRadius)) return;
-  if (settings::read(sname, svalue, szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config)) return;
   if (settings::read(sname, svalue, szRegistryTeamcodeRefWaypoint, TeamCodeRefWaypoint)) return;
   if (settings::read(sname, svalue, szRegistryTerrainBrightness, TerrainBrightness)) return;
   if (settings::read(sname, svalue, szRegistryTerrainContrast, TerrainContrast)) return;
@@ -810,6 +804,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   if (settings::read(sname, svalue, szRegistrySoundSwitch, EnableSoundModes)) return;
+
+  if (Units::LoadSettings(sname, svalue)) {
+    return;
+  }
 
   if(tracking::LoadSettings(sname,svalue)) {
     return;

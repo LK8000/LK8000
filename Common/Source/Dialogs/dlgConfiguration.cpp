@@ -2182,7 +2182,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<455>());
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(MsgToken<436>());
-    dfe->Set((int)SpeedUnit_Config);
+    dfe->Set(Units::SpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -2194,7 +2194,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("DDMM.mmm"));
     dfe->addEnumText(TEXT("DD.dddd"));
     dfe->addEnumText(TEXT("UTM"));
-    dfe->Set(LatLonUnits_Config);
+    dfe->Set(Units::LatLonUnits_Config);
     wp->RefreshDisplay();
   }
 
@@ -2207,7 +2207,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<455>());
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(MsgToken<436>());
-    dfe->Set(TaskSpeedUnit_Config);
+    dfe->Set(Units::TaskSpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -2220,7 +2220,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<455>());
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(MsgToken<436>());
-    dfe->Set(DistanceUnit_Config);
+    dfe->Set(Units::DistanceUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -2229,7 +2229,7 @@ DataField* dfe = wp->GetDataField();
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("feet"));
     dfe->addEnumText(TEXT("meters"));
-    dfe->Set(AltitudeUnit_Config);
+    dfe->Set(Units::AltitudeUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -2239,7 +2239,7 @@ DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("knots"));
     dfe->addEnumText(TEXT("m/s"));
     dfe->addEnumText(TEXT("ft/min"));
-    dfe->Set(VerticalSpeedUnit_Config);
+    dfe->Set(Units::VerticalSpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -3922,32 +3922,32 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
   if (wp) {
-    if ((int)SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
-      SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
+    if (Units::SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      Units::SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLatLon"));
   if (wp) {
-    if ((int)LatLonUnits_Config != wp->GetDataField()->GetAsInteger()) {
-      LatLonUnits_Config = wp->GetDataField()->GetAsInteger();
+    if (Units::LatLonUnits_Config != wp->GetDataField()->GetAsInteger()) {
+      Units::LatLonUnits_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
-    if ((int)TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
-      TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
+    if (Units::TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      Units::TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsDistance"));
   if (wp) {
-    if ((int)DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
-      DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
+    if (Units::DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      Units::DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
       notify_reset_zoom = true;
     }
@@ -3955,16 +3955,16 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
   if (wp) {
-    if ((int)VerticalSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
-      VerticalSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
+    if (Units::VerticalSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      Units::VerticalSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsAltitude"));
   if (wp) {
-    if ((int)AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
-      AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
+    if (Units::AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      Units::AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
       notify_units_change = true;
     }
   }

@@ -531,7 +531,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
             //Print the actual cross track error
             Surface.SelectObject(LK8InfoSmallFont);
             double xtk=fabs(deviation); //here is in meters
-            if(DistanceUnit_Config==2) { //Km
+            if (Units::GetDistanceUnit() == unKiloMeter) { //Km
                 if(xtk>1000) {
                      xtk = Units::To(unKiloMeter, xtk);
                      if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f km"),xtk);
