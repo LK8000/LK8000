@@ -18,7 +18,7 @@ if (rootProject.file(keystorePropertiesFile).exists()) {
 
 android {
     compileSdk 34
-    ndkVersion "26.1.10909125"
+    ndkVersion "26.2.11394342"
 
     namespace "org.LK8000"
 
@@ -94,18 +94,18 @@ android {
     compileOptions {
         // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true
-        // Sets Java compatibility to Java 8
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        // Sets Java compatibility to Java 17
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "androidx.camera:camera-camera2:1.4.0-alpha02"
-    implementation "androidx.camera:camera-lifecycle:1.4.0-alpha02"
-    implementation "androidx.camera:camera-view:1.4.0-alpha02"
+    implementation "androidx.camera:camera-camera2:1.4.0-alpha04"
+    implementation "androidx.camera:camera-lifecycle:1.4.0-alpha04"
+    implementation "androidx.camera:camera-view:1.4.0-alpha04"
 
     implementation "androidx.core:core:1.12.0"
 
@@ -122,8 +122,8 @@ dependencies {
     implementation "com.github.brunotl:boost_intrusive:1.81.0"
     implementation "com.github.brunotl:boost_container:1.81.0"
 
-    implementation "com.google.oboe:oboe:1.8.0"
-    implementation "com.google.android.material:material:1.10.0"
+    implementation "com.google.oboe:oboe:1.8.1"
+    implementation "com.google.android.material:material:1.11.0"
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }
