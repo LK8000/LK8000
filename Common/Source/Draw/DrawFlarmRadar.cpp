@@ -508,7 +508,6 @@ static int iRectangleSize = IBLSCALE(4);
 
 static short tscaler=0;
 static POINT Arrow[5];
-TCHAR text[80];
 static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 static RECT PositionSideView[FLARM_MAX_TRAFFIC];
 #ifdef OWNPOS
@@ -853,8 +852,7 @@ DiagrammStruct sDia;
   RECT rc34 = rc;
   rc34.top += (rct.top-rct.bottom)/2;
 
-  _stprintf(text, TEXT("%s"),Units::GetName(Units::GetDistanceUnit()));
-  DrawXGrid(Surface, rc34, Units::FromDistance(xtick), xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+  DrawXGrid(Surface, rc34, Units::FromDistance(xtick), xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, Units::GetDistanceName());
 
 
   /****************************************************************************************************
@@ -887,45 +885,41 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
  OwnPosTopView.bottom = y_middle+iTouchAreaSize;
 #endif
 
-/*******************************************************
- * draw radar circles
- *******************************************************/
+  /*******************************************************
+   * draw radar circles
+   *******************************************************/
 
-double fRing = 0; //sTopDia.fXMax;
-int iCircleRadius = 0;
-RECT rcc = rct;
-double scl = xtick;
-    rcc.bottom -=3;
-	Surface.SelectObject(LKBrush_Hollow);
-	scl *=1000.0;
-	Surface.SelectObject(hGreenPen);
-	if(sDia.fXMax ==sDia.fXMin)
-	  sDia.fXMax= sDia.fXMin+1.0;
-	LKASSERT( sDia.fXMax !=sDia.fXMin )
-	double fCScale =(double)( rct.right-rct.left)/((sDia.fXMax-sDia.fXMin ));
-	for ( int i = 0; i < (sDia.fXMax /scl); i++)
-	{
-    iCircleRadius =(int) (fRing* fCScale / Units::ToDistance(1000.0f));
-	  Surface.DrawCircle(x_middle, y_middle, iCircleRadius, rcc, false );
-	  fRing = fRing + scl;
-	}
+  Surface.SelectObject(LKBrush_Hollow);
+  Surface.SelectObject(hGreenPen);
+
+  if (sDia.fXMax == sDia.fXMin) {
+    sDia.fXMax = sDia.fXMin + 1.0;
+  }
+
+  const double fscale = Units::FromDistance((rct.right - rct.left) / (sDia.fXMax - sDia.fXMin));
+  const int radius_tick = xtick * fscale;
+
+  const int max_x = std::max(rct.right - x_middle, x_middle - rct.left);
+  const int max_y = std::max(rct.bottom - y_middle, y_middle - rct.top);
+  const int max_radius = sqrt(max_x * max_x + max_y * max_y);
 
 
-        // Borders in green not used in v6 for the flarm radar multimap page.
-        // Surface.Rectangle(rct.left , rct.bottom ,rct.right, rct.top);
+  for (int radius = radius_tick; radius < max_radius; radius += radius_tick) {
+    Surface.DrawCircle(x_middle, y_middle, radius, rct, false);
+  }
 
-	Surface.SelectObject(hOrangePen);
-	fRing = xtick/2;
-	if((sDia.fXMax /xtick)  < 3)
-	  for (int i = 0; i < (sDia.fXMax /xtick); i++)
-	  {
-      iCircleRadius =(int) (fRing* fCScale / Units::ToDistance(1000.0f));
-	    Surface.DrawCircle(x_middle, y_middle, iCircleRadius, rcc, false);
-	    fRing = fRing + xtick;
-	  }
+  // Borders in green not used in v6 for the flarm radar multimap page.
+  // Surface.Rectangle(rct.left , rct.bottom ,rct.right, rct.top);
 
-	Surface.SelectObject(hDrawBrush);
-	Surface.SelectObject(hDrawPen);
+  if ((max_radius / radius_tick) < 3) {
+    Surface.SelectObject(hOrangePen);
+    for (int radius = radius_tick / 2; radius < max_radius; radius += radius_tick) {
+      Surface.DrawCircle(x_middle, y_middle, radius, rct, false);
+    }
+  }
+
+  Surface.SelectObject(hDrawBrush);
+  Surface.SelectObject(hDrawPen);
 
 
 	/***********************************************
@@ -1144,7 +1138,7 @@ if(SPLITSCREEN_FACTOR >0)
   Surface.SetTextColor(rgbDrawColor);
   Surface.Rectangle(rc.left , rc.bottom+5 ,rc.right, rc.top);
   Surface.SelectObject(LKBrush_Hollow);
-  DrawXGrid(Surface, rc34, Units::FromDistance(xtick), xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
+  DrawXGrid(Surface, rc34, Units::FromDistance(xtick), xtick, 0, TEXT_ABOVE_LEFT, rgbGridColor, &sDia, Units::GetDistanceName());
 
 
   /*********************************************************************************
@@ -1191,8 +1185,7 @@ if(SPLITSCREEN_FACTOR >0)
  // sDia.rc = rc34;
   if(bSideview)
   {
-    _stprintf(text, TEXT("%s"),Units::GetAltitudeName());
-    DrawYGrid(Surface, rc, Units::FromAltitude(ytick), ytick, 0,TEXT_UNDER_RIGHT , rgbGridColor, &sDia, text);
+    DrawYGrid(Surface, rc, Units::FromAltitude(ytick), ytick, 0,TEXT_UNDER_RIGHT , rgbGridColor, &sDia, Units::GetAltitudeName());
   }
 
 /*************************************************************************
