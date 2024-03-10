@@ -378,6 +378,10 @@ void LoadChildsFromXML(WindowControl *Parent,
     bool Visible = AttributeToLong(*child, "Visible", 1) == 1;
     int Font = AttributeToLong(*child, "Font", ParentFont);
     int Border = AttributeToLong(*child, "Border", 0);
+    std::string_view align = AttributeToString(*child, "halign", "");
+    if (align == "center") {
+      X = (Parent->GetWidth() - Width) / 2;
+    }
 
     if (strcmp(child->name(), "WndProperty") == 0) {
 

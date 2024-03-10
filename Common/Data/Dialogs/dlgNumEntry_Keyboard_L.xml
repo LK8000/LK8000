@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M251_" Font="2" >
+   <WndFrame halign="center" Y="0" Width="320" Height="240">
+
     <WndProperty Name="prpText" Caption="_@M711_" X="0" Y="1" Width="224" Height="30" CaptionWidth="50" Font="2" ReadOnly="1" />
     <WndProperty Name="prpUnit" Caption=""   X="224" Y="-999" Width="30" Height="30" CaptionWidth="30" Font="2" ReadOnly="1" />
     <WndButton   Caption="_@M228_" X="260" Y="-999" Width="60"  Height="30" Font="2" OnClickNotify="OnDel"/>
@@ -25,5 +27,6 @@
     <WndButton   Caption="_@M180_" X="120" Y="-999" Width="98"  Height="34" Font="2" OnClickNotify="OnClear"/>
     <WndButton   Caption="OK"   X="218" Y="-999" Width="98"  Height="34" Font="2" OnClickNotify="OnOk"/>
 
+   </WndFrame>
   </WndForm>
 </PMML>

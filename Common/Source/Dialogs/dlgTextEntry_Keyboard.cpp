@@ -17,9 +17,9 @@
 #include "utils/printf.h"
 #include <regex>
 #include "Form/Clipboard.h"
+#include <memory>
 
 static bool first= false;
-static WndForm *wf=NULL;
 static WndProperty * wKeyboardPopupWndProperty = nullptr;
 
 #define MAX_TEXTENTRY 40
@@ -92,7 +92,7 @@ void UpdateKeyLayout(WndForm* pForm) {
   _sntprintf(Entered, MAX_SEL_LIST_SIZE, _T("%s: %s"), MsgToken<251>(), edittext); /* _@251_ Edit Text */
   pForm->SetCaption(Entered);
 
-  auto wpMatch = wf->FindByName(TEXT("prpMatch"));
+  auto wpMatch = pForm->FindByName(TEXT("prpMatch"));
   if (wpMatch) {
     wpMatch->SetVisible(key_filter);
 
@@ -103,12 +103,12 @@ void UpdateKeyLayout(WndForm* pForm) {
     }
   }
 
-  auto wbDate = wf->FindByName(TEXT("prpDate"));
+  auto wbDate = pForm->FindByName(TEXT("prpDate"));
   if (wbDate) {
     wbDate->SetVisible(!key_filter); // todo : replace by KeyFilter ?
   }
 
-  auto wbTime = wf->FindByName(TEXT("prpTime"));
+  auto wbTime = pForm->FindByName(TEXT("prpTime"));
   if (wbTime) {
     wbTime->SetVisible(!key_filter); // todo : replace by KeyFilter ?
   }
@@ -281,15 +281,14 @@ static CallBackTableEntry_t CallBackTable[] = {
 };
 
 static void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID) {
-  if (wf) {
-    throw std::runtime_error("dlgTextEntryKeyboardShowModal : invalid recursive call");
-  }
 
   max_width = min(MAX_TEXTENTRY, width);
-  wf = dlgLoadFromXML(CallBackTable, ResID);
-  if (!wf) return;
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ResID));
+  if (!wf) {
+    return;
+  }
 
-  ClearText(wf);
+  ClearText(wf.get());
 
   if (_tcslen(text)>0) {
     LK_tcsncpy(edittext, text, max_width-1);
@@ -299,7 +298,7 @@ static void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID
   }
   cursor = _tcslen(edittext);
 
-  UpdateKeyLayout(wf);
+  UpdateKeyLayout(wf.get());
 
   WindowControl* pBtHelp = wf->FindByName(TEXT("cmdHelp"));
   if(pBtHelp) {
@@ -310,7 +309,6 @@ static void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID
   wf->ShowModal();
   LK_tcsncpy(text, edittext, width-1);
 
-  delete wf;
   wf = nullptr;
 }
 

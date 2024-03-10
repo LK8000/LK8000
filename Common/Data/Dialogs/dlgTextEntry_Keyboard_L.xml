@@ -3,6 +3,8 @@
   xmlns="http://www.dmg.org/PMML-3-0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTextEntry_Keyboard" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M251_" Font="2">
+   <WndFrame halign="center" Y="0" Width="320" Height="240">
+
     <WndProperty Name="prpText" Caption="_@M711_" X="2" Y="2" Width="294" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
     <WndProperty Name="prpMatch" Caption="Match:" X="60" Y="190" Width="70" Height="33" CaptionWidth="70" Font="2" ReadOnly="1" />
 
@@ -107,5 +109,6 @@
     <WndButton Name="prpClear" Caption="_@M180_" X="200" Y="181" Width="60" Height="39" Font="2" OnClickNotify="OnClear"/>
 
     <WndButton Name="prpOk" Caption="OK" X="260" Y="181" Width="58" Height="39" Font="2" OnClickNotify="OnOk"/>
+   </WndFrame>
   </WndForm>
 </PMML>
