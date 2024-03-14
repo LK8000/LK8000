@@ -114,6 +114,7 @@ add_library( LK8000 SHARED
     Common/Source/Window/WndMain.cpp
 
     Common/Source/Form/WndButtonImage.cpp
+    Common/Source/Form/Clipboard.cpp
 
     Common/Source/xcs/Event/Shared/Timer.cpp
     Common/Source/xcs/Event/Shared/TimerQueue.cpp
