@@ -1131,9 +1131,12 @@ const TCHAR *DataFieldString::GetAsString(void){
   return(mValue);
 }
 
-bool DataFieldString::CreateKeyboard(void){
-	dlgTextEntryShowModal(mValue,std::size(mValue));
-	return true;
+bool DataFieldString::CreateKeyboard() {
+  dlgTextEntryShowModal(mValue,std::size(mValue));
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daChange);
+  }
+  return true;
 }
 
 //----------------------------------------------------------
