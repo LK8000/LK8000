@@ -67,10 +67,18 @@ namespace settings {
     void read_value(const char *curvalue, wchar_t (&lookupvalue)[size]) {
       from_utf8(curvalue, lookupvalue, size);
     }
+
+    /**
+     * generic : all type having operator=(const char*)  
+     */
+    template<typename T>
+    void read_value(const char *curvalue, T& lookupvalue) {
+        lookupvalue = curvalue;
+    }
   }
 
   /**
-   * read specialisation for all 'numeric' pref
+   * default read specialisation
    * @return true if 'curname' is equal to 'lookupname'
    */
   template<typename T>
