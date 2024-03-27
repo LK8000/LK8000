@@ -543,7 +543,7 @@ public:
   const TCHAR *GetAsDisplayString(void) override;
 };
 
-#define EDITSTRINGSIZE 32
+#define EDITSTRINGSIZE 64
 
 class DataFieldString:public DataField{
 
