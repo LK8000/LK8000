@@ -109,7 +109,7 @@ dependencies {
 
     implementation "androidx.core:core:1.12.0"
 
-    implementation "com.google.zxing:core:3.5.1"
+    implementation "com.google.zxing:core:3.5.3"
 
     implementation "com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07"
     implementation "com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07"
