@@ -65,11 +65,11 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode) {
   namespace fs = std::filesystem;
 
   fs::path file_path = fileName;
-  std::string name = file_path.filename().string();
+  std::string_view name = file_path.filename().c_str();
 
-  ci_equal<std::string> comp;
+  ci_equal<std::string_view> comp;
   for (auto const& dir_entry : std::filesystem::directory_iterator{file_path.parent_path()}) {
-    if (comp(name, dir_entry.path().filename().string())) {
+    if (comp(name, dir_entry.path().filename().c_str())) {
       fp = make_unique_file_ptr(dir_entry.path().c_str(), fmode);
       if (fp) {
         return true;
