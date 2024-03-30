@@ -15,6 +15,14 @@
 
 using namespace std::placeholders;
 
+namespace {
+    enum PortState {
+        STATE_READY = 0,
+        STATE_FAILED = 1,
+        STATE_LIMBO = 2,
+    };
+}
+
 AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName) {
     buffer.reserve(512);
     rxthread_buffer.reserve(512);
@@ -29,6 +37,9 @@ bool AndroidPort::Initialize() {
             bridge->setInputListener(env, this);
             bridge->setListener(env, this);
 
+            if (bridge->getState(env) == STATE_READY) {
+                SetPortStatus(CPS_OPENOK);
+            }
             return true;
         }
     } catch (const std::exception& e) {
@@ -178,12 +189,6 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
 
     newdata.Broadcast();
 }
-
-enum PortState {
-    STATE_READY = 0,
-    STATE_FAILED = 1,
-    STATE_LIMBO = 2,
-};
 
 bool AndroidPort::IsReady() {
     ScopeLock lock(mutex);
