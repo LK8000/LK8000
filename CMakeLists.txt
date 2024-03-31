@@ -776,6 +776,7 @@ add_library( LK8000 SHARED
 	Common/Source/Tracking/LiveTrack24.cpp
 	Common/Source/Tracking/Tracking.cpp
     Common/Source/Tracking/SkylinesGlue.cpp
+    Common/Source/Tracking/FFVLTracking.cpp
 
     Common/Source/xcs/Util/CRC.cpp
     Common/Source/xcs/Util/CRC.hpp

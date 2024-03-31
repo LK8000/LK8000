@@ -33,6 +33,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "ContestMgr.h"
+#include "Tracking/http_session.h"
 #include "Tracking/Tracking.h"
 #include "Devices/DeviceRegister.h"
 #include "Library/TimeFunctions.h"
@@ -216,6 +217,11 @@ if(!pOwner) return;
 	// LKTOKEN  _@M938_ = "Competition ID" 
     _stprintf(text,TEXT("%s: %s"), MsgToken<938>(), val);
     buttonCompetitionID->SetCaption(text);
+  }
+
+  WindowControl* pFfvlKey = pOwner->FindByName(_T("prp_ffvl_key"));
+  if (pFfvlKey) {
+    pFfvlKey->SetVisible(http_session::ssl_available());
   }
 
   WndButton* wCmdBth = ((WndButton *)pOwner->FindByName(TEXT("cmdBth")));
@@ -1289,7 +1295,21 @@ static void OnConfigDevReplayClicked(WndButton* pWnd){
 	dlgNMEAReplayShowModal();
 }
 
-
+static void OnFfvlKey(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      Sender->SetAsString(utf8_to_tstring(tracking::ffvl_user_key).c_str());
+      break;
+    case DataField::daPut:
+    case DataField::daChange:
+      tracking::ffvl_user_key = to_utf8(Sender->GetAsString());
+      break;
+    case DataField::daInc:
+    case DataField::daDec:
+    case DataField::daSpecial:
+      break;
+  }
+}
 
 
 
@@ -1361,6 +1381,9 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnConfigDevReplayClicked),
   ClickNotifyCallbackEntry(OnNextDevice),
   ClickNotifyCallbackEntry(OnTerminalClicked),
+
+  DataAccessCallbackEntry(OnFfvlKey),
+
   EndCallBackEntry()
 };
 

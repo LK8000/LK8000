@@ -1352,6 +1352,12 @@ else
    $(SRC_TRACKING)/Default/http_session.cpp
 endif
 
+ifneq ($(CONFIG_PPC2003),y)
+ TRACKING += \
+   $(SRC_TRACKING)/FFVLTracking.cpp
+endif
+
+
 SRC_FILES :=\
 	$(WINDOW) \
 	$(SCREEN) \

@@ -38,6 +38,8 @@ namespace tracking {
     extern TCHAR    usr_config[100]; // user name ( token for skylines )
     extern TCHAR    pwd_config[100]; // user pwd
 
+    extern std::string ffvl_user_key; // https://federation.ffvl.fr/pages/tracking-ffvl-et-retrouvabilit-des-lienci-s
+
     void ResetSettings();
     bool LoadSettings(const char *key, const char *value);
     void SaveSettings(settings::writer& writer_settings);

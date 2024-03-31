@@ -4,7 +4,8 @@
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="178" Width="62"  Height="42" Font="2" Tag="3" />
     <WndFrame Name="frmPilot" X="70" Y="10" Width="-1" Height="222" Font="2">
       <WndButton Name="cmdPilotName" Caption="_@M525_" X="2" Y="1" Width="-1"  Height="35" Font="2" />
-      <WndProperty Name="prpLiveTrackerInterval" Caption="_@M1779_" X="2" Y="70" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1258_">
+
+      <WndProperty Name="prpLiveTrackerInterval" Caption="_@M1779_" X="2" Y="60" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1258_">
         <DataField Name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0.0" Max="60.0" Step="1.0" />
       </WndProperty>
       <WndProperty Name="prpLiveTrackerRadar_config" Caption="_@M2322_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1295_">
@@ -17,6 +18,11 @@
       <WndButton Name="cmdLiveTrackerport" Caption="Port" X="202" Y="-999" Width="-1"  Height="25" Font="2" />
       <WndButton Name="cmdLiveTrackerusr" Caption="_@M1780_" X="2" Y="-1" Width="117"  Height="25" Font="2" />
       <WndButton Name="cmdLiveTrackerpwd" Caption="_@M1781_" X="120" Y="-999" Width="-1"  Height="25" Font="2" />
+
+      <WndProperty Name="prp_ffvl_key" Caption="FFVL tracking key" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Keyboard="1" Help="_@H1310_">
+        <DataField DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnFfvlKey" />
+      </WndProperty>
+
     </WndFrame>
   </WndForm>
 </PMML>
