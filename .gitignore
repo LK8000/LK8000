@@ -75,3 +75,4 @@ output.map
 /Common/Utils/test_tools/out/
 /Common/Utils/test_tools/CMakeSettings.json
 /cov-int/
+/Scripts/kobo-build-rootfs/build-config-user.sh
