@@ -7,31 +7,6 @@
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1
 
-#ifdef WIN32
-#ifdef PPC2002
-#include <winsock.h>
-#else
-#include <winsock2.h>
-#endif
-#endif
-
-#ifdef __linux__
-	#include <stdio.h>
-	#include <sys/socket.h>
-	#include <sys/types.h>
-	#include <netinet/in.h>
-	#include <netdb.h>
-	#include <unistd.h>
-	#include <sys/ioctl.h>
-
-	#define SOCKET int
-	#define SOCKET_ERROR -1
-	#define INVALID_SOCKET -1
-	#define closesocket close
-	#define ioctlsocket ioctl
-#endif
-#define DELAY 5000
-
 #include <stdlib.h>
 #include <cctype>
 #include <sstream>
@@ -57,6 +32,9 @@
 #ifdef KOBO
 #include "Kobo/System.hpp"
 #endif
+
+#include "http_session.h"
+#define DELAY 5000
 
 static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
@@ -105,7 +83,6 @@ static bool _t_run = false;             // Thread run
 static PointQueue _t_points;            // Point FIFO
 
 // Prototypes
-static bool InitWinsock();
 static void LiveTrackerThread(void);
 static void LiveTrackerThread2(void);
 static void LiveTrackRadarThread2(void);
@@ -204,45 +181,38 @@ void LiveTrackerInit() {
 
 	_server_port = tracking::port_config;
 
-	//Init winsock if available
-	if (InitWinsock()) {
-		_ws_inited = true;
-
-		// Create a thread for sending data to the server
-		if (tracking::interval != 0) {
-			std::string snu = std::string(_server_name);
-			transform(snu.begin(), snu.end(), snu.begin(), ::toupper);
-			if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
-				v2_sid = createSID();
-				v2_pwt = passwordToken(std::string(_password), toString(v2_sid));
-				_ThreadTracker.start(_ThreadTargetTracker2);
-				_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
-				StartupStore(
-						TEXT(
-								". LiveTracker API V2 will use server %s if available.%s"),
-						tracking::server_config, NEWLINE);
-			} else {
-				_ThreadTracker.start(_ThreadTargetTracker);
-				_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
-				StartupStore(
-						TEXT(
-								". LiveTracker API V1 will use server %s if available.%s"),
-						tracking::server_config, NEWLINE);
-			}
-
+	// Create a thread for sending data to the server
+	if (tracking::interval != 0) {
+		std::string snu = std::string(_server_name);
+		transform(snu.begin(), snu.end(), snu.begin(), ::toupper);
+		if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
+			v2_sid = createSID();
+			v2_pwt = passwordToken(std::string(_password), toString(v2_sid));
+			_ThreadTracker.start(_ThreadTargetTracker2);
+			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
+			StartupStore(
+					TEXT(
+							". LiveTracker API V2 will use server %s if available.%s"),
+					tracking::server_config, NEWLINE);
+		} else {
+			_ThreadTracker.start(_ThreadTargetTracker);
+			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
+			StartupStore(
+					TEXT(
+							". LiveTracker API V1 will use server %s if available.%s"),
+					tracking::server_config, NEWLINE);
 		}
 
-		// Create a thread fo getting radar data from livetrack24.com
-		if (tracking::radar_config && EnableFLARMMap) {
-			_ThreadRadar.start(_ThreadTargetRadar);
-			_ThreadRadar.setPriority(Poco::Thread::PRIO_NORMAL);
-			StartupStore(TEXT(". LiveTracker Radar Enabled.%s"), NEWLINE);
-
-		}
-		_inited = true;
 	}
-	if (!_inited)
-		StartupStore(TEXT(". LiveTracker init failed.%s"), NEWLINE);
+
+	// Create a thread fo getting radar data from livetrack24.com
+	if (tracking::radar_config && EnableFLARMMap) {
+		_ThreadRadar.start(_ThreadTargetRadar);
+		_ThreadRadar.setPriority(Poco::Thread::PRIO_NORMAL);
+		StartupStore(TEXT(". LiveTracker Radar Enabled.%s"), NEWLINE);
+
+	}
+	_inited = true;
 }
 
 // Shutdown Live Tracker
@@ -260,12 +230,6 @@ void LiveTrackerShutdown() {
 		_ThreadRadar.join();
 		StartupStore(TEXT(". LiveRadar closed.%s"), NEWLINE);
 	}
-
-#ifdef WIN32
-	if (_ws_inited) {
-		WSACleanup();
-	}
-#endif
 }
 
 // Update live tracker data, non blocking
@@ -324,26 +288,6 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	NewDataEvent.set();
 }
 
-bool InitWinsock() {
-#ifdef WIN32
-	WSADATA wsaData;
-
-	WORD version = MAKEWORD( 1, 1 );
-	int error = WSAStartup( version, &wsaData );
-	if ( error != 0 ) return false;
-
-	/* check for correct version */
-	if ( LOBYTE( wsaData.wVersion ) != 1 ||
-			HIBYTE( wsaData.wVersion ) != 1 )
-	{
-		/* incorrect WinSock version */
-		WSACleanup();
-		return false;
-	}
-#endif
-	return true;
-}
-
 static bool InterruptibleSleep(int msecs) {
 	int secs = msecs / 1000;
 	do {
@@ -357,215 +301,13 @@ static bool InterruptibleSleep(int msecs) {
 	return false;
 }
 
-// Establish a connection with the data server
-// Returns a valid SOCKET if ok, INVALID_SOCKET if failed 
-static SOCKET EstablishConnection(const char *servername, int serverport) {
-	SOCKET s;
-	struct hostent *server;
-	struct sockaddr_in sin;
-
-	server = gethostbyname(servername);
-	if (server == NULL)
-		return INVALID_SOCKET;
-
-	s = socket( AF_INET, SOCK_STREAM, 0);
-	if (s == INVALID_SOCKET)
-		return s;
-
-	memset(&sin, 0, sizeof sin);
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = ((struct in_addr *) (server->h_addr))->s_addr;
-	sin.sin_port = htons(serverport);
-	if (connect(s, (sockaddr*) &sin, sizeof(sockaddr_in)) == SOCKET_ERROR) {
-		//could not connect to server
-		closesocket(s);
-		return INVALID_SOCKET;
-	}
-
-	//-------------------------
-	// Set the socket I/O mode: In this case FIONBIO
-	// enables or disables the blocking mode for the
-	// socket based on the numerical value of iMode.
-	// If iMode = 0, blocking is enabled;
-	// If iMode != 0, non-blocking mode is enabled.
-
-	u_long iMode = 1;
-	int iResult = ioctlsocket(s, FIONBIO, &iMode);
-	if (iResult == SOCKET_ERROR) {
-		StartupStore(_T(".... ioctlsocket failed with error: %d%s"), iResult,
-		NEWLINE);
-		// if failed, socket still in blocking mode, it's big problem
-	}
-
-	return s;
-}
-
-static int ReadData(SOCKET s, void *szString, size_t size) {
-
-	struct timeval timeout;
-	timeout.tv_sec = 10;
-	timeout.tv_usec = 0;
-
-	fd_set readfs;
-	FD_ZERO(&readfs);
-	FD_SET(s, &readfs);
-
-	// wait for received data
-	int iResult = select(s + 1, &readfs, NULL, NULL, &timeout);
-	if (iResult == 0) {
-		return SOCKET_ERROR; // timeout
-	}
-
-	if ((iResult != SOCKET_ERROR) && FD_ISSET(s, &readfs)) {
-		// Data ready to read
-		iResult = recv(s, (char*) szString, size, 0);
-	}
-
-	return iResult;
-}
-
-static int WriteData(SOCKET s, const void *data, size_t length) {
-
-	struct timeval timeout;
-	timeout.tv_sec = 10;
-	timeout.tv_usec = 0;
-
-	fd_set writefs;
-	FD_ZERO(&writefs);
-	FD_SET(s, &writefs);
-
-	// wait for socket ready to write
-	int iResult = select(s + 1, NULL, &writefs, NULL, &timeout);
-	if (iResult == 0) {
-		return SOCKET_ERROR; // timeout
-	}
-
-	if ((iResult != SOCKET_ERROR) && FD_ISSET(s, &writefs)) {
-		// socket ready, Write data.
-
-#ifdef __linux        
-		const int flags = MSG_NOSIGNAL; // avoid SIGPIPE if socket is closed by peer.
-#else
-		const int flags = 0;
-#endif
-
-		iResult = send(s, (const char*) data, length, flags);
-	}
-
-	return iResult;
-}
-
-// Do a transaction with server
-// returns received bytes, -1 if transaction failed
-static int DoTransactionToServer(const char* server_name, int server_port,
-		const char *txbuf, char *rxbuf, unsigned int maxrxbuflen) {
-
-#ifdef LT_DEBUG
-	StartupStore(TEXT(".DoTransactionToServer txbuf : %s%s"), txbuf, NEWLINE);
-#endif
-
-	int rxfsm = 0;
-	unsigned int rxlen = 0;
-	char recvbuf[BUFSIZ];
-	unsigned char cdata;
-
-	SOCKET s = EstablishConnection(server_name, server_port);
-	if (s == INVALID_SOCKET)
-		return -1;
-
-	//Send the query to the server
-	int tmpres = WriteData(s, "GET ", (unsigned int) strlen("GET "));
-	if (tmpres < 0) {
-		rxlen = -1;
-		goto cleanup;
-	}
-	tmpres = WriteData(s, txbuf, strlen(txbuf));
-	if (tmpres < 0) {
-		rxlen = -1;
-		goto cleanup;
-	}
-	tmpres = WriteData(s, " HTTP/1.0\r\nHost: ",
-			(unsigned int) strlen(" HTTP/1.0\r\nHost: "));
-	if (tmpres < 0) {
-		rxlen = -1;
-		goto cleanup;
-	}
-	tmpres = WriteData(s, server_name, (unsigned int) strlen(server_name));
-	if (tmpres < 0) {
-		rxlen = -1;
-		goto cleanup;
-	}
-	tmpres = WriteData(s, "\r\n\r\n", (unsigned int) strlen("\r\n\r\n"));
-	if (tmpres < 0) {
-		rxlen = -1;
-		goto cleanup;
-	}
-
-	//Receive the page
-	while ((tmpres = ReadData(s, recvbuf, BUFSIZ)) > 0) {
-		for (int i = 0; i < tmpres; i++) {
-			cdata = recvbuf[i];
-			switch (rxfsm) {
-			default:
-			case 0:
-				if (cdata == '\r')
-					rxfsm++;
-				break;
-			case 1:
-				if (cdata == '\n') {
-					rxfsm++;
-					break;
-				}
-				rxfsm = 0;
-				break;
-			case 2:
-				if (cdata == '\r') {
-					rxfsm++;
-					break;
-				}
-				rxfsm = 0;
-				break;
-			case 3:
-				if (cdata == '\n') {
-					rxfsm++;
-					rxlen = 0;
-					break;
-				}
-				rxfsm = 0;
-				break;
-			case 4:
-				//Content chr
-				if (rxlen < maxrxbuflen) {
-					rxbuf[rxlen++] = cdata;
-				}
-				break;
-			} //sw
-		} //for
-	} //wh
-
-	if (tmpres == SOCKET_ERROR) {
-		rxlen = -1;
-		goto cleanup;
-	}
-
-	rxbuf[std::min(rxlen, maxrxbuflen-1)] = 0;
-#ifdef LT_DEBUG
-	StartupStore(TEXT(".DoTransactionToServer recv len=%d: %s%s"), rxlen, rxbuf, NEWLINE);
-#endif
-	cleanup:
-	closesocket(s);
-	return rxlen;
-}
-
 // Get the user id from Leonardo servername
 // returns 0=no id, -1=transaction failed
-static int GetUserIDFromServer() {
+static int GetUserIDFromServer(http_session& http) {
 	int retval = -1;
-	int rxlen;
 	char txbuf[512];
 	char username[128];
 	char password[128];
-	char rxcontent[32];
 
 	to_utf8(tracking::usr_config, txbuf);
 	UrlEncode(txbuf, username, std::size(username));
@@ -573,25 +315,20 @@ static int GetUserIDFromServer() {
 	UrlEncode(txbuf, password, std::size(password));
 	sprintf(txbuf, "/client.php?op=login&user=%s&pass=%s", username, password);
 
-	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxcontent,
-			sizeof(rxcontent));
-	if (rxlen > 0) {
-		rxcontent[rxlen] = 0;
-		retval = -1;
-		sscanf(rxcontent, "%d", &retval);
+	std::string response = http.request(_server_name, _server_port, txbuf);
+	if (!response.empty()) {
+		sscanf(response.c_str(), "%d", &retval);
 	}
 	return retval;
 }
 
-static bool SendStartOfTrackPacket(unsigned int *packet_id,
+static bool SendStartOfTrackPacket(http_session& http, unsigned int *packet_id,
 		unsigned int *session_id, int userid) {
 
 	char username[std::size(tracking::usr_config)]; 
 	char password[std::size(tracking::pwd_config)];
 
 	char txbuf[510];
-	char rxbuf[32];
-	int rxlen;
 	char phone[64];
 	char gps[64];
 	unsigned int vehicle_type = 8;
@@ -674,19 +411,17 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id,
 			LKFORK, LKVERSION, LKRELEASE, username, password, phone, gps,
 			tracking::interval, vehicle_type, vehicle_name);
 
-	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf, sizeof(rxbuf));
-	if (rxlen == 2 && rxbuf[0] == 'O' && rxbuf[1] == 'K') {
+	std::string response = http.request(_server_name, _server_port, txbuf);
+	if (response == "OK") {
 		(*packet_id)++;
 		return true;
 	}
 	return false;
 }
 
-static bool SendEndOfTrackPacket(unsigned int *packet_id,
+static bool SendEndOfTrackPacket(http_session& http, unsigned int *packet_id,
 		unsigned int *session_id) {
 	char txbuf[500];
-	char rxbuf[32];
-	int rxlen;
 
 	// END OF TRACK PACKET
 	//  /track.php?leolive=3&sid=42664778&pid=453&prid=0
@@ -701,19 +436,17 @@ static bool SendEndOfTrackPacket(unsigned int *packet_id,
 	sprintf(txbuf, "/track.php?leolive=3&sid=%u&pid=%u&prid=0", *session_id,
 			*packet_id);
 
-	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf, sizeof(rxbuf));
-	if (rxlen == 2 && rxbuf[0] == 'O' && rxbuf[1] == 'K') {
+	std::string response = http.request(_server_name, _server_port, txbuf);
+	if (response == "OK") {
 		(*packet_id)++;
 		return true;
 	}
 	return false;
 }
 
-static bool SendGPSPointPacket(unsigned int *packet_id,
+static bool SendGPSPointPacket(http_session& http, unsigned int *packet_id,
 		unsigned int *session_id, livetracker_point_t *sendpoint) {
 	char txbuf[500];
-	char rxbuf[32];
-	int rxlen;
 
 	// GPS POINT PACKET
 	//  /track.php?leolive=4&sid=42664778&pid=321&lat=22.3&lon=40.2&alt=23&sog=40&cog=160&tm=1241422845
@@ -732,9 +465,8 @@ static bool SendGPSPointPacket(unsigned int *packet_id,
 			sendpoint->ground_speed * 3.6, sendpoint->course_over_ground,
 			sendpoint->unix_timestamp);
 
-	rxlen = DoTransactionToServer(_server_name, _server_port, txbuf, rxbuf,
-			sizeof(rxbuf));
-	if (rxlen == 2 && rxbuf[0] == 'O' && rxbuf[1] == 'K') {
+	std::string response = http.request(_server_name, _server_port, txbuf);
+	if (response == "OK") {
 		(*packet_id)++;
 		return true;
 	}
@@ -756,6 +488,8 @@ static void LiveTrackerThread() {
 	_t_run = true;
 
 	srand(MonotonicClockMS());
+
+	http_session http;
 
 	do {
 		if (NewDataEvent.tryWait(5000))
@@ -786,7 +520,7 @@ static void LiveTrackerThread() {
 
 					case 1:
 						// Get User ID
-						userid = GetUserIDFromServer();
+						userid = GetUserIDFromServer(http);
 						sendpoint_processed = false;
 						if (userid >= 0)
 							tracker_fsm++;
@@ -794,7 +528,7 @@ static void LiveTrackerThread() {
 
 					case 2:
 						//Start of track packet
-						sendpoint_processed = SendStartOfTrackPacket(&packet_id,
+						sendpoint_processed = SendStartOfTrackPacket(http, &packet_id,
 								&session_id, userid);
 						if (sendpoint_processed) {
 							StartupStore(
@@ -807,7 +541,7 @@ static void LiveTrackerThread() {
 
 					case 3:
 						//Gps point packet
-						sendpoint_processed = SendGPSPointPacket(&packet_id,
+						sendpoint_processed = SendGPSPointPacket(http, &packet_id,
 								&session_id, &sendpoint);
 
 						//Connection lost to server
@@ -835,7 +569,7 @@ static void LiveTrackerThread() {
 
 					case 4:
 						//End of track packet
-						sendpoint_processed = SendEndOfTrackPacket(&packet_id,
+						sendpoint_processed = SendEndOfTrackPacket(http, &packet_id,
 								&session_id);
 						if (sendpoint_processed) {
 							StartupStore(
@@ -947,31 +681,23 @@ static std::string otpReply(std::string question) {
 	return std::string(mmdString);
 }
 
-static std::string downloadJSON(std::string url) {
-
-	typedef std::array<char, 64*1024> buffer_t;
-	std::unique_ptr<buffer_t> rxcontent_ptr(new buffer_t);
-	buffer_t& rxcontent(*rxcontent_ptr);
-
-	int rxlen = DoTransactionToServer("api.livetrack24.com", 80, url.c_str(), rxcontent.data(), rxcontent.size());
-
-	if (rxlen == -1)
+static std::string downloadJSON(http_session& http, std::string url) {
+	std::string response = http.request("api.livetrack24.com", 80, url.c_str());
+	if (response.empty()) {
 		return "";
-
-
+	}
 
 	if (url.find("gzip/1") != std::string::npos) {
-		std::string response;
-		if (gzipInflate(rxcontent.data(), rxlen, response)) {
-			return response;
+		std::string unzip;
+		if (gzipInflate(response.data(), response.size(), unzip)) {
+			return unzip;
 		}
 	}
 
-	return std::string(rxcontent.data(), rxlen);
+	return response;
 }
 
-static picojson::value callLiveTrack24(std::string subURL, bool calledSelf =
-false) {
+static picojson::value callLiveTrack24(http_session& http, std::string subURL, bool calledSelf = false) {
 	picojson::value res;
 
 	std::string url = "/api/v2/op/" + subURL;
@@ -979,7 +705,7 @@ false) {
 	if (calledSelf)
 		url += "/di/" + g_deviceID + "/ut/" + g_ut;
 
-	std::string reply = downloadJSON(url);
+	std::string reply = downloadJSON(http, url);
 
 	if (reply.empty()) {
 #ifdef LT_DEBUG
@@ -1009,23 +735,23 @@ false) {
 
 		if (res.get("newqwe").is<double>()
 				&& res.get("newqwe").get<double>() == 1) {
-			res = callLiveTrack24(subURL, true);
+			res = callLiveTrack24(http, subURL, true);
 		}
 		if (res.get("reLogin").is<double>()
 				&& res.get("reLogin").get<double>() == 1) {
-			res = callLiveTrack24(
+			res = callLiveTrack24(http,
 					"login/username/" + std::string(_username) + "/pass/"
 							+ std::string(_password), true);
 
 			if (res.get("ut").is<std::string>()) {
-				res = callLiveTrack24(subURL, true);
+				res = callLiveTrack24(http, subURL, true);
 			}
 		}
 	}
 	return res;
 }
 
-static bool LiveTrack24_Radar() {
+static bool LiveTrack24_Radar(http_session& http) {
 #ifdef LT_DEBUG
 	StartupStore(TEXT(".LiveRadar RADAR %s"), NEWLINE);
 #endif
@@ -1040,7 +766,7 @@ static bool LiveTrack24_Radar() {
 	strsCommand << "/gzip/1";
 
 
-	picojson::value json = callLiveTrack24(strsCommand.str());
+	picojson::value json = callLiveTrack24(http, strsCommand.str());
 
 	if (json.is<picojson::null>()) {
 #ifdef LT_DEBUG
@@ -1230,12 +956,14 @@ static bool InterruptibleSleepRadar(int msecs) {
 static void LiveTrackRadarThread2() {
 	_t_radar_run = true;
 
+	http_session http; 
+
 	InterruptibleSleepRadar(5000);
 	do {
 		if (!_t_radar_run)
 			break;
 
-		if (!LiveTrack24_Radar()) {
+		if (!LiveTrack24_Radar(http)) {
 			InterruptibleSleepRadar(5000);
 		} else {
 			InterruptibleSleepRadar(DELAY);
@@ -1282,24 +1010,20 @@ static std::string passwordToken(const std::string& plainTextPassword,
 	return base64url_encode(bytes.data(), bytes.size(), false);
 }
 
-static int GetUserIDFromServer2() {
+static int GetUserIDFromServer2(http_session& http) {
 	int retval = -1;
 	char txbuf[512];
-
-	char rxcontent[32];
 
 	std::string pwt0 = passwordToken(std::string(_password), "0");
 	sprintf(txbuf, "/api/t/lt/getUserID/%s/%s/%s/0/0/%s/%s", appKey, "1.0",
 			"LK8000", pwt0.c_str(), _username);
 
-	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, txbuf, rxcontent,
-			sizeof(rxcontent));
-	if (rxlen > 0) {
-		rxcontent[std::min<unsigned>(rxlen, std::size(rxcontent)-1)] = 0;
+	std::string response = http.request("t2.livetrack24.com", 80, txbuf);
+	if (!response.empty()) {
 
 		std::vector<std::string> strings;
 
-		std::istringstream f(rxcontent);
+		std::istringstream f(response);
 		std::string s;
 		while (getline(f, s, '\n')) {
 			strings.push_back(s);
@@ -1315,8 +1039,7 @@ static int GetUserIDFromServer2() {
 	return retval;
 }
 
-static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
-	char rxbuf[32];
+static bool SendEndOfTrackPacket2(http_session& http, unsigned int *packet_id) {
 
 	std::ostringstream stringStream;
 	stringStream << "/api/t/lt/trackEnd/";
@@ -1326,12 +1049,11 @@ static bool SendEndOfTrackPacket2(unsigned int *packet_id) {
 	stringStream << "0/0";
 
 	std::string command = stringStream.str();
-	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, command.c_str(), rxbuf, sizeof(rxbuf));
-	if (rxlen > 0) {
-		rxbuf[rxlen] = 0;
+	std::string response = http.request("t2.livetrack24.com", 80, command.c_str());
+	if (!response.empty()) {
 
 		std::vector<std::string> strings;
-		std::istringstream f(rxbuf);
+		std::istringstream f(response);
 		std::string s;
 		while (getline(f, s, '\n')) {
 			strings.push_back(s);
@@ -1413,10 +1135,7 @@ static std::string DeltaRLE(std::vector<int> data) {
 
 
 
-static bool SendGPSPointPacket2(unsigned int *packet_id) {
-
-	char rxbuf[32];
-
+static bool SendGPSPointPacket2(http_session& http, unsigned int *packet_id) {
 	unsigned long _last_unix_timestamp = 0;
 	std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
@@ -1462,13 +1181,11 @@ static bool SendGPSPointPacket2(unsigned int *packet_id) {
 	stringStream << "LK8000";  // TrackInfo
 
 	const std::string command = stringStream.str();
-	int rxlen = DoTransactionToServer("t2.livetrack24.com", 80, command.c_str(), rxbuf, sizeof(rxbuf));
-	if (rxlen > 0) {
-		rxbuf[std::min<unsigned>(rxlen, std::size(rxbuf)-1)] = 0;
-
+	std::string response = http.request("t2.livetrack24.com", 80, command.c_str());
+	if (!response.empty()) {
 		std::vector<std::string> strings;
 
-		std::istringstream f(rxbuf);
+		std::istringstream f(response);
 		std::string s;
 		while (getline(f, s, '\n')) {
 			strings.push_back(s);
@@ -1509,6 +1226,7 @@ static void LiveTrackerThread2() {
 	unsigned int packet_id = 0;
 
 	_t_run = true;
+	http_session http;
 
 	do {
 		if (NewDataEvent.tryWait(5000))
@@ -1545,7 +1263,7 @@ static void LiveTrackerThread2() {
 				break;
 			case 1:
 				// Get User ID
-				v2_userid = GetUserIDFromServer2();
+				v2_userid = GetUserIDFromServer2(http);
 				sendpoint_processed = false;
 				if (v2_userid >= 0)
 					tracker_fsm++;
@@ -1557,14 +1275,14 @@ static void LiveTrackerThread2() {
 				break;
 			case 3:
 				//Gps point packet
-				packet_processed = SendGPSPointPacket2(&packet_id);
+				packet_processed = SendGPSPointPacket2(http, &packet_id);
 				if (!sendpoint.flying) {
 					tracker_fsm++;
 				}
 				break;
 			case 4:
 				//End of track packet
-				sendpoint_processed = SendEndOfTrackPacket2(&packet_id);
+				sendpoint_processed = SendEndOfTrackPacket2(http, &packet_id);
 				StartupStore(TEXT(". Livetracker TRACKER  SendEndOfTrackPacket2 .%d ...%s"), sendpoint_processed, NEWLINE);
 
 				if (sendpoint_processed) {

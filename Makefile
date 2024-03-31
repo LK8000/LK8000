@@ -1336,6 +1336,7 @@ TRACKING := \
 	$(SRC)/xcs/Net/SocketDescriptor.cpp \
 	$(SRC)/xcs/Net/State.cpp \
 	$(SRC)/xcs/Net/StaticSocketAddress.cpp \
+    $(SRC_TRACKING)/Default/http_session.cpp \
 
 SRC_FILES :=\
 	$(WINDOW) \
