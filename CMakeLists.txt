@@ -25,6 +25,7 @@ add_definitions(
     -DPOCO_ANDROID
     -DGLM_FORCE_RADIANS
     -DGLM_FORCE_SIZE_T_LENGTH
+    -DUSE_CURL
 )
 
 if("${ANDROID_ABI}" MATCHES "arm")
@@ -57,6 +58,7 @@ set(CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS} ")
 
 add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
+add_subdirectory(Common/Source/Tracking/Curl tracking_http)
 
 add_library( LK8000 SHARED
 
@@ -774,7 +776,6 @@ add_library( LK8000 SHARED
 	Common/Source/Tracking/LiveTrack24.cpp
 	Common/Source/Tracking/Tracking.cpp
     Common/Source/Tracking/SkylinesGlue.cpp
-    Common/Source/Tracking/Default/HttpRequest.cpp
 
     Common/Source/xcs/Util/CRC.cpp
     Common/Source/xcs/Util/CRC.hpp
@@ -880,6 +881,8 @@ target_include_directories( LK8000 PRIVATE
 target_link_libraries(LK8000 PRIVATE
     LK8000_POCO
     LK8000_GLUTESS
+    tracking_http
+
 	geographiclib::geographiclib
 	oboe::oboe
 	boost_config::boost_config

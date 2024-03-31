@@ -35,6 +35,9 @@ public class Loader {
     try {
       System.loadLibrary("c++_shared");
       System.loadLibrary("oboe");
+      System.loadLibrary("crypto");
+      System.loadLibrary("ssl");
+      System.loadLibrary("curl");
       System.loadLibrary("LK8000");
       loaded = true;
     } catch (UnsatisfiedLinkError e) {

@@ -11,6 +11,10 @@
 #ifndef _TRACKING_HTTP_SESSION_H_
 #define _TRACKING_HTTP_SESSION_H_
 
-#include "Default/http_session.h"
+#ifdef USE_CURL
+  #include "Curl/http_session.h"
+#else 
+  #include "Default/http_session.h"
+#endif
 
 #endif // _TRACKING_HTTP_SESSION_H_

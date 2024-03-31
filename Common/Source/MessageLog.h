@@ -12,7 +12,7 @@
 #ifndef MESSAGELOG_H
 #define	MESSAGELOG_H
 
-#include "Compiler.h"
+#include "xcs/Compiler.h"
 #include <tchar.h>
 #include <stdarg.h>
 #include <iostream>
