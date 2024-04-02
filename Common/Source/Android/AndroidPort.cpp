@@ -25,7 +25,6 @@ namespace {
 
 AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName) {
     buffer.reserve(512);
-    rxthread_buffer.reserve(512);
 }
 
 bool AndroidPort::Initialize() {
@@ -204,34 +203,36 @@ void AndroidPort::PortError(const char *msg) {
 
 unsigned AndroidPort::RxThread() {
 
-    ScopeLock lock(mutex);
+    std::vector<char> rxthread_buffer;
+    int state = STATE_LIMBO;
 
-    while( running ) {
-
-        newdata.Wait(mutex);
-
-        if (buffer.empty()) {
-
-            if (!bridge) {
-                // port is Closed.
-                running = false;
-                return 0; // Stop RxThread...
+    do {
+        bool stop = WithLock(mutex, [&]() {
+            if (running && bridge) {
+                state = bridge->getState(Java::GetEnv());
+                assert(rxthread_buffer.empty());
+                std::swap(rxthread_buffer, buffer);
+                assert(buffer.empty());
+                return false;
             }
+            return true; // Stop RxThread...
+        });
 
-            if (bridge->getState(Java::GetEnv()) == STATE_READY) {
-                devOpen(devGetDeviceOnPort(GetPortIndex()));
-            }
+        if (stop) {
+            return 0; // Stop RxThread...
+        }
 
-        } else {
-            std::swap(rxthread_buffer, buffer);
-            buffer.clear();
-            ScopeUnlock unlock(mutex); // workaround to prevent deadlock on shutdown
-
+        if (!rxthread_buffer.empty() ) {
             WithLock(CritSec_Comm, [&]() {
                 ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
+                rxthread_buffer.clear();
             });
+        } else if (state == STATE_READY) {
+            devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
-    }
 
-    return 0;
+        ScopeLock lock(mutex);
+        newdata.Wait(mutex); // wait for data or state change
+    }
+    while(true);
 }
