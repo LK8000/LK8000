@@ -11,6 +11,7 @@
 #include "options.h"
 #include "fileext.h"
 #include "Util/tstring.hpp"
+#include "utils/unique_file_ptr.h"
 #include "stringext.h"
 
 #include <memory>
