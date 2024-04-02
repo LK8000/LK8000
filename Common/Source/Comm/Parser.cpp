@@ -700,21 +700,16 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
      *  7 = Manual input mode
      *  8 = Simulation mode
      */
-  
-  double ggafix = StrToDouble(params[5],NULL);
-  if ( ggafix==0 || ggafix>5 ) {
-	#ifdef DEBUG_GPS
-	if (ggafix>5) StartupStore(_T("------ GGA DEAD RECKON fix skipped%s"),NEWLINE);
-	#endif
-#ifdef YDEBUG
-    // in debug we need accept manual or simulated fix
-    gpsValid = (ggafix == 7 || ggafix == 8); 
-#else
-	gpsValid=false;
-#endif    
-  } else {
-	gpsValid=true;
+
+  unsigned ggafix = strtoul(params[5], nullptr, 10);
+  gpsValid = (ggafix > 0 && ggafix < 6);
+  if (ggafix == 6 ) {
+    DebugLog(_T("------ GGA DEAD RECKON fix skipped"));
   }
+#ifdef YDEBUG
+  // in debug we need to accept manual or simulated fix
+  gpsValid = gpsValid || (ggafix == 7 || ggafix == 8); 
+#endif
 
   if (gpsValid) {
     lastGpsValid.Update();
@@ -777,9 +772,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
 		pGPS->Longitude = tmplon;
 	} 
 	else {
-		#ifdef DEBUG_GPS
-		StartupStore(_T("++++++ GGA gpsValid with invalid posfix!%s"),NEWLINE);
-		#endif
+		DebugLog(_T("++++++ GGA gpsValid with invalid posfix!"));
 		gpsValid=false;
 	}
   }
