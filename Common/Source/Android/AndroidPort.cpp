@@ -36,16 +36,12 @@ bool AndroidPort::Initialize() {
             JNIEnv *env = Java::GetEnv();
             bridge->setInputListener(env, this);
             bridge->setListener(env, this);
-
-            if (bridge->getState(env) == STATE_READY) {
-                SetPortStatus(CPS_OPENOK);
-            }
             return true;
         }
     } catch (const std::exception& e) {
         delete std::exchange(bridge, nullptr); // required if `setInputListener` or `setListener` throw exception
         const tstring what = to_tstring(e.what());
-        StartupStore(_T("FAILED! <%s>" NEWLINE), what.c_str());
+        StartupStore(_T("FAILED! <%s>"), what.c_str());
     }
     StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
     return false;
@@ -217,26 +213,13 @@ unsigned AndroidPort::RxThread() {
         if (buffer.empty()) {
 
             if (!bridge) {
-                SetPortStatus(CPS_OPENKO);
                 // port is Closed.
                 running = false;
                 return 0; // Stop RxThread...
             }
 
-            switch (bridge->getState(Java::GetEnv())) {
-                case STATE_READY:
-                    SetPortStatus(CPS_OPENOK);
-                    devOpen(devGetDeviceOnPort(GetPortIndex()));
-                    break;
-                case STATE_FAILED:
-                    SetPortStatus(CPS_OPENKO);
-                    break;
-                case STATE_LIMBO:
-                    SetPortStatus(CPS_OPENWAIT);
-                    break;
-                default:
-                    SetPortStatus(CPS_OPENKO);
-                    break;
+            if (bridge->getState(Java::GetEnv()) == STATE_READY) {
+                devOpen(devGetDeviceOnPort(GetPortIndex()));
             }
 
         } else {

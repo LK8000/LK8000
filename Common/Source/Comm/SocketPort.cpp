@@ -44,7 +44,6 @@ bool SocketPort::Initialize() {
         goto failed;
     }
 
-    SetPortStatus(CPS_OPENOK);
     StartupStore(_T(". ComPort %u Init <%s> end OK"), GetPortIndex() + 1, GetPortName());
     return true;
 failed:

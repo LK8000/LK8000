@@ -38,7 +38,6 @@ bool GpsIdPort::Initialize() {
         StartupStore(_T("Unable to Open GPS Intermediate driver %s"), NEWLINE);
         return false;
     }
-    SetPortStatus(CPS_OPENOK);
 
     GPS_DEVICE dev = {};
     GPSResetData(dev);

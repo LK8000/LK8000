@@ -116,15 +116,11 @@ void BeforeShutdown(void) {
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(MsgToken<1222>());
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... Save default task%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Save default task"));
 
   SaveDefaultTask();
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... Clear task data%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Clear task data"));
 
   LockTaskData();
   CloseWayPoints();
@@ -132,9 +128,7 @@ void BeforeShutdown(void) {
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(MsgToken<1219>());
-  #if TESTBENCH
-  StartupStore(TEXT(".... CloseTerrainTopology%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... CloseTerrainTopology"));
 
   LockTerrainDataGraphics();
   CloseTopology();
@@ -152,70 +146,35 @@ void BeforeShutdown(void) {
   ProgramStarted = psInitInProgress;
 
   // Kill windows
-  #if TESTBENCH
-  StartupStore(TEXT(".... Close Messages%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Close Messages"));
   Message::Destroy();
-  #if TESTBENCH
-  StartupStore(TEXT(".... Destroy Button Labels%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Destroy Button Labels"));
   ButtonLabel::Destroy();
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... Delete Objects%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Delete Objects"));
 
   // Kill graphics objects
 
    CAirspaceManager::Instance().CloseAirspaces();
-  #if TESTBENCH
-  StartupStore(TEXT(".... Delete Critical Sections%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Delete Critical Sections"));
 
   // Wait end of Calculation thread before deinit critical section.
   WaitThreadCalculation();
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... Close Calculations%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(".... Close Calculations"));
   CloseCalculations();
 
   CloseGeoid();
   DeInitCustomHardware();
 
-  #if TESTBENCH
-  StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
-  #endif
-
-  if (RUN_MODE == RUN_FLY) {
-    for (unsigned i = 0; i < NUMDEV; i++) {
-      const DeviceDescriptor_t& dev = DeviceList[i];
-      if (dev.Status != CPS_UNUSED) {
-        StartupStore(_T(". ComPort %d: status=%d Rx=%u Tx=%u ErrRx=%u ErrTx=%u"), i,
-                                dev.Status, dev.Rx, dev.Tx, dev.ErrRx, dev.ErrTx);
-      }
-    }
-  }
-
-  StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
+  StartupStore(_T(". Finished shutdown %s"), WhatTimeIsIt());
   LKRunStartEnd(false);
 
-#ifdef DEBUG
-  TCHAR foop[80];
-  TASK_POINT wp;
-  TASK_POINT *wpr = &wp;
-  _stprintf(foop,TEXT(". Sizes %d %d %d%s"),
-	    sizeof(TASK_POINT),
-	    ((long)&wpr->AATTargetLocked)-((long)wpr),
-	    ((long)&wpr->Target)-((long)wpr), NEWLINE
-	    );
-  StartupStore(foop);
-#endif
 
   main_window->PostQuit();
 #if TESTBENCH
   StartupLogFreeRamAndStorage();
-  #endif
+#endif
 
 }
 

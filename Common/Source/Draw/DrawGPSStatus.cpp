@@ -25,23 +25,13 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc) {
     return;
   }
 
-  static bool firstrun = true;
-
   if (!extGPSCONNECT) {
-    const DeviceDescriptor_t& ComPort = *devA();
-    if (ComPort.Status == CPS_OPENKO) {
-      message = MsgToken<971>(); // No ComPort
-    } else if (ComPort.Status == CPS_OPENOK) {
-      if ((ComPort.Rx > 0) && !firstrun) {
-        message = MsgToken<973>(); // GPS IS MISSING
-        firstrun = false;
-      } else {
-        message = MsgToken<972>(); // NO DATA RX
+    message = MsgToken<974>(); // GPS NOT CONNECTED
+    for (const auto& dev : DeviceList) {
+      ScopeLock Lock(CritSec_Comm);
+      if (dev.IsReady()) {
+        message = nullptr;
       }
-    } else if (ComPort.Status == CPS_EFRAME) {
-      message = MsgToken<975>(); // DATA ERROR
-    } else {
-      message = MsgToken<974>(); // GPS NOT CONNECTED
     }
   } else if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
     message = MsgToken<970>(); // NO VALID FIX

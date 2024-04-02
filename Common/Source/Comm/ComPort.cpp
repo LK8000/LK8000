@@ -128,12 +128,8 @@ bool ComPort::StartRxThread() {
 }
 
 void ComPort::Run() {
-
     StartupStore(_T(". ComPort %u ReadThread : started"), GetPortIndex() + 1);
-
     RxThread();
-    SetPortStatus(CPS_OPENKO);
-
     StartupStore(_T(". ComPort %u ReadThread : terminated"), GetPortIndex() + 1);
 }
 
@@ -195,12 +191,6 @@ void ComPort::AddStatTx(unsigned dwBytes) {
 void ComPort::AddStatErrTx(unsigned dwBytes) {
     if (GetPortIndex() < NUMDEV) {
         DeviceList[GetPortIndex()].ErrTx += dwBytes;
-    }
-}
-
-void ComPort::SetPortStatus(int nStatus) {
-    if (GetPortIndex() < NUMDEV) {
-        DeviceList[GetPortIndex()].Status = nStatus;
     }
 }
 
