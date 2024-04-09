@@ -38,7 +38,7 @@ BOOL bAddonly = false;
 static void SetWaypointValues(bool first=false) {
   WndProperty* wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATType"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_task_sectors(gTaskType);
@@ -63,27 +63,27 @@ static void SetWaypointValues(bool first=false) {
     pFrm->SetVisible(Task[twItemIndex].AATType == sector_type_t::SECTOR);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATCircleRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(Task[twItemIndex].AATCircleRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATSectorRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATSectorRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(Task[twItemIndex].AATSectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATStartRadial"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATStartRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATStartRadial);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATFinishRadial"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATFinishRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Task[twItemIndex].AATFinishRadial);
     wp->RefreshDisplay();
@@ -95,14 +95,14 @@ static void UpdateCaption(void) {
 
   if(!bMoveallowed)
   {
-	wMove    = ((WndFrame *)wf->FindByName(TEXT("frmMoveTurnpoint")));
+	wMove    = (wf->FindByName<WndFrame>(TEXT("frmMoveTurnpoint")));
         LKASSERT(wMove!=NULL);
     wMove->SetVisible(FALSE);
   }
-  wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
-  wTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmTurnpoint")));
-  wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
-  wFinish    = ((WndFrame *)wf->FindByName(TEXT("frmFinish")));
+  wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
+  wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));
+  wAATTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmAATTurnpoint")));
+  wFinish    = (wf->FindByName<WndFrame>(TEXT("frmFinish")));
 
   LKASSERT(wStart!=NULL);
   LKASSERT(wTurnpoint!=NULL);
@@ -111,43 +111,43 @@ static void UpdateCaption(void) {
 
   WndButton* wb;
   if (bAddonly) {
-    wb = (WndButton *)wf->FindByName(TEXT("butSelect"));
+    wb = wf->FindByName<WndButton>(TEXT("butSelect"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butRemove"));
+    wb = wf->FindByName<WndButton>(TEXT("butRemove"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butDetails"));
+    wb = wf->FindByName<WndButton>(TEXT("butDetails"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butDown"));
+    wb = wf->FindByName<WndButton>(TEXT("butDown"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butUp"));
+    wb = wf->FindByName<WndButton>(TEXT("butUp"));
     if (wb) {
       wb->SetVisible(false);
     }
   } else {
-      wb = (WndButton *)wf->FindByName(TEXT("butUp"));
+      wb = wf->FindByName<WndButton>(TEXT("butUp"));
       if (wb) {
         wb->SetVisible(ValidTaskPoint(twItemIndex-1));
       }
 
-      wb = (WndButton *)wf->FindByName(TEXT("butDown"));
+      wb = wf->FindByName<WndButton>(TEXT("butDown"));
       if (wb) {
         wb->SetVisible(ValidTaskPoint(twItemIndex+1));
       }
 
-      wb = (WndButton *)wf->FindByName(TEXT("butPrev"));
+      wb = wf->FindByName<WndButton>(TEXT("butPrev"));
       if (wb) {
         wb->SetVisible(ValidTaskPoint(twItemIndex-1));
       }
 
-      wb = (WndButton *)wf->FindByName(TEXT("butNext"));
+      wb = wf->FindByName<WndButton>(TEXT("butNext"));
       if (wb) {
         wb->SetVisible(ValidTaskPoint(twItemIndex+1));
       }
@@ -215,7 +215,7 @@ static void UpdateCaption(void) {
 static void SetValues(bool first) {
   WndProperty* wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_finish_sectors(gTaskType);
@@ -229,14 +229,14 @@ static void SetValues(bool first) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(FinishRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*) wf->FindByName(TEXT("prpTaskStartLine"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_start_sectors(gTaskType);
@@ -252,14 +252,14 @@ static void SetValues(bool first) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(StartRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
     // 110223 CAN ANYONE PLEASE CHECK WHAT THE HACK IS A BOOL FOR BILL GATES? BECAUSE IF FALSE IS -1 THEN
     // WE HAVE MANY PROBLEMS! I THINK IT IS TIME TO GO BACK TO bool AND GET RID OF MS BOOLS!!
@@ -278,7 +278,7 @@ static void SetValues(bool first) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
   if (wp) {
     wp->SetVisible(gTaskType==TSK_DEFAULT);
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(SectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
@@ -286,7 +286,7 @@ static void SetValues(bool first) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAutoAdvance"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
@@ -306,21 +306,21 @@ static void SetValues(bool first) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMinTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMinTime"));
   if (wp) {
     wp->SetVisible(gTaskType==TSK_AAT);
     wp->GetDataField()->SetAsFloat(AATTaskLength);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableMultipleStartPoints"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpEnableMultipleStartPoints"));
   if (wp) {
     wp->SetVisible(gTaskType!=TSK_GP);
     wp->GetDataField()->Set(EnableMultipleStartPoints);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskType"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskType"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (first) {
@@ -342,7 +342,7 @@ static void SetValues(bool first) {
   }
 
   WndButton* wb;
-  wb = (WndButton *)wf->FindByName(TEXT("EditStartPoints"));
+  wb = wf->FindByName<WndButton>(TEXT("EditStartPoints"));
   if (wb) {
     wb->SetVisible(EnableMultipleStartPoints!=0 && gTaskType!=TSK_GP);
   }
@@ -368,32 +368,32 @@ static void GetWaypointValues(void) {
 
   if ((twItemIndex<MAXTASKPOINTS)&&(twItemIndex>=0)) {
     LockTaskData();
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAATType"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAATType"));
     if (wp) {
       auto dfe = wp->GetDataField();
       auto sectors = get_task_sectors(gTaskType);
       changed = CHECK_CHANGED(Task[twItemIndex].AATType, sectors->type(dfe->GetAsInteger()));
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAATCircleRadius"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAATCircleRadius"));
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATCircleRadius,
                     round(Units::FromDistance(wp->GetDataField()->GetAsFloat())));
     }
     
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAATSectorRadius"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAATSectorRadius"));
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATSectorRadius,
                     round(Units::FromDistance(wp->GetDataField()->GetAsFloat())));
     }
     
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAATStartRadial"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAATStartRadial"));
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATStartRadial,
                     round(wp->GetDataField()->GetAsFloat()));
     }
     
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAATFinishRadial"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAATFinishRadial"));
     if (wp) {
       changed = CHECK_CHANGED(Task[twItemIndex].AATFinishRadial, 
                     round(wp->GetDataField()->GetAsFloat()));
@@ -412,64 +412,64 @@ static void ReadValues(void) {
   bool changed = false;
 
   LockTaskData();
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableMultipleStartPoints"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpEnableMultipleStartPoints"));
   if (wp) {
     changed = CHECK_CHANGED(EnableMultipleStartPoints,
                   wp->GetDataField()->GetAsBoolean());
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskType"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskType"));
   if (wp) {
     changed = CHECK_CHANGED(gTaskType,
                   wp->GetDataField()->GetAsInteger());
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
     auto dfe = wp->GetDataField();
     auto sectors = get_finish_sectors(gTaskType);
     changed = CHECK_CHANGED(FinishLine, sectors->type(dfe->GetAsInteger()));
   }
   
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishRadius"));
   if (wp) {
     changed = CHECK_CHANGED(FinishRadius,
                   Units::FromDistance(wp->GetDataField()->GetAsFloat()));
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartLine"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
   if (wp) {
     auto dfe = wp->GetDataField();
     auto sectors = get_start_sectors(gTaskType);
     changed = CHECK_CHANGED(StartLine, sectors->type(dfe->GetAsInteger()));
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskStartRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartRadius"));
   if (wp) {
     changed = CHECK_CHANGED(StartRadius,
                   Units::FromDistance(wp->GetDataField()->GetAsFloat()));
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_task_sectors(TSK_DEFAULT);
     changed = CHECK_CHANGED(SectorType, sectors->type(dfe->GetAsInteger()));
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskSectorRadius"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
   if (wp) {
     changed = CHECK_CHANGED(SectorRadius,
                   round(Units::FromDistance(wp->GetDataField()->GetAsFloat())));
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAutoAdvance"));
   if (wp) {
     changed = CHECK_CHANGED(AutoAdvance, 
                   wp->GetDataField()->GetAsInteger());
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMinTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMinTime"));
   if (wp) {
     changed = CHECK_CHANGED(AATTaskLength, 
                   wp->GetDataField()->GetAsFloat());
@@ -610,7 +610,7 @@ static void OnTaskRulesClicked(WndButton* pWnd){
 
 static void OnTaskPointPicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
-    WndFrame *wPicto = ((WndFrame *) wf->FindByName(TEXT("frmTaskPointPicto")));
+    WndFrame *wPicto = (wf->FindByName<WndFrame>(TEXT("frmTaskPointPicto")));
     if(wPicto) {
         /********************/
         ReadValues();
@@ -712,10 +712,10 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
   //ASSERT(wf!=NULL);
   //  wf->SetKeyDownNotify(FormKeyDown);
-  wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
-  wTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmTurnpoint")));
-  wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
-  wFinish    = ((WndFrame *)wf->FindByName(TEXT("frmFinish")));
+  wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
+  wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));
+  wAATTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmAATTurnpoint")));
+  wFinish    = (wf->FindByName<WndFrame>(TEXT("frmFinish")));
 
   LKASSERT(wStart!=NULL);
   LKASSERT(wTurnpoint!=NULL);
@@ -724,35 +724,35 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
   WndButton* wb;
   if (addonly) {
-    wb = (WndButton *)wf->FindByName(TEXT("butSelect"));
+    wb = wf->FindByName<WndButton>(TEXT("butSelect"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butRemove"));
+    wb = wf->FindByName<WndButton>(TEXT("butRemove"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butDetails"));
+    wb = wf->FindByName<WndButton>(TEXT("butDetails"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butDown"));
+    wb = wf->FindByName<WndButton>(TEXT("butDown"));
     if (wb) {
       wb->SetVisible(false);
     }
-    wb = (WndButton *)wf->FindByName(TEXT("butUp"));
+    wb = wf->FindByName<WndButton>(TEXT("butUp"));
     if (wb) {
       wb->SetVisible(false);
     }
   } else {
     if (!ValidTaskPoint(twItemIndex-1)) {
-      wb = (WndButton *)wf->FindByName(TEXT("butUp"));
+      wb = wf->FindByName<WndButton>(TEXT("butUp"));
       if (wb) {
         wb->SetVisible(false);
       }
     }
     if (!ValidTaskPoint(twItemIndex+1)) {
-      wb = (WndButton *)wf->FindByName(TEXT("butDown"));
+      wb = wf->FindByName<WndButton>(TEXT("butDown"));
       if (wb) {
         wb->SetVisible(false);
       }

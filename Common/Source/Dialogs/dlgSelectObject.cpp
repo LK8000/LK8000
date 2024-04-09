@@ -42,7 +42,7 @@ void OnCloseClicked(WndButton* pWnd){
 
 
 void ResetFilter(WndForm* pForm, const TCHAR* Name) {
-  auto pWnd = dynamic_cast<WndProperty*>(pForm->FindByName(Name));
+  auto pWnd = pForm->FindByName<WndProperty>(Name);
   if (pWnd) {
     DataField* dfe = pWnd->GetDataField();
     if(dfe) {
@@ -79,7 +79,7 @@ void SetNameCaption(WndButton* pWnd, const TCHAR* tFilter) {
 void dlgSelectObject::OnSelectClicked(WndButton* pWnd) {
   WndForm* pForm = pWnd->GetParentWndForm();
   if(pForm) {
-    auto wList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmList")));
+    auto wList = pForm->FindByName<WndListFrame>(TEXT("frmList"));
     if (wList) {
       size_t idx = wList->GetItemIndex();
       if ( idx < GetVisibleCount()) {
@@ -196,11 +196,11 @@ void dlgSelectObject::OnFilterName(WndButton* pWnd) {
 
   ResetFilter(pForm);
 
-  auto wList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmList")));
+  auto wList = pForm->FindByName<WndListFrame>(TEXT("frmList"));
   if (wList) {
     UpdateList();
 
-    auto wListEntry = dynamic_cast<WndOwnerDrawFrame*>(pForm->FindByName(TEXT("frmListEntry")));
+    auto wListEntry = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmListEntry"));
     if (wListEntry) {
       wListEntry->SetFocus();
     }
@@ -352,9 +352,9 @@ bool dlgSelectObject::OnTimerNotify(WndForm* pForm) {
     if (abs(a - lastHeading) > 10) {
       lastHeading = a;
 
-      auto wList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmList")));
+      auto wList = pForm->FindByName<WndListFrame>(TEXT("frmList"));
       if(wList) {
-        auto wpDirection = dynamic_cast<WndProperty*>(pForm->FindByName(TEXT("prpFltDirection")));
+        auto wpDirection = pForm->FindByName<WndProperty>(TEXT("prpFltDirection"));
         if (wpDirection) {
           SetDirectionData(wpDirection->GetDataField());
           wpDirection->RefreshDisplay();
@@ -386,7 +386,7 @@ bool dlgSelectObject::FormKeyDown(WndForm* pForm, unsigned KeyCode) {
   if (GetTypeFilterIdx() != idx) {
     SetTypeFilterIdx(idx);
 
-    auto wp = dynamic_cast<WndProperty*>(pForm->FindByName(TEXT("prpFltType")));
+    auto wp = pForm->FindByName<WndProperty>(TEXT("prpFltType"));
     if (wp) {
       DataField* dfe = wp->GetDataField();
       if (dfe) {
@@ -634,7 +634,7 @@ int dlgSelectObject::DoModal() {
   }
 
 
-  pWndList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmList")));
+  pWndList = pForm->FindByName<WndListFrame>(TEXT("frmList"));
   if (!pWndList) {
       return mrCancel;
   }
@@ -644,7 +644,7 @@ int dlgSelectObject::DoModal() {
   pWndList->SetBorderKind(BORDERLEFT);
 
 
-  auto wListEntry = dynamic_cast<WndOwnerDrawFrame*>(pForm->FindByName(TEXT("frmListEntry")));
+  auto wListEntry = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmListEntry"));
   if (wListEntry) {
     wListEntry->SetCanFocus(true);
   }

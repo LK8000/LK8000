@@ -187,12 +187,12 @@ BOOL DevRCFenix::Config(DeviceDescriptor_t* d) {
   std::unique_ptr<WndForm>  wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P));
   if(wf) {
     Device(d);
-    WndButton *wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+    WndButton *wBt = wf->FindByName<WndButton>(TEXT("cmdClose"));
     if(wBt){
       wBt->SetOnClickNotify(OnCloseClicked);
     }
 
-    wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));		
+    wBt = wf->FindByName<WndButton>(TEXT("cmdIGCDownload"));		
 #ifndef IGC_DOWNLOAD	
 		// IGC Download not yet supported by Fenix 
 		wBt->SetVisible(false);  // hide IGC Download button
@@ -201,7 +201,7 @@ BOOL DevRCFenix::Config(DeviceDescriptor_t* d) {
       wBt->SetOnClickNotify(OnIGCDownloadClicked);
     }
 #endif
-    wBt = (WndButton *)wf->FindByName(TEXT("cmdValues"));
+    wBt = wf->FindByName<WndButton>(TEXT("cmdValues"));
     if(wBt){
       wBt->SetOnClickNotify(OnValuesClicked);
     }

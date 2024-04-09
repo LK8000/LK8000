@@ -362,7 +362,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
 
 //  int PortNum = d->PortNumber;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpQNHDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
@@ -373,7 +373,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
   
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMCDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
@@ -384,7 +384,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBUGDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
@@ -395,7 +395,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBALDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>());  // LKTOKEN  _@M491_ "OFF"
@@ -406,7 +406,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSTFDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -417,7 +417,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWINDDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -427,7 +427,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBARODir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -435,7 +435,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     dfe->Set((uint) PortIO.BARODir);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSPEEDDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -444,7 +444,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpVARIODir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -453,7 +453,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     dfe->Set((uint) PortIO.VARIODir);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpR_TRGTDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -463,7 +463,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpT_TRGTDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -473,7 +473,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpGFORCEDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -481,7 +481,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     dfe->Set((uint) PortIO.GFORCEDir);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpOATDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -490,7 +490,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBAT1Dir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -499,7 +499,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBAT2Dir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -508,7 +508,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpPOLARDir"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -517,7 +517,7 @@ BOOL DevLX_EOS_ERA::ShowData(WndForm* wf , DeviceDescriptor_t* d)
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpDirectLink"));
   if (wp) {
     DataField* dfe = wp->GetDataField(); dfe->Clear();
     dfe->addEnumText(MsgToken<491>()); // LKTOKEN  _@M491_ "OFF"
@@ -538,23 +538,23 @@ bool DevLX_EOS_ERA::OnTimer(WndForm* pWnd)
 
   if(wf)
   {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir")    ); UpdateValueTxt( wp,  _STF   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir")   ); UpdateValueTxt( wp,  _WIND  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir")   ); UpdateValueTxt( wp,  _BARO  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir")  ); UpdateValueTxt( wp,  _VARIO );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir")  ); UpdateValueTxt( wp,  _SPEED );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir") ); UpdateValueTxt( wp,  _R_TRGT);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir") ); UpdateValueTxt( wp,  _T_TRGT);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir") ); UpdateValueTxt( wp,  _GFORCE);
-    wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir")    ); UpdateValueTxt( wp,  _OAT   );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir")   ); UpdateValueTxt( wp,  _BAT1  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir")   ); UpdateValueTxt( wp,  _BAT2  );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir")  ); UpdateValueTxt( wp,  _POLAR );
-    wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);    
+    wp = wf->FindByName<WndProperty>(TEXT("prpQNHDir")    ); UpdateValueTxt( wp,  _QNH   );
+    wp = wf->FindByName<WndProperty>(TEXT("prpMCDir")     ); UpdateValueTxt( wp,  _MC    );
+    wp = wf->FindByName<WndProperty>(TEXT("prpBUGDir")    ); UpdateValueTxt( wp,  _BUGS  );
+    wp = wf->FindByName<WndProperty>(TEXT("prpBALDir")    ); UpdateValueTxt( wp,  _BAL   );
+    wp = wf->FindByName<WndProperty>(TEXT("prpSTFDir")    ); UpdateValueTxt( wp,  _STF   );
+    wp = wf->FindByName<WndProperty>(TEXT("prpWINDDir")   ); UpdateValueTxt( wp,  _WIND  );
+    wp = wf->FindByName<WndProperty>(TEXT("prpBARODir")   ); UpdateValueTxt( wp,  _BARO  );
+    wp = wf->FindByName<WndProperty>(TEXT("prpVARIODir")  ); UpdateValueTxt( wp,  _VARIO );
+    wp = wf->FindByName<WndProperty>(TEXT("prpSPEEDDir")  ); UpdateValueTxt( wp,  _SPEED );
+    wp = wf->FindByName<WndProperty>(TEXT("prpR_TRGTDir") ); UpdateValueTxt( wp,  _R_TRGT);
+    wp = wf->FindByName<WndProperty>(TEXT("prpT_TRGTDir") ); UpdateValueTxt( wp,  _T_TRGT);
+    wp = wf->FindByName<WndProperty>(TEXT("prpGFORCEDir") ); UpdateValueTxt( wp,  _GFORCE);
+    wp = wf->FindByName<WndProperty>(TEXT("prpOATDir")    ); UpdateValueTxt( wp,  _OAT   );
+    wp = wf->FindByName<WndProperty>(TEXT("prpBAT1Dir")   ); UpdateValueTxt( wp,  _BAT1  );
+    wp = wf->FindByName<WndProperty>(TEXT("prpBAT2Dir")   ); UpdateValueTxt( wp,  _BAT2  );
+    wp = wf->FindByName<WndProperty>(TEXT("prpPOLARDir")  ); UpdateValueTxt( wp,  _POLAR );
+    wp = wf->FindByName<WndProperty>(TEXT("prpDirectLink")); UpdateValueTxt( wp,  _DIRECT);    
   }
   return true;
 }
@@ -570,17 +570,17 @@ BOOL DevLX_EOS_ERA::Config(DeviceDescriptor_t* d){
     Device(d);
     WndButton *wBt = NULL;
 
-    wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+    wBt = wf->FindByName<WndButton>(TEXT("cmdClose"));
     if(wBt){
       wBt->SetOnClickNotify(OnCloseClicked);
     }
 
-    wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));
+    wBt = wf->FindByName<WndButton>(TEXT("cmdIGCDownload"));
     if(wBt){
       wBt->SetOnClickNotify(OnIGCDownloadClicked);
     }
 
-    wBt = (WndButton *)wf->FindByName(TEXT("cmdValues"));
+    wBt = wf->FindByName<WndButton>(TEXT("cmdValues"));
     if(wBt){
       wBt->SetOnClickNotify(OnValuesClicked);
     }
@@ -779,88 +779,88 @@ void DevLX_EOS_ERA::GetDirections(WndButton* pWnd){
 
       WndProperty *wp;
       
-      wp = (WndProperty*)wf->FindByName(TEXT("prpQNHDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpQNHDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.QNHDir = (DataBiIoDir) dfe->GetAsInteger();
       }     
-      wp = (WndProperty*)wf->FindByName(TEXT("prpMCDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpMCDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.MCDir = (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpBUGDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpBUGDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.BUGDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
 
-      wp = (WndProperty*)wf->FindByName(TEXT("prpBALDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpBALDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.BALDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpSTFDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpSTFDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.STFDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpWINDDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpWINDDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.WINDDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpBARODir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpBARODir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.BARODir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpVARIODir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpVARIODir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.VARIODir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpSPEEDDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpSPEEDDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.SPEEDDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpR_TRGTDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpR_TRGTDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.R_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpGFORCEDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpGFORCEDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.GFORCEDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpOATDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpOATDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.OATDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpBAT1Dir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpBAT1Dir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.BAT1Dir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpBAT2Dir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpBAT2Dir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.BAT2Dir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpPOLARDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpPOLARDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.POLARDir =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpDirectLink"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpDirectLink"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.DirLink =  (DataBiIoDir) dfe->GetAsInteger();
       }
-      wp = (WndProperty*)wf->FindByName(TEXT("prpT_TRGTDir"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpT_TRGTDir"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         PortIO.T_TRGTDir =  (DataTP_Type) dfe->GetAsInteger();
@@ -889,7 +889,7 @@ void DevLX_EOS_ERA::OnValuesClicked(WndButton* pWnd) {
   if(wf)
   {
     ShowValues (!ShowValues());
-    WndButton *wBt = (WndButton *) wf->FindByName(TEXT("cmdValues"));
+    WndButton *wBt = wf->FindByName<WndButton>(TEXT("cmdValues"));
     if (wBt) {
       if (ShowValues()) {
         wf->SetTimerNotify(250, OnTimer); // update values 4 times a second

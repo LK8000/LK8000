@@ -664,12 +664,12 @@ static void UpdateList(WndListFrame* pList) {
 }
 
 static void SelectItem(WndForm* pForm, int index) {
-  WndListFrame* pList = (WndListFrame*)pForm->FindByName(TEXT("frmMultiSelectListList"));
+  WndListFrame* pList = pForm->FindByName<WndListFrame>(TEXT("frmMultiSelectListList"));
   if(pList) {
     pList->SetItemIndexPos(index);
     pList->Redraw();
   }
-  WndOwnerDrawFrame* pListEntry = (WndOwnerDrawFrame*) pForm->FindByName(TEXT("frmMultiSelectListListEntry"));
+  WndOwnerDrawFrame* pListEntry = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmMultiSelectListListEntry"));
   if(pListEntry) {
       pListEntry->SetFocus();
   }
@@ -797,13 +797,13 @@ int dlgTaskSelectListShowModal() {
     return mrCancel;
   }
 
-  WndListFrame* pList = (WndListFrame*)pForm->FindByName(TEXT("frmMultiSelectListList"));
+  WndListFrame* pList = pForm->FindByName<WndListFrame>(TEXT("frmMultiSelectListList"));
   if(pList) {
     pList->SetBorderKind(BORDERLEFT);
     pList->SetEnterCallback(OnTaskSelectListListEnter);
   }
 
-  WndOwnerDrawFrame* pListEntry = (WndOwnerDrawFrame*) pForm->FindByName(TEXT("frmMultiSelectListListEntry"));
+  WndOwnerDrawFrame* pListEntry = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmMultiSelectListListEntry"));
   if(pListEntry) {
     /*
     * control height must contains 2 text Line

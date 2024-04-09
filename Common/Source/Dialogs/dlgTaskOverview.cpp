@@ -37,7 +37,7 @@ static double lengthtotal = 0.0;
 static bool fai_ok = false;
 
 static void UpdateFilePointer(WndForm* pWnd) {
-  WndProperty *wp = (WndProperty*)pWnd->FindByName(TEXT("prpFile"));
+  WndProperty *wp = pWnd->FindByName<WndProperty>(TEXT("prpFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     if (_tcslen(LastTaskFileName)>0) {
@@ -234,7 +234,7 @@ static void OverviewRefreshTask(WndForm* pWnd) {
 #ifdef OLD_TIME_ESTIMATE
   WndProperty* wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATEst"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATEst"));
   if (wp) {
     double dd = CALCULATED_INFO.TaskTimeToGo;
 //    if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) { patchout 091126
@@ -251,9 +251,9 @@ static void OverviewRefreshTask(WndForm* pWnd) {
 #endif
   LowLimit =0;
 
-  UpdateHomeWaypoint(static_cast<WndProperty*>(pWnd->FindByName(_T("prpHome"))));
+  UpdateHomeWaypoint(pWnd->FindByName<WndProperty>(_T("prpHome")));
 
-  WndListFrame* wTaskList = (WndListFrame*)pWnd->FindByName(TEXT("frmTaskList"));
+  WndListFrame* wTaskList = pWnd->FindByName<WndListFrame>(TEXT("frmTaskList"));
   if(wTaskList) {
     int SelectedItem = wTaskList->GetItemIndex();
     wTaskList->ResetList();
@@ -468,7 +468,7 @@ static void OnSaveClicked(WndButton* pWnd){
   TCHAR task_name[MAX_PATH];
 
   WndForm* pForm = pWnd->GetParentWndForm();
-  WndProperty* wp = (WndProperty*)pForm->FindByName(TEXT("prpFile"));
+  WndProperty* wp = pForm->FindByName<WndProperty>(TEXT("prpFile"));
   if (!wp) return;
   DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
   int file_index = dfe->GetAsInteger();
@@ -526,7 +526,7 @@ static void OnSaveClicked(WndButton* pWnd){
 static void OnLoadClicked(WndButton* pWnd){ // 091216
   TCHAR file_name[MAX_PATH];
   WndForm* pForm = pWnd->GetParentWndForm();
-  WndProperty* wp = (WndProperty*)pForm->FindByName(TEXT("prpFile"));
+  WndProperty* wp = pForm->FindByName<WndProperty>(TEXT("prpFile"));
   if (!wp) return;
 
   wp->OnLButtonDown((POINT){0,0});
@@ -604,7 +604,7 @@ static void OnDeleteClicked(WndButton* pWnd){
   TCHAR file_name[MAX_PATH];
 
   WndForm* pForm = pWnd->GetParentWndForm();
-  WndProperty* wp = (WndProperty*)pForm->FindByName(TEXT("prpFile"));
+  WndProperty* wp = pForm->FindByName<WndProperty>(TEXT("prpFile"));
   if (!wp) return;
   wp->OnLButtonDown((POINT){0,0});
 
@@ -687,14 +687,14 @@ void dlgTaskOverviewShowModal(int Idx){
 
   UpdateCaption(wf);
 
-  WndListFrame* wTaskList = (WndListFrame*)wf->FindByName(TEXT("frmTaskList"));
+  WndListFrame* wTaskList = wf->FindByName<WndListFrame>(TEXT("frmTaskList"));
   wTaskList->SetBorderKind(BORDERLEFT);
   wTaskList->SetEnterCallback(OnTaskListEnter);
 
-  WndOwnerDrawFrame* wTaskListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmTaskListEntry"));
+  WndOwnerDrawFrame* wTaskListEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmTaskListEntry"));
   wTaskListEntry->SetCanFocus(true);
 
-  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
+  WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpFile"));
   if (wp) {
     wp->SetVisible(false);
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());

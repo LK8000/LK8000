@@ -346,13 +346,13 @@ ListElement *dlgLX_IGCSelectListShowModal(void) {
                       ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
   if (wf) {
-    LX_IGCReadDialog.SelectList((WndListFrame *) wf->FindByName(TEXT("frmMultiSelectListList")));
+    LX_IGCReadDialog.SelectList(wf->FindByName<WndListFrame>(TEXT("frmMultiSelectListList")));
     LKASSERT(LX_IGCReadDialog.SelectList() != NULL);
     LX_IGCReadDialog.SelectList()->SetBorderKind(BORDERLEFT);
     LX_IGCReadDialog.SelectList()->SetEnterCallback(OnIGCListEnter);
 
     LX_IGCReadDialog.ListEntry(
-            (WndOwnerDrawFrame *) wf->FindByName(TEXT("frmMultiSelectListListEntry")));
+            wf->FindByName<WndOwnerDrawFrame>(TEXT("frmMultiSelectListListEntry")));
     if (LX_IGCReadDialog.ListEntry()) {
       /*
        * control height must contains 2 text Line

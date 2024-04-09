@@ -27,7 +27,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 
 static void setVariables(WndForm* pForm) {
-  auto wp = static_cast<WndProperty*>(pForm->FindByName(TEXT("prpCustomKeyTime")));
+  auto wp = pForm->FindByName<WndProperty>(TEXT("prpCustomKeyTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(CustomKeyTime);
     wp->RefreshDisplay();

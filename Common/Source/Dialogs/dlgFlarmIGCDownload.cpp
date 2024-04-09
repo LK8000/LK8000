@@ -487,7 +487,7 @@ static void OnIGCListEnter(WindowControl *Sender,
     WndForm *pForm = Sender->GetParentWndForm();
     if (pForm) {
       IGC_DLIndex = IGC_CurIndex;
-      OnEnterClicked( (WndButton *)pForm->FindByName(TEXT("cmdEnter")));
+      OnEnterClicked( pForm->FindByName<WndButton>(TEXT("cmdEnter")));
     }
   }
 }
@@ -523,7 +523,7 @@ static bool OnTimer(WndForm *pWnd) {
       pForm->SetTimerNotify(0, nullptr);
       UpdateList();
       if (FlarmReadIGC.state() == IDLE_STATE) {
-        WndButton *wb = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
+        WndButton *wb = pForm->FindByName<WndButton>(TEXT("cmdClose"));
         wb->SetCaption(MsgToken<186>()); // _@M186_ "Close"
 #ifdef PRPGRESS_DLG
         CloseIGCProgressDialog();
@@ -643,16 +643,16 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
                                             : IDR_XML_MULTISELECTLIST_P));
 
   if (wf) {
-    WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+    WndButton *wb = wf->FindByName<WndButton>(TEXT("cmdClose"));
     wb->SetCaption(MsgToken<670>()); // _@M670_ "Stop"
 
     wIGCSelectListList =
-        (WndListFrame *)wf->FindByName(TEXT("frmMultiSelectListList"));
+        wf->FindByName<WndListFrame>(TEXT("frmMultiSelectListList"));
     LKASSERT(wIGCSelectListList != NULL);
     wIGCSelectListList->SetBorderKind(BORDERLEFT);
     wIGCSelectListList->SetEnterCallback(OnIGCListEnter);
 
-    wIGCSelectListListEntry = (WndOwnerDrawFrame *)wf->FindByName(
+    wIGCSelectListListEntry = wf->FindByName<WndOwnerDrawFrame>(
         TEXT("frmMultiSelectListListEntry"));
     if (wIGCSelectListListEntry) {
       /*

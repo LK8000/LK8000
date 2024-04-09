@@ -106,7 +106,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     WndProperty* wp;
     WndButton* wb;
 
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpReason"));
     if (wp) {
       switch (msg.event) {
         default:
@@ -203,7 +203,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     }
 
 #if 0 // unused but available for sometime
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpState"));
     if (wp) {
       switch (airspace_copy.WarningLevel()) {
         default:
@@ -232,7 +232,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpName"));
     if (wp) {
       wp->SetText(airspace_copy.Name());
       wp->RefreshDisplay();
@@ -250,7 +250,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
 
 
     TCHAR buffer[80];
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpType"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpType"));
     if (wp) {
 	if (airspace_copy.Flyzone()) {
 	  _stprintf(buffer,TEXT("%s %s"), TEXT("FLY"), airspace_copy.TypeName());
@@ -270,7 +270,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     //inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
     bool distances_ready = airspace_copy.GetDistanceInfo(inside, hdist, bearing, vdist);
 
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpHDist"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpHDist"));
     if (wp) {
       TCHAR stmp2[40];
       if (distances_ready) {
@@ -291,7 +291,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpVDist"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpVDist"));
     if (wp) {
         TCHAR stmp2[40];
       if (distances_ready) {
@@ -312,7 +312,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpTopAlt"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpTopAlt"));
     if (wp) {
       TCHAR stmp2[40];
       CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Top());
@@ -320,7 +320,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)dlg->FindByName(TEXT("prpBaseAlt"));
+    wp = dlg->FindByName<WndProperty>(TEXT("prpBaseAlt"));
     if (wp) {
       TCHAR stmp2[40];
       CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Base());
@@ -328,7 +328,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       wp->RefreshDisplay();
     }
 
-    wb = (WndButton*)dlg->FindByName(TEXT("cmdClose"));
+    wb = dlg->FindByName<WndButton>(TEXT("cmdClose"));
     if (wb) {
       TCHAR stmp2[40];
       _stprintf(stmp2,TEXT("%s (%d)"), MsgToken<186>(), timer_counter);
@@ -414,7 +414,7 @@ short ShowAirspaceWarningsToUser()
     dlg->SetTimerNotify(1000, OnTimer);
     timer_counter = AirspaceWarningDlgTimeout;                    // Auto closing dialog in x secs
 
-    WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
+    WndButton *wb = dlg->FindByName<WndButton>(TEXT("cmdAckForTime"));
     if (wb) {
       TCHAR stmp2[40];
       _stprintf(stmp2,TEXT("%s (%dmin)"), MsgToken<46>(), AcknowledgementTime/60);

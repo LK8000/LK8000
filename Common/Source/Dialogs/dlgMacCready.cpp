@@ -110,7 +110,7 @@ void dlgMacCready::DoModal() {
     pForm->SetTop(main_center.y - pForm->GetHeight() / 2);
     pForm->SetLeft(main_center.x - pForm->GetWidth() / 2);
 
-    auto pWnd = dynamic_cast<WndFrame*>(pForm->FindByName(_T("frmValue")));
+    auto pWnd = pForm->FindByName<WndFrame>(_T("frmValue"));
     if(pWnd) {
       pWnd->SetFont(LK8InfoBigFont);
       pWnd->SetCaptionStyle(DT_CENTER|DT_VCENTER|DT_SINGLELINE);

@@ -150,7 +150,7 @@ int dlgComboPicker(WndProperty* theProperty){
     ComboPopupDataField->CreateComboList();   
     ComboListPopup = ComboPopupDataField->GetCombo();
 
-    auto wComboPopupListFrame = dynamic_cast<WndListFrame*>(wf->FindByName(TEXT("frmComboPopupList")));
+    auto wComboPopupListFrame = wf->FindByName<WndListFrame>(TEXT("frmComboPopupList"));
     if (wComboPopupListFrame) {
       wComboPopupListFrame->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT|BORDERBOTTOM);
       wComboPopupListFrame->SetEnterCallback(OnComboPopupListEnter);

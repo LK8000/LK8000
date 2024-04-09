@@ -671,11 +671,20 @@ class WindowControl : public WndCtrlBase {
 
     void PaintSelector(bool Value){mDontPaintSelector = Value;};
 
-    WindowControl *FindByName(const TCHAR *Name);
+    template<typename TypeT = WindowControl>
+    TypeT* FindByName(const TCHAR *Name) {
+      static_assert(std::is_base_of_v<WindowControl, TypeT>, "template parameters must have `WindowControl` as base class");
+      WindowControl* pWnd = FindChild(Name);
+      auto pTypeT = dynamic_cast<TypeT*>(pWnd);
+      assert(pWnd == pTypeT); // ctrl found is not an instance of the requested class
+      return pTypeT;
+    }
 
     void ForEachChild(std::function<void(WindowControl*)> visitor);
 
 protected:
+
+    WindowControl *FindChild(const TCHAR *Name);
 
     void OnSetFocus() override;
     void OnKillFocus() override;

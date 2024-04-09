@@ -87,7 +87,7 @@ static void OnAcknowledgeClicked(WndButton* pWnd){
 
   WndForm* wf = pWnd->GetParentWndForm();
   if(wf) {
-    WndFrame  *wPicto = ((WndFrame *)wf->FindByName(TEXT("frmAirspacePicto")));
+    WndFrame  *wPicto = (wf->FindByName<WndFrame>(TEXT("frmAirspacePicto")));
     if(wPicto) {
       wPicto->Redraw();
     }
@@ -196,7 +196,7 @@ static void SetValues(WndForm* wf) {
         _tcscat(capbuffer,_T(")")); // DISABLED
 	wf->SetCaption(capbuffer);
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
 	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()), TEXT("FLY"));
@@ -217,21 +217,21 @@ static void SetValues(WndForm* wf) {
     wp->RefreshDisplay();
   }
   
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTop"));
   if (wp) {
 	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Top());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBase"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBase"));
   if (wp) {
 	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Base());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     Units::FormatDistance(abs(hdist), buffer, 20);
     if (inside) {
@@ -310,7 +310,7 @@ static void SetValues(WndForm* wf) {
 
   // ONLY for DIAGNOSTICS- ENABLE ALSO XML
   #if 0
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarnLevel"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarnLevel"));
   if (wp) {
     switch (airspace_copy.WarningLevel()) {
     default:
@@ -336,7 +336,7 @@ static void SetValues(WndForm* wf) {
       wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAckLevel"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAckLevel"));
   if (wp) {
       if (airspace_copy.Enabled()) {
         switch (airspace_copy.WarningAckLevel()) {
@@ -369,7 +369,7 @@ static void SetValues(WndForm* wf) {
   }
   #endif
 
-  wb = (WndButton*)wf->FindByName(TEXT("cmdFly"));
+  wb = wf->FindByName<WndButton>(TEXT("cmdFly"));
   if (wb) {
 	if (airspace_copy.Flyzone()) {
 	  // LKTOKEN _@M1271_ "NOFLY"
@@ -381,7 +381,7 @@ static void SetValues(WndForm* wf) {
 	wb->Redraw();
   }
 
-  wb = (WndButton*)wf->FindByName(TEXT("cmdSelect"));
+  wb = wf->FindByName<WndButton>(TEXT("cmdSelect"));
   if (wb) {
 	if (airspace_copy.Selected()) {
 	  wb->SetCaption(MsgToken<1656>()); // SELECTED!
@@ -391,7 +391,7 @@ static void SetValues(WndForm* wf) {
 	wb->Redraw();
   }
 
-  wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
+  wb = wf->FindByName<WndButton>(TEXT("cmdAcknowledge"));
   if (wb) {
     if (airspace_copy.Enabled()) {
       // LKTOKEN _@M1283_ "Disable"

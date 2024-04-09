@@ -865,12 +865,12 @@ ListElement* dlgMultiSelectListShowModal(void) {
     if (!wf) return NULL;
 
     wf->SetTimerNotify(1000, OnTimer);
-    wMultiSelectListList = (WndListFrame*) wf->FindByName(TEXT("frmMultiSelectListList"));
+    wMultiSelectListList = wf->FindByName<WndListFrame>(TEXT("frmMultiSelectListList"));
     LKASSERT(wMultiSelectListList != NULL);
     wMultiSelectListList->SetBorderKind(BORDERLEFT);
     wMultiSelectListList->SetEnterCallback(OnMultiSelectListListEnter);
 
-    wMultiSelectListListEntry = (WndOwnerDrawFrame*) wf->FindByName(TEXT("frmMultiSelectListListEntry"));
+    wMultiSelectListListEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmMultiSelectListListEntry"));
     if(wMultiSelectListListEntry) {
         /*
          * control height must contains 2 text Line 

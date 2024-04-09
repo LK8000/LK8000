@@ -74,7 +74,7 @@ static void NextPage(WndForm* pForm, int Step){
     page = 0;
   }
 
-  WndOwnerDrawFrame* wDetailsEntry = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmDetailsEntry"));
+  WndOwnerDrawFrame* wDetailsEntry = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
   if(!wDetailsEntry) {
     return;
   }
@@ -103,7 +103,7 @@ static void NextPage(WndForm* pForm, int Step){
 
   pForm->SetCaption(buffer);
 
-  WndListFrame* wDetails = (WndListFrame*)pForm->FindByName(TEXT("frmDetails"));
+  WndListFrame* wDetails = pForm->FindByName<WndListFrame>(TEXT("frmDetails"));
   if(wDetails) {
     wDetails->ResetList();
     wDetails->Redraw();
@@ -328,7 +328,7 @@ void dlgChecklistShowModal(short checklistmode){
   }
   wf->SetKeyDownNotify(FormKeyDown);
 
-  WndButton* wndClose =  static_cast<WndButton*>(wf->FindByName(TEXT("cmdClose")));
+  WndButton* wndClose =  wf->FindByName<WndButton>(TEXT("cmdClose"));
   if(!wndClose) {
     StartupStore(_T("..... NOTEPAD ERROR NULL cmdClose!\n"));
     return;
@@ -336,7 +336,7 @@ void dlgChecklistShowModal(short checklistmode){
   wndClose->SetOnClickNotify(OnCloseClicked);
 
 
-  WndListFrame* wDetails = static_cast<WndListFrame*>(wf->FindByName(TEXT("frmDetails")));
+  WndListFrame* wDetails = wf->FindByName<WndListFrame>(TEXT("frmDetails"));
   if (!wDetails) {
     StartupStore(_T("..... NOTEPAD ERROR NULL frmDetails!\n"));
     return;
@@ -344,7 +344,7 @@ void dlgChecklistShowModal(short checklistmode){
   wDetails->SetBorderKind(BORDERLEFT);
 
 
-  WndOwnerDrawFrame* wDetailsEntry = static_cast<WndOwnerDrawFrame*>(wf->FindByName(TEXT("frmDetailsEntry")));
+  WndOwnerDrawFrame* wDetailsEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
   if (!wDetailsEntry) {
     StartupStore(_T("..... NOTEPAD ERROR NULL frmDetailsEntry!\n"));
     return;

@@ -227,7 +227,7 @@ static void SetValues(int indexid) {
 	// DoStatusMessage(_T("ERR-217 INVALID INDEXID"));
 	return;
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRegName"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRegName"));
   if (wp) {
 
 	wlen=_tcslen(LKTraffic[indexid].Name);
@@ -246,7 +246,7 @@ static void SetValues(int indexid) {
 
 
 #if 0
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStatus"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStatus"));
   if (wp) {
 	switch(LKTraffic[indexid].Status) {
 		case LKT_REAL:
@@ -267,7 +267,7 @@ static void SetValues(int indexid) {
   }
 #endif
   
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCn"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCn"));
   if (wp) {
 	if ( _tcslen(LKTraffic[indexid].Cn) == 1 ) {
 		if (LKTraffic[indexid].Cn[0] == _T('?')) {
@@ -282,7 +282,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
 	_stprintf(buffer,_T("%.1f %s"),
 						Units::ToDistance(LKTraffic[indexid].Distance),
@@ -291,7 +291,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
   if (wp) {
 	_stprintf(buffer,_T("%.0f %s"),
 	                    Units::ToAltitude(LKTraffic[indexid].Altitude),
@@ -299,7 +299,7 @@ static void SetValues(int indexid) {
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAltDiff"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAltDiff"));
   if (wp) {
 	// this has to be reverted, because it is a relative altitude to us
 	_stprintf(buffer,_T("%+.0f %s"),
@@ -308,7 +308,7 @@ static void SetValues(int indexid) {
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
   if (wp) {
 	_stprintf(buffer,_T("%.0f %s"),
 	                    Units::ToHorizontalSpeed(LKTraffic[indexid].Speed),
@@ -316,7 +316,7 @@ static void SetValues(int indexid) {
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpVario"));
   if (wp) {
 	_stprintf(buffer,_T("%+.1f %s"),
 	                    Units::ToVerticalSpeed(LKTraffic[indexid].Average30s),
@@ -325,7 +325,7 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
 	_stprintf(buffer, TEXT(" %d%s"), iround(LKTraffic[indexid].Bearing),MsgToken<2179>());
 	wp->SetText(buffer);
@@ -334,19 +334,19 @@ static void SetValues(int indexid) {
 
   flarmId = LookupFlarmId(LKTraffic[indexid].RadioId);
   if (flarmId != NULL) {
-	wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
+	wp = wf->FindByName<WndProperty>(TEXT("prpName"));
 	if (wp) {
 		_stprintf(buffer,_T("%s"),flarmId->name);
 		wp->SetText(buffer);
 		wp->RefreshDisplay();
 	}
-	wp = (WndProperty*)wf->FindByName(TEXT("prpAirfield"));
+	wp = wf->FindByName<WndProperty>(TEXT("prpAirfield"));
 	if (wp) {
 		_stprintf(buffer,_T("%s"),flarmId->airfield);
 		wp->SetText(buffer);
 		wp->RefreshDisplay();
 	}
-	wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
+	wp = wf->FindByName<WndProperty>(TEXT("prpType"));
 	if (wp) {
 		_stprintf(buffer,_T("%s"),flarmId->type);
 		wp->SetText(buffer);
@@ -404,7 +404,7 @@ void dlgLKTrafficDetails(int indexid) {
   //ASSERT(wf!=NULL);
 
   // cmdTarget Caption name is normally "TARGET"
-  buttonTarget=((WndButton *)wf->FindByName(TEXT("cmdTarget")));
+  buttonTarget=(wf->FindByName<WndButton>(TEXT("cmdTarget")));
   if (buttonTarget) {
 	if ( LKTraffic[indexid].Locked ) {
 	// LKTOKEN  _@M754_ = "UNLOCK" 

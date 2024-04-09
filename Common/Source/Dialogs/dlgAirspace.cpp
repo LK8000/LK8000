@@ -159,12 +159,12 @@ bool dlgAirspaceShowModal(bool coloredit){
   WndForm *wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
   if (!wf) return false;
 
-  WndListFrame* wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
+  WndListFrame* wAirspaceList = wf->FindByName<WndListFrame>(TEXT("frmAirspaceList"));
   LKASSERT(wAirspaceList!=NULL);
   wAirspaceList->SetBorderKind(BORDERLEFT);
   wAirspaceList->SetEnterCallback(OnAirspaceListEnter);
 
-  WndOwnerDrawFrame* wAirspaceListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceListEntry"));
+  WndOwnerDrawFrame* wAirspaceListEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmAirspaceListEntry"));
   if(wAirspaceListEntry) {
     wAirspaceListEntry->SetCanFocus(true);
   }

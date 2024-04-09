@@ -59,19 +59,19 @@ void dlgWeatherStDetails(int indexid) {
 
   double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, Station.Latitude,  Station.Longitude, &Distance, &Bear);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
     _stprintf(buffer, TEXT(" %d%s"), iround(Bear),MsgToken<2179>());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
     _stprintf(buffer,_T("%.1f %s"), Units::ToDistance(Distance), Units::GetDistanceName());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWSpeed"));
   if (wp) {
     _stprintf(buffer,_T("%.1f | %.1f %s"),
                 Units::ToWindSpeed(Station.windSpeed),
@@ -81,25 +81,25 @@ void dlgWeatherStDetails(int indexid) {
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWBearing"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWBearing"));
   if (wp) {
     _stprintf(buffer,_T("%.1f %s"),Station.windDir, MsgToken<2179>());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTemp"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTemp"));
   if (wp) {
     _stprintf(buffer,_T("%.1f %s"),Station.temp, MsgToken<2180>());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpHum"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpHum"));
   if (wp) {
     _stprintf(buffer,_T("%.1f %%"),Station.hum);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBaro"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBaro"));
   if (wp) {
     if (PressureHg) {
       _stprintf(buffer,_T("%.2f inHg"),Station.pressure/TOHPA);
@@ -109,7 +109,7 @@ void dlgWeatherStDetails(int indexid) {
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCharge"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCharge"));
   if (wp) {
     _stprintf(buffer,_T("%.1f %%"),Station.Battery);
     wp->SetText(buffer);

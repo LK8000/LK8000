@@ -18,7 +18,7 @@ static void getVariables(WndForm * pForm) {
 
   for (unsigned int i=0 ; i < NO_AS_FILES; i++) {
     _stprintf(tmp,_T("prpFile%1u"),i+1);
-    WndProperty* wp = static_cast<WndProperty*>(pForm->FindByName(tmp));
+    WndProperty* wp = pForm->FindByName<WndProperty>(tmp);
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
@@ -77,7 +77,7 @@ static void setVariables(WndForm * pForm) {
 
   for (unsigned int i=0 ; i < NO_AS_FILES; i++) {
     _stprintf(tmp, _T("prpFile%1u"), i + 1);
-    auto wp = static_cast<WndProperty*>(pForm->FindByName(tmp));
+    auto wp = pForm->FindByName<WndProperty>(tmp);
 
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());

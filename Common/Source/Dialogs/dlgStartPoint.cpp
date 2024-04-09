@@ -162,12 +162,12 @@ void dlgStartPointShowModal(void) {
 
   CheckStartPointInTask();
 
-  wStartPointList = (WndListFrame*)wf->FindByName(TEXT("frmStartPointList"));
+  wStartPointList = wf->FindByName<WndListFrame>(TEXT("frmStartPointList"));
   //ASSERT(wStartPointList!=NULL);
   wStartPointList->SetBorderKind(BORDERLEFT);
   wStartPointList->SetEnterCallback(OnStartPointListEnter);
 
-  wStartPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStartPointListEntry"));
+  wStartPointListEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmStartPointListEntry"));
 
   //ASSERT(wStartPointListEntry!=NULL);
   wStartPointListEntry->SetCanFocus(true);

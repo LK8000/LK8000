@@ -79,14 +79,14 @@ void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
   if (!wf) return;
 
 
-  WndOwnerDrawFrame* frm  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationText"));
+  WndOwnerDrawFrame* frm  = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmStationText"));
   LKASSERT(  frm  !=NULL)
   if (frm) {
     frm->SetCaptionStyle(DT_CENTER|DT_VCENTER|DT_SINGLELINE);
     frm->SetCaption(StationName);	
   }
 
-  WndOwnerDrawFrame* frmFreq  = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmStationFreq"));
+  WndOwnerDrawFrame* frmFreq  = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmStationFreq"));
   _stprintf(Name,_T("%7.3f"),  frequency_khz / 1000.);
   if (frmFreq) {
     frmFreq->SetCaptionStyle(DT_CENTER|DT_VCENTER|DT_SINGLELINE);
@@ -95,12 +95,12 @@ void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
 
   WndButton *wpnewActive = nullptr;
   WndButton *wpnewPassive = nullptr; 
-  wpnewActive  = (WndButton*)wf->FindByName(TEXT("cmdSelActive"));
+  wpnewActive  = wf->FindByName<WndButton>(TEXT("cmdSelActive"));
   LKASSERT(   wpnewActive   !=NULL)
   if(wpnewActive) 
     wpnewActive->SetCaption(GetActiveStationSymbol(Appearance.UTF8Pictorials));
 
-  wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdSelPassive"));
+  wpnewPassive  = wf->FindByName<WndButton>(TEXT("cmdSelPassive"));
   LKASSERT(   wpnewPassive   !=NULL)
   if(wpnewPassive) 
     wpnewPassive->SetCaption(GetStandyStationSymbol(Appearance.UTF8Pictorials));

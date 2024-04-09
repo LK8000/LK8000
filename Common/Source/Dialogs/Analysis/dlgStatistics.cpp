@@ -309,16 +309,16 @@ if (entered == true) /* prevent re entrance */
 
   pForm->SetKeyDownNotify(FormKeyDown);
 
-  WndButton *wClose = (WndButton *)pForm->FindByName(TEXT("cmdClose"));
+  WndButton *wClose = pForm->FindByName<WndButton>(TEXT("cmdClose"));
   LKASSERT(wClose);
   if (!wClose) return;
   wClose->SetOnClickNotify(OnCloseClicked);
 
-  WndButton *wNext = (WndButton *)pForm->FindByName(TEXT("cmdNext"));
+  WndButton *wNext = pForm->FindByName<WndButton>(TEXT("cmdNext"));
   LKASSERT(wNext);
   if (!wNext) return;
 
-  WndButton *wPrev = (WndButton *)pForm->FindByName(TEXT("cmdPrev"));
+  WndButton *wPrev = pForm->FindByName<WndButton>(TEXT("cmdPrev"));
   LKASSERT(wPrev);
   if (!wPrev) return;
 
@@ -350,7 +350,7 @@ if (entered == true) /* prevent re entrance */
     Why WndForm Do Not Use NonClientArea for Border and Caption ?
   */
   /*
-  WndFrame *wBtFrm = (WndFrame*)wfa->FindByName(TEXT("frmButton"));
+  WndFrame *wBtFrm = wfa->FindByName<WndFrame>(TEXT("frmButton"));
   if(wBtFrm) {
     wBtFrm->SetTop(wfa->GetHeigth()- wBtFrm->GetHeight());
     if(waInfo) {

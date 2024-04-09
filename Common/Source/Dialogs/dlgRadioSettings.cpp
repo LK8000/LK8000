@@ -463,22 +463,22 @@ void dlgRadioSettingsShowModal(void) {
 
   wf->FindByName(_T("cmdClose"))->SetFocus();
 
-  wpnewActive = (WndButton*)wf->FindByName(TEXT("cmdActive"));
+  wpnewActive = wf->FindByName<WndButton>(TEXT("cmdActive"));
   LKASSERT( wpnewActive !=NULL);
 
-  wpnewActiveFreq = (WndButton*)wf->FindByName(TEXT("cmdActiveFreq"));
+  wpnewActiveFreq = wf->FindByName<WndButton>(TEXT("cmdActiveFreq"));
   LKASSERT( wpnewActiveFreq !=NULL);
 
-  wpnewPassive  = (WndButton*)wf->FindByName(TEXT("cmdPassive"));
+  wpnewPassive  = wf->FindByName<WndButton>(TEXT("cmdPassive"));
   LKASSERT(   wpnewPassive   !=NULL)
 
-  wpnewPassiveFreq = (WndButton*)wf->FindByName(TEXT("cmdPassiveFreq"));
+  wpnewPassiveFreq = wf->FindByName<WndButton>(TEXT("cmdPassiveFreq"));
   LKASSERT(   wpnewPassiveFreq   !=NULL)
 
-  wpnewVol  = (WndButton*)wf->FindByName(TEXT("cmdVol"));
+  wpnewVol  = wf->FindByName<WndButton>(TEXT("cmdVol"));
   LKASSERT(   wpnewVol   !=NULL)
 
-  wpnewDual  = (WndButton*)wf->FindByName(TEXT("cmdDual"));
+  wpnewDual  = wf->FindByName<WndButton>(TEXT("cmdDual"));
   LKASSERT(   wpnewDual   !=NULL)
 
   wf->SetTimerNotify(300, OnTimerNotify);

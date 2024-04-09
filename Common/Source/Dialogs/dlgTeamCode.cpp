@@ -47,13 +47,13 @@ static void Update()
 	_tcscpy(Text, TEXT("---"));
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRelBearing"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRelBearing"));
   if (wp) {
     wp->SetText(Text);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
 	if (TeammateCodeValid) {
 		wp->GetDataField()->SetAsFloat(teammateBearing);
@@ -63,7 +63,7 @@ static void Update()
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
 	if (TeammateCodeValid)
 		wp->GetDataField()->SetAsFloat(Units::ToDistance(teammateRange));
@@ -72,14 +72,14 @@ static void Update()
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOwnCode"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpOwnCode"));
   if (wp) {
     LK_tcsncpy(Text,CALCULATED_INFO.OwnTeamCode,5);
     wp->SetText(Text);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMateCode"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMateCode"));
   if (wp) {
     wp->SetText(TeammateCode);
     wp->RefreshDisplay();
@@ -153,13 +153,13 @@ void dlgTeamCodeShowModal(void)
   wf->SetCaption(sTmp);
 
   // set event for button
-  buttonCode = ((WndButton *)wf->FindByName(TEXT("cmdSetCode")));
+  buttonCode = (wf->FindByName<WndButton>(TEXT("cmdSetCode")));
   if (buttonCode) {
     buttonCode->SetOnClickNotify(OnCodeClicked);
   }
 
   // Set unit for range
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
   }

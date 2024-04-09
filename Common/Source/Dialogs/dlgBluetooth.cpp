@@ -49,7 +49,7 @@ namespace DlgBluetooth {
                     SelectedDevice->m_src |= BDSRC_REGNAV;
                 }
             }
-            WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
+            WndListFrame* BthList = wfBth->FindByName<WndListFrame>(TEXT("frmBthList"));
             if (BthList) {
                 BthList->ResetList();
                 BthList->Redraw();
@@ -70,7 +70,7 @@ namespace DlgBluetooth {
                     pBtHandler->RemoveDevice(SelectedDevice->m_ba);
                 }
             }
-            WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
+            WndListFrame* BthList = wfBth->FindByName<WndListFrame>(TEXT("frmBthList"));
             if (BthList) {
                 BthList->ResetList();
                 BthList->Redraw();
@@ -82,7 +82,7 @@ namespace DlgBluetooth {
         StartHourglassCursor();
         CBtHandler * pBtHandler = CBtHandler::Get();
         if (pBtHandler && pBtHandler->StartHW() && pBtHandler->LookupDevices()) {
-            WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
+            WndListFrame* BthList = wfBth->FindByName<WndListFrame>(TEXT("frmBthList"));
             if (BthList) {
                 BthList->ResetList();
                 BthList->Redraw();
@@ -134,11 +134,11 @@ namespace DlgBluetooth {
         wfBth = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_BLUETOOTH_L : IDR_XML_BLUETOOTH_P);
         if (wfBth) {
 
-            WndListFrame* BthList = (WndListFrame*) wfBth->FindByName(TEXT("frmBthList"));
+            WndListFrame* BthList = wfBth->FindByName<WndListFrame>(TEXT("frmBthList"));
             if (BthList) {
                 BthList->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT | BORDERBOTTOM);
 
-                WndOwnerDrawFrame* BthListEntry = (WndOwnerDrawFrame*) wfBth->FindByName(TEXT("frmBthListEntry"));
+                WndOwnerDrawFrame* BthListEntry = wfBth->FindByName<WndOwnerDrawFrame>(TEXT("frmBthListEntry"));
                 if (BthListEntry) {
                     BthListEntry->SetCanFocus(true);
                 }

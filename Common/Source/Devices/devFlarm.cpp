@@ -148,24 +148,24 @@ BOOL CDevFlarm::Config(DeviceDescriptor_t* d){
 
         WndButton *wBt = NULL;
 
-        wBt = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+        wBt = wf->FindByName<WndButton>(TEXT("cmdClose"));
         if(wBt){
                 wBt->SetOnClickNotify(OnCloseClicked);
         }
 
 
-        wBt = (WndButton *)wf->FindByName(TEXT("cmdIGCDownload"));
+        wBt = wf->FindByName<WndButton>(TEXT("cmdIGCDownload"));
         if(wBt){
                 wBt->SetOnClickNotify(OnIGCDownloadClicked);
         }
 
-        wBt = (WndButton *)wf->FindByName(TEXT("cmdFlarmReboot"));
+        wBt = wf->FindByName<WndButton>(TEXT("cmdFlarmReboot"));
         if(wBt){
                 wBt->SetOnClickNotify(OnRebootClicked);
         }
 /*
         WndProperty* wp;
-        wp = (WndProperty*)wf->FindByName(TEXT("prpFlarmId"));
+        wp = wf->FindByName<WndProperty>(TEXT("prpFlarmId"));
         if (wp) {
         	wp->GetDataField()->SetAsString(_T("DD222"));
 

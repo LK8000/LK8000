@@ -68,7 +68,7 @@ void UpdateKeyLayout(WndForm* pForm) {
     wpPast->SetVisible(ClipboardAvailable());
   }
 
-  auto wpText = dynamic_cast<WndProperty*>(pForm->FindByName(_T("prpText")));
+  auto wpText = pForm->FindByName<WndProperty>(_T("prpText"));
   if (wpText) {
     if(key_filter) {
       wpText->SetText(key_filter->GetMatchText());
@@ -79,7 +79,7 @@ void UpdateKeyLayout(WndForm* pForm) {
     }
   }
 
-  auto wpUnit = dynamic_cast<WndProperty*>(pForm->FindByName(TEXT("prpUnit")));
+  auto wpUnit = pForm->FindByName<WndProperty>(TEXT("prpUnit"));
   if(wpUnit && wKeyboardPopupWndProperty) {
     DataField* pField = wKeyboardPopupWndProperty->GetDataField();
     if(pField) {

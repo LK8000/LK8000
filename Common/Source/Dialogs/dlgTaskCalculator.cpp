@@ -60,7 +60,7 @@ static void RefreshCalculator(void) {
   RefreshTaskStatistics();
 
   // update outputs
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATEst"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATEst"));
   if (wp) {
     double dd = CALCULATED_INFO.TaskTimeToGo;
     if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) {
@@ -72,7 +72,7 @@ static void RefreshCalculator(void) {
   }
 
   // update outputs
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATTime"));
   if (wp) {
     if (!(gTaskType==TSK_AAT)) {
       wp->SetVisible(false);
@@ -87,27 +87,27 @@ static void RefreshCalculator(void) {
   if (gTaskType==TSK_AAT && (d1==0.0)) {
     d1 = CALCULATED_INFO.AATTargetDistance;
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToDistance(d1));
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMacCready"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMacCready"));
   if (wp) {
     wp->GetDataField()->SetUnits(Units::GetVerticalSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEffectiveMacCready"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpEffectiveMacCready"));
   if (wp) {
     wp->GetDataField()->SetUnits(Units::GetVerticalSpeedName());
     wp->GetDataField()->SetAsFloat(Units::ToVerticalSpeed(emc));
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     wp->RefreshDisplay();
     if (gTaskType!=TSK_AAT || !ValidTaskPoint(ActiveTaskPoint+1)) {
@@ -127,21 +127,21 @@ static void RefreshCalculator(void) {
     v1 = 0;
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedRemaining"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSpeedRemaining"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(v1));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedAchieved"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCruiseEfficiency"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCruiseEfficiency"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(cruise_efficiency*100.0);
     wp->RefreshDisplay();
@@ -329,10 +329,10 @@ void dlgTaskCalculatorShowModal(void){
   RefreshCalculator();
 
   if ((gTaskType!=TSK_AAT) || !ValidTaskPoint(ActiveTaskPoint+1)) {
-    ((WndButton *)wf->FindByName(TEXT("Optimise")))->SetVisible(false);
+    (wf->FindByName<WndButton>(TEXT("Optimise")))->SetVisible(false);
   }
   if (!ValidTaskPoint(ActiveTaskPoint)) {
-    ((WndButton *)wf->FindByName(TEXT("Target")))->SetVisible(false);
+    (wf->FindByName<WndButton>(TEXT("Target")))->SetVisible(false);
   }
 
   if (wf->ShowModal() == mrCancel) {
