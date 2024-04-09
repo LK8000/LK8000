@@ -19,6 +19,7 @@
 #include "Devices/LKRoyaltek3200.h"
 #endif
 
+using std::string_view_literals::operator""sv;
 
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
@@ -228,65 +229,71 @@ BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* Str
   }
 
   if (params[0][1] == 'P') {
+    std::string_view token = params[0] + 2;
     // Proprietary String
-    if (strcmp(params[0] + 1, "PTAS1") == 0) {
+    if (token == "TAS1"sv) {
       ScopeLock lock(CritSec_FlightData);
       return PTAS1(d, &String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PFLAV") == 0) {
+    if (token == "FLAV"sv) {
       ScopeLock lock(CritSec_FlightData);
       return PFLAV(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PFLAA") == 0) {
+    if (token == "FLAA"sv) {
       ScopeLock lock(CritSec_FlightData);
       return PFLAA(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PFLAU") == 0) {
+    if (token == "FLAU"sv) {
       ScopeLock lock(CritSec_FlightData);
       return PFLAU(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PGRMZ") == 0) {
+    if (token == "GRMZ"sv) {
       ScopeLock lock(CritSec_FlightData);
       return RMZ(d, &String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PLKAS") == 0) {
+    if (token == "LKAS"sv) {
       ScopeLock lock(CritSec_FlightData);
       return PLKAS(&String[7], params + 1, n_params - 1, pGPS);
     }
     return FALSE;
   }
 
-  if (strcmp(params[0] + 3, "GSA") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return GSA(&String[7], params + 1, n_params - 1, pGPS);
+  if (params[0][1] == 'G') {
+    // GNSS String
+    std::string_view token = params[0] + 3;
+    if (token == "GSA"sv) {
+      ScopeLock lock(CritSec_FlightData);
+      return GSA(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (token == "GLL"sv) {
+      /*
+      ScopeLock lock(CritSec_FlightData);
+      return GLL(&String[7], params + 1, n_params-1, pGPS);
+      */
+      return FALSE;
+    }
+    if (token == "RMB"sv) {
+      /*
+      ScopeLock lock(CritSec_FlightData);
+      return RMB(&String[7], params + 1, n_params-1, pGPS);
+      */
+      return FALSE;
+    }
+    if (token == "RMC"sv) {
+      ScopeLock lock(CritSec_FlightData);
+      return RMC(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (token == "GGA"sv) {
+      ScopeLock lock(CritSec_FlightData);
+      return GGA(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (token == "VTG"sv) {
+      ScopeLock lock(CritSec_FlightData);
+      return VTG(&String[7], params + 1, n_params - 1, pGPS);
+    }
   }
-  if (strcmp(params[0] + 3, "GLL") == 0) {
-    /*
-    ScopeLock lock(CritSec_FlightData);
-    return GLL(&String[7], params + 1, n_params-1, pGPS);
-    */
-    return FALSE;
-  }
-  if (strcmp(params[0] + 3, "RMB") == 0) {
-    /*
-    ScopeLock lock(CritSec_FlightData);
-    return RMB(&String[7], params + 1, n_params-1, pGPS);
-    */
-    return FALSE;
-  }
-  if (strcmp(params[0] + 3, "RMC") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return RMC(&String[7], params + 1, n_params - 1, pGPS);
-  }
-  if (strcmp(params[0] + 3, "GGA") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return GGA(&String[7], params + 1, n_params - 1, pGPS);
-  }
-  if (strcmp(params[0] + 3, "VTG") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return VTG(&String[7], params + 1, n_params - 1, pGPS);
-  }
-  if (strcmp(params[0] + 1, "HCHDG") == 0) {
+
+  if (std::string_view(params[0] + 1) == "HCHDG"sv) {
     ScopeLock lock(CritSec_FlightData);
     return HCHDG(&String[7], params + 1, n_params - 1, pGPS);
   }
