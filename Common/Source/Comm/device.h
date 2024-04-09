@@ -13,12 +13,6 @@
 
 #define	NUMDEV		 6
 
-#define	devA()	    (&DeviceList[0])
-#define	devB()	    (&DeviceList[1])
-#define devC()      (&DeviceList[2])
-#define devD()      (&DeviceList[3])
-#define devE()      (&DeviceList[4])
-#define devF()      (&DeviceList[5])
 
 class COMMPortItem_t {
 public:
