@@ -7,6 +7,7 @@
 #include "Geographic/GeoPoint.h"
 #include "Util/ScopeExit.hxx"
 #include "Time/PeriodClock.hpp"
+#include "Sizes.h"
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
@@ -62,8 +63,10 @@ public:
   // these routines can be used by other parsers.
 
   static double ParseAltitude(const char* value, const char* format);
-  static size_t ValidateAndExtract(const char* src, char* dst, size_t dstsz, char** arr, size_t arrsz);
-  static size_t ExtractParameters(const char* src, char* dst, char** arr, size_t sz);
+
+  static size_t ValidateAndExtract(const char* src, char (&dst)[MAX_NMEA_LEN], char* (&arr)[MAX_NMEA_PARAMS]);
+  static size_t ExtractParameters(const char* src, char (&dst)[MAX_NMEA_LEN], char* (&arr)[MAX_NMEA_PARAMS]);
+
   static void ExtractParameter(const char* Source, char* Destination, int DesiredFieldNumber);
   static BOOL NMEAChecksum(const char* String);
 

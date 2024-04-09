@@ -1130,8 +1130,8 @@ BOOL DevLXNanoIII::PLXVC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
   bool bCRCok = NMEAParser::NMEAChecksum(sentence);
 
   char ctemp[MAX_NMEA_LEN];
-  char* params[10];
-  size_t n_params = NMEAParser::ExtractParameters(sentence, ctemp, params, 10);
+  char* params[MAX_NMEA_PARAMS];
+  size_t n_params = NMEAParser::ExtractParameters(sentence, ctemp, params);
   if(n_params < 4) {
     return FALSE;
   }

@@ -161,7 +161,7 @@ BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS) {
   char ctemp[MAX_NMEA_LEN];
   char* params[MAX_NMEA_PARAMS];
 
-  size_t n_params = NMEAParser::ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
+  size_t n_params = NMEAParser::ValidateAndExtract(String, ctemp, params);
   if (n_params > 0) {
     if (params[0] == "$PXCV"sv) {
       return PXCV(d, params, n_params, pGPS);

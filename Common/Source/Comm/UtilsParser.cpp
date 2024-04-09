@@ -52,22 +52,25 @@ void NMEAParser::ExtractParameter(const char* Source, char* Destination, int Des
  * Same as ExtractParameters, but also validate the length of
  * the string and the NMEA checksum.
  */
-size_t NMEAParser::ValidateAndExtract(const char* src, char* dst, size_t dstsz, char** arr, size_t arrsz) {
+size_t NMEAParser::ValidateAndExtract(const char* src, char (&dst)[MAX_NMEA_LEN], char* (&arr)[MAX_NMEA_PARAMS]) {
   if (!NMEAChecksum(src))
     return 0;
 
-  return ExtractParameters(src, dst, arr, arrsz);
+  return ExtractParameters(src, dst, arr);
 }
 
-size_t NMEAParser::ExtractParameters(const char* src, char* dst, char** arr, size_t sz) {
+size_t NMEAParser::ExtractParameters(const char* src, char (&dst)[MAX_NMEA_LEN], char* (&arr)[MAX_NMEA_PARAMS]) {
   if (!src || !(*src)) {
     return 0;
   }
 
-  size_t i = 0;
-  arr[i++] = dst;
+  auto out = std::begin(dst);
+  const auto out_end = std::prev(std::end(dst)); // reserve placeholder for trailing zero
 
-  while (*src && *src != '*') {
+  size_t i = 0;
+  arr[i++] = out;
+
+  while (*src && *src != '*' && out != out_end && i < MAX_NMEA_PARAMS) {
     if (*src == ',') {
       *dst = '\0';
       arr[i++] = dst + 1;
@@ -75,9 +78,9 @@ size_t NMEAParser::ExtractParameters(const char* src, char* dst, char** arr, siz
       *dst = *src;
     }
     ++src;
-    ++dst;
+    ++out;
   }
-  *dst = '\0';
+  *out = '\0';
   return i;
 }
 
@@ -100,15 +103,15 @@ BOOL NMEAParser::NMEAChecksum(const char *String) {
     return TRUE;
   }
 
-  uint8_t CalcCheckSum = 0;
-  uint8_t ReadCheckSum = 0;
+  uint8_t CalcCheckSum = 0U;
+  uint8_t ReadCheckSum = 0U;
 
   if (*String && *String == '$') {
     ++String;
   }
 
   while (*String && *String != '*') {
-    CalcCheckSum = (unsigned char)(CalcCheckSum ^ *(String++));
+    CalcCheckSum ^= static_cast<uint8_t>(*(String++));
   }
 
   if (*String == '*') {
