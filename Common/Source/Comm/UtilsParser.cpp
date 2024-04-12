@@ -72,10 +72,10 @@ size_t NMEAParser::ExtractParameters(const char* src, char (&dst)[MAX_NMEA_LEN],
 
   while (*src && *src != '*' && out != out_end && i < MAX_NMEA_PARAMS) {
     if (*src == ',') {
-      *dst = '\0';
-      arr[i++] = dst + 1;
+      *out = '\0';
+      arr[i++] = out + 1;
     } else {
-      *dst = *src;
+      *out = *src;
     }
     ++src;
     ++out;
