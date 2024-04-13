@@ -58,7 +58,7 @@ static void OnQnhData(DataField* Sender, DataField::DataAccessKind_t Mode) {
       if (UpdateQNH(newqnh)) {
         devPutQNH(newqnh);
       }
-      auto wp = dynamic_cast<WndProperty*>(wf->FindByName(TEXT("prpAltitude")));
+      auto wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
       if (wp) {
         wp->GetDataField()->SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude));
         wp->RefreshDisplay();
@@ -77,7 +77,7 @@ static void OnAltitudeData(DataField* Sender, DataField::DataAccessKind_t Mode) 
     case DataField::daChange: {
       double newalt = Sender->GetAsFloat();
       double newqnh = FindQNH(GPS_INFO.BaroAltitude, Units::FromAltitude(newalt));  // 100411
-      auto wp = dynamic_cast<WndProperty*>(wf->FindByName(TEXT("prpQNH")));
+      auto wp = wf->FindByName<WndProperty>(TEXT("prpQNH"));
       if (wp) {
         if (PressureHg) {
           wp->GetDataField()->SetAsFloat(newqnh / TOHPA);
@@ -107,7 +107,7 @@ static void SetBallast(bool updateDevices) {
   static double foldBallast = BALLAST;
   if (fabs(foldBallast - BALLAST) > 0.01) /* update on change only */
   {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBallastPercent"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpBallastPercent"));
     if (wp) {
       wp->GetDataField()->Set(BALLAST * 100);
       wp->RefreshDisplay();
@@ -118,7 +118,7 @@ static void SetBallast(bool updateDevices) {
 	static double foldLiter = GlidePolar::BallastLitres;
 	if(fabs (foldLiter-GlidePolar::BallastLitres ) > 0.01) /* update on change only */
 	{
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBallastLitres"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBallastLitres"));
 	  if (wp)
 	  {
 	    wp->GetDataField()->SetAsFloat(GlidePolar::BallastLitres);
@@ -130,14 +130,14 @@ static void SetBallast(bool updateDevices) {
 	static double fOldLoad = GlidePolar::WingLoading;
 	if(fabs (fOldLoad-GlidePolar::WingLoading ) > 0.01) /* update on change only */
 	{
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWingLoading"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWingLoading"));
   if (wp) {
     wp->GetDataField()-> SetAsFloat(GlidePolar::WingLoading);
     wp->RefreshDisplay();
 		fOldLoad = GlidePolar::WingLoading;
 	  }
   }
-  // SetFocus( ((WndButton *)wf->FindByName(TEXT("buttonClose")))->GetHandle()); // not needed
+  // SetFocus( (wf->FindByName<WndButton>(TEXT("buttonClose")))->GetHandle()); // not needed
 }
 
 //int BallastSecsToEmpty = 120;
@@ -149,7 +149,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
   WndProperty* wp;
   static double altlast = GPS_INFO.BaroAltitude;
   if (fabs(GPS_INFO.BaroAltitude-altlast)>1) {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->
 	SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude));
@@ -163,7 +163,7 @@ static float  flastBugs=BUGS;
   {
     if(wf)
     {
-      wp = (WndProperty*)wf->FindByName(TEXT("prpBugs"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpBugs"));
 	  if (wp)
 	  {
 		wp->GetDataField()->SetAsFloat(BUGS*100);
@@ -187,8 +187,8 @@ static void OnBallastData(DataField *Sender, DataField::DataAccessKind_t Mode){
     } else {
       BallastTimerActive = false;
     }
-    ((WndButton *)wf->FindByName(TEXT("buttonDumpBallast")))->SetVisible(!BallastTimerActive);
-    ((WndButton *)wf->FindByName(TEXT("buttonStopDump")))->SetVisible(BallastTimerActive);
+    (wf->FindByName<WndButton>(TEXT("buttonDumpBallast")))->SetVisible(!BallastTimerActive);
+    (wf->FindByName<WndButton>(TEXT("buttonStopDump")))->SetVisible(BallastTimerActive);
     break;
   case DataField::daGet:
     lastRead = BALLAST;
@@ -294,10 +294,10 @@ void dlgBasicSettingsShowModal(void){
 
     wf->SetTimerNotify(500, OnTimerNotify);
 
-    ((WndButton *)wf->FindByName(TEXT("buttonDumpBallast")))->SetVisible(!BallastTimerActive);
-    ((WndButton *)wf->FindByName(TEXT("buttonStopDump")))->SetVisible(BallastTimerActive);
+    (wf->FindByName<WndButton>(TEXT("buttonDumpBallast")))->SetVisible(!BallastTimerActive);
+    (wf->FindByName<WndButton>(TEXT("buttonStopDump")))->SetVisible(BallastTimerActive);
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->SetAsFloat(
 	       Units::ToAltitude(GPS_INFO.BaroAltitude));
@@ -308,13 +308,13 @@ void dlgBasicSettingsShowModal(void){
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBallastPercent"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpBallastPercent"));
     if (wp) {
       if (WEIGHTS[2]==0) wp->SetReadOnly(1);
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBallastLitres"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpBallastLitres"));
     if (wp) {
       if (WEIGHTS[2]>0) {
         wp->GetDataField()-> SetAsFloat(GlidePolar::BallastLitres);
@@ -323,7 +323,7 @@ void dlgBasicSettingsShowModal(void){
       }
       wp->RefreshDisplay();
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpWingLoading"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpWingLoading"));
     if (wp) {
       if (GlidePolar::WingLoading>0.1) {
         if (ISPARAGLIDER) {
@@ -345,7 +345,7 @@ void dlgBasicSettingsShowModal(void){
       wp->RefreshDisplay();
     }
     if (CALCULATED_INFO.Flying) {
-        wp = (WndProperty*)wf->FindByName(_T("prpQNH"));
+        wp = wf->FindByName<WndProperty>(_T("prpQNH"));
         if (wp) {
           wp->GetDataField()->SetDisplayFormat(_T("%.0f"));
         }

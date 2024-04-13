@@ -66,13 +66,13 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCap
   if(!wf) {
     return;
   }
-  WndListFrame* wHelp = static_cast<WndListFrame*>(wf->FindByName(TEXT("frmDetails")));
+  WndListFrame* wHelp = wf->FindByName<WndListFrame>(TEXT("frmDetails"));
   if(!wHelp) {
     return;
   }
   wHelp->SetBorderKind(BORDERLEFT);
 
-  WndOwnerDrawFrame* wHelpEntry = static_cast<WndOwnerDrawFrame*>(wf->FindByName(TEXT("frmDetailsEntry")));
+  WndOwnerDrawFrame* wHelpEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
   if (!wHelpEntry) {
     return;
   };

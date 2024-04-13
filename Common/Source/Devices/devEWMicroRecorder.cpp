@@ -55,8 +55,10 @@ BOOL ExpectStringWait(DeviceDescriptor_t* d, const TCHAR *token) {
 
 
 BOOL EWMicroRecorderParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
-  char ctemp[80], *params[5];
-  int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
+  char ctemp[MAX_NMEA_LEN];
+  char* params[MAX_NMEA_PARAMS];
+
+  int nparams = NMEAParser::ValidateAndExtract(String, ctemp, params);
   if (nparams < 1)
     return FALSE;
 

@@ -29,7 +29,7 @@ static void OnSaveExistingClicked(WndButton* pWnd) {
 	return;
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFile"));
   if (!wp) return;
 
   wp->OnLButtonDown((POINT){0,0});
@@ -80,7 +80,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   WndProperty* wp;
   DataFieldFileReader *dfe;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFile"));
   if (!wp) return;
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
@@ -203,13 +203,13 @@ void dlgProfilesShowModal(short mode){
 
   if (!wf) return;
 
-  ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSaveExisting"))) ->SetOnClickNotify(OnSaveExistingClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSaveNew"))) ->SetOnClickNotify(OnSaveNewClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdSaveExisting"))) ->SetOnClickNotify(OnSaveExistingClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdSaveNew"))) ->SetOnClickNotify(OnSaveNewClicked);
 
 
   WndProperty* wp;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFile"));
   if (wp) {
     wp->SetVisible(false);
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());

@@ -32,22 +32,22 @@ static void SetReadOnlyItems()
   bool aspw=false;
   bool aspmaplabels=false;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceWarnings"));
   if (wp) aspw=(wp->GetDataField()->GetAsBoolean());
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningMapLabels"));
   if (wp) aspmaplabels=(wp->GetDataField()->GetAsBoolean());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningTime"));
   if (wp) wp->SetReadOnly(!aspw && !aspmaplabels);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAcknowledgementTime"));
   if (wp) wp->SetReadOnly(!aspw);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningMessageRepeatTime"));
   if (wp) wp->SetReadOnly(!aspw);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAckAllSame"));
   if (wp) wp->SetReadOnly(!aspw);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningDlgTimeout"));
   if (wp) wp->SetReadOnly(!aspw);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningVerticalMargin"));
   if (wp) wp->SetReadOnly(!aspw && !aspmaplabels);
 
 }
@@ -69,51 +69,51 @@ static void OnWarningsClicked(DataField *Sender, DataField::DataAccessKind_t Mod
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(WarningTime);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAcknowledgementTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AcknowledgementTime/60);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAckAllSame"));
   if (wp) {
     wp->GetDataField()->Set(AirspaceAckAllSame);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningVerticalMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AirspaceWarningVerticalMargin / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningDlgTimeout"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AirspaceWarningDlgTimeout);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningMapLabels"));
   if (wp) {
     wp->GetDataField()->Set(AirspaceWarningMapLabels);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceWarnings"));
   if (wp) {
     bool aw = AIRSPACEWARNINGS != 0;
     wp->GetDataField()->Set(aw);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
     wp->RefreshDisplay();
@@ -145,14 +145,14 @@ void dlgAirspaceWarningParamsShowModal(void){
 
   wf->ShowModal();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningTime"));
   if (wp) {
     if (WarningTime != wp->GetDataField()->GetAsInteger()) {
       WarningTime = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAcknowledgementTime"));
   if (wp) {
     if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()*60) {
       AcknowledgementTime = wp->GetDataField()->GetAsInteger()*60;
@@ -160,7 +160,7 @@ void dlgAirspaceWarningParamsShowModal(void){
   }
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningVerticalMargin"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (AirspaceWarningVerticalMargin != ival) {
@@ -168,35 +168,35 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningDlgTimeout"));
   if (wp) {
     if (AirspaceWarningDlgTimeout != wp->GetDataField()->GetAsInteger()) {
       AirspaceWarningDlgTimeout = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningMapLabels"));
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsBoolean()) {
       AirspaceWarningMapLabels = wp->GetDataField()->GetAsBoolean();
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAckAllSame"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAckAllSame"));
   if (wp) {
     if (AirspaceAckAllSame != wp->GetDataField()->GetAsBoolean()) {
       AirspaceAckAllSame = wp->GetDataField()->GetAsBoolean();
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceWarnings"));
   if (wp) {
     if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsBoolean()) {
       AIRSPACEWARNINGS = wp->GetDataField()->GetAsBoolean();
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
       AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;

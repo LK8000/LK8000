@@ -19,6 +19,7 @@
 #include "Devices/LKRoyaltek3200.h"
 #endif
 
+using std::string_view_literals::operator""sv;
 
 extern double EastOrWest(double in, TCHAR EoW);
 extern double NorthOrSouth(double in, TCHAR NoS);
@@ -206,85 +207,81 @@ BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& 
 #endif
 
 BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* String, NMEA_INFO* pGPS) {
+  if (!String) {
+    return FALSE;
+  }
 
   auto wait_ack = d.lock_wait_ack();
   if (wait_ack && wait_ack->check(String)) {
     return TRUE;
   }
 
-  char ctemp[MAX_NMEA_LEN];
-  char* params[MAX_NMEA_PARAMS];
-
   if (String[0] !='$') {
     return FALSE;
   }
 
-  size_t n_params = ValidateAndExtract(String, ctemp, MAX_NMEA_LEN, params, MAX_NMEA_PARAMS);
+  char ctemp[MAX_NMEA_LEN];
+  char* params[MAX_NMEA_PARAMS];
+
+  size_t n_params = ValidateAndExtract(String, ctemp, params);
   if (n_params < 1 || params[0][0] != '$') {
     return FALSE;
   }
 
   if (params[0][1] == 'P') {
+    std::string_view token = params[0] + 2;
     // Proprietary String
-    if (strcmp(params[0] + 1, "PTAS1") == 0) {
-      ScopeLock lock(CritSec_FlightData);
+    if (token == "TAS1"sv) {
       return PTAS1(d, &String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PFLAV") == 0) {
-      ScopeLock lock(CritSec_FlightData);
+    if (token == "FLAV"sv) {
       return PFLAV(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PFLAA") == 0) {
-      ScopeLock lock(CritSec_FlightData);
+    if (token == "FLAA"sv) {
       return PFLAA(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PFLAU") == 0) {
-      ScopeLock lock(CritSec_FlightData);
+    if (token == "FLAU"sv) {
       return PFLAU(&String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PGRMZ") == 0) {
-      ScopeLock lock(CritSec_FlightData);
+    if (token == "GRMZ"sv) {
       return RMZ(d, &String[7], params + 1, n_params - 1, pGPS);
     }
-    if (strcmp(params[0] + 1, "PLKAS") == 0) {
-      ScopeLock lock(CritSec_FlightData);
+    if (token == "LKAS"sv) {
       return PLKAS(&String[7], params + 1, n_params - 1, pGPS);
     }
     return FALSE;
   }
 
-  if (strcmp(params[0] + 3, "GSA") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return GSA(&String[7], params + 1, n_params - 1, pGPS);
+  if (params[0][1] == 'G') {
+    // GNSS String
+    std::string_view token = params[0] + 3;
+    if (token == "GSA"sv) {
+      return GSA(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (token == "GLL"sv) {
+      /*
+      return GLL(&String[7], params + 1, n_params-1, pGPS);
+      */
+      return FALSE;
+    }
+    if (token == "RMB"sv) {
+      /*
+      return RMB(&String[7], params + 1, n_params-1, pGPS);
+      */
+      return FALSE;
+    }
+    if (token == "RMC"sv) {
+      return RMC(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (token == "GGA"sv) {
+      return GGA(&String[7], params + 1, n_params - 1, pGPS);
+    }
+    if (token == "VTG"sv) {
+      return VTG(&String[7], params + 1, n_params - 1, pGPS);
+    }
   }
-  if (strcmp(params[0] + 3, "GLL") == 0) {
-    /*
-    ScopeLock lock(CritSec_FlightData);
-    return GLL(&String[7], params + 1, n_params-1, pGPS);
-    */
-    return FALSE;
-  }
-  if (strcmp(params[0] + 3, "RMB") == 0) {
-    /*
-    ScopeLock lock(CritSec_FlightData);
-    return RMB(&String[7], params + 1, n_params-1, pGPS);
-    */
-    return FALSE;
-  }
-  if (strcmp(params[0] + 3, "RMC") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return RMC(&String[7], params + 1, n_params - 1, pGPS);
-  }
-  if (strcmp(params[0] + 3, "GGA") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return GGA(&String[7], params + 1, n_params - 1, pGPS);
-  }
-  if (strcmp(params[0] + 3, "VTG") == 0) {
-    ScopeLock lock(CritSec_FlightData);
-    return VTG(&String[7], params + 1, n_params - 1, pGPS);
-  }
-  if (strcmp(params[0] + 1, "HCHDG") == 0) {
-    ScopeLock lock(CritSec_FlightData);
+
+  if (std::string_view(params[0] + 1) == "HCHDG"sv) {
     return HCHDG(&String[7], params + 1, n_params - 1, pGPS);
   }
 
@@ -418,6 +415,8 @@ BOOL NMEAParser::GLL(const char* String, char** params, size_t nparams, NMEA_INF
 
   if (!activeGPS) return TRUE;
 
+  ScopeLock lock(CritSec_FlightData);
+
   pGPS->NAVWarning = !gpsValid;
   
   // use valid time with invalid fix
@@ -472,6 +471,9 @@ BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INF
   // if no valid fix, we dont get speed either!
   if (gpsValid) {
     double speed = StrToDouble(params[4], NULL);
+
+    ScopeLock lock(CritSec_FlightData);
+
     pGPS->Speed = Units::From(unKnots, speed);
 
     if (ISCAR) {
@@ -514,6 +516,7 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
     double ps = GM130BarPressure();
     double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
+    ScopeLock lock(CritSec_FlightData);
     UpdateBaroSource(pGPS, nullptr, Altitude);
   }
 
@@ -522,12 +525,8 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
       double ps = Royaltek3200_GetPressure();
       double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
+      ScopeLock lock(CritSec_FlightData);
       UpdateBaroSource(pGPS, nullptr,  Altitude);
-
-      #if 0
-      pGPS->TemperatureAvailable=true;
-      pGPS->OutsideAirTemperature = Royaltek3200_GetTemperature();
-      #endif
     }
   }
 
@@ -543,6 +542,8 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
     speed = StrToDouble(params[6], NULL);
   }
   
+  ScopeLock lock(CritSec_FlightData);
+
   pGPS->NAVWarning = !gpsValid;
 
   // say we are updated every time we get this,
@@ -700,21 +701,16 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
      *  7 = Manual input mode
      *  8 = Simulation mode
      */
-  
-  double ggafix = StrToDouble(params[5],NULL);
-  if ( ggafix==0 || ggafix>5 ) {
-	#ifdef DEBUG_GPS
-	if (ggafix>5) StartupStore(_T("------ GGA DEAD RECKON fix skipped%s"),NEWLINE);
-	#endif
-#ifdef YDEBUG
-    // in debug we need accept manual or simulated fix
-    gpsValid = (ggafix == 7 || ggafix == 8); 
-#else
-	gpsValid=false;
-#endif    
-  } else {
-	gpsValid=true;
+
+  unsigned ggafix = strtoul(params[5], nullptr, 10);
+  gpsValid = (ggafix > 0 && ggafix < 6);
+  if (ggafix == 6 ) {
+    DebugLog(_T("------ GGA DEAD RECKON fix skipped"));
   }
+#ifdef YDEBUG
+  // in debug we need to accept manual or simulated fix
+  gpsValid = gpsValid || (ggafix == 7 || ggafix == 8); 
+#endif
 
   if (gpsValid) {
     lastGpsValid.Update();
@@ -728,6 +724,9 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
   if(gpsValid && (nSatellites == 0)) {
     nSatellites = -1; // unknown count but valid fix !
   }
+
+  ScopeLock lock(CritSec_FlightData);
+
   pGPS->SatellitesUsed = nSatellites; // 091208
   pGPS->NAVWarning = !gpsValid; // 091208
 
@@ -777,9 +776,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
 		pGPS->Longitude = tmplon;
 	} 
 	else {
-		#ifdef DEBUG_GPS
-		StartupStore(_T("++++++ GGA gpsValid with invalid posfix!%s"),NEWLINE);
-		#endif
+		DebugLog(_T("++++++ GGA gpsValid with invalid posfix!"));
 		gpsValid=false;
 	}
   }
@@ -830,8 +827,6 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
 BOOL NMEAParser::PLKAS(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)pGPS;
-
   if(nparams < 1) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PLKAS sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 0...
@@ -839,6 +834,8 @@ BOOL NMEAParser::PLKAS(const char* String, char** params, size_t nparams, NMEA_I
   }
   
   double vias=StrToDouble(params[0],NULL)/10.0;
+
+  ScopeLock lock(CritSec_FlightData);
   if (vias > 1) {
     double qne_altitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);
     pGPS->TrueAirspeed = TrueAirSpeed(vias, qne_altitude);
@@ -856,8 +853,6 @@ BOOL NMEAParser::PLKAS(const char* String, char** params, size_t nparams, NMEA_I
 
 BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, const char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
 {
-  (void)pGPS;
-
   if(nparams < 2) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMZ sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 1...
@@ -874,6 +869,8 @@ BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, const char* String, char **params, s
   LastRMZHB = LKHearthBeats;
 
   double Altitude = ParseAltitude(params[0], params[1]);
+
+  ScopeLock lock(CritSec_FlightData);
   UpdateBaroSource(pGPS, &d, QNEAltitudeToQNHAltitude(Altitude));
 
   return FALSE;
@@ -881,13 +878,15 @@ BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, const char* String, char **params, s
 
 
 // TASMAN instruments support for Tasman Flight Pack model Fp10
-BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params, size_t nparams, NMEA_INFO *pGPS) 
 {
   if(nparams < 4) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PTAS1 sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
     // max index used is 3...
     return FALSE;
   }
+
+  ScopeLock lock(CritSec_FlightData);
 
   if(*params[0] != _T('\0')) {
     const double wnet = Units::From(unKnots, (StrToDouble(params[0],NULL) - 200.0) / 10);
@@ -920,14 +919,13 @@ BOOL NMEAParser::HCHDG(const char* String, char** params, size_t nparams, NMEA_I
     return FALSE;
   }
   
-  (void)pGPS;
-  double mag=0;
-  mag=StrToDouble(params[0],NULL);
+  double mag = StrToDouble(params[0],NULL);
   if (mag>=0 && mag<=360) {
+      ScopeLock lock(CritSec_FlightData);
       pGPS->MagneticHeading=mag;
       pGPS->MagneticHeadingAvailable=TRUE;
   }
-  return FALSE;
+  return TRUE;
 }
 
 

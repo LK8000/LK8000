@@ -1131,9 +1131,12 @@ const TCHAR *DataFieldString::GetAsString(void){
   return(mValue);
 }
 
-bool DataFieldString::CreateKeyboard(void){
-	dlgTextEntryShowModal(mValue,std::size(mValue));
-	return true;
+bool DataFieldString::CreateKeyboard() {
+  dlgTextEntryShowModal(mValue,std::size(mValue));
+  if (!GetDetachGUI()) {
+    mOnDataAccess(this, daChange);
+  }
+  return true;
 }
 
 //----------------------------------------------------------
@@ -1441,14 +1444,14 @@ void WindowControl::AddClient(WindowControl *Client) {
     mClients.push_back(Client);
 }
 
-WindowControl *WindowControl::FindByName(const TCHAR *Name) {
+WindowControl *WindowControl::FindChild(const TCHAR *Name) {
     if(Name) {
         if (_tcscmp(GetWndName(), Name) == 0) {
             return (this);
         }
 
         for (WindowControl* w : mClients) {
-            WindowControl* res = w->FindByName(Name);
+            WindowControl* res = w->FindChild(Name);
             if (res) {
                 return (res);
             }

@@ -50,7 +50,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
     pWndClose->SetVisible(true);
     pWndClose->SetFocus();
   }
-  WndFrame* pWndText = static_cast<WndFrame*>(pWnd->FindByName(_T("WndText")));
+  WndFrame* pWndText = pWnd->FindByName<WndFrame>(_T("WndText"));
   if (pWndText) {
     pWndText->SetBackColor(RGB_WINBACKGROUND);
     pWndText->SetCaption(_WhereAmI.getText());
@@ -73,7 +73,7 @@ void dlgOracleShowModal(void){
   if (pWndClose) {
     pWndClose->SetVisible(false);
   }
-  WndFrame* pWndText = static_cast<WndFrame*>(wf->FindByName(_T("WndText")));
+  WndFrame* pWndText = wf->FindByName<WndFrame>(_T("WndText"));
   if (pWndText) {
     pWndText->SetFont(MapWindowBoldFont);
     pWndText->SetCaptionStyle(DT_EXPANDTABS | DT_CENTER | DT_NOCLIP | DT_WORDBREAK);

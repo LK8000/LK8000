@@ -20,7 +20,7 @@ static void OnStopClicked(WndButton* pWnd) {
   Port.ReplaySpeed = 0;
 
 	if(wf) {
-	  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+	  WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpRate"));
 	  if(wp) {
 	    wp->GetDataField()->Set(Port.ReplaySpeed);
 	    wp->RefreshDisplay();
@@ -32,7 +32,7 @@ static void OnStartClicked(WndButton* pWnd) {
 
   auto& Port = PortConfig[SelectedDevice];
 
-  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
+  WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpIGCFile"));
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -44,7 +44,7 @@ static void OnStartClicked(WndButton* pWnd) {
     Port.ReplaySpeed = 1;
     if(wf)
     {
-      WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+      WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpRate"));
       if(wp)
       {
         wp->GetDataField()->Set(Port.ReplaySpeed);
@@ -60,7 +60,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 
   if(pWnd) {
     WndProperty* wp;
-    wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpIGCFile"));
     if (wp) {
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -68,7 +68,7 @@ static void OnCloseClicked(WndButton* pWnd) {
       _tcscpy(Port.Replay_FileName,dfe->GetPathFile());
 
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpRate"));
     if (wp) {
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -154,13 +154,13 @@ void dlgNMEAReplayShowModal(){
 
   if (wf) {
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpRate"));
     if (wp) {
       wp->GetDataField()->SetAsFloat(Port.ReplaySpeed);
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpIGCFile"));
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {
@@ -169,7 +169,7 @@ void dlgNMEAReplayShowModal(){
       }
       wp->RefreshDisplay();
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpRaw"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpRaw"));
     if (wp) {      
       wp->GetDataField()->Set(  Port.RawByteData );
       wp->RefreshDisplay();
@@ -178,7 +178,7 @@ void dlgNMEAReplayShowModal(){
     wf->ShowModal();
 
     
-    wp = (WndProperty*)wf->FindByName(TEXT("prpRaw"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpRaw"));
     if (wp) {
       if (Port.RawByteData != wp->GetDataField()->GetAsBoolean()) {
         Port.RawByteData = (int) wp->GetDataField()->GetAsBoolean();

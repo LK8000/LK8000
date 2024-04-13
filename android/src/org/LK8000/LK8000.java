@@ -74,6 +74,7 @@ public class LK8000 extends Activity {
   PowerManager.WakeLock wakeLock;
 
   BatteryReceiver batteryReceiver;
+  private ClipboardManager clipboard;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -164,6 +165,9 @@ public class LK8000 extends Activity {
     }
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+    // Gets a handle to the Clipboard Manager
+    clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
 
   }
 
@@ -521,15 +525,19 @@ public class LK8000 extends Activity {
   }
 
   String getClipboardText() {
-    // Gets a handle to the Clipboard Manager
-    final ClipboardManager clipboard = (ClipboardManager)
-            getSystemService(Context.CLIPBOARD_SERVICE);
-    // Gets the clipboard data from the clipboard
-    ClipData clip = clipboard.getPrimaryClip();
-    if (clip != null) {
-      // Gets the first item from the clipboard data
-      ClipData.Item item = clip.getItemAt(0);
-      return item.coerceToText(this).toString();
+    try {
+      if (clipboard != null) {
+        // Gets the clipboard data from the clipboard
+        ClipData clip = clipboard.getPrimaryClip();
+        if (clip != null) {
+          // Gets the first item from the clipboard data
+          ClipData.Item item = clip.getItemAt(0);
+          return item.coerceToText(this).toString();
+        }
+      }
+    }
+    catch (Exception e) {
+    	e.printStackTrace();
     }
     return null;
   }

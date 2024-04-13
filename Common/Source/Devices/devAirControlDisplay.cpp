@@ -47,10 +47,15 @@ struct Command {
 };
 
 template <typename Builder, typename... Args>
+size_t Build(char (&sNmea)[MAX_NMEA_LEN], Args&&... args) {
+  size_t len = Builder::build(sNmea, std::forward<Args>(args)...);
+  return len + lk::snprintf(sNmea + len, MAX_NMEA_LEN - len, "*%02X\r\n", nmea_crc(sNmea + 1));
+}
+
+template <typename Builder, typename... Args>
 BOOL Send(ComPort& port, Args&&... args) {
   char sNmea[MAX_NMEA_LEN];
-  size_t len = Builder::build(sNmea, std::forward<Args>(args)...);
-  len += lk::snprintf(sNmea + len, MAX_NMEA_LEN - len, "*%02X\r\n", nmea_crc(sNmea + 1));
+  size_t len = Build<Builder>(sNmea, std::forward<Args>(args)...);
   return port.Write(sNmea, len);
 }
 
@@ -225,6 +230,11 @@ BOOL ParseXPDR(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
 }
 
 BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
+  auto wait_ack = d->lock_wait_ack();
+  if (wait_ack && wait_ack->check(String)) {
+    return TRUE;
+  }
+
   auto configuration_prefix = "$PAAVC,A,"sv;
   if (start_with(String, configuration_prefix)) {
     return ParseConfiguration(d, String + configuration_prefix.size(), GPS_INFO);
@@ -261,7 +271,24 @@ BOOL PutQNH(DeviceDescriptor_t* d, double NewQNH) {
 }
 
 BOOL PutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
-  return SendConfiguration(d, 'S', "COM", "CHN1", khz);
+  /* Active frequency is readonly, so workaround is :
+   *   - set passive with new frequency
+   *   - swap active/passive
+   *   - restore old passive
+   */
+  unsigned old_khz = RadioPara.PassiveKhz;
+
+  char nmea_ack[MAX_NMEA_LEN];
+  Build<Configuration>(nmea_ack, 'A', "COM", "CHN2", khz);
+  wait_ack_shared_ptr wait_ack = d->make_wait_ack(nmea_ack);
+  if (SendConfiguration(d, 'S', "COM", "CHN2", khz) && wait_ack->wait(250)) {
+    wait_ack = d->make_wait_ack("$PAAVX,COM,XCHN,OK*2A");
+    SendCommand(d, "COM", "XCHN");
+    wait_ack->wait(250);
+    wait_ack.reset();
+    return SendConfiguration(d, 'S', "COM", "CHN2", old_khz);
+  }
+ return FALSE;
 }
 
 BOOL PutFreqStandby(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {

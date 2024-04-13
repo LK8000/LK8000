@@ -395,6 +395,8 @@ void LKProfileSave(const TCHAR *szFile) {
   if (SaveRuntime) {
     write_settings(szRegistrySoundSwitch, EnableSoundModes);
   }
+
+  Units::SaveSettings(write_settings);
 }
 
 //
@@ -423,8 +425,6 @@ void LKAircraftSave(const TCHAR *szFile) {
   write_settings(szRegistryAircraftRego, AircraftRego_Config);
   write_settings(szRegistryCompetitionClass, CompetitionClass_Config);
   write_settings(szRegistryCompetitionID, CompetitionID_Config);
-
-  Units::SaveSettings(write_settings);
 }
 
 

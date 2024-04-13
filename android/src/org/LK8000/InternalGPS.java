@@ -25,6 +25,8 @@ package org.LK8000;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.location.GnssMeasurementRequest;
+import android.location.GnssMeasurementsEvent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,6 +38,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+
+import java.util.concurrent.Executor;
 
 /**
  * Code to support the internal GPS receiver via #LocationManager.
@@ -97,25 +101,18 @@ public class InternalGPS
 
   private GpsStatus.NmeaListener listener = null;
   private OnNmeaMessageListener listener_N = null;
+  private GnssMeasurementsEvent.Callback measurementsCallback = null;
+
 
   /**
    * Called by the #Handler, indirectly by update().  Updates the
    * LocationManager subscription inside the main thread.
    */
+  @SuppressLint("MissingPermission")
   @Override public void run() {
     Log.d(TAG, "Updating GPS subscription...");
-    locationManager.removeUpdates(this);
 
-    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      if(listener != null) {
-        locationManager.removeNmeaListener(listener);
-      }
-    } else {
-      if(listener_N != null)  {
-        locationManager.removeNmeaListener(listener_N);
-      }
-    }
-
+    unregisterCallback();
 
     if (locationProvider != null) {
       Log.d(TAG, "Subscribing to GPS updates.");
@@ -128,6 +125,23 @@ public class InternalGPS
          was: "provider=gps" - no idea what that means */
         setConnectedSafe(false);
         return;
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        // Request "force full GNSS measurements" explicitly (on <= Android R this is a manual developer setting)
+        measurementsCallback = new GnssMeasurementsEvent.Callback() {
+          @Override
+          public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
+            super.onGnssMeasurementsReceived(eventArgs);
+          }
+
+          @Override
+          public void onStatusChanged(int status) {
+            super.onStatusChanged(status);
+          }
+        };
+        GnssMeasurementRequest request = new GnssMeasurementRequest.Builder().setFullTracking(true).build();
+        locationManager.registerGnssMeasurementsCallback(request, command -> { }, measurementsCallback);
       }
 
       if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -172,7 +186,26 @@ public class InternalGPS
     update();
   }
 
+  private void unregisterCallback() {
+    locationManager.removeUpdates(this);
+
+    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      if(listener != null) {
+        locationManager.removeNmeaListener(listener);
+      }
+    } else {
+      if(listener_N != null)  {
+        locationManager.removeNmeaListener(listener_N);
+      }
+      if (measurementsCallback != null) {
+        locationManager.unregisterGnssMeasurementsCallback(measurementsCallback);
+      }
+    }
+  }
+
   public void close() {
+    unregisterCallback();
+
     safeDestruct.beginShutdown();
     setLocationProvider(null);
     safeDestruct.finishShutdown();

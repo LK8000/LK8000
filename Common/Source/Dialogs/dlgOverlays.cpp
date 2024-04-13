@@ -27,7 +27,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopLeft"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(MsgToken<491>()); // OFF
@@ -36,7 +36,7 @@ static void setVariables(void) {
 	wp->RefreshDisplay();
   }
   
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOvTitle"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpOvTitle"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(MsgToken<491>()); // OFF
@@ -45,7 +45,7 @@ static void setVariables(void) {
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(MsgToken<491>()); // OFF
@@ -53,7 +53,7 @@ static void setVariables(void) {
 	dfe->Set(Overlay_TopMid);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopRight"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(MsgToken<491>()); // OFF
@@ -61,7 +61,7 @@ static void setVariables(void) {
 	dfe->Set(Overlay_TopRight);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
         dfe->addEnumText(MsgToken<491>()); // OFF
@@ -69,7 +69,7 @@ static void setVariables(void) {
 	dfe->Set(Overlay_TopDown);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -82,7 +82,7 @@ static void setVariables(void) {
       dfe->Set(Overlay_LeftTop - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -95,7 +95,7 @@ static void setVariables(void) {
       dfe->Set(Overlay_LeftMid - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -108,7 +108,7 @@ static void setVariables(void) {
       dfe->Set(Overlay_LeftBottom - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -121,7 +121,7 @@ static void setVariables(void) {
       dfe->Set(Overlay_LeftDown - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -134,7 +134,7 @@ static void setVariables(void) {
       dfe->Set(Overlay_RightTop - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -147,7 +147,7 @@ static void setVariables(void) {
       dfe->Set(Overlay_RightMid - 1000 +  2 ); // Custom value
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<491>()); // OFF
@@ -168,67 +168,67 @@ static void OnResetClicked(WndButton* pWnd){
   WndProperty *wp;
   Reset_CustomMenu();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopLeft"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopRight"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftDown"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightTop"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightMid"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightBottom"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(1);
@@ -256,22 +256,22 @@ void dlgOverlaysShowModal(void){
 
   wf->ShowModal();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopLeft"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopLeft"));
   if (wp) Overlay_TopLeft = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOvTitle"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpOvTitle"));
   if (wp) Overlay_Title =  (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopMid"));
   if (wp) Overlay_TopMid = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopRight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopRight"));
   if (wp) Overlay_TopRight = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopDown"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTopDown"));
   if (wp) Overlay_TopDown = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftTop"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )
@@ -280,7 +280,7 @@ void dlgOverlaysShowModal(void){
       Overlay_LeftTop = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftMid"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )
@@ -289,7 +289,7 @@ void dlgOverlaysShowModal(void){
       Overlay_LeftMid = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftBottom"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftBottom"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )
@@ -298,7 +298,7 @@ void dlgOverlaysShowModal(void){
       Overlay_LeftBottom = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLeftDown"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLeftDown"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )
@@ -307,7 +307,7 @@ void dlgOverlaysShowModal(void){
       Overlay_LeftDown = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightTop"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )
@@ -316,7 +316,7 @@ void dlgOverlaysShowModal(void){
       Overlay_RightTop = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightMid"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightMid"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )
@@ -325,7 +325,7 @@ void dlgOverlaysShowModal(void){
       Overlay_RightMid = dataField+1000-2; // Custom overlay have a code LKValue+1000
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRightBottom"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRightBottom"));
   if (wp) {
     int dataField = (wp->GetDataField()->GetAsInteger());
     if ( dataField < 2 )

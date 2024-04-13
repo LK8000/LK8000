@@ -196,7 +196,7 @@ static void UpdateValuesSystem() {
   TCHAR Temp2[80];
 
   WndProperty* wp;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpGPS"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpGPS"));
   if (wp) {
     if (extGPSCONNECT) {
       if (GPS_INFO.NAVWarning) {
@@ -213,7 +213,7 @@ static void UpdateValuesSystem() {
       }
       wp->RefreshDisplay();
 
-      wp = (WndProperty*)wf->FindByName(TEXT("prpNumSat"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpNumSat"));
       if (wp) {
         if (GPS_INFO.SatellitesUsed >= 0) {  // known numer of sats
           _stprintf(Temp,TEXT("%d"),GPS_INFO.SatellitesUsed);
@@ -236,7 +236,7 @@ static void UpdateValuesSystem() {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVario"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpVario"));
   if (wp) {
     const DeviceDescriptor_t* dev = getVarioDevice(GPS_INFO);
     if(dev) {
@@ -256,7 +256,7 @@ static void UpdateValuesSystem() {
   }
 
   if (wp) {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpFLARM"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpFLARM"));
     if (GPS_INFO.FLARM_Available) {
 	// LKTOKEN  _@M199_ = "Connected"
 
@@ -277,7 +277,7 @@ static void UpdateValuesSystem() {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLogger"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLogger"));
   if (wp) {
     if (LoggerGActive()) {
       if (LoggerActive) {
@@ -300,7 +300,7 @@ static void UpdateValuesSystem() {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDeclared"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpDeclared"));
   if (wp) {
     if (DeclaredToDevice) {
 	// LKTOKEN  _@M827_ = "Yes"
@@ -311,7 +311,7 @@ static void UpdateValuesSystem() {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVersion"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpVersion"));
   if (wp) {
       TCHAR softversion[100];
 #ifndef LKCOMPETITION
@@ -323,13 +323,13 @@ static void UpdateValuesSystem() {
       wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBattBank"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBattBank"));
   if (wp) {
     _stprintf(Temp,TEXT("%d"),GPS_INFO.ExtBatt_Bank);
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBatt1Volt"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBatt1Volt"));
   if (wp) {
 	if (GPS_INFO.ExtBatt1_Voltage>=1000)
 		_stprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt1_Voltage-1000);
@@ -338,7 +338,7 @@ static void UpdateValuesSystem() {
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBatt2Volt"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBatt2Volt"));
   if (wp) {
 	if (GPS_INFO.ExtBatt1_Voltage>=1000)
 		_stprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt2_Voltage-1000);
@@ -348,7 +348,7 @@ static void UpdateValuesSystem() {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBattery"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpBattery"));
   if (wp) {
     _tcscpy(Temp,TEXT("\0"));
     if (HaveBatteryInfo) {
@@ -371,20 +371,20 @@ static void UpdateValuesSystem() {
 static void UpdateValuesTimes(void) {
   TCHAR Temp[1000];
 
-  WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpSunset"));
+  WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpSunset"));
   if (wp) {
     const unsigned sunset_time = DoSunEphemeris(GPS_INFO.Longitude, GPS_INFO.Latitude);
     Units::TimeToText(Temp, sunset_time);
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLocalTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLocalTime"));
   if (wp) {
     Units::TimeToText(Temp, LocalTime());
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTakeoffTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTakeoffTime"));
   if (wp) {
     if (CALCULATED_INFO.FlightTime>0) {
       Units::TimeToText(Temp, LocalTime(CALCULATED_INFO.TakeOffTime));
@@ -394,7 +394,7 @@ static void UpdateValuesTimes(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLandingTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLandingTime"));
   if (wp) {
     if (!CALCULATED_INFO.Flying) {
       Units::TimeToText(Temp, LocalTime(CALCULATED_INFO.TakeOffTime + CALCULATED_INFO.FlightTime));
@@ -404,7 +404,7 @@ static void UpdateValuesTimes(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFlightTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFlightTime"));
   if (wp) {
     if (CALCULATED_INFO.FlightTime > 0){
       Units::TimeToText(Temp, (int)CALCULATED_INFO.FlightTime);
@@ -429,12 +429,12 @@ static void UpdateValuesFlight(void) {
 
   Units::CoordinateToString(GPS_INFO.Longitude, GPS_INFO.Latitude, sCoordinate);
 
-  wp = (WndProperty *)wf->FindByName(TEXT("prpCoordinate"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCoordinate"));
   if(wp) {
 	  wp->SetText(sCoordinate);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
   if (wp) {
 
     _stprintf(sBaroDevice, TEXT("GPS"));
@@ -455,7 +455,7 @@ static void UpdateValuesFlight(void) {
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMaxHeightGain"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMaxHeightGain"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
               Units::ToAltitude(CALCULATED_INFO.MaxHeightGain),
@@ -472,18 +472,18 @@ static void UpdateValuesFlight(void) {
                     &distance,
                     &bearing);
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpNear"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpNear"));
     if (wp) {
       wp->SetText(WayPointList[nearest_waypoint].Name);
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
     if (wp) {
       _stprintf(Temp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
       wp->SetText(Temp);
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
     if (wp) {
       TCHAR DistanceText[MAX_PATH];
       Units::FormatDistance(distance,DistanceText, 10);
@@ -491,15 +491,15 @@ static void UpdateValuesFlight(void) {
     }
 
   } else {
-    wp = (WndProperty*)wf->FindByName(TEXT("prpNear"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpNear"));
     if (wp) {
       wp->SetText(TEXT("-"));
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpBearing"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
     if (wp) {
       wp->SetText(TEXT("-"));
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
     if (wp) {
       wp->SetText(TEXT("-"));
     }
@@ -512,7 +512,7 @@ static void UpdateValuesRules(void) {
   WndProperty *wp;
   TCHAR Temp[80];
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpValidStart"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpValidStart"));
   if (wp) {
     if (CALCULATED_INFO.ValidStart) {
 	// LKTOKEN  _@M677_ = "TRUE"
@@ -522,7 +522,7 @@ static void UpdateValuesRules(void) {
       wp->SetText(MsgToken<278>());
     }
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpValidFinish"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpValidFinish"));
   if (wp) {
     if (CALCULATED_INFO.ValidFinish) {
 	// LKTOKEN  _@M677_ = "TRUE"
@@ -533,7 +533,7 @@ static void UpdateValuesRules(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartTime"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
       Units::TimeToText(Temp, LocalTime(CALCULATED_INFO.TaskStartTime));
@@ -543,7 +543,7 @@ static void UpdateValuesRules(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartSpeed"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
       _stprintf(Temp, TEXT("%.0f %s"),
@@ -559,7 +559,7 @@ static void UpdateValuesRules(void) {
   //  double start_h;
   LockTaskData();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartPoint"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartPoint"));
 
   if (ValidTaskPoint(0)) {
     //    start_h = WayPointList[Task[0].Index].Altitude;
@@ -573,7 +573,7 @@ static void UpdateValuesRules(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartHeight"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
       _stprintf(Temp, TEXT("%.0f %s"),
@@ -585,7 +585,7 @@ static void UpdateValuesRules(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFinishAlt"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFinishAlt"));
   if (wp) {
     double finish_min = FAIFinishHeight(&GPS_INFO, &CALCULATED_INFO, -1);
     _stprintf(Temp, TEXT("%.0f %s"),
@@ -602,7 +602,7 @@ static void UpdateValuesTask(void) {
   WndProperty *wp;
   TCHAR Temp[80];
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskTime"));
   Units::TimeToText(Temp, (int)AATTaskLength*60);
   if (wp) {
     if (!UseAATTarget()) {
@@ -617,13 +617,13 @@ static void UpdateValuesTask(void) {
     dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpETETime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpETETime"));
   if (wp) {
     Units::TimeToText(Temp, (int)dd);
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRemainingTime"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRemainingTime"));
   if (wp) {
     if (IsValidTaskTimeToGo(CALCULATED_INFO)) {
       Units::TimeToText(Temp, CALCULATED_INFO.TaskTimeToGo);
@@ -633,7 +633,7 @@ static void UpdateValuesTask(void) {
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskDistance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskDistance"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
               Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo +CALCULATED_INFO.TaskDistanceCovered),
@@ -641,7 +641,7 @@ static void UpdateValuesTask(void) {
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRemainingDistance"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRemainingDistance"));
   if (wp) {
     if (UseAATTarget()) {
       _stprintf(Temp, TEXT("%.0f %s"),
@@ -661,14 +661,14 @@ static void UpdateValuesTask(void) {
     // TODO bug: this fails for OLC
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEstimatedSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpEstimatedSpeed"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
               Units::ToTaskSpeed(d1), Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAverageSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAverageSpeed"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"),
               Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed),
@@ -704,14 +704,14 @@ void dlgStatusShowModal(int start_page){
 
   wf->SetKeyDownNotify(FormKeyDown);
 
-  ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
-  wStatus0    = ((WndFrame *)wf->FindByName(TEXT("frmStatusFlight")));
-  wStatus1    = ((WndFrame *)wf->FindByName(TEXT("frmStatusSystem")));
-  wStatus2    = ((WndFrame *)wf->FindByName(TEXT("frmStatusTask")));
-  wStatus3    = ((WndFrame *)wf->FindByName(TEXT("frmStatusRules")));
-  wStatus4    = ((WndFrame *)wf->FindByName(TEXT("frmStatusTimes")));
-  wStatus5    = ((WndFrame *)wf->FindByName(TEXT("frmStatusExtDevice")));
+  wStatus0    = (wf->FindByName<WndFrame>(TEXT("frmStatusFlight")));
+  wStatus1    = (wf->FindByName<WndFrame>(TEXT("frmStatusSystem")));
+  wStatus2    = (wf->FindByName<WndFrame>(TEXT("frmStatusTask")));
+  wStatus3    = (wf->FindByName<WndFrame>(TEXT("frmStatusRules")));
+  wStatus4    = (wf->FindByName<WndFrame>(TEXT("frmStatusTimes")));
+  wStatus5    = (wf->FindByName<WndFrame>(TEXT("frmStatusExtDevice")));
 
   //ASSERT(wStatus0!=NULL);
   //ASSERT(wStatus1!=NULL);
@@ -724,11 +724,11 @@ void dlgStatusShowModal(int start_page){
 
   if (!multi_page) {
     WndButton *wb;
-    wb = ((WndButton *)wf->FindByName(TEXT("cmdNext")));
+    wb = (wf->FindByName<WndButton>(TEXT("cmdNext")));
     if (wb != NULL) {
       wb->SetVisible(false);
     }
-    wb = ((WndButton *)wf->FindByName(TEXT("cmdPrev")));
+    wb = (wf->FindByName<WndButton>(TEXT("cmdPrev")));
     if (wb != NULL) {
       wb->SetVisible(false);
     }

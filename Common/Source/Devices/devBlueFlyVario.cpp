@@ -344,7 +344,7 @@ namespace dlgBlueFlyConfig {
 
         
 
-        WndProperty* pWnd = (WndProperty*)wfDlg->FindByName(utf8_to_tstring(Param.Code()).c_str());
+        WndProperty* pWnd = wfDlg->FindByName<WndProperty>(utf8_to_tstring(Param.Code()).c_str());
         if(pWnd) {
             DataField* pData = pWnd->GetDataField();
             if(pData) {
@@ -389,7 +389,7 @@ namespace dlgBlueFlyConfig {
             lstPageWnd.reserve(std::distance(std::begin(lstPageName), std::end(lstPageName)));
             std::transform(std::begin(lstPageName), std::end(lstPageName),
                     std::inserter(lstPageWnd, lstPageWnd.begin()),
-                    std::bind(&WndForm::FindByName, wfDlg, _1));
+                    std::bind(&WndForm::FindByName<WindowControl>, wfDlg, _1));
 
             if(!lstPageWnd.empty()) {
                 // Show First Page
@@ -401,7 +401,7 @@ namespace dlgBlueFlyConfig {
             }
 
             // Init Enum WndProperty
-            WndProperty* pWnd = (WndProperty*)wfDlg->FindByName(_T("BOM"));
+            WndProperty* pWnd = wfDlg->FindByName<WndProperty>(_T("BOM"));
             if(pWnd) {
                 DataField* pData = pWnd->GetDataField();
                 if(pData) {

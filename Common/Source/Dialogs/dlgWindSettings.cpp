@@ -27,11 +27,11 @@ static void OnCancelClicked(WndButton* pWnd){
 static void UpdateWind(bool set) {
   WndProperty *wp;
   double ws = 0.0, wb = 0.0;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
   if (wp) {
     ws = Units::FromWindSpped(wp->GetDataField()->GetAsFloat());
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDirection"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpDirection"));
   if (wp) {
     wb = wp->GetDataField()->GetAsFloat();
   }
@@ -113,13 +113,13 @@ void dlgWindSettingsShowModal(void){
   if (wf) {
     WndProperty* wp;
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpSpeed"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
     if (wp) {
       wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
     if (wp) {
       DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M418_ = "Manual"
@@ -134,7 +134,7 @@ void dlgWindSettingsShowModal(void){
       wp->GetDataField()->Set(AutoWindMode);
       wp->RefreshDisplay();
 
-      wp = (WndProperty*)wf->FindByName(TEXT("prpTrailDrift"));
+      wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
       if (wp) {
         wp->GetDataField()->Set(MapWindow::EnableTrailDrift);
         wp->RefreshDisplay();
@@ -143,13 +143,13 @@ void dlgWindSettingsShowModal(void){
 
     wf->ShowModal();
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
     if (wp) {
       if (AutoWindMode != wp->GetDataField()->GetAsInteger()) {
 	AutoWindMode = wp->GetDataField()->GetAsInteger();
       }
     }
-    wp = (WndProperty*)wf->FindByName(TEXT("prpTrailDrift"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
     if (wp) {
       if (MapWindow::EnableTrailDrift != wp->GetDataField()->GetAsBoolean()) {
         MapWindow::EnableTrailDrift = wp->GetDataField()->GetAsBoolean();

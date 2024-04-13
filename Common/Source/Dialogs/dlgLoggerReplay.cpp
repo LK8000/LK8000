@@ -21,7 +21,7 @@ static void OnStopClicked(WndButton* pWnd) {
 
 static void OnStartClicked(WndButton* pWnd) {
   WndProperty* wp;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIGCFile"));
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -76,13 +76,13 @@ void dlgLoggerReplayShowModal(void){
 
   if (wf) {
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpRate"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpRate"));
     if (wp) {
       wp->GetDataField()->SetAsFloat(ReplayLogger::TimeScale);
       wp->RefreshDisplay();
     }
 
-    wp = (WndProperty*)wf->FindByName(TEXT("prpIGCFile"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpIGCFile"));
     if (wp) {
       DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
       if(dfe) {

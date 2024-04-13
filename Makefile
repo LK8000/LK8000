@@ -10,7 +10,7 @@ HOST_IS_ARM := $(call string_contains,$(UNAME_M),armv)
 HOST_IS_ARMV7 := $(call string_equals,$(UNAME_M),armv7l)
 
 ifeq ($(HOST_IS_ARMV7),y)
- HOST_HAS_NEON := $(call string_contains,$(shell -)
+ HOST_HAS_NEON := $(call string_contains,$(shell -))
 else
  HOST_HAS_NEON := n
 endif
@@ -547,6 +547,12 @@ ifeq ($(CONFIG_LINUX),y)
   $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
   CE_DEFS += $(GEOGRAPHIC_CPPFLAGS)
 
+ USE_CURL ?= $(shell $(PKG_CONFIG) --exists libcurl && echo y)
+ ifeq ($(USE_CURL),y)
+  $(eval $(call pkg-config-library,CURL,libcurl))
+  CE_DEFS += -DUSE_CURL $(patsubst -I%,-isystem %,$(CURL_CPPFLAGS))
+ endif
+
 endif
 
 ifeq ($(CONFIG_WIN32),y)
@@ -671,7 +677,7 @@ ifeq ($(TARGET_IS_KOBO),y)
  # the stock Kobo firmware, as it may be incompatible
  LDFLAGS += -Wl,--dynamic-linker=/opt/LK8000/lib/ld-linux-armhf.so.3
  LDFLAGS += -Wl,--rpath=/opt/LK8000/lib
-
+ LDFLAGS  += -Wl,--rpath-link=$(KOBO)/lib
 endif
 
 ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
@@ -709,6 +715,7 @@ ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(SNDFILE_LDLIBS)
  LDLIBS += $(LIBINPUT_LDLIBS)
  LDLIBS += $(LIBUDEV_LDLIBS)
+ LDLIBS += $(CURL_LDLIBS)
 
  ifneq ($(GCC_GTEQ_910),1) 
   LDLIBS += -lstdc++fs
@@ -1336,6 +1343,20 @@ TRACKING := \
 	$(SRC)/xcs/Net/SocketDescriptor.cpp \
 	$(SRC)/xcs/Net/State.cpp \
 	$(SRC)/xcs/Net/StaticSocketAddress.cpp \
+
+ifeq ($(USE_CURL),y)
+ TRACKING += \
+   $(SRC_TRACKING)/Curl/http_session.cpp
+else
+ TRACKING += \
+   $(SRC_TRACKING)/Default/http_session.cpp
+endif
+
+ifneq ($(CONFIG_PPC2003),y)
+ TRACKING += \
+   $(SRC_TRACKING)/FFVLTracking.cpp
+endif
+
 
 SRC_FILES :=\
 	$(WINDOW) \

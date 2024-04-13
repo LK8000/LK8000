@@ -56,13 +56,13 @@ static CallBackTableEntry_t CallBackTable[]={
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFAIFinishHeight"));
   if (wp) {
     wp->GetDataField()->Set(EnableFAIFinishHeight);
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartHeightRef"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(LKGetText(TEXT("AGL")));
@@ -72,42 +72,42 @@ static void setVariables(void) {
   }
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFinishMinHeight"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(FinishMinHeight / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxHeight"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(StartMaxHeight / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxHeightMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(StartMaxHeightMargin / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxSpeed"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToHorizontalSpeed(StartMaxSpeed / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxSpeedMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToHorizontalSpeed(StartMaxSpeedMargin / 1000)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFAI28_45Threshold"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFAI28_45Threshold"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(LKGetText(TEXT("500km (DMSt/OLC)")));
@@ -139,7 +139,7 @@ bool dlgTaskRules(void){
 
   int ival;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFAIFinishHeight"));
   if (wp) {
     if (EnableFAIFinishHeight != wp->GetDataField()->GetAsBoolean()) {
       EnableFAIFinishHeight = wp->GetDataField()->GetAsBoolean();
@@ -150,7 +150,7 @@ bool dlgTaskRules(void){
 
   int Tmp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFAI28_45Threshold"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFAI28_45Threshold"));
   if (wp) {
      Tmp= wp->GetDataField()->GetAsInteger();
 
@@ -174,7 +174,7 @@ bool dlgTaskRules(void){
 
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartHeightRef"));
   if (wp) {
     if (StartHeightRef != wp->GetDataField()->GetAsInteger()) {
       StartHeightRef = wp->GetDataField()->GetAsInteger();
@@ -182,7 +182,7 @@ bool dlgTaskRules(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpFinishMinHeight"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)FinishMinHeight != ival) {
@@ -191,7 +191,7 @@ bool dlgTaskRules(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxHeight"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)StartMaxHeight != ival) {
@@ -200,7 +200,7 @@ bool dlgTaskRules(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxHeightMargin"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*1000); // 100315
     if ((int)StartMaxHeightMargin != ival) {
@@ -209,7 +209,7 @@ bool dlgTaskRules(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxSpeed"));
   if (wp) {
     ival = iround(Units::FromHorizontalSpeed(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)StartMaxSpeed != ival) {
@@ -218,7 +218,7 @@ bool dlgTaskRules(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpStartMaxSpeedMargin"));
   if (wp) {
     ival = iround(Units::FromHorizontalSpeed(wp->GetDataField()->GetAsInteger())*1000);
     if ((int)StartMaxSpeedMargin != ival) {

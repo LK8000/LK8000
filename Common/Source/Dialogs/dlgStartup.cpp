@@ -632,7 +632,7 @@ static WndForm* InitStartup(BYTE mode) {
     if(pWndForm) {
 
         WindowControl * pWndClose = pWndForm->FindByName(TEXT("cmdClose"));
-        WndProperty* pWndProfile = static_cast<WndProperty*>(pWndForm->FindByName(TEXT("prpProfile")));
+        WndProperty* pWndProfile = pWndForm->FindByName<WndProperty>(TEXT("prpProfile"));
 
         if (ScreenLandscape) {
             const int PROFWIDTH = IBLSCALE(256);
@@ -864,7 +864,7 @@ short dlgStartupShowModal(void) {
     }
     if (RUN_MODE == RUN_SHUTDOWN) goto _exit;
 
-    wp = (WndProperty*) wf->FindByName(TEXT("prpProfile"));
+    wp = wf->FindByName<WndProperty>(TEXT("prpProfile"));
     if (wp) {
         DataFieldFileReader* dfe = (DataFieldFileReader*) wp->GetDataField();
 

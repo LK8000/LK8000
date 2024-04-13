@@ -18,6 +18,8 @@
 #include "Settings/read.h"
 #include <Tracking/Tracking.h>
 #include "utils/printf.h"
+#include "utils/unique_file_ptr.h"
+
 #ifdef ANDROID
   #include "Android/BluetoothHelper.hpp"
 #endif
@@ -28,12 +30,6 @@ namespace {
 
 constexpr int nMaxValueValueSize = MAX_PATH * 2 + 6;    // max regkey name is 256 chars + " = "
 bool isDefaultProfile = false; // needed to avoid screensize changes from custom profiles on PC
-
-using unique_file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
-
-unique_file_ptr make_unique_file(const TCHAR* filename, const TCHAR * flags) {
-  return unique_file_ptr(_tfopen(filename, flags), &fclose);
-}
 
 }
 
@@ -60,7 +56,7 @@ bool LKProfileLoad(const TCHAR *szFile) {
 
   bool found = false;
 
-  unique_file_ptr fp = make_unique_file(szFile, TEXT("rb"));
+  unique_file_ptr fp = make_unique_file_ptr(szFile, TEXT("rb"));
   if (!fp) {
     StartupStore(_T(".... LoadProfile <%s> open failed%s"), szFile, NEWLINE);
     return false;

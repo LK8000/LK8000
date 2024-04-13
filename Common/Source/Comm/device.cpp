@@ -90,12 +90,12 @@ BOOL for_all_device(DeviceDescriptor_t* Sender, Callable&& func, Args&&... args)
     }
     unsigned nbDeviceFailed = 0;
 
-    for( DeviceDescriptor_t& d : DeviceList) {
+    for (DeviceDescriptor_t& d : DeviceList) {
       if (&d == Sender) {
         continue; // ignore sender.
       }
       ScopeLock Lock(CritSec_Comm);
-      if( !d.Disabled && d.Status == CPS_OPENOK && d.Com) {
+      if (d.IsReady()) {
         nbDeviceFailed += (d.*func)(std::forward<Args>(args)...) ? 0 : 1;
       }
     }
@@ -348,6 +348,13 @@ DeviceDescriptor_t::DeviceDescriptor_t() {
     ErrRx = 0;
 }
 
+bool DeviceDescriptor_t::IsReady() const {
+  if (Disabled) {
+    return false;
+  }
+  return Com && Com->IsReady();
+}
+
 void DeviceDescriptor_t::InitStruct(int i) {
     PortNumber = i;
 
@@ -381,7 +388,6 @@ void DeviceDescriptor_t::InitStruct(int i) {
     IsBaroSource = false;
     IsRadio = false;
 
-    Status = CPS_UNUSED; // 100210
     HB = 0; // counter
 
     iSharedPort = -1;
@@ -683,7 +689,6 @@ BOOL devInit() {
                 dev.iSharedPort =j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
                 dev.Com = DeviceList[j].Com ;
-                dev.Status = CPS_OPENOK;
                 pDev->Installer(&dev);
 
                 if(devIsRadio(&dev)) {
@@ -713,7 +718,6 @@ BOOL devInit() {
             Com->StartRxThread();
         } else {
             delete Com;
-            dev.Status = CPS_OPENKO;
         }
 
        if(devIsRadio(&dev)) {
@@ -741,8 +745,6 @@ static void devClose(DeviceDescriptor_t& d) {
     }
 
     auto port = std::exchange(d.Com, nullptr);
-    d.Status = CPS_CLOSED;
-
     if (d.iSharedPort >= 0) {
       // don't close shared Ports, these are only copies!
       port = nullptr;

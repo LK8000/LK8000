@@ -324,7 +324,7 @@ static void OnIGCListEnter(WindowControl *Sender,
     if (Sender) {
       WndForm *pForm = Sender->GetParentWndForm();
       if (pForm) {
-        WndButton* wb = ( WndButton*)pForm->FindByName(TEXT("cmdEnter"));
+        WndButton* wb = pForm->FindByName<WndButton>(TEXT("cmdEnter"));
 
         if (wb)          
          OnEnterClicked( wb);
@@ -390,13 +390,13 @@ ListElement *dlgEOSIGCSelectListShowModal(void) {
                       ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
 
   if (wf) {
-    EOS_IGCReadDialog.SelectList((WndListFrame *) wf->FindByName(TEXT("frmMultiSelectListList")));
+    EOS_IGCReadDialog.SelectList(wf->FindByName<WndListFrame>(TEXT("frmMultiSelectListList")));
     LKASSERT(EOS_IGCReadDialog.SelectList() != NULL);
     EOS_IGCReadDialog.SelectList()->SetBorderKind(BORDERLEFT);
     EOS_IGCReadDialog.SelectList()->SetEnterCallback(OnIGCListEnter);
 
     EOS_IGCReadDialog.ListEntry(
-            (WndOwnerDrawFrame *) wf->FindByName(TEXT("frmMultiSelectListListEntry")));
+            wf->FindByName<WndOwnerDrawFrame>(TEXT("frmMultiSelectListListEntry")));
     if (EOS_IGCReadDialog.ListEntry()) {
       /*
        * control height must contains 2 text Line

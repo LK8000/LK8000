@@ -322,13 +322,11 @@ void SerialPort::UpdateStatus() {
     if(hPort != INVALID_HANDLE_VALUE) {
         ClearCommError(hPort, &dwErrors, &comStat);
         if (dwErrors & CE_FRAME) {
-            SetPortStatus(CPS_EFRAME);
             AddStatErrRx(1);
             valid_frames = 0;
         } else {
             if (++valid_frames > 10) {
                 valid_frames = 20;
-                SetPortStatus(CPS_OPENOK);
             }
         }
     }

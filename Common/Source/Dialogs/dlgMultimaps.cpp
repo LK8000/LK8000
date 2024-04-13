@@ -28,7 +28,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap1"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
@@ -39,7 +39,7 @@ static void setVariables(void) {
 	dfe->Set(Multimap1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap2"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap2"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
@@ -50,7 +50,7 @@ static void setVariables(void) {
 	dfe->Set(Multimap2);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap3"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
@@ -61,7 +61,7 @@ static void setVariables(void) {
 	dfe->Set(Multimap3);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap4"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
@@ -71,7 +71,7 @@ static void setVariables(void) {
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap5"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap5"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 
@@ -95,31 +95,31 @@ static void OnResetClicked(WndButton* pWnd){
   WndProperty *wp;
   Reset_Multimap_Mode();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap1"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap1);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap2"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap2"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap2);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap3"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap3);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap4"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap4);
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap5"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap5"));
   if (wp) {
 	DataField* dfe = wp->GetDataField();
 	dfe->Set(Multimap5);
@@ -146,19 +146,19 @@ void dlgMultimapsShowModal(void){
 
   wf->ShowModal();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap1"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap1"));
   if (wp) Multimap1 = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap2"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap2"));
   if (wp) Multimap2 = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap3"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap3"));
   if (wp) Multimap3 = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap4"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap4"));
   if (wp) Multimap4 = (wp->GetDataField()->GetAsInteger());
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMultimap5"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpMultimap5"));
   if (wp) Multimap5 = (wp->GetDataField()->GetAsInteger());
 
   UpdateMultimapOrient();

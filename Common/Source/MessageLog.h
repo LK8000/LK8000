@@ -12,7 +12,7 @@
 #ifndef MESSAGELOG_H
 #define	MESSAGELOG_H
 
-#include "Compiler.h"
+#include "xcs/Compiler.h"
 #include <tchar.h>
 #include <stdarg.h>
 #include <iostream>
@@ -22,13 +22,13 @@
  * it's for debug build only.
  *  - file are cleared by first use.
  */
-void DebugStore(const char *Str, ...)
+void DebugStore(const char* fmt, ...)
         gcc_printf(1,2) gcc_nonnull(1);
 
 /**
  * add string to Runtime.log
  */
-inline void StartupStore(const TCHAR *Str, ...)
+inline void StartupStore(const TCHAR* fmt, ...)
         gcc_printf(1,2) gcc_nonnull(1);
 
 /**
@@ -44,7 +44,7 @@ inline void DebugLog(const TCHAR* fmt, ...)
         gcc_printf(1,2) gcc_nonnull(1);
 
 
-void StartupStoreV(const TCHAR *Str, va_list ap);
+void StartupStoreV(const TCHAR* fmt, va_list ap);
 
 
 void StartupStore(const TCHAR* fmt, ...) {

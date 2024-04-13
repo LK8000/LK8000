@@ -318,10 +318,10 @@ if ((strncmp("$PVCOM", device,5) == 0) )
       RadioPara.Changed = TRUE;
       if(RadioPara.Enabled == FALSE)
       {
-
         DoStatusMessage(_T("RADIO Detected!") );
-        PVCOMRequestAllData(devA()) ;
-        PVCOMRequestAllData(devB()) ;
+        for (auto& dev : DeviceList) {
+          PVCOMRequestAllData(&dev);
+        }
         RadioPara.Enabled = TRUE;
       }
 

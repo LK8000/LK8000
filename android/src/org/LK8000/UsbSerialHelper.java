@@ -255,7 +255,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
     private void requestPermission(UsbManager usbmanager, UsbDevice device) {
         int intent_flags = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            intent_flags |= PendingIntent.FLAG_MUTABLE;
+            intent_flags |= PendingIntent.FLAG_IMMUTABLE;
         }
         PendingIntent pi = PendingIntent.getBroadcast(_Context, 0, new Intent(UsbSerialHelper.ACTION_USB_PERMISSION), intent_flags);
 
@@ -274,11 +274,12 @@ public class UsbSerialHelper extends BroadcastReceiver {
     }
 
     static String getDeviceName(UsbDevice device) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        try {
             return String.format("%s_%s_%s", device.getManufacturerName(), device.getProductName(), device.getSerialNumber());
-        } else {
-            return getLegacyDeviceName(device);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return getLegacyDeviceName(device);
     }
 
     static String getLegacyDeviceName(UsbDevice device) {

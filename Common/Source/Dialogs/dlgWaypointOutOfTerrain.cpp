@@ -68,7 +68,7 @@ int dlgWaypointOutOfTerrain(TCHAR *Message){
     if (wf) {
 
 
-      wfrm = (WndFrame*)wf->FindByName(TEXT("frmWaypointOutOfTerrainText"));
+      wfrm = wf->FindByName<WndFrame>(TEXT("frmWaypointOutOfTerrainText"));
 
       wfrm->SetCaption(Message);
       wfrm->SetCaptionStyle(

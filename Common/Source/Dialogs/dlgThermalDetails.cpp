@@ -93,7 +93,7 @@ static void SetValues(int indexid) {
 	return;
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpName"));
   if (wp) {
 	_tcscpy(buffer,ThermalHistory[indexid].Name);
 	CharUpper(buffer);
@@ -101,28 +101,28 @@ static void SetValues(int indexid) {
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpHTop"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpHTop"));
   if (wp) {
 	_stprintf(buffer,_T("%.0f %s"),Units::ToAltitude(ThermalHistory[indexid].HTop), Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpHBase"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpHBase"));
   if (wp) {
 	_stprintf(buffer,_T("%.0f %s"),Units::ToAltitude(ThermalHistory[indexid].HBase), Units::GetAltitudeName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLift"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpLift"));
   if (wp) {
 	_stprintf(buffer,_T("%+.1f %s"),Units::ToVerticalSpeed(ThermalHistory[indexid].Lift), Units::GetVerticalSpeedName());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTeamCode"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTeamCode"));
   if (wp) {
 	// Taken from CalculateTeamBear..
 	if (WayPointList.empty()) return;

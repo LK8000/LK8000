@@ -18,6 +18,7 @@
 #include "Defines.h"
 #include "Settings/read.h"
 #include "Settings/write.h"
+#include "FFVLTracking.h"
 
 extern int LKTime_Real;
 extern int LKTime_Ghost;
@@ -34,8 +35,14 @@ namespace tracking {
     TCHAR    usr_config[100]; // user name ( token for skylines )
     TCHAR    pwd_config[100]; // user pwd
 
+    std::string ffvl_user_key;
+
     namespace {
         // private global;
+#ifndef UNDER_CE
+        std::unique_ptr<FFVLTracking> ffvl_tracking;
+#endif
+
         std::unique_ptr<SkylinesGlue> skylines_glue;
         platform tracking_platform = platform::none;
 
@@ -47,6 +54,7 @@ namespace tracking {
         constexpr char registry_port[] =  "LiveTrackerport";
         constexpr char registry_usr[] =  "LiveTrackerusr";
         constexpr char registry_pwd[] =  "LiveTrackerpwd";
+        constexpr char registry_ffvl_user_key[] =  "ffvl_user_key";
 
         uint64_t hex_to_uint64(const tstring& string) {
             typedef std::is_same<uint64_t, unsigned long> is_long;
@@ -68,6 +76,13 @@ namespace tracking {
     }
 
     void Initialize(platform id) {
+
+#ifndef UNDER_CE
+        if (!ffvl_user_key.empty()) {
+            ffvl_tracking = std::make_unique<FFVLTracking>(ffvl_user_key);
+        }
+#endif
+
         tracking_platform = id;
         switch (tracking_platform) {
             case platform::none:
@@ -104,6 +119,13 @@ namespace tracking {
     }
 
     void Update(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
+
+#ifndef UNDER_CE
+        if (ffvl_tracking) {
+            ffvl_tracking->Update(Basic, Calculated);
+        }
+#endif
+
         switch (tracking_platform) {
             case platform::none:
                 break; // tracking disabled
@@ -128,6 +150,9 @@ namespace tracking {
             LiveTrackerShutdown();
         }
         skylines_glue = nullptr;
+#ifndef UNDER_CE
+        ffvl_tracking = nullptr;
+#endif
     }
 
     void ResetSettings() {
@@ -140,6 +165,8 @@ namespace tracking {
 
         _tcscpy(usr_config,_T("LK8000"));
         _tcscpy(pwd_config,_T(""));
+
+        ffvl_user_key.clear();
     }
 
     bool LoadSettings(const char *key, const char *value) {
@@ -149,7 +176,8 @@ namespace tracking {
             || settings::read(key, value, registry_srv, server_config)
             || settings::read(key, value, registry_port, port_config)
             || settings::read(key, value, registry_usr, usr_config)
-            || settings::read(key, value, registry_pwd, pwd_config);
+            || settings::read(key, value, registry_pwd, pwd_config)
+            || settings::read(key, value, registry_ffvl_user_key, ffvl_user_key);
     }
 
     void SaveSettings(settings::writer& writer_settings) {
@@ -160,6 +188,7 @@ namespace tracking {
         writer_settings(registry_port, port_config);
         writer_settings(registry_usr, usr_config);
         writer_settings(registry_pwd, pwd_config);
+        writer_settings(registry_ffvl_user_key, ffvl_user_key);
     }
 
     platform GetPlatform() {

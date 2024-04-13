@@ -98,7 +98,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"7"
-#define LKRELEASE	"4.11"
+#define LKRELEASE	"4.13"
 
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
@@ -826,14 +826,6 @@
 #define LKW_LK8000	7	// mixed format
 #define LKW_VIRTUAL	8	// temporary, cannot save them
 #define LKW_OPENAIP 9   // OpenAIP format
-
-// ComPort diagnostics: ComPortStatus
-#define CPS_UNUSED	0	// init to zero at startup
-#define CPS_CLOSED	1	// closed by CloseAll
-#define CPS_OPENKO	2 	// port could not be open
-#define CPS_OPENOK	3 	// port open ok
-#define CPS_EFRAME	4	// frame errors
-#define CPS_OPENWAIT    5 	// port open ok but wait for connected device
 
 // Overtargets Modes
 #define OVT_TASK        0

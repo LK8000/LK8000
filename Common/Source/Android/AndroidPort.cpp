@@ -15,9 +15,16 @@
 
 using namespace std::placeholders;
 
+namespace {
+    enum PortState {
+        STATE_READY = 0,
+        STATE_FAILED = 1,
+        STATE_LIMBO = 2,
+    };
+}
+
 AndroidPort::AndroidPort(int idx, const tstring& sName) : ComPort(idx, sName) {
     buffer.reserve(512);
-    rxthread_buffer.reserve(512);
 }
 
 bool AndroidPort::Initialize() {
@@ -28,13 +35,12 @@ bool AndroidPort::Initialize() {
             JNIEnv *env = Java::GetEnv();
             bridge->setInputListener(env, this);
             bridge->setListener(env, this);
-
             return true;
         }
     } catch (const std::exception& e) {
         delete std::exchange(bridge, nullptr); // required if `setInputListener` or `setListener` throw exception
         const tstring what = to_tstring(e.what());
-        StartupStore(_T("FAILED! <%s>" NEWLINE), what.c_str());
+        StartupStore(_T("FAILED! <%s>"), what.c_str());
     }
     StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
     return false;
@@ -179,12 +185,6 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
     newdata.Broadcast();
 }
 
-enum PortState {
-    STATE_READY = 0,
-    STATE_FAILED = 1,
-    STATE_LIMBO = 2,
-};
-
 bool AndroidPort::IsReady() {
     ScopeLock lock(mutex);
     if (bridge) {
@@ -203,47 +203,36 @@ void AndroidPort::PortError(const char *msg) {
 
 unsigned AndroidPort::RxThread() {
 
-    ScopeLock lock(mutex);
+    std::vector<char> rxthread_buffer;
+    int state = STATE_LIMBO;
 
-    while( running ) {
-
-        newdata.Wait(mutex);
-
-        if (buffer.empty()) {
-
-            if (!bridge) {
-                SetPortStatus(CPS_OPENKO);
-                // port is Closed.
-                running = false;
-                return 0; // Stop RxThread...
+    do {
+        bool stop = WithLock(mutex, [&]() {
+            if (running && bridge) {
+                state = bridge->getState(Java::GetEnv());
+                assert(rxthread_buffer.empty());
+                std::swap(rxthread_buffer, buffer);
+                assert(buffer.empty());
+                return false;
             }
+            return true; // Stop RxThread...
+        });
 
-            switch (bridge->getState(Java::GetEnv())) {
-                case STATE_READY:
-                    SetPortStatus(CPS_OPENOK);
-                    devOpen(devGetDeviceOnPort(GetPortIndex()));
-                    break;
-                case STATE_FAILED:
-                    SetPortStatus(CPS_OPENKO);
-                    break;
-                case STATE_LIMBO:
-                    SetPortStatus(CPS_OPENWAIT);
-                    break;
-                default:
-                    SetPortStatus(CPS_OPENKO);
-                    break;
-            }
+        if (stop) {
+            return 0; // Stop RxThread...
+        }
 
-        } else {
-            std::swap(rxthread_buffer, buffer);
-            buffer.clear();
-            ScopeUnlock unlock(mutex); // workaround to prevent deadlock on shutdown
-
+        if (!rxthread_buffer.empty() ) {
             WithLock(CritSec_Comm, [&]() {
                 ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
+                rxthread_buffer.clear();
             });
+        } else if (state == STATE_READY) {
+            devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
-    }
 
-    return 0;
+        ScopeLock lock(mutex);
+        newdata.Wait(mutex); // wait for data or state change
+    }
+    while(true);
 }

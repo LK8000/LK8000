@@ -19,11 +19,11 @@ extern int analysis_page;
 
 void UpdateAnalysis(WndForm* pForm){
 
-  WndOwnerDrawFrame *waGrid = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmGrid"));
+  WndOwnerDrawFrame *waGrid = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmGrid"));
   LKASSERT(waGrid);
   if (!waGrid) return;
 
-  WndOwnerDrawFrame *waInfo = (WndOwnerDrawFrame*)pForm->FindByName(TEXT("frmInfo"));
+  WndOwnerDrawFrame *waInfo = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmInfo"));
   LKASSERT(waInfo);
   if (!waInfo) return;
 

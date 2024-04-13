@@ -352,12 +352,12 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   if (!wf) return;
 
-  wInfo    = ((WndFrame *)wf->FindByName(TEXT("frmInfos")));
-  wCommand = ((WndFrame *)wf->FindByName(TEXT("frmCommands")));
-  wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
-  wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
-  wComment = (WndListFrame*)wf->FindByName(TEXT("frmWpComment"));
-  wCommentEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWpCommentEntry"));
+  wInfo    = (wf->FindByName<WndFrame>(TEXT("frmInfos")));
+  wCommand = (wf->FindByName<WndFrame>(TEXT("frmCommands")));
+  wSpecial = (wf->FindByName<WndFrame>(TEXT("frmSpecial")));
+  wDetails = wf->FindByName<WndListFrame>(TEXT("frmDetails"));
+  wComment = wf->FindByName<WndListFrame>(TEXT("frmWpComment"));
+  wCommentEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmWpCommentEntry"));
 
   LKASSERT(wInfo!=NULL);
   LKASSERT(wCommand!=NULL);
@@ -448,7 +448,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   //
   Units::CoordinateToString(WayPointList[SelectedWaypoint].Longitude, WayPointList[SelectedWaypoint].Latitude, sTmp);
 
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")));
+  wp = (wf->FindByName<WndProperty>(TEXT("prpCoordinate")));
   LKASSERT(wp);
   wp->SetText(sTmp);
 
@@ -456,7 +456,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   // Waypoint Altitude
   //
   Units::FormatAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpAltitude")));
+  wp = (wf->FindByName<WndProperty>(TEXT("prpAltitude")));
   LKASSERT(wp);
   wp->SetText(sTmp);
 
@@ -466,7 +466,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   const unsigned sunset_time = DoSunEphemeris(WayPointList[SelectedWaypoint].Longitude,
                                               WayPointList[SelectedWaypoint].Latitude);
   Units::TimeToText(sTmp, sunset_time);
-  ((WndProperty *)wf->FindByName(TEXT("prpSunset")))->SetText(sTmp);
+  (wf->FindByName<WndProperty>(TEXT("prpSunset")))->SetText(sTmp);
 
 
   //
@@ -495,7 +495,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   } else {
       Units::FormatDistance(distance, DistanceText, 10);
   }
-  ((WndProperty *)wf->FindByName(TEXT("prpDistance")))->SetText(DistanceText);
+  (wf->FindByName<WndProperty>(TEXT("prpDistance")))->SetText(DistanceText);
 
   if (ScreenLandscape) {
       _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), MsgToken<2179>(),
@@ -503,7 +503,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   } else {
       _stprintf(sTmp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
   }
-  ((WndProperty *)wf->FindByName(TEXT("prpBearing")))->SetText(sTmp);
+  (wf->FindByName<WndProperty>(TEXT("prpBearing")))->SetText(sTmp);
 
 
   //
@@ -526,7 +526,7 @@ void dlgWayPointDetailsShowModal(short mypage){
             Units::ToAltitude(alt),
             Units::GetAltitudeName());
 
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpMc0")));
+  wp = (wf->FindByName<WndProperty>(TEXT("prpMc0")));
   if (wp) wp->SetText(sTmp);
 
 
@@ -549,7 +549,7 @@ void dlgWayPointDetailsShowModal(short mypage){
             Units::ToAltitude(alt),
             Units::GetAltitudeName());
 
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpMc2")));
+  wp = (wf->FindByName<WndProperty>(TEXT("prpMc2")));
   if (wp) {
 	wp->SetText(sTmp);
   }
@@ -557,10 +557,10 @@ void dlgWayPointDetailsShowModal(short mypage){
 
   wf->SetKeyDownNotify(FormKeyDown);
 
-  ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
   // We DONT use PREV  anymore
-  ((WndButton *)wf->FindByName(TEXT("cmdPrev")))->SetVisible(false);
+  (wf->FindByName<WndButton>(TEXT("cmdPrev")))->SetVisible(false);
 
 
   //
@@ -569,7 +569,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   DetailDrawListIndex=0;
   aDetailTextLine.clear();
 
-  wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
+  wDetailsEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
   LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
 
@@ -584,7 +584,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   TCHAR captmp[200];
 
   // Resize also buttons
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdInserInTask")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdInserInTask")));
   if (wb) {
     wb->SetOnClickNotify(OnInserInTaskClicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
@@ -605,25 +605,25 @@ void dlgWayPointDetailsShowModal(short mypage){
     wb->SetCaption(captmp);
   }
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdAppendInTask1")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdAppendInTask1")));
   if (wb) {
     wb->SetOnClickNotify(OnAppendInTask1Clicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
   }
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdAppendInTask2")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdAppendInTask2")));
   if (wb) {
     wb->SetOnClickNotify(OnAppendInTask2Clicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
   }
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdRemoveFromTask")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdRemoveFromTask")));
   if (wb) {
     wb->SetOnClickNotify(OnRemoveFromTaskClicked);
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
   }
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdReplace")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdReplace")));
   if (wb) {
     wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
 
@@ -643,13 +643,13 @@ void dlgWayPointDetailsShowModal(short mypage){
   }
 
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdNewHome")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdNewHome")));
   if (wb)  {
     wb->SetOnClickNotify(OnNewHomeClicked);
     wb->SetWidth(wSpecial->GetWidth()-wb->GetLeft()*2);
   }
 
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdTeamCode")));
+  wb = (wf->FindByName<WndButton>(TEXT("cmdTeamCode")));
   if (wb) {
     wb->SetOnClickNotify(OnTeamCodeClicked);
     wb->SetWidth(wSpecial->GetWidth()-wb->GetLeft()*2);

@@ -25,10 +25,8 @@ KOBO_SYS_LIB_NAMES = \
 	libgcc_s.so.1 \
 	librt.so.1 \
 	libpthread.so.0 \
-
-ifeq ($(SNDFILE)$(ALSA),yy)
- KOBO_SYS_LIB_NAMES += libdl.so.2
-endif
+	libdl.so.2 \
+	libatomic.so.1 \
 
 KOBO_SYS_LIB_PATHS = $(addprefix $(SYSROOT)/lib/,$(KOBO_SYS_LIB_NAMES))
 
@@ -47,6 +45,14 @@ ifeq ($(SNDFILE)$(ALSA),yy)
  KOBO_LIB_PATHS += \
 	$(KOBO)/lib/libasound.so.2 \
 	$(KOBO)/lib/libsndfile.so.1 \
+
+endif
+
+ifeq ($(USE_CURL),y)
+ KOBO_LIB_PATHS += \
+	$(KOBO)/lib/libssl.so.3 \
+	$(KOBO)/lib/libcrypto.so.3 \
+	$(KOBO)/lib/libcurl.so.4 \
 
 endif
 

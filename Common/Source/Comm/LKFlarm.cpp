@@ -251,6 +251,8 @@ BOOL NMEAParser::PFLAV(const char *String, char **params, size_t nparams, NMEA_I
 
 */
 	if(nparams > 3) {
+		ScopeLock lock(CritSec_FlightData);
+
 		pGPS->FLARM_HW_Version = strtod(params[1], nullptr);
 		pGPS->FLARM_SW_Version = strtod(params[2], nullptr);
 
@@ -364,6 +366,8 @@ BOOL NMEAParser::PFLAU(const char *String, char **params, size_t nparams, NMEA_I
 		conflict=true;
 		return FALSE;
 	}
+
+	ScopeLock lock(CritSec_FlightData);
 
 	setFlarmAvailable(pGPS);
 
@@ -573,6 +577,8 @@ BOOL NMEAParser::PFLAA(const char *String, char **params, size_t nparams, NMEA_I
 		// max index used is 5...
 		return FALSE;
 	}
+
+	ScopeLock lock(CritSec_FlightData);
 
 	setFlarmAvailable(pGPS);
 

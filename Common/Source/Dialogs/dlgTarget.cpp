@@ -264,7 +264,7 @@ static void RefreshCalculator(void) {
 
   nodisplay = nodisplay || TargetMoveMode;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskPoint"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   if (wp) {
     if (TargetMoveMode) {
       wp->SetVisible(false);
@@ -273,7 +273,7 @@ static void RefreshCalculator(void) {
     }
   }
 
-  WindowControl* wc = (WindowControl*)wf->FindByName(TEXT("btnOK"));
+  WindowControl* wc = wf->FindByName<WindowControl>(TEXT("btnOK"));
   if (wc) {
     if (TargetMoveMode) {
       wc->SetVisible(false);
@@ -282,7 +282,7 @@ static void RefreshCalculator(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATTargetLocked"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
   if (wp) {
     wp->GetDataField()->Set(Task[target_point].AATTargetLocked);
     wp->RefreshDisplay();
@@ -293,7 +293,7 @@ static void RefreshCalculator(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Range*100.0);
     wp->RefreshDisplay();
@@ -304,7 +304,7 @@ static void RefreshCalculator(void) {
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRadial"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Radial);
     wp->RefreshDisplay();
@@ -321,12 +321,12 @@ static void RefreshCalculator(void) {
     dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
   }
   dd= min(24.0*60.0,dd/60.0);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATEst"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATEst"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAATDelta"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpAATDelta"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd-AATTaskLength);
     if (gTaskType==TSK_AAT) {
@@ -345,14 +345,14 @@ static void RefreshCalculator(void) {
     v1 = 0;
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedRemaining"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSpeedRemaining"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(v1));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSpeedAchieved"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
@@ -558,7 +558,7 @@ void dlgTarget(int TaskPoint) {
   TargetDialogOpen = true;
   TargetMoveMode = false;
 
-  WndFrame *wf2 = (WndFrame*)wf->FindByName(TEXT("frmTarget"));
+  WndFrame *wf2 = wf->FindByName<WndFrame>(TEXT("frmTarget"));
   if (wf2) {
     if (ScreenLandscape)
     {// make flush right in landscape mode (at top in portrait mode)
@@ -570,12 +570,12 @@ void dlgTarget(int TaskPoint) {
     }
   }
 
-  btnMove = (WindowControl*)wf->FindByName(TEXT("btnMove"));
+  btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));
 
   wf->SetKeyDownNotify(FormKeyDown);
 
   WndProperty *wp;
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTaskPoint"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   DataField* dfe = wp->GetDataField();
   TCHAR tp_label[80];
   TCHAR tp_short[21];

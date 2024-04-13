@@ -65,12 +65,12 @@ int dlgSelectItem::DoModal() {
 
   pForm->SetCaption(GetTitle());
 
-  auto wListEntry = dynamic_cast<WndOwnerDrawFrame*>(pForm->FindByName(TEXT("frmListEntry")));
+  auto wListEntry = pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmListEntry"));
   if (wListEntry) {
     wListEntry->SetCanFocus(true);
   }
 
-  auto pWndList = dynamic_cast<WndListFrame*>(pForm->FindByName(TEXT("frmList")));
+  auto pWndList = pForm->FindByName<WndListFrame>(TEXT("frmList"));
   if (pWndList) {
     pWndList->SetEnterCallback(OnListEnter);
     pWndList->ResetList();

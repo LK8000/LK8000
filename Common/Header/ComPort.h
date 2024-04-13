@@ -88,8 +88,6 @@ protected:
     void AddStatTx(unsigned dwBytes);
     void AddStatErrTx(unsigned dwBytes);
 
-    void SetPortStatus(int Status);
-
     virtual unsigned RxThread() = 0;
 
     void ProcessChar(char c);

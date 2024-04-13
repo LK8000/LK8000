@@ -38,8 +38,6 @@ bool FilePort::Initialize() {
 		 StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
 		 return false;
 	}
-
-  SetPortStatus(CPS_OPENOK);
 	StartupStore(_T(". FilePort  %u open file %s Port <%s> OK"), GetPortIndex() + 1, file_name, GetPortName());
 	m_dwWaitTime =0;
 	return true;

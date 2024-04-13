@@ -98,7 +98,7 @@ static void OnPortClicked(WndButton* pWnd) {
   ComCheck_ActivePort=SelectedDevice; // needed
   ComCheck_Reset=ComCheck_ActivePort;
   wf->SetTimerNotify(500, OnTimerNotify);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken<670>()); // Stop
+  (wf->FindByName<WndButton>(TEXT("cmdSelectStop")))->SetCaption(MsgToken<670>()); // Stop
   stopped=false;
 }
 
@@ -112,7 +112,7 @@ static void OnStopClicked(WndButton* pWnd) {
           DeviceName(SelectedDevice));
       wf->SetCaption(tmps);
       wf->SetTimerNotify(0, NULL);
-      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken<1200>()); // Start
+      (wf->FindByName<WndButton>(TEXT("cmdSelectStop")))->SetCaption(MsgToken<1200>()); // Start
   } else {
       {
         _stprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
@@ -121,7 +121,7 @@ static void OnStopClicked(WndButton* pWnd) {
       }
       wf->SetCaption(tmps);
       wf->SetTimerNotify(500, OnTimerNotify);
-      ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetCaption(MsgToken<670>()); // Stop
+      (wf->FindByName<WndButton>(TEXT("cmdSelectStop")))->SetCaption(MsgToken<670>()); // Stop
   }
 }
 
@@ -211,7 +211,7 @@ static void OnSendClicked(WndButton* pWnd) {
 WndForm* pOwner = pWnd->GetParentWndForm();
 WndProperty* wp = NULL;
   if(pOwner)
-	wp = (WndProperty*)pOwner->FindByName(TEXT("prpSendText"));
+	wp = pOwner->FindByName<WndProperty>(TEXT("prpSendText"));
 
   if(wp)
   {
@@ -242,17 +242,17 @@ void dlgTerminal(int portnumber) {
   if (!wf) return;
 
 
-  ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnTTYCloseClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectPort1")))->SetOnClickNotify(OnPrevClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectPort2")))->SetOnClickNotify(OnNextClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSelectStop")))->SetOnClickNotify(OnStopClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdSendButton")))->SetOnClickNotify(OnSendClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdClose")))->SetOnClickNotify(OnTTYCloseClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdSelectPort1")))->SetOnClickNotify(OnPrevClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdSelectPort2")))->SetOnClickNotify(OnNextClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdSelectStop")))->SetOnClickNotify(OnStopClicked);
+  (wf->FindByName<WndButton>(TEXT("cmdSendButton")))->SetOnClickNotify(OnSendClicked);
 
-  wTTYList = (WndListFrame*)wf->FindByName(TEXT("frmTTYList"));
+  wTTYList = wf->FindByName<WndListFrame>(TEXT("frmTTYList"));
   LKASSERT(wTTYList!=NULL);
   wTTYList->SetWidth(wf->GetWidth()-NIBLSCALE(2));
 
-  wTTYListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmTTYListEntry"));
+  wTTYListEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmTTYListEntry"));
   LKASSERT(wTTYListEntry!=NULL);
   wTTYListEntry->SetWidth(wf->GetWidth()-NIBLSCALE(2));
 
@@ -261,7 +261,7 @@ void dlgTerminal(int portnumber) {
 
   if(wf)
   {
-	WndProperty* wp = (WndProperty*)wf->FindByName(TEXT("prpSendText"));
+	WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpSendText"));
     wp->GetDataField()->Set(TxText);
     wp->RefreshDisplay();
   }

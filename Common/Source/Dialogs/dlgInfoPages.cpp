@@ -31,85 +31,85 @@ static void OnCloseClicked(WndButton* pWnd) {
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP11"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP11"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP11);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP12"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP12"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP12);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP13"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP13"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP13);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP14"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP14"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP14);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP15"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP15"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP15);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP16"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP16"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP16);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP17"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP17"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP17);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP21"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP21"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP21);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP22"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP22"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP22);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP23"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP23"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP23);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP24"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP24"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP24);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP31"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP31"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP31);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP32"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP32"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP32);
     wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP33"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP33"));
   if (wp) {
     DataField* dfb = wp->GetDataField();
     dfb->Set(ConfIP33);
@@ -138,7 +138,7 @@ void dlgInfoPagesShowModal(void){
 
   wf->ShowModal();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP11"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP11"));
   if (wp) {
 	if (ConfIP11 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP11 = (wp->GetDataField()->GetAsBoolean());
@@ -146,7 +146,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP12"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP12"));
   if (wp) {
 	if (ConfIP12 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP12 = (wp->GetDataField()->GetAsBoolean());
@@ -154,7 +154,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP13"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP13"));
   if (wp) {
 	if (ConfIP13 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP13 = (wp->GetDataField()->GetAsBoolean());
@@ -162,7 +162,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP14"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP14"));
   if (wp) {
 	if (ConfIP14 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP14 = (wp->GetDataField()->GetAsBoolean());
@@ -170,7 +170,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP15"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP15"));
   if (wp) {
 	if (ConfIP15 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP15 = (wp->GetDataField()->GetAsBoolean());
@@ -178,7 +178,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP16"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP16"));
   if (wp) {
 	if (ConfIP16 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP16 = (wp->GetDataField()->GetAsBoolean());
@@ -186,7 +186,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP17"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP17"));
   if (wp) {
 	if (ConfIP17 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP17 = (wp->GetDataField()->GetAsBoolean());
@@ -194,7 +194,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP21"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP21"));
   if (wp) {
 	if (ConfIP21 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP21 = (wp->GetDataField()->GetAsBoolean());
@@ -202,7 +202,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP22"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP22"));
   if (wp) {
 	if (ConfIP22 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP22 = (wp->GetDataField()->GetAsBoolean());
@@ -210,7 +210,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP23"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP23"));
   if (wp) {
 	if (ConfIP23 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP23 = (wp->GetDataField()->GetAsBoolean());
@@ -218,7 +218,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP24"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP24"));
   if (wp) {
 	if (ConfIP24 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP24 = (wp->GetDataField()->GetAsBoolean());
@@ -226,7 +226,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP31"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP31"));
   if (wp) {
 	if (ConfIP31 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP31 = (wp->GetDataField()->GetAsBoolean());
@@ -234,7 +234,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP32"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP32"));
   if (wp) {
 	if (ConfIP32 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP32 = (wp->GetDataField()->GetAsBoolean());
@@ -242,7 +242,7 @@ void dlgInfoPagesShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpIP33"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpIP33"));
   if (wp) {
 	if (ConfIP33 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP33 = (wp->GetDataField()->GetAsBoolean());

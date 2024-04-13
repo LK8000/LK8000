@@ -578,7 +578,7 @@ static_assert(CustomKeyMode_t::ckTOP == static_cast<CustomKeyMode_t>(std::size(_
 
 template<typename TypeT>
 void GetCustomKey(WndForm* pForm, const TCHAR* WndName, TypeT& value) {
-	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
+	auto pWnd = pForm->FindByName<WndProperty>(WndName);
 	if (pWnd) {
 		DataField* dfe = pWnd->GetDataField();
 		if (dfe) {
@@ -595,7 +595,7 @@ const TCHAR* CustomKeyLabel(CustomKeyMode_t key) {
 }
 
 void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, CustomKeyMode_t value) {
-	auto pWnd = static_cast<WndProperty*>(pForm->FindByName(WndName));
+	auto pWnd = pForm->FindByName<WndProperty>(WndName);
 	if (pWnd) {
 		DataField* dfe = pWnd->GetDataField();
 		if (dfe) {

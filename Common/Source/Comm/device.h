@@ -13,12 +13,6 @@
 
 #define	NUMDEV		 6
 
-#define	devA()	    (&DeviceList[0])
-#define	devB()	    (&DeviceList[1])
-#define devC()      (&DeviceList[2])
-#define devD()      (&DeviceList[3])
-#define devE()      (&DeviceList[4])
-#define devF()      (&DeviceList[5])
 
 class COMMPortItem_t {
 public:
@@ -69,15 +63,17 @@ typedef struct Declaration {
 extern Mutex CritSec_Comm;
 
 struct DeviceDescriptor_t {
-  
+
   DeviceDescriptor_t();
-  
+
   DeviceDescriptor_t(const DeviceDescriptor_t&) = delete;
   DeviceDescriptor_t(DeviceDescriptor_t&&) = delete;
   DeviceDescriptor_t& operator= (const DeviceDescriptor_t&) = delete;
   DeviceDescriptor_t& operator= (DeviceDescriptor_t&&) = delete;
-  
-  ComPort *Com;
+
+  bool IsReady() const;
+
+  ComPort *Com = nullptr;
   TCHAR	Name[DEVNAMESIZE+1];
 
   BOOL (*DirectLink)(DeviceDescriptor_t* d, BOOL	bLinkEnable);
@@ -96,7 +92,7 @@ struct DeviceDescriptor_t {
   BOOL (*Close)(DeviceDescriptor_t* d);
   BOOL (*LinkTimeout)(DeviceDescriptor_t* d);
   BOOL (*Declare)(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
-  
+
   BOOL (*PutQNH)(DeviceDescriptor_t* d, double NewQNH);
   BOOL (*OnSysTicker)(DeviceDescriptor_t* d);
   BOOL (*Config)(DeviceDescriptor_t	*d);
@@ -116,8 +112,8 @@ struct DeviceDescriptor_t {
   int iSharedPort;
   int PortNumber;
   bool Disabled;
+
   // Com port diagnostic
-  int Status;
   unsigned Rx;
   unsigned ErrRx;
   unsigned Tx;

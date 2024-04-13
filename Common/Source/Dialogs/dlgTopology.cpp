@@ -50,7 +50,7 @@ static void OnCloseClicked(WndButton* pWnd) {
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat10"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat10"));
   if (wp) {
 	if (HaveZoomTopology(10)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(10)*RZC);
@@ -60,7 +60,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat20"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat20"));
   if (wp) {
 	if (HaveZoomTopology(20)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(20)*RZC);
@@ -70,7 +70,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat30"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat30"));
   if (wp) {
 	if (HaveZoomTopology(30)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(30)*RZC);
@@ -80,7 +80,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat40"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat40"));
   if (wp) {
 	if (HaveZoomTopology(40)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(40)*RZC);
@@ -90,7 +90,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat50"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat50"));
   if (wp) {
 	if (HaveZoomTopology(50)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(50)*RZC);
@@ -100,7 +100,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat60"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat60"));
   if (wp) {
 	if (HaveZoomTopology(60)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(60)*RZC);
@@ -110,7 +110,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat70"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat70"));
   if (wp) {
 	if (HaveZoomTopology(70)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(70)*RZC);
@@ -120,7 +120,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat80"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat80"));
   if (wp) {
 	if (HaveZoomTopology(80)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(80)*RZC);
@@ -130,7 +130,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat90"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat90"));
   if (wp) {
 	if (HaveZoomTopology(90)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(90)*RZC);
@@ -140,7 +140,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat100"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat100"));
   if (wp) {
 	if (HaveZoomTopology(100)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(100)*RZC);
@@ -150,7 +150,7 @@ static void setVariables(void) {
 	}
 	wp->RefreshDisplay();
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat110"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat110"));
   if (wp) {
 	if (HaveZoomTopology(110)) {
 		wp->GetDataField()->SetAsFloat( ReadZoomTopology(110)*RZC);
@@ -208,7 +208,7 @@ void dlgTopologyShowModal(void){
   wf->ShowModal();
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat10"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat10"));
   if (wp) {
 	if (HaveZoomTopology(5))
 	if ( LKTopoZoomCat05 != wp->GetDataField()->GetAsFloat()) {
@@ -225,7 +225,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat20"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat20"));
   if (wp) {
 	if (HaveZoomTopology(20))
 	if ( LKTopoZoomCat20 != wp->GetDataField()->GetAsFloat()) {
@@ -234,7 +234,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat30"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat30"));
   if (wp) {
 	if (HaveZoomTopology(30))
 	if ( LKTopoZoomCat30 != wp->GetDataField()->GetAsFloat()) {
@@ -243,7 +243,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat40"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat40"));
   if (wp) {
 	if (HaveZoomTopology(40))
 	if ( LKTopoZoomCat40 != wp->GetDataField()->GetAsFloat()) {
@@ -252,7 +252,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat50"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat50"));
   if (wp) {
 	if (HaveZoomTopology(50))
 	if ( LKTopoZoomCat50 != wp->GetDataField()->GetAsFloat()) {
@@ -261,7 +261,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat60"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat60"));
   if (wp) {
 	if (HaveZoomTopology(60))
 	if ( LKTopoZoomCat60 != wp->GetDataField()->GetAsFloat()) {
@@ -270,7 +270,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat70"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat70"));
   if (wp) {
 	if (HaveZoomTopology(70))
 	if ( LKTopoZoomCat70 != wp->GetDataField()->GetAsFloat()) {
@@ -279,7 +279,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat80"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat80"));
   if (wp) {
 	if (HaveZoomTopology(80))
 	if ( LKTopoZoomCat80 != wp->GetDataField()->GetAsFloat()) {
@@ -288,7 +288,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat90"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat90"));
   if (wp) {
 	if (HaveZoomTopology(90))
 	if ( LKTopoZoomCat90 != wp->GetDataField()->GetAsFloat()) {
@@ -297,7 +297,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat100"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat100"));
   if (wp) {
 	if (HaveZoomTopology(100))
 	if ( LKTopoZoomCat100 != wp->GetDataField()->GetAsFloat()) {
@@ -306,7 +306,7 @@ void dlgTopologyShowModal(void){
 		changed = true;
 	}
   }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCat110"));
+  wp = wf->FindByName<WndProperty>(TEXT("prpCat110"));
   if (wp) {
 	if (HaveZoomTopology(110))
 	if ( LKTopoZoomCat110 != wp->GetDataField()->GetAsFloat()) {

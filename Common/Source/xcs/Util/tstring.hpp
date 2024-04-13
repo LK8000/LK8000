@@ -124,11 +124,7 @@ tstring to_lower_ascii(const tstring& source) {
 template<typename CharT>
 struct ci_equal_to {
   bool operator()(CharT ca, CharT cb) const {
-    return UpperAlpha(ca) == UpperAlpha(cb);
-  }
-
-  CharT UpperAlpha(CharT c) const {
-    return (c >= 'a' && c <= 'z') ? (c - ('a' - 'A')) : c;
+    return ToLowerASCII(ca) == ToLowerASCII(cb);
   }
 };
 

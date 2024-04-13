@@ -69,7 +69,7 @@ namespace DlgIgcFile {
                     MessageBoxX(MsgToken<1537>(), MsgToken<266>(), mbOk);
                     StartHourglassCursor();
                 } else {
-                    WndProperty* wp = (WndProperty*)wfDlg->FindByName(TEXT("prpDeviceList"));
+                    WndProperty* wp = wfDlg->FindByName<WndProperty>(TEXT("prpDeviceList"));
                     DataField* dfe = NULL;
                     if (wp) {
                         dfe = wp->GetDataField();
@@ -184,11 +184,11 @@ void dlgIgcFileShowModal() {
     wfDlg = dlgLoadFromXML(DlgIgcFile::CallBackTable, ScreenLandscape ? IDR_XML_IGCFILE_L : IDR_XML_IGCFILE_P);
     if (wfDlg) {
 
-        WndListFrame* wndFileList = (WndListFrame*) wfDlg->FindByName(TEXT("frmIgcFileList"));
+        WndListFrame* wndFileList = wfDlg->FindByName<WndListFrame>(TEXT("frmIgcFileList"));
         if (wndFileList) {
             wndFileList->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT | BORDERBOTTOM);
 
-            WndOwnerDrawFrame* FileListEntry = (WndOwnerDrawFrame*) wfDlg->FindByName(TEXT("frmIgcFileListEntry"));
+            WndOwnerDrawFrame* FileListEntry = wfDlg->FindByName<WndOwnerDrawFrame>(TEXT("frmIgcFileListEntry"));
             if (FileListEntry) {
                 FileListEntry->SetCanFocus(true);
             }
