@@ -113,7 +113,7 @@ size_t to_usascii(const CharT *string, char *ascii, size_t size) {
 
 
 template<typename CharT>
-CharT* ci_search_substr(CharT* string, CharT* sub_string) {
+const CharT* ci_search_substr(const CharT* string, const CharT* sub_string) {
   
   auto ci_equal = [](CharT ch1, CharT ch2) {
     return to_lower(ch1) == to_lower(ch2);
@@ -244,9 +244,9 @@ size_t from_ansi(const char *ansi, char *utf8, size_t size) {
 }
 
 const char* ci_search_substr(const char* string, const char* sub_string) {
-  return ci_search_substr<const char>(string, sub_string);
+  return ci_search_substr<char>(string, sub_string);
 }
 
 const wchar_t* ci_search_substr(const wchar_t* string, const wchar_t* sub_string) {
-  return ci_search_substr<const wchar_t>(string, sub_string);
+  return ci_search_substr<wchar_t>(string, sub_string);
 }
