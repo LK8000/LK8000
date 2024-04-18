@@ -296,7 +296,7 @@ static bool airspeedreset=true;
         #if SCAN_RANGE
         StartupStore(_T(".... (QUALITY=%d  SAMPLES=%d\n"),QualityScanRange(),kalman_samples);
         #endif
-	if (basic->ExternalWindAvailable) {
+	if (ExternalWindAvailable(*Basic)) {
 		StartupStore(_T(".... (EXTERNAL WIND: %4.1fkmh  %4.1fdeg\n"),
 		  basic->ExternalWindSpeed, basic->ExternalWindDirection);
 	}
@@ -323,7 +323,7 @@ static bool airspeedreset=true;
         #if SCAN_RANGE
         StartupStore(_T(".... (QUALITY=%d\n"),QualityScanRange());
         #endif
-	if (basic->ExternalWindAvailable) {
+	if (ExternalWindAvailable(*Basic)) {
 		StartupStore(_T(".... (EXTERNAL WIND: %4.1fkmh  %4.1fdeg\n"),
 		  basic->ExternalWindSpeed, basic->ExternalWindDirection);
 	}
@@ -351,7 +351,7 @@ static bool airspeedreset=true;
   #if SCAN_RANGE
   StartupStore(_T(".... (QUALITY=%d SAMPLES=%d\n"),QualityScanRange(),kalman_samples);
   #endif
-  if (basic->ExternalWindAvailable) {
+  if (ExternalWindAvailable(*Basic)) {
 	StartupStore(_T(".... (EXTERNAL WIND: %4.1fkmh  %4.1fdeg\n"),
 	  basic->ExternalWindSpeed, basic->ExternalWindDirection);
   }

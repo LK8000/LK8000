@@ -10,6 +10,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "devZander.h"
+#include "Comm/ExternalWind.h"
 
 static BOOL PZAN1(DeviceDescriptor_t* d, const char* String, NMEA_INFO *apGPS);
 static BOOL PZAN2(DeviceDescriptor_t* d, const char* String, NMEA_INFO *apGPS);
@@ -112,26 +113,7 @@ static BOOL PZAN3(DeviceDescriptor_t* d, const char* String, NMEA_INFO *apGPS)
 
 
   if (wind_usable == 'A') {
-
-	wspeed/=3.6;
-
-	#if 1 // 120424 fix correct wind setting
-
-	apGPS->ExternalWindAvailable = TRUE;
-	apGPS->ExternalWindSpeed = wspeed;
-	apGPS->ExternalWindDirection = wfrom;
-
-	#else
-
-	// do not update if it has not changed
-	if ( (wspeed!=CALCULATED_INFO.WindSpeed) || (wfrom != CALCULATED_INFO.WindBearing) ) {
-
-		SetWindEstimate(wspeed, wfrom,9);
-		CALCULATED_INFO.WindSpeed=wspeed;
-		CALCULATED_INFO.WindBearing=wfrom;
-
-	}
-	#endif
+    UpdateExternalWind(*apGPS, *d, Units::From(Units_t::unKiloMeterPerHour, wspeed), wfrom);
   }
 
   return true;

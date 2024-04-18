@@ -14,6 +14,7 @@
 #include "utils/stringext.h"
 #include "utils/printf.h"
 #include "utils/charset_helper.h"
+#include "Comm/ExternalWind.h"
 
 //____________________________________________________________class_definitions_
 
@@ -117,12 +118,9 @@ bool DevLX::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
   if (ParToDouble(sentence, 9, &info->MagneticHeading))
       info->MagneticHeadingAvailable=TRUE;
 
-  if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
-      ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-  {
-    /* convert to m/s */
-    info->ExternalWindSpeed = Units::From(unKiloMeterPerHour, info->ExternalWindSpeed);
-    info->ExternalWindAvailable = TRUE;
+  double WindSpeed, WindDirection;
+  if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {
+    UpdateExternalWind(*info, *d, Units::From(Units_t::unKiloMeterPerHour, WindSpeed), WindDirection);
   }
 
   return(true);

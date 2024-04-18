@@ -1151,6 +1151,7 @@ UTILS	:=\
 
 
 COMMS	:=\
+	$(CMM)/ExternalWind.cpp\
 	$(CMM)/LKFlarm.cpp\
 	$(CMM)/LKFanet.cpp\
 	$(CMM)/Parser.cpp\

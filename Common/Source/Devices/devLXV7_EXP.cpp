@@ -16,6 +16,7 @@
 #include "utils/printf.h"
 #include "utils/charset_helper.h"
 #include "Comm/UpdateQNH.h"
+#include "Comm/ExternalWind.h"
 #include "OS/Sleep.h"
 
 int iLXV7_EXP_RxUpdateTime=0;
@@ -395,12 +396,9 @@ bool DevLXV7_EXP::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* 
 
 
 
-
-  if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
-      ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-  {
-    info->ExternalWindSpeed = Units::From(unKiloMeterPerHour, info->ExternalWindSpeed);
-    info->ExternalWindAvailable = TRUE;
+  double WindSpeed, WindDirection;
+  if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {
+    UpdateExternalWind(*info, *d, Units::From(Units_t::unKiloMeterPerHour, WindSpeed), WindDirection);
   }
 
   return(false);

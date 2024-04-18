@@ -579,6 +579,7 @@ add_library( LK8000 SHARED
     Common/Source/utils/charset_helper.cpp
     Common/Source/utils/printf.cpp
 
+    Common/Source/Comm/ExternalWind.cpp
     Common/Source/Comm/LKFlarm.cpp
     Common/Source/Comm/LKFanet.cpp
     Common/Source/Comm/Parser.cpp

@@ -10,6 +10,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "devCondor.h"
+#include "Comm/ExternalWind.h"
 
 
 static BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS);
@@ -93,10 +94,8 @@ BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
 
   DevIsCondor=true;
 
-  double airspeed, wspeed, wfrom;
-
   NMEAParser::ExtractParameter(String,ctemp,1);
-  airspeed = Units::From(unKiloMeterPerHour, StrToDouble(ctemp,NULL));
+  double airspeed = Units::From(unKiloMeterPerHour, StrToDouble(ctemp,NULL));
 
   NMEAParser::ExtractParameter(String,ctemp,2);
   double QneAltitude = StrToDouble(ctemp,NULL);
@@ -114,40 +113,11 @@ BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
 
   // we don't use heading for wind calculation since... wind is already calculated in condor!!
   NMEAParser::ExtractParameter(String,ctemp,11);
-  wspeed=StrToDouble(ctemp,NULL);
+  double wspeed = StrToDouble(ctemp,NULL);
   NMEAParser::ExtractParameter(String,ctemp,10);
-  wfrom=StrToDouble(ctemp,NULL);
+  double wfrom = StrToDouble(ctemp,NULL) + 180;
 
-  #if 1 // 120424 fix correct wind setting
-
-  wfrom+=180;
-  if (wfrom==360) wfrom=0;
-  if (wfrom>360) wfrom-=360;
-  wspeed/=3.6;
-
-  pGPS->ExternalWindAvailable = TRUE;
-  pGPS->ExternalWindSpeed = wspeed;
-  pGPS->ExternalWindDirection = wfrom;
-
-  #else
-  if (wspeed>0) {
-
-	wfrom+=180;
-	if (wfrom==360) wfrom=0;
-	if (wfrom>360) wfrom-=360;
-	wspeed/=3.6;
-
-	// do not update if it has not changed
-	if ( (wspeed!=CALCULATED_INFO.WindSpeed) || (wfrom != CALCULATED_INFO.WindBearing) ) {
-
-		SetWindEstimate(wspeed, wfrom,9);
-		CALCULATED_INFO.WindSpeed=wspeed;
-		CALCULATED_INFO.WindBearing=wfrom;
-
-	}
-  }
-  #endif
-
+  UpdateExternalWind(*pGPS, *d, Units::From(Units_t::unKiloMeterPerHour, wspeed), wfrom);
 
   return TRUE;
 }

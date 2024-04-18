@@ -42,7 +42,7 @@
 #include "utils/charset_helper.h"
 #include "utils/printf.h"
 #include "Comm/UpdateQNH.h"
-
+#include "Comm/ExternalWind.h"
 
 unsigned int uiEOSDebugLevel = 1;
 
@@ -972,73 +972,69 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-  double fDir,fTmp,airspeed=0;
-
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
  // if( !devGetAdvancedMode(d))
   {
-    if( ParToDouble(sentence, 1, &fTmp))
+    double airspeed;
+    if( ParToDouble(sentence, 1, &airspeed))
     {
 
       if(Values(d)) 
       { 
         TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"),fTmp);
+        _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"), airspeed);
         SetDataText( d,_SPEED,   szTmp);
       }
       if(IsDirInput(PortIO.SPEEDDir  ))
       {
-        airspeed = Units::From(unKiloMeterPerHour, fTmp);
+        airspeed = Units::From(unKiloMeterPerHour, airspeed);
         info->TrueAirspeed = airspeed;
         info->AirspeedAvailable = TRUE;
       }
     }
 
-    if (ParToDouble(sentence, 2, &fTmp))
+    double altitude;
+    if (ParToDouble(sentence, 2, &altitude))
     {
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),fTmp);
+        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),altitude);
         SetDataText( d, _BARO,   szTmp);
       }
       if(IsDirInput(PortIO.BARODir  ))
       {
         if (airspeed > 0) {
-          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, fTmp);
+          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, altitude);
         }
-        UpdateBaroSource( info, d, fTmp);
+        UpdateBaroSource( info, d, altitude);
       }
     }
 
-    if (ParToDouble(sentence, 3, &fTmp))
+    double vario;
+    if (ParToDouble(sentence, 3, &vario))
     {
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm/s ($LXWP0)"), fTmp);
+        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm/s ($LXWP0)"), vario);
         SetDataText( d, _VARIO,   szTmp);
       }
       if(IsDirInput(PortIO.VARIODir  ))
       {
-        UpdateVarioSource(*info, *d, fTmp);
+        UpdateVarioSource(*info, *d, vario);
       }
     }
   }
 
-  if (ParToDouble(sentence, 10, &fDir) && ParToDouble(sentence, 11, &fTmp))
-  {
-
-    if(Values(d))
-    { 
+  double WindSpeed, WindDirection;
+  if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {
+    if(Values(d)) {
       TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.1fkm/h %3.0f° ($LXWP0)"),fTmp,fDir);
+      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fkm/h %3.0f° ($LXWP0)"),WindSpeed, WindDirection);
       SetDataText( d, _WIND,   szTmp);
     }
-    if(IsDirInput(PortIO.WINDDir  ))
-    {
-      info->ExternalWindDirection = fDir;
-      info->ExternalWindSpeed =  Units::From(unKiloMeterPerHour, fTmp);
-      info->ExternalWindAvailable = TRUE;
+    if(IsDirInput(PortIO.WINDDir)) {
+      UpdateExternalWind(*info, *d, Units::From(Units_t::unKiloMeterPerHour, WindSpeed), WindDirection);
     }
   }
 

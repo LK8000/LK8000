@@ -17,6 +17,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "Comm/UpdateQNH.h"
+#include "Comm/ExternalWind.h"
 #include "devCAI302.h"
 #include "OS/Sleep.h"
 
@@ -512,10 +513,13 @@ BOOL cai_w(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
   char ctemp[80];
 
   NMEAParser::ExtractParameter(String,ctemp,1);
-  pGPS->ExternalWindAvailable = TRUE;
-  pGPS->ExternalWindSpeed = (StrToDouble(ctemp,NULL) / 10.0);
+  double wind_speed = StrToDouble(ctemp, nullptr) / 10.0;
+
   NMEAParser::ExtractParameter(String,ctemp,0);
-  pGPS->ExternalWindDirection = AngleLimit360(StrToDouble(ctemp,NULL)+180);
+  double wind_dir = StrToDouble(ctemp, nullptr) + 180;
+  
+  UpdateExternalWind(*pGPS, *d, wind_speed, wind_dir);
+
 
 
   NMEAParser::ExtractParameter(String,ctemp,4);

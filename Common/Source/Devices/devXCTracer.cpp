@@ -17,6 +17,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "nmeaistream.h"
+#include "Comm/ExternalWind.h"
 
 /**
  * Helper functions to parse and check an input field
@@ -212,12 +213,9 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
     if (ReadChecked(params[10], pGPS->MagneticHeading))
         pGPS->MagneticHeadingAvailable=TRUE;
 
-    if (ReadChecked(params[11], pGPS->ExternalWindDirection) &&
-            ReadChecked(params[12], pGPS->ExternalWindSpeed))
-    {
-        pGPS->ExternalWindDirection = AngleLimit360(pGPS->ExternalWindDirection + 180);
-        pGPS->ExternalWindSpeed = Units::From(unKiloMeterPerHour, pGPS->ExternalWindSpeed);  /* convert to system unit */
-        pGPS->ExternalWindAvailable = TRUE;
+    double wind_speed, wind_dir;
+    if (ReadChecked(params[11], wind_dir) && ReadChecked(params[12], wind_speed)) {
+        UpdateExternalWind(*pGPS, *d, Units::From(unKiloMeterPerHour, wind_speed), wind_dir);
     }
 
     return(true);

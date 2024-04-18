@@ -16,6 +16,7 @@
 #include "utils/printf.h"
 #include "utils/charset_helper.h"
 #include "OS/Sleep.h"
+#include "Comm/ExternalWind.h"
 
 int  LX166AltitudeUpdateTimeout =0;
 int  LX16xxAlt=0;
@@ -298,11 +299,9 @@ bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* in
     UpdateVarioSource(*info, *d, Vario);
   }
 
-  if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
-      ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-  {
-    info->ExternalWindSpeed = Units::From(unKiloMeterPerHour, info->ExternalWindSpeed);  /* convert to m/s */
-    info->ExternalWindAvailable = TRUE;
+  double WindSpeed, WindDirection;
+  if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {
+    UpdateExternalWind(*info, *d, Units::From(Units_t::unKiloMeterPerHour, WindSpeed), WindDirection);
   }
 
   return(true);

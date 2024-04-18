@@ -21,6 +21,7 @@
 #include "Comm/UpdateQNH.h"
 #include "devLXNano.h"
 #include "OS/Sleep.h"
+#include "Comm/ExternalWind.h"
 
 //____________________________________________________________class_definitions_
 
@@ -276,9 +277,10 @@ bool DevLXMiniMap::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
     UpdateVarioSource(*info, *d, Vario);
   }
 
-  if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
-      ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-    info->ExternalWindAvailable = TRUE;
+  double WindSpeed, WindDirection;
+  if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {
+    UpdateExternalWind(*info, *d, Units::From(Units_t::unKiloMeterPerHour, WindSpeed), WindDirection);
+  }
 
   return(true);
 } // LXWP0()

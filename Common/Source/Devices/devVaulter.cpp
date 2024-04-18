@@ -11,6 +11,7 @@
 #include "LKInterface.h"
 #include "Baro.h"
 #include "Calc/Vario.h"
+#include "Comm/ExternalWind.h"
 
 int iVaulter_RxUpdateTime=0;
 double oldVaulterMC = MACCREADY;
@@ -253,19 +254,14 @@ bool DevVaulter::PITV5(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
 //  0=Vario
 //  1=Sollfahrt
 //  6 2.30 MacCready-Wert (m/s)
-double fTmp;
 
-  if (ParToDouble(sentence, 0, &fTmp))
-  {
-      info->ExternalWindSpeed = fTmp;
 
-    if (ParToDouble(sentence, 1, &fTmp))
-    {
-      info->ExternalWindDirection = fTmp;
-      info->ExternalWindAvailable = true;
-    }
+  double WindSpeed, WindDirection;
+  if (ParToDouble(sentence, 0, &WindSpeed) && ParToDouble(sentence, 1, &WindDirection)) {
+    UpdateExternalWind(*info, *d, Units::From(Units_t::unMeterPerSecond, WindSpeed), WindDirection);
   }
 
+  double fTmp;
   if (ParToDouble(sentence, 5, &fTmp)) {
     d->RecvMacCready(fTmp);
   }

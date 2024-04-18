@@ -13,6 +13,7 @@
 #include "Calc/Vario.h"
 #include <optional>
 #include "Baro.h"
+#include "Comm/ExternalWind.h"
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 
@@ -134,6 +135,7 @@ void reset_nmea_info_availability() {
 
   ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
+  ResetExternalWindAvailable(GPS_INFO);
 
   GPS_INFO.AirspeedAvailable = false;
   GPS_INFO.NettoVarioAvailable = false;
@@ -142,7 +144,6 @@ void reset_nmea_info_availability() {
   GPS_INFO.HumidityAvailable = false;
   GPS_INFO.MagneticHeadingAvailable = false;
   GPS_INFO.GyroscopeAvailable = false;
-  GPS_INFO.ExternalWindAvailable = false;
 
   EnableExternalTriggerCruise = false;
 }

@@ -11,6 +11,7 @@
 #include "Calc/Vario.h"
 #include "Comm/UpdateQNH.h"
 #include "devIlec.h"
+#include "Comm/ExternalWind.h"
 
 
 static
@@ -52,41 +53,17 @@ BOOL PILC(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS)
 	double Vario = StrToDouble(ctemp,NULL);
 	UpdateVarioSource(*pGPS, *d, Vario);
 
-	NMEAParser::ExtractParameter(String,ctemp,3); // wind direction, integer
-	double wfrom;
-	wfrom = StrToDouble(ctemp,NULL); //@ could also be the NMEA checksum!
 	NMEAParser::ExtractParameter(String,ctemp,4); // wind speed kph integer
-
 	if (strlen(ctemp)!=0) {
-
-		#if 1 // 120424 fix correct wind setting
-
-			double wspeed, wconfidence;
-			wspeed = StrToDouble(ctemp,NULL);
-			NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
-			wconfidence = StrToDouble(ctemp,NULL);
-
-			pGPS->ExternalWindAvailable = TRUE;
-			if (wconfidence>=1) {
-				pGPS->ExternalWindSpeed = Units::From(unKiloMeterPerHour, wspeed);
-				pGPS->ExternalWindDirection = wfrom;
-			}
-
-		#else
-
-			double wspeed, wconfidence;
-			wspeed = StrToDouble(ctemp,NULL);
-			NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
-			wconfidence = StrToDouble(ctemp,NULL);
-			// StartupStore(_T(".... WIND from %.0f speed=%.0f kph  confidence=%.0f\n"),wfrom,wspeed,wconfidence);
-
-			SetWindEstimate(wspeed/TOKPH, wfrom,(int)(wconfidence/100)*10);
-	                CALCULATED_INFO.WindSpeed=wspeed/TOKPH;
-	                CALCULATED_INFO.WindBearing=wfrom;
-		#endif
-
-
-	} else	pGPS->ExternalWindAvailable = FALSE;
+		double wspeed = StrToDouble(ctemp,NULL);
+		NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
+		double wconfidence = StrToDouble(ctemp,NULL);
+		if (wconfidence > 0) {
+			NMEAParser::ExtractParameter(String,ctemp,3); // wind direction, integer
+			double wfrom = StrToDouble(ctemp,NULL); //@ could also be the NMEA checksum!
+			UpdateExternalWind(*pGPS, *d, Units::From(Units_t::unKiloMeterPerHour, wspeed), wfrom);
+		}
+	}
 
 	return TRUE;
   }

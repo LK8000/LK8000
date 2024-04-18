@@ -51,9 +51,10 @@ struct NMEA_INFO {
     double IndicatedAirspeed;
     double TrueAirspeed;
 
-    bool ExternalWindAvailable;
+    unsigned ExternalWindIdx;
     double ExternalWindSpeed;
     double ExternalWindDirection;
+    
     bool NettoVarioAvailable;
     bool AirspeedAvailable;
 

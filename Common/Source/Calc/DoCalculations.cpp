@@ -11,6 +11,8 @@
 #include "McReady.h"
 #include "Sideview.h"
 #include "Multimap.h"
+#include "Comm/ExternalWind.h"
+
 
 extern void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -49,11 +51,11 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   EnergyHeightNavAltitude(Basic, Calculated);
 
   // second thing: if available, get external wind precalculated!
-  if ( (Basic->ExternalWindAvailable==TRUE) && (AutoWindMode==D_AUTOWIND_EXTERNAL)) {
-	if (Basic->ExternalWindSpeed>0 && Basic->ExternalWindSpeed<35) {
-		Calculated->WindSpeed = Basic->ExternalWindSpeed;
-		Calculated->WindBearing = Basic->ExternalWindDirection;
-	}
+  if ((ExternalWindAvailable(*Basic)) && (AutoWindMode == D_AUTOWIND_EXTERNAL)) {
+    if (Basic->ExternalWindSpeed > 0 && Basic->ExternalWindSpeed < 35) {
+      Calculated->WindSpeed = Basic->ExternalWindSpeed;
+      Calculated->WindBearing = Basic->ExternalWindDirection;
+    }
   }
 
   UpdateFlarmTarget(*Basic);
