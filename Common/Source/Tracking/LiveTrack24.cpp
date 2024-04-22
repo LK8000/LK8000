@@ -4,9 +4,6 @@
  See CREDITS.TXT file for authors and copyrights
  */
 
-//Use to log transactions to the startupstore
-//#define LT_DEBUG  1
-
 #include <stdlib.h>
 #include <cctype>
 #include <sstream>
@@ -65,7 +62,7 @@ static const std::string mapGBase64Index =
 
 
 // Data point definition to send to the server
-typedef struct {
+struct livetracker_point_t {
 	unsigned long int unix_timestamp;     // Unix timestamp
 	int flying;                           // true = flying, triggers a new track
 	double latitude;                      // position
@@ -73,10 +70,10 @@ typedef struct {
 	double alt;                           // altitude MSL [m]
 	double ground_speed;                  // GS [m/s]
 	double course_over_ground;            // Heading [deg]
-} livetracker_point_t;
+};
 
 // Point FIFO beetween calc thread and data server
-typedef std::deque<livetracker_point_t> PointQueue;
+using PointQueue = std::deque<livetracker_point_t>;
 
 //Protected thread storage
 static Mutex _t_mutex;                  // Mutex
@@ -162,9 +159,7 @@ void LiveTrackerInit() {
 			&& (!tracking::radar_config || !EnableFLARMMap)) {
 		// If livetracker is not enabled at startup, we do nothing,
 		// but in this case LK must be restarted, if user enables it!
-#if TESTBENCH
-		StartupStore(TEXT(". LiveTracker disabled.%s"), NEWLINE);
-#endif
+		TestLog(_T(". LiveTracker disabled."));
 		return;
 	}
 
@@ -187,34 +182,28 @@ void LiveTrackerInit() {
 
 	// Create a thread for sending data to the server
 	if (tracking::interval != 0) {
-		std::string snu = std::string(_server_name);
+		std::string snu = _server_name;
 		transform(snu.begin(), snu.end(), snu.begin(), ::toupper);
 		if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
 			v2_sid = createSID();
-			v2_pwt = passwordToken(std::string(_password), toString(v2_sid));
+			v2_pwt = passwordToken(_password, toString(v2_sid));
 			_ThreadTracker.start(_ThreadTargetTracker2);
 			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
-			StartupStore(
-					TEXT(
-							". LiveTracker API V2 will use server %s if available.%s"),
-					tracking::server_config, NEWLINE);
+			StartupStore(_T(". LiveTracker API V2 will use server %s if available."),
+							tracking::server_config);
 		} else {
 			_ThreadTracker.start(_ThreadTargetTracker);
 			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
-			StartupStore(
-					TEXT(
-							". LiveTracker API V1 will use server %s if available.%s"),
-					tracking::server_config, NEWLINE);
+			StartupStore(_T(". LiveTracker API V1 will use server %s if available."),
+							tracking::server_config);
 		}
-
 	}
 
 	// Create a thread fo getting radar data from livetrack24.com
 	if (tracking::radar_config && EnableFLARMMap) {
 		_ThreadRadar.start(_ThreadTargetRadar);
 		_ThreadRadar.setPriority(Poco::Thread::PRIO_NORMAL);
-		StartupStore(TEXT(". LiveTracker Radar Enabled.%s"), NEWLINE);
-
+		StartupStore(_T(". LiveTracker Radar Enabled."));
 	}
 	_inited = true;
 }
@@ -225,14 +214,14 @@ void LiveTrackerShutdown() {
 		_t_run = false;
 		NewDataEvent.set();
 		_ThreadTracker.join();
-		StartupStore(TEXT(". LiveTracker closed.%s"), NEWLINE);
+		StartupStore(_T(". LiveTracker closed."));
 	}
 
 	if (_ThreadRadar.isRunning()) {
 		_t_radar_run = false;
 		NewDataEvent.set();
 		_ThreadRadar.join();
-		StartupStore(TEXT(". LiveRadar closed.%s"), NEWLINE);
+		StartupStore(_T(". LiveRadar closed."));
 	}
 }
 
@@ -280,15 +269,14 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 	newpoint.ground_speed = Basic.Speed;
 	newpoint.course_over_ground = Calculated.Heading;
 
-	{
-		ScopeLock guard(_t_mutex);
+	WithLock(_t_mutex, [&]() {
 		// Half hour FIFO must be enough
 		if (_t_points.size() > static_cast<size_t>(1800 / tracking::interval)) {
 			// points in queue are full, drop oldest point
 			_t_points.pop_front();
 		}
 		_t_points.emplace_back(newpoint);
-	}
+	});
 	NewDataEvent.set();
 }
 
@@ -437,8 +425,7 @@ static bool SendEndOfTrackPacket(http_session& http, unsigned int *packet_id,
 	//   2-> "Need some help, nothing broken"
 	//   3-> "Need help, maybe something broken"
 	//   4-> "HELP, SERIOUS INJURY"
-	sprintf(txbuf, "/track.php?leolive=3&sid=%u&pid=%u&prid=0", *session_id,
-			*packet_id);
+	sprintf(txbuf, "/track.php?leolive=3&sid=%u&pid=%u&prid=0", *session_id, *packet_id);
 
 	std::string response = http.request(_server_name, _server_port, txbuf);
 	if (response == "OK") {
@@ -501,14 +488,14 @@ static void LiveTrackerThread() {
 		if (!_t_run)
 			break;
 		do {
-			if (1) {
-				sendpoint_valid = false;
-				ScopeLock guard(_t_mutex);
+			sendpoint_valid = WithLock(_t_mutex, [&]() {
 				if (!_t_points.empty()) {
 					sendpoint = _t_points.front();
-					sendpoint_valid = true;
+					return true;
 				}
-			} //mutex
+				return false;
+			});
+
 			if (sendpoint_valid) {
 				sendpoint_processed = false;
 				do {
@@ -535,9 +522,7 @@ static void LiveTrackerThread() {
 						sendpoint_processed = SendStartOfTrackPacket(http, &packet_id,
 								&session_id, userid);
 						if (sendpoint_processed) {
-							StartupStore(
-									TEXT(". Livetracker new track started.%s"),
-									NEWLINE);
+							StartupStore(_T(". Livetracker new track started."));
 							sendpoint_processed_old = true;
 							tracker_fsm++;
 						}
@@ -550,19 +535,15 @@ static void LiveTrackerThread() {
 
 						//Connection lost to server
 						if (sendpoint_processed_old && !sendpoint_processed) {
-							StartupStore(
-									TEXT(
-											". Livetracker connection to server lost.%s"),
-									NEWLINE);
+							StartupStore(_T(". Livetracker connection to server lost."));
 						}
 						//Connection established to server
 						if (!sendpoint_processed_old && sendpoint_processed) {
-							ScopeLock guard(_t_mutex);
-							int queue_size = _t_points.size();
-							StartupStore(
-									TEXT(
-											". Livetracker connection to server established, start sending %d queued packets.%s"),
-									queue_size, NEWLINE);
+							int queue_size = WithLock(_t_mutex, [&]() {
+								return _t_points.size();
+							});
+							StartupStore(_T(". Livetracker connection to server established, start sending %d queued packets."),
+											queue_size);
 						}
 						sendpoint_processed_old = sendpoint_processed;
 
@@ -573,13 +554,9 @@ static void LiveTrackerThread() {
 
 					case 4:
 						//End of track packet
-						sendpoint_processed = SendEndOfTrackPacket(http, &packet_id,
-								&session_id);
+						sendpoint_processed = SendEndOfTrackPacket(http, &packet_id, &session_id);
 						if (sendpoint_processed) {
-							StartupStore(
-									TEXT(
-											". Livetracker track finished, sent %d points.%s"),
-									packet_id, NEWLINE);
+							StartupStore(_T(". Livetracker track finished, sent %d points."), packet_id);
 							tracker_fsm = 0;
 						}
 						break;
@@ -588,8 +565,9 @@ static void LiveTrackerThread() {
 					if (sendpoint_processed) {
 						ScopeLock guard(_t_mutex);
 						_t_points.pop_front();
-					} else
+					} else {
 						InterruptibleSleep(2500);
+					}
 					sendpoint_processed_old = sendpoint_processed;
 				} while (!sendpoint_processed && _t_run);
 			}
@@ -601,7 +579,7 @@ static void LiveTrackerThread() {
 
 /** Decompress an STL string using zlib and return the original data. */
 static bool gzipInflate(const char* compressedBytes, unsigned nBytes,
-		std::string& uncompressedBytes) {
+						std::string& uncompressedBytes) {
 	if (nBytes == 0) {
 		return false;
 	}
@@ -612,7 +590,6 @@ static bool gzipInflate(const char* compressedBytes, unsigned nBytes,
 	unsigned half_length = nBytes / 2;
 
 	unsigned uncompLength = full_length;
-	char* uncomp = (char*) calloc(sizeof(char), uncompLength);
 
 	z_stream strm;
 	strm.next_in = (Bytef *) compressedBytes;
@@ -624,23 +601,21 @@ static bool gzipInflate(const char* compressedBytes, unsigned nBytes,
 	bool done = false;
 
 	if (inflateInit2(&strm, (16+MAX_WBITS)) != Z_OK) {
-		free(uncomp);
 		return false;
 	}
 
+	auto uncomp = std::make_unique<char[]>(uncompLength);
 	while (!done) {
 		// If our output buffer is too small
 		if (strm.total_out >= uncompLength) {
 			// Increase size of output buffer
-			char* uncomp2 = (char*) calloc(sizeof(char),
-					uncompLength + half_length);
-			memcpy(uncomp2, uncomp, uncompLength);
+			auto uncomp2 = std::make_unique<char[]>(uncompLength + half_length);
+			memcpy(uncomp2.get(), uncomp.get(), uncompLength);
 			uncompLength += half_length;
-			free(uncomp);
-			uncomp = uncomp2;
+			std::swap(uncomp,  uncomp2);
 		}
 
-		strm.next_out = (Bytef *) (uncomp + strm.total_out);
+		strm.next_out = (Bytef *) (uncomp.get() + strm.total_out);
 		strm.avail_out = uncompLength - strm.total_out;
 
 		// Inflate another chunk.
@@ -653,15 +628,12 @@ static bool gzipInflate(const char* compressedBytes, unsigned nBytes,
 	}
 
 	if (inflateEnd(&strm) != Z_OK) {
-		free(uncomp);
 		return false;
 	}
 
 	if(done) {
-		std::copy_n(uncomp, strm.total_out, std::back_inserter(uncompressedBytes));
+		std::copy_n(uncomp.get(), strm.total_out, std::back_inserter(uncompressedBytes));
 	}
-
-	free(uncomp);
 	return done;
 }
 
@@ -675,29 +647,31 @@ static std::string otpReply(std::string question) {
 			(unsigned char*) question.c_str(), message_len,
 			(unsigned char*) mac, (unsigned) SHA256_DIGEST_SIZE);
 
-	char mmdString[200];
-	for (int i = 0; i < 16; i++) {
-		sprintf(&mmdString[i * 2], "%02x", (unsigned char) mac[i]);
+	static constexpr char Digit[] = {
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+	};
+
+	std::string out;
+	out.reserve(16);
+	auto out_iterator = std::back_inserter(out);
+	for (int i = 0; i < 8; i++) {
+		out_iterator = Digit[(mac[i] & 0xF0) >> 4];
+		out_iterator = Digit[(mac[i] & 0x0F) >> 0];
 	}
-
-	mmdString[16] = 0;
-
-	return std::string(mmdString);
+	return out;
 }
 
-static std::string downloadJSON(http_session& http, std::string url) {
+static std::string downloadJSON(http_session& http, const std::string& url) {
 	std::string response = http.request("api.livetrack24.com", 80, url.c_str());
-	if (response.empty()) {
-		return "";
-	}
-
-	if (url.find("gzip/1") != std::string::npos) {
-		std::string unzip;
-		if (gzipInflate(response.data(), response.size(), unzip)) {
-			return unzip;
+	if (!response.empty()) {
+		if (url.find("gzip/1") != std::string::npos) {
+			std::string unzip;
+			if (gzipInflate(response.data(), response.size(), unzip)) {
+				response = std::move(unzip);
+			}
 		}
 	}
-
 	return response;
 }
 
@@ -712,10 +686,7 @@ static picojson::value callLiveTrack24(http_session& http, std::string subURL, b
 	std::string reply = downloadJSON(http, url);
 
 	if (reply.empty()) {
-#ifdef LT_DEBUG
-		StartupStore(TEXT(".LiveRadar callLiveTrack24 : Empty response from server%s"),
-				NEWLINE);
-#endif
+		DebugLog(_T(".LiveRadar callLiveTrack24 : Empty response from server"));
 		return res;
 	}
 
@@ -732,17 +703,14 @@ static picojson::value callLiveTrack24(http_session& http, std::string subURL, b
 	}
 
 	if (res.get("sync").is<double>()) {
-		g_sync = ((int) res.get("sync").get<double>());
+		g_sync = res.get("sync").get<double>();
 	}
 
 	if (!calledSelf) {
-
-		if (res.get("newqwe").is<double>()
-				&& res.get("newqwe").get<double>() == 1) {
+		if (res.get("newqwe") == picojson::value(1.)) {
 			res = callLiveTrack24(http, subURL, true);
 		}
-		if (res.get("reLogin").is<double>()
-				&& res.get("reLogin").get<double>() == 1) {
+		if (res.get("reLogin") == picojson::value(1.)) {
 			res = callLiveTrack24(http,
 					"login/username/" + std::string(_username) + "/pass/"
 							+ std::string(_password), true);
@@ -756,9 +724,7 @@ static picojson::value callLiveTrack24(http_session& http, std::string subURL, b
 }
 
 static bool LiveTrack24_Radar(http_session& http) {
-#ifdef LT_DEBUG
-	StartupStore(TEXT(".LiveRadar RADAR %s"), NEWLINE);
-#endif
+	DebugLog(_T(".LiveRadar RADAR"));
 
 	time_t t_of_day = to_time_t(GPS_INFO);
 
@@ -773,33 +739,23 @@ static bool LiveTrack24_Radar(http_session& http) {
 	picojson::value json = callLiveTrack24(http, strsCommand.str());
 
 	if (json.is<picojson::null>()) {
-#ifdef LT_DEBUG
-		StartupStore(TEXT(".LiveRadar json null%s"), NEWLINE);
-#endif
+		DebugLog(_T(".LiveRadar json null"));
 		return false;
 	}
 
 	std::string err = picojson::get_last_error();
 	if (!err.empty()) {
-#ifdef LT_DEBUG
-		StartupStore(TEXT(".LiveRadar json error%s"), NEWLINE);
-#endif
+		DebugLog(_T(".LiveRadar json error"));
 		return false;
 	}
 	if (!json.is<picojson::object>()) {
-#ifdef LT_DEBUG
-		StartupStore(TEXT(".LiveRadar json error not object%s"),
-				NEWLINE);
-#endif
+		DebugLog(_T(".LiveRadar json error not object"));
 		return false;
 	}
 
 	picojson::array list = json.get("userlist").get<picojson::array>();
 
-#ifdef LT_DEBUG
-	StartupStore(TEXT(". LiveRadar list.size =%d %s"), (int)list.size(),
-			NEWLINE);
-#endif
+	DebugLog(_T(". LiveRadar list.size =%u"), static_cast<unsigned>(list.size()));
 
 	for (const auto& elmt : list) {
 
@@ -814,8 +770,7 @@ static bool LiveTrack24_Radar(http_session& http) {
 		std::string username = elmt.get("username").get<std::string>();
 		int category = elmt.get("category").get<double>();
 		int isLiveDB = elmt.get("isLiveDB").get<double>();
-		transform(username.begin(), username.end(), username.begin(),
-				::toupper);
+		transform(username.begin(), username.end(), username.begin(), ::toupper);
 
 		double Distance, Bearing;
 		DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
@@ -827,13 +782,8 @@ static bool LiveTrack24_Radar(http_session& http) {
 
 		double delay = t_of_day - lastTM;
 
-#ifdef LT_DEBUG
-		StartupStore(
-				TEXT(
-						".LiveRadar USER: %d category %d isLiveDB %d  compare %d delay %.0f Distance %.0f %s"),
-				userID, category, isLiveDB, username.compare(_username) == 0,
-				delay, Distance, NEWLINE);
-#endif
+		DebugLog(_T(".LiveRadar USER: %d category %d isLiveDB %d  compare %d delay %.0f Distance %.0f"),
+				userID, category, isLiveDB, username.compare(_username) == 0, delay, Distance);
 
 		if (delay > 300 || isLiveDB == 0
 				|| (category != 1 && category != 2 && category != 4
@@ -841,13 +791,8 @@ static bool LiveTrack24_Radar(http_session& http) {
 				|| username.compare(_pilotname) == 0)
 			continue;
 
-#ifdef LT_DEBUG
-		StartupStore(
-				TEXT(
-						".LiveRadar USERPASSED: %d category %d isLiveDB %d  compare %d delay %.0f %s"),
-				userID, category, isLiveDB, username.compare(_username) == 0,
-				delay, NEWLINE);
-#endif
+		DebugLog(_T(".LiveRadar USERPASSED: %d category %d isLiveDB %d  compare %d delay %.0f"),
+				userID, category, isLiveDB, username.compare(_username) == 0, delay);
 
 		time_t rawtime = lastTM;
 		struct tm * ptm;
@@ -1001,11 +946,10 @@ static std::string md5(const std::string& text, bool tolower) {
 static std::string passwordToken(const std::string& plainTextPassword,
 		const std::string& sessionID) {
 
-	std::string lowerPassMD5;
-	lowerPassMD5 = md5(plainTextPassword, true);
+	std::string lowerPassMD5 = md5(plainTextPassword, true);
 	std::string lowerPassMD5_and_sessionID = lowerPassMD5 + sessionID;
 	std::string tokenString = md5(lowerPassMD5_and_sessionID, false);
-	tokenString += lowerPassMD5 + std::string(appSecret);
+	tokenString += lowerPassMD5 + appSecret;
 	std::string tokenStringMd5 = md5(tokenString, false);
 
 	auto bytes = hex_to_bytes(tokenStringMd5);
@@ -1017,9 +961,8 @@ static int GetUserIDFromServer2(http_session& http) {
 	int retval = -1;
 	char txbuf[512];
 
-	std::string pwt0 = passwordToken(std::string(_password), "0");
-	sprintf(txbuf, "/api/t/lt/getUserID/%s/%s/%s/0/0/%s/%s", appKey, "1.0",
-			"LK8000", pwt0.c_str(), _username);
+	std::string pwt0 = passwordToken(_password, "0");
+	sprintf(txbuf, "/api/t/lt/getUserID/%s/1.0/LK8000/0/0/%s/%s", appKey, pwt0.c_str(), _username);
 
 	std::string response = http.request("t2.livetrack24.com", 80, txbuf);
 	if (!response.empty()) {
@@ -1032,8 +975,9 @@ static int GetUserIDFromServer2(http_session& http) {
 			strings.push_back(s);
 		}
 
-		if (strings.size() < 2 || strings[0] != "0;OK")
+		if (strings.size() < 2 || strings[0] != "0;OK") {
 			return -1;
+		}
 
 		retval = -1;
 		sscanf(strings[1].c_str(), "%d", &retval);
@@ -1045,27 +989,15 @@ static int GetUserIDFromServer2(http_session& http) {
 static bool SendEndOfTrackPacket2(http_session& http, unsigned int *packet_id) {
 
 	std::ostringstream stringStream;
-	stringStream << "/api/t/lt/trackEnd/";
-	stringStream << appKey << "/1.0/LK8000" << "/" << v2_sid << "/" << v2_userid
-			<< "/" << v2_pwt << "/";
-	stringStream << "0" << "/99/" << (*packet_id) + 1 << "/";
+	stringStream << "/api/t/lt/trackEnd/" << appKey;
+	stringStream << "/1.0/LK8000" << "/" << v2_sid;
+	stringStream << "/" << v2_userid << "/" << v2_pwt;
+	stringStream << "/0/99/" << (*packet_id) + 1 << "/";
 	stringStream << "0/0";
 
 	std::string command = stringStream.str();
 	std::string response = http.request("t2.livetrack24.com", 80, command.c_str());
-	if (!response.empty()) {
-
-		std::vector<std::string> strings;
-		std::istringstream f(response);
-		std::string s;
-		while (getline(f, s, '\n')) {
-			strings.push_back(s);
-		}
-		if (strings.size() < 1 || strings[0] != "0;OK") {
-			return false;
-		}
-	}
-	return true;
+	return (response == "0;OK");
 }
 
 static std::string intToGBase64(int num) {
@@ -1185,36 +1117,19 @@ static bool SendGPSPointPacket2(http_session& http, unsigned int *packet_id) {
 
 	const std::string command = stringStream.str();
 	std::string response = http.request("t2.livetrack24.com", 80, command.c_str());
-	if (!response.empty()) {
-		std::vector<std::string> strings;
-
-		std::istringstream f(response);
-		std::string s;
-		while (getline(f, s, '\n')) {
-			strings.push_back(s);
-		}
-
-		if (strings.size() < 1 || strings[0] != "0;OK") {
-			return false;
-		}
-
-		{
-			ScopeLock guard(_t_mutex);
-			// all points older than "_last_unix_timestamp" was succesfully sent.
-			//   -> remove them from queue.
-			while(!_t_points.empty() && _t_points.front().unix_timestamp <= _last_unix_timestamp) {
-				_t_points.pop_front();
-			}
-		}
-		(*packet_id)++;
-#ifdef LT_DEBUG
-		StartupStore(TEXT(".Livetrack24 TRACKER sent %d points %s"), nPoints,
-				NEWLINE);
-#endif
-
+	if (response != "0;OK") {
+		return false;
 	}
+	WithLock(_t_mutex, [&]() {
+		// all points older than "_last_unix_timestamp" was succesfully sent.
+		//   -> remove them from queue.
+		while(!_t_points.empty() && _t_points.front().unix_timestamp <= _last_unix_timestamp) {
+			_t_points.pop_front();
+		}
+	});
+	(*packet_id)++;
+	DebugLog(_T(".Livetrack24 TRACKER sent %u points"), static_cast<unsigned>(TimeList.size()));
 	return true;
-
 }
 
 static void LiveTrackerThread2() {
@@ -1238,20 +1153,17 @@ static void LiveTrackerThread2() {
 			break;
 		sendpoint_processed = false;
 
-		if (1) {
-			sendpoint_valid = false;
-			packet_processed = false;
-			ScopeLock guard(_t_mutex);
+		sendpoint_valid = WithLock(_t_mutex, [&]() {
 			if (!_t_points.empty()) {
 				sendpoint = _t_points.front();
-				sendpoint_valid = true;
+				return true;
 			}
-		} //mutex
+			return false;
+		});
 
 		if (sendpoint_valid) {
-#ifdef LT_DEBUG
-			StartupStore(TEXT(". Livetracker TRACKER sendpoint.flying: %d - tracker_fsm: %d %s"), sendpoint.flying,tracker_fsm,NEWLINE);
-#endif
+			DebugLog(_T(". Livetracker TRACKER sendpoint.flying: %d - tracker_fsm: %d"),
+						sendpoint.flying,tracker_fsm);
 
 			switch (tracker_fsm) {
 			default:
@@ -1286,7 +1198,7 @@ static void LiveTrackerThread2() {
 			case 4:
 				//End of track packet
 				sendpoint_processed = SendEndOfTrackPacket2(http, &packet_id);
-				StartupStore(TEXT(". Livetracker TRACKER  SendEndOfTrackPacket2 .%d ...%s"), sendpoint_processed, NEWLINE);
+				StartupStore(_T(". Livetracker TRACKER  SendEndOfTrackPacket2 .%d ..."), sendpoint_processed);
 
 				if (sendpoint_processed) {
 					tracker_fsm = 0;
