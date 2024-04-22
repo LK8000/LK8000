@@ -36,7 +36,7 @@ private:
 
   void Run() override;
 
-  void Send(AGeoPoint position) const;
+  void Send(const AGeoPoint& position) const;
 
   const std::string _user_key;
 

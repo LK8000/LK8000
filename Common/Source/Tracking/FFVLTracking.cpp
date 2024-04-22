@@ -32,24 +32,24 @@ FFVLTracking::~FFVLTracking() {
 }
 
 void FFVLTracking::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) {
-  ScopeLock lock(queue_mtx);
+  using namespace std::chrono_literals;
+
   if (basic.NAVWarning) {
-    return; // ignore invalide fix
+    return; // ignore invalid fix
   }
 
-  using namespace std::chrono_literals;
   auto time_now = gps_time(basic.Time);
 
   if (time_now > next_time) {
     next_time = time_now + 60s;
 
+    ScopeLock lock(queue_mtx);
     queue = {{basic.Latitude, basic.Longitude}, basic.Altitude};
-    
     queue_cv.Signal();
   }
 }
 
-void FFVLTracking::Send(AGeoPoint position) const {
+void FFVLTracking::Send(const AGeoPoint& position) const {
 
   std::string url = R"(https://data.ffvl.fr/api/?device_type=LK8000)";
   url += R"(&key=a0ac0e7592a0c827cbc8a7b95737d044)";
