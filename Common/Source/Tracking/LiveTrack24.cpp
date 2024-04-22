@@ -460,10 +460,10 @@ static bool SendGPSPointPacket(http_session& http, unsigned int *packet_id,
 	// tm=1241422845 // the unixt timestamp in GMT of the GPS time, not the phone's time.
 	sprintf(txbuf,
 			"/track.php?leolive=4&sid=%u&pid=%u&lat=%.5f&lon=%.5f&alt=%.0f&sog=%.0f&cog=%.0f&tm=%lu",
-			*session_id, *packet_id, sendpoint->latitude,
-			sendpoint->longitude, sendpoint->alt,
-			sendpoint->ground_speed * 3.6, sendpoint->course_over_ground,
-			sendpoint->unix_timestamp);
+			*session_id, *packet_id, sendpoint->latitude, sendpoint->longitude,
+			Units::To(Units_t::unMeter, sendpoint->alt),
+			Units::To(Units_t::unKiloMeterPerHour, sendpoint->ground_speed),
+			sendpoint->course_over_ground, sendpoint->unix_timestamp);
 
 	std::string response = http.request(_server_name, _server_port, txbuf);
 	if (response == "OK") {
@@ -797,20 +797,19 @@ static bool LiveTrack24_Radar(http_session& http) {
 			NEWLINE);
 #endif
 
-	for (picojson::array::iterator iter = list.begin(); iter != list.end();
-			++iter) {
+	for (const auto& elmt : list) {
 
-		double lat = (*iter).get("lat").get<double>();
-		double lon = (*iter).get("lon").get<double>();
-		double alt = (*iter).get("alt").get<double>();
-		double sog = (*iter).get("sog").get<double>() / 3.6;
-		int lastTM = (*iter).get("lastTM").get<double>();
-		uint32_t userID = (*iter).get("userID").get<double>();
-		//		double agl = (*iter).get("sog").get<double>();
-		//		int isFlight = (*iter).get("isFlight").get<double>();
-		std::string username = (*iter).get("username").get<std::string>();
-		int category = (*iter).get("category").get<double>();
-		int isLiveDB = (*iter).get("isLiveDB").get<double>();
+		double lat = elmt.get("lat").get<double>();
+		double lon = elmt.get("lon").get<double>();
+		double alt = Units::From(Units_t::unMeter, elmt.get("alt").get<double>());
+		double sog = Units::From(Units_t::unKiloMeterPerHour, elmt.get("sog").get<double>());
+		int lastTM = elmt.get("lastTM").get<double>();
+		uint32_t userID = elmt.get("userID").get<double>();
+		//		double agl = elmt.get("sog").get<double>();
+		//		int isFlight = elmt.get("isFlight").get<double>();
+		std::string username = elmt.get("username").get<std::string>();
+		int category = elmt.get("category").get<double>();
+		int isLiveDB = elmt.get("isLiveDB").get<double>();
 		transform(username.begin(), username.end(), username.begin(),
 				::toupper);
 
@@ -1156,8 +1155,8 @@ static bool SendGPSPointPacket2(http_session& http, unsigned int *packet_id) {
 			TimeList.emplace_back(point.unix_timestamp);
 			LatList.emplace_back(std::floor(point.latitude * 60000.));
 			LonList.emplace_back(std::floor(point.longitude * 60000.));
-			AltList.emplace_back(point.alt);
-			SOGlist.emplace_back(point.ground_speed * 3.6 ) ;
+			AltList.emplace_back(Units::To(Units_t::unMeter, point.alt));
+			SOGlist.emplace_back(Units::To(Units_t::unKiloMeterPerHour, point.ground_speed));
 			COGlist.emplace_back(point.course_over_ground);
 		}
 	}
