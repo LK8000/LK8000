@@ -22,7 +22,6 @@ static WndForm *wf=NULL;
 static int twType = 0; // start, turnpoint, finish
 
 
-static WndFrame *wMove=NULL;
 static WndFrame *wStart=NULL;
 static WndFrame *wTurnpoint=NULL;
 static WndFrame *wAATTurnpoint=NULL;
@@ -92,12 +91,11 @@ static void SetWaypointValues(bool first=false) {
 
 static void UpdateCaption(void) {
 
-
-  if(!bMoveallowed)
-  {
-	wMove    = (wf->FindByName<WndFrame>(TEXT("frmMoveTurnpoint")));
-        LKASSERT(wMove!=NULL);
-    wMove->SetVisible(FALSE);
+  if (!bMoveallowed) {
+	  auto wMove = (wf->FindByName<WndButton>(TEXT("btMoveTurnpoint")));
+    if (wMove) {
+      wMove->SetVisible(FALSE);
+    }
   }
   wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
   wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));

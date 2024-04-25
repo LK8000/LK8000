@@ -7,7 +7,7 @@
     <WndButton Name="butDetails" Caption="_@M231_" X="90" Y="0" Width="80" Height="22" Font="2" OnClickNotify="OnDetailsClicked"/>
     <WndButton Name="butDown" Caption="_@M440_" X="90" Y="25" Width="80" Height="22" Font="2" OnClickNotify="OnMoveAfterClicked"/>
     <WndButton Name="butUp" Caption="_@M441_" X="90" Y="50" Width="80" Height="22" Font="2" OnClickNotify="OnMoveBeforeClicked"/>
-    <WndButton Name="frmMoveTurnpoint" Caption="_@M444_" X="175" Y="50" Width="60" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>    
+    <WndButton Name="btMoveTurnpoint" Caption="_@M444_" X="175" Y="50" Width="60" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>    
 
     <WndFrame Name="frmStart"        X="0" Y="85" Width="240" Height="185" Font="2">
       <WndProperty Name="prpTaskStartLine" Caption="_@M656_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="120" Font="2" Help="_@H500_">

@@ -3,7 +3,7 @@
   <WndForm Name="frmTaskWaypoint" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M800_" Font="2" >
 
     <WndButton                         Caption="_@M186_" X="2" Y="-1" Width="90" Height="22" Font="2" OnClickNotify="OnCloseClicked"/>
-    <WndButton Name="frmMoveTurnpoint" Caption="_@M444_" X="2" Y="-1" Width="90" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>
+    <WndButton Name="btMoveTurnpoint" Caption="_@M444_" X="2" Y="-1" Width="90" Height="22" Font="2" OnClickNotify="OnMoveClicked"/>
     <WndButton Name="butSelect"        Caption="_@M595_" X="2" Y="-1" Width="90" Height="22" Font="2" OnClickNotify="OnSelectClicked"/>
     <WndButton Name="butRemove"        Caption="_@M553_" X="2" Y="-1" Width="90" Height="22" Font="2" OnClickNotify="OnRemoveClicked"/>
     <WndButton Name="butDetails"       Caption="_@M231_" X="2" Y="-1" Width="90" Height="22" Font="2" OnClickNotify="OnDetailsClicked"/>
