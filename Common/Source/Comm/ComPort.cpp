@@ -17,7 +17,6 @@
 #include <functional>
 #include <stdarg.h>
 #include <stdio.h>
-#include "Poco/RunnableAdapter.h"
 #include "ComCheck.h"
 #include <sstream>
 #include <regex>
