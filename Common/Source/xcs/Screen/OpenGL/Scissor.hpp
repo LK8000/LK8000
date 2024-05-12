@@ -50,7 +50,7 @@ public:
 private:
   void Scissor(PixelRect rc) {
     OpenGL::ToViewport(rc);
-    ::glScissor(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+    ::glScissor(rc.left, rc.top, rc.GetWidth(), rc.GetHeight());
 #if HAVE_GLES
     OpenGL::scissor_test = true;
 #endif
@@ -69,7 +69,7 @@ public:
   explicit GLCanvasScissor(PixelRect rc)
     :GLScissor(OpenGL::translate.x + rc.left,
                OpenGL::viewport_size.y - OpenGL::translate.y - rc.bottom,
-               rc.right - rc.top, rc.bottom - rc.top) {}
+               rc.GetWidth(), rc.GetHeight()) {}
 };
 
 #endif
