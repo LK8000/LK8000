@@ -80,9 +80,9 @@ BluetoothHelper::Initialise(JNIEnv *env)
                                                "()Lorg/LK8000/AndroidPort;");
 
   startLeScan_method = env->GetStaticMethodID(cls, "startLeScan",
-                                              "(Landroid/bluetooth/BluetoothAdapter$LeScanCallback;)Z");
+                                              "(Landroid/bluetooth/le/ScanCallback;)Z");
   stopLeScan_method = env->GetStaticMethodID(cls, "stopLeScan",
-                                             "(Landroid/bluetooth/BluetoothAdapter$LeScanCallback;)V");
+                                             "(Landroid/bluetooth/le/ScanCallback;)V");
 
   return true;
 }

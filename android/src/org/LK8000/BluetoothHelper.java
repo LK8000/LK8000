@@ -23,18 +23,22 @@ Copyright_License {
 
 package org.LK8000;
 
-import java.util.UUID;
-import java.util.Set;
-import java.io.IOException;
-
 import android.annotation.SuppressLint;
-import android.os.Build;
-import android.util.Log;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.ParcelUuid;
+import android.util.Log;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A library that constructs Bluetooth ports.  It is called by C++
@@ -47,6 +51,7 @@ final class BluetoothHelper {
         UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
   private static final BluetoothAdapter adapter;
+  private static final BluetoothLeScanner scanner;
 
   /**
    * Does this device support Bluetooth Low Energy?
@@ -63,6 +68,16 @@ final class BluetoothHelper {
     }
 
     adapter = _adapter;
+
+    BluetoothLeScanner _scanner = null;
+    if (adapter != null) {
+      try {
+        _scanner = _adapter.getBluetoothLeScanner();
+      } catch (Exception e) {
+        Log.e(TAG, "BluetoothAdapter.getBluetoothLeScanner() failed", e);
+      }
+    }
+    scanner = _scanner;
   }
 
   public static void cancelDiscovery() {
@@ -142,18 +157,23 @@ final class BluetoothHelper {
       if (devices == null)
         return null;
 
-      String[] addresses = new String[devices.size() * 3];
-      int n = 0;
+      Set<BluetoothDevice> spp_devices = new HashSet<>();
+
       for (BluetoothDevice device : devices) {
+        ParcelUuid[] uuids = device.getUuids();
+        for (ParcelUuid puuid : uuids) {
+          if (SPP_UUID.equals(puuid.getUuid())) {
+              spp_devices.add(device);
+          }
+        }
+      }
+
+      String[] addresses = new String[spp_devices.size() * 3];
+      int n = 0;
+      for (BluetoothDevice device : spp_devices) {
         addresses[n++] = device.getAddress();
         addresses[n++] = device.getName();
-        if (BluetoothDevice.DEVICE_TYPE_LE == device.getType()) {
-          // TODO : check if device as GATT HM10_SERVICE ...
-          addresses[n++] = "HM10";
-        }
-        else {
-          addresses[n++] = "CLASSIC";
-        }
+        addresses[n++] = "CLASSIC";
       }
 
       return addresses;
@@ -163,13 +183,35 @@ final class BluetoothHelper {
     }
   }
 
-  public static boolean startLeScan(BluetoothAdapter.LeScanCallback cb) {
-    return hasLe && adapter.startLeScan(cb);
+  static int deviceType(BluetoothDevice device) {
+    try {
+      return device.getType();
+    }
+    catch (SecurityException ignore) {
+      return BluetoothDevice.DEVICE_TYPE_UNKNOWN;
+    }
   }
 
-  public static void stopLeScan(BluetoothAdapter.LeScanCallback cb) {
-    if (hasLe)
-      adapter.stopLeScan(cb);
+  static boolean isUnknownType(BluetoothDevice device) {
+    return (deviceType(device) != BluetoothDevice.DEVICE_TYPE_LE);
+  }
+
+  public static boolean startLeScan(ScanCallback cb) {
+    if (hasLe) {
+
+      final ScanSettings.Builder settings = new ScanSettings.Builder()
+              .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
+
+      scanner.startScan(null, settings.build(), cb);
+      return true;
+    }
+    return false;
+  }
+
+  public static void stopLeScan(ScanCallback cb) {
+    if (hasLe) {
+      scanner.stopScan(cb);
+    }
   }
 
   public static AndroidPort connect(Context ignoredContext, String address)

@@ -23,7 +23,6 @@
 package org.LK8000;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -31,12 +30,15 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -54,6 +56,9 @@ public class BluetoothGattClientPort
   private static final UUID DEVICE_NAME_CHARACTERISTIC_UUID =
           UUID.fromString("00002A00-0000-1000-8000-00805F9B34FB");
 
+  private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION =
+          UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
   /**
    * The HM-10 and compatible bluetooth modules use a GATT characteristic
    * with this UUID for sending and receiving data.
@@ -62,11 +67,11 @@ public class BluetoothGattClientPort
           UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB");
 
   private static final UUID RX_TX_CHARACTERISTIC_UUID =
-      UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
+          UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
 
-  private static final UUID RX_TX_DESCRIPTOR_UUID =
-      UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
+  public static boolean isSupported(UUID uuid) {
+    return HM10_SERVICE.equals(uuid);
+  }
 
   /* Maximum number of milliseconds to wait for disconnected state after
      calling BluetoothGatt.disconnect() in close() */
@@ -89,27 +94,17 @@ public class BluetoothGattClientPort
   private final Object gattStateSync = new Object();
   private int gattState = BluetoothGatt.STATE_DISCONNECTED;
 
-  private BluetoothAdapter.LeScanCallback callback = null;
-
-  static int deviceType(BluetoothDevice device) {
-    try {
-      return device.getType();
-    }
-    catch (SecurityException ignore) {
-      return BluetoothDevice.DEVICE_TYPE_UNKNOWN;
-    }
-  }
-
-  static boolean isUnknownType(BluetoothDevice device) {
-    return (deviceType(device) != BluetoothDevice.DEVICE_TYPE_LE);
-  }
+  private ScanCallback callback = null;
 
   void startLeScan(Context context, String address) {
     if (callback == null) {
-      callback = (device, rssi, scanRecord) -> {
-        if (device.getAddress().equals(address)) {
-          stopLeScan();
-          connectDevice(context, device);
+      callback = new LeScanCallback() {
+        public void onScanResult(ScanResult result) {
+          BluetoothDevice device = result.getDevice();
+          if (device.getAddress().equals(address)) {
+            stopLeScan();
+            connectDevice(context, device);
+          }
         }
       };
       BluetoothHelper.startLeScan(callback);
@@ -117,7 +112,7 @@ public class BluetoothGattClientPort
   }
 
   void stopLeScan() {
-    BluetoothAdapter.LeScanCallback tmp = callback;
+    ScanCallback tmp = callback;
     callback = null;
     if (tmp != null) {
       BluetoothHelper.stopLeScan(tmp);
@@ -125,7 +120,7 @@ public class BluetoothGattClientPort
   }
 
   public BluetoothGattClientPort(Context context, BluetoothDevice device) {
-    if (isUnknownType(device)) {
+    if (BluetoothHelper.isUnknownType(device)) {
       // unknown device : scan for device...
       startLeScan(context, device.getAddress());
     }
@@ -234,11 +229,11 @@ public class BluetoothGattClientPort
     if (findCharacteristics()) {
       if (gatt.setCharacteristicNotification(dataCharacteristic, true)) {
         BluetoothGattDescriptor descriptor =
-          dataCharacteristic.getDescriptor(RX_TX_DESCRIPTOR_UUID);
+          dataCharacteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION);
         if(descriptor != null) {
           writeDescriptor(gatt, descriptor);
         } else {
-          Log.e(TAG, "Could not get RX_TX_DESCRIPTOR_UUID Descriptor");
+          Log.e(TAG, "Could not get CLIENT_CHARACTERISTIC_CONFIGURATION Descriptor");
         }
         portState = STATE_READY;
       } else {
@@ -301,7 +296,8 @@ public class BluetoothGattClientPort
     }
   }
 
-  @Override public void setListener(PortListener _listener) {
+  @Override 
+  public void setListener(PortListener _listener) {
     portListener = _listener;
   }
 

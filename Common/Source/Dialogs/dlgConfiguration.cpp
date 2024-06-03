@@ -3253,12 +3253,14 @@ wp->RefreshDisplay();
 static void OnLeScan(WndForm* pWndForm, const char *address, const char *name, const char *type) {
   ScopeLock lock(COMMPort_mutex);
 
+  using std::string_view_literals::operator""sv;
+
   auto prefix = [&]() {
-    if (std::string_view("HM10") == type) {
+    if ("HM10"sv == type) {
       return "BT_HM10:";
     }
     else {
-      return "BT_SPP:";
+      return "BLE:";
     }
   };
 
