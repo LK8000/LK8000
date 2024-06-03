@@ -225,8 +225,8 @@ unsigned AndroidPort::RxThread() {
         if (!rxthread_buffer.empty() ) {
             WithLock(CritSec_Comm, [&]() {
                 ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
-                rxthread_buffer.clear();
             });
+            rxthread_buffer.clear();
         } else if (state == STATE_READY) {
             devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
