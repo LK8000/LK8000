@@ -37,6 +37,7 @@ Copyright_License {
 #include "Android/Vario/VarioPlayer.h"
 #include "Java/Env.hxx"
 
+#include "Java/Array.hxx"
 
 Java::TrivialClass InternalSensors::gps_cls, InternalSensors::sensors_cls;
 jmethodID InternalSensors::gps_ctor_id, InternalSensors::close_method;
@@ -156,9 +157,8 @@ void InternalSensors::getSubscribableSensors(JNIEnv* env, jobject sensors_obj) {
   jintArray ss_arr = (jintArray) env->CallObjectMethod(
       obj_NonGPSSensors_.Get(), mid_sensors_getSubscribableSensors);
   jsize ss_arr_size = env->GetArrayLength(ss_arr);
-  jint* ss_arr_elems = env->GetIntArrayElements(ss_arr, nullptr);
-  subscribable_sensors_.assign(ss_arr_elems, ss_arr_elems + ss_arr_size);
-  env->ReleaseIntArrayElements(ss_arr, ss_arr_elems, 0);
+  Java::IntArrayElements array(env, ss_arr);
+  subscribable_sensors_.assign(array.get(), array.get() + ss_arr_size);
 }
 
 

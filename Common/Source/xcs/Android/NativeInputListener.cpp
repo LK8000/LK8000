@@ -25,6 +25,7 @@ Copyright_License {
 #include "IO/DataHandler.hpp"
 #include "Java/Class.hxx"
 #include "Java/Env.hxx"
+#include "Java/Array.hxx"
 
 #include <stddef.h>
 
@@ -46,9 +47,8 @@ Java_org_LK8000_NativeInputListener_dataReceived(JNIEnv *env, jobject obj,
 
   DataHandler &handler = *(DataHandler *)(void *)ptr;
 
-  jbyte *data2 = env->GetByteArrayElements(data, nullptr);
-  handler.DataReceived(data2, length);
-  env->ReleaseByteArrayElements(data, data2, 0);
+  Java::ByteArrayElements array(env, data);
+  handler.DataReceived(array, length);
 }
 
 void
