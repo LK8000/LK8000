@@ -121,7 +121,7 @@ typedef struct {
 #endif
 
 // position independent data, for wind calculation
-typedef struct {
+struct windrotary_s {
 	// Ground Speed in m/s
 	int speed[WCALC_ROTARYSIZE];
 	// IAS if available
@@ -136,9 +136,9 @@ typedef struct {
 	int	start;
 	// size of buffer in use: will reduce windrotarysize usage
 	int	size;
-} windrotary_s;
+};
 
-typedef struct {
+struct ldrotary_s {
 	int distance[MAXLDROTARYSIZE]; // rotary array with a predefined max capacity
 	int altitude[MAXLDROTARYSIZE];
 	double ias[MAXLDROTARYSIZE];
@@ -149,7 +149,7 @@ typedef struct {
 	short start; // pointer to current first item in rotarybuf if used
 	short size; // real size of rotary buffer (0-size)
 	bool valid;
-} ldrotary_s;
+};
 
 typedef struct {
 	int triggervalue;	// example altitude limit
