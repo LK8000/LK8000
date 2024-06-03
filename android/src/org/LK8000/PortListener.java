@@ -26,7 +26,7 @@ package org.LK8000;
 /**
  * A listener for #AndroidPort objects.
  */
-interface PortListener {
+public interface PortListener {
   /**
    * The state has changed, and AndroidPort.getState() will provide
    * the new value.
