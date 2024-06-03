@@ -8,6 +8,7 @@
 
 #ifndef ENUMS_H
 #define ENUMS_H
+#include <cstdint>
 
 // 0: not started at all
 // 1: everything is alive
