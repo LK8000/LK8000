@@ -431,16 +431,13 @@ public class LK8000 extends Activity {
     }
     if (!missingPermissions.isEmpty()) {
       // request all missing permissions
-      final String[] permissions = missingPermissions
-              .toArray(new String[missingPermissions.size()]);
+      final String[] permissions = missingPermissions.toArray(new String[0]);
       ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
     } else {
       final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.size()];
       Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-      final String[] permissions = REQUIRED_SDK_PERMISSIONS
-              .toArray(new String[REQUIRED_SDK_PERMISSIONS.size()]);
-      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, permissions,
-              grantResults);
+      final String[] permissions = REQUIRED_SDK_PERMISSIONS.toArray(new String[0]);
+      onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, permissions, grantResults);
     }
   }
 
