@@ -85,6 +85,7 @@ void PGTaskMgr::Initialize() {
             case sector_type_t::DAe:
                 AddSector(curwp);
                 break;
+            case sector_type_t::SGP_START:
             case sector_type_t::LINE:
                 AddLine(curwp, param.radius);
                 break;

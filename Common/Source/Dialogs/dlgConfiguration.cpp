@@ -3059,7 +3059,7 @@ DataField* dfe = wp->GetDataField();
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    auto sectors = get_start_sectors(TSK_DEFAULT);
+    auto sectors = get_start_sectors(gTaskType);
     if (dfe && sectors) {
       for (auto type : *sectors) {
         dfe->addEnumText(get_sectors_label(type));
@@ -4084,7 +4084,7 @@ int ival;
 
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
   if (wp) {
-    auto sectors = get_start_sectors(TSK_DEFAULT);
+    auto sectors = get_start_sectors(gTaskType);
     sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
     if (StartLine != new_type) {
       StartLine = new_type;

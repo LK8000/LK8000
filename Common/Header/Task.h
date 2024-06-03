@@ -14,7 +14,8 @@ enum class sector_type_t : int {
   DAe = 2, // only Exist for not AAT and Not PGTask.
   LINE = 3, // only Used for Save Start and Finish Type in xml file.
 //  CONE = 4, // deleted
-  ESS_CIRCLE = 5 // Only Used In PG Optimized Task
+  ESS_CIRCLE = 5, // Only Used In PG Optimized Task
+  SGP_START = 6 // experimental : to follow sailplane GP start rule
 };
 
 struct task_sectors {

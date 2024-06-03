@@ -31,6 +31,7 @@ public:
     void SetDae(unsigned idx, const GeoPoint& center, double start, double end);
     void SetLine(unsigned idx, const GeoPoint& center, double radius, double radial);
     void SetStartSector(unsigned idx, const GeoPoint& center, double radius, double start, double end);
+    void SetGPStart(unsigned idx, const GeoPoint& center, double radius, double radial);
 
     void Clear();
 

@@ -427,6 +427,7 @@ add_library( LK8000 SHARED
     Common/Source/Draw/Task/TaskRendererDae.cpp
     Common/Source/Draw/Task/TaskRendererSector.cpp
     Common/Source/Draw/Task/TaskRendererStartSector.cpp
+    Common/Source/Draw/Task/TaskRendererSGPStart.cpp
     Common/Source/Draw/Task/TaskRendererMgr.cpp
 
     Common/Source/Draw/Multimaps/DrawMultimap.cpp

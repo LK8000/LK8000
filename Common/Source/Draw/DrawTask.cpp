@@ -230,18 +230,18 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 					double rotation=AngleLimit360(Task[i].Bisector-DisplayAngle);
 					const int length=IBLSCALE(14); //Make intermediate WP lines always of the same size independent by zoom level
 
-                    const auto& wpt = WayPointList[Task[i].Index];
+					const auto& wpt = WayPointList[Task[i].Index];
 
-                    const ScreenPoint Center = ToScreen(wpt.Latitude, wpt.Longitude);
-                    const ScreenPoint Start = {
-                            static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
-                            static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
-                    };
+					const ScreenPoint Center = ToScreen(wpt.Latitude, wpt.Longitude);
+					const ScreenPoint Start = {
+          			static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
+          			static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
+					};
 					rotation=Reciprocal(rotation);
-                    const ScreenPoint End = {
-                            static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
-                            static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
-                    };
+					const ScreenPoint End = {
+								static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
+								static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
+					};
 					Surface.DrawLine(PEN_SOLID, IBLSCALE(3), Start, End, taskcolor, rc);
 				} else {
 					Surface.SelectObject(hpStartFinishThin);
@@ -293,27 +293,49 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
     // Draw Start Turnpoint
 	if ((ActiveTaskPoint < 2) && ValidTaskPoint(0) && ValidTaskPoint(1)) {
 
-		const TaskRenderer* pTaskItem = gTaskSectorRenderer.GetRenderer(0);
-		assert(pTaskItem);
-		if(pTaskItem) {
+		const TaskRenderer* pItem = gTaskSectorRenderer.GetRenderer(0);
+		assert(pItem);
+		if(pItem) {
+
+      if (StartLine == sector_type_t::SGP_START && gTaskType == TSK_GP) {
+        double rotation=AngleLimit360(Task[0].OutBound - DisplayAngle + 90);
+				const int length=IBLSCALE(500); //Make intermediate WP lines always of the same size independent by zoom level
+
+				const auto& wpt = WayPointList[Task[0].Index];
+
+				const ScreenPoint Center = ToScreen(wpt.Latitude, wpt.Longitude);
+				const ScreenPoint Start = {
+         			static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
+         			static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
+				};
+				rotation=Reciprocal(rotation);
+				const ScreenPoint End = {
+							static_cast<ScreenPoint::scalar_type>(Center.x + (length*fastsine(rotation))),
+							static_cast<ScreenPoint::scalar_type>(Center.y - (length*fastcosine(rotation)))
+				};
+
+  			Surface.SelectObject(LKPen_Red_N1);
+				Surface.DrawLine(PEN_SOLID, IBLSCALE(1), Start, End, RGB_RED, rc);
+      }
+
 			Surface.SelectObject(hpStartFinishThick);
-			pTaskItem->Draw(Surface, rc, false);
+			pItem->Draw(Surface, rc, false);
 
 			Surface.SelectObject(LKPen_Red_N1);
-			pTaskItem->Draw(Surface, rc, false);
+			pItem->Draw(Surface, rc, false);
 		}
 
 		if (EnableMultipleStartPoints) {
 			for (int i = 0; i < MAXSTARTPOINTS; i++) {
 				if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
-					const TaskRenderer* pStartItem = gStartSectorRenderer.GetRenderer(i);
-					assert(pStartItem);
-					if(pStartItem) {
+					const TaskRenderer* pItem = gStartSectorRenderer.GetRenderer(i);
+					assert(pItem);
+					if(pItem) {
 						Surface.SelectObject(hpStartFinishThick);
-						pStartItem->Draw(Surface, rc, false);
+						pItem->Draw(Surface, rc, false);
 
 						Surface.SelectObject(LKPen_Red_N1);
-						pStartItem->Draw(Surface, rc, false);
+						pItem->Draw(Surface, rc, false);
 					}
 				}
 			}

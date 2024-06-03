@@ -481,14 +481,15 @@ bool CTaskFileHelper::LoadTaskPointList(const xml_node* node) {
             switch (Task[0].AATType) {
                 case sector_type_t::CIRCLE:
                 case sector_type_t::LINE:
+                case sector_type_t::SGP_START:
                     StartRadius = Task[0].AATCircleRadius;
                     break;
                 case sector_type_t::SECTOR:
                     StartRadius = Task[0].AATSectorRadius;
                     break;
-                default:
+                case sector_type_t::ESS_CIRCLE:
+                case sector_type_t::DAe:
                     assert(false);
-                    break;
             }
         }
     }
@@ -562,6 +563,9 @@ bool CTaskFileHelper::LoadTaskPoint(const xml_node* node) {
                 Task[idx].AATType = sector_type_t::DAe; // not Used in AAT and PGTask
             } else if (strcmp(szType, "ess_circle") == 0) {
                 Task[idx].AATType = sector_type_t::ESS_CIRCLE;
+                GetAttribute(node, "radius", Task[idx].AATCircleRadius);
+            } else if (strcmp(szType, "sgp_start") == 0) {
+                Task[idx].AATType = sector_type_t::SGP_START;
                 GetAttribute(node, "radius", Task[idx].AATCircleRadius);
             }
         }
@@ -979,8 +983,9 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
                 SetAttribute(node, "type", "ess_circle");
                 SetAttribute(node, "radius", param.radius);
                 break;
-            default:
-                assert(false);
+            case sector_type_t::SGP_START:
+                SetAttribute(node, "type", "sgp_start");
+                SetAttribute(node, "radius", param.radius);
                 break;
         }
 

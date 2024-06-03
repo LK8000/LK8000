@@ -38,6 +38,13 @@ void SetSectorRenderer(int tp_index, const task::line_data& data) {
   }
 }
 
+void SetSectorRenderer(int tp_index, const task::sgp_start_data& data) {
+  assert(tp_index == 0);
+  if (tp_index == 0) {
+    gTaskSectorRenderer.SetGPStart(tp_index, data.center, data.radius, data.outbound + 180);
+  }
+}
+
 template <sector_type_t type, int task_type>
 void SetSectorRenderer(int tp_index) {
   SetSectorRenderer(tp_index, task::zone_data<type, task_type>::get(tp_index));
@@ -85,11 +92,14 @@ void CalculateTaskSectors() {
                     gStartSectorRenderer.SetStartSector(i, center, StartRadius,
                                                         StartPt.OutBound + 45,
                                                         StartPt.OutBound - 45);
-                    break;                
+                    break;
                 case sector_type_t::LINE:
                     gStartSectorRenderer.SetLine(i, center, StartRadius, StartPt.OutBound);
                     break;
-                default:
+                case sector_type_t::SGP_START:
+                case sector_type_t::CIRCLE:
+                case sector_type_t::DAe:
+                case sector_type_t::ESS_CIRCLE:
                     assert(false);
                     break;
                 }

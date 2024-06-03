@@ -50,6 +50,9 @@ struct line_data {
   double outbound;
 };
 
+struct sgp_start_data : public line_data {
+  sgp_start_data(line_data&& data) : line_data(std::move(data))  {}
+};
 
 /**
  *  helper to get sector radius from Task definition.
@@ -100,6 +103,9 @@ template<>
 struct zone_radius<sector_type_t::LINE, TSK_AAT> 
     : public zone_radius<sector_type_t::CIRCLE, TSK_AAT> {};
 
+template<>
+struct zone_radius<sector_type_t::LINE, TSK_GP> 
+    : public zone_radius<sector_type_t::LINE, TSK_AAT> {};
 
 /**
  *  helper to get zone data struct from Task definition.
@@ -169,6 +175,13 @@ struct zone_data<sector_type_t::SECTOR, TSK_AAT> {
   }
 };
 
+template <int task_type>
+struct zone_data<sector_type_t::SGP_START, task_type> {
+  static sgp_start_data get(int tp_index) {
+    return  zone_data<sector_type_t::LINE, task_type>::get(tp_index);
+  }
+};
+
 
 /**
  * call `_Fn::invoke<sector_type_t>(tp_index, ...)` if tp_index is valid task point,
@@ -193,6 +206,8 @@ _Return invoke_for_task_point(int tp_index, _Args&& ...args) {
       return _Fn::template invoke<sector_type_t::LINE>(tp_index, std::forward<_Args>(args)...);
     case sector_type_t::ESS_CIRCLE:
       return _Fn::template invoke<sector_type_t::ESS_CIRCLE>(tp_index, std::forward<_Args>(args)...);
+    case sector_type_t::SGP_START:
+      return _Fn::template invoke<sector_type_t::SGP_START>(tp_index, std::forward<_Args>(args)...);
   }
 
   /* invalid zone type, if this happens, there is an unchecked 

@@ -25,6 +25,13 @@ constexpr sector_type_t default_start_sectors[] = {
   sector_type_t::SECTOR,
 };
 
+constexpr sector_type_t gp_start_sectors[] = {
+  sector_type_t::CIRCLE,
+  sector_type_t::LINE,
+  sector_type_t::SECTOR,
+  sector_type_t::SGP_START,
+};
+
 constexpr sector_type_t aat_start_sectors[] = {
   sector_type_t::CIRCLE,
   sector_type_t::LINE,
@@ -68,6 +75,7 @@ constexpr auto sector_labels_table = lookup_table<sector_type_t, const TCHAR*(*)
   { sector_type_t::DAe, [] { return LKGetText(_T("DAe 0.5/10")); } },
   { sector_type_t::LINE, MsgToken<393> }, // _@M393_ = "Line"
   { sector_type_t::ESS_CIRCLE , MsgToken<2189> }, // _@M2189_ = "Circle ESS"
+  { sector_type_t::SGP_START , [] { return _T("SGP Start line"); } },
 });
 
 template<size_t size>
@@ -118,8 +126,9 @@ std::unique_ptr<task_sectors> get_start_sectors(int type) {
   switch (type) {  
   default:
   case TSK_DEFAULT:
-  case TSK_GP:
     return make_task_sectors_adaptor(default_start_sectors);
+  case TSK_GP:
+    return make_task_sectors_adaptor(gp_start_sectors);
   case TSK_AAT:
     return make_task_sectors_adaptor(aat_start_sectors);
   }

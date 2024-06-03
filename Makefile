@@ -1005,6 +1005,7 @@ DRAW	:=\
 	$(DRW)/Task/TaskRendererDae.cpp \
 	$(DRW)/Task/TaskRendererSector.cpp \
 	$(DRW)/Task/TaskRendererStartSector.cpp \
+	$(DRW)/Task/TaskRendererSGPStart.cpp \
 	$(DRW)/Task/TaskRendererMgr.cpp \
 
 CALC	:=\

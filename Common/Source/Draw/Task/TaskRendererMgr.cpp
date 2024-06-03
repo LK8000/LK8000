@@ -16,6 +16,7 @@
 #include "TaskRendererLine.h"
 #include "TaskRendererSector.h"
 #include "TaskRendererStartSector.h"
+#include "TaskRendererSGPStart.h"
 
 TaskRendererMgr gTaskSectorRenderer;
 TaskRendererMgr gStartSectorRenderer;
@@ -80,6 +81,15 @@ void TaskRendererMgr::SetStartSector(unsigned idx, const GeoPoint& center, doubl
     }
 
     _renderer_list[idx] = std::make_unique<TaskRendererStartSector>(center, radius, start, end);
+}
+
+void TaskRendererMgr::SetGPStart(unsigned idx, const GeoPoint& center, double radius, double radial) {
+
+    if (_renderer_list.size() <= idx) {
+        _renderer_list.resize(idx + 1);
+    }
+
+    _renderer_list[idx] = std::make_unique<TaskRendererSGPStart>(center, radius, radial);
 }
 
 void TaskRendererMgr::Clear() {
