@@ -26,6 +26,6 @@ package org.LK8000;
 /**
  * A listener that gets called when data is received on a socket.
  */
-interface InputListener {
+public interface InputListener {
   void dataReceived(byte[] data, int length);
 }
