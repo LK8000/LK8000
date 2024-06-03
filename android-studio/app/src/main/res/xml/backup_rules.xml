@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content xmlns:android="http://schemas.android.com/apk/res/android">
+    <include domain="sharedpref" path="."/>
+    <include domain="file" path="_Configuration" />
+    <include domain="file" path="_Logger" />
+    <include domain="file" path="_Tasks" />
+    <include domain="file" path="_Polars" />
+    <include domain="file" path="_Waypoints" />
+
+    <exclude domain="file" path="_Configuration/DEMO.prf" />
+    <exclude domain="file" path="_Configuration/CAR.prf" />
+    <exclude domain="file" path="_Configuration/TREKKING.prf" />
+    <exclude domain="file" path="_Logger/DEMO.IGC" />
+    <exclude domain="file" path="_Tasks/DEMO.lkt" />
+    <exclude domain="file" path="_Polars/Example.plr" />
+    <exclude domain="file" path="_Waypoints/DEMO.cup" />
+</full-backup-content>
