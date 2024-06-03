@@ -26,6 +26,7 @@
 #include "Baro.h"
 #include "Comm/wait_ack.h"
 #include "OS/Sleep.h"
+#include "Util/StringAPI.hxx"
 
 #ifdef __linux__
   #include <dirent.h>
@@ -48,7 +49,7 @@
 #include <Android/Main.hpp>
 #include <Android/IOIOUartPort.h>
 #include <Android/UsbSerialPort.h>
-
+#include "Android/NativeView.hpp"
 #endif
 
 
@@ -269,6 +270,19 @@ void RefreshComPortList() {
     if(EngineeringMenu)
       COMMPort.emplace_back(NMEA_REPLAY);
 #ifdef ANDROID
+
+  // Fanet on Air3 7.3+
+  if (lk::filesystem::exist("/dev/ttyMT2")
+        && StringIsEqual(native_view->GetProduct(), "AIR3")) {
+
+    auto it = FindCOMMPort("/dev/ttyMT2");
+    if (it == COMMPort.end()) {
+      COMMPort.emplace_back(_T("/dev/ttyMT2"), "/dev/ttyMT2 (Fanet+)");
+    }
+    else {
+      (*it) = { _T("/dev/ttyMT2"), _T("/dev/ttyMT2 (Fanet+)") };
+    }
+  }
 
   JNIEnv *env = Java::GetEnv();
   if (env) {
