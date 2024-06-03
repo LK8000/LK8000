@@ -13,6 +13,7 @@
 
 #include <map>
 #include <functional>
+#include <cassert>
 #include "tchar.h"
 #include "Util/tstring.hpp"
 
