@@ -569,6 +569,10 @@ void DataFieldEnum::addEnumText(const TCHAR *Text, const TCHAR *Label) {
   mEntries.push_back({ (unsigned)mEntries.size(), Text, Label ? Label : _T("") });
 }
 
+void DataFieldEnum::setEnumLabel(int idx, const TCHAR *Label) {
+  mEntries[idx].mLabel = Label ? Label : _T("");
+}
+
 void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
   tstring szTmp(Text);
   std::replace(szTmp.begin(), szTmp.end(), _T('\n'), _T(' '));

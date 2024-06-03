@@ -153,6 +153,7 @@ class DataField{
   const TCHAR* GetUnits() const { return mUnits; }
 
   virtual void addEnumText(const TCHAR *Text, const TCHAR *Label = nullptr ) { assert(false); }
+  virtual void setEnumLabel(int idx, const TCHAR *Label) { assert(false); }
   virtual void addEnumTextNoLF(const TCHAR *Text) { assert(false); }
   virtual void Sort(int startindex=0) { assert(false); }
 	
@@ -297,8 +298,9 @@ class DataFieldEnum: public DataField {
 
 
   void addEnumTextNoLF(const TCHAR *Text) override;
-  void addEnumText(const TCHAR *Text, const TCHAR *Label) override ;
-	
+  void addEnumText(const TCHAR *Text, const TCHAR *Label) override;
+  void setEnumLabel(int idx, const TCHAR *Label) override;
+
 	size_t getCount() const override { return mEntries.size(); }
 	void removeLastEnum() override;
 

@@ -1492,15 +1492,32 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
                         dfe->addEnumText(item.GetName(), item.GetLabel());
                     });
 
-            COMMPort_t::iterator It = std::find_if(
-                COMMPort.begin(), 
-                COMMPort.end(), 
-                std::bind(&COMMPortItem_t::IsSamePort, _1, szPort)
-            );
+            auto It = FindCOMMPort(szPort);
             if(It != COMMPort.end()) {
                 dfe->Set((unsigned)std::distance(COMMPort.begin(), It));
             } else {
-                dfe->addEnumText(szPort);
+                auto label = [&]() -> tstring {
+#ifdef ANDROID
+                    std::string address;
+                    std::string prefix = szPort;
+                    if (prefix.find("BT_HM10:") == 0) {
+                        address = prefix.substr(8);
+                        prefix = prefix.substr(0, 8);
+                    }
+                    else if (prefix.find("BT_SPP:") == 0) {
+                        address = prefix.substr(7);
+                        prefix = prefix.substr(0, 7);
+                    }
+                    if (!address.empty()) {
+                        const char* label = BluetoothHelper::GetNameFromAddress(Java::GetEnv(), address.c_str());
+                        if (label) {
+                            return prefix + label;
+                        }
+                    }
+#endif
+                    return _T("");
+                };
+                dfe->addEnumText(szPort, label().c_str());
                 dfe->Set((unsigned)COMMPort.size());
             }
         }
@@ -3249,16 +3266,17 @@ static void OnLeScan(WndForm* pWndForm, const char *address, const char *name, c
   prefixed_address_stream << prefix() << address;
   std::string prefixed_address = prefixed_address_stream.str();
 
-  auto it = std::find_if(COMMPort.begin(), COMMPort.end(), [&](const auto& item) {
-      return item.IsSamePort(prefixed_address.c_str());
-  });
+  std::stringstream prefixed_name_stream;
+  prefixed_name_stream << prefix() << ((strlen(name)>0)? name : address);
 
+  auto it = FindCOMMPort(prefixed_address.c_str());
   if (it == COMMPort.end()) {
-    std::stringstream prefixed_name_stream;
-    prefixed_name_stream << prefix() << ((strlen(name)>0)? name : address);
-
     COMMPort.emplace_back(std::move(prefixed_address), prefixed_name_stream.str());
   }
+  else {
+    (*it) = { std::move(prefixed_address), prefixed_name_stream.str() };
+  }
+
   if(pWndForm) {
     pWndForm->SendUser(UPDATE_COM_PORT);
   }
@@ -3267,7 +3285,7 @@ static void OnLeScan(WndForm* pWndForm, const char *address, const char *name, c
 static bool OnUser(WndForm * pWndForm, unsigned id) {
   switch(id) {
     case UPDATE_COM_PORT: {
-      WndProperty *pWnd = static_cast<WndProperty *>(pWndForm->FindByName(TEXT("prpComPort1")));
+      auto pWnd = pWndForm->FindByName<WndProperty>(_T("prpComPort1"));
       if (pWnd) {
         DataField * dataField = pWnd->GetDataField();
         if(dataField) {
@@ -3275,11 +3293,15 @@ static bool OnUser(WndForm * pWndForm, unsigned id) {
           ScopeLock lock(COMMPort_mutex);
 
           for( const auto& item : COMMPort ) {
-            if(dataField->Find(item.GetName()) == -1) {
+            int idx = dataField->Find(item.GetName());
+            if(idx == -1) {
               dataField->addEnumText(item.GetName(), item.GetLabel());
+            } else {
+              dataField->setEnumLabel(idx, item.GetLabel());
             }
           }
         }
+        pWnd->RefreshDisplay();
       }
       return true;
     }

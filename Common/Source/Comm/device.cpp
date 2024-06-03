@@ -75,6 +75,12 @@ Mutex COMMPort_mutex; // needed for Bluetooth LE scan
 #endif
 COMMPort_t COMMPort;
 
+COMMPort_t::iterator FindCOMMPort(const TCHAR* port) {
+  return std::find_if(COMMPort.begin(), COMMPort.end(), [&](const auto& item) {
+    return item.IsSamePort(port);
+  });
+}
+
 DeviceDescriptor_t DeviceList[NUMDEV];
 
 /**
@@ -228,8 +234,8 @@ void RefreshComPortList() {
 
 #ifdef KOBO
 
-  if(KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
-    if(std::find_if(COMMPort.begin(), COMMPort.end(), std::bind(&COMMPortItem_t::IsSamePort, _1, _T("/dev/ttyGS0"))) == COMMPort.end()) {
+  if (KoboExportSerialAvailable() && !IsKoboOTGKernel()) {
+    if (FindCOMMPort(_T("/dev/ttyGS0")) == COMMPort.end()) {
       COMMPort.emplace_back(_T("/dev/ttyGS0"));
     }
   }

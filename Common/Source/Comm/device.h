@@ -49,6 +49,8 @@ protected:
 
 typedef std::vector<COMMPortItem_t> COMMPort_t;
 
+COMMPort_t::iterator FindCOMMPort(const TCHAR* port);
+
 typedef struct Declaration {
   TCHAR PilotName[64];
   TCHAR AircraftType[32];
