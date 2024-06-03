@@ -11,6 +11,10 @@ There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [version 7.4.15]
+ - Add new start turnpoint type for SGP task
+ - Android : add config for cloud backup and device transfert
+
+[version 7.4.15]
  - Implement device priority for external wind
  - Fix segfault is task turnpoint edit
 
