@@ -798,7 +798,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
   pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
  
-  if (strlen(params[10])>0) {
+  if ((*params[10]) && (params[10] != "0"sv)) {
     // No real need to parse this value,
     // but we do assume that no correction is required in this case
     // double GeoidSeparation = ParseAltitude(params[10], params[11]);
