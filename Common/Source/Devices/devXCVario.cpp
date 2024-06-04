@@ -104,7 +104,7 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
     // Static && Dynamic pressure in hPa
     pGPS->AirspeedAvailable = true;
     pGPS->IndicatedAirspeed = sqrt(163.2653061 * dyn_press / 100.);
-    double qne_alt = StaticPressureToQNEAltitude(static_press);
+    double qne_alt = StaticPressureToQNEAltitude(static_press * 100);
     pGPS->TrueAirspeed = TrueAirSpeed(pGPS->IndicatedAirspeed, qne_alt);
   }
 
