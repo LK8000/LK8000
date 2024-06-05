@@ -10,7 +10,15 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
-[version 7.4.15]
+[version 7.4.17]
+* Android : 
+ - display device name instead of adress for bluetooth device
+ - Air3 7.3 : make Fanet commport (ttyMT2) available in comport list
+* fix
+ - XCVario : Fix TAS calculation
+ - discard '0m' geoid separation in GPGGA nmea sentence
+
+[version 7.4.16]
  - Add new start turnpoint type for SGP task
  - Android : add config for cloud backup and device transfert
 
