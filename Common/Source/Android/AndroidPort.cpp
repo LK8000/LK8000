@@ -206,6 +206,8 @@ unsigned AndroidPort::RxThread() {
     std::vector<char> rxthread_buffer;
     int state = STATE_LIMBO;
 
+    bool connected = false;
+
     do {
         bool stop = WithLock(mutex, [&]() {
             if (running && bridge) {
@@ -227,8 +229,13 @@ unsigned AndroidPort::RxThread() {
                 ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
             });
             rxthread_buffer.clear();
-        } else if (state == STATE_READY) {
+        }
+        else if (!connected && state == STATE_READY) {
+            connected = true;
             devOpen(devGetDeviceOnPort(GetPortIndex()));
+        }
+        else if (connected) {
+          connected = false;
         }
 
         ScopeLock lock(mutex);
