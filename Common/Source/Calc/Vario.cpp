@@ -11,11 +11,11 @@
 #include "Calc/Vario.h"
 
 void ResetVarioAvailable(NMEA_INFO& Info) {
-  Info.VarioSourceIdx = std::numeric_limits<unsigned>::max();
+  Info.VarioSourceIdx = NUMDEV;
 }
 
 bool VarioAvailable(const NMEA_INFO& Info) {
-  return (!ReplayLogger::IsEnabled()) && (Info.VarioSourceIdx < std::numeric_limits<unsigned>::max());
+  return (!ReplayLogger::IsEnabled()) && (Info.VarioSourceIdx < NUMDEV);
 }
 
 const DeviceDescriptor_t* getVarioDevice(const NMEA_INFO& Info) {
@@ -26,7 +26,7 @@ const DeviceDescriptor_t* getVarioDevice(const NMEA_INFO& Info) {
 }
 
 void UpdateVarioSource( NMEA_INFO& Info, const DeviceDescriptor_t& d, double Vario) {
-  if((unsigned)d.PortNumber <= Info.VarioSourceIdx) {
+  if (d.PortNumber <= Info.VarioSourceIdx) {
 
     Info.VarioSourceIdx = d.PortNumber;
     Info.Vario = Vario;

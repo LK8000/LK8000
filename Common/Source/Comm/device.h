@@ -10,6 +10,7 @@
 #include "Util/tstring.hpp"
 #include "utils/stl_utils.h"
 #include "Comm/wait_ack.h"
+#include <optional>
 
 #define	NUMDEV		 6
 
@@ -111,8 +112,8 @@ struct DeviceDescriptor_t {
   bool IsRadio;
 
   bool m_bAdvancedMode;
-  int iSharedPort;
-  int PortNumber;
+  std::optional<unsigned> SharedPortNum;
+  unsigned PortNumber;
   bool Disabled;
 
   // Com port diagnostic
@@ -129,7 +130,7 @@ struct DeviceDescriptor_t {
 #endif
   NMEAParser nmeaParser;
 //  DeviceIO PortIO[NUMDEV];
-  void InitStruct(int i);
+  void InitStruct(unsigned i);
 
   BOOL _PutMacCready(double McReady);
   BOOL _PutBugs(double	Bugs);
@@ -196,8 +197,10 @@ BOOL ExpectString(DeviceDescriptor_t* d, const TCHAR *token);
 bool devIsDisabled();
 BOOL devOpen(DeviceDescriptor_t* d);
 BOOL devDirectLink(DeviceDescriptor_t* d,	BOOL bLink);
-void devParseNMEA(int portNum, const char *String,	NMEA_INFO	*GPS_INFO);
-BOOL devParseStream(int portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
+
+void devParseNMEA(unsigned portNum, const char *String,	NMEA_INFO	*GPS_INFO);
+BOOL devParseStream(unsigned portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
+
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender);
 BOOL devRequestFlarmVersion(DeviceDescriptor_t* d);
 BOOL devPutBugs(double	Bugs, DeviceDescriptor_t* Sender);

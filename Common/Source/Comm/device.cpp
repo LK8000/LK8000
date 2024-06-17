@@ -375,7 +375,7 @@ bool DeviceDescriptor_t::IsReady() const {
   return Com && Com->IsReady();
 }
 
-void DeviceDescriptor_t::InitStruct(int i) {
+void DeviceDescriptor_t::InitStruct(unsigned i) {
     PortNumber = i;
 
     Name[0] = '\0';
@@ -410,7 +410,7 @@ void DeviceDescriptor_t::InitStruct(int i) {
 
     HB = 0; // counter
 
-    iSharedPort = -1;
+    SharedPortNum.reset();
     m_bAdvancedMode = false;
 
 #ifdef DEVICE_SERIAL
@@ -701,12 +701,15 @@ BOOL devInit() {
 
         const TCHAR* Port = Config.GetPort();
 
-        dev.iSharedPort =-1;
+        dev.SharedPortNum.reset();
         for(uint j = 0; j < i ; j++) {
             if( (_tcscmp(Port, NMEA_REPLAY) != 0)
-                 && (!DeviceList[j].Disabled) && (IsIdenticalPort(i,j)) &&  DeviceList[j].iSharedPort <0) {
+                 && (!DeviceList[j].Disabled) 
+                 && (IsIdenticalPort(i,j)) 
+                 && !DeviceList[j].SharedPortNum.has_value()) 
+            {
 
-                dev.iSharedPort =j;
+                dev.SharedPortNum = j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
                 dev.Com = DeviceList[j].Com ;
                 pDev->Installer(&dev);
@@ -718,7 +721,7 @@ BOOL devInit() {
             }
         }
 
-        if(dev.iSharedPort >=0) { // skip making new device on shared ports
+        if(dev.SharedPortNum.has_value()) { // skip making new device on shared ports
             continue;
         }
 
@@ -765,7 +768,7 @@ static void devClose(DeviceDescriptor_t& d) {
     }
 
     auto port = std::exchange(d.Com, nullptr);
-    if (d.iSharedPort >= 0) {
+    if (d.SharedPortNum.has_value()) {
       // don't close shared Ports, these are only copies!
       port = nullptr;
     }
@@ -792,7 +795,7 @@ DeviceDescriptor_t* devGetDeviceOnPort(unsigned Port){
 }
 
 
-BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
+BOOL devParseStream(unsigned portNum, char* stream, int length, NMEA_INFO *pGPS) {
   DeviceDescriptor_t* din = devGetDeviceOnPort(portNum);
   if (!din) {
     return FALSE;
@@ -804,7 +807,7 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
   bool ret = FALSE;
   for (auto& d : DeviceList) {
     if (d.ParseStream) {
-      if ((d.iSharedPort == portNum) || (d.PortNumber == portNum)) {
+      if ((d.PortNumber == portNum) || (d.SharedPortNum.has_value() && d.SharedPortNum.value() == portNum)) {
         d.HB = LKHearthBeats;
         if (d.ParseStream(din, stream, length, pGPS)) {
 
@@ -819,7 +822,7 @@ BOOL devParseStream(int portNum, char* stream, int length, NMEA_INFO *pGPS) {
 
 
 // Called from Port task, after assembly of a string from serial port, ending with a LF
-void devParseNMEA(int portNum, const char* String, NMEA_INFO *pGPS){
+void devParseNMEA(unsigned portNum, const char* String, NMEA_INFO *pGPS){
   LogNMEA(String, portNum); // We must manage EnableLogNMEA internally from LogNMEA
 
   DeviceDescriptor_t* d = devGetDeviceOnPort(portNum);
@@ -835,7 +838,7 @@ void devParseNMEA(int portNum, const char* String, NMEA_INFO *pGPS){
   // intercept device specific parser routines 
     for(DeviceDescriptor_t& d2 : DeviceList) {
 
-      if((d2.iSharedPort == portNum) ||  (d2.PortNumber == portNum)) {
+      if ((d2.PortNumber == portNum) || (d2.SharedPortNum.has_value() && d2.SharedPortNum.value() == portNum)) {
 
         if ( d2.ParseNMEA && WithLock(CritSec_FlightData, d2.ParseNMEA, d, String, pGPS) ) {
           continue;

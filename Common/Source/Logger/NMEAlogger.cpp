@@ -16,12 +16,12 @@ bool	EnableLogNMEA = false;
 
 
 // New LogNMEA
-void LogNMEA(const char* text, int PortNum) {
+void LogNMEA(const char* text, unsigned PortNum) {
 
 static FILE *logfpall = NULL;
 static FILE *logfsingle[NUMDEV]= {NULL,NULL,NULL,NULL,NULL,NULL};
 
-static int iLastPort =-1;
+static unsigned iLastPort = NUMDEV;
 static bool wasWriting=false;
 
 
@@ -39,7 +39,7 @@ static bool wasWriting=false;
             }
           }
 
-          iLastPort =-1;
+          iLastPort = NUMDEV;
           wasWriting=false;
       }
       return;
@@ -61,11 +61,11 @@ static bool wasWriting=false;
         wasWriting=true;
   }
 
-  if(iLastPort != -1)  /* already a port info ? */
+  if(iLastPort != NUMDEV)  /* already a port info ? */
   {
     if( iLastPort != PortNum) /* more than one port active (another than the previous) */
     {
-      if((PortNum >=0) && (PortNum < NUMDEV))
+      if((PortNum >= 0) && (PortNum < NUMDEV))
       {
         if(logfsingle[PortNum] == NULL)
         {

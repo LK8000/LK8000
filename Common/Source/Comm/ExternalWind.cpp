@@ -16,7 +16,7 @@
 #include "Logger.h"
 
 void UpdateExternalWind(NMEA_INFO& Info, const DeviceDescriptor_t& d, double Speed, double Direction) {
-  if((unsigned)d.PortNumber <= Info.ExternalWindIdx) {
+  if (d.PortNumber <= Info.ExternalWindIdx) {
     Info.ExternalWindIdx = d.PortNumber;
     Info.ExternalWindDirection = AngleLimit360(Direction);
     Info.ExternalWindSpeed = Speed;
@@ -24,9 +24,9 @@ void UpdateExternalWind(NMEA_INFO& Info, const DeviceDescriptor_t& d, double Spe
 }
 
 void ResetExternalWindAvailable(NMEA_INFO& Info) {
-  Info.ExternalWindIdx = std::numeric_limits<unsigned>::max();
+  Info.ExternalWindIdx = NUMDEV;
 }
 
 bool ExternalWindAvailable(const NMEA_INFO& Info) {
-  return (!ReplayLogger::IsEnabled()) && (Info.ExternalWindIdx < std::numeric_limits<unsigned>::max());
+  return (!ReplayLogger::IsEnabled()) && (Info.ExternalWindIdx < NUMDEV);
 }

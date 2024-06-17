@@ -18,7 +18,7 @@ BaroIndex GetBaroIndex(const DeviceDescriptor_t* d) {
    */
   return {
     d ? d->nmeaParser.isFlarm : false,
-    d ? static_cast<unsigned>(d->PortNumber) : NUMDEV
+    d ? d->PortNumber : NUMDEV
   };
 }
 
@@ -36,12 +36,12 @@ PeriodClock lastBaroUpdate; // to check time elapsed since last baro altitude up
 }
 
 bool BaroAltitudeAvailable(const NMEA_INFO& Info) {
-  return Info.BaroSourceIdx.device_index < std::numeric_limits<unsigned>::max();
+  return Info.BaroSourceIdx.device_index < NUMDEV;
 }
 
 void ResetBaroAvailable(NMEA_INFO& Info) {
   Info.BaroSourceIdx.is_flarm = false;
-  Info.BaroSourceIdx.device_index = std::numeric_limits<unsigned>::max();
+  Info.BaroSourceIdx.device_index = NUMDEV;
   lastBaroUpdate.Reset();
 }
 

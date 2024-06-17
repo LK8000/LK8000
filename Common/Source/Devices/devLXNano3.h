@@ -126,7 +126,11 @@ class DevLXNanoIII : public DevLX
    static void IGCDownload(BOOL bDL) {bIGC_Download = bDL;};
    static BOOL Declare(void) {return m_bDeclare;};
    static void Declare(BOOL bDL) {m_bDeclare = bDL;};
-   static int Port(void) { if(m_pDevice) return m_pDevice->PortNumber; else return -1;};
+
+   static unsigned Port() {
+     return m_pDevice ? m_pDevice->PortNumber : NUMDEV;
+   }
+
 
    static DeviceDescriptor_t* Device(void) {return m_pDevice;};
    static void Device(DeviceDescriptor_t* d);

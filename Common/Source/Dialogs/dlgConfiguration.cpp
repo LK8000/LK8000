@@ -1234,7 +1234,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     bool bTCPServer = (_tcscmp(szPortName, _T("TCPServer")) == 0);
     bool bFileReplay = (_tcscmp(szPortName, NMEA_REPLAY)    == 0);
     bool bUDPServer = (_tcscmp(szPortName, _T("UDPServer")) == 0);
-    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || bFileReplay || ( DeviceList[SelectedDevice].iSharedPort>=0 ));
+    bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || bFileReplay || ( DeviceList[SelectedDevice].SharedPortNum.has_value()));
     if(bCOM)
     {
       ShowWindowControl(wf, TEXT("prpComPort1"), true);
@@ -1265,7 +1265,9 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     if( DeviceList[SelectedDevice].nmeaParser.gpsValid) _tcscat(StateText,TEXT("GPSFix "));
     if( DeviceList[SelectedDevice].nmeaParser.isFlarm) _tcscat(StateText,TEXT("Flarm "));
     if( devIsBaroSource(DeviceList[SelectedDevice])) _tcscat(StateText,TEXT("Baro "));
-    if( DeviceList[SelectedDevice].iSharedPort>=0 ) _tcscat(StateText,TEXT("Shared "));
+    if (DeviceList[SelectedDevice].SharedPortNum.has_value()) {
+      _tcscat(StateText,TEXT("Shared "));
+    }
 
     if(DeviceList[idx].Disabled)
       ShowWindowControl(wf, TEXT("prpStatus"),false);

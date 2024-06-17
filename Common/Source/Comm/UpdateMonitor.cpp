@@ -27,7 +27,7 @@ namespace {
  * Searches first device for which predicate "pred" returns true
  */
 template<typename Predicate>
-std::optional<int> find_device(Predicate&& p) {
+std::optional<unsigned> find_device(Predicate&& p) {
   for (auto& dev : DeviceList) {
     if (p(dev)) {
       return dev.PortNumber;
@@ -105,7 +105,7 @@ void check_gps_valid() {
 /**
  * activate "idx" port and desactivate all others
  */
-void set_active_gps(int idx) {
+void set_active_gps(unsigned idx) {
   for_each_device([=](auto& dev) {
     dev.nmeaParser.activeGPS = (dev.PortNumber == idx);
   });
@@ -247,14 +247,14 @@ bool UpdateMonitor() {
       continue;
     }
 
-    LKASSERT((unsigned)dev.PortNumber < std::size(wasSilent));
+    LKASSERT(dev.PortNumber < std::size(wasSilent));
     if ((LKHearthBeats - dev.HB) > 10) {
 #ifdef DEBUGNPM
-      StartupStore(_T("... GPS Port %d : no activity LKHB=%u CBHB=%u"), dev.PortNumber, LKHearthBeats, dev.HB);
+      StartupStore(_T("... GPS Port %u : no activity LKHB=%u CBHB=%u"), dev.PortNumber, LKHearthBeats, dev.HB);
 #endif
       // if this is active and supposed to have a valid fix.., but no HB..
       if ((active == dev.PortNumber) && dev.nmeaParser.gpsValid) {
-        StartupStore(_T("... GPS Port %d no hearthbeats, but still gpsValid: forced invalid  %s"), dev.PortNumber, WhatTimeIsIt());
+        StartupStore(_T("... GPS Port %u no hearthbeats, but still gpsValid: forced invalid  %s"), dev.PortNumber, WhatTimeIsIt());
       }
 
 #ifdef DEBUGNPM

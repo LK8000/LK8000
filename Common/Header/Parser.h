@@ -136,6 +136,6 @@ void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
 int FLARM_FindSlot(NMEA_INFO *GPS_INFO, uint32_t RadioId);
 
 extern bool EnableLogNMEA;
-void LogNMEA(const char* text, int);
+void LogNMEA(const char* text, unsigned PortNum);
 
 #endif

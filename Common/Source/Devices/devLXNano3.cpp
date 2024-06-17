@@ -2125,8 +2125,8 @@ BOOL DevLXNanoIII::PLXVC_INFO(DeviceDescriptor_t* d, char** params, size_t size,
 	 {
 
 		 if(d) 
-			 StartupStore(TEXT("Config Device %i: %s"),d->PortNumber, d->Name);
+			 StartupStore(TEXT("Config Device %u: %s"),d->PortNumber, d->Name);
 		 else
-			 StartupStore(TEXT("Remove Config Device %i: %s"),m_pDevice->PortNumber, m_pDevice->Name);
+			 StartupStore(TEXT("Remove Config Device %u: %s"),m_pDevice->PortNumber, m_pDevice->Name);
 		 m_pDevice = d;
 	 };
