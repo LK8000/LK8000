@@ -2,7 +2,7 @@
 Language:        Cpp
 BasedOnStyle:  Chromium
 
-Standard: Cpp11
+Standard: c++17
 
 ColumnLimit: 120
 
@@ -10,12 +10,12 @@ DerivePointerAlignment: false
 PointerAlignment: Left
 
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: false
+AlignConsecutiveAssignments: None
 
 BinPackArguments: true
 BinPackParameters : true
 
-SortIncludes: false
+SortIncludes: Never
 
 SpaceBeforeParens: ControlStatements
 AllowShortIfStatementsOnASingleLine: false
