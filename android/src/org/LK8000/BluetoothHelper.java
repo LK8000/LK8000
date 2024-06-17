@@ -29,6 +29,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -37,6 +38,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -196,13 +198,29 @@ final class BluetoothHelper {
     return (deviceType(device) != BluetoothDevice.DEVICE_TYPE_LE);
   }
 
+  private static List<ScanFilter> buildFilter(String address) {
+    if (address != null) {
+      final ScanFilter.Builder filter = new ScanFilter.Builder()
+              .setDeviceAddress(address);
+      return List.of(filter.build());
+    }
+    return null;
+  }
+
+  /**
+   * used by native code
+   */
   public static boolean startLeScan(ScanCallback cb) {
+    return startLeScan(null, cb);
+  }
+
+  public static boolean startLeScan(String address, ScanCallback cb) {
     if (hasLe) {
 
       final ScanSettings.Builder settings = new ScanSettings.Builder()
               .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
 
-      scanner.startScan(null, settings.build(), cb);
+      scanner.startScan(buildFilter(address), settings.build(), cb);
       return true;
     }
     return false;

@@ -38,7 +38,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -107,7 +106,7 @@ public class BluetoothGattClientPort
           }
         }
       };
-      BluetoothHelper.startLeScan(callback);
+      BluetoothHelper.startLeScan(address, callback);
     }
   }
 
