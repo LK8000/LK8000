@@ -3,7 +3,7 @@
  *  Released under GNU/GPL License v.2 or later
  *  See CREDITS.TXT file for authors and copyrights
  *
- *  File:   devFanet.h
+ *  File:   devFanet.cpp
  *  Author: Gerald Eichler
  *
  *  Created on 13 march 2020, 14:45
@@ -688,56 +688,60 @@ BOOL Close(DeviceDescriptor_t* d) {
   return TRUE;
 }
 
-BOOL HeartBeat(DeviceDescriptor_t* d) {
+std::string build_state_string(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+  /*
+   * Every 5 second
+   *
+   * State: 		#FNS lat(deg),lon(deg),alt(m MSL),speed(km/h),climb(m/s),heading(deg)
+   * 						[,year(since 1900),month(0-11),day,hour,min,sec,sep(m)[,turnrate(deg/sec)[,QNEoffset(m)]]]
+   * 					note: all values in float/int (NOT hex), time is required for FLARM in struct tm format
+   * 					note2: FLARM uses the ellipsoid altitudes ->
+   * 							sep = Height of geoid (mean sea level) above WGS84 ellipsoid
+   * 					note3: QNEoffset is optional: QNEoffset = QNE - GPS altitude
+   */
+
+  if (Basic.NAVWarning) {
+    return {};
+  }
+
+  std::ostringstream ss;
+  ss << "#FNS ";
+  ss << Basic.Latitude << ",";
+  ss << Basic.Longitude << ",";
+  ss << Basic.Altitude << ",";
+  ss << Units::To(unKiloMeterPerHour, Basic.Speed) << ",";
+  ss << Calculated.Heading << ",";
+  ss << Basic.Vario << ",";
+  ss << Basic.Year - 1900 << ",";
+  ss << Basic.Month << ",";
+  ss << Basic.Day << ",";
+  ss << Basic.Hour << ",";
+  ss << Basic.Minute << ",";
+  ss << Basic.Second << ",";
+  ss << LookupGeoidSeparation(Basic.Latitude, Basic.Longitude) << ",\n";
+
+  return ss.str();
+}
+
+BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
   static PeriodClock timeName;
+  static PeriodClock timeState;
 
- /*
-  * Every 5 second
-  *
-  * State: 		#FNS lat(deg),lon(deg),alt(m MSL),speed(km/h),climb(m/s),heading(deg)
-  * 						[,year(since 1900),month(0-11),day,hour,min,sec,sep(m)[,turnrate(deg/sec)[,QNEoffset(m)]]]
-  * 					note: all values in float/int (NOT hex), time is required for FLARM in struct tm format
-  * 					note2: FLARM uses the ellipsoid altitudes ->
-  * 							sep = Height of geoid (mean sea level) above WGS84 ellipsoid
-  * 					note3: QNEoffset is optional: QNEoffset = QNE - GPS altitude
-  */
-
-  std::string frm_to_send = WithLock(CritSec_FlightData, []() -> std::string {
-    if (GPS_INFO.NAVWarning) {
-        return {};
+  if (timeState.CheckUpdate(5000)) {
+    // Every 5 second : Send current state
+    std::string frm_to_send = build_state_string(Basic, Calculated);
+    if (!frm_to_send.empty()) {  // empty if no valid fix
+      d->Com->Write(frm_to_send.data(), frm_to_send.size());
     }
+  }
 
-    std::ostringstream ss;
-    ss << "#FNS ";
-    ss << GPS_INFO.Latitude << ",";
-    ss << GPS_INFO.Longitude << ",";
-    ss << GPS_INFO.Altitude << ",";
-    ss << Units::To(unKiloMeterPerHour, GPS_INFO.Speed) << ",";
-    ss << CALCULATED_INFO.Heading << ",";
-    ss << GPS_INFO.Vario << ",";
-    ss << GPS_INFO.Year - 1900 << ",";
-    ss << GPS_INFO.Month << ",";
-    ss << GPS_INFO.Day << ",";
-    ss << GPS_INFO.Hour << ",";
-    ss << GPS_INFO.Minute << ",";
-    ss << GPS_INFO.Second << ",";
-    ss << LookupGeoidSeparation(GPS_INFO.Latitude, GPS_INFO.Longitude) << ",\n";
-
-    return ss.str();
-  });
-
-  if (!frm_to_send.empty()) { // empty if no valid fix
-
-    d->Com->Write(frm_to_send.data(), frm_to_send.size());
-
-    if (timeName.CheckUpdate(60000)) {
-      // Every 1 : minute Send Pilot Name if not empty
-      if (PilotName_Config[0]) {
-        std::string payload = to_payload(to_utf8(PilotName_Config));
-        d->Com->WriteString("#FNT 2,00,0000,1,0,");
-        d->Com->Write(payload.data(), payload.size());
-        d->Com->WriteString("\n");
-      }
+  if (timeName.CheckUpdate(60000)) {
+    // Every 1 minute : Send Pilot Name if not empty
+    if (PilotName_Config[0]) {
+      std::string payload = to_payload(to_utf8(PilotName_Config));
+      d->Com->WriteString("#FNT 2,00,0000,1,0,");
+      d->Com->Write(payload.data(), payload.size());
+      d->Com->WriteString("\n");
     }
   }
   return TRUE;
@@ -748,7 +752,7 @@ BOOL HeartBeat(DeviceDescriptor_t* d) {
 void Install(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, DeviceName);
   d->ParseNMEA = ParseNMEA;
-  d->HeartBeat = HeartBeat;
+  d->SendData = SendData;
   d->Open = Open;
   d->Close = Close;
 }
