@@ -533,6 +533,9 @@ void RestartCommPorts() {
 // Only called from devInit() above which
 // is in turn called with LockComm
 BOOL devOpen(DeviceDescriptor_t* d) {
+
+  StartupStore(_T("Device %c ready @%s"), devLetter(d->PortNumber), WhatTimeIsIt());
+
   if (d && d->Open) {
     return d->Open(d);
   }

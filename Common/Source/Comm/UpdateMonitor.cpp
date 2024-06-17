@@ -158,6 +158,36 @@ bool UpdateMonitor() {
   static bool  lastvalidBaro=false;
   static bool wasSilent[std::size(DeviceList)] = { false };
 
+  // check for Baro source change
+  static unsigned last_active_baro = NUMDEV; 
+  unsigned baro_idx = WithLock(CritSec_FlightData, []() {
+    return GPS_INFO.BaroSourceIdx.device_index;
+  });
+  if (last_active_baro != baro_idx) {
+    last_active_baro = baro_idx;
+    StartupStore(_T(". Baro source changed to device %c @%s"), devLetter(baro_idx), WhatTimeIsIt());
+  }
+
+  // check for vario source change
+  static unsigned last_active_vario = NUMDEV;
+  unsigned vario_idx = WithLock(CritSec_FlightData, []() {
+    return GPS_INFO.VarioSourceIdx;
+  });
+  if (last_active_vario != vario_idx) {
+    last_active_vario = vario_idx;
+    StartupStore(_T(". Vario source changed to device %c @%s"), devLetter(vario_idx), WhatTimeIsIt());
+  }
+
+  // check for external wind source change
+  static unsigned last_active_wind = NUMDEV; 
+  unsigned wind_idx = WithLock(CritSec_FlightData, []() {
+    return GPS_INFO.ExternalWindIdx;
+  });
+  if (last_active_wind != wind_idx) {
+    last_active_wind = wind_idx;
+    StartupStore(_T(". Wind source changed to device %c @%s"), devLetter(wind_idx), WhatTimeIsIt());
+  }
+
   ScopeLock Lock(CritSec_Comm);
 
   // save current active port.
@@ -250,11 +280,11 @@ bool UpdateMonitor() {
     LKASSERT(dev.PortNumber < std::size(wasSilent));
     if ((LKHearthBeats - dev.HB) > 10) {
 #ifdef DEBUGNPM
-      StartupStore(_T("... GPS Port %u : no activity LKHB=%u CBHB=%u"), dev.PortNumber, LKHearthBeats, dev.HB);
+      StartupStore(_T("... GPS Port %c : no activity LKHB=%u CBHB=%u"), devLetter(dev.PortNumber), LKHearthBeats, dev.HB);
 #endif
       // if this is active and supposed to have a valid fix.., but no HB..
       if ((active == dev.PortNumber) && dev.nmeaParser.gpsValid) {
-        StartupStore(_T("... GPS Port %u no hearthbeats, but still gpsValid: forced invalid  %s"), dev.PortNumber, WhatTimeIsIt());
+        StartupStore(_T("... GPS Port %c no hearthbeats, but still gpsValid: forced invalid  %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
       }
 
 #ifdef DEBUGNPM
@@ -417,7 +447,7 @@ bool UpdateMonitor() {
     reset_nmea_info_availability();
 
     if (active)
-      StartupStore(_T(". GPS NMEA source changed to port %d  %s"), active.value(), WhatTimeIsIt());
+      StartupStore(_T(". GPS NMEA source changed to device %c  %s"), devLetter(active.value()), WhatTimeIsIt());
     else
       StartupStore(_T("... GPS NMEA source PROBLEM, no active GPS!  %s"), WhatTimeIsIt());
 
