@@ -43,7 +43,7 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
   C.C, // MacCready 0 to 10 m/s
   EE, // Bugs degradation, 0 = clean to 30 %
   F.FF, // Ballast 1.00 to 1.60
-  G, // 1 in climb, 0 in cruise, Note: Original Borgelt docushows vice versa
+  G, // 1 in climb, 0 in cruise, Note: Original Borgelt docu shows vice versa
   HH.H, // Outside airtemp in degrees celcius ( may have leading negative sign )
   QQQQ.Q, // QNH e.g. 1013.2
   PPPP.P, // Static pressure in hPa
@@ -74,8 +74,8 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
 
   int ival;
   if (ReadChecked(params[5], ival)) {
-    // 1 in climb, 0 in cruise, Note: Original Borgelt docushows vice versa
-    if (ival == 1) {
+    // 1 in climb, 0 in cruise, Note: Original Borgelt docu shows vice versa
+    if (ival == 0) {
       ExternalTriggerCruise = true;
       ExternalTriggerCircling = false;
       MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
