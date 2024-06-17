@@ -688,14 +688,14 @@ BOOL devInit() {
 
         dev.Disabled = Config.IsDisabled();
         if (dev.Disabled) {
-            StartupStore(_T(". Device %c is DISABLED.%s"), (_T('A') + i), NEWLINE);
+            StartupStore(_T(". Device %c is DISABLED."), devLetter(i));
             continue;
         }
 
         const DeviceRegister_t* pDev = GetRegisteredDevice(Config.szDeviceName);
         if (!pDev) {
             dev.Disabled = true;
-            StartupStore(_T(". Device %c : invalide drivers name <%s>%s"), (_T('A') + i), Config.szDeviceName, NEWLINE);
+            StartupStore(_T(". Device %c : invalide drivers name <%s>"), devLetter(i), Config.szDeviceName);
             continue;
         }
 
@@ -710,13 +710,13 @@ BOOL devInit() {
             {
 
                 dev.SharedPortNum = j;
-                StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c ! %s"), Port, (_T('A') + i),(_T('A') + j), NEWLINE);
+                StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c !"), Port, devLetter(i), devLetter(j));
                 dev.Com = DeviceList[j].Com ;
                 pDev->Installer(&dev);
 
                 if(devIsRadio(&dev)) {
                     RadioPara.Enabled = true;
-                    StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+                    StartupStore(_T(".  RADIO  %c  over  <%s>"), devLetter(i),  Port);
                 }
             }
         }
@@ -725,7 +725,7 @@ BOOL devInit() {
             continue;
         }
 
-        StartupStore(_T(". Device %c is <%s> Port=%s"), (_T('A') + i), Config.szDeviceName, Port);
+        StartupStore(_T(". Device %c is <%s> Port=%s"), devLetter(i), Config.szDeviceName, Port);
 
         ComPort* Com = make_ComPort(i, Config);
         if (Com && Com->Initialize()) {
@@ -745,11 +745,11 @@ BOOL devInit() {
 
        if(devIsRadio(&dev)) {
           RadioPara.Enabled = true;
-          StartupStore(_T(".  RADIO  %c  over  <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+          StartupStore(_T(".  RADIO  %c  over  <%s>"), devLetter(i),  Port);
        }
        if(devDriverActivated(TEXT("PVCOM"))) {
           RadioPara.Enabled = true;
-          StartupStore(_T(".  RADIO  %c  PVCOM over  shared <%s>%s"), (_T('A') + i),  Port, NEWLINE);
+          StartupStore(_T(".  RADIO  %c  PVCOM over  shared <%s>"), devLetter(i),  Port);
        }
 
     }
@@ -1265,4 +1265,11 @@ void SendDataToExternalDevice(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   }
 
   for_all_device(&DeviceDescriptor_t::_SendData, Basic, Calculated);
+}
+
+TCHAR devLetter(unsigned idx) {
+  if (idx < NUMDEV) {
+    return _T('A') + idx;
+  }
+  return _T('?');
 }

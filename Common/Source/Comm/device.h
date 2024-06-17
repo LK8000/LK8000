@@ -240,4 +240,6 @@ void devWriteNMEA(const TCHAR *Text) {
 
 void SendDataToExternalDevice(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
+TCHAR devLetter(unsigned idx);
+
 #endif

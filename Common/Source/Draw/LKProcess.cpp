@@ -3285,7 +3285,7 @@ lkfin_ete:
 				for (const auto& dev : DeviceList) {
 					if (dev.nmeaParser.activeGPS) {
 						// LKTOKEN _@M1199_ "Sat"
-						_stprintf(BufferTitle, _T("  (%s:%c)"), MsgToken<1199>(), _T('A') + dev.PortNumber);
+						_stprintf(BufferTitle, _T("  (%s:%c)"), MsgToken<1199>(), devLetter(dev.PortNumber));
 						break;  // we have got the first active port.
 					}
 				}
