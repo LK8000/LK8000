@@ -27,6 +27,7 @@
 #include "Comm/wait_ack.h"
 #include "OS/Sleep.h"
 #include "Util/StringAPI.hxx"
+#include "Comm/ExternalWind.h"
 
 #ifdef __linux__
   #include <dirent.h>
@@ -678,6 +679,7 @@ BOOL devInit() {
 
     ResetBaroAvailable(GPS_INFO);
     ResetVarioAvailable(GPS_INFO);
+    ResetExternalWindAvailable(GPS_INFO);
 
     for (unsigned i = 0; i < NUMDEV; i++) {
         const auto& Config = PortConfig[i];

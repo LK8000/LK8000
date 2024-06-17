@@ -57,6 +57,7 @@
 #include "Waypoints/SetHome.h"
 #include "Baro.h"
 #include "OS/Sleep.h"
+#include "Comm/ExternalWind.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -323,6 +324,8 @@ bool Startup(const TCHAR* szCmdLine) {
 
   ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
+  ResetExternalWindAvailable(GPS_INFO);
+
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();

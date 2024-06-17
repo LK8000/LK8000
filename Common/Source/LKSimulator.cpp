@@ -15,6 +15,8 @@
 #include "NavFunctions.h"
 #include "Calc/Vario.h"
 #include "Tracking/Tracking.h"
+#include "Comm/ExternalWind.h"
+#include "Baro.h"
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
@@ -44,7 +46,9 @@ void LKSimulator(void) {
   //
   GPS_INFO.NAVWarning = false;
   GPS_INFO.SatellitesUsed = 6;
+  ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
+  ResetExternalWindAvailable(GPS_INFO);
 
   // Even on ground, we can turn the glider in the hangar
   BEARING += SimTurn;
