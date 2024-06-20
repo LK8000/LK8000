@@ -215,7 +215,7 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
 
     double wind_speed, wind_dir;
     if (ReadChecked(params[11], wind_dir) && ReadChecked(params[12], wind_speed)) {
-        UpdateExternalWind(*pGPS, *d, Units::From(unKiloMeterPerHour, wind_speed), wind_dir);
+        UpdateExternalWind(*pGPS, *d, Units::From(unKiloMeterPerHour, wind_speed), wind_dir + 180);
     }
 
     return(true);
