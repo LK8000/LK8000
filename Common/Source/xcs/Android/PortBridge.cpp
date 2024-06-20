@@ -95,8 +95,7 @@ PortBridge::write(JNIEnv *env, const void *data, size_t length)
   if (length > write_buffer_size)
     length = write_buffer_size;
 
-  Java::ByteArrayElements dest(env, write_buffer);
-  memcpy(dest, data, length);
+  memcpy(Java::ByteArrayElements(env, write_buffer), data, length);
 
   return env->CallIntMethod(Get(), write_method, write_buffer.Get(), length);
 }
