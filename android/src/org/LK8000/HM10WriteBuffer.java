@@ -22,8 +22,11 @@
 
 package org.LK8000;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothStatusCodes;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -39,14 +42,25 @@ final class HM10WriteBuffer {
   private int nextWriteChunkIdx;
   private boolean lastChunkWriteError;
 
+  @SuppressLint("MissingPermission")
+  private static boolean writeCharacteritics(BluetoothGatt gatt, BluetoothGattCharacteristic dataCharacteristic, byte[] pendingWriteChunk) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return gatt.writeCharacteristic(dataCharacteristic, pendingWriteChunk,
+              dataCharacteristic.getWriteType()) == BluetoothStatusCodes.SUCCESS;
+    }
+    else {
+      dataCharacteristic.setValue(pendingWriteChunk);
+      return gatt.writeCharacteristic(dataCharacteristic);
+    }
+  }
+
   synchronized boolean beginWriteNextChunk(BluetoothGatt gatt,
                                            BluetoothGattCharacteristic dataCharacteristic) {
 
     if (pendingWriteChunks == null)
       return false;
 
-    dataCharacteristic.setValue(pendingWriteChunks[nextWriteChunkIdx]);
-    if (!gatt.writeCharacteristic(dataCharacteristic)) {
+    if (!writeCharacteritics(gatt, dataCharacteristic, pendingWriteChunks[nextWriteChunkIdx])) {
       Log.e(TAG, "GATT characteristic write request failed");
       setError();
       return false;
