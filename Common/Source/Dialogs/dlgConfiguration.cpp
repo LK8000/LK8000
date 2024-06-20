@@ -44,7 +44,7 @@
 #include "Android/NativeView.hpp"
 #include "Android/Context.hpp"
 #include "Android/BluetoothHelper.hpp"
-#include "Android/BluetoothLeScan.h"
+#include "Android/BluetoothLeScanner.h"
 #include "Util/ScopeExit.hxx"
 #include <sstream>
 #endif
@@ -3252,26 +3252,18 @@ wp->RefreshDisplay();
 
 #define UPDATE_COM_PORT 1
 
-static void OnLeScan(WndForm* pWndForm, const char *address, const char *name, const char *type) {
-  ScopeLock lock(COMMPort_mutex);
+static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
 
-  using std::string_view_literals::operator""sv;
-
-  auto prefix = [&]() {
-    if ("HM10"sv == type) {
-      return "BT_HM10:";
-    }
-    else {
-      return "BLE:";
-    }
-  };
+  constexpr std::string_view prefix = "BT_HM10:";
 
   std::stringstream prefixed_address_stream;
-  prefixed_address_stream << prefix() << address;
+  prefixed_address_stream << prefix << address;
   std::string prefixed_address = prefixed_address_stream.str();
 
   std::stringstream prefixed_name_stream;
-  prefixed_name_stream << prefix() << ((strlen(name)>0)? name : address);
+  prefixed_name_stream << prefix << ((strlen(name)>0)? name : address);
+
+  ScopeLock lock(COMMPort_mutex);
 
   auto it = FindCOMMPort(prefixed_address.c_str());
   if (it == COMMPort.end()) {
@@ -3401,10 +3393,15 @@ void dlgConfigurationShowModal(short mode){
 #ifdef ANDROID
   wf->SetOnUser(OnUser);
 
-  std::unique_ptr<BluetoothLeScan> BluetoothLeScanPtr;
+  std::unique_ptr<BluetoothLeScanner> BluetoothLeScanPtr;
   if(configMode==CONFIGMODE_DEVICE) {
     // Start Bluetooth LE device scan before Open Dialog
-    BluetoothLeScanPtr = std::make_unique<BluetoothLeScan>(wf, OnLeScan);
+    try {
+      BluetoothLeScanPtr = std::make_unique<BluetoothLeScanner>(wf, OnLeScan);
+    }
+    catch (std::exception& e) {
+      StartupStore("Failed to start BLE Scanner : %s", e.what());
+    }
   }
 #endif
 

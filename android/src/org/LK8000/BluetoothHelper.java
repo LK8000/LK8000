@@ -170,12 +170,11 @@ final class BluetoothHelper {
         }
       }
 
-      String[] addresses = new String[spp_devices.size() * 3];
+      String[] addresses = new String[spp_devices.size() * 2];
       int n = 0;
       for (BluetoothDevice device : spp_devices) {
         addresses[n++] = device.getAddress();
         addresses[n++] = device.getName();
-        addresses[n++] = "CLASSIC";
       }
 
       return addresses;

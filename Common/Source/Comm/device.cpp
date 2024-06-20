@@ -291,7 +291,7 @@ void RefreshComPortList() {
 
       COMMPort.emplace_back(_T("Bluetooth Server"));
 
-      static constexpr jsize BLUETOOTH_LIST_STRIDE = 3;
+      static constexpr jsize BLUETOOTH_LIST_STRIDE = 2;
 
       Java::LocalRef<jobjectArray> bonded = BluetoothHelper::list(env);
       if (bonded) {
@@ -307,20 +307,12 @@ void RefreshComPortList() {
             continue;
 
           Java::String j_name(env, (jstring) env->GetObjectArrayElement(bonded, i * BLUETOOTH_LIST_STRIDE + 1));
-          Java::String j_type(env, (jstring) env->GetObjectArrayElement(bonded, i * BLUETOOTH_LIST_STRIDE + 2));
 
-          auto prefix = [&]() {
-            if (j_type.ToString() == "HM10") {
-              return "BT_HM10:";
-            }
-            else {
-              return "BT_SPP:";
-            }
-          };
+          const std::string_view prefix = "BT_SPP:";
 
           std::stringstream prefixed_address, name;
-          prefixed_address << prefix() << address;
-          name << prefix() << (j_name ? j_name.ToString() : std::string());
+          prefixed_address << prefix << address;
+          name << prefix<< (j_name ? j_name.ToString() : std::string());
 
           COMMPort.emplace_back(prefixed_address.str(), name.str());
         }

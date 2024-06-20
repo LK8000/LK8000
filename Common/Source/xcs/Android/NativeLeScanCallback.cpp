@@ -26,6 +26,7 @@ Copyright_License {
 #include "Android/Main.hpp"
 #include "Java/Class.hxx"
 #include "Java/String.hxx"
+#include "Java/Env.hxx"
 
 #include <android/api-level.h>
 
@@ -38,23 +39,20 @@ namespace NativeLeScanCallback {
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeLeScanCallback_onLeScan(JNIEnv *env, jobject obj,
-                                              jstring _address, jstring _name, jstring _type)
+                                              jstring _address, jstring _name)
 {
   jlong ptr = env->GetLongField(obj, NativeLeScanCallback::ptr_field);
   if (ptr == 0)
     return;
 
-  char address[64]={}, name[256]={}, type[64] = {};
+  char address[64]={}, name[256]={};
   Java::String::CopyTo(env, _address, address, sizeof(address));
   if(_name) {
     Java::String::CopyTo(env, _name, name, sizeof(name));
   }
-  if(_type) {
-    Java::String::CopyTo(env, _type, type, sizeof(type));
-  }
 
   LeScanCallback &cb = *(reinterpret_cast<LeScanCallback*>(ptr));
-  cb.OnLeScan(address, name, type);
+  cb.OnLeScan(address, name);
 }
 
 void
@@ -83,5 +81,5 @@ NativeLeScanCallback::Create(JNIEnv *env, LeScanCallback &cb)
     /* Bluetooth LE not supported on this Android version */
     return nullptr;
 
-  return {env, env->NewObject(cls, ctor, (jlong)&cb)};
+  return NewObjectRethrow(env, cls, ctor, (jlong)&cb);
 }

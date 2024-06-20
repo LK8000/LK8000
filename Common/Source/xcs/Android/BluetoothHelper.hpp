@@ -64,20 +64,6 @@ namespace BluetoothHelper {
   gcc_const
   bool HasLe(JNIEnv *env);
 
-  /**
-   * Start scanning for Bluetooth LE devices.  Call StopLeScan() with
-   * the returned value when you're done.  Returns nullptr on error.
-   */
-  Java::LocalObject StartLeScan(JNIEnv *env, LeScanCallback &cb);
-
-  /**
-   * Stop scanning for Bluetooth LE devices.
-   *
-   * @param cb the return value of StartLeScan(); the local reference
-   * will be deleted by this function
-   */
-  void StopLeScan(const Java::LocalObject& cb);
-
   gcc_malloc
   PortBridge *connect(JNIEnv *env, const char *address);
 

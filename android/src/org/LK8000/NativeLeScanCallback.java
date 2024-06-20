@@ -23,18 +23,11 @@ Copyright_License {
 
 package org.LK8000;
 
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanRecord;
-import android.bluetooth.le.ScanResult;
-import android.os.ParcelUuid;
-
-import java.util.List;
-
 /**
  * An #ScanCallback implementation that passes
  * method calls to native code.
  */
-class NativeLeScanCallback extends LeScanCallback {
+public class NativeLeScanCallback {
   private static final String TAG = "NativeLeScanCallback";
 
   /**
@@ -46,27 +39,5 @@ class NativeLeScanCallback extends LeScanCallback {
     ptr = _ptr;
   }
 
-  public final native void onLeScan(String address, String name, String type);
-
-  public void onScanResult(ScanResult result) {
-    ScanRecord record = result.getScanRecord();
-    if (record != null) {
-      BluetoothDevice device = result.getDevice();
-      if (device != null) {
-        List<ParcelUuid> puuids = record.getServiceUuids();
-        if (puuids != null) {
-          for (ParcelUuid puuid : puuids) {
-            if (BluetoothGattClientPort.isSupported(puuid.getUuid())) {
-              onLeScan(device.getAddress(), record.getDeviceName(), "HM10");
-            }
-          }
-        }
-        else {
-          // some device don't provide their service uuid, add it device as "BLE Sensor"
-          onLeScan(device.getAddress(), record.getDeviceName(), "HM10");
-        }
-      }
-    }
-  }
-
+  public final native void onLeScan(String address, String name);
 }

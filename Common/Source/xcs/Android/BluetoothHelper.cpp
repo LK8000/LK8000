@@ -41,7 +41,6 @@ namespace BluetoothHelper {
   static jmethodID getNameFromAddress_method, getTypeFromAddress_method;
   static jmethodID list_method;
   static jmethodID connect_method, hm10connect_method, createServer_method;
-  static jmethodID startLeScan_method, stopLeScan_method;
 
   static std::map<std::string, std::string> address_to_name;
 }
@@ -78,11 +77,6 @@ BluetoothHelper::Initialise(JNIEnv *env)
 
   createServer_method = env->GetStaticMethodID(cls, "createServer",
                                                "()Lorg/LK8000/AndroidPort;");
-
-  startLeScan_method = env->GetStaticMethodID(cls, "startLeScan",
-                                              "(Landroid/bluetooth/le/ScanCallback;)Z");
-  stopLeScan_method = env->GetStaticMethodID(cls, "stopLeScan",
-                                             "(Landroid/bluetooth/le/ScanCallback;)V");
 
   return true;
 }
@@ -153,7 +147,7 @@ BluetoothHelper::list(JNIEnv *env)
   if (!cls.IsDefined())
     return nullptr;
 
-  /* call BluetoothHelper.connect() */
+  /* call BluetoothHelper.list() */
 
   return {env, (jobjectArray)env->CallStaticObjectMethod(cls, list_method)};
 }
@@ -162,33 +156,6 @@ bool
 BluetoothHelper::HasLe(JNIEnv *env)
 {
   return cls.IsDefined() && env->GetStaticBooleanField(cls, hasLe_field);
-}
-
-Java::LocalObject
-BluetoothHelper::StartLeScan(JNIEnv *env, LeScanCallback &_cb)
-{
-  assert(HasLe(env));
-
-  Java::LocalObject cb = NativeLeScanCallback::Create(env, _cb);
-  if (cb == nullptr) {
-    env->ExceptionClear();
-    return nullptr;
-  }
-
-  if (!env->CallStaticBooleanMethod(cls, startLeScan_method, cb.Get())) {
-    env->ExceptionClear();
-    return nullptr;
-  }
-
-  return cb;
-}
-
-void
-BluetoothHelper::StopLeScan(const Java::LocalObject& cb)
-{
-  JNIEnv *env = cb.GetEnv();
-  assert(HasLe(env));
-  env->CallStaticVoidMethod(cls, stopLeScan_method, cb.Get());
 }
 
 PortBridge *

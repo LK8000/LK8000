@@ -38,6 +38,7 @@
 #include "UsbSerialHelper.h"
 #include "AndroidFileUtils.h"
 #include "NetUtil.h"
+#include "BluetoothLeScanner.h"
 
 #ifndef DOCTEST_CONFIG_DISABLE
 #  include <doctest/doctest.h>
@@ -95,6 +96,7 @@ Java_org_LK8000_NativeView_initializeNative(JNIEnv *env, jobject obj,
   UsbSerialHelper::Initialise(env);
   AndroidFileUtils::Initialise(env);
   NetUtil::Initialise(env);
+  BluetoothLeScanner::Initialise(env);
 
   const bool have_ioio = IOIOHelper::Initialise(env);
 
@@ -199,6 +201,7 @@ Java_org_LK8000_NativeView_deinitializeNative(JNIEnv *env, jobject obj)
   InternalSensors::Deinitialise(env);
   AndroidBitmap::Deinitialise(env);
   NativeView::Deinitialise(env);
+  BluetoothLeScanner::Deinitialise(env);
 }
 
 extern "C"
