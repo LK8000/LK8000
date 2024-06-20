@@ -10,6 +10,14 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.18]
+- XCVario: Fix Cruise/Climb switch
+- XCTracer: Fix Wind bearing
+- Info box: Fix satellite count title
+- External Wind: Fix missing availability reset
+- Add device fallback info to RUNTIME.log
+- fix possible crash after device config change
+
 [version 7.4.17]
 * Android : 
  - display device name instead of adress for bluetooth device
