@@ -21,4 +21,9 @@ DeviceRegister_t GPSBipRegister() {
   return devRegister(_T("GPSBip"), GPSBipInstall);
 }
 
+inline constexpr
+DeviceRegister_t UltraBipRegister() {
+  return devRegister(_T("UltraBip / BlueBip"), GPSBipInstall);
+}
+
 #endif	/* DEVGPSBIP_H */

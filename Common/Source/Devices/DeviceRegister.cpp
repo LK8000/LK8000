@@ -117,6 +117,7 @@ DeviceRegister_t device_list[] = {
     XCVario::Register(),
     GenericAutopilot::Register(),
     AirControlDisplay::Register(),
+    UltraBipRegister(),
 };
 
 
