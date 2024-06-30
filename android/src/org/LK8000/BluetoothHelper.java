@@ -163,9 +163,11 @@ final class BluetoothHelper {
 
       for (BluetoothDevice device : devices) {
         ParcelUuid[] uuids = device.getUuids();
-        for (ParcelUuid puuid : uuids) {
-          if (SPP_UUID.equals(puuid.getUuid())) {
+        if (uuids != null) {
+          for (ParcelUuid puuid : uuids) {
+            if (SPP_UUID.equals(puuid.getUuid())) {
               spp_devices.add(device);
+            }
           }
         }
       }
