@@ -61,6 +61,7 @@
 #include "devXCVario.h"
 #include "devGenericAutopilot.h"
 #include "devAirControlDisplay.h"
+#include "devFlyBeeper.h"
 
 namespace {
 
@@ -119,6 +120,7 @@ DeviceRegister_t device_list[] = {
     AirControlDisplay::Register(),
     Stodeus::UltraBipRegister(),
     Stodeus::BlueBipRegister(),
+    FlyBeeper::Register(),
 };
 
 

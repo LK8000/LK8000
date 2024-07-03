@@ -664,6 +664,7 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devXCVario.cpp
     Common/Source/Devices/devGenericAutopilot.cpp
     Common/Source/Devices/devAirControlDisplay.cpp
+    Common/Source/Devices/devFlyBeeper.cpp
     Common/Source/Devices/DeviceRegister.cpp
 
     Common/Source/Dialogs/dlgSelectObject.cpp

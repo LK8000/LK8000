@@ -1229,6 +1229,7 @@ DEVS	:=\
 	$(DEV)/devXCVario.cpp \
 	$(DEV)/devGenericAutopilot.cpp \
 	$(DEV)/devAirControlDisplay.cpp \
+	$(DEV)/devFlyBeeper.cpp \
 	$(DEV)/DeviceRegister.cpp \
 
 VOLKS	:=\
