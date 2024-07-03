@@ -448,6 +448,10 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
     if (settings::read(sname, svalue, szRegistryDevice[n], Port.szDeviceName)) return;
     if (settings::read(sname, svalue, szRegistryPortName[n], Port.szPort)) {
+      if (_tcsncmp(Port.szPort, _T("BT_HM10:"), 3) == 0) {
+        tstring address(&Port.szPort[8]);
+        lk::snprintf(Port.szPort, _T("BLE:%s"), address.c_str());
+      }
       if (_tcsncmp(Port.szPort, _T("BT:"), 3) == 0) {
         tstring address(&Port.szPort[3]);
 #ifdef ANDROID
@@ -455,8 +459,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
         if (env) {
           std::string type = BluetoothHelper::GetTypeFromAddress(env, address.c_str());
           if (type == "TYPE_LE") {
-            // "BT:XXXXX" to "BT_HM10:XXXXX"
-            lk::snprintf(Port.szPort, _T("BT_HM10:%s"), address.c_str());
+            // "BT:XXXXX" to "BLE:XXXXX"
+            lk::snprintf(Port.szPort, _T("BLE:%s"), address.c_str());
           } else if (type != "TYPE_UNKNOWN") {
             // CLASSIC or DUAL
             // "BT:XXXXX" to "BT_SPP:XXXXX"

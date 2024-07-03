@@ -120,7 +120,7 @@ public:
 	GlobalRef(const LocalRef<T> &src) noexcept
 					:GlobalRef(src.GetEnv(), src.Get()) {}
 
-	~GlobalRef() noexcept {
+	virtual ~GlobalRef() noexcept {
 		GetEnv()->DeleteGlobalRef(value);
 	}
 

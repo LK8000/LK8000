@@ -26,14 +26,6 @@ protected:
     PortBridge* CreateBridge() override;
 };
 
-class BleHM10Port : public AndroidPort {
-public:
-    using AndroidPort::AndroidPort;
-
-protected:
-    PortBridge* CreateBridge() override;
-};
-
 class BluetoothServerPort : public AndroidPort {
 public:
     using AndroidPort::AndroidPort;

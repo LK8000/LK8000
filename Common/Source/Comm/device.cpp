@@ -51,6 +51,7 @@
 #include <Android/IOIOUartPort.h>
 #include <Android/UsbSerialPort.h>
 #include "Android/NativeView.hpp"
+#include <Android/BluetoothSensor.h>
 #endif
 
 
@@ -396,6 +397,12 @@ void DeviceDescriptor_t::InitStruct(unsigned i) {
     HeartBeat = nullptr;
     NMEAOut = nullptr;
     PutTarget = nullptr;
+
+    OnHeartRate = nullptr;
+    OnBarometricPressure = nullptr;
+    OnOutsideTemperature = nullptr;
+    OnBatteryLevel = nullptr;
+
     Disabled = true;
 
     IsBaroSource = false;
@@ -608,14 +615,18 @@ namespace {
   ComPort* make_ComPort(int idx, const PortConfig_t& Config) {
     const tstring_view Port = Config.GetPort();
 
-    if (check_prefix(Port, _T("BT_SPP:"))) {
+    constexpr tstring_view bt_spp = _T("BT_SPP:");
+    constexpr tstring_view bt_sensor = _T("BLE:");
+    constexpr tstring_view usb = _T("USB:");
+
+    if (check_prefix(Port, bt_spp)) {
       if(BluetoothStart()) {
-        return new BthPort(idx, &Port[7]);
+        return new BthPort(idx, &Port[bt_spp.size()]);
       }
     }
-    else if (check_prefix(Port, _T("BT_HM10:"))) {
+    else if (check_prefix(Port, bt_sensor)) {
 #ifdef ANDROID
-      return new BleHM10Port(idx, &Port[8]);
+      return new BluetoothSensor(idx, &Port[bt_sensor.size()]);
 #endif
     }
     else if (check_prefix(Port, DEV_INTERNAL_NAME)) {
@@ -647,14 +658,15 @@ namespace {
       return new IOIOUartPort(idx, Port.data(), Config.GetBaudrate());
 #endif
     }
-    else if (check_prefix(Port, _T("USB:"))) {
+    else if (check_prefix(Port, usb)) {
 #ifdef ANDROID
-      return new UsbSerialPort(idx, &Port[4], Config.GetBaudrate(), Config.dwBitIndex);
+      return new UsbSerialPort(idx, &Port[usb.size()], Config.GetBaudrate(), Config.dwBitIndex);
 #endif
     }
     else if (check_prefix(Port, NMEA_REPLAY)) {
       return new FilePort(idx, Port.data());
-    } else {
+    } 
+    else {
       return new SerialPort(idx, Port.data(), Config.GetBaudrate(), Config.dwBitIndex, PollingMode);
     }
 

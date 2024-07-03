@@ -248,7 +248,7 @@ final class BluetoothHelper {
     return new BluetoothClientPort(socket);
   }
 
-  public static AndroidPort connectHM10(Context context, String address) {
+  public static AndroidPort connectSensor(Context context, String address) {
     if (adapter == null || !hasLe)
       return null;
 

@@ -9,6 +9,7 @@
 #include <vector>
 #include "Util/tstring.hpp"
 #include "utils/stl_utils.h"
+#include "utils/uuid.h"
 #include "Comm/wait_ack.h"
 #include <optional>
 
@@ -102,6 +103,15 @@ struct DeviceDescriptor_t {
   BOOL (*HeartBeat)(DeviceDescriptor_t* d);
   BOOL (*NMEAOut)(DeviceDescriptor_t* d, const char* String);
   BOOL (*PutTarget)(DeviceDescriptor_t* d, const WAYPOINT& wpt);
+
+  BOOL (*OnHeartRate)(DeviceDescriptor_t& d, NMEA_INFO& info, unsigned bpm);
+  BOOL (*OnBarometricPressure)(DeviceDescriptor_t& d, NMEA_INFO& info, double Pa);
+  BOOL (*OnOutsideTemperature)(DeviceDescriptor_t& d, NMEA_INFO& info, double temp);
+  BOOL (*OnBatteryLevel)(DeviceDescriptor_t& d, NMEA_INFO& info, double level);
+
+  bool (*EnableGattCharacteristic)(uuid_t, uuid_t);
+  void (*OnGattCharacteristic)(DeviceDescriptor_t&, NMEA_INFO&, uuid_t, uuid_t, const std::vector<uint8_t>&);
+
 
   /**
    * called at the the end of calculation thread loop for each GPS FIX

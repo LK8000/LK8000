@@ -33,7 +33,7 @@ import java.util.Arrays;
 
 /**
  * This class helps with writing chunked data to a Bluetooth LE HM10
- * device.
+ * and compatible device.
  */
 final class HM10WriteBuffer {
   private static final String TAG = "HM10WriteBuffer";
@@ -106,7 +106,7 @@ final class HM10WriteBuffer {
 
   synchronized int write(BluetoothGatt gatt,
                          BluetoothGattCharacteristic dataCharacteristic,
-                         BluetoothGattCharacteristic deviceNameCharacteristic,
+                         AsyncCompletionQueue queueCommand,
                          byte[] data, int length, int maxChunkSize) {
     final long TIMEOUT = 5000;
 
@@ -116,21 +116,11 @@ final class HM10WriteBuffer {
     if (!drain())
       return 0;
 
-    if ((dataCharacteristic == null) || (deviceNameCharacteristic == null))
+    if (dataCharacteristic == null)
       return 0;
 
-    /* Workaround: To avoid a race condition when data is sent and received
-       at the same time, we place a read request for the device name
-       characteristic here. This way, we can place the actual write
-       operation in the read callback so that the write operation is performed
-       int the GATT event handling thread. */
-    if (!gatt.readCharacteristic(deviceNameCharacteristic)) {
-      Log.e(TAG, "GATT characteristic read request failed");
-      return 0;
-    }
-
-    /* Write data in 20 byte large chunks at maximun. Most GATT devices do
-       not support characteristic values which are larger than 20 bytes. */
+    /* Write data in `maxChunkSize` byte large chunks at maximun. GATT devices do
+       not support characteristic values which are larger than negotiated mtu size. */
     int writeChunksCount = (length + maxChunkSize - 1) / maxChunkSize;
     pendingWriteChunks = new byte[writeChunksCount][];
     nextWriteChunkIdx = 0;
@@ -141,14 +131,22 @@ final class HM10WriteBuffer {
       pendingWriteChunks[i] = Arrays.copyOfRange(data, from, to);
     }
 
-    try {
-      wait(TIMEOUT);
-    } catch (InterruptedException e) {
-      /* cancel the write on interruption */
-      pendingWriteChunks = null;
-      return 0;
-    }
+    queueCommand.add(() -> {
+      if (!beginWriteNextChunk(gatt, dataCharacteristic)) {
+        setError();
+        queueCommand.completed();
+      }
+    });
 
+    if (pendingWriteChunks != null) {
+      try {
+        wait(TIMEOUT);
+      } catch (InterruptedException e) {
+        /* cancel the write on interruption */
+        pendingWriteChunks = null;
+        return 0;
+      }
+    }
     if (pendingWriteChunks != null && nextWriteChunkIdx == 0) {
       /* timeout */
       pendingWriteChunks = null;

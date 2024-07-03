@@ -1227,7 +1227,7 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 
     bool bBt = ((_tcslen(szPortName) > 3)
             && ((_tcsncmp(szPortName, _T("BT_SPP:"), 7) == 0)
-                || (_tcsncmp(szPortName, _T("BT_HM10:"), 8) == 0)
+                || (_tcsncmp(szPortName, _T("BLE:"), 4) == 0)
                 || (_tcsncmp(szPortName, _T("Bluetooth Server"), 16) == 0)));
 
     bool bTCPClient = (_tcscmp(szPortName, _T("TCPClient")) == 0);
@@ -1488,11 +1488,10 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
         DataField* dfe =  wp->GetDataField();
         if(dfe) {
             dfe->Clear();
-            std::for_each(
-                    COMMPort.begin(), COMMPort.end(),
-                    [dfe](const COMMPortItem_t &item) {
-                        dfe->addEnumText(item.GetName(), item.GetLabel());
-                    });
+
+            for (const auto& item : COMMPort) {
+              dfe->addEnumText(item.GetName(), item.GetLabel());
+            }
 
             auto It = FindCOMMPort(szPort);
             if(It != COMMPort.end()) {
@@ -1502,9 +1501,9 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
 #ifdef ANDROID
                     std::string address;
                     std::string prefix = szPort;
-                    if (prefix.find("BT_HM10:") == 0) {
-                        address = prefix.substr(8);
-                        prefix = prefix.substr(0, 8);
+                    if (prefix.find("BLE:") == 0) {
+                      address = prefix.substr(4);
+                      prefix = prefix.substr(0, 4);
                     }
                     else if (prefix.find("BT_SPP:") == 0) {
                         address = prefix.substr(7);
@@ -3254,7 +3253,7 @@ wp->RefreshDisplay();
 
 static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
 
-  constexpr std::string_view prefix = "BT_HM10:";
+  constexpr std::string_view prefix = "BLE:";
 
   std::stringstream prefixed_address_stream;
   prefixed_address_stream << prefix << address;

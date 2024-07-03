@@ -89,11 +89,14 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Java/Object.cxx
     Common/Source/xcs/Java/Exception.cxx
 
+    Common/Source/Java/UUID.cpp
+
     Common/Source/Android/Main.cpp
     Common/Source/Android/InternalPort.cpp
     Common/Source/Android/AndroidPort.cpp
     Common/Source/Android/BluetoothPort.cpp
     Common/Source/Android/BluetoothLeScanner.cpp
+    Common/Source/Android/BluetoothSensor.cpp
 
     Common/Source/Android/IOIOUartPort.cpp
 

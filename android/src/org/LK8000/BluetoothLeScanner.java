@@ -46,7 +46,7 @@ public class BluetoothLeScanner extends LeScanCallback {
         List<ParcelUuid> puuids = record.getServiceUuids();
         if (puuids != null) {
             for (ParcelUuid puuid : puuids) {
-                if (BluetoothGattClientPort.isSupported(puuid.getUuid())) {
+                if (BluetoothGattClientPort.isServiceSupported(puuid.getUuid())) {
                     listener.onLeScan(device.getAddress(), record.getDeviceName());
                 }
             }

@@ -26,6 +26,8 @@ package org.LK8000;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.UUID;
+
 import android.util.Log;
 
 /**
@@ -145,6 +147,22 @@ class MultiPort implements AndroidPort, InputListener {
     InputListener l = inputListener;
     if (l != null)
       l.dataReceived(data, length);
+  }
+
+  @Override
+  public boolean doEnableNotification(UUID service, UUID characteristic) {
+    InputListener l = inputListener;
+    if (l != null) {
+      return l.doEnableNotification(service, characteristic);
+    }
+    return false;
+  }
+
+  @Override
+  public void onCharacteristicChanged(UUID service, UUID characteristic, byte[] value, int length) {
+    InputListener l = inputListener;
+    if (l != null)
+      l.onCharacteristicChanged(service, characteristic, value, length);
   }
 
   protected void stateChanged() {

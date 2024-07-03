@@ -26,13 +26,14 @@ Copyright_License {
 #include "Java/Class.hxx"
 #include "Java/Env.hxx"
 #include "Java/Array.hxx"
+#include "Java/UUID.h"
 
 #include <stddef.h>
 
-namespace NativeInputListener {
-  static Java::TrivialClass cls;
-  static jmethodID ctor;
-  static jfieldID ptr_field;
+namespace {
+  Java::TrivialClass cls;
+  jmethodID ctor;
+  jfieldID ptr_field;
 };
 
 extern "C"
@@ -40,15 +41,54 @@ JNIEXPORT void JNICALL
 Java_org_LK8000_NativeInputListener_dataReceived(JNIEnv *env, jobject obj,
                                                  jbyteArray data, jint length)
 {
-  jlong ptr = env->GetLongField(obj, NativeInputListener::ptr_field);
+  jlong ptr = env->GetLongField(obj, ptr_field);
   if (ptr == 0)
     /* not yet set */
     return;
 
-  DataHandler &handler = *(DataHandler *)(void *)ptr;
+  auto& handler = *reinterpret_cast<DataHandler*>(ptr);
 
   Java::ByteArrayElements array(env, data);
   handler.DataReceived(array, length);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_LK8000_NativeInputListener_onCharacteristicChanged(JNIEnv* env, jobject obj,
+                                                                 jobject service, jobject characteristic,
+                                                                 jbyteArray data, jint length) {
+
+  using namespace Java::UUID;
+
+  if (length > 0) {
+    jlong ptr = env->GetLongField(obj, ptr_field);
+    if (ptr == 0) {
+      /* not yet set */
+      return;
+    }
+
+    auto& handler = *reinterpret_cast<DataHandler*>(ptr);
+
+    Java::ByteArrayElements array(env, data);
+    handler.OnCharacteristicChanged(to_uuid_t(env, service), to_uuid_t(env, characteristic), array, length);
+  }
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_org_LK8000_NativeInputListener_doEnableNotification(JNIEnv* env, jobject obj,
+                                                              jobject service, jobject characteristic) {
+
+  using namespace Java::UUID;
+
+  jlong ptr = env->GetLongField(obj, ptr_field);
+  if (ptr == 0) {
+    /* not yet set */
+    return false;
+  }
+
+  auto& handler = *reinterpret_cast<DataHandler*>(ptr);
+  return handler.DoEnableNotification(to_uuid_t(env, service), to_uuid_t(env, characteristic));
 }
 
 void

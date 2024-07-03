@@ -40,7 +40,7 @@ namespace BluetoothHelper {
   static jmethodID isEnabled_method;
   static jmethodID getNameFromAddress_method, getTypeFromAddress_method;
   static jmethodID list_method;
-  static jmethodID connect_method, hm10connect_method, createServer_method;
+  static jmethodID connect_method, connectSensor_method, createServer_method;
 
   static std::map<std::string, std::string> address_to_name;
 }
@@ -70,7 +70,7 @@ BluetoothHelper::Initialise(JNIEnv *env)
                                           "Ljava/lang/String;)"
                                           "Lorg/LK8000/AndroidPort;");
 
-  hm10connect_method = env->GetStaticMethodID(cls, "connectHM10",
+  connectSensor_method = env->GetStaticMethodID(cls, "connectSensor",
                                           "(Landroid/content/Context;"
                                           "Ljava/lang/String;)"
                                           "Lorg/LK8000/AndroidPort;");
@@ -177,15 +177,15 @@ BluetoothHelper::connect(JNIEnv *env, const char *address)
 }
 
 PortBridge *
-BluetoothHelper::connectHM10(JNIEnv *env, const char *address)
+BluetoothHelper::connectSensor(JNIEnv *env, const char *address)
 {
   if (!cls.IsDefined())
     throw std::runtime_error("Bluetooth not available");
 
-  /* call BluetoothHelper.connectHM10() */
+  /* call BluetoothHelper.connectSensor() */
 
   const Java::String address2(env, address);
-  Java::LocalObject obj = { env, env->CallStaticObjectMethod(cls, hm10connect_method,
+  Java::LocalObject obj = { env, env->CallStaticObjectMethod(cls, connectSensor_method,
                                             context->Get(), address2.Get())};
   Java::RethrowException(env);
   if (obj == nullptr)

@@ -68,7 +68,7 @@ namespace BluetoothHelper {
   PortBridge *connect(JNIEnv *env, const char *address);
 
   gcc_malloc
-  PortBridge *connectHM10(JNIEnv *env, const char *address);
+  PortBridge *connectSensor(JNIEnv *env, const char *address);
 
   gcc_malloc
   PortBridge *createServer(JNIEnv *env);

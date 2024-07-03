@@ -23,6 +23,8 @@ Copyright_License {
 
 package org.LK8000;
 
+import java.util.UUID;
+
 /**
  * An #InputListener implementation that passes method calls to native
  * code.
@@ -37,5 +39,12 @@ class NativeInputListener implements InputListener {
     ptr = _ptr;
   }
 
-  @Override public native void dataReceived(byte[] data, int length);
+  @Override
+  public native void dataReceived(byte[] data, int length);
+
+  @Override
+  public native boolean doEnableNotification(UUID service, UUID characteristic);
+
+  @Override
+  public native void onCharacteristicChanged(UUID service, UUID characteristic, byte[] value, int length);
 }

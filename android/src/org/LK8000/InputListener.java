@@ -23,9 +23,15 @@ Copyright_License {
 
 package org.LK8000;
 
+import java.util.UUID;
+
 /**
  * A listener that gets called when data is received on a socket.
  */
 public interface InputListener {
   void dataReceived(byte[] data, int length);
+
+  boolean doEnableNotification(UUID service, UUID characteristic);
+
+  void onCharacteristicChanged(UUID service, UUID characteristic, byte[] value, int length);
 }

@@ -30,6 +30,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.BluetoothStatusCodes;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
@@ -38,6 +39,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -49,6 +51,10 @@ public class BluetoothGattClientPort
     implements AndroidPort  {
   private static final String TAG = "BluetoothGattClientPort";
 
+  private static final int STATE_READY = 0;
+  private static final int STATE_FAILED = 1;
+  private static final int STATE_LIMBO = 2;
+
   private static final UUID GENERIC_ACCESS_SERVICE =
           UUID.fromString("00001800-0000-1000-8000-00805F9B34FB");
 
@@ -56,8 +62,7 @@ public class BluetoothGattClientPort
           UUID.fromString("00002A00-0000-1000-8000-00805F9B34FB");
 
   private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION =
-          UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
+          UUID.fromString("00002902-0000-1000-8000-00805F9B34FB");
   /**
    * The HM-10 and compatible bluetooth modules use a GATT characteristic
    * with this UUID for sending and receiving data.
@@ -68,19 +73,26 @@ public class BluetoothGattClientPort
   private static final UUID RX_TX_CHARACTERISTIC_UUID =
           UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
 
-  public static boolean isSupported(UUID uuid) {
-    return HM10_SERVICE.equals(uuid);
+
+  private static final Set<UUID> supported_service = Set.of(
+          UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB"),  // Heart Rate
+          UUID.fromString("0000181A-0000-1000-8000-00805F9B34FB"),  // Environmental Sensing Service
+          UUID.fromString("00001819-0000-1000-8000-00805F9B34FB"),  // Location and Navigation service
+          HM10_SERVICE);  // HM-10 and compatible bluetooth modules
+
+  public static boolean isServiceSupported(UUID uuid) {
+    return supported_service.contains(uuid);
   }
 
   /* Maximum number of milliseconds to wait for disconnected state after
      calling BluetoothGatt.disconnect() in close() */
   private static final int DISCONNECT_TIMEOUT = 500;
 
-  private PortListener portListener;
-  private volatile InputListener listener;
+  private PortListener portListener = null;
+  private volatile InputListener listener = null;
 
   private BluetoothGatt gatt = null;
-  private BluetoothGattCharacteristic dataCharacteristic;
+  private BluetoothGattCharacteristic hm10DataCharacteristic;
   private BluetoothGattCharacteristic deviceNameCharacteristic;
   private volatile boolean shutdown = false;
 
@@ -94,6 +106,8 @@ public class BluetoothGattClientPort
   private int gattState = BluetoothGatt.STATE_DISCONNECTED;
 
   private ScanCallback callback = null;
+
+  private final AsyncCompletionQueue queueCommand = new AsyncCompletionQueue();
 
   void startLeScan(Context context, String address) {
     if (callback == null) {
@@ -119,56 +133,27 @@ public class BluetoothGattClientPort
   }
 
   public BluetoothGattClientPort(Context context, BluetoothDevice device) {
-    if (BluetoothHelper.isUnknownType(device)) {
-      // unknown device : scan for device...
-      startLeScan(context, device.getAddress());
-    }
-    else {
-      connectDevice(context, device);
-    }
+    startLeScan(context, device.getAddress());
   }
 
   private void connectDevice(Context context, BluetoothDevice device) {
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        gatt = device.connectGatt(context, true, this, BluetoothDevice.TRANSPORT_LE);
-      } else {
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+        // handler usage is broken until SDK 27
+        // https://android.googlesource.com/platform/frameworks/base/+/eb6b3da4fc54ca4cfcbb8ee3b927391eed981725%5E%21/#F0
+        gatt = device.connectGatt(context, true, this,
+                BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M_MASK,
+                queueCommand.queueHandler);
+      }
+      else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        gatt = device.connectGatt(context, true, this,
+                BluetoothDevice.TRANSPORT_LE);
+      }
+      else {
         gatt = device.connectGatt(context, true, this);
       }
     } catch (SecurityException e) {
       e.printStackTrace();
-    }
-  }
-
-  private boolean findCharacteristics() {
-    try {
-      dataCharacteristic = null;
-      deviceNameCharacteristic = null;
-
-      BluetoothGattService service = gatt.getService(HM10_SERVICE);
-      if (service != null) {
-        dataCharacteristic = service.getCharacteristic(RX_TX_CHARACTERISTIC_UUID);
-      }
-
-      service = gatt.getService(GENERIC_ACCESS_SERVICE);
-      if (service != null) {
-        deviceNameCharacteristic = service.getCharacteristic(DEVICE_NAME_CHARACTERISTIC_UUID);
-      }
-
-      if (dataCharacteristic == null) {
-        Log.e(TAG, "GATT data characteristic not found");
-        return false;
-      }
-
-      if (deviceNameCharacteristic == null) {
-        Log.e(TAG, "GATT device name characteristic not found");
-        return false;
-      }
-
-      return true;
-    } catch (Exception e) {
-      Log.e(TAG, "GATT characteristics lookup failed", e);
-      return false;
     }
   }
 
@@ -182,7 +167,7 @@ public class BluetoothGattClientPort
         newPortState = STATE_FAILED;
       }
     } else {
-      dataCharacteristic = null;
+      hm10DataCharacteristic = null;
       deviceNameCharacteristic = null;
       if ((BluetoothProfile.STATE_DISCONNECTED == newState) && !shutdown) {
         if (!gatt.connect()) {
@@ -202,11 +187,19 @@ public class BluetoothGattClientPort
   }
 
   @SuppressLint("MissingPermission")
+  void requestMtu(BluetoothGatt gatt) {
+    maxChunkSize = 20; // default mtu - 3
+    if (!gatt.requestMtu(517)) {
+      queueCommand.completed();
+    }
+  }
+
   @Override
   public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = 20; // default mtu - 3
-      gatt.requestMtu(85); // Max NMEA length is 82 -> mtu = 82 + 3
+      queueCommand.add(() -> requestMtu(gatt));
+      queueCommand.add(() -> configureCharacteristics(gatt));
     } else {
       Log.e(TAG, "Discovering GATT services failed");
       portState = STATE_FAILED;
@@ -219,83 +212,153 @@ public class BluetoothGattClientPort
     super.onMtuChanged(gatt, mtu, status);
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = mtu - 3;
-      configureCharacteristics(gatt);
     }
+    queueCommand.completed();
   }
 
-  @SuppressLint("MissingPermission")
-  private void configureCharacteristics(BluetoothGatt gatt) {
-    if (findCharacteristics()) {
-      if (gatt.setCharacteristicNotification(dataCharacteristic, true)) {
-        BluetoothGattDescriptor descriptor =
-          dataCharacteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION);
-        if(descriptor != null) {
-          writeDescriptor(gatt, descriptor);
-        } else {
-          Log.e(TAG, "Could not get CLIENT_CHARACTERISTIC_CONFIGURATION Descriptor");
-        }
-        portState = STATE_READY;
-      } else {
-        Log.e(TAG, "Could not enable GATT characteristic notification");
-        portState = STATE_FAILED;
-      }
-    } else {
-      portState = STATE_FAILED;
+  private boolean doEnableNotification(UUID service, UUID characteristic) {
+    if (listener != null) {
+      return listener.doEnableNotification(service, characteristic);
     }
+    return false;
+  }
+
+  private void configureCharacteristics(BluetoothGatt gatt) {
+    queueCommand.completed();
+
+    BluetoothGattService genericService = gatt.getService(GENERIC_ACCESS_SERVICE);
+    if (genericService != null) {
+      deviceNameCharacteristic = genericService.getCharacteristic(DEVICE_NAME_CHARACTERISTIC_UUID);
+      if (deviceNameCharacteristic != null) {
+        if ((deviceNameCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0) {
+          queueCommand.add(() -> readCharacteristic(gatt, deviceNameCharacteristic));
+        }
+      }
+    }
+
+    BluetoothGattService hm10Service = gatt.getService(HM10_SERVICE);
+    if (hm10Service != null) {
+      hm10DataCharacteristic = hm10Service.getCharacteristic(RX_TX_CHARACTERISTIC_UUID);
+    } else {
+      hm10DataCharacteristic = null;
+    }
+
+    for (BluetoothGattService service : gatt.getServices()) {
+      for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+        if ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
+          if (doEnableNotification(service.getUuid(), characteristic.getUuid())) {
+            queueCommand.add(() -> enableNotification(gatt, characteristic));
+          }
+        }
+      }
+    }
+    portState = STATE_READY;
     stateChanged();
   }
 
   @SuppressLint("MissingPermission")
-  private void writeDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor) {
+  private void readCharacteristic(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    if (!gatt.readCharacteristic(characteristic)) {
+      Log.e(TAG, "GATT characteristic read request failed");
+      queueCommand.completed();
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private void enableNotification(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    if (characteristic == null) {
+      queueCommand.completed();
+      return;
+    }
+    if (gatt.setCharacteristicNotification(characteristic, true)) {
+      enableDescriptor(gatt, characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION));
+    } else {
+      queueCommand.completed();
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private void enableDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor) {
+    if (descriptor == null) {
+      queueCommand.completed();
+      return;
+    }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
       descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-      gatt.writeDescriptor(descriptor);
-    } else {
-      gatt.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-    }
-  }
-
-  @Override
-  public void onCharacteristicRead(BluetoothGatt gatt,
-      BluetoothGattCharacteristic characteristic, int status) {
-    writeBuffer.beginWriteNextChunk(gatt, dataCharacteristic);
-  }
-
-  @Override
-  public void onCharacteristicWrite(BluetoothGatt gatt,
-      BluetoothGattCharacteristic characteristic, int status) {
-    if (BluetoothGatt.GATT_SUCCESS == status) {
-      writeBuffer.beginWriteNextChunk(gatt, dataCharacteristic);
-    } else {
-      Log.e(TAG, "GATT characteristic write failed");
-      writeBuffer.setError();
-    }
-  }
-
-  @Override
-  public void onCharacteristicChanged(BluetoothGatt gatt,
-      BluetoothGattCharacteristic characteristic) {
-    if ((dataCharacteristic != null) &&
-        (dataCharacteristic.getUuid().equals(characteristic.getUuid()))) {
-      if (listener != null) {
-        byte[] data = characteristic.getValue();
-        if (data.length > 0) {
-          listener.dataReceived(data, data.length);
-        }
+      if (!gatt.writeDescriptor(descriptor)) {
+        queueCommand.completed();
       }
+    } else {
+      if (gatt.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE) != BluetoothStatusCodes.SUCCESS) {
+        queueCommand.completed();
+      }
+    }
+  }
+
+  @Override
+  public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+    if (BluetoothGatt.GATT_SUCCESS == status) {
+      onCharacteristicChanged(gatt, characteristic, characteristic.getValue());
+    }
+    // Notify Completion
+    queueCommand.completed();
+  }
+
+  @Override
+  public void onCharacteristicRead(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value, int status) {
+    if (BluetoothGatt.GATT_SUCCESS == status) {
+      onCharacteristicChanged(gatt, characteristic, value);
+    }
+    // Notify Completion
+    queueCommand.completed();
+  }
+
+  @Override
+  public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+    if (BluetoothGatt.GATT_SUCCESS == status) {
+      if (characteristic.equals(hm10DataCharacteristic)) {
+        writeBuffer.beginWriteNextChunk(gatt, hm10DataCharacteristic);
+      }
+    }
+    // Notify Completion
+    queueCommand.completed();
+  }
+
+  @Override
+  public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+    // Notify Completion
+    queueCommand.completed();
+  }
+
+  @Override
+  public void onDescriptorRead(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattDescriptor descriptor, int status, @NonNull byte[] value) {
+    // Notify Completion
+    queueCommand.completed();
+  }
+
+  @Override
+  public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+    // Notify Completion
+    queueCommand.completed();
+  }
+
+  @Override
+  public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    if (listener != null) {
+      onCharacteristicChanged(gatt, characteristic, characteristic.getValue());
     }
   }
 
   @Override
   public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
     if (listener != null) {
-      if (dataCharacteristic.getUuid().equals(characteristic.getUuid())) {
-        listener.dataReceived(value, value.length);
-      }
+      final UUID service = characteristic.getService().getUuid();
+      final UUID uuid = characteristic.getUuid();
+      listener.onCharacteristicChanged(service, uuid, value, value.length);
     }
   }
 
-  @Override 
+  @Override
   public void setListener(PortListener _listener) {
     portListener = _listener;
   }
@@ -360,14 +423,14 @@ public class BluetoothGattClientPort
 
   @Override
   public int write(byte[] data, int length) {
-    return writeBuffer.write(gatt, dataCharacteristic,
-            deviceNameCharacteristic,
-            data, length, maxChunkSize);
+    return writeBuffer.write(gatt, hm10DataCharacteristic,
+            queueCommand, data, length, maxChunkSize);
   }
 
   protected final void stateChanged() {
     PortListener portListener = this.portListener;
-    if (portListener != null)
+    if (portListener != null) {
       portListener.portStateChanged();
+    }
   }
 }
