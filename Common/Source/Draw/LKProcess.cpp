@@ -3385,7 +3385,17 @@ lkfin_ete:
 			valid = true;
 			break;
 
-
+		case LK_HEART_RATE:
+			if (HeartRateAvailable(DrawInfo)) {
+				valid = true;
+				_stprintf(BufferValue, _T("%u"), DrawInfo.HeartRate);
+			} else {
+				valid = false;
+				_stprintf(BufferValue, TEXT("---"));
+			}
+			_stprintf(BufferUnit, TEXT("bpm"));
+			_tcscpy(BufferTitle, DataOptionsTitle(LK_HEART_RATE));
+			break;
 		case LK_DUMMY:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)

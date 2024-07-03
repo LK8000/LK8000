@@ -733,6 +733,7 @@
 #define LK_HOME_DISTNM         154 // distance to home nm 
 #define LK_HOME_BRG            155 // bearing to home 
 #define LK_XC_TYPE            156 // type of best result in XC 
+#define LK_HEART_RATE   157 // pilot heart rate in bpm
 
 // The following values are not available for custom configuration
 

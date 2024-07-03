@@ -2613,5 +2613,9 @@
 
     "_@M002499_": "Download Manager…",
 
-    "_@H001310_": "[FFVL Tracker Id]\n\"VLSafe\" FFVL tracking : how ?\nFFVL has published a tracking tool (API) that enables manufacturers and tracking apps developpers to send to FFVL their latest GPS position of its members in fly or in hike and fly. The target is clearly to shorter rescue delays and save lives. The latest position of a dedicated pilot is readable by him (its family if he shares its credentials) and by clubs managers or school instructors. In a close future, this functionality will enable communities (clubs, teams) to share their positions.\nEach FFVL member has now a \"tracking key\" (see tracker de la page intranet.ffvl.fr) to be entered in the tracking solution (device or application) compatible with FFVL tracking system.\n\nIn case of an accident and the disappearance of a pilot, FFVL and its supervisors will be able to access the last known GPS position posted by the licensee's tracker, for emergency services usages."
+    "_@H001310_": "[FFVL Tracker Id]\n\"VLSafe\" FFVL tracking : how ?\nFFVL has published a tracking tool (API) that enables manufacturers and tracking apps developpers to send to FFVL their latest GPS position of its members in fly or in hike and fly. The target is clearly to shorter rescue delays and save lives. The latest position of a dedicated pilot is readable by him (its family if he shares its credentials) and by clubs managers or school instructors. In a close future, this functionality will enable communities (clubs, teams) to share their positions.\nEach FFVL member has now a \"tracking key\" (see tracker de la page intranet.ffvl.fr) to be entered in the tracking solution (device or application) compatible with FFVL tracking system.\n\nIn case of an accident and the disappearance of a pilot, FFVL and its supervisors will be able to access the last known GPS position posted by the licensee's tracker, for emergency services usages.",
+
+    "_@M002500_": "Heart Rate",
+    "_@M002501_": "\u2764",
+    "_@H000957_": "[Heart Rate]\nPilot heartbeat frequency in beats per minute"
 }

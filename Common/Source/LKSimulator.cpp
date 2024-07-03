@@ -49,6 +49,7 @@ void LKSimulator(void) {
   ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
   ResetExternalWindAvailable(GPS_INFO);
+  ResetHeartRateAvailable(GPS_INFO);
 
   // Even on ground, we can turn the glider in the hangar
   BEARING += SimTurn;

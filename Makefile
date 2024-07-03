@@ -1446,6 +1446,7 @@ SRC_FILES :=\
 	$(SRC)/Form/Clipboard.cpp \
 	$(SRC)/Geographic/GeoPoint.cpp \
 	$(SRC)/Geographic/TransverseMercator.cpp \
+	$(SRC)/NMEA/Info.cpp \
 	\
 	$(TRACKING) \
 	$(LKINTER) \

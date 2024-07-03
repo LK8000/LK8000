@@ -331,6 +331,7 @@ bool Startup(const TCHAR* szCmdLine) {
   ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
   ResetExternalWindAvailable(GPS_INFO);
+  ResetHeartRateAvailable(GPS_INFO);
 
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 

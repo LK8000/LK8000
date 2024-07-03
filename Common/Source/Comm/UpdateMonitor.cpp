@@ -136,6 +136,7 @@ void reset_nmea_info_availability() {
   ResetBaroAvailable(GPS_INFO);
   ResetVarioAvailable(GPS_INFO);
   ResetExternalWindAvailable(GPS_INFO);
+  ResetHeartRateAvailable(GPS_INFO);
 
   GPS_INFO.AirspeedAvailable = false;
   GPS_INFO.NettoVarioAvailable = false;

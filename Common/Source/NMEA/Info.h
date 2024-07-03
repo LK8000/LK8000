@@ -13,6 +13,9 @@
 #include "Flarm.h"
 #include "Fanet.h"
 #include "Geographic/GeoPoint.h"
+
+struct DeviceDescriptor_t;
+
 /**
  * used to manage Baro Altitude Source priority
  *   - Flarm device First ordered by port index
@@ -103,6 +106,9 @@ struct NMEA_INFO {
     bool GyroscopeAvailable;
     double Pitch;
     double Roll;
+
+    unsigned HeartRateIdx;
+    unsigned HeartRate;
 };
 
 static_assert(std::is_trivial_v<NMEA_INFO>, "mandatory while memset/memcpy is used to init/copy this struct");
@@ -111,5 +117,9 @@ inline
 AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   return {{ Info.Latitude, Info.Longitude }, Info.Altitude };
 }
+
+void ResetHeartRateAvailable(NMEA_INFO& info);
+bool HeartRateAvailable(const NMEA_INFO& info);
+void UpdateHeartRate(NMEA_INFO& info, const DeviceDescriptor_t& d, unsigned bpm);
 
 #endif //_NMEA_INFO_H_
