@@ -65,6 +65,8 @@
 
 #ifdef ANDROID
 #include "Android/LK8000Activity.h"
+#include "Android/NativeView.hpp"
+#include "Android/Main.hpp"
 #endif
 
 using std::min;
@@ -114,6 +116,10 @@ bool Startup(const TCHAR* szCmdLine) {
     StartupStore(". Kernel Build:   %s" NEWLINE, sysinfo.version);
     StartupStore(". Machine Arch:   %s" NEWLINE, sysinfo.machine);
   }
+#ifdef ANDROID
+  StartupStore(". Android Product:%s",  native_view->GetProduct());
+#endif
+
 
 #elif defined(PNA)
   StartupStore(TEXT(". Starting %s %s"),LK8000_Version,_T("PNA"));
