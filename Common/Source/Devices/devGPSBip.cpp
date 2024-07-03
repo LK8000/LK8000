@@ -14,11 +14,9 @@
 #include <functional>
 #include <array>
 #include "DeviceRegister.h"
-
+#include "devGeneric.h"
 
 namespace {
-
-  const TCHAR szDeviceName[] = _T("GPSBip");
 
   const TCHAR* DeviceNameList[] = {
     _T("LK8EX1"),
@@ -38,10 +36,8 @@ namespace {
     return FALSE;
   }
 
-} // namespace
-
-
-void GPSBipInstall(DeviceDescriptor_t* d) {
+void Install(DeviceDescriptor_t* d, const TCHAR* szDeviceName) {
+  genInstall(d); // install Generic driver callback first
 
   static_assert(DeviceDesciptorList.size() == std::size(DeviceNameList));
 
@@ -59,3 +55,21 @@ void GPSBipInstall(DeviceDescriptor_t* d) {
   _tcscpy(d->Name, szDeviceName);
   d->ParseNMEA = ParseNMEA;
 }
+
+} // namespace
+
+namespace Stodeus {
+
+void GPSBipInstall(DeviceDescriptor_t* d) {
+  Install(d, GPSBip);
+}
+
+void UltraBipInstall(DeviceDescriptor_t* d) {
+  Install(d, UltraBip);
+}
+
+void BlueBipInstall(DeviceDescriptor_t* d) {
+  Install(d, BlueBip);
+}
+
+} // Stodeus

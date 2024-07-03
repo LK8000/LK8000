@@ -14,16 +14,32 @@
 
 #include "Devices/DeviceRegister.h"
 
+namespace Stodeus {
+
+constexpr const TCHAR GPSBip[] = _T("GPSBip");
+
 void GPSBipInstall(DeviceDescriptor_t* d);
 
-inline constexpr
-DeviceRegister_t GPSBipRegister() {
-  return devRegister(_T("GPSBip"), GPSBipInstall);
+inline constexpr DeviceRegister_t GPSBipRegister() {
+  return devRegister( GPSBip, GPSBipInstall);
 }
 
-inline constexpr
-DeviceRegister_t UltraBipRegister() {
-  return devRegister(_T("UltraBip / BlueBip"), GPSBipInstall);
+constexpr const TCHAR UltraBip[] = _T("UltraBip");
+
+void UltraBipInstall(DeviceDescriptor_t* d);
+
+inline constexpr DeviceRegister_t UltraBipRegister() {
+  return devRegister(UltraBip, UltraBipInstall);
 }
+
+constexpr const TCHAR BlueBip[] = _T("BlueBip");
+
+void BlueBipInstall(DeviceDescriptor_t* d);
+
+inline constexpr DeviceRegister_t BlueBipRegister() {
+  return devRegister(BlueBip, BlueBipInstall);
+}
+
+} // Stodeus
 
 #endif	/* DEVGPSBIP_H */

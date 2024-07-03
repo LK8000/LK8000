@@ -103,7 +103,7 @@ DeviceRegister_t device_list[] = {
     LXV7easyRegister(),
     DevLXNanoIII::Register(),
     XCTracerRegister(),
-    GPSBipRegister(),
+    Stodeus::GPSBipRegister(),
     PVCOMRegister(),
     KRT2Register(),
     AR620xRegister(),
@@ -117,7 +117,8 @@ DeviceRegister_t device_list[] = {
     XCVario::Register(),
     GenericAutopilot::Register(),
     AirControlDisplay::Register(),
-    UltraBipRegister(),
+    Stodeus::UltraBipRegister(),
+    Stodeus::BlueBipRegister(),
 };
 
 
