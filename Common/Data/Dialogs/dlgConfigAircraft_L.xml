@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmConfiguration" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M195_" Font="2" >
-    <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="178" Width="62"  Height="42" Font="2" Tag="3" />
+    <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="178" Width="62"  Height="42" Font="2" OnClickNotify="OnCloseClicked" Tag="3" />
     <WndFrame Name="frmPolar" X="70" Y="0" Width="-2" Height="222" Font="2">
       <WndProperty Name="prpAircraftCategory" Caption="_@M164_" X="2" Y="-1"   Width="-2" Height="22" CaptionWidth="120" Font="2" Help="_@H1205_" >
         <DataField Name="" DataType="enum" Min="0" Max="10" Step="1"/>
@@ -21,10 +21,10 @@
       <WndProperty Name="prpGliderSymbol" Caption="_@M2316_"  X="2" Y="-1" Width="-2" Height="22" CaptionWidth="120" Font="2" Help="_@H1294_">
         <DataField Name="" DataType="enum"/>
       </WndProperty>
-      <WndButton Name="cmdAircraftType" Caption="_@M60_" X="2" Y="-1" Width="-2"  Height="22" Font="2" />
-      <WndButton Name="cmdAircraftRego" Caption="_@M56_" X="2" Y="-1" Width="-2"  Height="22" Font="2" />
-      <WndButton Name="cmdCompetitionClass" Caption="_@M937_" X="2" Y="-1" Width="-2"  Height="22" Font="2" />
-      <WndButton Name="cmdCompetitionID" Caption="_@M939_" X="2" Y="-1" Width="-2"  Height="22" Font="2" />
+      <WndButton Name="cmdAircraftType" Caption="_@M60_" X="2" Y="-1" Width="-2"  Height="22" Font="2" OnClickNotify="OnAircraftTypeClicked" />
+      <WndButton Name="cmdAircraftRego" Caption="_@M56_" X="2" Y="-1" Width="-2"  Height="22" Font="2" OnClickNotify="OnAircraftRegoClicked" />
+      <WndButton Name="cmdCompetitionClass" Caption="_@M937_" X="2" Y="-1" Width="-2"  Height="22" Font="2" OnClickNotify="OnCompetitionClassClicked" />
+      <WndButton Name="cmdCompetitionID" Caption="_@M939_" X="2" Y="-1" Width="-2"  Height="22" Font="2" OnClickNotify="OnCompetitionIDClicked" />
     </WndFrame>
   </WndForm>
 </PMML>

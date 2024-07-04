@@ -50,12 +50,12 @@
 #endif
 using namespace std::placeholders;
 
-extern void UpdateAircraftConfig(void);
-void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
-void UpdateComPortSetting(WndForm* pOwner, size_t idx, const TCHAR* szPortName);
-void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow);
-void UpdateDeviceEntries(WndForm *pOwner, int DeviceIdx);
-static void UpdateButtons(WndForm *pOwner) ;
+static void UpdateAircraftConfig(WndForm* pForm);
+static void UpdateComPortList(WndProperty* wp, LPCTSTR szPort);
+static void UpdateComPortSetting(WndForm* pForm, size_t idx, const TCHAR* szPortName);
+static void ShowWindowControl(WndForm* pForm, const TCHAR* WndName, bool bShow);
+static void UpdateDeviceEntries(WndForm *pForm, int DeviceIdx);
+static void UpdateButtons(WndForm *pForm);
 static bool taskchanged = false;
 static bool requirerestart = false;
 static bool utcchanged = false;
@@ -72,8 +72,6 @@ static bool snailchanged= false;
 static short configMode=0;  // current configuration mode, see above
 static short config_page[4]={0,0,0,0}; // remember last page we were using, for each profile
 
-static WndForm *wf=NULL;
-
 #define NUMOFCONFIGPAGES 22 // total number of config pages including engineering
 #define NUMENGPAGES 1       // number of engineering hidden pages, part of NUMOFCONFIGPAGES
 #define FIRST_INFOBOX_PAGE 13 
@@ -81,11 +79,11 @@ static WndForm *wf=NULL;
 
 static WndFrame *wConfig[NUMOFCONFIGPAGES]={};
 
-typedef struct {
-    const TCHAR* szName;
-    const TCHAR* szCpation;
-    bool CopyPaste;
-} ConfigPageNames_t;
+struct ConfigPageNames_t {
+  const TCHAR* szName;
+  const TCHAR* szCpation;
+  bool CopyPaste;
+};
 
 /* 
  * carefull : if order change, check all "config_page" array use...
@@ -136,19 +134,6 @@ static_assert(std::size(wConfig) == std::size(ConfigPageNames[1]), "invalid arra
 static_assert(std::size(wConfig) == std::size(ConfigPageNames[2]), "invalid array size");
 static_assert(std::size(wConfig) == std::size(ConfigPageNames[2]), "invalid array size");
 
-
-static WndButton *buttonPilotName=NULL;
-static WndButton *buttonLiveTrackersrv=NULL;
-static WndButton *buttonLiveTrackerport=NULL;
-static WndButton *buttonLiveTrackerusr=NULL;
-static WndButton *buttonLiveTrackerpwd=NULL;
-static WndButton *buttonAircraftType=NULL;
-static WndButton *buttonAircraftRego=NULL;
-static WndButton *buttonCompetitionClass=NULL;
-static WndButton *buttonCompetitionID=NULL;
-static WndButton *buttonCopy=NULL;
-static WndButton *buttonPaste=NULL;
-
 short numPages=0;
 
 void reset_wConfig(void) {
@@ -164,10 +149,12 @@ void FontSetEnums( DataField* dfe) {
   }
 }
 
-static void UpdateButtons(WndForm *pOwner) {
+static void UpdateButtons(WndForm* pForm) {
   TCHAR text[120];
   TCHAR val[100];
-if(!pOwner) return;
+  if(!pForm) return;
+
+  auto buttonPilotName = (pForm->FindByName<WndButton>(TEXT("cmdPilotName")));
   if (buttonPilotName) {
     _tcscpy(val,PilotName_Config);
     if (_tcslen(val)<=0) {
@@ -178,6 +165,8 @@ if(!pOwner) return;
     _stprintf(text,TEXT("%s: %s"), MsgToken<524>(), val);
     buttonPilotName->SetCaption(text);
   }
+
+  auto buttonAircraftType = (pForm->FindByName<WndButton>(TEXT("cmdAircraftType")));
   if (buttonAircraftType) {
     _tcscpy(val,AircraftType_Config);
     if (_tcslen(val)<=0) {
@@ -188,6 +177,8 @@ if(!pOwner) return;
     _stprintf(text,TEXT("%s: %s"), MsgToken<59>(), val);
     buttonAircraftType->SetCaption(text);
   }
+
+  auto buttonAircraftRego = (pForm->FindByName<WndButton>(TEXT("cmdAircraftRego")));
   if (buttonAircraftRego) {
     _tcscpy(val,AircraftRego_Config);
     if (_tcslen(val)<=0) {
@@ -198,6 +189,8 @@ if(!pOwner) return;
     _stprintf(text,TEXT("%s: %s"), MsgToken<57>(), val);
     buttonAircraftRego->SetCaption(text);
   }
+
+  auto buttonCompetitionClass = (pForm->FindByName<WndButton>(TEXT("cmdCompetitionClass")));
   if (buttonCompetitionClass) {
     _tcscpy(val,CompetitionClass_Config);
     if (_tcslen(val)<=0) {
@@ -208,6 +201,8 @@ if(!pOwner) return;
     _stprintf(text,TEXT("%s: %s"), MsgToken<936>(), val);
     buttonCompetitionClass->SetCaption(text);
   }
+
+  auto buttonCompetitionID = (pForm->FindByName<WndButton>(TEXT("cmdCompetitionID")));
   if (buttonCompetitionID) {
     _tcscpy(val,CompetitionID_Config);
     if (_tcslen(val)<=0) {
@@ -219,12 +214,12 @@ if(!pOwner) return;
     buttonCompetitionID->SetCaption(text);
   }
 
-  WindowControl* pFfvlKey = pOwner->FindByName(_T("prp_ffvl_key"));
+  WindowControl* pFfvlKey = pForm->FindByName(_T("prp_ffvl_key"));
   if (pFfvlKey) {
     pFfvlKey->SetVisible(http_session::ssl_available());
   }
 
-  WndButton* wCmdBth = (pOwner->FindByName<WndButton>(TEXT("cmdBth")));
+  WndButton* wCmdBth = (pForm->FindByName<WndButton>(TEXT("cmdBth")));
   if(wCmdBth) {
 #ifdef NO_BLUETOOTH
       wCmdBth->SetVisible(false);
@@ -237,7 +232,7 @@ if(!pOwner) return;
 
 
 
-static void NextPage(int Step){
+static void NextPage(WndForm* pForm, int Step){
     LKASSERT((size_t)configMode<std::size(config_page));
     config_page[configMode] += Step;
 
@@ -257,10 +252,14 @@ static void NextPage(int Step){
     if (!szCaption || (_tcslen(szCaption) <= 0)) {
         szCaption = current[config_page[configMode]].szCpation;
     }
-    wf->SetCaption(szCaption);
+    pForm->SetCaption(szCaption);
+
+    auto buttonCopy = pForm->FindByName(TEXT("cmdCopy"));
     if (buttonCopy) {
         buttonCopy->SetVisible(current[config_page[configMode]].CopyPaste);
     }
+
+    auto buttonPaste = pForm->FindByName(TEXT("cmdPaste"));
     if (buttonPaste) {
         buttonPaste->SetVisible(current[config_page[configMode]].CopyPaste);
     }
@@ -273,20 +272,20 @@ static void NextPage(int Step){
 } // NextPage
 
 
-static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *Name*/) {
+static void UpdateDeviceSetupButton(WndForm* pForm,size_t idx /*, const TCHAR *Name*/) {
 
   // const TCHAR * DevicePropName[] = {_T("prpComPort1")};
   // check if all array have same size ( compil time check );
   // static_assert(std::size(DeviceList) == std::size(DevicePropName), "DevicePropName array size need to be same of DeviceList array size");
 
-  if(!pOwner)
+  if(!pForm)
     return;
   WndProperty* wp;
 
   auto& Port = PortConfig[SelectedDevice];
 
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComPort1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComPort1"));
   if (wp) {
       if (_tcscmp(Port.GetPort(), wp->GetDataField()->GetAsString()) != 0)
       {
@@ -295,14 +294,14 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
       }
   }
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpExtSound1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpExtSound1"));
   if (wp) {
         if (Port.UseExtSound != (wp->GetDataField()->GetAsBoolean())) {
                 Port.UseExtSound = (wp->GetDataField()->GetAsBoolean());
         }
   }
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComSpeed1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComSpeed1"));
   if (wp) {
     if ((int)Port.dwSpeedIndex != wp->GetDataField()->GetAsInteger()) {
       Port.dwSpeedIndex = wp->GetDataField()->GetAsInteger();
@@ -310,7 +309,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
     }
   }
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComBit1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComBit1"));
   if (wp) {
     if ((int)Port.dwBitIndex != wp->GetDataField()->GetAsInteger()) {
       Port.dwBitIndex = static_cast<BitIndex_t>(wp->GetDataField()->GetAsInteger());
@@ -318,7 +317,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
     }
   }
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComIpAddr1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComIpAddr1"));
   if (wp) {
     if (_tcscmp(Port.szIpAddress, wp->GetDataField()->GetAsString()) != 0) {
       _tcsncpy(Port.szIpAddress, wp->GetDataField()->GetAsString(), std::size(Port.szIpAddress));
@@ -327,7 +326,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
     }
   }
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComIpPort1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComIpPort1"));
   if (wp) {
     if ((int)Port.dwIpPort != wp->GetDataField()->GetAsInteger()) {
       Port.dwIpPort = wp->GetDataField()->GetAsInteger();
@@ -335,7 +334,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
     }
   }
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComDevice1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComDevice1"));
   if (wp) {
 
     DataField* df = wp->GetDataField();
@@ -348,7 +347,7 @@ static void UpdateDeviceSetupButton(WndForm* pOwner,size_t idx /*, const TCHAR *
 
   /************************************************************************/
 
-    UpdateComPortSetting(pOwner, idx, Port.GetPort());
+  UpdateComPortSetting(pForm, idx, Port.GetPort());
 }
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -358,10 +357,8 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-      #ifdef TESTBENCH
-      StartupStore(_T("........... OnDeviceAData Device %i %s %s"),SelectedDevice, Sender->GetAsString(),NEWLINE); // 091105
-      #endif
-      UpdateDeviceSetupButton(wf, SelectedDevice);
+      TestLog(_T("........... OnDeviceAData Device %i %s"), SelectedDevice, Sender->GetAsString()); // 091105
+      UpdateDeviceSetupButton(Sender->GetOwner().GetParentWndForm(), SelectedDevice);
     break;
 	default: 
 		StartupStore(_T("........... DBG-902%s"),NEWLINE); // 091105
@@ -372,174 +369,140 @@ static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 
   
-static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-
-  switch(Mode){
+static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
     case DataField::daGet:
-    break;
+      break;
     case DataField::daPut:
-    case DataField::daChange:
-      wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceOpacity"));
-      if (wp)
-        wp->SetVisible( (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_full) || (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_borders) );
-    break;
-	default: 
-                #ifdef TESTBENCH
-		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
-                #endif
-		break;
-  }
-}
- 
-static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-  int altmode=0;
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-      wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceDisplay"));
-      if (wp) altmode=(wp->GetDataField()->GetAsInteger());
-      // Warning, this is duplicated later on
-      wp = wf->FindByName<WndProperty>(TEXT("prpClipAltitude"));
-      if (wp) wp->SetVisible(altmode==CLIP);
-      wp = wf->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
-      if (wp) wp->SetVisible(altmode==AUTO || altmode==ALLBELOW);
-    break;
-	default: 
-                #ifdef TESTBENCH
-		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
-                #endif
-		break;
-  }
-}
-
- 
-static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-
-
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-      wp = wf->FindByName<WndProperty>(TEXT("prpAspPermDisable"));
-      if (wp) {
-    	  AspPermanentChanged=(wp->GetDataField()->GetAsInteger());
+    case DataField::daChange: {
+      auto pForm = Sender->GetOwner().GetParentWndForm();
+      if (pForm) {
+        auto wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceOpacity"));
+        if (wp) {
+          wp->SetVisible((Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_full) ||
+                         (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_borders));
+        }
       }
-#ifdef TESTBENCH 
-      StartupStore(_T(".......AspPermanentChanged %i %s"),AspPermanentChanged,NEWLINE);
-#endif
+    } break;
+    default:
+      TestLog(_T("........... DBG-908"));
+      break;
+  }
+}
+ 
+static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      break;
+    case DataField::daPut:
+    case DataField::daChange: {
+      auto pForm = Sender->GetOwner().GetParentWndForm();
+      if (pForm) {
+        int altmode = Sender->GetAsInteger();
+        // Warning, this is duplicated later on
+        auto wp = pForm->FindByName(TEXT("prpClipAltitude"));
+        if (wp) {
+          wp->SetVisible(altmode == CLIP);
+        }
+        wp = pForm->FindByName(TEXT("prpAltWarningMargin"));
+        if (wp) {
+          wp->SetVisible(altmode == AUTO || altmode == ALLBELOW);
+        }
+      }
+    } break;
+    default:
+      TestLog(_T("........... DBG-908"));
+      break;
+  }
+}
+
+ 
+static void OnAspPermModified(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      break;
+    case DataField::daPut:
+    case DataField::daChange:
+      AspPermanentChanged = Sender->GetAsInteger();
+      TestLog(_T(".......AspPermanentChanged %i"), AspPermanentChanged);
       break;
     default:
-                #ifdef TESTBENCH
-		StartupStore(_T("........... DBG-908%s"),NEWLINE);
-                #endif
-		break;
+      TestLog(_T("........... DBG-908"));
+      break;
   }
-
 }
 
-static void OnAutoContrastChange(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-  switch(Mode){
-     case DataField::daGet:
-        break;
-     case DataField::daPut:
-     case DataField::daChange:
-        wp = wf->FindByName<WndProperty>(TEXT("prpAutoContrast"));
+static void OnAutoContrastChange(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      break;
+    case DataField::daPut:
+    case DataField::daChange: {
+      AutoContrast = Sender->GetAsBoolean();
+      auto pForm = Sender->GetOwner().GetParentWndForm();
+      if (pForm) {
+        auto wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
         if (wp) {
-           if (AutoContrast != wp->GetDataField()->GetAsBoolean()) {
-              AutoContrast = wp->GetDataField()->GetAsBoolean();
-           }
+          wp->SetReadOnly(AutoContrast);
+          wp->RefreshDisplay();
         }
-        wp = wf->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
-        if(wp) {
-           if(AutoContrast) {
-              wp->SetReadOnly(true);
-           } else {
-              wp->SetReadOnly(false);
-           }
-           wp->RefreshDisplay();
+        wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainBrightness"));
+        if (wp) {
+          wp->SetReadOnly(AutoContrast);
+          wp->RefreshDisplay();
         }
-        wp = wf->FindByName<WndProperty>(TEXT("prpTerrainBrightness"));
-        if(wp) {
-           if(AutoContrast) {
-              wp->SetReadOnly(true);
-           } else {
-              wp->SetReadOnly(false);
-           }
-           wp->RefreshDisplay();
-        }
-        break;
-     default:
-        break;
+      }
+    } break;
+    default:
+      break;
   }
 }
 
 
-static void OnGearWarningModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
-WndProperty* wp;
-
-int ival;
-    switch(Mode){
-      case DataField::daGet:
-	  break;
-      case DataField::daPut:
-      case DataField::daChange:
-    	wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
-    	if (wp) {
-    	  ival = iround( wp->GetDataField()->GetAsInteger() );
-    	  if ((int)GearWarningMode != ival) {
-    	  	GearWarningMode = ival;
-    	  }
-    	}
-        wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
-        if(wp)
-        {
-          if(GearWarningMode == 0)
-          {
-            wp->SetVisible(false);
-            wp->SetReadOnly(true);
-            wp->RefreshDisplay();
+static void OnGearWarningModeChange(DataField *Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      break;
+    case DataField::daPut:
+    case DataField::daChange: {
+      GearWarningMode = Sender->GetAsInteger();
+      auto pForm = Sender->GetOwner().GetParentWndForm();
+      if (pForm) {
+        auto wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
+        if (wp) {
+          if (GearWarningMode != 0) {
+            auto dfe = wp->GetDataField();
+            if (dfe) {
+              dfe->SetAsFloat(iround(Units::ToAltitude(GearWarningAltitude / 1000.0)));
+              dfe->SetUnits(Units::GetAltitudeName());
+            }
           }
-          else
-          {
-            wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(GearWarningAltitude / 1000.0)));
-            wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-            wp->SetVisible(true);
-            wp->SetReadOnly(false);
-            wp->RefreshDisplay();
-          }
+          wp->SetVisible(GearWarningMode != 0);
+          wp->SetReadOnly(GearWarningMode == 0);
+          wp->RefreshDisplay();
         }
+      }
+    } break;
+    default:
       break;
-      default:
-      break;
-    }
+  }
 }
 
 
 static void OnAircraftRegoClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonAircraftRego) {
-        _tcscpy(Temp, AircraftRego_Config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(AircraftRego_Config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, AircraftRego_Config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(AircraftRego_Config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnAircraftTypeClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonAircraftType) {
-        _tcscpy(Temp, AircraftType_Config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(AircraftType_Config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, AircraftType_Config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(AircraftType_Config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnTerminalClicked(WndButton* pWnd) {
@@ -551,45 +514,45 @@ extern bool SysOpMode;
 extern bool Sysop(TCHAR *command);
 
 static void OnPilotNameClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonPilotName) {
-        _tcscpy(Temp, PilotName_Config);
-        dlgTextEntryShowModal(Temp, 100);
+  TCHAR Temp[100];
+  _tcscpy(Temp, PilotName_Config);
+  dlgTextEntryShowModal(Temp, 100);
 
-        //
-        // ACCESS TO SYSOP MODE 
-        //
-        if (!SysOpMode) {
-           if (!_tcscmp(Temp,_T("OPSYS"))) {
-              _tcscpy(Temp,_T("SYSOP"));
-              Sysop(Temp); // activate sysop mode and exit dialog
-              if(pWnd) {
-                 WndForm * pForm = pWnd->GetParentWndForm();
-                 if(pForm) pForm->SetModalResult(mrOK);
-              }
-              return;
-           }
-        } 
-        
-        if (SysOpMode && _tcslen(Temp)>=2) {
-           if (Sysop(Temp)) {
-              // if requested, close immediately the parent dialog and back to normal menu!
-              // This is needed for example when commanding resolution chang because
-              // dialogs are not changed until closed, and we risk not seeing the Close button anymore.
-              if(pWnd) {
-                 WndForm * pForm = pWnd->GetParentWndForm();
-                 if(pForm) pForm->SetModalResult(mrOK);
-              }
-           }
-           return; // in SysOp mode no change of pilot name
-        } 
-
-        if (!SysOpMode) _tcscpy(PilotName_Config, Temp);
+  //
+  // ACCESS TO SYSOP MODE
+  //
+  if (!SysOpMode) {
+    if (!_tcscmp(Temp, _T("OPSYS"))) {
+      _tcscpy(Temp, _T("SYSOP"));
+      Sysop(Temp);  // activate sysop mode and exit dialog
+      if (pWnd) {
+        WndForm* pForm = pWnd->GetParentWndForm();
+        if (pForm)
+          pForm->SetModalResult(mrOK);
+      }
+      return;
     }
-    UpdateButtons(pWnd->GetParentWndForm());
+  }
+
+  if (SysOpMode && _tcslen(Temp) >= 2) {
+    if (Sysop(Temp)) {
+      // if requested, close immediately the parent dialog and back to normal menu!
+      // This is needed for example when commanding resolution chang because
+      // dialogs are not changed until closed, and we risk not seeing the Close button anymore.
+      if (pWnd) {
+        WndForm* pForm = pWnd->GetParentWndForm();
+        if (pForm)
+          pForm->SetModalResult(mrOK);
+      }
+    }
+    return;  // in SysOp mode no change of pilot name
+  }
+
+  if (!SysOpMode)
+    _tcscpy(PilotName_Config, Temp);
+
+  UpdateButtons(pWnd->GetParentWndForm());
 }
-
-
 
 static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKind_t Mode){
   if (Sender) {
@@ -619,63 +582,51 @@ static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKin
 }
 
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonLiveTrackersrv) {
-        _tcscpy(Temp, tracking::server_config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(tracking::server_config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, tracking::server_config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(tracking::server_config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerportClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonLiveTrackerport) {
-        _stprintf(Temp, _T("%d"), tracking::port_config);
-        dlgNumEntryShowModal(Temp, 100);
-        tracking::port_config = _tcstol(Temp, nullptr, 10);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _stprintf(Temp, _T("%d"), tracking::port_config);
+  dlgNumEntryShowModal(Temp, 100);
+  tracking::port_config = _tcstol(Temp, nullptr, 10);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerusrClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonLiveTrackerusr) {
-        _tcscpy(Temp, tracking::usr_config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(tracking::usr_config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, tracking::usr_config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(tracking::usr_config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonLiveTrackerpwd) {
-        _tcscpy(Temp, tracking::pwd_config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(tracking::pwd_config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, tracking::pwd_config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(tracking::pwd_config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnCompetitionClassClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonCompetitionClass) {
-        _tcscpy(Temp, CompetitionClass_Config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(CompetitionClass_Config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, CompetitionClass_Config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(CompetitionClass_Config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnCompetitionIDClicked(WndButton* pWnd) {
-    TCHAR Temp[100];
-    if (buttonCompetitionID) {
-        _tcscpy(Temp, CompetitionID_Config);
-        dlgTextEntryShowModal(Temp, 100);
-        _tcscpy(CompetitionID_Config, Temp);
-    }
-    UpdateButtons(pWnd->GetParentWndForm());
+  TCHAR Temp[100];
+  _tcscpy(Temp, CompetitionID_Config);
+  dlgTextEntryShowModal(Temp, 100);
+  _tcscpy(CompetitionID_Config, Temp);
+  UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnAirspaceColoursClicked(WndButton* pWnd) {
@@ -749,11 +700,11 @@ static void OnAirspaceModeClicked(WndButton* pWnd) {
 }
 
 static void OnNextClicked(WndButton* pWnd) {
-    NextPage(+1);
+  NextPage(pWnd->GetParentWndForm(), +1);
 }
 
 static void OnPrevClicked(WndButton* pWnd) {
-    NextPage(-1);
+  NextPage(pWnd->GetParentWndForm(), -1);
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
@@ -836,17 +787,17 @@ static void OnPaste(WndButton* pWnd) {
   }
 }
 
-static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
+static bool FormKeyDown(WndForm* pForm, unsigned KeyCode) {
     Window * pBtn = NULL;
 
     switch (KeyCode & 0xffff) {
         case '6':
-            pBtn = pWnd->FindByName(TEXT("cmdPrev"));
-            NextPage(-1);
+            pBtn = pForm->FindByName(TEXT("cmdPrev"));
+            NextPage(pForm, -1);
             break;
         case '7':
-            pBtn = pWnd->FindByName(TEXT("cmdNext"));
-            NextPage(+1);
+            pBtn = pForm->FindByName(TEXT("cmdNext"));
+            NextPage(pForm, +1);
             break;;
     }
     if (pBtn) {
@@ -857,8 +808,8 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
     return false;
 }
 
-static void SetLocalTime(void) {
-  WndProperty* wp = wf->FindByName<WndProperty>(TEXT("prpLocalTime"));
+static void SetLocalTime(WndForm* pForm) {
+  auto wp = pForm->FindByName<WndProperty>(TEXT("prpLocalTime"));
   if (wp) {
     TCHAR temp[20];
     Units::TimeToText(temp, LocalTime());
@@ -867,26 +818,25 @@ static void SetLocalTime(void) {
   }
 }
 
-static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
+static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode) {
   int ival;
 
-  switch(Mode){
+  switch (Mode) {
     case DataField::daGet:
-    break;
-    case DataField::daPut: 
+      break;
+    case DataField::daPut:
     case DataField::daChange:
-      ival = iround(Sender->GetAsFloat()*3600.0);
+      ival = iround(Sender->GetAsFloat() * 3600.0);
       if (UTCOffset != ival) {
         UTCOffset = ival;
         utcchanged = true;
       }
-      SetLocalTime();
-    break;
-	default: 
-		StartupStore(_T("........... DBG-905%s"),NEWLINE); // 091105
-		break;
+      SetLocalTime(Sender->GetOwner().GetParentWndForm());
+      break;
+    default:
+      TestLog(_T("........... DBG-905"));  // 091105
+      break;
   }
-
 }
 
 static void OnWaypointNewClicked(WndButton* pWnd){
@@ -1066,87 +1016,108 @@ static void OnWaypointDeleteClicked(WndButton* pWnd) {
 static void OnBthDevice(WndButton* pWnd) {
 #ifndef NO_BLUETOOTH
     DlgBluetooth::Show();
-    
-    const auto& Port = PortConfig[SelectedDevice];
-    UpdateComPortList(wf->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
+
+    auto pForm = pWnd->GetParentWndForm();
+    if (pForm) {
+      const auto& Port = PortConfig[SelectedDevice];
+      UpdateComPortList(pForm->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
+    }
 #endif
 }
 
 
 
 static void OnNextDevice(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
 
-  SelectedDevice++;
-  if(SelectedDevice >=NUMDEV)
-    SelectedDevice = 0;
+    SelectedDevice++;
+    if(SelectedDevice >=NUMDEV)
+      SelectedDevice = 0;
 
-  UpdateDeviceEntries(pOwner, SelectedDevice);
-
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
 
 static void OnA(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
-  SelectedDevice =0;
-  UpdateDeviceEntries(pOwner, SelectedDevice);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
+    SelectedDevice = 0;
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
 static void OnB(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
-  SelectedDevice =1;
-  UpdateDeviceEntries(pOwner, SelectedDevice);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
+    SelectedDevice = 1;
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
 
 static void OnC(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
-  SelectedDevice =2;
-  UpdateDeviceEntries(pOwner, SelectedDevice);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
+    SelectedDevice = 2;
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
 
 static void OnD(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
-  SelectedDevice =3;
-  UpdateDeviceEntries(pOwner, SelectedDevice);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
+    SelectedDevice = 3;
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
 static void OnE(WndButton* pWnd) {
-WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
-  SelectedDevice =4;
-  UpdateDeviceEntries(pOwner, SelectedDevice);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
+    SelectedDevice = 4;
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
 
 static void OnF(WndButton* pWnd) {
-  WndForm* pOwner = pWnd->GetParentWndForm();
-  UpdateDeviceSetupButton(pOwner,SelectedDevice );
-  SelectedDevice =5;
-  UpdateDeviceEntries(pOwner, SelectedDevice);
+  WndForm* pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    UpdateDeviceSetupButton(pForm,SelectedDevice );
+    SelectedDevice = 5;
+    UpdateDeviceEntries(pForm, SelectedDevice);
+  }
 }
 
-void ShowWindowControl(WndForm* pOwner, const TCHAR* WndName, bool bShow) {
-    WindowControl* pWnd = pOwner->FindByName(WndName);
+void ShowWindowControl(WndForm* pForm, const TCHAR* WndName, bool bShow) {
+  if (pForm) {
+    WindowControl* pWnd = pForm->FindByName(WndName);
     if(pWnd) {
         pWnd->SetVisible(bShow);
     }
+  }
 }
 
-static void LedSetOnOff(WndForm* pOwner, const TCHAR* name, bool Enable) {
-    WndButton* pWnd = pOwner->FindByName<WndButton>(name);
+static void LedSetOnOff(WndForm* pForm, const TCHAR* name, bool Enable) {
+  if (pForm) {
+    WndButton* pWnd = pForm->FindByName<WndButton>(name);
     if (pWnd) {
        pWnd->LedSetOnOff(Enable);
     }
+  }
 }
 
-void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName) {
+void UpdateComPortSetting(WndForm* pForm,  size_t idx, const TCHAR* szPortName) {
+  if (pForm) {
 
     LKASSERT(szPortName);
     // check if all array have same size ( compil time check );
@@ -1166,15 +1137,15 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
 
 
 
-    wp = pOwner->FindByName<WndProperty>(TEXT("prpComDevice1"));
+    wp = pForm->FindByName<WndProperty>(TEXT("prpComDevice1"));
 
 
     TCHAR newname[25];
 
-    if(pOwner) {
-        _stprintf(newname,  TEXT("%s"), MsgToken<232>());
-        newname[_tcslen(newname)-1] = (TCHAR)('A'+SelectedDevice);
-      WndFrame  *wDev = (pOwner->FindByName<WndFrame>(TEXT("frmCommName")));
+    if(pForm) {
+      _stprintf(newname,  TEXT("%s"), MsgToken<232>());
+      newname[_tcslen(newname)-1] = (TCHAR)('A'+SelectedDevice);
+      WndFrame  *wDev = (pForm->FindByName<WndFrame>(TEXT("frmCommName")));
       if(wDev) {
           wDev->SetCaption(newname);
       }
@@ -1203,23 +1174,23 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     }
 
 
-    ShowWindowControl(wf, TEXT("cmdConfigDev"), DeviceList[SelectedDevice].Config);
+    ShowWindowControl(pForm, TEXT("cmdConfigDev"), DeviceList[SelectedDevice].Config);
 
-    LedSetOnOff(pOwner, _T("cmdA"), !DeviceList[0].Disabled);
-    LedSetOnOff(pOwner, _T("cmdB"), !DeviceList[1].Disabled);
-    LedSetOnOff(pOwner, _T("cmdC"), !DeviceList[2].Disabled);
-    LedSetOnOff(pOwner, _T("cmdD"), !DeviceList[3].Disabled);
-    LedSetOnOff(pOwner, _T("cmdE"), !DeviceList[4].Disabled);
-    LedSetOnOff(pOwner, _T("cmdF"), !DeviceList[5].Disabled);
+    LedSetOnOff(pForm, _T("cmdA"), !DeviceList[0].Disabled);
+    LedSetOnOff(pForm, _T("cmdB"), !DeviceList[1].Disabled);
+    LedSetOnOff(pForm, _T("cmdC"), !DeviceList[2].Disabled);
+    LedSetOnOff(pForm, _T("cmdD"), !DeviceList[3].Disabled);
+    LedSetOnOff(pForm, _T("cmdE"), !DeviceList[4].Disabled);
+    LedSetOnOff(pForm, _T("cmdF"), !DeviceList[5].Disabled);
 
     if(bHide)
     {
-        ShowWindowControl(wf, TEXT("prpComPort1"), !bHide);
-        ShowWindowControl(wf, TEXT("prpComSpeed1"),!bHide);
-        ShowWindowControl(wf, TEXT("prpComBit1"),  !bHide );
-        ShowWindowControl(wf, TEXT("prpComIpAddr1"),!bHide);
-        ShowWindowControl(wf, TEXT("prpComIpPort1"),!bHide);
-        ShowWindowControl(wf, TEXT("prpExtSound1"), !bHide);
+        ShowWindowControl(pForm, TEXT("prpComPort1"), !bHide);
+        ShowWindowControl(pForm, TEXT("prpComSpeed1"),!bHide);
+        ShowWindowControl(pForm, TEXT("prpComBit1"),  !bHide );
+        ShowWindowControl(pForm, TEXT("prpComIpAddr1"),!bHide);
+        ShowWindowControl(pForm, TEXT("prpComIpPort1"),!bHide);
+        ShowWindowControl(pForm, TEXT("prpExtSound1"), !bHide);
     }
     else
     {
@@ -1237,27 +1208,27 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     bool bCOM = !(bBt || bTCPClient || bTCPServer || bUDPServer || bFileReplay || ( DeviceList[SelectedDevice].SharedPortNum.has_value()));
     if(bCOM)
     {
-      ShowWindowControl(wf, TEXT("prpComPort1"), true);
-      ShowWindowControl(wf, TEXT("prpComSpeed1"),true);
-      ShowWindowControl(wf, TEXT("prpComBit1"),  true );
-      ShowWindowControl(wf, TEXT("prpComIpAddr1"),false);
-      ShowWindowControl(wf, TEXT("prpComIpPort1"),false);
-      ShowWindowControl(wf, TEXT("prpExtSound1"), false);
+      ShowWindowControl(pForm, TEXT("prpComPort1"), true);
+      ShowWindowControl(pForm, TEXT("prpComSpeed1"),true);
+      ShowWindowControl(pForm, TEXT("prpComBit1"),  true );
+      ShowWindowControl(pForm, TEXT("prpComIpAddr1"),false);
+      ShowWindowControl(pForm, TEXT("prpComIpPort1"),false);
+      ShowWindowControl(pForm, TEXT("prpExtSound1"), false);
     }
     else
     {
-      ShowWindowControl(wf, TEXT("prpComPort1"), true);
-      ShowWindowControl(wf, TEXT("prpComSpeed1"),false);
-      ShowWindowControl(wf, TEXT("prpComBit1"),  false);
-      ShowWindowControl(wf, TEXT("prpComIpAddr1"), bTCPClient);
-      ShowWindowControl(wf, TEXT("prpComIpPort1"),  bTCPClient || bTCPServer || bUDPServer);
+      ShowWindowControl(pForm, TEXT("prpComPort1"), true);
+      ShowWindowControl(pForm, TEXT("prpComSpeed1"),false);
+      ShowWindowControl(pForm, TEXT("prpComBit1"),  false);
+      ShowWindowControl(pForm, TEXT("prpComIpAddr1"), bTCPClient);
+      ShowWindowControl(pForm, TEXT("prpComIpPort1"),  bTCPClient || bTCPServer || bUDPServer);
     }
 
-    ShowWindowControl(wf, TEXT("cmdReplay"), bFileReplay);
+    ShowWindowControl(pForm, TEXT("cmdReplay"), bFileReplay);
 
     // Manage external sounds only if necessary
     if (bManageExtAudio) {
-        ShowWindowControl(wf,  TEXT("prpExtSound1"), !bHide);
+        ShowWindowControl(pForm,  TEXT("prpExtSound1"), !bHide);
     }
     }
     TCHAR StateText[255];
@@ -1270,25 +1241,24 @@ void UpdateComPortSetting(WndForm* pOwner,  size_t idx, const TCHAR* szPortName)
     }
 
     if(DeviceList[idx].Disabled)
-      ShowWindowControl(wf, TEXT("prpStatus"),false);
+      ShowWindowControl(pForm, TEXT("prpStatus"),false);
     else
     {
-      ShowWindowControl(wf, TEXT("prpStatus"),true);
-      wp = pOwner->FindByName<WndProperty>(TEXT("prpStatus"));
+      ShowWindowControl(pForm, TEXT("prpStatus"),true);
+      wp = pForm->FindByName<WndProperty>(TEXT("prpStatus"));
       if (wp) {
         DataField* dfe = wp->GetDataField();
         dfe->Set(StateText);
         wp->RefreshDisplay();
       }
     }
-
-
+  }
 }
 
 
-  static void OnConfigDevClicked(WndButton* pWnd){
-     if(DeviceList[SelectedDevice].Config)
-       DeviceList[SelectedDevice].Config(&DeviceList[SelectedDevice]);
+static void OnConfigDevClicked(WndButton* pWnd){
+  if(DeviceList[SelectedDevice].Config)
+    DeviceList[SelectedDevice].Config(&DeviceList[SelectedDevice]);
 }
 
 
@@ -1322,7 +1292,7 @@ static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daPut:
     case DataField::daChange:
-        UpdateComPortSetting(wf, SelectedDevice, Sender->GetAsString());
+        UpdateComPortSetting(Sender->GetOwner().GetParentWndForm(), SelectedDevice, Sender->GetAsString());
     break;
 	default: 
 		break;
@@ -1347,12 +1317,8 @@ static CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnWaypointSaveClicked),
   ClickNotifyCallbackEntry(OnLKMapOpenClicked),
 
-  DataAccessCallbackEntry(OnDeviceAData),
- // DataAccessCallbackEntry(OnDeviceBData),
-  
+  DataAccessCallbackEntry(OnDeviceAData),  
   DataAccessCallbackEntry(OnComPort1Data),
-  //DataAccessCallbackEntry(OnComPort2Data),
-
 
   ClickNotifyCallbackEntry(OnSetTopologyClicked),
   ClickNotifyCallbackEntry(OnSetCustomKeysClicked),
@@ -1386,18 +1352,33 @@ static CallBackTableEntry_t CallBackTable[]={
 
   DataAccessCallbackEntry(OnFfvlKey),
 
+  ClickNotifyCallbackEntry(OnPaste),
+  ClickNotifyCallbackEntry(OnCopy),
+  ClickNotifyCallbackEntry(OnCloseClicked),
+
+  ClickNotifyCallbackEntry(OnPilotNameClicked),
+
+  ClickNotifyCallbackEntry(OnLiveTrackersrvClicked),
+  ClickNotifyCallbackEntry(OnLiveTrackerportClicked),
+  ClickNotifyCallbackEntry(OnLiveTrackerusrClicked),
+  ClickNotifyCallbackEntry(OnLiveTrackerpwdClicked),
+
+  ClickNotifyCallbackEntry(OnAircraftTypeClicked),
+  ClickNotifyCallbackEntry(OnAircraftRegoClicked),
+  ClickNotifyCallbackEntry(OnCompetitionClassClicked),
+  ClickNotifyCallbackEntry(OnCompetitionIDClicked),
+
   EndCallBackEntry()
 };
 
 
 
-static void SetInfoBoxSelector(int item, int mode)
+static void SetInfoBoxSelector(WndForm* pForm, int item, int mode)
 {
   TCHAR name[80];
   InfoBoxPropName(name, item, mode);
 
-  WndProperty *wp;
-  wp = wf->FindByName<WndProperty>(name);
+  auto wp = pForm->FindByName<WndProperty>(name);
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FillDataOptionDescription(dfe);
@@ -1425,12 +1406,11 @@ static void SetInfoBoxSelector(int item, int mode)
 }
 
 
-static void GetInfoBoxSelector(int item, int mode)
+static void GetInfoBoxSelector(WndForm* pForm, int item, int mode)
 {
   TCHAR name[80];
   InfoBoxPropName(name, item, mode);
-  WndProperty *wp;
-  wp = wf->FindByName<WndProperty>(name);
+  auto wp = (WndProperty*)pForm->FindByName<WndProperty>(name);
   if (wp) {
     int itnew = wp->GetDataField()->GetAsInteger();
     int it=0;
@@ -1527,118 +1507,76 @@ void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
 }
 
 
-void UpdateDeviceEntries(WndForm *wf, int DeviceIdx)
+void UpdateDeviceEntries(WndForm *pForm, int DeviceIdx)
 {
+  if(!pForm) {
+    return;
+  }
   WndProperty *wp;
 
-  LKASSERT(wf);
 
   const auto& Port = PortConfig[DeviceIdx];
 
-  UpdateComPortSetting(wf,DeviceIdx, Port.GetPort());
-  UpdateComPortList(wf->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
+  UpdateComPortSetting(pForm,DeviceIdx, Port.GetPort());
+  UpdateComPortList(pForm->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
 
-wp = wf->FindByName<WndProperty>(TEXT("prpComSpeed1"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpComSpeed1"));
 if (wp) {
   DataField* dfe = wp->GetDataField();
   dfe->Set(Port.dwSpeedIndex);
   wp->SetReadOnly(false);
   wp->RefreshDisplay();
 }
-wp = wf->FindByName<WndProperty>(TEXT("prpComBit1"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpComBit1"));
 if (wp) {
   DataField* dfe = wp->GetDataField();
   dfe->Set(Port.dwBitIndex);
   wp->RefreshDisplay();
 }
-wp = wf->FindByName<WndProperty>(TEXT("prpExtSound1"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpExtSound1"));
 if (wp) {
   wp->GetDataField()->Set(Port.UseExtSound);
   wp->RefreshDisplay();
 }
 
-wp = wf->FindByName<WndProperty>(TEXT("prpComIpAddr1"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpComIpAddr1"));
 if (wp) {
   wp->GetDataField()->Set(Port.szIpAddress);
   wp->RefreshDisplay();
 }
 
-wp = wf->FindByName<WndProperty>(TEXT("prpComIpPort1"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpComIpPort1"));
 if (wp) {
   wp->GetDataField()->Set((int)Port.dwIpPort);
   wp->RefreshDisplay();
 }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpComDevice1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->Set(Port.szDeviceName);
     wp->RefreshDisplay();
-    UpdateButtons(wf);
+    UpdateButtons(pForm);
   }
 
-  UpdateComPortSetting(wf, DeviceIdx, Port.GetPort());
-  UpdateComPortList(wf->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
+  UpdateComPortSetting(pForm, DeviceIdx, Port.GetPort());
+  UpdateComPortList(pForm->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
 }
 
-static void setVariables( WndForm *pOwner) {
+static void setVariables(WndForm* pForm) {
   WndProperty *wp;
 
-  LKASSERT(pOwner);
+  LKASSERT(pForm);
 
-  buttonPilotName = (pOwner->FindByName<WndButton>(TEXT("cmdPilotName")));
-  if (buttonPilotName) {
-    buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
-  }
-  buttonLiveTrackersrv = (pOwner->FindByName<WndButton>(TEXT("cmdLiveTrackersrv")));
-  if (buttonLiveTrackersrv) {
-    buttonLiveTrackersrv->SetOnClickNotify(OnLiveTrackersrvClicked);
-  }
-  buttonLiveTrackerport = (pOwner->FindByName<WndButton>(TEXT("cmdLiveTrackerport")));
-  if (buttonLiveTrackerport) {
-    buttonLiveTrackerport->SetOnClickNotify(OnLiveTrackerportClicked);
-  }
-  buttonLiveTrackerusr = (pOwner->FindByName<WndButton>(TEXT("cmdLiveTrackerusr")));
-  if (buttonLiveTrackerusr) {
-    buttonLiveTrackerusr->SetOnClickNotify(OnLiveTrackerusrClicked);
-  }
-  buttonLiveTrackerpwd = (pOwner->FindByName<WndButton>(TEXT("cmdLiveTrackerpwd")));
-  if (buttonLiveTrackerpwd) {
-    buttonLiveTrackerpwd->SetOnClickNotify(OnLiveTrackerpwdClicked);
-  }
-  buttonAircraftType = (pOwner->FindByName<WndButton>(TEXT("cmdAircraftType")));
-  if (buttonAircraftType) {
-    buttonAircraftType->SetOnClickNotify(OnAircraftTypeClicked);
-  }
-  buttonAircraftRego = (pOwner->FindByName<WndButton>(TEXT("cmdAircraftRego")));
-  if (buttonAircraftRego) {
-    buttonAircraftRego->SetOnClickNotify(OnAircraftRegoClicked);
-  }
-  buttonCompetitionClass = (pOwner->FindByName<WndButton>(TEXT("cmdCompetitionClass")));
-  if (buttonCompetitionClass) {
-    buttonCompetitionClass->SetOnClickNotify(OnCompetitionClassClicked);
-  }
-  buttonCompetitionID = (pOwner->FindByName<WndButton>(TEXT("cmdCompetitionID")));
-  if (buttonCompetitionID) {
-    buttonCompetitionID->SetOnClickNotify(OnCompetitionIDClicked);
-  }
-  buttonCopy = (pOwner->FindByName<WndButton>(TEXT("cmdCopy")));
-  if (buttonCopy) {
-    buttonCopy->SetOnClickNotify(OnCopy);
-  }
-  buttonPaste = (pOwner->FindByName<WndButton>(TEXT("cmdPaste")));
-  if (buttonPaste) {
-    buttonPaste->SetOnClickNotify(OnPaste);
-  }
 
-  UpdateButtons(pOwner);
+  UpdateButtons(pForm);
 
   const auto& Port = PortConfig[SelectedDevice];
 
-  UpdateComPortList(pOwner->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
+  UpdateComPortList(pForm->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
 
 
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComSpeed1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComSpeed1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     std::for_each(std::begin(baudrate_string), 
@@ -1649,7 +1587,7 @@ static void setVariables( WndForm *pOwner) {
     wp->SetReadOnly(false);
     wp->RefreshDisplay();
   }
-  wp = pOwner->FindByName<WndProperty>(TEXT("prpComBit1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComBit1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("8bit"));
@@ -1657,25 +1595,25 @@ static void setVariables( WndForm *pOwner) {
     dfe->Set(Port.dwBitIndex);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpExtSound1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpExtSound1"));
   if (wp) {
     wp->GetDataField()->Set(Port.UseExtSound);
     wp->RefreshDisplay();
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpComIpAddr1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComIpAddr1"));
   if (wp) {
     wp->GetDataField()->Set(Port.szIpAddress);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpComIpPort1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComIpPort1"));
   if (wp) {
     wp->GetDataField()->Set((int)Port.dwIpPort);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpComDevice1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpComDevice1"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     
@@ -1688,11 +1626,11 @@ static void setVariables( WndForm *pOwner) {
     wp->RefreshDisplay();
   }
 
-  UpdateButtons(wf);
+  UpdateButtons(pForm);
 
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceDisplay"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceDisplay"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M79_ = "All on" 
@@ -1704,14 +1642,14 @@ static void setVariables( WndForm *pOwner) {
     dfe->addEnumText(MsgToken<77>());
     dfe->Set(AltitudeMode_Config);
     wp->RefreshDisplay();
-      wp = wf->FindByName<WndProperty>(TEXT("prpClipAltitude"));
+      wp = pForm->FindByName<WndProperty>(TEXT("prpClipAltitude"));
       if (wp) wp->SetVisible(AltitudeMode_Config==CLIP);
-      wp = wf->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
+      wp = pForm->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
       if (wp) wp->SetVisible(AltitudeMode_Config==AUTO || AltitudeMode_Config==ALLBELOW);
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceFillType"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceFillType"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
@@ -1729,7 +1667,7 @@ static void setVariables( WndForm *pOwner) {
     wp->RefreshDisplay();
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceOpacity"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceOpacity"));
   if (wp) {
     wp->SetVisible(true);
     DataField* dfe = wp->GetDataField();
@@ -1750,7 +1688,7 @@ static void setVariables( WndForm *pOwner) {
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBarOpacity"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBarOpacity"));
   if (wp) {
     wp->SetVisible(true);
 DataField* dfe = wp->GetDataField();
@@ -1787,7 +1725,7 @@ DataField* dfe = wp->GetDataField();
   //
   // Font manager
   //
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontMapWaypoint"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontMapWaypoint"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1795,7 +1733,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontSymbols"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontSymbols"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<2327>()); // LKTOKEN  _@M2327_ "Bitmap"
@@ -1806,7 +1744,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontMapTopology"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontMapTopology"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1814,7 +1752,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontInfopage1L"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontInfopage1L"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1822,7 +1760,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontBottomBar"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontBottomBar"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1830,7 +1768,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSnailScale"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSnailScale"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1838,7 +1776,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontVisualGlide"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontVisualGlide"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1846,7 +1784,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlayTarget"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlayTarget"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1854,7 +1792,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlayValues"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlayValues"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     FontSetEnums(dfe);
@@ -1862,7 +1800,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseTwoLines"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseTwoLines"));
   if (wp) {
     wp->GetDataField()->Set(UseTwoLines);
     if (ScreenLandscape) wp->SetReadOnly(true);
@@ -1870,7 +1808,7 @@ DataField* dfe = wp->GetDataField();
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontRenderer"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontRenderer"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 
@@ -1885,7 +1823,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpAspPermDisable"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAspPermDisable"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<968>()); // _@M968_ "for this time only"
@@ -1895,7 +1833,7 @@ DataField* dfe = wp->GetDataField();
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyAltitudeMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M382_ = "Landables only" 
@@ -1906,64 +1844,64 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUTCOffset"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUTCOffset"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(UTCOffset/900.0)/4.0);
     wp->RefreshDisplay();
   }
-  SetLocalTime();
+  SetLocalTime(pForm);
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpClipAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpClipAltitude"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(ClipAltitude / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
-    
-  wp = wf->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
+
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AltWarningMargin / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoZoom"));
   if (wp) {
     wp->GetDataField()->Set(AutoZoom_Config);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDrawFAI"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDrawFAI"));
   if (wp) {
     wp->GetDataField()->Set(Flags_DrawFAI_config);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDrawXC"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDrawXC"));
   if (wp) {
     wp->GetDataField()->Set(Flags_DrawXC_config);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLockSettingsInFlight"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLockSettingsInFlight"));
   if (wp) {
     wp->GetDataField()->Set(LockSettingsInFlight);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLoggerShortName"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLoggerShortName"));
   if (wp) {
     wp->GetDataField()->Set(LoggerShortName);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDebounceTimeout"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDebounceTimeout"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(debounceTimeout);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpEnableFLARMMap"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpEnableFLARMMap"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<239>()); // Disabled
@@ -1975,7 +1913,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWaypointLabels"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWaypointLabels"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M454_ = "Names" 
@@ -2008,13 +1946,13 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpCirclingZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpCirclingZoom"));
   if (wp) {
     wp->GetDataField()->Set(MapWindow::zoom.CircleZoom());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOrientation"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOrientation"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M737_ = "Track up" 
@@ -2036,27 +1974,27 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMenuTimeout"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMenuTimeout"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(MenuTimeout_Config/2);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyAltitudeArrival"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(SAFETYALTITUDEARRIVAL / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyAltitudeTerrain"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(SAFETYALTITUDETERRAIN / 10.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFinalGlideTerrain"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFinalGlideTerrain"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M959_ = "OFF" 
@@ -2073,38 +2011,38 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpEnableNavBaroAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpEnableNavBaroAltitude"));
   if (wp) {
     wp->GetDataField()->Set(EnableNavBaroAltitude_Config);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpOrbiter"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOrbiter"));
   if (wp) {
     wp->GetDataField()->Set(Orbiter_Config);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoMcStatus"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoMcStatus"));
   if (wp) {
     wp->GetDataField()->Set(AutoMacCready_Config);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpShading"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpShading"));
   if (wp) {
     wp->GetDataField()->Set(Shading_Config);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpIsoLine"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpIsoLine"));
   if (wp) {
     wp->GetDataField()->Set(IsoLine_Config);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpSonarWarning"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSonarWarning"));
   if (wp) {
     wp->GetDataField()->Set(SonarWarning_Config);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoWind"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M418_ = "Manual" 
@@ -2120,7 +2058,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoMcMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoMcMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<290>());  // Final Glide
@@ -2131,7 +2069,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWaypointsOutOfRange"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
 
   // ToDo: Remove Ask ?
@@ -2153,20 +2091,20 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoForceFinalGlide"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoForceFinalGlide"));
   if (wp) {
     wp->GetDataField()->Set(AutoForceFinalGlide);
     wp->RefreshDisplay();
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpHandicap"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpHandicap"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(Handicap);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpClimbZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpClimbZoom"));
   if (wp) {
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
@@ -2177,25 +2115,25 @@ DataField* dfe = wp->GetDataField();
     dfe->Set(ClimbZoom);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCruiseZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpCruiseZoom"));
   if (wp) {
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
     for (int i=0; i<MapWindow::GetScaleListCount(); ++i) {
       MapWindow::zoom.GetInitMapScaleText(i, buf1);
-	    dfe->addEnumText(buf1);
+      dfe->addEnumText(buf1);
     }
     dfe->Set(CruiseZoom);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoZoomThreshold"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoZoomThreshold"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToDistance(AutoZoomThreshold));
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMaxAutoZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMaxAutoZoom"));
   if (wp) {
     TCHAR buf1[32];
     DataField* dfe = wp->GetDataField();
@@ -2208,13 +2146,13 @@ DataField* dfe = wp->GetDataField();
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoOrientScale"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoOrientScale"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AutoOrientScale);
     wp->RefreshDisplay();
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsSpeed"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsSpeed"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
@@ -2227,7 +2165,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsLatLon"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsLatLon"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("DDMMSS"));
@@ -2239,7 +2177,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsTaskSpeed"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
@@ -2252,7 +2190,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsDistance"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsDistance"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M667_ = "Statute" 
@@ -2265,7 +2203,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsAltitude"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("feet"));
@@ -2274,7 +2212,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsLift"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsLift"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("knots"));
@@ -2284,13 +2222,13 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTrailDrift"));
   if (wp) {
     wp->GetDataField()->Set(EnableTrailDrift_Config);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpThermalLocator"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpThermalLocator"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M959_ = "OFF" 
@@ -2303,7 +2241,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
 #if defined(PPC2003) || defined(PNA)
       wp->SetVisible(true);
@@ -2314,39 +2252,39 @@ DataField* dfe = wp->GetDataField();
 #endif
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSaveRuntime"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSaveRuntime"));
   if (wp) {
     wp->GetDataField()->Set(SaveRuntime);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDisableAutoLogger"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDisableAutoLogger"));
   if (wp) {
     wp->GetDataField()->Set(!DisableAutoLogger);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLiveTrackerInterval"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerInterval"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(tracking::interval);
     wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpLiveTrackerRadar_config"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
     wp->GetDataField()->Set(tracking::radar_config);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyMacCready"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyMacCready"));
   if (wp) {
     wp->GetDataField()->Set(Units::ToVerticalSpeed(GlidePolar::SafetyMacCready));
     wp->GetDataField()->SetUnits(Units::GetVerticalSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTrail"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTrail"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M499_ = "Off" 
@@ -2361,39 +2299,39 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLKMaxLabels"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLKMaxLabels"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(LKMaxLabels);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBugs"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBugs"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(BUGS_Config*100); // we show the value correctly
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMaxManoeuveringSpeed"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToHorizontalSpeed(SAFTEYSPEED)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWindCalcSpeed")); // 100112
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWindCalcSpeed")); // 100112
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToHorizontalSpeed(WindCalcSpeed)));
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWindCalcTime")); // 100113
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWindCalcTime")); // 100113
   if (wp) {
     wp->GetDataField()->Set(WindCalcTime);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBallastSecsToEmpty"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBallastSecsToEmpty"));
   if (wp) {
     wp->GetDataField()->Set(BallastSecsToEmpty);
 #if 0
@@ -2407,7 +2345,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPilotFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPilotFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2416,7 +2354,7 @@ DataField* dfe = wp->GetDataField();
     }
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAircraftFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAircraftFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2425,7 +2363,7 @@ DataField* dfe = wp->GetDataField();
     }
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpDeviceFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDeviceFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2440,7 +2378,7 @@ DataField* dfe = wp->GetDataField();
   else
     _tcscpy(temptext,szPolarFile);
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPolarFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPolarFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2456,7 +2394,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  WndButton *cmdLKMapOpen = (wf->FindByName<WndButton>(TEXT("cmdLKMapOpen")));
+  WndButton *cmdLKMapOpen = pForm->FindByName<WndButton>(TEXT("cmdLKMapOpen"));
   if (cmdLKMapOpen) {
 #ifdef ANDROID
     cmdLKMapOpen->SetVisible(true);
@@ -2466,7 +2404,7 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szMapFile);
-  wp = wf->FindByName<WndProperty>(TEXT("prpMapFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2481,7 +2419,7 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szTerrainFile);
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2492,7 +2430,7 @@ DataField* dfe = wp->GetDataField();
   }
 
   _tcscpy(temptext,szAirfieldFile);
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirfieldFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirfieldFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2502,7 +2440,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLanguageCode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLanguageCode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
@@ -2518,7 +2456,7 @@ DataField* dfe = wp->GetDataField();
 
 
   _tcscpy(temptext,szInputFile);
-  wp = wf->FindByName<WndProperty>(TEXT("prpInputFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpInputFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
     if(dfe) {
@@ -2528,7 +2466,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAppInfoBoxModel"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAppInfoBoxModel"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     for (auto& item : ModelType::list()) {
@@ -2538,7 +2476,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M328_ = "Glider" 
@@ -2555,7 +2493,7 @@ DataField* dfe = wp->GetDataField();
 
 
 #if (0)
-  wp = wf->FindByName<WndProperty>(TEXT("prpAltArrivMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAltArrivMode"));
   if (wp) {
     DataFieldEnum* dfe;
     dfe = wp->GetDataField();
@@ -2572,7 +2510,7 @@ DataField* dfe = wp->GetDataField();
   }
 #endif
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpCheckSum"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpCheckSum"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
@@ -2583,7 +2521,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpIphoneGestures"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpIphoneGestures"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M364_ = "Inverted" 
@@ -2594,7 +2532,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAndroidScreenOrientation"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAndroidScreenOrientation"));
   if (wp) {
 #ifdef ANDROID
     wp->SetVisible(true);
@@ -2611,7 +2549,7 @@ DataField* dfe = wp->GetDataField();
 #endif
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPollingMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPollingMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M480_ = "Normal" 
@@ -2622,7 +2560,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLKVarioBar"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLKVarioBar"));
   if (wp) {
     TCHAR newtoken[150];
     DataField* dfe = wp->GetDataField();
@@ -2650,7 +2588,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLKVarioVal"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLKVarioVal"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<1425>()); // vario in thermal and cruise
@@ -2660,7 +2598,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpHideUnits"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpHideUnits"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
@@ -2669,7 +2607,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDeclutterMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDeclutterMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
@@ -2686,7 +2624,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBestWarning")); // 091122
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBestWarning")); // 091122
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
@@ -2694,7 +2632,7 @@ DataField* dfe = wp->GetDataField();
     }
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseTotalEnergy"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseTotalEnergy"));
   if (wp) {
     DataField * dfe = wp->GetDataField();
     if(dfe) {
@@ -2702,7 +2640,7 @@ DataField* dfe = wp->GetDataField();
     }
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseUngestures"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseUngestures"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     LKASSERT(dfe);
@@ -2712,7 +2650,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpThermalBar")); // 091122
+  wp = pForm->FindByName<WndProperty>(TEXT("prpThermalBar")); // 091122
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
@@ -2726,7 +2664,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlayClock"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlayClock"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     // LKTOKEN  _@M239_ = "Disabled" 
@@ -2737,7 +2675,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
@@ -2746,7 +2684,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGliderSymbol"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGliderSymbol"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<227>());  //  Default
@@ -2763,7 +2701,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTrackBar")); // 091122
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTrackBar")); // 091122
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if(dfe) {
@@ -2772,7 +2710,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOutlinedTp"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOutlinedTp"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M78_ = "All black" 
@@ -2785,7 +2723,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTpFilter"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTpFilter"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M473_ = "No landables" 
@@ -2798,7 +2736,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverColor"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverColor"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M816_ = "White" 
@@ -2833,7 +2771,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMapBox"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMapBox"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M763_ = "Unboxed, no units" 
@@ -2848,7 +2786,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlaySize"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlaySize"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M842_ = "Big font " 
@@ -2860,7 +2798,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGlideBarMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGlideBarMode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
@@ -2873,7 +2811,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpArrivalValue"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpArrivalValue"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M98_ = "ArrivalAltitude" 
@@ -2888,7 +2826,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpNewMapDeclutter"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpNewMapDeclutter"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
@@ -2901,7 +2839,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAverEffTime"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAverEffTime"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<1775>()); // 3 sec
@@ -2924,7 +2862,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
  }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBgMapcolor"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBgMapcolor"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M816_ = "White" 
@@ -2952,7 +2890,7 @@ DataField* dfe = wp->GetDataField();
  }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAppIndLandable"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAppIndLandable"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<1797>()); // Vector
@@ -2962,7 +2900,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAppInverseInfoBox"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAppInverseInfoBox"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M958_ = "ON" 
@@ -2973,19 +2911,19 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGliderScreenPosition"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGliderScreenPosition"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(MapWindow::GliderScreenPosition);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoContrast"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoContrast"));
   if (wp) {
      wp->GetDataField()->Set(AutoContrast);
      wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
   if (wp) {
 
     wp->GetDataField()->SetAsFloat(iround((TerrainContrast*100.0)/255.0));
@@ -2993,14 +2931,14 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainBrightness"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainBrightness"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround((TerrainBrightness*100.0)/255.0));
     if (AutoContrast) wp->SetReadOnly(true); // needed on dlg startup
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainRamp"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainRamp"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M413_ = "Low lands" 
@@ -3032,7 +2970,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoBacklight")); // VENTA4
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoBacklight")); // VENTA4
   if (wp) {
 #ifndef PPC2003   // PNA is also PPC2003
     wp->SetVisible(false);
@@ -3043,7 +2981,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoSoundVolume")); // VENTA4
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoSoundVolume")); // VENTA4
   if (wp) {
 #ifndef PPC2003   // PNA is also PPC2003
     	wp->SetVisible(false);
@@ -3054,7 +2992,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_finish_sectors(TSK_DEFAULT);
@@ -3067,14 +3005,14 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishRadius"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(FinishRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_start_sectors(gTaskType);
@@ -3087,14 +3025,14 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartRadius"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskStartRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(StartRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     auto sectors = get_task_sectors(TSK_DEFAULT);
@@ -3107,14 +3045,14 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(SectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoAdvance"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoAdvance"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(MsgToken<418>()); // Manual
@@ -3125,39 +3063,39 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGPSAltitudeOffset"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGPSAltitudeOffset"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(GPSAltitudeOffset / 1000.0))); // 100429
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude1"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmMaxAltitude1 / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude2"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude2"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmMaxAltitude2 / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude3"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude3"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmMaxAltitude3 / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmTakeoffSafety"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmTakeoffSafety"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(Units::ToAltitude(AlarmTakeoffSafety / 1000.0)));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
   if (wp)
   {
 	DataField* dfe = wp->GetDataField();
@@ -3168,7 +3106,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAdditionalContestRule"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAdditionalContestRule"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (dfe) {
@@ -3185,14 +3123,14 @@ DataField* dfe = wp->GetDataField();
 {
 GearWarningMode =0;
 GearWarningAltitude=0;
-wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
 wp->SetVisible(false);
-wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
+wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
 wp->SetVisible(false);
 wp->RefreshDisplay();
 }
 #else
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
 
   if (wp) {
 	if(GearWarningMode == 0)
@@ -3210,13 +3148,13 @@ wp->RefreshDisplay();
   }
 #endif
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseGeoidSeparation"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseGeoidSeparation"));
   if (wp) {
     wp->GetDataField()->Set(UseGeoidSeparation);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPressureHg"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPressureHg"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("hPa"));
@@ -3225,13 +3163,13 @@ wp->RefreshDisplay();
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpEngineeringMenu")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpEngineeringMenu")); 
   if (wp) {
     wp->GetDataField()->Set(EngineeringMenu);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAndroidAudioVario"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAndroidAudioVario"));
   if (wp) {
 #ifndef ANDROID
     wp->SetVisible(false);
@@ -3242,7 +3180,7 @@ wp->RefreshDisplay();
 
   for (int i=0; i<4; i++) {
     for (int j=0; j<8; j++) {
-      SetInfoBoxSelector(j, i);
+      SetInfoBoxSelector(pForm, j, i);
     }
   }
 }
@@ -3342,6 +3280,23 @@ static void InitDlgDevice(WndForm *pWndForm) {
   }
 }
 
+std::unique_ptr<WndForm> dlgConfigurationFromXML(bool landscape, unsigned mode) {
+  struct dlgTemplate_t {
+    unsigned landscape;
+    unsigned portrait;
+  };
+
+  constexpr dlgTemplate_t dlgTemplate [] = {
+      { IDR_XML_CONFIGURATION_L, IDR_XML_CONFIGURATION_P },
+      { IDR_XML_CONFIGPILOT_L, IDR_XML_CONFIGPILOT_P },
+      { IDR_XML_CONFIGAIRCRAFT_L, IDR_XML_CONFIGAIRCRAFT_P },
+      { IDR_XML_CONFIGDEVICE_L, IDR_XML_CONFIGDEVICE_P }
+  };
+  if(mode < std::size(dlgTemplate)) {
+    return std::unique_ptr<WndForm>(dlgLoadFromXML(CallBackTable, landscape ? dlgTemplate[mode].landscape : dlgTemplate[mode].portrait));
+  }
+  return {};
+};
 
 void dlgConfigurationShowModal(short mode){
 
@@ -3349,54 +3304,28 @@ void dlgConfigurationShowModal(short mode){
 
   configMode=mode;
 
-  typedef struct {
-      const unsigned resid;
-  }  dlgTemplate_t;
-  
-  static const dlgTemplate_t dlgTemplate_L [] = { 
-      { IDR_XML_CONFIGURATION_L },
-      { IDR_XML_CONFIGPILOT_L },
-      { IDR_XML_CONFIGAIRCRAFT_L },
-      { IDR_XML_CONFIGDEVICE_L }
-  };
-  
-  static const dlgTemplate_t dlgTemplate_P [] = { 
-      { IDR_XML_CONFIGURATION_P },
-      { IDR_XML_CONFIGPILOT_P },
-      { IDR_XML_CONFIGAIRCRAFT_P },
-      { IDR_XML_CONFIGDEVICE_P }
-  };
-  
-  static_assert(std::size(dlgTemplate_L) == std::size(dlgTemplate_P), "check array size");
-  
+
+
+
   StartHourglassCursor();
 
   if (configMode==CONFIGMODE_DEVICE) {
     RefreshComPortList();
   }
 
-  if(configMode >= 0 && configMode < (int)std::size(dlgTemplate_L)) {
-    
-    auto dlgTemplate = (ScreenLandscape ? dlgTemplate_L[configMode] : dlgTemplate_P[configMode]);
-  
-    wf = dlgLoadFromXML(CallBackTable, dlgTemplate.resid);
-    
-  } else {
-      wf = nullptr;
-  }
-  
-  if (!wf) {
-	return;
+  auto pForm = dlgConfigurationFromXML(ScreenLandscape, configMode);
+  if (!pForm) {
+    return;
   }
 
 #ifdef ANDROID
-  wf->SetOnUser(OnUser);
+  pForm->SetOnUser(OnUser);
 
   std::unique_ptr<BluetoothLeScanner> BluetoothLeScanPtr;
   if(configMode==CONFIGMODE_DEVICE) {
     // Start Bluetooth LE device scan before Open Dialog
     try {
-      BluetoothLeScanPtr = std::make_unique<BluetoothLeScanner>(wf, OnLeScan);
+      BluetoothLeScanPtr = std::make_unique<BluetoothLeScanner>(pForm.get(), OnLeScan);
     }
     catch (std::exception& e) {
       StartupStore("Failed to start BLE Scanner : %s", e.what());
@@ -3404,40 +3333,34 @@ void dlgConfigurationShowModal(short mode){
   }
 #endif
 
-  wf->SetKeyDownNotify(FormKeyDown);
-
-  LKASSERT(wf->FindByName<WndButton>(TEXT("cmdClose")));
-  (wf->FindByName<WndButton>(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
+  pForm->SetKeyDownNotify(FormKeyDown);
 
   reset_wConfig();
 
   for(size_t i = 0; i < std::size(ConfigPageNames[configMode]); i++) {
-      wConfig[i]    = wf->FindByName<WndFrame>(ConfigPageNames[configMode][i].szName);
+      wConfig[i] = pForm->FindByName<WndFrame>(ConfigPageNames[configMode][i].szName);
       numPages += wConfig[i]?1:0;
   }
   std::fill(std::begin(cpyInfoBox), std::end(cpyInfoBox), -1);
 
-  setVariables(wf);
+  setVariables(pForm.get());
 
   if (configMode==CONFIGMODE_DEVICE) {
-  	UpdateDeviceSetupButton(wf, SelectedDevice);
-//      UpdateDeviceSetupButton(1, deviceName2);
+  	UpdateDeviceSetupButton(pForm.get(), SelectedDevice);
 // Don't show external sound config if not compiled for this device or not used
 #ifdef DISABLEEXTAUDIO
-        ShowWindowControl(wf, _T("prpExtSound1"), false);
-//      ShowWindowControl(wf, _T("prpExtSound2"), false);
+        ShowWindowControl(pForm.get(), _T("prpExtSound1"), false);
 #else
         if (!IsSoundInit()) {
-           ShowWindowControl(wf, _T("prpExtSound1"), false);
-//         ShowWindowControl(wf, _T("prpExtSound2"), false);
+           ShowWindowControl(pForm.get(), _T("prpExtSound1"), false);
         }
 #endif
-     InitDlgDevice(wf);
+     InitDlgDevice(pForm.get());
 
 
   } // end configmode_device
 
-  wp = wf->FindByName<WndProperty>(_T("prpEarthModel"));
+  wp = pForm->FindByName<WndProperty>(_T("prpEarthModel"));
   if(wp) {
 #ifdef _WGS84
     DataField* pDataField = wp->GetDataField();
@@ -3453,7 +3376,7 @@ void dlgConfigurationShowModal(short mode){
   }
 
 
-  NextPage(0);
+  NextPage(pForm.get(), 0);
 
   taskchanged = false;
   requirerestart = false;
@@ -3461,7 +3384,7 @@ void dlgConfigurationShowModal(short mode){
   waypointneedsave = false;
 
   StopHourglassCursor();
-  wf->ShowModal();
+  pForm->ShowModal();
   
   bool notify_units_change = false;
   bool notify_reset_zoom = false;
@@ -3472,7 +3395,7 @@ void dlgConfigurationShowModal(short mode){
 #endif
 
 #ifdef _WGS84
-  wp = wf->FindByName<WndProperty>(_T("prpEarthModel"));
+  wp = pForm->FindByName<WndProperty>(_T("prpEarthModel"));
   if(wp) {
     DataField* pDataField = wp->GetDataField();
     if(pDataField) {
@@ -3484,7 +3407,7 @@ void dlgConfigurationShowModal(short mode){
   }
 #endif
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDisableAutoLogger"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDisableAutoLogger"));
   if (wp) {
     if (!DisableAutoLogger
 	!= wp->GetDataField()->GetAsBoolean()) {
@@ -3493,7 +3416,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLiveTrackerInterval"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerInterval"));
   if (wp) {
     if (tracking::interval != wp->GetDataField()->GetAsInteger()) {
         tracking::interval = (wp->GetDataField()->GetAsInteger());
@@ -3501,7 +3424,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLiveTrackerRadar_config"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerRadar_config"));
   if (wp) {
     if (tracking::radar_config != wp->GetDataField()->GetAsBoolean()) {
         tracking::radar_config = wp->GetDataField()->GetAsBoolean();
@@ -3511,7 +3434,7 @@ void dlgConfigurationShowModal(short mode){
   
   double val;
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyMacCready"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyMacCready"));
   if (wp) {
     val = Units::FromVerticalSpeed(wp->GetDataField()->GetAsFloat());
     if (GlidePolar::SafetyMacCready != val) {
@@ -3519,7 +3442,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 #if defined(PPC2003) || defined(PNA)
-  wp = wf->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
   if (wp) {
     if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
       SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
@@ -3527,14 +3450,14 @@ void dlgConfigurationShowModal(short mode){
   }
 #endif
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSaveRuntime"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSaveRuntime"));
   if (wp) {
     if (SaveRuntime != wp->GetDataField()->GetAsBoolean()) {
       SaveRuntime = wp->GetDataField()->GetAsBoolean();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTrailDrift"));
   if (wp) {
     if (EnableTrailDrift_Config != wp->GetDataField()->GetAsBoolean()) {
       EnableTrailDrift_Config = wp->GetDataField()->GetAsBoolean();
@@ -3542,14 +3465,14 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpThermalLocator"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpThermalLocator"));
   if (wp) {
     if (EnableThermalLocator != wp->GetDataField()->GetAsInteger()) {
       EnableThermalLocator = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTrail"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTrail"));
   if (wp) {
     if (TrailActive_Config != wp->GetDataField()->GetAsInteger()) {
       TrailActive_Config = wp->GetDataField()->GetAsInteger();
@@ -3557,14 +3480,14 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLKMaxLabels"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLKMaxLabels"));
   if (wp) {
     if (LKMaxLabels != wp->GetDataField()->GetAsInteger()) {
       LKMaxLabels = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBugs"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBugs"));
   if (wp) {
     if (BUGS_Config != wp->GetDataField()->GetAsFloat()/100.0) {
       BUGS_Config = wp->GetDataField()->GetAsFloat()/100.0;
@@ -3574,7 +3497,7 @@ void dlgConfigurationShowModal(short mode){
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpCruiseZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpCruiseZoom"));
   if (wp) {
     if ( CruiseZoom != wp->GetDataField()->GetAsInteger()) {
       CruiseZoom = wp->GetDataField()->GetAsInteger();
@@ -3582,7 +3505,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpClimbZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpClimbZoom"));
   if (wp) {
     if ( ClimbZoom != wp->GetDataField()->GetAsInteger()) {
       ClimbZoom = wp->GetDataField()->GetAsInteger();
@@ -3592,7 +3515,7 @@ void dlgConfigurationShowModal(short mode){
 
 
   double dval;
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoZoomThreshold"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoZoomThreshold"));
   if (wp) {
     dval = Units::FromDistance(wp->GetDataField()->GetAsFloat());
     if (AutoZoomThreshold != dval) {
@@ -3600,7 +3523,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMaxAutoZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMaxAutoZoom"));
   if (wp) {
     if ( MaxAutoZoom != wp->GetDataField()->GetAsInteger()) {
       MaxAutoZoom = wp->GetDataField()->GetAsInteger();
@@ -3609,14 +3532,14 @@ void dlgConfigurationShowModal(short mode){
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoOrientScale"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoOrientScale"));
   if (wp) {
     if ( AutoOrientScale != wp->GetDataField()->GetAsFloat()) {
       AutoOrientScale = wp->GetDataField()->GetAsFloat();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceDisplay"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceDisplay"));
   if (wp) {
     if (AltitudeMode_Config != wp->GetDataField()->GetAsInteger()) {
       AltitudeMode_Config = wp->GetDataField()->GetAsInteger();
@@ -3624,14 +3547,14 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyAltitudeMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     if (SafetyAltitudeMode != wp->GetDataField()->GetAsInteger()) {
       SafetyAltitudeMode = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLockSettingsInFlight"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLockSettingsInFlight"));
   if (wp) {
     if (LockSettingsInFlight != 
 	wp->GetDataField()->GetAsBoolean()) {
@@ -3639,7 +3562,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLoggerShortName"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLoggerShortName"));
   if (wp) {
     if (LoggerShortName != 
 	wp->GetDataField()->GetAsBoolean()) {
@@ -3647,7 +3570,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpEnableFLARMMap"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpEnableFLARMMap"));
   if (wp) {
     if ((int)EnableFLARMMap != 
 	wp->GetDataField()->GetAsInteger()) {
@@ -3655,28 +3578,28 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDebounceTimeout"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDebounceTimeout"));
   if (wp) {
     if (debounceTimeout != (unsigned)wp->GetDataField()->GetAsInteger()) {
       debounceTimeout = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceFillType"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceFillType"));
   if (wp) {
     if (MapWindow::GetAirSpaceFillType() != wp->GetDataField()->GetAsInteger()) {
       MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)wp->GetDataField()->GetAsInteger());
     }
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirspaceOpacity"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceOpacity"));
   if (wp) {
     if (MapWindow::GetAirSpaceOpacity() != wp->GetDataField()->GetAsInteger()*10) {
       MapWindow::SetAirSpaceOpacity(wp->GetDataField()->GetAsInteger() * 10);
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBarOpacity"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBarOpacity"));
   if (wp) {
     if (BarOpacity != wp->GetDataField()->GetAsInteger()*5 ) {
 	BarOpacity= wp->GetDataField()->GetAsInteger() * 5;
@@ -3684,7 +3607,7 @@ void dlgConfigurationShowModal(short mode){
   }
 
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontMapWaypoint"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontMapWaypoint"));
   if (wp) {
       if (FontMapWaypoint != wp->GetDataField()->GetAsInteger() ) {
           FontMapWaypoint = wp->GetDataField()->GetAsInteger();
@@ -3694,7 +3617,7 @@ void dlgConfigurationShowModal(short mode){
 
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontSymbols"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontSymbols"));
   if (wp) {
     if (Appearance.UTF8Pictorials != (IndLandable_t)(wp->GetDataField()->GetAsInteger())) {
       Appearance.UTF8Pictorials = (IndLandable_t)(wp->GetDataField()->GetAsInteger());
@@ -3703,14 +3626,14 @@ void dlgConfigurationShowModal(short mode){
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontMapTopology"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontMapTopology"));
   if (wp) {
       if (FontMapTopology != wp->GetDataField()->GetAsInteger() ) {
           FontMapTopology = wp->GetDataField()->GetAsInteger();
           fontschanged=true;
       }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontInfopage1L"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontInfopage1L"));
   if (wp) {
       if (FontInfopage1L != wp->GetDataField()->GetAsInteger() ) {
           FontInfopage1L = wp->GetDataField()->GetAsInteger();
@@ -3718,7 +3641,7 @@ void dlgConfigurationShowModal(short mode){
       }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontBottomBar"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontBottomBar"));
   if (wp) {
       if (FontBottomBar != wp->GetDataField()->GetAsInteger() ) {
           FontBottomBar = wp->GetDataField()->GetAsInteger();
@@ -3726,7 +3649,7 @@ void dlgConfigurationShowModal(short mode){
       }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSnailScale"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSnailScale"));
   if (wp) {
       if (SnailScale != wp->GetDataField()->GetAsInteger() ) {
           SnailScale = wp->GetDataField()->GetAsInteger();
@@ -3734,7 +3657,7 @@ void dlgConfigurationShowModal(short mode){
       }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontVisualGlide"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontVisualGlide"));
   if (wp) {
       if (FontVisualGlide != wp->GetDataField()->GetAsInteger() ) {
           FontVisualGlide = wp->GetDataField()->GetAsInteger();
@@ -3742,7 +3665,7 @@ void dlgConfigurationShowModal(short mode){
       }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlayTarget"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlayTarget"));
   if (wp) {
       if (FontOverlayMedium != wp->GetDataField()->GetAsInteger() ) {
           FontOverlayMedium = wp->GetDataField()->GetAsInteger();
@@ -3750,7 +3673,7 @@ void dlgConfigurationShowModal(short mode){
       }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlayValues"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlayValues"));
   if (wp) {
       if (FontOverlayBig != wp->GetDataField()->GetAsInteger() ) {
           FontOverlayBig = wp->GetDataField()->GetAsInteger();
@@ -3758,7 +3681,7 @@ void dlgConfigurationShowModal(short mode){
       }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseTwoLines"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseTwoLines"));
   if (wp) {
       if (UseTwoLines != wp->GetDataField()->GetAsBoolean()) {
           UseTwoLines = wp->GetDataField()->GetAsBoolean();
@@ -3766,7 +3689,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFontRenderer"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFontRenderer"));
   if (wp) {
     if (FontRenderer != wp->GetDataField()->GetAsInteger() ) 
     {
@@ -3775,7 +3698,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
   
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoZoom"));
   if (wp) {
     if (AutoZoom_Config != 
 	wp->GetDataField()->GetAsBoolean()) {
@@ -3784,7 +3707,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDrawFAI"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDrawFAI"));
   if (wp) {
     if (Flags_DrawFAI_config != wp->GetDataField()->GetAsBoolean()) {
       Flags_DrawFAI_config = wp->GetDataField()->GetAsBoolean();
@@ -3792,7 +3715,7 @@ void dlgConfigurationShowModal(short mode){
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpDrawXC"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDrawXC"));
   if (wp) {
     if (Flags_DrawXC_config !=  wp->GetDataField()->GetAsBoolean()) {
       Flags_DrawXC_config = wp->GetDataField()->GetAsBoolean();
@@ -3803,7 +3726,7 @@ void dlgConfigurationShowModal(short mode){
 
 int ival; 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUTCOffset"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUTCOffset"));
   if (wp) {
     ival = iround(wp->GetDataField()->GetAsFloat()*3600.0);
     if ((UTCOffset != ival)||(utcchanged)) {
@@ -3812,7 +3735,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpClipAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpClipAltitude"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) * 10);
     if (ClipAltitude != ival) {
@@ -3820,7 +3743,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAltWarningMargin"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (AltWarningMargin != ival) {
@@ -3828,21 +3751,21 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWaypointLabels"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWaypointLabels"));
   if (wp) {
     if (DisplayTextType != wp->GetDataField()->GetAsInteger()) {
       DisplayTextType = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpCirclingZoom"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpCirclingZoom"));
   if (wp) {
     if (MapWindow::zoom.CircleZoom() != wp->GetDataField()->GetAsBoolean()) {
       MapWindow::zoom.CircleZoom(wp->GetDataField()->GetAsBoolean());
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOrientation"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOrientation"));
   if (wp) {
     if (DisplayOrientation_Config != wp->GetDataField()->GetAsInteger()) {
       DisplayOrientation_Config = wp->GetDataField()->GetAsInteger();
@@ -3851,14 +3774,14 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMenuTimeout"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMenuTimeout"));
   if (wp) {
     if (MenuTimeout_Config != wp->GetDataField()->GetAsInteger()*2) {
       MenuTimeout_Config = wp->GetDataField()->GetAsInteger()*2;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyAltitudeArrival"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (SAFETYALTITUDEARRIVAL != ival) {
@@ -3866,7 +3789,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpSafetyAltitudeTerrain"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
     if (SAFETYALTITUDETERRAIN != ival) {
@@ -3874,7 +3797,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoWind"));
   if (wp) {
     if (AutoWindMode_Config != wp->GetDataField()->GetAsInteger()) {
       AutoWindMode_Config = wp->GetDataField()->GetAsInteger();
@@ -3882,7 +3805,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoMcMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoMcMode"));
   if (wp) {
     if (AutoMcMode_Config != wp->GetDataField()->GetAsInteger()) {
       AutoMcMode_Config = wp->GetDataField()->GetAsInteger();
@@ -3890,7 +3813,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWaypointsOutOfRange"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWaypointsOutOfRange"));
   if (wp) {
 #ifdef ASK_WAYPOINTS
 	  if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
@@ -3907,14 +3830,14 @@ int ival;
 #endif
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoForceFinalGlide"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoForceFinalGlide"));
   if (wp) {
     if (AutoForceFinalGlide != wp->GetDataField()->GetAsBoolean()) {
       AutoForceFinalGlide = wp->GetDataField()->GetAsBoolean();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpEnableNavBaroAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpEnableNavBaroAltitude"));
   if (wp) {
     if (EnableNavBaroAltitude_Config != wp->GetDataField()->GetAsBoolean()) {
       EnableNavBaroAltitude_Config = wp->GetDataField()->GetAsBoolean();
@@ -3922,14 +3845,14 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOrbiter"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOrbiter"));
   if (wp) {
     if (Orbiter_Config != wp->GetDataField()->GetAsBoolean()) {
       Orbiter_Config = wp->GetDataField()->GetAsBoolean();
       Orbiter=Orbiter_Config;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoMcStatus"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoMcStatus"));
   if (wp) {
     if (AutoMacCready_Config != wp->GetDataField()->GetAsBoolean()) {
       AutoMacCready_Config = wp->GetDataField()->GetAsBoolean();
@@ -3937,20 +3860,20 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpShading"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpShading"));
   if (wp) {
     if (Shading_Config != wp->GetDataField()->GetAsBoolean()) {
       Shading_Config = wp->GetDataField()->GetAsBoolean();
       Shading=Shading_Config;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpIsoLine"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpIsoLine"));
   if (wp) {
     if (IsoLine_Config != wp->GetDataField()->GetAsBoolean()) {
       IsoLine_Config = wp->GetDataField()->GetAsBoolean();
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpSonarWarning"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpSonarWarning"));
   if (wp) {
     if (SonarWarning_Config != wp->GetDataField()->GetAsBoolean()) {
       SonarWarning_Config = wp->GetDataField()->GetAsBoolean();
@@ -3958,14 +3881,14 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpFinalGlideTerrain"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpFinalGlideTerrain"));
   if (wp) {
     if (FinalGlideTerrain != wp->GetDataField()->GetAsInteger()) {
       FinalGlideTerrain = wp->GetDataField()->GetAsInteger();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsSpeed"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsSpeed"));
   if (wp) {
     if (Units::SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       Units::SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
@@ -3973,7 +3896,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsLatLon"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsLatLon"));
   if (wp) {
     if (Units::LatLonUnits_Config != wp->GetDataField()->GetAsInteger()) {
       Units::LatLonUnits_Config = wp->GetDataField()->GetAsInteger();
@@ -3981,7 +3904,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsTaskSpeed"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
     if (Units::TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       Units::TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
@@ -3989,7 +3912,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsDistance"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsDistance"));
   if (wp) {
     if (Units::DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
       Units::DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
@@ -3998,7 +3921,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsLift"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsLift"));
   if (wp) {
     if (Units::VerticalSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       Units::VerticalSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
@@ -4006,7 +3929,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUnitsAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUnitsAltitude"));
   if (wp) {
     if (Units::AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
       Units::AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
@@ -4014,7 +3937,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMapFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
@@ -4024,7 +3947,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
@@ -4039,7 +3962,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAirfieldFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAirfieldFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
@@ -4049,7 +3972,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLanguageCode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLanguageCode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     _tcscpy(temptext, dfe->GetAsString());
@@ -4060,7 +3983,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpInputFile"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpInputFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
@@ -4071,7 +3994,7 @@ int ival;
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWindCalcTime")); // 100113
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWindCalcTime")); // 100113
   if (wp) {
 	ival = wp->GetDataField()->GetAsInteger();
 	if (WindCalcTime != ival) {
@@ -4080,12 +4003,12 @@ int ival;
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpWindCalcSpeed"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpWindCalcSpeed"));
   if (wp) {
     WindCalcSpeed = iround(Units::FromHorizontalSpeed(wp->GetDataField()->GetAsInteger())*1000.0) / 1000;
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
     auto sectors = get_finish_sectors(TSK_DEFAULT);
     sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
@@ -4095,7 +4018,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishRadius"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishRadius"));
   if (wp) {
     ival = iround(Units::FromDistance(wp->GetDataField()->GetAsFloat()));
     if ((int)FinishRadius != ival) {
@@ -4104,7 +4027,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskStartLine"));
   if (wp) {
     auto sectors = get_start_sectors(gTaskType);
     sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
@@ -4114,7 +4037,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskStartRadius"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskStartRadius"));
   if (wp) {
     ival = iround(Units::FromDistance(wp->GetDataField()->GetAsFloat()));
     if ((int)StartRadius != ival) {
@@ -4123,7 +4046,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
     auto sectors = get_task_sectors(TSK_DEFAULT);
     sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
@@ -4133,7 +4056,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
   if (wp) {
     ival = iround(Units::FromDistance(wp->GetDataField()->GetAsFloat()));
     if ((int)SectorRadius != ival) {
@@ -4144,7 +4067,7 @@ int ival;
 
 
   #if (0)
-  wp = wf->FindByName<WndProperty>(TEXT("prpAltArrivMode"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAltArrivMode"));
   if (wp) {
     if (AltArrivMode != (AltArrivMode_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4154,7 +4077,7 @@ int ival;
   }
   #endif
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpCheckSum")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpCheckSum"));
   if (wp) {
     if (CheckSum != (CheckSum_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4163,7 +4086,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpIphoneGestures")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpIphoneGestures"));
   if (wp) {
     if (IphoneGestures != (IphoneGestures_t) (wp->GetDataField()->GetAsInteger())) {
       IphoneGestures = (IphoneGestures_t) (wp->GetDataField()->GetAsInteger());
@@ -4171,7 +4094,7 @@ int ival;
   }
 
 #ifdef ANDROID
-  wp = wf->FindByName<WndProperty>(TEXT("prpAndroidScreenOrientation"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAndroidScreenOrientation"));
   if (wp) {
     int ret = wp->GetDataField()->GetAsInteger();
     if (ret != native_view->getScreenOrientation()) {
@@ -4180,14 +4103,14 @@ int ival;
   }
 #endif
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPollingMode")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPollingMode"));
   if (wp) {
     if (PollingMode != (PollingMode_t) (wp->GetDataField()->GetAsInteger())) {
       PollingMode = (PollingMode_t) (wp->GetDataField()->GetAsInteger());
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLKVarioBar")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLKVarioBar"));
   if (wp) {
     const LKVarioBar_t tmpValue = static_cast<LKVarioBar_t>(wp->GetDataField()->GetAsInteger());
     if (LKVarioBar != tmpValue) {
@@ -4195,7 +4118,7 @@ int ival;
       Reset_Single_DoInits(MDI_DRAWVARIO);
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpLKVarioVal")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLKVarioVal"));
   if (wp) {
     if (LKVarioVal != (LKVarioVal_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4203,7 +4126,7 @@ int ival;
 	(wp->GetDataField()->GetAsInteger());
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpHideUnits"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpHideUnits"));
   if (wp) {
       if (HideUnits != (HideUnits_t) (wp->GetDataField()->GetAsBoolean())) {
           HideUnits = (HideUnits_t) (wp->GetDataField()->GetAsBoolean());
@@ -4211,7 +4134,7 @@ int ival;
           Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
       }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpDeclutterMode")); // VENTA10
+  wp = pForm->FindByName<WndProperty>(TEXT("prpDeclutterMode")); // VENTA10
   if (wp) {
     if (DeclutterMode != (DeclutterMode_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4220,44 +4143,44 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBestWarning"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBestWarning"));
   if (wp) {
     if (BestWarning != (wp->GetDataField()->GetAsBoolean())) {
       BestWarning = (wp->GetDataField()->GetAsBoolean());
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseTotalEnergy"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseTotalEnergy"));
   if (wp) {
     if (UseTotalEnergy_Config != (wp->GetDataField()->GetAsBoolean())) {
       UseTotalEnergy_Config = (wp->GetDataField()->GetAsBoolean());
       UseTotalEnergy=UseTotalEnergy_Config;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseUngestures"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseUngestures"));
   if (wp) {
     if (UseUngestures != (wp->GetDataField()->GetAsBoolean())) {
       UseUngestures = (wp->GetDataField()->GetAsBoolean());
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpThermalBar"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpThermalBar"));
   if (wp) {
     if (ThermalBar != (unsigned)(wp->GetDataField()->GetAsInteger())) {
       ThermalBar = (wp->GetDataField()->GetAsInteger());
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlayClock"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlayClock"));
   if (wp) {
     if (OverlayClock != (wp->GetDataField()->GetAsInteger())) {
       OverlayClock = (wp->GetDataField()->GetAsInteger());
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpTrackBar"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTrackBar"));
   if (wp) {
     if (TrackBar != (wp->GetDataField()->GetAsBoolean())) {
       TrackBar = (wp->GetDataField()->GetAsBoolean());
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     if (TskOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
       TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
@@ -4268,7 +4191,7 @@ int ival;
 	}
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGliderSymbol"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGliderSymbol"));
   if (wp) {
     if (GliderSymbol != wp->GetDataField()->GetAsInteger() )
     {
@@ -4276,7 +4199,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOutlinedTp"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOutlinedTp"));
   if (wp) {
 	if (OutlinedTp_Config != (OutlinedTp_t) (wp->GetDataField()->GetAsInteger()))  {
 		OutlinedTp_Config = (OutlinedTp_t) (wp->GetDataField()->GetAsInteger());
@@ -4284,7 +4207,7 @@ int ival;
 	}
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTpFilter"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTpFilter"));
   if (wp) {
     if (TpFilter != (TpFilter_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4294,7 +4217,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverColor"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverColor"));
   if (wp) {
     if (OverColor != (OverColor_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4304,7 +4227,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpMapBox")); // VENTA6
+  wp = pForm->FindByName<WndProperty>(TEXT("prpMapBox")); // VENTA6
   if (wp) {
     if (MapBox != (MapBox_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4313,7 +4236,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpOverlaySize"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpOverlaySize"));
   if (wp) {
     if (OverlaySize != wp->GetDataField()->GetAsInteger() ) {
       OverlaySize = wp->GetDataField()->GetAsInteger();
@@ -4321,7 +4244,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGlideBarMode")); // VENTA6
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGlideBarMode")); // VENTA6
   if (wp) {
     if (GlideBarMode != (GlideBarMode_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4330,7 +4253,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpNewMapDeclutter")); // VENTA6
+  wp = pForm->FindByName<WndProperty>(TEXT("prpNewMapDeclutter")); // VENTA6
   if (wp) {
     if (NewMapDeclutter != 
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4339,7 +4262,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGPSAltitudeOffset")); 
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGPSAltitudeOffset"));
   if (wp) {
     ival = iround( Units::FromAltitude(wp->GetDataField()->GetAsInteger())*1000.0);
     if(((int) GPSAltitudeOffset) != ival) {
@@ -4347,21 +4270,21 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpUseGeoidSeparation"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpUseGeoidSeparation"));
   if (wp) {
 	if (UseGeoidSeparation != (wp->GetDataField()->GetAsBoolean())) {
 		UseGeoidSeparation = (wp->GetDataField()->GetAsBoolean());
 	}
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPressureHg"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPressureHg"));
   if (wp) {
 	if (PressureHg != (wp->GetDataField()->GetAsInteger())) {
 		PressureHg = (wp->GetDataField()->GetAsInteger());
 	}
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAverEffTime"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAverEffTime"));
   if (wp) {
     if (AverEffTime != 
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4370,7 +4293,7 @@ int ival;
         LKSW_ResetLDRotary=true;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpBgMapcolor"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpBgMapcolor"));
   if (wp) {
     if (BgMapColor_Config != (wp->GetDataField()->GetAsInteger())) {
       BgMapColor_Config = (wp->GetDataField()->GetAsInteger());
@@ -4378,7 +4301,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpArrivalValue")); // VENTA6
+  wp = pForm->FindByName<WndProperty>(TEXT("prpArrivalValue")); // VENTA6
   if (wp) {
     if (ArrivalValue != (ArrivalValue_t)
 	(wp->GetDataField()->GetAsInteger())) {
@@ -4387,7 +4310,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAppInfoBoxModel"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAppInfoBoxModel"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     ModelType::Type_t selected = ModelType::get_id(dfe->GetAsInteger());
@@ -4397,7 +4320,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAppIndLandable"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAppIndLandable"));
   if (wp) {
     if (Appearance.IndLandable != (IndLandable_t)(wp->GetDataField()->GetAsInteger())) {
       Appearance.IndLandable = (IndLandable_t)(wp->GetDataField()->GetAsInteger());
@@ -4405,7 +4328,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAppInverseInfoBox"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAppInverseInfoBox"));
   if (wp) {
     if ((int)(InverseInfoBox_Config) != wp->GetDataField()->GetAsInteger()) {
       InverseInfoBox_Config = (wp->GetDataField()->GetAsInteger() != 0);
@@ -4414,7 +4337,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpGliderScreenPosition"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpGliderScreenPosition"));
   if (wp) {
     if (MapWindow::GliderScreenPosition != 
 	wp->GetDataField()->GetAsInteger()) {
@@ -4423,14 +4346,14 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoBacklight")); // VENTA4
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoBacklight")); // VENTA4
   if (wp) {
     if (EnableAutoBacklight != wp->GetDataField()->GetAsBoolean()) {
       EnableAutoBacklight = wp->GetDataField()->GetAsBoolean();
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoSoundVolume")); // VENTA4
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoSoundVolume")); // VENTA4
   if (wp) {
     if (EnableAutoSoundVolume != wp->GetDataField()->GetAsBoolean()) {
       EnableAutoSoundVolume = wp->GetDataField()->GetAsBoolean();
@@ -4438,7 +4361,7 @@ int ival;
   }
 
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
   if (wp) {
     if (iround((TerrainContrast*100)/255) != 
 	wp->GetDataField()->GetAsInteger()) {
@@ -4446,7 +4369,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainBrightness"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainBrightness"));
   if (wp) {
     if (iround((TerrainBrightness*100)/255) != 
 	wp->GetDataField()->GetAsInteger()) {
@@ -4454,7 +4377,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTerrainRamp"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainRamp"));
   if (wp) {
     if (TerrainRamp_Config != wp->GetDataField()->GetAsInteger()) {
       TerrainRamp_Config = wp->GetDataField()->GetAsInteger();
@@ -4462,7 +4385,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude1"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude1"));
   if (wp) {
     ival = iround( Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmMaxAltitude1 != ival) {
@@ -4471,7 +4394,7 @@ int ival;
       LKalarms[0].triggerscount=0;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude2"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude2"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmMaxAltitude2 != ival) {
@@ -4480,7 +4403,7 @@ int ival;
       LKalarms[1].triggerscount=0;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude3"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmMaxAltitude3"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmMaxAltitude3 != ival) {
@@ -4489,7 +4412,7 @@ int ival;
       LKalarms[2].triggerscount=0;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmTakeoffSafety"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmTakeoffSafety"));
   if (wp) {
     ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if ((int)AlarmTakeoffSafety != ival) {
@@ -4497,7 +4420,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearWarning"));
   if (wp) {
     ival = iround( wp->GetDataField()->GetAsInteger() );
     if ((int)GearWarningMode != ival) {
@@ -4506,12 +4429,12 @@ int ival;
 
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAdditionalContestRule"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAdditionalContestRule"));
   if (wp) {
       AdditionalContestRule = static_cast<CContestMgr::ContestRule>(wp->GetDataField()->GetAsInteger());
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAlarmGearAltitude"));
   if (wp) {
 	  unsigned tmp = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger()) *1000.0);
     if (GearWarningAltitude != tmp)
@@ -4520,7 +4443,7 @@ int ival;
     }
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAutoAdvance"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoAdvance"));
   if (wp) {
     if (AutoAdvance_Config != wp->GetDataField()->GetAsInteger()) {
       AutoAdvance_Config = wp->GetDataField()->GetAsInteger();
@@ -4528,12 +4451,12 @@ int ival;
     }
   }
 
-  UpdateDeviceSetupButton(wf, SelectedDevice);
+  UpdateDeviceSetupButton(pForm.get(), SelectedDevice);
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpEngineeringMenu")); // VENTA9
+  wp = pForm->FindByName<WndProperty>(TEXT("prpEngineeringMenu")); // VENTA9
   if (wp) EngineeringMenu = wp->GetDataField()->GetAsBoolean();
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpAndroidAudioVario"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAndroidAudioVario"));
   if (wp) {
     if (std::exchange(EnableAudioVario, wp->GetDataField()->GetAsBoolean()) != EnableAudioVario) {
       // TODO : notify thread waiting for `EnableAudioVario`.
@@ -4548,12 +4471,12 @@ int ival;
     }
   }
 
-  UpdateAircraftConfig();
+  UpdateAircraftConfig(pForm.get());
 
   int i,j;
   for (i=0; i<4; i++) {
     for (j=0; j<8; j++) {
-      GetInfoBoxSelector(j, i);
+      GetInfoBoxSelector(pForm.get(), j, i);
     }
   }
   
@@ -4611,11 +4534,6 @@ int ival;
 		   MsgToken<561>(), 
 		   TEXT("Configuration"), mbOk);
     }
-
-
-  delete wf;
-  wf = NULL;
-
 }
 
 //
@@ -4623,12 +4541,12 @@ int ival;
 // wont be updating the current set values! This is why we keep separated function for polar.
 // IN 3.1 we Call it only on exit, because saving is done externally, always.
 //
-void UpdateAircraftConfig(void){
+void UpdateAircraftConfig(WndForm* pForm){
 
  WndProperty *wp;
  int ival;
 
- wp = wf->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
+ wp = pForm->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
   if (wp) {
     if (AircraftCategory != (AircraftCategory_t)
         (wp->GetDataField()->GetAsInteger())) {
@@ -4639,7 +4557,7 @@ void UpdateAircraftConfig(void){
     }
   }
 
- wp = wf->FindByName<WndProperty>(TEXT("prpPolarFile"));
+ wp = pForm->FindByName<WndProperty>(TEXT("prpPolarFile"));
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -4655,7 +4573,7 @@ void UpdateAircraftConfig(void){
     }
   }
 
- wp = wf->FindByName<WndProperty>(TEXT("prpMaxManoeuveringSpeed"));
+ wp = pForm->FindByName<WndProperty>(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
     ival = iround(Units::FromHorizontalSpeed(wp->GetDataField()->GetAsFloat())*1000.0);
     if ((int)(SAFTEYSPEED*1000) != (int)iround(ival)) {
@@ -4664,7 +4582,7 @@ void UpdateAircraftConfig(void){
     }
   }
 
- wp = wf->FindByName<WndProperty>(TEXT("prpHandicap"));
+ wp = pForm->FindByName<WndProperty>(TEXT("prpHandicap"));
   if (wp) {
     ival  = wp->GetDataField()->GetAsInteger();
     if (Handicap != ival) {
@@ -4672,7 +4590,7 @@ void UpdateAircraftConfig(void){
     }
   }
 
- wp = wf->FindByName<WndProperty>(TEXT("prpBallastSecsToEmpty"));
+ wp = pForm->FindByName<WndProperty>(TEXT("prpBallastSecsToEmpty"));
   if (wp) {
     ival = wp->GetDataField()->GetAsInteger();
     if (BallastSecsToEmpty != ival) {

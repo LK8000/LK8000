@@ -52,7 +52,7 @@
       <DataField Name="" DataType="enum" Min="0" Max="50" Step="1"/>
     </WndProperty>
 
-    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="258" Width="58" Height="45" Font="2" Tag="2" />
+    <WndButton Name="cmdClose" Caption="_@M186_" X="2" Y="258" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnCloseClicked"/>
     <WndButton Name="cmdBth" Caption="Bluetooth" X="60" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnBthDevice" />    
     <WndButton Name="cmdConfigDev" Caption="_@M2414_" X="120" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnConfigDevClicked" />
     <WndButton Name="cmdTerminal" Caption="_@M1871_" X="180" Y="-999" Width="58" Height="45" Font="2" Tag="2" OnClickNotify="OnTerminalClicked" />

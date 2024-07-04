@@ -3,9 +3,9 @@
   <WndForm Name="frmConfiguration" Type="Dialog" X="0" Y="0" Width="320" Height="240" Caption="_@M195_" Font="2" >
     <WndButton Name="cmdNext"  Caption="_@M460_" X="3" Y="92" Width="62"  Height="42" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
     <WndButton Name="cmdPrev"  Caption="_@M6_" X="3" Y="-992" Width="62"  Height="42" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
-    <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="-992" Width="62"  Height="42" Font="2" Tag="3" />
-    <WndButton Name="cmdCopy" Caption="_@M200_" X="5" Y="28" Width="60"  Height="28" Font="2" />
-    <WndButton Name="cmdPaste" Caption="_@M521_" X="5" Y="58" Width="60"  Height="28" Font="2" />
+    <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="-992" Width="62"  Height="42" Font="2" OnClickNotify="OnCloseClicked" Tag="3" />
+    <WndButton Name="cmdCopy" Caption="_@M200_" X="5" Y="28" Width="60"  Height="28" Font="2" OnClickNotify="OnCopy" />
+    <WndButton Name="cmdPaste" Caption="_@M521_" X="5" Y="58" Width="60"  Height="28" Font="2" OnClickNotify="OnPaste" />
     <WndFrame Name="frmSite" X="70" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpMapFile" Caption="_@M420_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H101_">
         <DataField Name="" DataType="filereader" Min="0" Max="200" Step="1"/>

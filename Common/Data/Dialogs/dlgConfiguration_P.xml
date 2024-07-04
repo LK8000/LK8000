@@ -4,9 +4,9 @@
 
     <WndButton Name="cmdNext"  Caption="_@M460_" X="122" Y="238" Width="114" Height="30" Font="2" OnClickNotify="OnNextClicked" Tag="1" />
     <WndButton Name="cmdPrev"  Caption="_@M6_"   X="4"   Y="238" Width="114" Height="30" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
-    <WndButton Name="cmdClose" Caption="_@M186_" X="4"   Y="270" Width="114" Height="30" Font="2" Tag="2" />
-    <WndButton Name="cmdCopy"  Caption="_@M200_" X="4"   Y="206" Width="114" Height="30" Font="2" />
-    <WndButton Name="cmdPaste" Caption="_@M521_" X="122" Y="206" Width="114" Height="30" Font="2" />
+    <WndButton Name="cmdClose" Caption="_@M186_" X="4"   Y="270" Width="114" Height="30" Font="2" OnClickNotify="OnCloseClicked" Tag="2" />
+    <WndButton Name="cmdCopy"  Caption="_@M200_" X="4"   Y="206" Width="114" Height="30" Font="2" OnClickNotify="OnCopy" />
+    <WndButton Name="cmdPaste" Caption="_@M521_" X="122" Y="206" Width="114" Height="30" Font="2" OnClickNotify="OnPaste" />
 
     <WndFrame Name="frmSite" X="1" Y="0" Width="-1" Height="222" Font="2">
       <WndProperty Name="prpMapFile" Caption="_@M420_" X="1" Y="-1" Width="-1" Height="22" CaptionWidth="100" Font="2" Help="_@H101_">
