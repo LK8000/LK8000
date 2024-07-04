@@ -90,8 +90,8 @@ public:
   static InternalSensors *create(JNIEnv* env, Context* native_view,
                                unsigned int index);
 
-  void InitialiseVarioSound();
-  void DeinitialiseVarioSound();
+  static void InitialiseVarioSound();
+  static void DeinitialiseVarioSound();
 };
 
 #endif

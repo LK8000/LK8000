@@ -31,14 +31,20 @@
 #include <oboe/Oboe.h>
 #include "OscillatorSquare.h"
 
-class VarioPlayer final : public oboe::AudioStreamDataCallback {
+class VarioPlayer final :
+        public oboe::AudioStreamDataCallback,
+        public std::enable_shared_from_this<oboe::AudioStreamDataCallback>
+{
 public:
-    VarioPlayer();
-    ~VarioPlayer();
+    VarioPlayer() = default;
+    ~VarioPlayer() override;
 
     void SetVz(double vz) {
         mVz = vz;
     }
+
+    void Close();
+    void Open();
 
 private:
     void UpdateTone();

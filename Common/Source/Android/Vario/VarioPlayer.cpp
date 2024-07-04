@@ -99,15 +99,14 @@ namespace {
     }
 }
 
-VarioPlayer::VarioPlayer() {
-
+void VarioPlayer::Open() {
     oboe::AudioStreamBuilder builder;
 
     builder.setSharingMode(oboe::SharingMode::Shared);
     builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
     builder.setFormat(oboe::AudioFormat::Float);
     builder.setChannelCount(oboe::ChannelCount::Mono);
-    builder.setDataCallback(this);
+    builder.setDataCallback(shared_from_this());
 
     oboe::Result result = builder.openStream(mOutStream);
     if (result == oboe::Result::OK) {
@@ -121,10 +120,15 @@ VarioPlayer::VarioPlayer() {
 }
 
 VarioPlayer::~VarioPlayer() {
+    Close();
+}
+
+void VarioPlayer::Close() {
     if (mOutStream) {
         mOutStream->stop();
         mOutStream->close();
     }
+    mOutStream = nullptr;
 }
 
 void VarioPlayer::UpdateTone() {

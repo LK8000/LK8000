@@ -163,16 +163,23 @@ void InternalSensors::getSubscribableSensors(JNIEnv* env, jobject sensors_obj) {
 
 
 static Mutex vario_player_mutex;
-static std::unique_ptr<VarioPlayer> vario_player;
+static std::shared_ptr<VarioPlayer> vario_player;
 
 void InternalSensors::InitialiseVarioSound() {
-  ScopeLock lock(vario_player_mutex);
-  vario_player = std::make_unique<VarioPlayer>();
+  auto player = std::make_shared<VarioPlayer>();
+  player->Open();
+  WithLock(vario_player_mutex, [&]() {
+    vario_player = player;
+  });
 }
 
 void InternalSensors::DeinitialiseVarioSound() {
-  ScopeLock lock(vario_player_mutex);
-  vario_player = nullptr;
+  auto player = WithLock(vario_player_mutex, [&]() {
+    return std::exchange(vario_player, nullptr);
+  });
+  if (player) {
+    player->Close();
+  }
 }
 
 /*
