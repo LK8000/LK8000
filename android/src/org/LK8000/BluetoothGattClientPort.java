@@ -30,7 +30,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothStatusCodes;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
@@ -39,6 +38,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
@@ -283,15 +283,8 @@ public class BluetoothGattClientPort
       queueCommand.completed();
       return;
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-      descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-      if (!gatt.writeDescriptor(descriptor)) {
-        queueCommand.completed();
-      }
-    } else {
-      if (gatt.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE) != BluetoothStatusCodes.SUCCESS) {
-        queueCommand.completed();
-      }
+    if (!LeGattHelper.writeDescriptor(gatt, descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)) {
+      queueCommand.completed();
     }
   }
 
@@ -427,8 +420,20 @@ public class BluetoothGattClientPort
             queueCommand, data, length, maxChunkSize);
   }
 
+  @Override
+  public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) {
+    final BluetoothGattService sv = gatt.getService(service);
+    final BluetoothGattCharacteristic ch = sv.getCharacteristic(characteristic);
+
+    queueCommand.add(() -> {
+      if (!LeGattHelper.writeCharacteristic(gatt, ch, Arrays.copyOf(data, length))) {
+        queueCommand.completed();
+      }
+    });
+  }
+
   protected final void stateChanged() {
-    PortListener portListener = this.portListener;
+    final PortListener portListener = this.portListener;
     if (portListener != null) {
       portListener.portStateChanged();
     }

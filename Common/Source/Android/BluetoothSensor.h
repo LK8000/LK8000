@@ -45,6 +45,8 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   size_t Read(void* data, size_t size) override { return 0; };
 
+  void WriteGattCharacteristic(uuid_t service, uuid_t characteristic, const void *data, size_t size) override;
+
  protected:
   unsigned RxThread() override;
 

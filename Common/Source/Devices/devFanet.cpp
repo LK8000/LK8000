@@ -273,9 +273,7 @@ std::string build_state_string(const NMEA_INFO& Basic, const DERIVED_INFO& Calcu
 }
 
 BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
-  static PeriodClock timeName;
   static PeriodClock timeState;
-
   if (timeState.CheckUpdate(5000)) {
     // Every 5 second : Send current state
     std::string frm_to_send = build_state_string(Basic, Calculated);
@@ -284,6 +282,7 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
     }
   }
 
+  static PeriodClock timeName;
   if (timeName.CheckUpdate(60000)) {
     // Every 1 minute : Send Pilot Name if not empty
     if (PilotName_Config[0]) {

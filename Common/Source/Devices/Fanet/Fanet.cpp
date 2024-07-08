@@ -408,6 +408,46 @@ bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   return TRUE;
 }
 
+bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
+  /*
+    Ground Tracking (Type = 7)
+    [recommended interval: floor((#neighbors/10 + 1) * 5s)]
+
+    [Byte 0-2]	Position	(Little Endian, 2-Complement)
+    bit 0-23	Latitude 	(Absolute, see below)
+    [Byte 3-5]	Position	(Little Endian, 2-Complement)
+    bit 0-23	Longitude 	(Absolute, see below)
+    [Byte 6]
+    bit 7-4		Type
+                          0:    Other
+                          1:    Walking
+                          2:    Vehicle
+                          3:    Bike
+                          4:    Boot
+                          8:    Need a ride
+                          9:    Landed well
+                          12:   Need technical support
+                          13:   Need medical help
+                          14:   Distress call
+                          15:   Distress call automatically
+                          Rest: TBD
+    bit 3-1		TBD
+    bit 0		Online Tracking
+  */
+
+  d->nmeaParser.setFlarmAvailable(pGPS);
+
+  /*
+  TODO: display static object ?
+  GeoPoint pos;
+  payload_absolut2coord(pos.latitude,pos.longitude,&data[0]);
+  uint8_t type = data[6] > 4;
+  bool online_tracking = data[6] & 0x01;
+  */
+  return TRUE;
+}
+
 bool FanetParseUnknown(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
+  DebugLog(_T("Unknown Fanet Message : id = %x, payloadsize %zu"), id, data.size());
   return TRUE;
 }

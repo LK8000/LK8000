@@ -20,6 +20,7 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 
 public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbReadCallback {
@@ -122,6 +123,9 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
         _SerialPort.write(Arrays.copyOf(data, length));
         return length;
     }
+
+    @Override
+    public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) { }
 
     @Override
     public void onReceivedData(byte[] arg0) {

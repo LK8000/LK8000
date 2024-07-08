@@ -23,6 +23,8 @@ Copyright_License {
 
 package org.LK8000;
 
+import java.util.UUID;
+
 /**
  * The Java interface of the C++ AndroidPort class.
  */
@@ -56,4 +58,13 @@ interface AndroidPort {
    * @return the number of bytes that were written or -1 on error/timeout
    */
   int write(byte[] data, int length);
+
+  /**
+   * write data to bluetooth gatt characteristic
+   *
+   * @param data the data to be written
+   * @param length the number of bytes to be written
+   */
+  void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length);
+
 }

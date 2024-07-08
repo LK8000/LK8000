@@ -75,6 +75,14 @@ class uuid_t {
       return std::hash<uint64_t>{}(_msb) ^ std::hash<uint64_t>{}(_lsb);
   }
 
+  uint64_t msb() const {
+    return _msb;
+  }
+
+  uint64_t lsb() const {
+    return _lsb;
+  }
+
  private:
   uint64_t _msb;
   uint64_t _lsb;

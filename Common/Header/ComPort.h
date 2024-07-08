@@ -18,6 +18,7 @@
 #include "Util/tstring.hpp"
 #include "Poco/Event.h"
 #include "Thread/Thread.hpp"
+#include "utils/uuid.h"
 
 class ComPort : public Thread {
 public:
@@ -110,6 +111,9 @@ private:
     char* pLastNmea;
 
     virtual bool Write_Impl(const void *data, size_t size) = 0;
+
+public:
+    virtual void WriteGattCharacteristic(uuid_t service, uuid_t characteristic, const void *data, size_t size)  { }
 };
 
 #endif	/* COMPORT_H */

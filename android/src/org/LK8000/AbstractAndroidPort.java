@@ -26,6 +26,8 @@ package org.LK8000;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.util.UUID;
+
 /**
  * Abstract base class to aid the real implementations (Bluetooth,
  * IOIO).
@@ -114,4 +116,7 @@ abstract class AbstractAndroidPort implements AndroidPort {
     if (portListener != null)
       portListener.portStateChanged();
   }
+
+  @Override
+  public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) { }
 }

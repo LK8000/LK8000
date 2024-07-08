@@ -77,6 +77,8 @@ bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
 
 bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
 
+bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
+
 bool FanetParseUnknown(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
 
 #endif

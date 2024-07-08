@@ -27,12 +27,16 @@
 
 #include "UUID.h"
 #include "Java/Class.hxx"
+#include "Java/Env.hxx"
 
 namespace {
 
+Java::Class uuid_cls(JNIEnv* env) {
+  return Java::GetClassRethrow(env, "java/util/UUID");
+}
+
 jmethodID GetMethodID(JNIEnv* env, const char* name, const char* sig) {
-  Java::Class cls(env, "java/util/UUID");
-  return env->GetMethodID(cls.Get(), name, sig);
+  return env->GetMethodID(uuid_cls(env), name, sig);
 }
 
 uint64_t getLeastSignificantBits(JNIEnv* env, jobject object) {
@@ -49,4 +53,9 @@ uint64_t getMostSignificantBits(JNIEnv* env, jobject object) {
 
 uuid_t Java::UUID::to_uuid_t(JNIEnv* env, jobject object) {
   return { getMostSignificantBits(env, object), getLeastSignificantBits(env, object) };
+}
+
+Java::LocalObject Java::UUID::from_uuid_t(JNIEnv* env, uuid_t uuid) {
+  static jmethodID ctor = GetMethodID(env, "<init>", "(JJ)V");
+  return NewObjectRethrow(env, uuid_cls(env), ctor, uuid.msb(), uuid.lsb());
 }

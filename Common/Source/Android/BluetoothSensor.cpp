@@ -201,7 +201,7 @@ bool BluetoothSensor::DoEnableNotification(uuid_t service, uuid_t characteristic
   ScopeLock lock(CritSec_Comm);
   auto port = devGetDeviceOnPort(GetPortIndex());
   if (port && port->EnableGattCharacteristic) {
-    return port->EnableGattCharacteristic(service, characteristic);
+    return port->EnableGattCharacteristic(*port, service, characteristic);
   }
   return false;
 }
@@ -303,3 +303,8 @@ bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
   return false;
 }
 
+void BluetoothSensor::WriteGattCharacteristic(uuid_t service, uuid_t characteristic, const void *data, size_t size) {
+  if(bridge) {
+    bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
+  }
+}

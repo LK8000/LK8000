@@ -23,6 +23,8 @@ Copyright_License {
 
 package org.LK8000;
 
+import java.util.UUID;
+
 /**
  * A an abstract base class for #AndroidPort implementations that act
  * as a proxy for another #AndroidPort instance.
@@ -103,6 +105,14 @@ abstract class ProxyAndroidPort implements AndroidPort {
     return port != null
       ? port.write(data, length)
       : 0;
+  }
+
+  @Override
+  public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) {
+    AndroidPort port = this.port;
+    if (port != null) {
+      port.writeGattCharacteristic(service, characteristic, data, length);
+    }
   }
 
   protected void stateChanged() {

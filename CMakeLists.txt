@@ -764,6 +764,9 @@ add_library( LK8000 SHARED
 
     Common/Source/Devices/Fanet/Fanet.h
     Common/Source/Devices/Fanet/Fanet.cpp
+    Common/Source/Devices/Fanet/frame.h
+    Common/Source/Devices/Fanet/frame.cpp
+    Common/Source/Devices/Fanet/macaddr.h
 
     Common/Source/Android/fdsan.h
     Common/Source/Android/fdsan.c

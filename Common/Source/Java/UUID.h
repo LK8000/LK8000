@@ -37,6 +37,8 @@ namespace UUID  {
 
   uuid_t to_uuid_t(JNIEnv* env, jobject object);
 
+  LocalObject from_uuid_t(JNIEnv* env, uuid_t uuid);
+
 } // namespace UUID
 }  // namespace Java
 

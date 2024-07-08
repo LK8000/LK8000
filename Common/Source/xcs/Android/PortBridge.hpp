@@ -27,6 +27,7 @@ Copyright_License {
 #include "Java/Object.hxx"
 
 #include <stddef.h>
+#include "utils/uuid.h"
 
 class PortListener;
 class DataHandler;
@@ -39,9 +40,11 @@ class PortBridge : protected Java::GlobalObject {
   static jmethodID drain_method;
   static jmethodID getBaudRate_method, setBaudRate_method;
   static jmethodID write_method;
+  static jmethodID writeGattCharacteristic_method;
 
   static constexpr size_t write_buffer_size = 4096;
-  Java::GlobalRef<jbyteArray> write_buffer;
+  Java::GlobalRef<jbyteArray> write_buffer = nullptr;
+  Java::GlobalRef<jbyteArray> characteristic_buffer = nullptr;
 
 public:
   /**
@@ -78,6 +81,8 @@ public:
   }
 
   int write(JNIEnv *env, const void *data, size_t length);
+
+  void writeGattCharacteristic(JNIEnv *env, uuid_t service, uuid_t characteristic, const void *data, size_t size);
 };
 
 #endif

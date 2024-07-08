@@ -26,6 +26,7 @@ Copyright_License {
 #include "NativeInputListener.hpp"
 #include "Java/Class.hxx"
 #include "Java/Array.hxx"
+#include "Java/UUID.h"
 
 #include <string.h>
 
@@ -37,6 +38,7 @@ jmethodID PortBridge::drain_method;
 jmethodID PortBridge::getBaudRate_method;
 jmethodID PortBridge::setBaudRate_method;
 jmethodID PortBridge::write_method;
+jmethodID PortBridge::writeGattCharacteristic_method;
 
 void
 PortBridge::Initialise(JNIEnv *env)
@@ -53,11 +55,13 @@ PortBridge::Initialise(JNIEnv *env)
   getBaudRate_method = env->GetMethodID(cls, "getBaudRate", "()I");
   setBaudRate_method = env->GetMethodID(cls, "setBaudRate", "(I)Z");
   write_method = env->GetMethodID(cls, "write", "([BI)I");
+  writeGattCharacteristic_method = env->GetMethodID(cls, 
+                            "writeGattCharacteristic", 
+                            "(Ljava/util/UUID;Ljava/util/UUID;[BI)V");
 }
 
 PortBridge::PortBridge(const Java::LocalObject& obj)
-  : Java::GlobalObject(obj)
-  , write_buffer(obj.GetEnv(), obj.GetEnv()->NewByteArray(write_buffer_size)) { }
+  : Java::GlobalObject(obj) { }
 
 
 PortBridge::~PortBridge() {
@@ -95,7 +99,31 @@ PortBridge::write(JNIEnv *env, const void *data, size_t length)
   if (length > write_buffer_size)
     length = write_buffer_size;
 
+  if (!write_buffer.IsDefined()) {
+    write_buffer = { env, env->NewByteArray(write_buffer_size) };
+  }
+
   memcpy(Java::ByteArrayElements(env, write_buffer), data, length);
 
   return env->CallIntMethod(Get(), write_method, write_buffer.Get(), length);
+}
+
+void
+PortBridge::writeGattCharacteristic(JNIEnv *env, uuid_t service, uuid_t characteristic, const void *data, size_t size)
+{
+  if (size > 517)
+    size = 517;
+
+  if (!characteristic_buffer.IsDefined()) {
+    characteristic_buffer = { env, env->NewByteArray(517) };
+  }
+
+  memcpy(Java::ByteArrayElements(env, characteristic_buffer), data, size);
+
+  using Java::UUID::from_uuid_t;
+
+  env->CallVoidMethod(Get(), writeGattCharacteristic_method,
+                    from_uuid_t(env, service).Get(),
+                    from_uuid_t(env, characteristic).Get(),
+                    characteristic_buffer.Get(), size);
 }

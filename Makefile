@@ -1180,6 +1180,7 @@ COMMS	:=\
 
 DEVS	:=\
 	$(DEV)/Fanet/Fanet.cpp \
+	$(DEV)/Fanet/frame.cpp \
 	$(DEV)/devBase.cpp \
 	$(DEV)/devBorgeltB50.cpp \
 	$(DEV)/devCAI302.cpp \
