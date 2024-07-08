@@ -11,7 +11,7 @@
 
 #include "tchar.h"
 #include "Flarm.h"
-#include "Fanet.h"
+#include "Devices/Fanet/Fanet.h"
 #include "Geographic/GeoPoint.h"
 
 struct DeviceDescriptor_t;

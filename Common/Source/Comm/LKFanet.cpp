@@ -8,7 +8,7 @@
 */
 
 #include "externs.h"
-#include "Fanet.h"
+#include "Devices/Fanet/Fanet.h"
 
 static void emptySlot(FANET_DATA& data) {
 	data.Time_Fix = 0;

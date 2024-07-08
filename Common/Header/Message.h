@@ -1,6 +1,8 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <list>
+
 #define MAXMESSAGES 20
 
 enum {

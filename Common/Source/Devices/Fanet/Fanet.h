@@ -12,8 +12,14 @@
 #ifndef _FANET_H
 #define _FANET_H
 
+#include "Compiler.h"
 #include <iterator>
+#include <vector>
+#include <cstdint>
+#include "tchar.h"
+
 struct NMEA_INFO;
+struct DeviceDescriptor_t;
 
 //
 #define MAXFANETWEATHER 10 //max. FANET-Weatherstation to display
@@ -60,5 +66,17 @@ bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR (&szName)[size]) {
   static_assert(size >= (MAXFANETNAME+1), "out string too small");
   return GetFanetName(ID, info, szName, size);
 }
+
+using fanet_parse_function = bool(*)(DeviceDescriptor_t*, NMEA_INFO*, uint32_t, const std::vector<uint8_t>&);
+
+bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
+
+bool FanetParseType2Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
+
+bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
+
+bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
+
+bool FanetParseUnknown(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data);
 
 #endif

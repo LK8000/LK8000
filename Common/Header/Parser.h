@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "Flarm.h"
-#include "Fanet.h"
+#include "Devices/Fanet/Fanet.h"
 #include "Geographic/GeoPoint.h"
 #include "Util/ScopeExit.hxx"
 #include "Time/PeriodClock.hpp"

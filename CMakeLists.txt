@@ -762,6 +762,9 @@ add_library( LK8000 SHARED
     Common/Source/Devices/Volkslogger/vlconv.cpp
     Common/Source/Devices/Volkslogger/vlutils.cpp
 
+    Common/Source/Devices/Fanet/Fanet.h
+    Common/Source/Devices/Fanet/Fanet.cpp
+
     Common/Source/Android/fdsan.h
     Common/Source/Android/fdsan.c
 
