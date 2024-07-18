@@ -360,7 +360,6 @@ public:
   }
 
   void DrawText(int x, int y, const TCHAR *text);
-  void DrawText(int x, int y, const TCHAR *text, size_t length);
 
   void DrawTransparentText(int x, int y, const TCHAR *text);
 

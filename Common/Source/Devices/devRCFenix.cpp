@@ -281,7 +281,7 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
 
   int wpCount = lkDecl->num_waypoints;
   int totalLines = (wpCount * 2) + 2 + 4; // N * w(p + zone) + takeoff + landing + header
-  TCHAR DeclStrings[totalLines][256];
+  auto DeclStrings = std::make_unique<TCHAR[][256]>(totalLines);
   INT i = 0;
 
   _stprintf(DeclStrings[i++], _T("RCDT,SET,PILOT,%s,%s"), PilotName, PilotSurName);

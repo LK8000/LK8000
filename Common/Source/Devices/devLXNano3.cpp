@@ -704,7 +704,7 @@ BOOL DevLXNanoIII::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDec
 
   int wpCount = lkDecl->num_waypoints;
   unsigned totalLines = 6 + 1 + wpCount + 1;
-  TCHAR DeclStrings[totalLines][256];
+  auto DeclStrings = std::make_unique<TCHAR[][256]>(totalLines);
   unsigned i = 0;
 
   // Metadata

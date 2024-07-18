@@ -598,12 +598,12 @@ BOOL DevLX_EOS_ERA::Config(DeviceDescriptor_t* d){
 }
 
 
-int DeviceASCIIConvert(TCHAR *pDest, const TCHAR *pSrc, int size=11)
+int DeviceASCIIConvert(TCHAR *pDest, const TCHAR *pSrc, int size)
 {
   if (pSrc && pDest) {
-    char szTmp[size+10];
-    to_usascii(pSrc , szTmp, size);
-    from_utf8(szTmp, pDest, size);
+    auto szTmp = std::make_unique<char[]>(size+10);
+    to_usascii(pSrc , szTmp.get(), size);
+    from_utf8(szTmp.get(), pDest, size);
     return _tcslen(pDest);
   }
   return 0;
@@ -675,7 +675,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
 
   int wpCount = lkDecl->num_waypoints;
   int totalLines =  wpCount*2 + 2 + 4; // N * w(p + zone) + takeoff + landing + header
-  TCHAR DeclStrings[totalLines][256];
+  auto DeclStrings = std::make_unique<TCHAR[][256]>(totalLines);
   INT i = 0;
 
 

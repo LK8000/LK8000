@@ -314,7 +314,7 @@ BOOL FanetParseType1Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pG
     return FALSE;
   }
 
-  uint8_t msg[payload_length];
+  auto msg = std::make_unique<uint8_t[]>(payload_length);
   NMEAParser::ExtractParameter(String, ctemp, 6);
   for (int i = 0; i < payload_length; i++) {
     // undefined result if _tcslen(ctemp) < (payloadLen*2)
@@ -472,7 +472,7 @@ BOOL FanetParseType4Msg(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pG
 
   NMEAParser::ExtractParameter(String,ctemp,5);
   uint8_t payloadLen = getByteFromHex(ctemp);
-  uint8_t msg[payloadLen]; // unchecked buffer overflow in the following code if payloadLen < 17...
+  auto msg = std::make_unique<uint8_t[]>(payloadLen); // unchecked buffer overflow in the following code if payloadLen < 17...
   NMEAParser::ExtractParameter(String,ctemp,6);
   for (int i = 0;i < payloadLen;i++) {
     // undefined result if _tcslen(ctemp) < (payloadLen*2)

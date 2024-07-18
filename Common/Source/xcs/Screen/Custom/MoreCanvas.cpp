@@ -178,22 +178,6 @@ Canvas::DrawFormattedText(PixelRect *rc, const TCHAR *text, unsigned format)
 }
 
 void
-Canvas::DrawText(int x, int y,
-                 const TCHAR *_text, size_t length)
-{
-  assert(_text != nullptr);
-
-  TCHAR copy[length + 1];
-  *std::copy_n(_text, length, copy) = _T('\0');
-
-#ifndef UNICODE
-  assert(ValidateUTF8(copy));
-#endif
-
-  DrawText(x, y, copy);
-}
-
-void
 Canvas::DrawOpaqueText(int x, int y, const PixelRect &rc,
                        const TCHAR *_text)
 {
