@@ -109,21 +109,23 @@ unsigned BluetoothSensor::RxThread() {
       return 0;  // Stop RxThread...
     }
 
-    if (!rxthread_queue.empty()) {
-      for (auto& data : rxthread_queue) {
-        ProcessSensorData(data);
-      }
-      rxthread_queue.clear();
-    } else if (!connected && state == STATE_READY) {
+    if (!connected && state == STATE_READY) {
       connected = true;
       devOpen(devGetDeviceOnPort(GetPortIndex()));
-    } else if (connected) {
+    }
+
+    if (connected && state != STATE_READY) {
+      connected = false;
       auto name = WithLock(mutex, [&]() {
         return device_name;
       });
       StatusMessage("%s disconnected", name.c_str());
-      connected = false;
     }
+
+    for (auto& data : rxthread_queue) {
+      ProcessSensorData(data);
+    }
+    rxthread_queue.clear();
 
     ScopeLock lock(mutex);
     newdata.Wait(mutex);  // wait for data or state change
