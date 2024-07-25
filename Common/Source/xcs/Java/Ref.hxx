@@ -110,6 +110,8 @@ class GlobalRef {
 public:
 	GlobalRef() = delete;
 
+	GlobalRef(std::nullptr_t) noexcept : value() {};
+
 	GlobalRef(JNIEnv *env, T _value) noexcept {
 		assert(env != nullptr);
 		assert(_value != nullptr);
@@ -120,12 +122,27 @@ public:
 	GlobalRef(const LocalRef<T> &src) noexcept
 					:GlobalRef(src.GetEnv(), src.Get()) {}
 
+	GlobalRef(GlobalRef &&other) noexcept {
+		value = std::exchange(other.value, nullptr);
+	}
+
+	GlobalRef &operator=(GlobalRef &&other) noexcept {
+		std::swap(value, other.value);
+		return *this;
+	}
+
 	virtual ~GlobalRef() noexcept {
-		GetEnv()->DeleteGlobalRef(value);
+		if (value) {
+			GetEnv()->DeleteGlobalRef(value);
+		}
 	}
 
 	GlobalRef(const GlobalRef &other) = delete;
 	GlobalRef &operator=(const GlobalRef &other) = delete;
+
+	bool IsDefined() const noexcept {
+		return value != nullptr;
+	}
 
 	T Get() const noexcept {
 		return value;
