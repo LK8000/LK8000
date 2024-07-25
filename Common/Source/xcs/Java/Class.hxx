@@ -48,6 +48,8 @@ public:
 		:LocalRef<jclass>(env, env->FindClass(name)) {}
 };
 
+using GlobalClass = GlobalRef<jclass>;
+
 /**
  * Wrapper for a global "jclass" reference.
  */
