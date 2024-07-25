@@ -31,6 +31,7 @@
 
 #include "Exception.hxx"
 #include "Ref.hxx"
+#include "Class.hxx"
 
 namespace Java {
 
@@ -62,6 +63,13 @@ CallObjectMethodRethrow(JNIEnv *env, jobject obj, jmethodID method,
 	LocalObject result{env, env->CallObjectMethod(obj, method, args...)};
 	RethrowException(env);
 	return result;
+}
+
+inline
+Class GetClassRethrow(JNIEnv *env, const char* class_name) {
+    Java::Class cls{ env, class_name };
+    Java::RethrowException(env); // rethrow ClassNotFoundException
+    return cls;
 }
 
 } // namespace Java
