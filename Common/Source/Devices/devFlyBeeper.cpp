@@ -178,7 +178,7 @@ void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service
       // TAS
       if (data.size() == 2) {
         info.AirspeedAvailable = true;
-        info.TrueAirspeed = FromLE16(*reinterpret_cast<const int16_t*>(data.data())) / 10.;
+        info.TrueAirspeed = Units::From(unKiloMeterPerHour, FromLE16(*reinterpret_cast<const int16_t*>(data.data())) / 10.);
         info.IndicatedAirspeed = IndicatedAirSpeed(info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
       }
     }
