@@ -15,6 +15,7 @@
 #include "Fanet/frame.h"
 #include "utils/lookup_table.h"
 #include <random>
+#include "DeviceSettings.h"
 
 #undef uuid_t
 
@@ -89,13 +90,30 @@ Frame::payload_t serialize_name() {
 }
 
 MacAddr generate_id() {
+  MacAddr addr;
+
+  DeviceSettings settings(_T("FlyBeeper"));
+  try {
+    addr.manufacturer = settings.get<uint8_t>("fanet-manufacturer");
+    addr.id = settings.get<uint16_t>("fanet-id");
+  }
+  catch(std::exception& e) { }
+
   std::random_device rd;   // a seed source for the random number engine
   std::mt19937 gen(rd());  // mersenne_twister_engine seeded with rd()
   std::uniform_int_distribution<uint16_t> distrib(1, std::numeric_limits<uint16_t>::max());
-  return { 0xFC, distrib(gen) };
+
+  addr.manufacturer = 0xFC;
+  addr.id = distrib(gen);
+
+  settings.set<int>("fanet-manufacturer", addr.manufacturer);
+  settings.set<int>("fanet-id", addr.id);
+
+  return addr;
 }
 
 BOOL SendData(DeviceDescriptor_t* d, uint8_t type, std::vector<uint8_t>&& data) {
+  
   static MacAddr src_addr = generate_id();
 
   auto frm = std::make_unique<Frame>(src_addr);

@@ -1233,6 +1233,7 @@ DEVS	:=\
 	$(DEV)/devAirControlDisplay.cpp \
 	$(DEV)/devFlyBeeper.cpp \
 	$(DEV)/DeviceRegister.cpp \
+	$(DEV)/DeviceSettings.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \

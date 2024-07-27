@@ -666,6 +666,8 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devAirControlDisplay.cpp
     Common/Source/Devices/devFlyBeeper.cpp
     Common/Source/Devices/DeviceRegister.cpp
+    Common/Source/Devices/DeviceSettings.h
+    Common/Source/Devices/DeviceSettings.cpp
 
     Common/Source/Dialogs/dlgSelectObject.cpp
     Common/Source/Dialogs/dlgSelectItem.cpp
