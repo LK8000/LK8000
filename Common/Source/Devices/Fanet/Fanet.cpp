@@ -245,14 +245,15 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   traffic.Type = static_cast<uint16_t>(aircraft_type_table.get((aircraft_t) ((Type >> 12) & 0x07),
                                                                  flarm_aircraft_t::unknown));
 
-  uint16_t speed = to_uint16_t(&data[8]);
-  if (speed & 0x80) {
-    speed = (speed & 0x007F) * 5;
+  if (data[8] & 0x80) {
+    traffic.Speed = Units::From(unKiloMeterPerHour, ((data[8] & 0x007F) * 5) * 0.5);
   }
-  traffic.Speed = Units::From(unKiloMeterPerHour, speed * 0.5);
+  else {
+    traffic.Speed = Units::From(unKiloMeterPerHour, data[8] * 0.5);
+  }
 
-  auto climb = static_cast<uint8_t>(data[9]);
-  auto climb2 = static_cast<int8_t>((climb & 0x7F) | (climb & (1 << 6)) << 1); //create 2-complement
+  uint8_t climb = data[9];
+  uint8_t climb2 = (climb & 0x7F) | (climb & (1 << 6)) << 1; //create 2-complement
   if (climb & 0x80) {
     traffic.ClimbRate = climb2 * 5.0 / 10.0;
   } else {
