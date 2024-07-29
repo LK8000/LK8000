@@ -1,5 +1,6 @@
 #include "picojson.h"
 #include "tchar.h"
+#include "Util/tstring.hpp"
 
 class DeviceSettings final {
 public:
@@ -29,5 +30,5 @@ public:
 
 private:
   picojson::value data;
-  const std::string file_path;
+  const tstring file_path;
 };

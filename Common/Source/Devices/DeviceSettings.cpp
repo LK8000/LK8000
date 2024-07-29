@@ -8,7 +8,7 @@ namespace {
 tstring get_file_path(const TCHAR* name) {
   TCHAR szFilePath[MAX_PATH] = {};
   LocalPath(szFilePath, _T(LKD_CONF), name);
-  _tcscat(szFilePath, ".json");
+  _tcscat(szFilePath, _T(".json"));
   return szFilePath;
 }
 
@@ -17,7 +17,7 @@ tstring get_file_path(const TCHAR* name) {
 
 DeviceSettings::DeviceSettings(const TCHAR* name) : file_path(get_file_path(name)) {
   try {
-    std::ifstream file_in(file_path, std::ifstream::in);
+    std::ifstream file_in(file_path.c_str());
     file_in >> data;
   }
   catch (std::exception& e) {
@@ -34,7 +34,7 @@ DeviceSettings::~DeviceSettings() {
 
 void DeviceSettings::Commit() {
   try {
-    std::ofstream file_out(file_path);
+    std::ofstream file_out(file_path.c_str());
     data.serialize(std::ostream_iterator<char>(file_out), true);
   }
   catch (std::exception& e) {
