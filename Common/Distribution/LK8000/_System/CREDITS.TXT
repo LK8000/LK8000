@@ -10,6 +10,19 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.19]
+* Android :
+ - Support standart BLE Sensor (Heart rate, Pressure, Temperature, Battery)
+ - Notify BLE device connection / deconnection to user
+* New device :
+ - FlyBeeper (Pressure, TAS, Fanet)
+ - Stodeus UltraBip & BlueBip
+* OpenAir airspace :
+ - use 'AY' field for type
+ - ignore 'AI' field
+* Others :
+ - fix invalid unit symbols
+
 [version 7.4.18]
 - XCVario: Fix Cruise/Climb switch
 - XCTracer: Fix Wind bearing
