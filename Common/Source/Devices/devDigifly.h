@@ -14,7 +14,7 @@
 void DigiflyInstall(DeviceDescriptor_t* d);
 
 inline constexpr
-DeviceRegister_t DigiflyRegister(void) {
+DeviceRegister_t DigiflyRegister() {
   return devRegister(_T("Digifly"), DigiflyInstall);
 }
 

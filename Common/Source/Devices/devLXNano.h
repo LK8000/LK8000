@@ -43,7 +43,7 @@ class DevLXNano : public DevLX
     /// Registers device into device subsystem.
     static constexpr 
     DeviceRegister_t Register() {
-      return devRegister(GetName(), Install);
+      return devRegister(_T("LX Colibri/Nano"), Install);
     }
 
 
@@ -63,12 +63,6 @@ class DevLXNano : public DevLX
 
     /// Installs device specific handlers.
     static void Install(DeviceDescriptor_t* d);
-
-    /// Returns device name (max length is @c DEVNAMESIZE).
-    static constexpr
-    const TCHAR* GetName() {
-        return _T("LX Colibri/Nano");
-    }
 
     /// Writes declaration into the logger.
     static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);

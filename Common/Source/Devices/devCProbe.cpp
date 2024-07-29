@@ -24,8 +24,7 @@ double CDevCProbe::m_delta_press=0.0;
 TCHAR CDevCProbe::m_szVersion[15]={0};
 
 
-void CDevCProbe::Install(DeviceDescriptor_t* d ) {
-	_tcscpy(d->Name, GetName());
+void CDevCProbe::Install(DeviceDescriptor_t* d) {
 	d->ParseNMEA = ParseNMEA;
 	d->Open = Open;
 	d->Close = Close;

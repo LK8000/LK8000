@@ -40,10 +40,6 @@ BOOL DigiflyParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS
 }
 
 void DigiflyInstall(DeviceDescriptor_t* d) {
-
-  StartupStore(_T(". DIGIFLY device installed%s"),NEWLINE);
-
-  _tcscpy(d->Name, TEXT("Digifly"));
   d->ParseNMEA = DigiflyParseNMEA;
 }
 

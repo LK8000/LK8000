@@ -14,7 +14,7 @@
 void LK8EX1Install(DeviceDescriptor_t* d);
 
 inline constexpr
-DeviceRegister_t LK8EX1Register(void){
+DeviceRegister_t LK8EX1Register(){
   return devRegister( _T("LK8EX1"), LK8EX1Install);
 }
 

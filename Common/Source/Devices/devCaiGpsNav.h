@@ -20,11 +20,6 @@
 class CDevCAIGpsNav : public DevBase
 {
   // LK interface
-  static constexpr 
-  const TCHAR *GetName() {
-    return _T("CAI GPS-NAV");
-  }
-
   static BOOL Open(DeviceDescriptor_t* d);
   static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
   static void Install(DeviceDescriptor_t* d);
@@ -33,7 +28,7 @@ public:
 
   static constexpr
   DeviceRegister_t Register() {
-    return devRegister(GetName(), Install);
+    return devRegister(_T("CAI GPS-NAV"), Install);
   }
 
 };

@@ -80,7 +80,7 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     /// Registers device into device subsystem.
     static constexpr 
     DeviceRegister_t Register() {
-      return devRegister(GetName(), Install);
+      return devRegister(_T("LX EOS/ERA"), Install);
     }
 
   //----------------------------------------------------------------------------
@@ -91,12 +91,6 @@ class DevLX_EOS_ERA : public DevLXNanoIII
 
     /// Installs device specific handlers.
     static void Install(DeviceDescriptor_t* d);
-
-    /// Returns device name (max length is @c DEVNAMESIZE).
-    static constexpr
-    const TCHAR* GetName() {
-      return _T("LX EOS/ERA");  
-    }
 
     static BOOL Open(DeviceDescriptor_t* d);
 

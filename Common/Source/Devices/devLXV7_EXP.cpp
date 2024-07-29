@@ -51,7 +51,6 @@ BOOL Open(DeviceDescriptor_t* d) {
 //static
 void DevLXV7_EXP::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->Open = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LXV7_EXPPutMacCready;

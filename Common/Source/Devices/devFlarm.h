@@ -74,13 +74,7 @@ private:
 public:
   static constexpr
   DeviceRegister_t Register() {
-    return devRegister(GetName(), &Install);
-  }
-
-
-  static constexpr
-  const TCHAR* GetName() { 
-    return TEXT("Flarm"); 
+    return devRegister(_T("Flarm"), Install);
   }
 
   static BOOL Open(DeviceDescriptor_t* d);

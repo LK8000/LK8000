@@ -16,13 +16,11 @@
 
 namespace GXAirCom {
 
-constexpr const TCHAR DeviceName[] = _T("GXAirCom");
-
 void Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t Register() {
-  return (devRegister(DeviceName, Install));
+  return (devRegister(_T("GXAirCom"), Install));
 }
 
 } // GXAirCom

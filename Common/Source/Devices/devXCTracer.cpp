@@ -238,6 +238,5 @@ static BOOL XCTracerParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_IN
 }
 
 void XCTracerInstall(DeviceDescriptor_t* d) {
-    _tcscpy(d->Name, _T("XCTracer"));
     d->ParseNMEA = XCTracerParseNMEA;
 }

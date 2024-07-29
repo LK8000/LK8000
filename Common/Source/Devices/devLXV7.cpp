@@ -45,7 +45,6 @@ BOOL LXV7PutBugs(DeviceDescriptor_t* d, double Bugs);
 //static
 void DevLXV7::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LXV7PutMacCready;
   d->PutBugs      = LXV7PutBugs; // removed to prevent cirvular updates

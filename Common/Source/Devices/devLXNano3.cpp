@@ -152,7 +152,6 @@ BOOL  DevLXNanoIII::Values(DeviceDescriptor_t* d)
 ///
 //static
 void DevLXNanoIII::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, GetName());
   d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = Nano3_PutMacCready;
@@ -163,11 +162,6 @@ void DevLXNanoIII::Install(DeviceDescriptor_t* d) {
   d->Config       = Config;
   d->DirectLink   = Nano3_DirectLink;
   d->PutTarget    = PutTarget;
-
-  StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
-    GetName(),
-    PlatfEndian::IsBE() ? _T("be") : _T("le"),
-    PlatfEndian::To32BE(0x01000000), NEWLINE);
 } // Install()
 
 BOOL DevLXNanoIII::Open(DeviceDescriptor_t* d) {

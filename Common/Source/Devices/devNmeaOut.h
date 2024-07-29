@@ -15,11 +15,9 @@ namespace NmeaOut {
 
 void Install(DeviceDescriptor_t* d);
 
-constexpr const TCHAR* Name = _T("NmeaOut");
-
 inline constexpr
 DeviceRegister_t Register(){
-  return devRegister(Name, Install);
+  return devRegister(_T("NmeaOut"), Install);
 }
 
 BOOL NMEAOut(DeviceDescriptor_t* d, const char* String);

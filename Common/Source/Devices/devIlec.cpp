@@ -32,7 +32,6 @@ BOOL IlecParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS){
 
 
 void IlecInstall(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, TEXT("Ilec SN10"));
   d->ParseNMEA = IlecParseNMEA;
 }
 

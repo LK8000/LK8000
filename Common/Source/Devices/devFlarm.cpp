@@ -26,9 +26,7 @@
 DeviceDescriptor_t* CDevFlarm::m_pDevice=NULL;
 
 
-void CDevFlarm::Install(DeviceDescriptor_t* d ) {
-  StartupStore(_T("Flarm Drvier Install %s"), NEWLINE);
-	_tcscpy(d->Name, GetName());
+void CDevFlarm::Install(DeviceDescriptor_t* d) {
 	d->ParseNMEA = FlarmParse ; // ParseNMEA;
 	d->Open = Open;
 	d->Close = Close;

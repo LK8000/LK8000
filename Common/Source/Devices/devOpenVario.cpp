@@ -31,7 +31,6 @@ constexpr int OV_DebugLevel = 0;
 ///
 //static
 void DevOpenVario::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, GetName());
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = OpenVarioPutMacCready;
   d->PutBugs = OpenVarioPutBugs;

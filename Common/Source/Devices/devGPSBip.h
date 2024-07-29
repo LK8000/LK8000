@@ -16,28 +16,21 @@
 
 namespace Stodeus {
 
-constexpr const TCHAR GPSBip[] = _T("GPSBip");
+void Install(DeviceDescriptor_t* d);
 
-void GPSBipInstall(DeviceDescriptor_t* d);
-
-inline constexpr DeviceRegister_t GPSBipRegister() {
-  return devRegister( GPSBip, GPSBipInstall);
+inline constexpr
+DeviceRegister_t GPSBipRegister() {
+  return devRegister( _T("GPSBip"), Install);
 }
 
-constexpr const TCHAR UltraBip[] = _T("UltraBip");
-
-void UltraBipInstall(DeviceDescriptor_t* d);
-
-inline constexpr DeviceRegister_t UltraBipRegister() {
-  return devRegister(UltraBip, UltraBipInstall);
+inline constexpr
+DeviceRegister_t UltraBipRegister() {
+  return devRegister(_T("UltraBip"), Install);
 }
 
-constexpr const TCHAR BlueBip[] = _T("BlueBip");
-
-void BlueBipInstall(DeviceDescriptor_t* d);
-
-inline constexpr DeviceRegister_t BlueBipRegister() {
-  return devRegister(BlueBip, BlueBipInstall);
+inline constexpr
+DeviceRegister_t BlueBipRegister() {
+  return devRegister(_T("BlueBip"), Install);
 }
 
 } // Stodeus

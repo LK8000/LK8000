@@ -33,8 +33,6 @@ BOOL FlyNetParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *_INFO
   return FALSE;
 }
 
-void FlyNetInstall(DeviceDescriptor_t* d){
-
-  _tcscpy(d->Name, TEXT("FlyNet"));
+void FlyNetInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = FlyNetParseNMEA;
 }

@@ -135,7 +135,6 @@ BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS){
 } // namespace
 
 void Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, DeviceName);
   d->ParseNMEA = ParseNMEA;
 }
 
@@ -298,7 +297,6 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
 } // namespace
 
 void Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, DeviceName);
   d->ParseNMEA = ParseNMEA;
   d->SendData = SendData;
   d->Open = Open;

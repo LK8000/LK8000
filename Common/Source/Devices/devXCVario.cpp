@@ -250,7 +250,6 @@ BOOL Open(DeviceDescriptor_t* d) {
 }  // namespace
 
 void XCVario::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, Name);
   d->Open = Open;
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = PutMacCready;

@@ -126,7 +126,6 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 ///
 //static
 void DevLX_EOS_ERA::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, GetName());
   d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = EOSPutMacCready;

@@ -291,7 +291,6 @@ BOOL EWLinkTimeout(DeviceDescriptor_t* d){
 
 
 void ewInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, TEXT("EW Logger"));
   d->LinkTimeout = EWLinkTimeout;
   d->Declare = EWDeclare;
 }

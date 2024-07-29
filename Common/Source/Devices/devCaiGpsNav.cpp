@@ -418,7 +418,6 @@ BOOL CDevCAIGpsNav::DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl
 
 void CDevCAIGpsNav::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->Open         = Open;
   d->Declare      = DeclareTask;
 }

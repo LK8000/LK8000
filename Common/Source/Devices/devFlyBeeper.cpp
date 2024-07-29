@@ -195,7 +195,6 @@ void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service
 
 void FlyBeeper::Install(DeviceDescriptor_t* d) {
   genInstall(d); // install Generic driver callback first
-  _tcscpy(d->Name, Name);
 
   d->EnableGattCharacteristic = EnableGattCharacteristic;
   d->OnGattCharacteristic = OnGattCharacteristic;

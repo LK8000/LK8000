@@ -39,7 +39,6 @@ static BOOL XCOM760PutFreqStandby(DeviceDescriptor_t* d, unsigned Freq,  const T
 
 
 void XCOM760Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, TEXT("XCOM760"));
   d->PutVolume = XCOM760PutVolume;
   d->PutFreqActive = XCOM760PutFreqActive;
   d->PutFreqStandby = XCOM760PutFreqStandby;

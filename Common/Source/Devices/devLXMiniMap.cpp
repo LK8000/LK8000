@@ -58,7 +58,6 @@ bool FirstCheckBaroAlt = true;
 //static
 void DevLXMiniMap::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LXMiniMapPutMacCready;
   d->PutBugs      = LXMiniMapPutBugs;

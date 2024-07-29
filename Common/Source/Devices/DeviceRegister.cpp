@@ -126,6 +126,12 @@ DeviceRegister_t device_list[] = {
 
 } // namespace
 
+void DeviceRegister_t::Install(DeviceDescriptor_t* d) const {
+  _tcscpy(d->Name, Name);
+  Installer(d);
+}
+
+
 const DeviceRegister_t* devRegisterIterator::begin() {
   return std::begin(device_list);
 }

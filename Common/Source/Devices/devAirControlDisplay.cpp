@@ -324,8 +324,6 @@ BOOL Open(DeviceDescriptor_t* d) {
 }  // namespace
 
 void AirControlDisplay::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, Name);
-
   d->NMEAOut = NMEAOut;
   d->ParseNMEA = ParseNMEA;
 

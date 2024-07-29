@@ -142,7 +142,6 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
 }  // namespace
 
 void GenericAutopilot::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, Name);
   d->SendData = SendData;
   d->NMEAOut = NMEAOut;
 }

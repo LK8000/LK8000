@@ -30,7 +30,7 @@ class DevLXV7 : public DevBase
     /// Registers device into device subsystem.
     static constexpr
     DeviceRegister_t Register() {
-        return devRegister(GetName(), Install);
+        return devRegister(_T("LXV7"), Install);
     }
 
     // Send $PFLX2 to request Info from LX.
@@ -49,11 +49,6 @@ class DevLXV7 : public DevBase
     static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
 
     static BOOL LXV7DirectLink(DeviceDescriptor_t* d, BOOL LinkStatus);
-    /// Returns device name (max length is @c DEVNAMESIZE).
-    static constexpr 
-    const TCHAR* GetName() {
-      return _T("LXV7");
-    }
 
     /// Parses PLXVF sentence.
     static bool PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);

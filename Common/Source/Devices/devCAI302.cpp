@@ -429,8 +429,6 @@ BOOL cai302DeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
 }
 
 void cai302Install(DeviceDescriptor_t* d){
-
-  _tcscpy(d->Name, TEXT("CAI 302"));
   d->ParseNMEA = cai302ParseNMEA;
   d->PutMacCready = cai302PutMacCready;
   d->PutBugs = cai302PutBugs;

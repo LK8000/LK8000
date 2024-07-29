@@ -44,9 +44,6 @@ BOOL CondorParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 
 
 void condorInstall(DeviceDescriptor_t* d) {
-
-  StartupStore(_T(". Condor device installed%s"),NEWLINE);
-  _tcscpy(d->Name, TEXT("Condor"));
   d->ParseNMEA = CondorParseNMEA;
   DevIsCondor = true;
 }

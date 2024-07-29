@@ -19,11 +19,9 @@ namespace XCVario {
 
 void Install(DeviceDescriptor_t* d);
 
-constexpr const TCHAR* Name = _T("XCVario");
-
 inline constexpr
 DeviceRegister_t Register() {
-  return devRegister(Name, Install);
+  return devRegister(_T("XCVario"), Install);
 }
 
 } // XCVario

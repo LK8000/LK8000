@@ -17,10 +17,8 @@ namespace FlyBeeper {
 
 void Install(DeviceDescriptor_t* d);
 
-constexpr const TCHAR* Name = _T("FlyBeeper");
-
 inline constexpr DeviceRegister_t Register() {
- return devRegister(Name, Install);
+ return devRegister(_T("FlyBeeper"), Install);
 }
 
 }  // namespace FlyBeeper

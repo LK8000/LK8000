@@ -42,7 +42,6 @@
 /// @retval false device cannot be installed
 ///
 void DevRCFenix::Install(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, GetName());
   d->Open = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = FenixPutMacCready;

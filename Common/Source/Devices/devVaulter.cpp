@@ -39,7 +39,6 @@ BOOL VaulterPutBallast(DeviceDescriptor_t* d, double Ballast);
 //static
 void DevVaulter::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = VaulterPutMacCready;
   d->PutBallast   = VaulterPutBallast;

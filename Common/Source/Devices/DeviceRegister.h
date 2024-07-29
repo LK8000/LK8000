@@ -13,13 +13,23 @@
 #include "tchar.h"
 #include "cstddef"
 #include "types.h"
+#include <type_traits>
 
 struct DeviceDescriptor_t;
 
-using Installer_t = void(*)(DeviceDescriptor_t* d);
+using Installer_t = void(*)(DeviceDescriptor_t*);
 
-struct DeviceRegister_t {
+class DeviceRegister_t {
+ public:
+  constexpr DeviceRegister_t(const TCHAR* name, Installer_t installer)
+      : Name(name), Installer(installer)
+  {}
+
+  void Install(DeviceDescriptor_t* d) const;
+
   const TCHAR* Name;
+
+ private:
   Installer_t Installer;
 };
 

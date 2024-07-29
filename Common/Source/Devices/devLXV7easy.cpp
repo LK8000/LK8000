@@ -37,9 +37,7 @@ bool ParToDouble(const char* sentence, unsigned int parIdx, double* value) {
   return(true);
 } 
 
-void LXV7easyInstall(DeviceDescriptor_t* d)
-{
-  _tcscpy(d->Name, TEXT("LXV7 easy"));
+void LXV7easyInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA    = LXV7easyParseNMEA;
 }
 

@@ -41,7 +41,6 @@ BOOL LX16xxPutBugs(DeviceDescriptor_t* d, double Bugs);
 //static
 void DevLX16xx::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LX16xxPutMacCready;
   d->PutBugs      = LX16xxPutBugs; // removed to prevent cirvular updates

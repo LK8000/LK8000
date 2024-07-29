@@ -45,8 +45,6 @@ BOOL PGIsGPSSource(DeviceDescriptor_t* d){
 }
 
 void pgInstall(DeviceDescriptor_t* d){
-
-  _tcscpy(d->Name, TEXT("PosiGraph Logger"));
   d->ParseNMEA = PGParseNMEA;
 }
 

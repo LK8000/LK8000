@@ -146,9 +146,6 @@ if(strncmp("$PWES0", String, 6) == 0)
 }
 
 void WesterboerInstall(DeviceDescriptor_t* d) {
-  StartupStore(_T(". WESTERBOER device installed%s"),NEWLINE);
-
-  _tcscpy(d->Name, TEXT("Westerboer"));
   d->ParseNMEA = WesterboerParseNMEA;
   d->PutMacCready = devWesterboerPutMacCready;
   d->PutBugs = devWesterboerPutBugs;

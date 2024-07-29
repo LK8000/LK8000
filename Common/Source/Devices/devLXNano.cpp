@@ -71,16 +71,9 @@ static const char PKT_CCWRITE   = '\xD0';
 /// @retval false device cannot be installed
 ///
 //static
-void DevLXNano::Install(DeviceDescriptor_t* d)
-{
-  _tcscpy(d->Name, GetName());
+void DevLXNano::Install(DeviceDescriptor_t* d) {
   d->ParseNMEA    = ParseNMEA;
   d->Declare      = DeclareTask;
-
-  StartupStore(_T(". %s installed (platform=%s test=%u)%s"),
-    GetName(),
-    PlatfEndian::IsBE() ? _T("be") : _T("le"),
-    PlatfEndian::To32BE(0x01000000), NEWLINE);
 } // Install()
 
 

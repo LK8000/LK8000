@@ -267,8 +267,7 @@ BOOL VLDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
 
 }
 
-void vlInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, TEXT("Volkslogger"));
+void vlInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = VLParseNMEA;
   d->Declare = VLDeclare;
 }

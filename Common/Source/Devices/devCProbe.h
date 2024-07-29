@@ -32,15 +32,9 @@ private:
 public:
 	static constexpr
 	DeviceRegister_t Register() {
-		return devRegister(GetName(), &Install);
+		return devRegister(_T("C-Probe"), Install);
 	}
 
-
-	static constexpr
-	const TCHAR* GetName() { 
-		return TEXT("C-Probe"); 
-	}
-	
 	static BOOL Open(DeviceDescriptor_t* d);
 	static BOOL Close (DeviceDescriptor_t* d);
 

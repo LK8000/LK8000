@@ -523,8 +523,7 @@ BOOL KRT2ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GP
 
 } // namespace
 
-void KRT2Install(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, TEXT("Dittel KRT2"));
+void KRT2Install(DeviceDescriptor_t* d) {
 
   d->Open = OpenClose;
   d->Close = OpenClose;

@@ -468,8 +468,7 @@ BOOL AR620xParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *
 
 } // namespace
 
-void AR620xInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, TEXT("Dittel AR620x"));
+void AR620xInstall(DeviceDescriptor_t* d) {
   d->IsRadio        = true;
   d->PutVolume      = AR620xPutVolume;
   d->PutSquelch     = AR620xPutSquelch;

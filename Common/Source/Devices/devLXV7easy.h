@@ -14,7 +14,7 @@ void LXV7easyInstall(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t LXV7easyRegister() {
-    return devRegister(_T("LXV7 easy"), LXV7easyInstall );
+    return devRegister(_T("LXV7 easy"), LXV7easyInstall);
 }
 
 #endif // __DEVLXV7EASY_H_

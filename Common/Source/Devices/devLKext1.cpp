@@ -24,9 +24,7 @@ BOOL LK8EX1ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   return FALSE;
 }
 
-void LK8EX1Install(DeviceDescriptor_t* d){
-
-  _tcscpy(d->Name, TEXT("LK8EX1"));
+void LK8EX1Install(DeviceDescriptor_t* d) {
   d->ParseNMEA = LK8EX1ParseNMEA;
 }
 

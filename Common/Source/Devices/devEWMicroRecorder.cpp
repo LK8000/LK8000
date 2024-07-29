@@ -246,8 +246,7 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
 }
 
 
-void ewMicroRecorderInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, TEXT("EW MicroRecorder"));
+void ewMicroRecorderInstall(DeviceDescriptor_t* d) {
   d->ParseNMEA = EWMicroRecorderParseNMEA;
   d->Declare = EWMicroRecorderDeclare;
 }

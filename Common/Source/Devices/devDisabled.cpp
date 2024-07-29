@@ -13,5 +13,5 @@
 
 
 void disInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, DEV_DISABLED_NAME); // no tokens here!
+  // no tokens here!
 }

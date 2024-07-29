@@ -43,14 +43,12 @@ BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
 } // namespace
 
 void genInstall(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, TEXT("Generic"));
-
   d->OnHeartRate = OnHeartRate;
   d->OnBarometricPressure = OnBarometricPressure;
   d->OnOutsideTemperature = OnOutsideTemperature;
   d->OnBatteryLevel = OnBatteryLevel;
 }
 
-void internalInstall(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, DEV_INTERNAL_NAME);
+void internalInstall(DeviceDescriptor_t* d) {
+
 }

@@ -28,8 +28,6 @@ BOOL B50ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
 }
 
 void b50Install(DeviceDescriptor_t* d){
-
-  _tcscpy(d->Name, TEXT("Borgelt B50"));
   d->ParseNMEA = B50ParseNMEA;
 }
 

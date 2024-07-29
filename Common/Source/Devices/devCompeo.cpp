@@ -29,10 +29,6 @@ static BOOL CompeoParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO
 }
 
 void CompeoInstall(DeviceDescriptor_t* d) {
-
-  StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
-
-  _tcscpy(d->Name, TEXT("Brauniger/Compeo 5030"));
   d->ParseNMEA = CompeoParseNMEA;
 }
 

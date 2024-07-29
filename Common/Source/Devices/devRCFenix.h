@@ -39,7 +39,7 @@ public:
   /// Registers device into device subsystem.
   static constexpr 
   DeviceRegister_t Register() {
-    return devRegister(GetName(), Install);
+    return devRegister(_T("RC Fenix"), Install);
   }
 
 //----------------------------------------------------------------------------
@@ -48,12 +48,6 @@ protected:
 
   /// Installs device specific handlers.
   static void Install(DeviceDescriptor_t* d);
-
-  /// Returns device name (max length is @c DEVNAMESIZE).
-  static constexpr
-  const TCHAR* GetName() {
-    return _T("RC Fenix");  
-  }
 
   /// to send data at connection start
   static BOOL Open(DeviceDescriptor_t* d);

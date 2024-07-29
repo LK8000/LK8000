@@ -536,8 +536,6 @@ BOOL BlueFlyVarioParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO 
 } // unamed namespaces
 
 void BlueFlyInstall(DeviceDescriptor_t* d) {
-
-    _tcscpy(d->Name, TEXT("BlueFlyVario"));
     d->ParseNMEA = BlueFlyVarioParseNMEA;
     d->Open = BlueFlyVarioOpen;
     d->Close = BlueFlyVarioClose;

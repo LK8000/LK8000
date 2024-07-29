@@ -29,7 +29,6 @@
 //static
 void DevLX::Install(DeviceDescriptor_t* d)
 {
-  _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
 } // Install()
 

@@ -427,9 +427,7 @@ return  RadioPara.Changed;
 
 } // namespace
 
-void PVCOMInstall(DeviceDescriptor_t* d){
-
-  _tcscpy(d->Name, TEXT("PVCOM"));
+void PVCOMInstall(DeviceDescriptor_t* d) {
   d->IsRadio = true;
   d->PutVolume = PVCOMPutVolume;
   d->PutSquelch = PVCOMPutSquelch;

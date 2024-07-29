@@ -24,6 +24,5 @@ BOOL NmeaOut::NMEAOut(DeviceDescriptor_t* d, const char* String) {
 }
 
 void NmeaOut::Install(DeviceDescriptor_t* d){
-  _tcscpy(d->Name, Name);
   d->NMEAOut = NMEAOut;
 }

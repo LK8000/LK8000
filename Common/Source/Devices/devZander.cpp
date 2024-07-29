@@ -47,7 +47,6 @@ static BOOL ZanderParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO
 }
 
 void zanderInstall(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, TEXT("Zander"));
   d->ParseNMEA = ZanderParseNMEA;
 }
 

@@ -28,7 +28,7 @@ class DevVaulter : public DevBase
     /// Registers device into device subsystem.
     static constexpr
     DeviceRegister_t Register() {
-      return devRegister(GetName(), Install);
+      return devRegister(_T("Vaulter"), Install);
     }
 
   //----------------------------------------------------------------------------
@@ -42,12 +42,6 @@ class DevVaulter : public DevBase
 
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
-
-    /// Returns device name (max length is @c DEVNAMESIZE).
-    static constexpr
-    const TCHAR* GetName() {
-      return _T("Vaulter");
-    }
 
     /// Parses PITV5 sentence.
     static bool PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);

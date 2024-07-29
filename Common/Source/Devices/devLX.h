@@ -51,7 +51,7 @@ class DevLX : public DevBase
     /// Registers device into device subsystem.
     static constexpr
     DeviceRegister_t Register() {
-      return devRegister(GetName(), Install);
+      return devRegister(_T("LX"), Install);
     }
 
 
@@ -66,12 +66,6 @@ class DevLX : public DevBase
 
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
-
-    /// Returns device name (max length is @c DEVNAMESIZE).
-    static constexpr
-    const TCHAR* GetName() {
-      return _T("LX");
-    }
 
     /// Parses LXWP0 sentence.
     static bool LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);

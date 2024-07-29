@@ -853,6 +853,5 @@ void CDevIMI::Install(DeviceDescriptor_t* d)
   memset(&_info, 0, sizeof(_info));
   _serialNumber = 0;
 
-  _tcscpy(d->Name, GetName());
   d->Declare      = DeclareTask;
 }

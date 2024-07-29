@@ -20,10 +20,9 @@ namespace GenericAutopilot {
 
 void Install(DeviceDescriptor_t* d);
 
-constexpr const TCHAR* Name = _T("Generic Autopilot");
-
-inline constexpr DeviceRegister_t Register() {
-  return devRegister(Name, Install);
+inline constexpr
+DeviceRegister_t Register() {
+  return devRegister(_T("Generic Autopilot"), Install);
 }
 
 }  // namespace GenericAutopilot

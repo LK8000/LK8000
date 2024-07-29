@@ -20,10 +20,9 @@ namespace AirControlDisplay {
 
 void Install(DeviceDescriptor_t* d);
 
-constexpr const TCHAR* Name = _T("Air Control Display");
-
-inline constexpr DeviceRegister_t Register() {
-  return devRegister(Name, Install);
+inline constexpr
+DeviceRegister_t Register() {
+  return devRegister(_T("Air Control Display"), Install);
 }
 
 }  // namespace AirControlDisplay

@@ -62,18 +62,10 @@ static BOOL Close(DeviceDescriptor_t* d) {
 }
 
 void flymasterf1Install(DeviceDescriptor_t* d) {
-
-  StartupStore(_T(". FlymasterF1 device installed%s"),NEWLINE);
-
-  _tcscpy(d->Name, TEXT("FlymasterF1"));
   d->ParseNMEA = FlymasterF1ParseNMEA;
 }
 
 void flymasterInstall(DeviceDescriptor_t* d) {
-
-  StartupStore(_T(". Flymaster GPS device installed%s"),NEWLINE);
-
-  _tcscpy(d->Name, TEXT("Flymaster GPS"));
   d->ParseNMEA = FlymasterF1ParseNMEA;
   d->Open = Open;
   d->Close = Close;

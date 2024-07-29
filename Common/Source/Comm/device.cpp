@@ -722,7 +722,7 @@ BOOL devInit() {
                 dev.SharedPortNum = j;
                 StartupStore(_T(". Port <%s> Already used, Device %c shares it with %c !"), Port, devLetter(i), devLetter(j));
                 dev.Com = DeviceList[j].Com ;
-                pDev->Installer(&dev);
+                pDev->Install(&dev);
 
                 if(devIsRadio(&dev)) {
                     RadioPara.Enabled = true;
@@ -739,7 +739,7 @@ BOOL devInit() {
 
         ComPort* Com = make_ComPort(i, Config);
         if (Com && Com->Initialize()) {
-            pDev->Installer(&dev);
+            pDev->Install(&dev);
             /*
              * Need to be done before anny #DeviceDescriptor_t::Callback call.
              */

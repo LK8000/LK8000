@@ -26,7 +26,7 @@ public:
   /// Registers device into device subsystem.
   static constexpr
   DeviceRegister_t Register() {
-    return (devRegister(GetName(), Install));
+    return devRegister(_T("OpenVario"), Install);
   }
 
 
@@ -44,14 +44,6 @@ protected:
 
   /// Parses POV sentence.
   static BOOL POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
-
-
-  /// Returns device name (max length is @c DEVNAMESIZE).
-  static constexpr
-  const TCHAR* GetName() {
-    return _T("OpenVario");
-  }
-
 };
 
 //______________________________________________________________________________

@@ -102,16 +102,11 @@ class CDevIMI : public DevBase
   static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
   static void Install(DeviceDescriptor_t* d);
 
-  static constexpr 
-  const TCHAR *GetName() {
-    return _T("IMI ERIXX");
-  }
-
 public:
   
   static constexpr
   DeviceRegister_t Register() {
-    return devRegister(GetName(), Install);
+    return devRegister(_T("IMI ERIXX"), Install);
   }
 };
 

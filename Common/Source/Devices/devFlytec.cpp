@@ -33,7 +33,6 @@ BOOL FlytecParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 
 
 void FlytecInstall(DeviceDescriptor_t* d) {
-  _tcscpy(d->Name, TEXT("Flytec/FLYSEN"));
   d->ParseNMEA = FlytecParseNMEA;
 }
 

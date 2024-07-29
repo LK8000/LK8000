@@ -14,7 +14,7 @@
 void vlInstall(DeviceDescriptor_t* d);
 
 inline constexpr
-DeviceRegister_t vlRegister(void){
+DeviceRegister_t vlRegister(){
   return devRegister(_T("Volkslogger"), vlInstall);
 }
 

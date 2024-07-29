@@ -36,7 +36,11 @@ namespace {
     return FALSE;
   }
 
-void Install(DeviceDescriptor_t* d, const TCHAR* szDeviceName) {
+} // namespace
+
+namespace Stodeus {
+
+void Install(DeviceDescriptor_t* d) {
   genInstall(d); // install Generic driver callback first
 
   static_assert(DeviceDesciptorList.size() == std::size(DeviceNameList));
@@ -48,28 +52,11 @@ void Install(DeviceDescriptor_t* d, const TCHAR* szDeviceName) {
 
     const DeviceRegister_t* pDev = GetRegisteredDevice(DevName);
     if (pDev) {
-      pDev->Installer(&descriptor);
+      pDev->Install(&descriptor);
     }
   }
 
-  _tcscpy(d->Name, szDeviceName);
   d->ParseNMEA = ParseNMEA;
-}
-
-} // namespace
-
-namespace Stodeus {
-
-void GPSBipInstall(DeviceDescriptor_t* d) {
-  Install(d, GPSBip);
-}
-
-void UltraBipInstall(DeviceDescriptor_t* d) {
-  Install(d, UltraBip);
-}
-
-void BlueBipInstall(DeviceDescriptor_t* d) {
-  Install(d, BlueBip);
 }
 
 } // Stodeus
