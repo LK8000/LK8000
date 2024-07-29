@@ -137,11 +137,40 @@ namespace Units {
   void FormatDistance(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
   void FormatMapScale(double Distance, TCHAR *Buffer, size_t size) gcc_nonnull(2);
 
+  namespace impl {
+  struct UnitDescriptor_t {
+    const TCHAR* const Name;
+    const double ToUserFact;
+    const double ToUserOffset;
+  };
 
+  inline constexpr UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
+      {_T(""), 1.0, 0},                          // unUndef
+      {_T("km"), 0.001, 0},                      // unKiloMeter
+      {_T("nm"), 1.0 / 1852, 0},                 // unNauticalMiles
+      {_T("mi"), 1.0 / 1609.344, 0},             // unStatuteMiles
+      {_T("kh"), 3.6, 0},                        // unKiloMeterPerHour
+      {_T("kt"), 1.0 / (1852.0 / 3600.0), 0},    // unKnots
+      {_T("mh"), 1.0 / (1609.344 / 3600.0), 0},  // unStatuteMilesPerHour
+      {_T("ms"), 1.0, 0},                        // unMeterPerSecond
+      {_T("fm"), 1.0 / 0.3048 * 60.0, 0},        // unFeetPerMinutes
+      {_T("m"), 1.0, 0},                         // unMeter
+      {_T("ft"), 1.0 / 0.3048, 0},               // unFeet
+      {_T("FL"), 1.0 / 0.3048 / 100, 0},         // unFligthLevel
+      {_T("K"), 1.0, 0},                         // unKelvin
+      {_T("°C"), 1.0, -273.15},                  // unGradCelcius
+      {_T("°F"), 9.0 / 5.0, -459.67},            // unGradFahrenheit
+      {_T("fs"), 1.0 / 0.3048, 0},               // unFeetPerSecond
+      {_T(""), 1.0, 0},                          // unLastUnit
+  };
+  } // impl
   /**
    * convert value from System Unit to @unit
    */
-  double To(Units_t unit, double value) gcc_pure;
+  constexpr double To(Units_t unit, double value) {
+    const impl::UnitDescriptor_t& U = impl::UnitDescriptors[unit];
+    return value * U.ToUserFact + U.ToUserOffset;
+  }
 
   /**
    * convert value from System Unit to User Unit
@@ -177,7 +206,10 @@ namespace Units {
   /**
    * convert value from @unit to System Unit
    */
-  double From(Units_t unit, double value) gcc_pure;
+  constexpr double From(Units_t unit, double value) {
+    const impl::UnitDescriptor_t& U = impl::UnitDescriptors[unit];
+    return (value - U.ToUserOffset) / U.ToUserFact;
+  }
 
   /**
    * convert value from User Unit to System Unit

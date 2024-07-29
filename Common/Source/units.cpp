@@ -22,32 +22,6 @@
 
 namespace {
 
-struct UnitDescriptor_t {
-  const TCHAR * const Name;
-  double  ToUserFact;
-  double  ToUserOffset;
-};
-
-UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
-    {_T(""),   1.0,                       0},    // unUndef
-    {_T("km"), 0.001,                     0},    // unKiloMeter
-    {_T("nm"), 1.0 / 1852,                0},    // unNauticalMiles
-    {_T("mi"), 1.0 / 1609.344,            0},    // unStatuteMiles
-    {_T("kh"), 3.6,                       0},    // unKiloMeterPerHour
-    {_T("kt"), 1.0 / (1852.0 / 3600.0),   0},    // unKnots
-    {_T("mh"), 1.0 / (1609.344 / 3600.0), 0},    // unStatuteMilesPerHour
-    {_T("ms"), 1.0                      , 0},    // unMeterPerSecond
-    {_T("fm"), 1.0 / 0.3048 * 60.0,       0},    // unFeetPerMinutes
-    {_T("m"),  1.0,                       0},    // unMeter
-    {_T("ft"), 1.0 / 0.3048,              0},    // unFeet
-    {_T("FL"), 1.0 / 0.3048 / 100,        0},    // unFligthLevel
-    {_T("K"),  1.0,                       0},    // unKelvin
-    {_T("°C"), 1.0,                    -273.15}, // unGradCelcius
-    {_T("°F"), 9.0 / 5.0,              -459.67}, // unGradFahrenheit
-    {_T("fs"), 1.0 / 0.3048,              0},    // unFeetPerSecond
-    {_T(""),   1.0,                       0},    // unLastUnit
-};
-
 CoordinateFormats_t CoordinateFormat;
 Units_t DistanceUnit = unKiloMeter;
 Units_t AltitudeUnit = unMeter;
@@ -278,7 +252,7 @@ bool Units::LatitudeToString(double Latitude, TCHAR *Buffer, size_t size){
 const TCHAR *Units::GetName(Units_t Unit) {
   // JMW adjusted this because units are pretty standard internationally
   // so don't need different names in different languages.
-  return UnitDescriptors[Unit].Name;
+  return impl::UnitDescriptors[Unit].Name;
 }
 
 CoordinateFormats_t Units::GetCoordinateFormat() {
@@ -472,18 +446,6 @@ void Units::FormatMapScale(double Distance, TCHAR *Buffer, size_t size){
   }
 
   lk::snprintf(Buffer, size, _T("%.*f%s"), prec, value, GetName(UnitIdx));
-}
-
-
-
-double Units::To(Units_t unit, double value) {
-  const UnitDescriptor_t *pU = &UnitDescriptors[unit];
-  return value * pU->ToUserFact + pU->ToUserOffset;
-}
-
-double Units::From(Units_t unit, double value)  {
-  const UnitDescriptor_t *pU = &UnitDescriptors[unit];
-  return (value - pU->ToUserOffset) / pU->ToUserFact;
 }
 
 void Units::TimeToText(TCHAR* text, size_t cb, int d) {
