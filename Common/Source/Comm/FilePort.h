@@ -13,7 +13,7 @@
 #define FilePort_H
 
 #include "ComPort.h"
-
+#include "utils/unique_file_ptr.h"
 
 #ifdef WIN32
 #ifdef PPC2002
@@ -31,10 +31,7 @@
 
 class FilePort :  public ComPort {
 public:
-
-    FilePort(unsigned idx, const tstring& sName);
-
-    ~FilePort();
+    using ComPort::ComPort;
     
     bool Initialize() override;
     bool Close() override;
@@ -44,7 +41,7 @@ public:
     void CancelWaitEvent() override {};
 
     bool IsReady() override {
-        return FileStream != nullptr;
+        return static_cast<bool>(FileStream);
     }
 
     int SetRxTimeout(int TimeOut) override;
@@ -63,7 +60,8 @@ protected:
     int ReadLine(char *pString, size_t size);
 
     unsigned long m_dwWaitTime;
-    FILE *FileStream;
+
+    unique_file_ptr FileStream;
 
 private:
 

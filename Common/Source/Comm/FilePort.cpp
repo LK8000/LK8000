@@ -16,22 +16,12 @@
 
 using namespace std::placeholders;
 
-
-FilePort::FilePort (unsigned idx, const tstring& sName) : ComPort(idx, sName)
-{
-  FileStream = NULL;
-}
-
-FilePort::~FilePort() {
-	// not yet needed
-}
-
 bool FilePort::Initialize() {
   const TCHAR* file_name = PortConfig[GetPortIndex()].Replay_FileName;
 
   TCHAR szReplayFileName [MAX_PATH];
   LocalPath(szReplayFileName,TEXT(LKD_LOGS), file_name);
-	FileStream = _tfopen(szReplayFileName, TEXT("rt"));
+	FileStream = make_unique_file_ptr(szReplayFileName, TEXT("rt"));
 
 	if (!FileStream) {
 		 StartupStore(_T(". FilePort  %u failed to open file %s Port <%s>"), GetPortIndex() + 1, file_name, GetPortName());
@@ -54,7 +44,7 @@ int FilePort::ReadLine(char* pString, size_t size) {
 		return -1;
 	}
 
-	if (fgets(pString, size, FileStream)==NULL) {
+	if (fgets(pString, size, FileStream.get())==NULL) {
 		pString[0] = '\0';
 		return -1;
 	}
@@ -64,9 +54,8 @@ int FilePort::ReadLine(char* pString, size_t size) {
 
 bool FilePort::Close() {
 	ComPort::Close();
-	fclose(FileStream);
-	FileStream = NULL;
-	StartupStore(_T(". FilePort %u %s closed Ok.%s"), GetPortIndex(), GetPortName(), NEWLINE);
+	FileStream = nullptr;
+	StartupStore(_T(". FilePort %u %s closed Ok."), GetPortIndex(), GetPortName());
 	return true;
 }
 
