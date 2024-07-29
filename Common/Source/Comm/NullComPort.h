@@ -15,7 +15,7 @@
 
 class NullComPort : public ComPort {
 public:
-    NullComPort(unsigned idx, const tstring& sName) : ComPort(idx, sName) {}
+    using ComPort::ComPort;
 
     bool StartRxThread() override { return true; }
 
