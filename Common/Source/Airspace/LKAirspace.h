@@ -131,7 +131,7 @@ public:
 
   // Attributes interface
   // Initialize instance attributes
-  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment = NULL);
+  void Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment = NULL);
 
   const TCHAR* TypeName() const;
   const LKColor& TypeColor() const;
@@ -206,7 +206,7 @@ protected:
 
   std::shared_ptr<TCHAR> _shared_comment ;       // extended airspace informations e.g. for Notams
 
-  int _type = 0;                                    // type (class) of airspace
+  int _type = OTHER;                                    // type (class) of airspace
   AIRSPACE_ALT _base = {};                            // base altitude
   AIRSPACE_ALT _top = {};                            // top altitude
   rectObj _bounds = {};                                // airspace bounds

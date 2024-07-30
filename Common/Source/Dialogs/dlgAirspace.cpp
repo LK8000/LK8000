@@ -27,12 +27,10 @@ static int DrawListIndex=0;
 
 static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
-  TCHAR label[40];
-
-  if (DrawListIndex < AIRSPACECLASSCOUNT){
+  if (DrawListIndex > 0 && DrawListIndex < AIRSPACECLASSCOUNT) {
     int i = DrawListIndex;
-	LK_tcsncpy(label, CAirspaceManager::GetAirspaceTypeText(i), 39);
-    
+    const TCHAR* label = CAirspaceManager::GetAirspaceTypeText(i);
+
     const PixelRect rcClient(Sender->GetClientRect());
     const int w0 = rcClient.GetSize().cx;
 	// LKTOKEN  _@M789_ = "Warn"

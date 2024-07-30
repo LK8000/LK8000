@@ -13,7 +13,6 @@
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
 #define DEBUGNPM          // port monitor and hearthbeats in Parser
 #define DEBUG_BESTALTERNATE     // full bestalternate messages inside DEBUG.TXT in home directory
-#define DEBUG_AIRSPACE  // Airspace code debug messages to runtime.log
 */
 #endif
 

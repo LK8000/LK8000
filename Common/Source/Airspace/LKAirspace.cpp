@@ -32,6 +32,7 @@
 #include "utils/printf.h"
 #include "Library/TimeFunctions.h"
 #include "Baro.h"
+#include "utils/lookup_table.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;
@@ -44,56 +45,49 @@ using GeographicLib::GeodesicLine;
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
-
-#define LINE_LEN 1023
-
 unsigned int OutsideAirspaceCnt =0;
 
-#if TESTBENCH
-//#define DEBUG_NEAR_POINTS	1
-#define DEBUG_AIRSPACE
-#endif
+namespace {
 
+struct start_with_predicate final {
+    bool operator()(tstring_view text, tstring_view prefix) {
+        return text.substr(0, prefix.size()) == prefix;
+    }
+};
 
-static const int k_nAreaCount = 17;
-static const TCHAR* k_strAreaStart[k_nAreaCount] = {
-    _T("R"),
-    _T("Q"),
-    _T("P"),
-    _T("A"),
-    _T("B"),
-    _T("C"),
-    _T("D"),
-    _T("W"),
-    _T("E"),
-    _T("F"),
-    _T("G"),
-    _T("GP"),
-    _T("CTR"),
-    _T("TMZ"),
-    _T("RMZ"),
-    _T("NOTAM"),
-    _T("GSEC")
-};
-static const int k_nAreaType[k_nAreaCount] = {
-    RESTRICT,
-    DANGER,
-    PROHIBITED,
-    CLASSA,
-    CLASSB,
-    CLASSC,
-    CLASSD,
-    WAVE,
-    CLASSE,
-    CLASSF,
-    CLASSG,
-    NOGLIDER,
-    CTR,
-    CLASSTMZ,
-    CLASSRMZ,
-    CLASSNOTAM,
-    GLIDERSECT
-};
+auto type_table = lookup_table<tstring_view, int, start_with_predicate>({
+    { _T("R"), RESTRICT },
+    { _T("Q"), DANGER },
+    { _T("P"), PROHIBITED },
+    { _T("A"), CLASSA },
+    { _T("B"), CLASSB },
+    { _T("C"), CLASSC },
+    { _T("D"), CLASSD },
+    { _T("W"), WAVE },
+    { _T("E"), CLASSE },
+    { _T("F"), CLASSF },
+    { _T("G"), CLASSG },
+    { _T("GP"), NOGLIDER },
+    { _T("CTR"), CTR },
+    { _T("TMZ"), CLASSTMZ },
+    { _T("RMZ"), CLASSRMZ },
+    { _T("NOTAM"), CLASSNOTAM },
+    { _T("GSEC"), GLIDERSECT }
+});
+
+/**
+ * Update Airspace type from OpenAir Fields
+ * @c type from AC Field
+ * @y type from AY Field
+ */
+int update_type( int c, int y) {
+    if (c == OTHER) {
+        return y;
+    }
+    return c;
+}
+
+} //namespace
 
 // CAirspace class attributes
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED
@@ -125,7 +119,7 @@ CAirspace* CAirspace::_sideview_nearest_instance = NULL; // collect nearest airs
 void CAirspace::Dump() const {
     //StartupStore(TEXT("CAirspace Dump%s"),NEWLINE);
     StartupStore(TEXT(" Name:%s%s"), _name, NEWLINE);
-    StartupStore(TEXT(" Type:%d (%s)%s"), _type, k_strAreaStart[_type], NEWLINE);
+    StartupStore(TEXT(" Type:%d (%s)"), _type, NEWLINE);
     StartupStore(TEXT(" Base.Altitude:%f%s"), _base.Altitude, NEWLINE);
     StartupStore(TEXT(" Base.FL:%f%s"), _base.FL, NEWLINE);
     StartupStore(TEXT(" Base.AGL:%f%s"), _base.AGL, NEWLINE);
@@ -761,7 +755,7 @@ void CAirspaceBase::ResetWarnings() {
 }
 
 // Initialize instance attributes
-void CAirspaceBase::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
+void CAirspaceBase::Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
     CopyTruncateString(_name, NAME_SIZE, name);
 
     // always allocate string to avoid unchecked nullptr exception
@@ -1781,7 +1775,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             Radius = 0;
                             Center = {0, 0};
                             points.clear();
-                            Type = 0;
+                            Type = OTHER;
                             Base.Base = abUndef;
                             Top.Base = abUndef;
                             flyzone = false;
@@ -1794,13 +1788,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         }
                         // New AC
                         p++; //Skip space
-                        Type = OTHER;
-                        for (int i = k_nAreaCount-1; i >=0 ; i--) {
-                            if (StartsWith(p, k_strAreaStart[i])) {
-                                Type = k_nAreaType[i];
-                                break;
-                            }
-                        }
+                        Type = type_table.get(p, OTHER);
 
                         if (Type == CLASSNOTAM) {
                             // notam class disabled by default
@@ -1866,7 +1854,18 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         continue;
 
                     case _T('Y'): // AY
-                        // ignore
+                        if (*(++p) == ' ') {
+                            ++p; //Skip Space ?
+                        }
+                        Type = update_type(Type, type_table.get(p, OTHER));
+                        continue;
+
+                    case _T('I'): // AI
+                        if (*(++p) == ' ') {
+                            ++p; //Skip Space ?
+                        }
+                        // TODO: use ID has hash replacement ?
+                        DebugLog(_T("Airpsace : ignore field AI <%s : %s>"), Name, ++p);
                         continue;
 
                     default:
@@ -3084,9 +3083,8 @@ void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningL
             if ((*it)->IsSame(airspace)) {
                 (*it)->WarningAckLevel(ackstate);
                 (*it)->SetAckTimeout();
-#ifdef DEBUG_AIRSPACE
-                StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()%s"), (*it)->Name(), NEWLINE);
-#endif
+
+                TestLog(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()"), (*it)->Name());
             }
         }
     }
@@ -3106,9 +3104,8 @@ void CAirspaceManager::AirspaceAckWarn(CAirspace &airspace) {
             if ((*it)->IsSame(airspace)) {
                 (*it)->WarningAckLevel(airspace.WarningLevel());
                 (*it)->SetAckTimeout();
-#ifdef DEBUG_AIRSPACE
-                StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"), (*it)->Name(), NEWLINE);
-#endif
+
+                TestLog(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"), (*it)->Name(), NEWLINE);
             }
         }
     }
@@ -3126,9 +3123,8 @@ void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace) {
         for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
             if ((*it)->IsSame(airspace)) {
                 (*it)->WarningAckLevel(awRed);
-#ifdef DEBUG_AIRSPACE
-                StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"), (*it)->Name(), NEWLINE);
-#endif
+
+                TestLog(TEXT("LKAIRSP: %s AirspaceAckSpace()"), (*it)->Name());
             }
         }
     }
@@ -3146,9 +3142,8 @@ void CAirspaceManager::AirspaceDisable(CAirspace &airspace) {
         for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
             if ((*it)->IsSame(airspace)) {
                 (*it)->Enabled(false);
-#ifdef DEBUG_AIRSPACE
-                StartupStore(TEXT("LKAIRSP: %s AirspaceDisable()%s"), (*it)->Name(), NEWLINE);
-#endif
+
+                TestLog(TEXT("LKAIRSP: %s AirspaceDisable()"), (*it)->Name());
             }
         }
     }
@@ -3166,9 +3161,8 @@ void CAirspaceManager::AirspaceEnable(CAirspace &airspace) {
         for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
             if ((*it)->IsSame(airspace)) {
                 (*it)->Enabled(true);
-#ifdef DEBUG_AIRSPACE
-                StartupStore(TEXT("LKAIRSP: %s AirspaceEnable()%s"), (*it)->Name(), NEWLINE);
-#endif
+
+                TestLog(TEXT("LKAIRSP: %s AirspaceEnable()"), (*it)->Name());
             }
         }
     }
@@ -3186,9 +3180,7 @@ void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
         for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
             if ((*it)->IsSame(airspace)) {
                 (*it)->FlyzoneToggle();
-#ifdef DEBUG_AIRSPACE
-                StartupStore(TEXT("LKAIRSP: %s FlyzoneToggle()%s"), (*it)->Name(), NEWLINE);
-#endif
+                TestLog(TEXT("LKAIRSP: %s FlyzoneToggle()"), (*it)->Name());
             }
         }
     }
@@ -3568,9 +3560,8 @@ void CAirspaceManager::AirspaceDisableWaveSectors(void) {
         if ((*it)->Type() == WAVE) {
             (*it)->Enabled(false);
             (*it)->Flyzone(true);
-#ifdef DEBUG_AIRSPACE
-            StartupStore(TEXT("LKAIRSP: %s AirspaceDisable()%s"), (*it)->Name(), NEWLINE);
-#endif
+
+            DebugLog(TEXT("LKAIRSP: %s AirspaceDisable()%s"), (*it)->Name());
         }
     }
 
