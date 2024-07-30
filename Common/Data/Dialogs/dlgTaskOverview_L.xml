@@ -18,7 +18,7 @@
     <WndButton  Name="cmdTimegates" Caption="_@M1747_" X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnTimegatesClicked"/>
     <WndButton  Name="cmdDelete" Caption="_@M230_" X="2" Y="-999" Width="98"  Height="22" Font="2" OnClickNotify="OnDeleteClicked"/>
 
-    <!--using ReadOnly, Keyboard allow to use OnHelp ti select HomeWapoint by click on property -->
+    <!--using ReadOnly, Keyboard allow to use OnHelp to select HomeWapoint by click on property -->
     <WndProperty Name="prpHome" Caption="_@M930_" CaptionWidth="60" X="102" Y="0" Width="-2" Height="22" ReadOnly="1" OnHelp="OnSelectHomeWaypoint" Keyboard="1">
       <DataField DataType="string" />
     </WndProperty>
