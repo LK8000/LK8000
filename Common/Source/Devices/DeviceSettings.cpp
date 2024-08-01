@@ -1,3 +1,12 @@
+/*
+ *  LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ *  Released under GNU/GPL License v.2 or later
+ *  See CREDITS.TXT file for authors and copyrights
+ *
+ *  File:   DeviceSettings.h
+ *  Author: Bruno de Lacheisserie
+ */
+
 #include "DeviceSettings.h"
 #include "externs.h"
 #include "Utils.h"

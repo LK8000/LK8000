@@ -1,3 +1,15 @@
+/*
+ *  LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ *  Released under GNU/GPL License v.2 or later
+ *  See CREDITS.TXT file for authors and copyrights
+ *
+ *  File:   DeviceSettings.h
+ *  Author: Bruno de Lacheisserie
+ */
+
+#ifndef _DEVICES_DEVICESETTINGS_H_
+#define _DEVICES_DEVICESETTINGS_H_
+
 #include "picojson.h"
 #include "tchar.h"
 #include "Util/tstring.hpp"
@@ -32,3 +44,5 @@ private:
   picojson::value data;
   const tstring file_path;
 };
+
+#endif // _DEVICES_DEVICESETTINGS_H_
