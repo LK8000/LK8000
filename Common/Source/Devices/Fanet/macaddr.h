@@ -20,7 +20,12 @@ class MacAddr {
 
   MacAddr(int manufacturer_addr, int id_addr) : manufacturer(manufacturer_addr), id(id_addr) {};
   MacAddr() = default;  // broadcast address
+
   MacAddr(const MacAddr& ma) = default;
+  MacAddr& operator= (const MacAddr& ma) = default;
+
+  MacAddr(MacAddr&& ma) = default;
+  MacAddr& operator= (MacAddr&& ma) = default;
 
   uint32_t get() const {
     return (manufacturer & 0x000000FF) | ((id & 0x0000FFFF) << 8);
