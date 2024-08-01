@@ -3432,14 +3432,9 @@ void dlgConfigurationShowModal(short mode){
     }
   }
   
-  double val;
-
   wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyMacCready"));
   if (wp) {
-    val = Units::FromVerticalSpeed(wp->GetDataField()->GetAsFloat());
-    if (GlidePolar::SafetyMacCready != val) {
-      GlidePolar::SafetyMacCready = val;
-    }
+    GlidePolar::SafetyMacCready = Units::FromVerticalSpeed(wp->GetDataField()->GetAsFloat());
   }
 #if defined(PPC2003) || defined(PNA)
   wp = pForm->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
@@ -3514,13 +3509,9 @@ void dlgConfigurationShowModal(short mode){
   }
 
 
-  double dval;
   wp = pForm->FindByName<WndProperty>(TEXT("prpAutoZoomThreshold"));
   if (wp) {
-    dval = Units::FromDistance(wp->GetDataField()->GetAsFloat());
-    if (AutoZoomThreshold != dval) {
-      AutoZoomThreshold = dval;
-    }
+    AutoZoomThreshold = Units::FromDistance(wp->GetDataField()->GetAsFloat());
   }
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpMaxAutoZoom"));
@@ -3534,9 +3525,7 @@ void dlgConfigurationShowModal(short mode){
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpAutoOrientScale"));
   if (wp) {
-    if ( AutoOrientScale != wp->GetDataField()->GetAsFloat()) {
-      AutoOrientScale = wp->GetDataField()->GetAsFloat();
-    }
+    AutoOrientScale = wp->GetDataField()->GetAsFloat();
   }
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpAirspaceDisplay"));
@@ -3783,18 +3772,12 @@ int ival;
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeArrival"));
   if (wp) {
-    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
-    if (SAFETYALTITUDEARRIVAL != ival) {
-      SAFETYALTITUDEARRIVAL = ival;
-    }
+    SAFETYALTITUDEARRIVAL = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
   }
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
-    ival = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
-    if (SAFETYALTITUDETERRAIN != ival) {
-      SAFETYALTITUDETERRAIN = ival;
-    }
+    SAFETYALTITUDETERRAIN = iround(Units::FromAltitude(wp->GetDataField()->GetAsInteger())*10);
   }
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpAutoWind"));
