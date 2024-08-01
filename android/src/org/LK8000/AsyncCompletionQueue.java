@@ -15,7 +15,7 @@ import android.os.Looper;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class AsyncCompletionQueue {
+public final class AsyncCompletionQueue {
   private final Queue<Runnable> commandQueue = new LinkedList<>();
   private final HandlerThread handlerThread;
   public final Handler queueHandler;
