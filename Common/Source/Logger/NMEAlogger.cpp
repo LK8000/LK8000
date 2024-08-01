@@ -65,7 +65,7 @@ static bool wasWriting=false;
   {
     if( iLastPort != PortNum) /* more than one port active (another than the previous) */
     {
-      if((PortNum >= 0) && (PortNum < NUMDEV))
+      if(PortNum < NUMDEV)
       {
         if(logfsingle[PortNum] == NULL)
         {
