@@ -123,15 +123,14 @@ final class HM10WriteBuffer {
       }
     });
 
-    if (pendingWriteChunks != null) {
-      try {
-        wait(TIMEOUT);
-      } catch (InterruptedException e) {
-        /* cancel the write on interruption */
-        pendingWriteChunks = null;
-        return 0;
-      }
+    try {
+      wait(TIMEOUT);
+    } catch (InterruptedException e) {
+      /* cancel the write on interruption */
+      pendingWriteChunks = null;
+      return 0;
     }
+
     if (pendingWriteChunks != null && nextWriteChunkIdx == 0) {
       /* timeout */
       pendingWriteChunks = null;
