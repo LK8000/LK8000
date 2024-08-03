@@ -114,6 +114,7 @@ private:
 
 public:
     virtual void WriteGattCharacteristic(uuid_t service, uuid_t characteristic, const void *data, size_t size)  { }
+    virtual void ReadGattCharacteristic(uuid_t service, uuid_t characteristic)  { }
 };
 
 #endif	/* COMPORT_H */

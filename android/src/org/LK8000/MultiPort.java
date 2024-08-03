@@ -150,6 +150,14 @@ class MultiPort implements AndroidPort, InputListener {
       }
   }
 
+  @Override
+  public void readGattCharacteristic(UUID service, UUID characteristic) {
+    for (AndroidPort port : ports) {
+      port.readGattCharacteristic(service, characteristic);
+    }
+  }
+
+
   @Override public void dataReceived(byte[] data, int length) {
     InputListener l = inputListener;
     if (l != null)

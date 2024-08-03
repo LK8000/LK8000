@@ -119,4 +119,7 @@ abstract class AbstractAndroidPort implements AndroidPort {
 
   @Override
   public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) { }
+
+  @Override
+  public void readGattCharacteristic(UUID service, UUID characteristic) { }
 }

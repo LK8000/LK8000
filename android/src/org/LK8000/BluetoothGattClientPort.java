@@ -433,6 +433,20 @@ public class BluetoothGattClientPort
     });
   }
 
+  @Override
+  public void readGattCharacteristic(UUID service, UUID characteristic) {
+    final BluetoothGattService sv = gatt.getService(service);
+    if (sv == null) {
+      return;
+    }
+    final BluetoothGattCharacteristic ch = sv.getCharacteristic(characteristic);
+    if (ch == null) {
+      return;
+    }
+
+    queueCommand.add(() -> gatt.readCharacteristic(ch));
+  }
+
   protected final void stateChanged() {
     final PortListener portListener = this.portListener;
     if (portListener != null) {

@@ -308,3 +308,9 @@ void BluetoothSensor::WriteGattCharacteristic(uuid_t service, uuid_t characteris
     bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
   }
 }
+
+void BluetoothSensor::ReadGattCharacteristic(uuid_t service, uuid_t characteristic) {
+  if(bridge) {
+    bridge->readGattCharacteristic(Java::GetEnv(), service, characteristic);
+  }
+}

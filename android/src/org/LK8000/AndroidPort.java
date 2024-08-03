@@ -67,4 +67,8 @@ interface AndroidPort {
    */
   void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length);
 
+  /**
+   * read data to bluetooth gatt characteristic
+   */
+  void readGattCharacteristic(UUID service, UUID characteristic);
 }

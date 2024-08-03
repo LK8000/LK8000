@@ -115,6 +115,14 @@ abstract class ProxyAndroidPort implements AndroidPort {
     }
   }
 
+  @Override
+  public void readGattCharacteristic(UUID service, UUID characteristic) {
+    AndroidPort port = this.port;
+    if (port != null) {
+      port.readGattCharacteristic(service, characteristic);
+    }
+  }
+
   protected void stateChanged() {
     PortListener portListener = this.portListener;
     if (portListener != null)

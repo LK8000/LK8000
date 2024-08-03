@@ -128,6 +128,9 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
     public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) { }
 
     @Override
+    public void readGattCharacteristic(UUID service, UUID characteristic) { }
+
+    @Override
     public void onReceivedData(byte[] arg0) {
         if (arg0.length == 0) {
             error("Disconnected");

@@ -41,6 +41,7 @@ class PortBridge : protected Java::GlobalObject {
   static jmethodID getBaudRate_method, setBaudRate_method;
   static jmethodID write_method;
   static jmethodID writeGattCharacteristic_method;
+  static jmethodID readGattCharacteristic_method;
 
   static constexpr size_t write_buffer_size = 4096;
   Java::GlobalRef<jbyteArray> write_buffer = nullptr;
@@ -83,6 +84,7 @@ public:
   int write(JNIEnv *env, const void *data, size_t length);
 
   void writeGattCharacteristic(JNIEnv *env, uuid_t service, uuid_t characteristic, const void *data, size_t size);
+  void readGattCharacteristic(JNIEnv *env, uuid_t service, uuid_t characteristic);
 };
 
 #endif

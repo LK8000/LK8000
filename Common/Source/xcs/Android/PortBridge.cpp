@@ -39,6 +39,7 @@ jmethodID PortBridge::getBaudRate_method;
 jmethodID PortBridge::setBaudRate_method;
 jmethodID PortBridge::write_method;
 jmethodID PortBridge::writeGattCharacteristic_method;
+jmethodID PortBridge::readGattCharacteristic_method;
 
 void
 PortBridge::Initialise(JNIEnv *env)
@@ -58,6 +59,9 @@ PortBridge::Initialise(JNIEnv *env)
   writeGattCharacteristic_method = env->GetMethodID(cls, 
                             "writeGattCharacteristic", 
                             "(Ljava/util/UUID;Ljava/util/UUID;[BI)V");
+  readGattCharacteristic_method = env->GetMethodID(cls, 
+                            "readGattCharacteristic", 
+                            "(Ljava/util/UUID;Ljava/util/UUID;)V");
 }
 
 PortBridge::PortBridge(const Java::LocalObject& obj)
@@ -126,4 +130,14 @@ PortBridge::writeGattCharacteristic(JNIEnv *env, uuid_t service, uuid_t characte
                     from_uuid_t(env, service).Get(),
                     from_uuid_t(env, characteristic).Get(),
                     characteristic_buffer.Get(), size);
+}
+
+void
+PortBridge::readGattCharacteristic(JNIEnv *env, uuid_t service, uuid_t characteristic)
+{
+  using Java::UUID::from_uuid_t;
+
+  env->CallVoidMethod(Get(), readGattCharacteristic_method,
+                    from_uuid_t(env, service).Get(),
+                    from_uuid_t(env, characteristic).Get());
 }
