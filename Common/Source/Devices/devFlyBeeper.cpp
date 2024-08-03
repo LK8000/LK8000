@@ -164,11 +164,12 @@ bool EnableGattCharacteristic(DeviceDescriptor_t& d, uuid_t service, uuid_t char
 }
 
 constexpr auto function_table = lookup_table<uint8_t, fanet_parse_function>({
-  { 0x01, &FanetParseType1Msg },
-  { 0x02, &FanetParseType2Msg },
-  { 0x03, &FanetParseType3Msg },
-  { 0x04, &FanetParseType4Msg },
-  { 0x07, &FanetParseType7Msg }
+  { FRM_TYPE_TRACKING, &FanetParseType1Msg },
+  { FRM_TYPE_NAME, &FanetParseType2Msg },
+  { FRM_TYPE_MESSAGE, &FanetParseType3Msg },
+  { FRM_TYPE_SERVICE, &FanetParseType4Msg },
+  { FRM_TYPE_GROUNDTRACKING, &FanetParseType7Msg },
+  { FRM_TYPE_THERMAL, &FanetParseType9Msg }
 });
 
 void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service,

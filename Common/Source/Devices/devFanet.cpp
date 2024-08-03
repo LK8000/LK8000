@@ -117,9 +117,11 @@ namespace {
 
 constexpr auto function_table = lookup_table<uint8_t, fanet_parse_function>({
     // GXAircom send both Fanet and FLarn nmea sentence for Friend Position, ignore the first ...
-  { 0x02, &FanetParseType2Msg },
-  { 0x03, &FanetParseType3Msg },
-  { 0x04, &FanetParseType4Msg }
+  { FRM_TYPE_NAME, &FanetParseType2Msg },
+  { FRM_TYPE_MESSAGE, &FanetParseType3Msg },
+  { FRM_TYPE_SERVICE, &FanetParseType4Msg },
+  { FRM_TYPE_GROUNDTRACKING, &FanetParseType7Msg },
+  { FRM_TYPE_THERMAL, &FanetParseType9Msg }
 });
 
 BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS){
@@ -149,10 +151,12 @@ namespace Fanet {
 namespace {
 
 constexpr auto function_table = lookup_table<uint8_t, fanet_parse_function>({
-  { 0x01, &FanetParseType1Msg },
-  { 0x02, &FanetParseType2Msg },
-  { 0x03, &FanetParseType3Msg },
-  { 0x04, &FanetParseType4Msg }
+  { FRM_TYPE_TRACKING, &FanetParseType1Msg },
+  { FRM_TYPE_NAME, &FanetParseType2Msg },
+  { FRM_TYPE_MESSAGE, &FanetParseType3Msg },
+  { FRM_TYPE_SERVICE, &FanetParseType4Msg },
+  { FRM_TYPE_GROUNDTRACKING, &FanetParseType7Msg },
+  { FRM_TYPE_THERMAL, &FanetParseType9Msg }
 });
 
 BOOL ParseNMEA(DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
