@@ -44,16 +44,13 @@
 #define FRM_TYPE_THERMAL			9
 
 #include "macaddr.h"
-#include <vector>
 
 class Frame final {
  public:
-  using payload_t = std::vector<uint8_t>;
-  using payload_back_insert_iterator = std::back_insert_iterator<payload_t>;
 
   /* general stuff */
   static uint16_t coord2payload_compressed(double deg);
-  static void coord2payload_absolut(double lat, double lon, payload_back_insert_iterator& out);
+  static void coord2payload_absolut(double lat, double lon, payload_t::back_insert_iterator& out);
 
   /* addresses */
   MacAddr src;
@@ -76,9 +73,13 @@ class Frame final {
   /* Received stuff */
   int rssi = 0;
 
-  std::vector<uint8_t> serialize() const;
+  payload_t serialize() const;
 
   explicit Frame(const MacAddr& addr) : src(addr) {}
+
+  Frame(const MacAddr& addr, int t, payload_t&& p) 
+        : src(addr), type(t), payload(std::move(p)) {};
+
   Frame() = delete;
   Frame(const uint8_t* data, size_t length);  // deserialize packet
   ~Frame() { }

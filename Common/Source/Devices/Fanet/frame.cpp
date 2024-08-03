@@ -4,7 +4,6 @@
  *  Created on: Sep 29, 2018
  *      Author: sid
  */
-#include <cstdint>
 #include <cstring>
 #include <cmath>
 #include <stdexcept>
@@ -25,7 +24,7 @@ uint16_t Frame::coord2payload_compressed(double deg) {
   return ((dec_int & 0x7FFF) | (deg_odd << 15));
 }
 
-void Frame::coord2payload_absolut(double lat, double lon, Frame::payload_back_insert_iterator& out) {
+void Frame::coord2payload_absolut(double lat, double lon, payload_t::back_insert_iterator& out) {
   int32_t lat_i = std::round(lat * 93206.0);
   int32_t lon_i = std::round(lon * 46603.0);
 
@@ -38,22 +37,21 @@ void Frame::coord2payload_absolut(double lat, double lon, Frame::payload_back_in
   out = ((uint8_t*)&lon_i)[2];
 }
 
-Frame::payload_t Frame::serialize() const {
+payload_t Frame::serialize() const {
   if (src.id <= 0 || src.id >= 0xFFFF || src.manufacturer <= 0 || src.manufacturer >= 0xFE) {
     throw std::runtime_error("invalid fanet id");
   }
 
   payload_t data;
   data.reserve(MAC_FRM_MIN_HEADER_LENGTH + payload.size());
-  auto out_it = std::back_inserter(data);
+  auto out_it = data.back_inserter();
 
   /* header */
   out_it = (ack_requested || dest.id != 0 || dest.manufacturer != 0 || signature != 0)
                << MAC_FRM_HEADER_EXTHEADER_BIT |
            forward << MAC_FRM_HEADER_FORWARD_BIT | (type & MAC_FRM_HEADER_TYPE_MASK);
-  out_it = src.manufacturer;
-  out_it = src.id & 0x00FF;
-  out_it = (src.id >> 8) & 0x00FF;
+
+  src.serialize(out_it);
 
   /* extended header */
   if (data[0] & 1 << 7)
@@ -63,9 +61,7 @@ Frame::payload_t Frame::serialize() const {
 
   /* extheader and unicast -> add destination addr */
   if ((data[0] & 1 << 7) && (data[4] & 1 << 5)) {
-    out_it = dest.manufacturer & 0x00FF;
-    out_it = dest.id & 0x00FF;
-    out_it = (dest.id >> 8) & 0x00FF;
+    dest.serialize(out_it);
   }
 
   /* extheader and signature -> add signature */
@@ -88,8 +84,8 @@ Frame::Frame(const uint8_t *data, size_t length) {
   /* header */
   forward = !!(data[0] & (1 << MAC_FRM_HEADER_FORWARD_BIT));
   type = data[0] & MAC_FRM_HEADER_TYPE_MASK;
-  src.manufacturer = data[1];
-  src.id = data[2] | (data[3] << 8);
+
+  src = { data[1], data[3], data[2] };
 
   /* extended header */
   if (data[0] & 1 << MAC_FRM_HEADER_EXTHEADER_BIT) {
@@ -100,9 +96,7 @@ Frame::Frame(const uint8_t *data, size_t length) {
 
     /* unicast */
     if (data[4] & (1 << MAC_FRM_EXTHEADER_UNICAST_BIT)) {
-      dest.manufacturer = data[5];
-      dest.id = data[6] | (data[7] << 8);
-
+      dest = { data[5], data[7], data[6] };
       payload_start += MAC_FRM_ADDR_LENGTH;
     }
 

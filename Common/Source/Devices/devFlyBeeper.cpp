@@ -42,8 +42,8 @@ aircraft_t type() {
   return aircraft_t::otherAircraft;
 }
 
-Frame::payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
-  Frame::payload_t buffer;
+payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+  payload_t buffer;
   buffer.reserve(11);
   auto out_it = std::back_inserter(buffer);
 
@@ -57,7 +57,8 @@ Frame::payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& 
   }
   uint16_t data = alt;
   /* online tracking */
-  data |= true << 15;
+  constexpr uint16_t online_tracking = 0x01;
+  data |= online_tracking << 15;
   /* aircraft type */
   data |= (type() & 0x7) << 12;
 
@@ -84,7 +85,7 @@ Frame::payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& 
   return buffer;
 }
 
-Frame::payload_t serialize_name() {
+payload_t serialize_name() {
   std::string name = to_utf8(PilotName_Config);
   return { name.begin(), name.end() };
 }
@@ -112,15 +113,12 @@ MacAddr generate_id() {
   return addr;
 }
 
-BOOL SendData(DeviceDescriptor_t* d, uint8_t type, std::vector<uint8_t>&& data) {
+BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   
   static MacAddr src_addr = generate_id();
 
-  auto frm = std::make_unique<Frame>(src_addr);
-  frm->type = type;
-  frm->payload = std::move(data);
-
-  auto buffer = frm->serialize();
+  Frame frm(src_addr, type, std::move(data));
+  auto buffer = frm.serialize();
 
   d->Com->WriteGattCharacteristic(
         "00001819-0000-1000-8000-00805F9B34FB",
