@@ -85,6 +85,24 @@ payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calcula
   return buffer;
 }
 
+payload_t serialize_gound_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+  payload_t buffer;
+  buffer.reserve(6);
+  auto out_it = std::back_inserter(buffer);
+
+  /* position */
+  Frame::coord2payload_absolut(Basic.Latitude, Basic.Longitude, out_it);
+
+
+  /* state & Online Tracking */
+  constexpr uint8_t state = 0;
+  constexpr uint8_t online_tracking = 0x01;
+
+  out_it = (state&0x0F)<<4 | online_tracking;
+
+  return buffer;
+}
+
 payload_t serialize_name() {
   std::string name = to_utf8(PilotName_Config);
   return { name.begin(), name.end() };
@@ -133,7 +151,12 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
     static PeriodClock timeState;
     if (timeState.CheckUpdate(5000)) {
       // Every 5 second : Send current state
-      return SendData(d, FRM_TYPE_TRACKING, serialize_tracking(Basic, Calculated));
+      if (Calculated.Flying) {
+        return SendData(d, FRM_TYPE_TRACKING, serialize_tracking(Basic, Calculated));
+      }
+      else {
+        return SendData(d, FRM_TYPE_GROUNDTRACKING, serialize_gound_tracking(Basic, Calculated));
+      }
     }
 
     static PeriodClock timeName;
