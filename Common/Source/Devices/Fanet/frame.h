@@ -41,6 +41,7 @@
 #define FRM_TYPE_LANDMARK			5
 #define FRM_TYPE_REMOTECONFIG			6
 #define FRM_TYPE_GROUNDTRACKING			7
+#define FRM_TYPE_THERMAL			9
 
 #include "macaddr.h"
 #include <vector>

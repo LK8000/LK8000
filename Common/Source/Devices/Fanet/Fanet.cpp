@@ -448,6 +448,47 @@ bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   return TRUE;
 }
 
+bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
+  /*
+    Thermal (Type = 9)
+    [recommended interval: floor((#neighbors/10 + 1) * 30s), if a thermal is detected]
+
+    [Byte 0-2]	Position of thermal	(Little Endian, 2-Complement)
+    bit 0-23	Latitude 		(Absolute, see below)
+    [Byte 3-5]	Position of thermal	(Little Endian, 2-Complement)
+    bit 0-23	Longitude 		(Absolute, see below)
+
+    [Byte 6-7]	Type			(Little Endian)
+    bit 15		TBD, leave as 0
+    bit 14-12	confidence/quality	(0 = 0%, 7= 100%)
+    bit 11		Thermal Altitude Scaling 1->4x, 0->1x
+    bit 0-10	Thermal Altitude in m
+
+    [Byte 8]	Avg climb of thermal	(max +/- 31.5m/s, 2-Complement, climb of air NOT the paraglider)
+    bit 7		Scaling 	1->5x, 0->1x
+    bit 0-6		Value		in 0.1m/s
+
+    [Byte 9]	Avg wind speed at thermal (max 317.5km/h)
+    bit 7		Scaling 	1->5x, 0->1x
+    bit 0-6		Value		in 0.5km/h		
+
+    [Byte 10]	Avg wind heading at thermal (attention: 90degree means the wind is coming from east and blowing towards west)
+    bit 0-7		Value		in 360/256 deg  
+  */
+  d->nmeaParser.setFlarmAvailable(pGPS);
+
+  /*
+  TODO: Add Receved thermal to ThermalHistory  ?
+
+  GeoPoint pos;
+  payload_absolut2coord(pos.latitude,pos.longitude,&data[0]);
+
+  */
+
+  return true;
+}
+
+
 bool FanetParseUnknown(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
   DebugLog(_T("Unknown Fanet Message : id = %x, payloadsize %zu"), id, data.size());
   return TRUE;
