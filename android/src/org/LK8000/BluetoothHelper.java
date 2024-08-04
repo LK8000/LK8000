@@ -74,7 +74,7 @@ final class BluetoothHelper {
     BluetoothLeScanner _scanner = null;
     if (adapter != null) {
       try {
-        _scanner = _adapter.getBluetoothLeScanner();
+        _scanner = adapter.getBluetoothLeScanner();
       } catch (Exception e) {
         Log.e(TAG, "BluetoothAdapter.getBluetoothLeScanner() failed", e);
       }
@@ -83,7 +83,9 @@ final class BluetoothHelper {
   }
 
   public static void cancelDiscovery() {
-    adapter.cancelDiscovery();
+    if (adapter != null) {
+      adapter.cancelDiscovery();
+    }
   }
 
   public static void Initialize(Context context) {
