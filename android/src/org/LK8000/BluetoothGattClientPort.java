@@ -112,6 +112,7 @@ public class BluetoothGattClientPort
   void startLeScan(Context context, String address) {
     if (callback == null) {
       callback = new LeScanCallback() {
+        @Override
         public void onScanResult(ScanResult result) {
           BluetoothDevice device = result.getDevice();
           if (device.getAddress().equals(address)) {
