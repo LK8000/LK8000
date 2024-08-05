@@ -12,6 +12,7 @@
 #include "OS/Sleep.h"
 #include "Android/BluetoothHelper.hpp"
 #include "Android/PortBridge.hpp"
+#include "Comm/Bluetooth/gatt_utils.h"
 
 namespace {
 
@@ -150,37 +151,38 @@ void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteris
 }
 
 const BluetoothSensor::service_table_t& BluetoothSensor::service_table() {
+  using bluetooth::gatt_uuid;
   static const service_table_t table = {{
-    { "0000180D-0000-1000-8000-00805F9B34FB", {{ // Heart Rate
-        { "00002A37-0000-1000-8000-00805F9B34FB", {
+    { gatt_uuid(0x180D), {{ // Heart Rate
+        { gatt_uuid(0x2A37), {
             &BluetoothSensor::HeartRateMeasurement,
             &BluetoothSensor::Enable<&DeviceDescriptor_t::OnHeartRate>,
         }}
     }}},
-    { "0000181A-0000-1000-8000-00805F9B34FB", { { // Environmental Sensing Service
-        { "00002A6D-0000-1000-8000-00805F9B34FB", {
+    { gatt_uuid(0x181A), {{ // Environmental Sensing Service
+        { gatt_uuid(0x2A6D), {
             &BluetoothSensor::BarometricPressure,
             &BluetoothSensor::Enable<&DeviceDescriptor_t::OnBarometricPressure>,
         }},
-        { "00002A6E-0000-1000-8000-00805F9B34FB", {
+        { gatt_uuid(0x2A6E), {
             &BluetoothSensor::OutsideTemperature,
             &BluetoothSensor::Enable<&DeviceDescriptor_t::OnOutsideTemperature>,
         }},
     }}},
-    { "0000FFE0-0000-1000-8000-00805F9B34FB", {{ // HM-10 and compatible bluetooth modules
-        { "0000FFE1-0000-1000-8000-00805F9B34FB", {
+    { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
+        { gatt_uuid(0xFFE1), {
             &BluetoothSensor::Hm10Data,
             &BluetoothSensor::Hm10DataEnable
         }}
     }}},
-    { "00001800-0000-1000-8000-00805F9B34FB", {{ // Generic Access
-        { "00002A00-0000-1000-8000-00805F9B34FB", {
+    { gatt_uuid(0x1800), {{ // Generic Access
+        { gatt_uuid(0x2A00), {
             &BluetoothSensor::DeviceName,
             &BluetoothSensor::DeviceNameEnable
         }}
     }}},
-    { "0000180F-0000-1000-8000-00805F9B34FB", {{ // Battery Service
-        { "00002A19-0000-1000-8000-00805F9B34FB", { // Battery Level
+    { gatt_uuid(0x180F), {{ // Battery Service
+        { gatt_uuid(0x2A19), { // Battery Level
             &BluetoothSensor::BatteryLevel,
             &BluetoothSensor::Enable<&DeviceDescriptor_t::OnBatteryLevel>
         }}

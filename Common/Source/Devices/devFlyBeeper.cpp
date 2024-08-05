@@ -16,8 +16,11 @@
 #include "utils/lookup_table.h"
 #include <random>
 #include "DeviceSettings.h"
+#include "Comm/Bluetooth/gatt_utils.h"
 
 #undef uuid_t
+
+using bluetooth::gatt_uuid;
 
 namespace {
 
@@ -139,7 +142,7 @@ BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   auto buffer = frm.serialize();
 
   d->Com->WriteGattCharacteristic(
-        "00001819-0000-1000-8000-00805F9B34FB",
+        gatt_uuid(0x1819),
         "FEC81438-CB89-4C37-93D0-BADFCED4376E",
         buffer.data(), buffer.size());
 
@@ -173,7 +176,7 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
 }
 
 bool EnableGattCharacteristic(DeviceDescriptor_t& d, uuid_t service, uuid_t characteristic) {
-  if (service == "00001819-0000-1000-8000-00805F9B34FB") { // Location and Navigation service
+  if (service == gatt_uuid(0x1819)) { // Location and Navigation service
     if (characteristic == "FEC81438-CB89-4C37-93D0-BADFCED4376E") {
       // FANET characteristic is available, enable SendData
       d.SendData = SendData;
@@ -195,7 +198,7 @@ constexpr auto function_table = lookup_table<uint8_t, fanet_parse_function>({
 
 void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service,
                              uuid_t characteristic, const std::vector<uint8_t>& data) {
-  if (service == "00001819-0000-1000-8000-00805F9B34FB") { // Location and Navigation service
+  if (service == gatt_uuid(0x1819)) { // Location and Navigation service
     if (characteristic == "234337BF-F931-4D2D-A13C-07E2F06A0249") {
       // TAS
       if (data.size() == 2) {
