@@ -67,7 +67,7 @@ class uuid_t {
         _lsb(lsb)
   {}
 
-  bool operator==(uuid_t uuid) const {
+  constexpr bool operator==(uuid_t uuid) const {
     return uuid._msb == _msb && uuid._lsb == _lsb;
   }
 
@@ -75,11 +75,11 @@ class uuid_t {
       return std::hash<uint64_t>{}(_msb) ^ std::hash<uint64_t>{}(_lsb);
   }
 
-  uint64_t msb() const {
+  constexpr uint64_t msb() const {
     return _msb;
   }
 
-  uint64_t lsb() const {
+  constexpr uint64_t lsb() const {
     return _lsb;
   }
 
