@@ -146,7 +146,7 @@ void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteris
   auto last = std::next(first, size);
 
   ScopeLock lock(mutex);
-  data_queue.emplace_back(service, characteristic, std::vector<uint8_t>(first, last));
+  data_queue.emplace_back(std::move(service), std::move(characteristic), std::vector<uint8_t>(first, last));
   newdata.Signal();
 }
 
@@ -191,7 +191,7 @@ const BluetoothSensor::service_table_t& BluetoothSensor::service_table() {
   return table;
 }
 
-bool BluetoothSensor::DoEnableNotification(uuid_t service, uuid_t characteristic) const {
+bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {
   auto it_service = service_table().find(service);
   if (it_service != service_table().end()) {
     auto it_characteristic = it_service->second.find(characteristic);
@@ -305,13 +305,13 @@ bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
   return false;
 }
 
-void BluetoothSensor::WriteGattCharacteristic(uuid_t service, uuid_t characteristic, const void *data, size_t size) {
+void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) {
   if(bridge) {
     bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
   }
 }
 
-void BluetoothSensor::ReadGattCharacteristic(uuid_t service, uuid_t characteristic) {
+void BluetoothSensor::ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic) {
   if(bridge) {
     bridge->readGattCharacteristic(Java::GetEnv(), service, characteristic);
   }

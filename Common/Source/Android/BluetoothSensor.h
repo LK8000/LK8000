@@ -45,8 +45,8 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   size_t Read(void* data, size_t size) override { return 0; };
 
-  void WriteGattCharacteristic(uuid_t service, uuid_t characteristic, const void *data, size_t size) override;
-  void ReadGattCharacteristic(uuid_t service, uuid_t characteristic) override;
+  void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) override;
+  void ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic) override;
 
  protected:
   unsigned RxThread() override;
@@ -62,7 +62,8 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
   bool running = false;
 
   struct sensor_data {
-    sensor_data(uuid_t s, uuid_t c, std::vector<uint8_t>&& _data) : service(s), characteristic(c), data(_data) {}
+    sensor_data(uuid_t&& s, uuid_t&& c, std::vector<uint8_t>&& _data)
+        : service(s), characteristic(std::move(c)), data(std::move(_data)) {}
 
     uuid_t service;
     uuid_t characteristic;
@@ -131,7 +132,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
  public:
   void DataReceived(const void* data, size_t size) override;
   void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, const void* data, size_t size) override;
-  bool DoEnableNotification(uuid_t service, uuid_t characteristic) const override;
+  bool DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const override;
 };
 
 #endif  // ANDROID_BLUETOOTHSENSOR_H

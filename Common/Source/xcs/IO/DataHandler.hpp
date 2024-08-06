@@ -40,7 +40,7 @@ public:
   gcc_nonnull_all
   virtual void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, const void* data, size_t size) { }
 
-  virtual bool DoEnableNotification(uuid_t service, uuid_t characteristic) const {
+  virtual bool DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {
     return false;
   }
 };
