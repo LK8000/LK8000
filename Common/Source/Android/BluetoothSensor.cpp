@@ -150,7 +150,17 @@ void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteris
   newdata.Signal();
 }
 
-const BluetoothSensor::service_table_t& BluetoothSensor::service_table() {
+using ProcessSensorDataT = std::function<void(BluetoothSensor*, const std::vector<uint8_t>&)>;
+using DoEnableNotificationT = std::function<bool(const BluetoothSensor*)>;
+
+struct DataHandlerT {
+  ProcessSensorDataT ProcessSensorData;
+  DoEnableNotificationT DoEnableNotification;
+};
+
+using service_table_t = bluetooth::service_table_t<DataHandlerT>;
+
+const service_table_t& service_table() {
   using bluetooth::gatt_uuid;
   static const service_table_t table = {{
     { gatt_uuid(0x180D), {{ // Heart Rate
@@ -192,18 +202,15 @@ const BluetoothSensor::service_table_t& BluetoothSensor::service_table() {
 }
 
 bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {
-  auto it_service = service_table().find(service);
-  if (it_service != service_table().end()) {
-    auto it_characteristic = it_service->second.find(characteristic);
-    if (it_characteristic != it_service->second.end()) {
-      return std::invoke(it_characteristic->second.enable_handler, this);
-    }
+  auto handler = service_table().get(service, characteristic);
+  if (handler) {
+    return std::invoke(handler->DoEnableNotification, this);
   }
 
   ScopeLock lock(CritSec_Comm);
   auto port = devGetDeviceOnPort(GetPortIndex());
-  if (port && port->EnableGattCharacteristic) {
-    return port->EnableGattCharacteristic(*port, service, characteristic);
+  if (port && port->DoEnableGattCharacteristic) {
+    return port->DoEnableGattCharacteristic(*port, service, characteristic);
   }
   return false;
 }
@@ -217,12 +224,9 @@ void BluetoothSensor::ProcessSensorData(const sensor_data& data) {
     }
   });
 
-  auto it_service = service_table().find(data.service);
-  if (it_service != service_table().end()) {
-    auto it_characteristic = it_service->second.find(data.characteristic);
-    if (it_characteristic != it_service->second.end()) {
-      return std::invoke(it_characteristic->second.handler, this, data.data);
-    }
+  auto handler = service_table().get(data.service, data.characteristic);
+  if (handler) {
+    return std::invoke(handler->ProcessSensorData, this, data.data);
   }
   OnSensorData<&DeviceDescriptor_t::OnGattCharacteristic>(data.service, data.characteristic, data.data);
 }
@@ -308,6 +312,7 @@ bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
 void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) {
   if(bridge) {
     bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
+    AddStatTx(size);
   }
 }
 

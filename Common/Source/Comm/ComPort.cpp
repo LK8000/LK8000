@@ -169,25 +169,25 @@ void ComPort::ProcessData(const char* string, size_t size) {
     }
 }
 
-void ComPort::AddStatRx(unsigned dwBytes) {
+void ComPort::AddStatRx(unsigned dwBytes) const {
     if (GetPortIndex() < NUMDEV) {
         DeviceList[GetPortIndex()].Rx += dwBytes;
     }
 }
 
-void ComPort::AddStatErrRx(unsigned dwBytes) {
+void ComPort::AddStatErrRx(unsigned dwBytes) const {
     if (GetPortIndex() < NUMDEV) {
         DeviceList[GetPortIndex()].ErrRx += dwBytes;
     }
 }
 
-void ComPort::AddStatTx(unsigned dwBytes) {
+void ComPort::AddStatTx(unsigned dwBytes) const {
     if (GetPortIndex() < NUMDEV) {
         DeviceList[GetPortIndex()].Tx += dwBytes;
     }
 }
 
-void ComPort::AddStatErrTx(unsigned dwBytes) {
+void ComPort::AddStatErrTx(unsigned dwBytes) const {
     if (GetPortIndex() < NUMDEV) {
         DeviceList[GetPortIndex()].ErrTx += dwBytes;
     }

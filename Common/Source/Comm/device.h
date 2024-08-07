@@ -109,7 +109,7 @@ struct DeviceDescriptor_t {
   BOOL (*OnOutsideTemperature)(DeviceDescriptor_t& d, NMEA_INFO& info, double temp);
   BOOL (*OnBatteryLevel)(DeviceDescriptor_t& d, NMEA_INFO& info, double level);
 
-  bool (*EnableGattCharacteristic)(DeviceDescriptor_t&, uuid_t, uuid_t);
+  bool (*DoEnableGattCharacteristic)(DeviceDescriptor_t&, uuid_t, uuid_t);
   void (*OnGattCharacteristic)(DeviceDescriptor_t&, NMEA_INFO&, uuid_t, uuid_t, const std::vector<uint8_t>&);
 
 

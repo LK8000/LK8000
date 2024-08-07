@@ -20,8 +20,6 @@
 
 #undef uuid_t
 
-using bluetooth::gatt_uuid;
-
 namespace {
 
 enum aircraft_t : uint8_t {
@@ -135,6 +133,7 @@ MacAddr generate_id() {
 }
 
 BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
+  using bluetooth::gatt_uuid;
   
   static MacAddr src_addr = generate_id();
 
@@ -175,44 +174,79 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
   return TRUE;
 }
 
-bool EnableGattCharacteristic(DeviceDescriptor_t& d, uuid_t service, uuid_t characteristic) {
-  if (service == gatt_uuid(0x1819)) { // Location and Navigation service
-    if (characteristic == "FEC81438-CB89-4C37-93D0-BADFCED4376E") {
-      // FANET characteristic is available, enable SendData
-      d.SendData = SendData;
-      return true;
-    }
-    return (characteristic == "234337BF-F931-4D2D-A13C-07E2F06A0249"); // TAS 
+void TAS(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {
+  // TAS
+  if (data.size() == 2) {
+    info.AirspeedAvailable = true;
+    info.TrueAirspeed = Units::From(unKiloMeterPerHour, FromLE16(*reinterpret_cast<const int16_t*>(data.data())) / 10.);
+    info.IndicatedAirspeed = IndicatedAirSpeed(info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
   }
-  return false;
 }
 
-constexpr auto function_table = lookup_table<uint8_t, fanet_parse_function>({
-  { FRM_TYPE_TRACKING, &FanetParseType1Msg },
-  { FRM_TYPE_NAME, &FanetParseType2Msg },
-  { FRM_TYPE_MESSAGE, &FanetParseType3Msg },
-  { FRM_TYPE_SERVICE, &FanetParseType4Msg },
-  { FRM_TYPE_GROUNDTRACKING, &FanetParseType7Msg },
-  { FRM_TYPE_THERMAL, &FanetParseType9Msg }
-});
+void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {
+
+  constexpr static auto function_table = lookup_table<uint8_t, fanet_parse_function>({
+    { FRM_TYPE_TRACKING, &FanetParseType1Msg },
+    { FRM_TYPE_NAME, &FanetParseType2Msg },
+    { FRM_TYPE_MESSAGE, &FanetParseType3Msg },
+    { FRM_TYPE_SERVICE, &FanetParseType4Msg },
+    { FRM_TYPE_GROUNDTRACKING, &FanetParseType7Msg },
+    { FRM_TYPE_THERMAL, &FanetParseType9Msg }
+  });
+
+  // FANET
+  Frame frame(data.data(), data.size());
+  const fanet_parse_function& parse = function_table.get(frame.type, FanetParseUnknown);
+  parse(&d, &info, frame.src.get(), frame.payload);
+}
+
+bool EnableFanet(DeviceDescriptor_t& d) {
+  d.SendData = SendData;
+  return true;
+}
+
+template<bool b>
+bool Enable(DeviceDescriptor_t&) {
+  return b;
+}
+
+using OnGattCharacteristicT = std::function<void(DeviceDescriptor_t&, NMEA_INFO&, const std::vector<uint8_t>&)>;
+using DoEnableNotificationT = std::function<bool(DeviceDescriptor_t&)>;
+
+struct DataHandlerT {
+  OnGattCharacteristicT OnGattCharacteristic;
+  DoEnableNotificationT DoEnableNotification;
+};
+
+using service_table_t = bluetooth::service_table_t<DataHandlerT>;
+
+const service_table_t& service_table() {
+  using bluetooth::gatt_uuid;
+  static const service_table_t table = {{
+    { gatt_uuid(0x1819), {{ // Location and Navigation service
+        { "FEC81438-CB89-4C37-93D0-BADFCED4376E", {
+            &Fanet,
+            &EnableFanet,
+        }},
+        { "234337BF-F931-4D2D-A13C-07E2F06A0249", {
+            &TAS,
+            &Enable<true>
+        }}
+    }}}
+  }};
+  return table;
+}
+
+bool DoEnableGattCharacteristic(DeviceDescriptor_t& d, uuid_t service, uuid_t characteristic) {
+  auto handler = service_table().get(service, characteristic);
+  return handler && std::invoke(handler->DoEnableNotification, d);
+}
 
 void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service,
                              uuid_t characteristic, const std::vector<uint8_t>& data) {
-  if (service == gatt_uuid(0x1819)) { // Location and Navigation service
-    if (characteristic == "234337BF-F931-4D2D-A13C-07E2F06A0249") {
-      // TAS
-      if (data.size() == 2) {
-        info.AirspeedAvailable = true;
-        info.TrueAirspeed = Units::From(unKiloMeterPerHour, FromLE16(*reinterpret_cast<const int16_t*>(data.data())) / 10.);
-        info.IndicatedAirspeed = IndicatedAirSpeed(info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
-      }
-    }
-    else if (characteristic == "FEC81438-CB89-4C37-93D0-BADFCED4376E") {
-      // FANET
-      Frame frame(data.data(), data.size());
-      fanet_parse_function parse = function_table.get(frame.type, FanetParseUnknown);
-      parse(&d, &info, frame.src.get(), frame.payload);
-    }
+  auto handler = service_table().get(service, characteristic);
+  if (handler) {
+    std::invoke(handler->OnGattCharacteristic, d, info, data);
   }
 }
 
@@ -221,6 +255,6 @@ void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service
 void FlyBeeper::Install(DeviceDescriptor_t* d) {
   genInstall(d); // install Generic driver callback first
 
-  d->EnableGattCharacteristic = EnableGattCharacteristic;
+  d->DoEnableGattCharacteristic = DoEnableGattCharacteristic;
   d->OnGattCharacteristic = OnGattCharacteristic;
 }

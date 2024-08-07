@@ -85,10 +85,10 @@ protected:
     static
     void StatusMessage(const TCHAR *fmt, ...) gcc_printf(1,2) gcc_nonnull(1);
 
-    void AddStatRx(unsigned dwBytes);
-    void AddStatErrRx(unsigned dwBytes);
-    void AddStatTx(unsigned dwBytes);
-    void AddStatErrTx(unsigned dwBytes);
+    void AddStatRx(unsigned dwBytes) const;
+    void AddStatErrRx(unsigned dwBytes) const;
+    void AddStatTx(unsigned dwBytes) const;
+    void AddStatErrTx(unsigned dwBytes) const;
 
     virtual unsigned RxThread() = 0;
 

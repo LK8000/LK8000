@@ -75,21 +75,6 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   void ProcessSensorData(const sensor_data& data);
 
- private:
-  using handler_t = std::function<void(BluetoothSensor*, const std::vector<uint8_t>&)>;
-  using enable_handler_t = std::function<bool(const BluetoothSensor*)>;
-
-  struct characteristic_handler_t {
-    handler_t handler;
-    enable_handler_t enable_handler;
-  };
-
-  using characteristic_table_t = std::unordered_map<uuid_t, characteristic_handler_t, uuid_hash>;
-  using service_table_t = std::unordered_map<uuid_t, characteristic_table_t, uuid_hash>;
-
-  static
-  const service_table_t& service_table();
-
  public:
 
   template <auto callback>
