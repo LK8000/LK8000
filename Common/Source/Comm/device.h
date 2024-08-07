@@ -126,6 +126,8 @@ struct DeviceDescriptor_t {
   unsigned PortNumber;
   bool Disabled;
 
+  tstring SerialNumber;
+
   // Com port diagnostic
   unsigned Rx;
   unsigned ErrRx;
@@ -135,7 +137,6 @@ struct DeviceDescriptor_t {
   unsigned HB;
 #ifdef DEVICE_SERIAL
   int HardwareId;
-  int SerialNumber;
   double SoftwareVer;
 #endif
   NMEAParser nmeaParser;

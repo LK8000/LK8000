@@ -405,6 +405,8 @@ void DeviceDescriptor_t::InitStruct(unsigned i) {
 
     Disabled = true;
 
+    SerialNumber = {};
+
     IsBaroSource = false;
     IsRadio = false;
 
@@ -415,7 +417,6 @@ void DeviceDescriptor_t::InitStruct(unsigned i) {
 
 #ifdef DEVICE_SERIAL
     HardwareId = 0;
-    SerialNumber = 0;
     SoftwareVer = 0;
 #endif
 

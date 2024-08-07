@@ -13,6 +13,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "Comm/UpdateQNH.h"
+#include "utils/charset_helper.h"
 
 #define VW_BIDIRECTIONAL
 static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS);
@@ -23,8 +24,8 @@ BOOL devWesterboerPutBallast(DeviceDescriptor_t* d, double Ballast);
 BOOL devWesterboerPutBugs(DeviceDescriptor_t* d, double Bus);
 BOOL devWesterboerPutWingload(DeviceDescriptor_t* d, double fWingload);
 
-int oldSerial;
-int SerialNumber =0;
+tstring oldSerial;
+tstring SerialNumber;
 int iReceiveSuppress = 0;
 
 int iWEST_RxUpdateTime=0;
@@ -65,7 +66,7 @@ if (i++ > 5)
 else
 {
   static int j =0;
-  if(SerialNumber == 0)
+  if(d->SerialNumber.empty())
   { // request hardware/serial informations
 	if(j++> 10)
 	{ j=0;
@@ -188,7 +189,7 @@ static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 
 
   if (strlen(String) < 180) {
-    if (((d->SerialNumber == 0) || (oldSerial != SerialNumber)) && (NoMsg < 5)) {
+    if ((d->SerialNumber.empty() || (oldSerial != SerialNumber)) && (NoMsg < 5)) {
       NoMsg++ ;
       NMEAParser::ExtractParameter(String, ctemp, 0);
       d->HardwareId = StrToDouble(ctemp, nullptr);
@@ -421,7 +422,7 @@ static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   static int NoMsg=0;
 
   if (strlen(String) < 180) {
-    if (((d->SerialNumber == 0) || (oldSerial	!= SerialNumber)) && (NoMsg < 5)) {
+    if (((d->SerialNumber.empty()) || (oldSerial	!= SerialNumber)) && (NoMsg < 5)) {
       NoMsg++;
       NMEAParser::ExtractParameter(String, ctemp, 0);
       d->HardwareId = StrToDouble(ctemp, nullptr);
@@ -434,8 +435,7 @@ static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
       }
     }
     NMEAParser::ExtractParameter(String, ctemp, 1);
-    d->SerialNumber = StrToDouble(ctemp, nullptr);
-    SerialNumber = d->SerialNumber;
+    oldSerial = d->SerialNumber = from_unknown_charset(ctemp);
 
     NMEAParser::ExtractParameter(String, ctemp, 2);
     int Year = StrToDouble(ctemp, nullptr);
@@ -444,14 +444,13 @@ static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
     d->SoftwareVer = StrToDouble(ctemp, nullptr) / 100.0;
 
     TCHAR str[255];
-    _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+    _stprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
     DoStatusMessage(str);
   	StartupStore(_T(". %s"), str);
 
     _stprintf(str, _T("SW Ver:%3.2f  HW Ver:%i "), d->SoftwareVer, Year);
     DoStatusMessage(str);
 	  StartupStore(_T(". %s"),ctemp);
-  	oldSerial	=SerialNumber;
   }
   // nothing to do
 #endif

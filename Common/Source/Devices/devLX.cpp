@@ -151,9 +151,9 @@ bool DevLX::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS)
 #ifdef DEVICE_SERIAL
 char ctemp[180];
 static int NoMsg=0;
-static int oldSerial=0;
+static tstring oldSerial;
 if(strlen(String) < 180)
-  if((( d->SerialNumber == 0)  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
+  if(( d->SerialNumber.empty()  || ( d->SerialNumber != oldSerial)) && (NoMsg < 5))
   {
     NoMsg++ ;
     NMEAParser::ExtractParameter(String, ctemp, 0);
@@ -162,8 +162,8 @@ if(strlen(String) < 180)
     StartupStore(_T(". %s\n"), d->Name);
 
     NMEAParser::ExtractParameter(String, ctemp, 1);
-    oldSerial = d->SerialNumber = StrToDouble(ctemp, nullptr);
-    StartupStore(_T(". %s Serial Number %i"), d->Name, d->SerialNumber);
+    oldSerial = d->SerialNumber = from_unknown_charset(ctemp);
+    StartupStore(_T(". %s Serial Number %s"), d->Name, d->SerialNumber.c_str());
 
     NMEAParser::ExtractParameter(String, ctemp, 2);
   	d->SoftwareVer = StrToDouble(ctemp, nullptr);
@@ -174,7 +174,7 @@ if(strlen(String) < 180)
     StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, (d->HardwareId) / 10.0);
 
     TCHAR str[255];
-    _stprintf(str, _T("%s (#%i) DETECTED"), d->Name, d->SerialNumber);
+    _stprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
     DoStatusMessage(str);
 
     _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, (double)(d->HardwareId)/10.0);
