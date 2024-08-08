@@ -109,33 +109,21 @@ payload_t serialize_name() {
   return { name.begin(), name.end() };
 }
 
-MacAddr generate_id() {
-  MacAddr addr;
-
-  DeviceSettings settings(_T("FlyBeeper"));
-  try {
-    addr.manufacturer = settings.get<uint8_t>("fanet-manufacturer");
-    addr.id = settings.get<uint16_t>("fanet-id");
+MacAddr generate_id(tstring_view sn) {
+  if (sn.size() > 4) {
+    // use last four digit as fanet id
+    return { 
+      0x0B, // FlyBeeper manufacturer id
+      hex::to_uint16_t(sn.substr(sn.size() - 4).data())
+    };
   }
-  catch(std::exception& e) { }
-
-  std::random_device rd;   // a seed source for the random number engine
-  std::mt19937 gen(rd());  // mersenne_twister_engine seeded with rd()
-  std::uniform_int_distribution<uint16_t> distrib(1, std::numeric_limits<uint16_t>::max());
-
-  addr.manufacturer = 0xFC;
-  addr.id = distrib(gen);
-
-  settings.set<int>("fanet-manufacturer", addr.manufacturer);
-  settings.set<int>("fanet-id", addr.id);
-
-  return addr;
+  throw std::domain_error("SN is too short");
 }
 
 BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   using bluetooth::gatt_uuid;
   
-  static MacAddr src_addr = generate_id();
+  MacAddr src_addr = generate_id(d->SerialNumber);
 
   Frame frm(src_addr, type, std::move(data));
   auto buffer = frm.serialize();
@@ -168,7 +156,7 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
     }
   }
   catch (std::exception& e) {
-    DebugLog(_T("%s"), to_tstring(e.what()).c_str());
+    DebugLog(_T("FlyBeeper::SendData : <%s>"), to_tstring(e.what()).c_str());
     return FALSE;
   }
   return TRUE;
