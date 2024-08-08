@@ -33,27 +33,32 @@
 
 namespace hex {
 
-constexpr
-uint8_t digit(char c) {
-  return ('0' <= c && c <= '9')   ? c - '0'
-         : ('a' <= c && c <= 'f') ? 10 + c - 'a'
-         : ('A' <= c && c <= 'F') ? 10 + c - 'A'
-                                  : throw std::domain_error("invalid hex digit");
+template <typename CharT>
+constexpr uint8_t in_range(CharT c, CharT lower, CharT upper) {
+  return lower <= c && c <= upper;
 }
 
-constexpr
-uint8_t to_uint8_t(const char* ptr) {
-  return (digit(ptr[0]) << 4) | digit(ptr[1]);
+template <typename CharT>
+constexpr uint8_t digit(CharT c) {
+  return in_range<CharT>(c, '0', '9')   ? c - '0'
+         : in_range<CharT>(c, 'a', 'f') ? 10 + c - 'a'
+         : in_range<CharT>(c, 'A', 'F') ? 10 + c - 'A'
+                                        : throw std::domain_error("invalid hex digit");
 }
 
-constexpr
-uint16_t to_uint16_t(const char* ptr) {
-  return (to_uint8_t(ptr) << 8) | to_uint8_t(ptr + 2);
+template <typename CharT>
+constexpr uint8_t to_uint8_t(const CharT* ptr) {
+  return (digit<CharT>(ptr[0]) << 4) | digit<CharT>(ptr[1]);
 }
 
-constexpr
-uint32_t to_uint32_t(const char* ptr) {
-  return (to_uint16_t(ptr) << 16) | to_uint16_t(ptr + 4);
+template <typename CharT>
+constexpr uint16_t to_uint16_t(const CharT* ptr) {
+  return (to_uint8_t<CharT>(ptr) << 8) | to_uint8_t<CharT>(ptr + 2);
+}
+
+template <typename CharT>
+constexpr uint32_t to_uint32_t(const CharT* ptr) {
+  return (to_uint16_t<CharT>(ptr) << 16) | to_uint16_t<CharT>(ptr + 4);
 }
 
 } // hex
