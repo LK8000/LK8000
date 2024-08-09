@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -21,6 +21,10 @@ make TARGET=LINUX distrib
 
 make TARGET=KOBO clean
 make TARGET=KOBO
+
+pushd android-studio
+    ./gradlew assemble
+popd
 
 echo "DONE -----------"
 echo "started $start"
