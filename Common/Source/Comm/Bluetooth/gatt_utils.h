@@ -26,7 +26,7 @@ uuid_t gatt_uuid(uint16_t id) {
   return { msb, base_uuid.lsb() };
 }
 
-static_assert(gatt_uuid(0x1234) == uuid_t("00001234-0000-1000-8000-00805F9B34FB"), "gatt_uuid() failed.");
+static_assert(gatt_uuid(0x1234) == "00001234-0000-1000-8000-00805F9B34FB", "gatt_uuid() failed.");
 
 template<typename Type>
 class service_table_t {

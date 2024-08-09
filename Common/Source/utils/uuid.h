@@ -59,8 +59,8 @@ class uuid_t {
   constexpr uuid_t(uuid_t&&) = default;
   constexpr uuid_t(const uuid_t&) = default;
 
-  constexpr uuid_t(const char* s) 
-      : uuid_t(uuid_msb(s), uuid_lsb(s)) {}
+  constexpr uuid_t(const char (&string)[37]) 
+      : uuid_t(uuid_msb(string), uuid_lsb(string)) {}
 
   constexpr uuid_t(uint64_t msb, uint64_t lsb)
       : _msb(msb),
