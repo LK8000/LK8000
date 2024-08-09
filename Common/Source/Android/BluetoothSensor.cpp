@@ -319,7 +319,7 @@ bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
   return false;
 }
 
-void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) {
+void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) const {
   if(bridge) {
     bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
     AddStatTx(size);

@@ -113,8 +113,14 @@ private:
     virtual bool Write_Impl(const void *data, size_t size) = 0;
 
 public:
-    virtual void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size)  { }
+    virtual void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) const  { }
     virtual void ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic)  { }
+
+    template<typename Type>
+    void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const Type& data) const {
+        WriteGattCharacteristic(service, characteristic, &data, sizeof(data));
+    }
+
 };
 
 #endif	/* COMPORT_H */

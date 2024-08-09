@@ -45,7 +45,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   size_t Read(void* data, size_t size) override { return 0; };
 
-  void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) override;
+  void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) const override;
   void ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic) override;
 
  protected:
