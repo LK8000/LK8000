@@ -120,6 +120,101 @@ MacAddr generate_id(tstring_view sn) {
   throw std::domain_error("SN is too short");
 }
 
+constexpr uuid_t radio_uuid = "904BAF04-5814-11EE-8C99-0242AC120000";
+
+// frequency (UINT32)
+constexpr uuid_t frequency_uuid = "8D8E8809-4697-41FC-8EE2-CA0B999354EC";
+enum class frequency : uint32_t {
+  ue = 868200000, // default
+  us = 920800000,
+  in = 866200000,
+  kr = 923200000
+};
+
+// Bandwidth (UINT8)
+constexpr uuid_t bandwidth_uuid = "F19422E2-982A-4954-9A75-B38927236A59";
+enum class bandwidth : uint8_t {
+  khz_125 = 0,
+  khz_250 = 1, // default
+  khz_500 = 2
+};
+
+  // Spreading Factor (INT8)
+constexpr uuid_t spreading_factor_uuid = "108B855F-11CD-4BC5-ADEE-EAFCE49BC77A";
+enum class spreading_factor : int8_t {
+    sf_6 = 6,
+    sf_7 = 7, // default
+    sf_8 = 8,
+    sf_9 = 9,
+    sf_10 = 10,
+    sf_11 = 11,
+    sf_12 = 12
+};
+
+// Coding Rate (INT8)
+constexpr uuid_t coding_rate_uuid = "17A95752-3C12-438F-9244-4F4612A1AB49";
+enum class coding_rate : int8_t {
+  cr_4_5 = 1, // default
+  cr_4_6 = 2,
+  cr_4_7 = 3,
+  cr_4_8 = 4
+};
+
+// Tx Power (INT8)
+constexpr uuid_t tx_power_uuid = "8EF0C42E-ADB6-4897-B9C9-6FE93143FAF4";
+class tx_power {
+  public:
+    constexpr tx_power() = default;
+    constexpr tx_power(int8_t dbm) : value(Clamp<int8_t>(dbm, -9, 22)) { }
+  private:
+    int8_t value = 14;
+};
+
+struct sx_region_t {
+  frequency khz;
+  bandwidth bw;
+  tx_power dBm;
+};
+
+class bounding_box {
+ public:
+  constexpr bounding_box(double topLat, double bottomLat, double rightLon, double leftLon)
+      : min(bottomLat, leftLon), max(topLat, rightLon) {}
+
+  bool inside(const GeoPoint& position) const {
+    return (position.latitude >= min.latitude && position.latitude <= max.latitude &&
+            position.longitude >= min.longitude && position.longitude <= max.longitude);
+  }
+
+ private:
+  GeoPoint min;
+  GeoPoint max;
+};
+
+struct region_t {
+  const char* name;
+  sx_region_t mac;
+  bounding_box bbox;
+};
+
+constexpr region_t zones[] = {
+  { "US920", { frequency::us, bandwidth::khz_500, 15 }, { 90, -90, -30, -169 } },
+  { "AU920", { frequency::us, bandwidth::khz_500, 15 }, { -10, -48, 179, 110 } },
+  { "IN866", { frequency::in, bandwidth::khz_250, 14 }, { 40, 5, 89, 69 } },
+  { "KR923", { frequency::kr, bandwidth::khz_125, 15 }, { 39, 34, 130, 124 } },
+  { "AS920", { frequency::us, bandwidth::khz_125, 15 }, { 47, 21, 146, 89} },
+  { "EU868", { frequency::ue, bandwidth::khz_250, 14 }, { 90, -90, 180, -180 } },
+};
+
+const region_t& get_region_settings(const GeoPoint& position) {
+  for (auto& r : zones) {
+    if (r.bbox.inside(position)) {
+      return r;
+    }
+  }
+  return *std::rbegin(zones);
+}
+
 BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   using bluetooth::gatt_uuid;
   
@@ -136,8 +231,20 @@ BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   return TRUE;
 }
 
+std::string_view current_region; // TODO : must be stored in DeviceDescriptor_t...
+
 BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
   try {
+
+    // set region parameters on first run or if regions change
+    auto& params = get_region_settings({ Basic.Latitude, Basic.Longitude });
+    if (current_region != params.name) {
+      current_region = params.name;
+      d->Com->WriteGattCharacteristic(radio_uuid, frequency_uuid, params.mac.khz);
+      d->Com->WriteGattCharacteristic(radio_uuid, bandwidth_uuid, params.mac.bw);
+      d->Com->WriteGattCharacteristic(radio_uuid, tx_power_uuid, params.mac.dBm);
+    }
+
     static PeriodClock timeState;
     if (timeState.CheckUpdate(5000)) {
       // Every 5 second : Send current state
@@ -189,6 +296,14 @@ void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& d
 }
 
 bool EnableFanet(DeviceDescriptor_t& d) {
+
+  // set model settings for FANET
+  current_region = ""; // reset regional settings, will be set by SendData
+
+  // check if this must be changed ?
+  d.Com->WriteGattCharacteristic(radio_uuid, spreading_factor_uuid, spreading_factor::sf_7);
+  d.Com->WriteGattCharacteristic(radio_uuid, coding_rate_uuid, coding_rate::cr_4_5);
+
   d.SendData = SendData;
   return true;
 }
