@@ -77,6 +77,9 @@ void UpdateConfBB(void) {
 		// we need at least one bottom bar stripe available (thermal apart)
 		ConfBB[1]=true;
 
+  while (!ConfBB[BottomMode]) {
+    BottomBarChange(true);
+  }
 }
 
 void UpdateConfIP(void) {
