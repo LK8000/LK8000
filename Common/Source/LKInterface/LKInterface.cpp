@@ -166,33 +166,34 @@ void SoundModeIndex() {
 
 void BottomSounds() {
 	switch(BottomMode) {
-		case 1:
+		case BM_CRU:
 			PlayResource(TEXT("IDR_WAV_BTONE7"));
 			break;
-		case 2:
+		case BM_HGH:
 			PlayResource(TEXT("IDR_WAV_BTONE2"));
 			break;
-		case 3:
+		case BM_AUX:
 			PlayResource(TEXT("IDR_WAV_BTONE2"));
 			break;
-		case 4:
+		case BM_TSK:
 			PlayResource(TEXT("IDR_WAV_BTONE4"));
 			break;
-		case 5:
+		case BM_ALT:
 			PlayResource(TEXT("IDR_WAV_BTONE4"));
 			break;
-		case 6:
+		case BM_SYS:
 			PlayResource(TEXT("IDR_WAV_BTONE5"));
 			break;
-		case 7:
+		case BM_CUS2:
 			PlayResource(TEXT("IDR_WAV_BTONE5"));
 			break;
-		case 8:
+		case BM_CUS3:
 			PlayResource(TEXT("IDR_WAV_BTONE6"));
 			break;
-		case 9:
+		case BM_CUS:
 			PlayResource(TEXT("IDR_WAV_BTONE6"));
 			break;
+		case BM_TRM:
 		default:
 			PlayResource(TEXT("IDR_WAV_CLICK"));
 			break;
