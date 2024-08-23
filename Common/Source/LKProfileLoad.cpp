@@ -448,7 +448,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
     if (settings::read(sname, svalue, szRegistryDevice[n], Port.szDeviceName)) return;
     if (settings::read(sname, svalue, szRegistryPortName[n], Port.szPort)) {
-      if (_tcsncmp(Port.szPort, _T("BT_HM10:"), 3) == 0) {
+      if (_tcsncmp(Port.szPort, _T("BT_HM10:"), 8) == 0) {
         tstring address(&Port.szPort[8]);
         lk::snprintf(Port.szPort, _T("BLE:%s"), address.c_str());
       }
