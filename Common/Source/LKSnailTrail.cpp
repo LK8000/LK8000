@@ -36,10 +36,7 @@ static short ApplySnailResize(short defaultsize,short change) {
 }
 
 void SnailTrail_Create(void) {
-
-  #if TESTBENCH
-  StartupStore(_T("... SnailTrail_Create\n"));
-  #endif
+  TestLog(_T("... SnailTrail_Create"));
 
   //
   // THE SNAIL TRAIL 
@@ -182,10 +179,7 @@ void SnailTrail_Create(void) {
 
 
 void SnailTrail_Delete(void) {
-
-  #if TESTBENCH
-  StartupStore(_T("... SnailTrail_Delete\n"));
-  #endif
+  TestLog(_T("... SnailTrail_Delete"));
 
   std::for_each(std::begin(MapWindow::hSnailPens), std::end(MapWindow::hSnailPens), std::bind(&LKPen::Release, _1) );
 

@@ -66,10 +66,7 @@ LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires) {
 // Kalman or Richard? I think it will speed up map drawing a bit.
 //
 void LKLoadFixedBitmaps(void) {
-
-  #if TESTBENCH
-  StartupStore(_T("... Loading Fixed Bitmaps\n"));
-  #endif
+  TestLog(_T("... Loading Fixed Bitmaps\n"));
 
   hTurnPoint = LKLoadBitmap(_T("TPOINT_BIG"), UseHiresBitmap);
   hInvTurnPoint = LKLoadBitmap(_T("TPOINT_BIG_INV"), UseHiresBitmap);
@@ -201,10 +198,7 @@ void LKLoadFixedBitmaps(void) {
 //
 
 void LKUnloadFixedBitmaps(void) {
-
-#if TESTBENCH
-    StartupStore(_T("... Unload Fixed Bitmaps\n"));
-#endif
+    TestLog(_T("... Unload Fixed Bitmaps\n"));
 
     hTurnPoint.Release();
     hInvTurnPoint.Release();
@@ -312,10 +306,7 @@ void LKUnloadFixedBitmaps(void) {
 // Load bitmaps that are affected by a profile 
 //
 void LKLoadProfileBitmaps(void) {
-
-  #if TESTBENCH
-  StartupStore(_T("... Loading Profile Bitmaps\n"));
-  #endif
+  TestLog(_T("... Loading Profile Bitmaps\n"));
 
   if ( ISPARAGLIDER ) {
 	hCruise=LKLoadBitmap(_T("ICOCRUISE_PG"));
@@ -361,10 +352,7 @@ void LKLoadProfileBitmaps(void) {
 }
 
 void LKUnloadProfileBitmaps(void) {
-
-#if TESTBENCH
-    StartupStore(_T("... Unload Profile Bitmaps\n"));
-#endif
+    TestLog(_T("... Unload Profile Bitmaps\n"));
 
     hBmpAirportReachable.Release();
     hBmpAirportUnReachable.Release();

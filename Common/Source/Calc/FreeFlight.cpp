@@ -88,9 +88,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (forcereset) {
 	LKSW_ForceFreeFlightRestart=false;
-	#if TESTBENCH
-	StartupStore(_T("... Forced FreeFlight Restart!\n"));
-	#endif
+	TestLog(_T("... Forced FreeFlight Restart!"));
 	DoStatusMessage(MsgToken<1452>(),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 	goto confirmbacktrue;
   }

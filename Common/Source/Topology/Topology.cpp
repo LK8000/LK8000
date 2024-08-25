@@ -705,9 +705,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
 		item=&NearestSmallCity;
 		break;
 	default:
-		#if TESTBENCH
-		StartupStore(_T("...... Cannot use nearestItem cat=%d <%s>%s"),category,label,NEWLINE);
-		#endif
+		TestLog(_T("...... Cannot use nearestItem cat=%d <%s>"), category, label);
 		return false;
 		break;
   }

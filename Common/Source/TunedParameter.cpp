@@ -60,9 +60,7 @@ unsigned int TunedParameter_Fastpanning(void) {
         #endif
     }
 
-    #if TESTBENCH
-    StartupStore(_T("... TunedParameter_Fastpanning set to: %d%s"),fastpanning,NEWLINE);
-    #endif
+    TestLog(_T("... TunedParameter_Fastpanning set to: %d"), fastpanning);
 
     doinit=false;
     return fastpanning;

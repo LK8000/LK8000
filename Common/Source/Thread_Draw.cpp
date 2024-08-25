@@ -309,9 +309,7 @@ _dontbitblt:
 
   } // Big LOOP
 
-  #if TESTBENCH
-  StartupStore(_T("... Thread_Draw terminated\n"));
-  #endif
+  TestLog(_T("... Thread_Draw terminated"));
   THREADEXIT = TRUE;
 
 }
@@ -363,31 +361,23 @@ void MapWindow::ResumeDrawingThread(void)
 void MapWindow::CloseDrawingThread(void)
 {
 #ifndef ENABLE_OPENGL
-  #if TESTBENCH
-  StartupStore(_T("... CloseDrawingThread started\n"));
-  #endif
+  TestLog(_T("... CloseDrawingThread started"));
   CLOSETHREAD = TRUE;
   drawTriggerEvent.set(); // wake self up
   SuspendDrawingThread();
 
-  #if TESTBENCH
-  StartupStore(_T("... CloseDrawingThread waitforsingleobject\n"));
-  #endif
+  TestLog(_T("... CloseDrawingThread waitforsingleobject"));
   #ifdef __linux__
   #else
   drawTriggerEvent.reset(); // on linux this is delaying 5000
   #endif
   MapWindowThread.Join();
 
-  #if TESTBENCH
-  StartupStore(_T("... CloseDrawingThread wait THREADEXIT\n"));
-  #endif
+  TestLog(_T("... CloseDrawingThread wait THREADEXIT"));
   while(!THREADEXIT) {
     Sleep(50);
   }
-  #if TESTBENCH
-  StartupStore(_T("... CloseDrawingThread finished\n"));
-  #endif
+  TestLog(_T("... CloseDrawingThread finished"));
 #else
   CLOSETHREAD = TRUE;
   THREADEXIT = TRUE;

@@ -88,9 +88,7 @@ bool SetBacklight() // VENTA4
 		break;
   }
 
-  #if TESTBENCH
-  StartupStore(_T("...... Backlight set ok!\n"));
-  #endif
+  TestLog(_T("...... Backlight set ok!"));
   return true;
 
 }

@@ -95,9 +95,7 @@ void ReinitScreen(void) {
   // This is needed to hide any menu currently on, as first thing.
   InputEvents::setMode(TEXT("default"));
 
-  #if TESTBENCH
-  StartupStore(_T("... ChangeScreen suspending Draw Thread\n"));
-  #endif
+  TestLog(_T("... ChangeScreen suspending Draw Thread\n"));
 
 #ifndef ENABLE_OPENGL
   MapWindow::SuspendDrawingThread();

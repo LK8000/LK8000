@@ -34,9 +34,7 @@ static void OnSelectClicked(WndButton* pWnd) {
 	return;
   }
 
-  #if TESTBENCH
-  StartupStore(_T("... Selected thermal n.%d <%s>\n"),s_selected,ThermalHistory[s_selected].Name);
-  #endif
+  TestLog(_T("... Selected thermal n.%d <%s>"),s_selected,ThermalHistory[s_selected].Name);
 
   SetThermalMultitarget(s_selected); // update selected multitarget
 

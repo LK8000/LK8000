@@ -51,9 +51,7 @@ void SettingsLeave() {
 
   // 101020 LKmaps contain only topology , so no need to force total reload!
   if(MAPFILECHANGED) {
-	#if TESTBENCH
-	StartupStore(_T(".... MAPFILECHANGED from configuration\n"));
-	#endif
+	TestLog(_T(".... MAPFILECHANGED from configuration"));
 	if (LKTopo==0) {
 		AIRSPACEFILECHANGED = TRUE;
 		AIRFIELDFILECHANGED = TRUE;
@@ -64,9 +62,7 @@ void SettingsLeave() {
   }
 
   if (TERRAINFILECHANGED) {
-	#if TESTBENCH
-	StartupStore(_T(".... TERRAINFILECHANGED from configuration\n"));
-	#endif
+	TestLog(_T(".... TERRAINFILECHANGED from configuration"));
     LockTerrainDataGraphics();
 	RasterTerrain::CloseTerrain();
 	RasterTerrain::OpenTerrain();
@@ -77,9 +73,7 @@ void SettingsLeave() {
   }
 
   if((WAYPOINTFILECHANGED) || (AIRFIELDFILECHANGED)) {
-    #if TESTBENCH
-    StartupStore(_T(".... WAYPOINT OR AIRFIELD CHANGED from configuration\n"));
-    #endif
+    TestLog(_T(".... WAYPOINT OR AIRFIELD CHANGED from configuration"));
     LockTaskData();
 
     SaveRecentList();
@@ -105,18 +99,14 @@ void SettingsLeave() {
   }
 
   if (TOPOLOGYFILECHANGED) {
-	#if TESTBENCH
-	StartupStore(_T(".... TOPOLOGYFILECHANGED from configuration\n"));
-	#endif
+	TestLog(_T(".... TOPOLOGYFILECHANGED from configuration"));
 	CloseTopology();
 	OpenTopology();
 	MapWindow::ForceVisibilityScan = true;
   }
 
   if(AIRSPACEFILECHANGED) {
-	#if TESTBENCH
-	StartupStore(_T(".... AIRSPACEFILECHANGED from configuration\n"));
-	#endif
+	TestLog(_T(".... AIRSPACEFILECHANGED from configuration"));
 	CAirspaceManager::Instance().CloseAirspaces();
 	CAirspaceManager::Instance().ReadAirspaces();
 	CAirspaceManager::Instance().SortAirspaces();
@@ -124,9 +114,7 @@ void SettingsLeave() {
   }
 
   if (POLARFILECHANGED) {
-	#if TESTBENCH
-	StartupStore(_T(".... POLARFILECHANGED from configuration\n"));
-	#endif
+	TestLog(_T(".... POLARFILECHANGED from configuration"));
 	ReadWinPilotPolar();
   }
 
@@ -145,9 +133,7 @@ void SettingsLeave() {
   }
 
   if(!SIMMODE && COMPORTCHANGED) {
-      #if TESTBENCH
-      StartupStore(_T(".... COMPORTCHANGED from configuration.  ForceComPortReset @%s\n"),WhatTimeIsIt());
-      #endif
+      TestLog(_T(".... COMPORTCHANGED from configuration.  ForceComPortReset @%s"), WhatTimeIsIt());
       LKForceComPortReset=true;
       // RestartCommPorts(); 110605
   }
@@ -165,13 +151,9 @@ void SystemConfiguration(short mode) {
 	}
   }
 
-  #if TESTBENCH
-  StartupStore(_T("... SETTINGS enter @%s\n"),WhatTimeIsIt());
-  #endif
+  TestLog(_T("... SETTINGS enter @%s"), WhatTimeIsIt());
   SettingsEnter();
   dlgConfigurationShowModal(mode);
-  #if TESTBENCH
-  StartupStore(_T("... SETTINGS leave @%s\n"),WhatTimeIsIt());
-  #endif
+  TestLog(_T("... SETTINGS leave @%s"), WhatTimeIsIt());
   SettingsLeave();
 }

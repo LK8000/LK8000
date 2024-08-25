@@ -70,10 +70,7 @@ BOOL IsWow64()
 // to keep trace of new items.
 //
 void Globals_Init(void) {
-
-  #if TESTBENCH
-  StartupStore(_T(". Globals_Init\n"));
-  #endif
+  TestLog(_T(". Globals_Init"));
   int i;
 
 

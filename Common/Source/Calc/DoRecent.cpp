@@ -125,9 +125,7 @@ void SaveRecentList() {
    int save_count = 0;
    for (int i=0; i<RecentNumber; i++)  {
       if ( RecentIndex[i] <= RESWP_END ) {
-         #if TESTBENCH
-         StartupStore(_T(".... SaveHistory: ignoring reserved waypoint %d"),RecentIndex[i]);
-         #endif
+         TestLog(_T(".... SaveHistory: ignoring reserved waypoint %d"),RecentIndex[i]);
          continue;
       }
       if ( !ValidWayPoint(RecentIndex[i])) {

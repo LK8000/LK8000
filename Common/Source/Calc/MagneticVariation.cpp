@@ -40,9 +40,7 @@ double CalculateMagneticVariation() {
 			);
 
 	if (magvar != magvar) {
-		#if TESTBENCH
-		StartupStore(_T(".... CalculateMagVar OVERFLOW detected\n"));
-		#endif
+		TestLog(_T(".... CalculateMagVar OVERFLOW detected"));
 		continue;
 	}
 	break;
@@ -50,30 +48,21 @@ double CalculateMagneticVariation() {
 
   // Check for a consistent result
   if (magvar != magvar) {
-	#if TESTBENCH
-	StartupStore(_T(".... CalculateMagVar OVERFLOW PROBLEM = no result!\n"));
-	#endif
+	TestLog(_T(".... CalculateMagVar OVERFLOW PROBLEM = no result!"));
 	return 0.0;
   }
   if (magvar==0) {
-	#if TESTBENCH
-	StartupStore(_T(".... CalculateMagVar ERROR,no result!\n"));
-	#endif
+	TestLog(_T(".... CalculateMagVar ERROR,no result!"));
 	return 0.0;
   }
   if (magvar>60||magvar<-60) {
-	#if TESTBENCH
-	StartupStore(_T(".... CalculateMagVar ERROR, ><60,no result!\n"));
-	#endif
+	TestLog(_T(".... CalculateMagVar ERROR, ><60,no result!"));
 	return 0.0;
   }
 
-  #if TESTBENCH
-  StartupStore(_T(".... Lat=%f Lon=%f H=%f y=%d m=%d d=%d MAGVAR= %f\n"),
+  TestLog(_T(".... Lat=%f Lon=%f H=%f y=%d m=%d d=%d MAGVAR= %f"),
 	GPS_INFO.Latitude, GPS_INFO.Longitude, h, 
 	GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, magvar);
-  #endif
-
 
   return magvar;
 

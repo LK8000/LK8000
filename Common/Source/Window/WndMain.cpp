@@ -284,10 +284,7 @@ bool WndMain::OnKeyDown(unsigned KeyCode) {
 }
 
 void AfterStartup() {
-
-  #if TESTBENCH
-  StartupStore(TEXT(". CloseProgressDialog%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(". CloseProgressDialog"));
   CloseProgressDialog();
 
   if (SIMMODE) {

@@ -605,9 +605,7 @@ void AlertBestAlternate(short soundmode) {
   if (!BestWarning || !CALCULATED_INFO.Flying) return; // 091125
 
   if (GPS_INFO.Time < (LastAlertTime-60) ) {
-	#if TESTBENCH
-	StartupStore(_T("... AlertBestAlternate back in time: now=%f last=%f, reset  %s\n"),GPS_INFO.Time,LastAlertTime,WhatTimeIsIt());
-	#endif
+	TestLog(_T("... AlertBestAlternate back in time: now=%f last=%f, reset %s"), GPS_INFO.Time, LastAlertTime, WhatTimeIsIt());
 	LastAlertTime=GPS_INFO.Time;
   }
 

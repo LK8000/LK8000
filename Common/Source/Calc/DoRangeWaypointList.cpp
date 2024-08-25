@@ -242,13 +242,11 @@ LabelLandables:
   // Set it for the first time only
   if (lastRetryRetuneTime==0) lastRetryRetuneTime=Basic->Time; 
 
-  #if TESTBENCH
-  StartupStore(_T(".... RangeTurnepoint=%d/%d (TPrange=%d) RangeLandable=%d/%d (LNrange=%d) retunecount=%d retrycount=%d sinceretry=%0.0fs \n"),
+  TestLog(_T(".... RangeTurnepoint=%d/%d (TPrange=%d) RangeLandable=%d/%d (LNrange=%d) retunecount=%d retrycount=%d sinceretry=%0.0fs \n"),
 	RangeTurnpointNumber, MAXRANGETURNPOINT, dstrangeturnpoint,
 	RangeLandableNumber, MAXRANGELANDABLE, dstrangelandable,
 	retunecount, retryretunecount,
 	Basic->Time-lastRetryRetuneTime);
-  #endif
 
   // If we are not over the counter limit, and enough time has passed, check for recalibration
   if (retryretunecount<MAXRETRYRETUNEDST && ((Basic->Time - lastRetryRetuneTime)>MAXRETRYRETUNEINT) ) {

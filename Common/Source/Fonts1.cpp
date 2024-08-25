@@ -177,12 +177,8 @@ void InitLKFonts() {
 // Historically we had two font configurations. For simplicity, we keep the two setups
 // still separated, since they are very long. The only drawback is that the deinit is in common.
 //
-void Init_Fonts_1(void)
-{
-
-  #if TESTBENCH
-  StartupStore(_T(". Init_Fonts_1%s"),NEWLINE);
-  #endif
+void Init_Fonts_1() {
+  TestLog(_T(". Init_Fonts_1"));
 
   LOGFONT logfontTitleWindowLogFont;
   LOGFONT logfontMapWindowLogFont;

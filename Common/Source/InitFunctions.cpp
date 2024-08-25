@@ -84,24 +84,16 @@ void PreloadInitialisation(bool ask) {
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
         if (!LKProfileLoad(startPilotFile)) {
-            #if TESTBENCH
-            StartupStore(_T(". PilotFile RESET to defaults%s"),NEWLINE);
-            #endif
+            TestLog(_T(". PilotFile RESET to defaults%s"),NEWLINE);
         }
         if (!LKProfileLoad(startDeviceFile)) {
-            #if TESTBENCH
-            StartupStore(_T(". DeviceFile RESET to defaults%s"),NEWLINE);
-            #endif
+            TestLog(_T(". DeviceFile RESET to defaults%s"),NEWLINE);
         }
         if (!LKProfileLoad(startAircraftFile)) {
-            #if TESTBENCH
-            StartupStore(_T(". AircraftFile RESET to defaults%s"),NEWLINE);
-            #endif
+            TestLog(_T(". AircraftFile RESET to defaults%s"),NEWLINE);
         }
     	if(!LKProfileLoad(startProfileFile)) {
-            #if TESTBENCH
-            StartupStore(_T(". SystemFile RESET to defaults%s"),NEWLINE);
-            #endif
+            TestLog(_T(". SystemFile RESET to defaults%s"),NEWLINE);
         }
     }
 	LKProfileInitRuntime();
@@ -189,9 +181,7 @@ BOOL InitInstance()
 #endif
 #endif
 
-  #if TESTBENCH
-  StartupStore(TEXT(". Create main window%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(". Create main window"));
 
   if(!main_window->Create(WindowSize)) {
       StartupStore(TEXT(". FAILURE: Create main window%s"),NEWLINE);

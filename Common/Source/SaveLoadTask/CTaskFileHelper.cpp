@@ -261,9 +261,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
     TCHAR taskFileName[MAX_PATH];
 
     if (FullResetAsked) {
-        #if TESTBENCH
-        StartupStore(_T("... LoadTask detected FullResetAsked, attempt to load DEMO.lkt\n"));
-        #endif
+        TestLog(_T("... LoadTask detected FullResetAsked, attempt to load DEMO.lkt\n"));
         // Clear the flag, forever.
         FullResetAsked=false;
 

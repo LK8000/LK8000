@@ -221,11 +221,9 @@ bool ReadWinPilotPolar(void) {
 			GlidePolar::WingArea = 0.0;
 		}
 
-              #if TESTBENCH
-              StartupStore(_T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f v2=%.2f,%.2f area=%.2f\n"),
+              TestLog(_T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f v2=%.2f,%.2f area=%.2f"),
                   ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1],
                   dPOLARW[1], dPOLARV[2], dPOLARW[2], GlidePolar::WingArea);
-              #endif
 
 		if (ww[0]<=0 || dPOLARV[0]==0 || dPOLARW[0]==0 || dPOLARV[1]==0 || dPOLARW[1]==0 || dPOLARV[2]==0 || dPOLARW[2]==0) {
 			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);

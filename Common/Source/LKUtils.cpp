@@ -21,9 +21,7 @@ extern TCHAR LastTaskFileName[MAX_PATH];
 
 
 void ResetNearestTopology(void) {
-  #if TESTBENCH
-  StartupStore(_T(". ResetNearestTopology%s"),NEWLINE);
-  #endif
+  TestLog(_T(". ResetNearestTopology"));
   NearestBigCity.Valid=false;
   NearestCity.Valid=false;
   NearestSmallCity.Valid=false;

@@ -28,6 +28,7 @@ Copyright_License {
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
+#include "MessageLog.h"
 
 static bool
 ReadFromFile(const char *path, off_t offset, void *buffer, size_t size)
@@ -87,9 +88,7 @@ DetectKoboModel()
   char buffer[16];
   if (!ReadFromFile("/dev/mmcblk0", 0x200, buffer, sizeof(buffer)))
     return KoboModel::UNKNOWN;
-#if TESTBENCH
-  	  StartupStore(_T(".. Detected Kobo Model <%s>%s"),buffer,,NEWLINE);
-#endif
+  TestLog(".. Detected Kobo Model <%s>", buffer);
   return DetectKoboModel(buffer);
 }
 

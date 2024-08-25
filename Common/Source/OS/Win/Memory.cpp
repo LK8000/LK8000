@@ -78,22 +78,16 @@ size_t FindFreeSpace(const TCHAR *path) {
   ULARGE_INTEGER FreeBytesAvailableToCaller;
   ULARGE_INTEGER TotalNumberOfBytes;
   ULARGE_INTEGER TotalNumberOfFreeBytes;
-  #if TESTBENCH
-  StartupStore(_T("... FindFreeSpace <%s> start\n"),path);
-  #endif
+  TestLog(_T("... FindFreeSpace <%s> start"),path);
   if (GetDiskFreeSpaceEx(path,
 			 &FreeBytesAvailableToCaller,
 			 &TotalNumberOfBytes,
 			 &TotalNumberOfFreeBytes)) {
-      #if TESTBENCH
-      StartupStore(_T("... FindFreeSpace ok\n"));
-      #endif
+      TestLog(_T("... FindFreeSpace ok"));
 
     return FreeBytesAvailableToCaller.LowPart/1024;
   } else {
-      #if TESTBENCH
-      StartupStore(_T("... FindFreeSpace failed, error=%ld\n"),GetLastError());
-      #endif
+    TestLog(_T("... FindFreeSpace failed, error=%ld"), GetLastError());
     return 0;
   }
 }

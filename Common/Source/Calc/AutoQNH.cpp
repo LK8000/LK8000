@@ -72,17 +72,12 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		int i=FindNearestWayPoint(Basic->Longitude, Basic->Latitude, 2000);
 		if ( (i>RESWP_END) && (WayPointList[i].Altitude>0) ) {  // avoid using TAKEOFF wp
 			fixaltitude=WayPointList[i].Altitude;
-			#if TESTBENCH
-			StartupStore(_T(". AutoQNH: setting QNH to nearest <%s> waypoint altitude=%.0f m%s"),
-				WayPointList[i].Name,fixaltitude,NEWLINE);
-			#endif
+			TestLog(_T(". AutoQNH: setting QNH to nearest <%s> waypoint altitude=%.0f m"), WayPointList[i].Name,fixaltitude);
 		} else {
-			#if TESTBENCH
 			if (fixaltitude!=0)
-				StartupStore(_T(". AutoQNH: setting QNH to average terrain altitude=%.0f m%s"),fixaltitude,NEWLINE);
+				TestLog(_T(". AutoQNH: setting QNH to average terrain altitude=%.0f m"), fixaltitude);
 			else
-				StartupStore(_T(". AutoQNH: cannot set QNH, impossible terrain altitude%s"),NEWLINE);
-			#endif
+				TestLog(_T(". AutoQNH: cannot set QNH, impossible terrain altitude"));
 		}
 	}
 	if (fixaltitude!=0) {
@@ -100,9 +95,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 								Units::ToAltitude(fixaltitude),
 								Units::GetAltitudeName());
 		DoStatusMessage(qmes);
-		#if TESTBENCH
-		StartupStore(_T("%s%s"),qmes,NEWLINE);
-		#endif
+		TestLog(_T("%s"), qmes);
 	}
   }
 }

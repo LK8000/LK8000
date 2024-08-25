@@ -28,9 +28,7 @@ void TripTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (LKSW_ResetTripComputer) {
 	LKSW_ResetTripComputer=false;
-	#if TESTBENCH
-	StartupStore(_T("... Trip Computer RESET by request\n"));
-	#endif
+	TestLog(_T("... Trip Computer RESET by request"));
 	Trip_Steady_Time=0;
 	Trip_Moving_Time=0;
 	steady_start_time=0;

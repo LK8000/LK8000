@@ -17,9 +17,7 @@ short i, bsize;
 char ventabuffer[200];
 FILE *fp;
 #endif
-	#if TESTBENCH
-	StartupStore(_T("... Init LDRotary @%s%s"),WhatTimeIsIt(),NEWLINE);
-	#endif
+	TestLog(_T("... Init LDRotary @%s"), WhatTimeIsIt());
 
 	switch (AverEffTime) {
 		case ae3seconds:
@@ -93,9 +91,7 @@ char ventabuffer[200];
 FILE *fp;
 #endif
 	if (LKSW_ResetLDRotary) {
-		#if TESTBENCH
-		StartupStore(_T("... LD ROTARY SWITCH RESET @%s%s"),WhatTimeIsIt(),NEWLINE);
-		#endif
+		TestLog(_T("... LD ROTARY SWITCH RESET @%s"), WhatTimeIsIt());
 		LKSW_ResetLDRotary=false;
 		InitLDRotary(&rotaryLD);
 	}
@@ -136,9 +132,7 @@ FILE *fp;
 			if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 				    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-			#if TESTBENCH
-			StartupStore(_T("... LDROTARY RESET, distance errors%s"),NEWLINE);
-			#endif
+			TestLog(_T("... LDROTARY RESET, distance errors"));
 			InitLDRotary(&rotaryLD);
 			errs=10; // an no more here until errs reset with valid data
 			return;

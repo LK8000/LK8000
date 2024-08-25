@@ -138,9 +138,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     _stprintf(line,_T("%s:  %s"),MsgToken<931>(),LANDINGWP_Name);
     file.WriteLn(line);
   } else {
-    #if TESTBENCH
-    StartupStore(_T(".... LogBookTXT, logging but still flying!%s"),NEWLINE);
-    #endif
+    TestLog(_T(".... LogBookTXT, logging but still flying!"));
     _stprintf(line,_T("%s: ??:??:??"),MsgToken<386>());
     file.WriteLn(line);
   }
@@ -273,9 +271,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
     Units::TimeToTextS(slanding, LocalTime(utc_landing_time));
     Units::TimeToTextS(slandingutc, utc_landing_time);
   } else {
-    #if TESTBENCH
-    StartupStore(_T(".... LogBookCSV, logging but still flying!%s"),NEWLINE);
-    #endif
+    TestLog(_T(".... LogBookCSV, logging but still flying!"));
     _tcscpy(slanding,_T("???"));
     _tcscpy(slandingutc,_T("???"));
   }
@@ -366,9 +362,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
     Units::TimeToText(Temp, utc_landing_time);
     lk::snprintf(slandingutc,_T("(UTC %s)"),Temp);
   } else {
-    #if TESTBENCH
-    StartupStore(_T(".... LogBookLST, logging but still flying!%s"),NEWLINE);
-    #endif
+    TestLog(_T(".... LogBookLST, logging but still flying!"));
     _tcscpy(slanding,_T("???"));
     _tcscpy(slandingutc,_T(""));
   }

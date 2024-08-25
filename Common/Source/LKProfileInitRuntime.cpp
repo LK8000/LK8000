@@ -27,10 +27,7 @@
 // Be careful, like AdjustVariables this function is called twice or more times on startup
 //
 void LKProfileInitRuntime() {
-
-  #if TESTBENCH
-  StartupStore(_T("... LKProfileInitRuntime\n"));
-  #endif
+  TestLog(_T("... LKProfileInitRuntime"));
 
   // Todo: use _Config values for files, and then we can compare if they changed
   WAYPOINTFILECHANGED = TRUE;

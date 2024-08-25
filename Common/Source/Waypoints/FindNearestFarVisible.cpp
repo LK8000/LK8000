@@ -19,9 +19,7 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpT
   int nearestIndex = -1;
   double nearestDistance, dist;
 
-  #if TESTBENCH
   int farvisibles=0;
-  #endif
 
   if(WayPointList.size() <= NUMRESWP ) return -1;
   nearestDistance = maxRange;
@@ -31,9 +29,7 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpT
 	if (!WayPointList[i].FarVisible) continue;
 	if (wpType && (WayPointCalc[i].WpType != wpType)) continue;
 
-	#if TESTBENCH
 	farvisibles++;
-	#endif
 
 	DistanceBearing(Y,X, WayPointList[i].Latitude, WayPointList[i].Longitude, &dist, NULL);
 
@@ -43,9 +39,7 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpT
 	}
   }
 
-  #if TESTBENCH
-  StartupStore(_T("...... Checked %d farvisibles waypoints for maxRange=%f, type=%d\n"),farvisibles,maxRange,wpType);
-  #endif
+  TestLog(_T("...... Checked %d farvisibles waypoints for maxRange=%f, type=%d\n"),farvisibles,maxRange,wpType);
 
   if(nearestDistance < maxRange) {
 	return nearestIndex;

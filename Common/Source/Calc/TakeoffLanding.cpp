@@ -131,9 +131,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// Check for an abnormal status
 	if (LKSW_ForceLanding) {
 		LKSW_ForceLanding=FALSE;
-		#if TESTBENCH
-		StartupStore(_T("... Not flying, but ForceLanding request found! Cleared.\n"));
-		#endif
+		TestLog(_T("... Not flying, but ForceLanding request found! Cleared."));
 	}
 	// detect takeoff
 	if (time_in_flight>10) {
@@ -199,9 +197,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   } else {
 	// detect landing
 	if (LKSW_ForceLanding) {
-		#if TESTBENCH
-		StartupStore(_T("... Force Landing detected\n"));
-		#endif
+		TestLog(_T("... Force Landing detected"));
 		time_in_flight=0;
 		LKSW_ForceLanding=FALSE;
 	}

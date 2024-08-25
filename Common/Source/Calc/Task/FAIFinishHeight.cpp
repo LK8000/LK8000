@@ -39,9 +39,7 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int twp) {
     }
     if (!CheckSafetyAltitudeApplies(Task[twp].Index)) safetyaltitudearrival=0;
   } else {
-    #if TESTBENCH
-    StartupStore(_T("..... FAIFinishHeight invalid twp=%d%s"),twp,NEWLINE);
-    #endif
+    TestLog(_T("..... FAIFinishHeight invalid twp=%d"), twp);
     wp_alt = 0;
   }
 

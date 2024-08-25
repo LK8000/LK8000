@@ -2724,9 +2724,7 @@ struct airspace_sorter {
 };
 
 void CAirspaceManager::SortAirspaces(void) {
-#if TESTBENCH
-    StartupStore(TEXT(". SortAirspace%s"), NEWLINE);
-#endif
+    TestLog(_T(". SortAirspace"));
 
     // Sort by top altitude for drawing
     ScopeLock guard(_csairspaces);

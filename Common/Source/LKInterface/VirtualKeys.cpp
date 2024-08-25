@@ -58,10 +58,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=MapWindow::Y_BottomBar-NIBLSCALE(2);
-#if TESTBENCH
-                StartupStore(_T("... Virtualkeys: s_xleft=%d s_xright=%d s_bottomY=%d%s"),s_xleft,s_xright,s_bottomY, NEWLINE);
-#endif
-
+		TestLog(_T("... Virtualkeys: s_xleft=%d s_xright=%d s_bottomY=%d"),s_xleft,s_xright,s_bottomY);
 		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
 
@@ -111,9 +108,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// This could happen only in Ibox mode. We should never fall here.
 		yup=(short)(ScreenSizeY/2.7);
 		ydown=(short)(ScreenSizeY-(ScreenSizeY/2.7));
-		#if TESTBENCH
-		StartupStore(_T("...... DrawBottom FALSE in virtual key processing!\n"));
-		#endif
+		TestLog(_T("...... DrawBottom FALSE in virtual key processing!"));
 	}
 
 	#ifdef DEBUG_PROCVK

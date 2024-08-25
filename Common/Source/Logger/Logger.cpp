@@ -524,9 +524,7 @@ void LogPoint(const NMEA_INFO& info) {
 
   // pending rounding error from millisecond timefix in RMC sentence?
   if (info.Second >= 60 || info.Second < 0) {
-#if TESTBENCH
-    StartupStore(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped\n"),info.Second);
-#endif
+    TestLog(_T("... WRONG TIMEFIX FOR LOGGER, seconds=%d, fix skipped"), info.Second);
     return;
   }
 
@@ -768,13 +766,9 @@ static bool DeleteOldIGCFile(TCHAR *pathname) {
 
   // now, delete the file...
   lk::snprintf(fullname, TEXT("%s%s"),pathname,oldestname.c_str());
-  #if TESTBENCH
-  StartupStore(_T("... DeleteOldIGCFile <%s> ...\n"),fullname);
-  #endif
+  TestLog(_T("... DeleteOldIGCFile <%s> ..."), fullname);
   lk::filesystem::deleteFile(fullname);
-  #if TESTBENCH
-  StartupStore(_T("... done DeleteOldIGCFile\n"));
-  #endif
+  TestLog(_T("... done DeleteOldIGCFile"));
   return true; // did delete one
 }
 
@@ -828,12 +822,10 @@ bool LoggerClearFreeSpace(void) {
     }
   }
   if (kbfree>=LOGGER_MINFREESTORAGE) {
-    #if TESTBENCH
-    StartupStore(TEXT("... LoggerFreeSpace returned: true%s"),NEWLINE);
-    #endif
+    TestLog(_T("... LoggerFreeSpace returned: true"));
     return true;
   } else {
-    StartupStore(TEXT("--- LoggerFreeSpace returned: false%s"),NEWLINE);
+    TestLog(_T("--- LoggerFreeSpace returned: false"));
     return false;
   }
 }

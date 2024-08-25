@@ -49,9 +49,7 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   if (!Calculated->Flying) {
 	if (MODE!=CRUISE) {
-		#if TESTBENCH
-		StartupStore(_T(".... Not flying, still circling -> Cruise forced!\n"));
-		#endif
+		TestLog(_T(".... Not flying, still circling -> Cruise forced!"));
 		goto _forcereset;
 	}
 	return;
@@ -59,9 +57,7 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // Back in time in IGC replay mode?
   if(Basic->Time <= LastTime) {
-    #if TESTBENCH
-    StartupStore(_T("...... Turning check is back in time. Now=%f Last=%f: reset %s\n"),Basic->Time, LastTime,WhatTimeIsIt());
-    #endif
+    TestLog(_T("...... Turning check is back in time. Now=%f Last=%f: reset %s"),Basic->Time, LastTime,WhatTimeIsIt());
 _forcereset:
     LastTime = Basic->Time; // 101216 PV not sure of this.. 
     LastTrack = 0;

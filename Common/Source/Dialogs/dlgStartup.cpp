@@ -60,9 +60,7 @@ bool FullResetAsked = false;
 static bool OnTimerNotify(WndForm* pWnd) {
     // Do we have a premature shutdown request from system quit?
     if (RUN_MODE == RUN_SHUTDOWN) {
-#if TESTBENCH
-        StartupStore(_T("... dlGStartup shutdown requested\n"));
-#endif
+      TestLog(_T("... dlGStartup shutdown requested"));
       if(pWnd) {
         pWnd->SetModalResult(mrOK);
       }
@@ -709,9 +707,7 @@ static WndForm* InitStartup(BYTE mode) {
 short dlgStartupShowModal(void) {
     WndProperty* wp = nullptr;
 
-#if TESTBENCH
-    StartupStore(TEXT(". Startup dialog, RUN_MODE=%d %s"), RUN_MODE, NEWLINE);
-#endif
+    TestLog(_T(". Startup dialog, RUN_MODE=%d"), RUN_MODE);
 
     switch(RUN_MODE) {
         case RUN_WELCOME: // FLY SIM PROFILE EXIT
@@ -873,18 +869,14 @@ short dlgStartupShowModal(void) {
                 if (_tcscmp(dfe->GetPathFile(), startProfileFile)) { // if they are not the same
                     const TCHAR* szFileName = dfe->GetPathFile();
                     if (_tcscmp(szFileName, _T("PROFILE_RESET")) == 0) {
-#if TESTBENCH
-                        StartupStore(_T("... Selected FULL RESET virtual profile\n"));
-#endif
+                        TestLog(_T("... Selected FULL RESET virtual profile"));
                         _tcscpy(startProfileFile,szFileName);
 
                         MessageBoxX(MsgToken<1758>(), MsgToken<1757>(), mbOk);
                         FullResetAsked = true;
                         LKProfileResetDefault();
                     } else {
-#if TESTBENCH
-                        StartupStore(_T("... Selected new profile, preloading..\n"));
-#endif
+                        TestLog(_T("... Selected new profile, preloading..."));
                         LocalPath(startProfileFile, _T(LKD_CONF), szFileName);
                         LKProfileLoad(startProfileFile);
                         FullResetAsked = false;
@@ -897,9 +889,7 @@ short dlgStartupShowModal(void) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startAircraftFile)) { // if they are not the same
                     LocalPath(startAircraftFile, _T(LKD_CONF), dfe->GetPathFile());
-#if TESTBENCH
-                    StartupStore(_T("... Selected new aircraft, preloading..\n"));
-#endif
+                    TestLog(_T("... Selected new aircraft, preloading..."));
                     LKProfileLoad(startAircraftFile);
                     LKProfileInitRuntime();
                 }
@@ -909,9 +899,7 @@ short dlgStartupShowModal(void) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startDeviceFile)) { // if they are not the same
                     LocalPath(startDeviceFile, _T(LKD_CONF), dfe->GetPathFile());
-#if TESTBENCH
-                    StartupStore(_T("... Selected new device, preloading..\n"));
-#endif
+                    TestLog(_T("... Selected new device, preloading..."));
                     LKProfileLoad(startDeviceFile);
                     LKProfileInitRuntime();
                 }
@@ -921,9 +909,7 @@ short dlgStartupShowModal(void) {
             if (_tcslen(dfe->GetPathFile()) > 0) {
                 if (_tcscmp(dfe->GetPathFile(), startPilotFile)) { // if they are not the same
                     LocalPath(startPilotFile, _T(LKD_CONF), dfe->GetPathFile());
-#if TESTBENCH
-                    StartupStore(_T("... Selected new pilot, preloading..\n"));
-#endif
+                    TestLog(_T("... Selected new pilot, preloading..."));
                     LKProfileLoad(startPilotFile);
                     LKProfileInitRuntime();
                 }

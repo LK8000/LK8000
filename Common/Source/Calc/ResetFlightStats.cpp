@@ -23,9 +23,8 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   int i;
   (void)Basic;
 
-    #if TESTBENCH
-    StartupStore(_T(". Reset flight statistics\n"));
-    #endif
+    TestLog(_T(". Reset flight statistics"));
+
     // It is better to reset it even if UseContestEngine() if false, because we might
     // change aircraft type during runtime. We never know.
     CContestMgr::Instance().Reset(Handicap);

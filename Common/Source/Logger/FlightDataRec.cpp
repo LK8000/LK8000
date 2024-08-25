@@ -46,9 +46,7 @@ void InitFlightDataRecorder() {
 
   // Did we already found a config? If so, dont do anything else.
   if (FlightDataRecorderActive) {
-	#if TESTBENCH
-	StartupStore(_T("... InitFDR error: already initialised!\n"));
-	#endif
+	TestLog(_T("... InitFDR error: already initialised!"));
 	return;
   }
 
@@ -70,9 +68,7 @@ void InitFlightDataRecorder() {
 	// We shall no more check for dataconfig, unless we reset DoInit
 	// So now the FlightDataRecorder is disabled at all, and we shall only
 	// check for FlightDataRecorderActive to be true 
-	#if TESTBENCH
-	StartupStore(_T("... InitFDR: no configuration, FDR disabled\n"));
-	#endif
+	TestLog(_T("... InitFDR: no configuration, FDR disabled"));
 	return;
   }
 
@@ -453,9 +449,7 @@ void CloseFlightDataRecorder() {
   if (!FlightDataRecorderActive) return;
 
   FlightDataRecorderActive=false;
-  #if TESTBENCH
-  StartupStore(_T("... Closing Flight Data Recorder\n"));
-  #endif
+  TestLog(_T("... Closing Flight Data Recorder"));
   iLogDelay=0;
   if (FlightDataRecorderFile) fclose(FlightDataRecorderFile);
 }

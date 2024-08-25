@@ -261,19 +261,13 @@ void AddReservedWaypoints()
  */
 void InitVirtualWaypoints()	// 091102
 {
-  #if TESTBENCH
-  StartupStore(_T(". InitVirtualWaypoints: start%s"),NEWLINE);
-  #endif
+  TestLog(_T(". InitVirtualWaypoints: start"));
 
   // if first load, reserve space
   if (WayPointList.size()<=NUMRESWP) {
 	AddReservedWaypoints();
-	#if TESTBENCH
-	StartupStore(_T(". InitVirtualWaypoints: done (%d vwp)%s"),NUMRESWP,NEWLINE);
-	#endif
+	TestLog(_T(". InitVirtualWaypoints: done (%d vwp)"), NUMRESWP);
   } else {
-	#if TESTBENCH
-	StartupStore(_T(".. InitVirtualWaypoints: already done, skipping.%s"),NEWLINE);
-        #endif
+	TestLog(_T(".. InitVirtualWaypoints: already done, skipping."));
   }
 }

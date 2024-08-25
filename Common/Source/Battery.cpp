@@ -289,10 +289,9 @@ void UpdateBatteryInfos(void) {
     PDABatteryStatus=BatteryInfo.acStatus;
     PDABatteryFlag=BatteryInfo.chargeStatus;
 
-    #if TESTBENCH
-    if (HaveBatteryInfo==false)
-        StartupStore(_T("... LKBatteryManager: HaveBatteryInfo  ENABLED%s"),NEWLINE);
-    #endif
+    if (HaveBatteryInfo==false) {
+      TestLog(_T("... LKBatteryManager: HaveBatteryInfo  ENABLED"));
+    }
     HaveBatteryInfo=true;
 
     // All you need to display extra Battery informations...
@@ -304,10 +303,9 @@ void UpdateBatteryInfos(void) {
     //		BatteryInfo.BatteryTemperature, BatteryInfo.BatteryLifeTime, BatteryInfo.BatteryFullLifeTime);
     //	StartupStore( vtemp );
   } else {
-      #if TESTBENCH
-      if (HaveBatteryInfo==true)
-          StartupStore(_T("... LKBatteryManager: HaveBatteryInfo DISABLED%s"),NEWLINE);
-      #endif
+      if (HaveBatteryInfo) {
+          TestLog(_T("... LKBatteryManager: HaveBatteryInfo DISABLED"));
+      }
       HaveBatteryInfo=false;
 
   }
@@ -326,10 +324,8 @@ void LKBatteryManager() {
   static int last_percent=0, last_status=0;
 
   if (!battInitialized) {
-	#if TESTBENCH
-	StartupStore(_T("... LKBatteryManager waiting for first update%s"),NEWLINE);
-	#endif
-        return;
+    TestLog(_T("... LKBatteryManager waiting for first update"));
+    return;
   }
   if (invalid) return;
   if (DoInit[MDI_BATTERYMANAGER]) {
@@ -511,12 +507,11 @@ bool GiveBatteryWarnings(void)
 
   // If last warning was issued more than 60 minutes ago, reset toomany.
   if (GPS_INFO.Time>(last_time+3600)) {
-	#if TESTBENCH
-	if (last_time>0 && numwarn>0)
-		StartupStore(_T("... GiveBatteryWarnings resetting at %s%s"),WhatTimeIsIt(),NEWLINE);
-	#endif
-	toomany=false;
-	numwarn=0;
+    if (last_time>0 && numwarn>0) {
+      StartupStore(_T("... GiveBatteryWarnings resetting at %s"), WhatTimeIsIt());
+    }
+    toomany=false;
+    numwarn=0;
   }
 
   if (toomany) return false;

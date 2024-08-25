@@ -38,37 +38,27 @@ bool RotateScreen(short angle) {
   if (angle==90) {
 	switch (DeviceMode.dmDisplayOrientation) {
 		case DMDO_0:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=0, rotate to 90\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=0, rotate to 90\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_90;
 			break;
 		case DMDO_90:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=90, rotate back to 0\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=90, rotate back to 0\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_0;
 			break;
 		case DMDO_180:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=180, rotate to 270\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=180, rotate to 270\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_270;
 			break;
 		case DMDO_270:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=270, rotate back to 180\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=270, rotate back to 180\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_180;
 			break;
 		default:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=UNKNOWN\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=UNKNOWN\n"));
 			break;
 	}
   }  // angle 90
@@ -79,37 +69,27 @@ bool RotateScreen(short angle) {
   if (angle==180) {
 	switch (DeviceMode.dmDisplayOrientation) {
 		case DMDO_0:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=0, flip to 180\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=0, flip to 180\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_180;
 			break;
 		case DMDO_90:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=90, flip to 270\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=90, flip to 270\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_270;
 			break;
 		case DMDO_180:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=180, flip back to 0\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=180, flip back to 0\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_0;
 			break;
 		case DMDO_270:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=270, flip back to 90\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=270, flip back to 90\n"));
 			memset(&DeviceMode, 0, sizeof(DeviceMode));
 			DeviceMode.dmDisplayOrientation = DMDO_90;
 			break;
 		default:
-			#if TESTBENCH
-			StartupStore(_T("... CURRENT ORIENT=UNKNOWN\n"));
-			#endif
+			TestLog(_T("... CURRENT ORIENT=UNKNOWN\n"));
 			break;
 	}
   } // angle 180
@@ -138,9 +118,7 @@ bool RotateScreen(short angle) {
 
 	return true;
   } else {
-	#if TESTBENCH
-	StartupStore(_T("... Screen Rotation failed!\n"));
-	#endif
+	TestLog(_T("... Screen Rotation failed!"));
 	return false;
   }
 

@@ -227,9 +227,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(bLinkEnable)
   {
-    #if TESTBENCH
-    StartupStore(TEXT("LAXNav: enable LX LAXNav direct Link %s"), NEWLINE);
-    #endif
+    TestLog(_T("LAXNav: enable LX LAXNav direct Link"));
     iNano3_PDABaudrate = d->Com->GetBaudrate();
 
     _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,DIRECT"));
@@ -238,9 +236,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
     if((iNano3_PDABaudrate > 0) && (iNano3_GPSBaudrate >0) && (iNano3_PDABaudrate != iNano3_GPSBaudrate))
     {
       d->Com->SetBaudrate(iNano3_GPSBaudrate);
-    #if TESTBENCH
-      StartupStore(TEXT("LAXNav: Set Baudrate %i %s"),iNano3_GPSBaudrate, NEWLINE);
-    #endif
+      TestLog(_T("LAXNav: Set Baudrate %i"), iNano3_GPSBaudrate);
       Sleep(CHANGE_DELAY);
     }
     Sleep(CHANGE_DELAY);
@@ -251,16 +247,12 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
     if((iNano3_PDABaudrate > 0) && (iNano3_GPSBaudrate > 0) &&(iNano3_PDABaudrate != iNano3_GPSBaudrate))
     {
-#if TESTBENCH
-      StartupStore(TEXT("LAXNav: Set Baudrate %i %s"),iNano3_PDABaudrate, NEWLINE);
-#endif
+      TestLog(_T("LAXNav: Set Baudrate %i"), iNano3_PDABaudrate);
       d->Com->SetBaudrate(iNano3_PDABaudrate);
       Sleep(CHANGE_DELAY);
     }
 
-    #if TESTBENCH
-    StartupStore(TEXT("LAXNav: Return from LAXNav link %s"), NEWLINE);
-    #endif
+    TestLog(TEXT("LAXNav: Return from LAXNav link"));
     _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
     SendNmea(d,szTmp);
     Sleep(CHANGE_DELAY);

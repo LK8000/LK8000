@@ -2240,9 +2240,7 @@ void InputEvents::eventAutoLogger(const TCHAR *misc) {
 // note: the text following the 'note' characters is added to the log file
 void InputEvents::eventLogger(const TCHAR *misc) {
 
-#if TESTBENCH
-  StartupStore(_T(". eventLogger: %s") NEWLINE, misc );
-#endif
+  TestLog(_T(". eventLogger: %s"), misc );
 
   if (_tcscmp(misc, TEXT("start ask")) == 0) {
     guiStartLogger();
@@ -2266,13 +2264,9 @@ void InputEvents::eventLogger(const TCHAR *misc) {
     EnableLogNMEA = !EnableLogNMEA;
     if (EnableLogNMEA) {
       DoStatusMessage(MsgToken<864>()); // NMEA Log ON
-      #if TESTBENCH
-      StartupStore(_T("... NMEA LOG IS ON @%s%s"),WhatTimeIsIt(),NEWLINE);
-      #endif
+      TestLog(_T("... NMEA LOG IS ON @%s"), WhatTimeIsIt());
     } else {
-      #if TESTBENCH
-      StartupStore(_T("... NMEA LOG IS OFF @%s%s"),WhatTimeIsIt(),NEWLINE);
-      #endif
+      StartupStore(_T("... NMEA LOG IS OFF @%s"), WhatTimeIsIt());
       DoStatusMessage(MsgToken<865>()); // NMEA Log OFF
     }
     return;

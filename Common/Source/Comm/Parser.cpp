@@ -377,9 +377,7 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
   // among the same quantum time
   if(ThisTime< LastTime) {
-    #if TESTBENCH
-    StartupStore(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f   %s\n"), LastTime, ThisTime,WhatTimeIsIt());
-    #endif
+    TestLog(_T("... TimeHasAdvanced BACK in time: Last=%f This=%f   %s"), LastTime, ThisTime, WhatTimeIsIt());
     LastTime = ThisTime;
     StartDay = -1; // reset search for the first day
     MasterTimeReset();
@@ -558,9 +556,7 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
 	// note that Condor sends no date..
 	const size_t size_date = strlen(params[8]);
 	if (size_date < 6 && !DevIsCondor) {
-		#if TESTBENCH
-		StartupStore(_T(".... RMC date field empty, skip sentence!\n"));
-		#endif
+		TestLog(_T(".... RMC date field empty, skip sentence!"));
 		return TRUE;
 	}
 

@@ -17,9 +17,7 @@ void InitWayPointCalc(void);
 
 void ReadWayPoints(void)
 {
-    #if TESTBENCH
-    StartupStore(TEXT(". ReadWayPoints%s"),NEWLINE);
-    #endif
+    TestLog(TEXT(". ReadWayPoints"));
 
     LockTaskData();
     CloseWayPoints(); // BUGFIX 091104 duplicate waypoints entries

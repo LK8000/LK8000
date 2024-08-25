@@ -293,9 +293,9 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 Column2[n] = Column3[n] - K2TextSize[n].cx - InfoNumberSize.cx;
 
                 int spare = (Column2[n] - K1TextSize[n].cx - left - InfoNumberSize.cx);
-#if TESTBENCH
-                if (spare < 1) StartupStore(_T("... NEAREST: mapspace=%d spare invalid, =%d%s"), n, spare, NEWLINE);
-#endif
+                if (spare < 1) {
+                    TestLog(_T("... NEAREST: mapspace=%d spare invalid, =%d"), n, spare);
+                }
                 if (spare < 0) spare = 0; // no problem, the user chose a font too big
                 // the available space for printing the name after minimally spacing the other items.
                 // Result will be perfectly readable, but spacing between items is much welcome.
@@ -307,9 +307,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 if (available_size <= min_name[n]) {
                     //  0 or 1 chars do not make a name. We force 2 and good luck with visibility.
                     if (available_size < 2) {
-#if TESTBENCH
-                        StartupStore(_T("... NEAREST: mapspace=%d not enough space=%d for item names%s"), n, available_size, NEWLINE);
-#endif
+                        TestLog(_T("... NEAREST: mapspace=%d not enough space=%d for item names"), n, available_size);
                         size_name = 2;
                     } else {
                         size_name = available_size;

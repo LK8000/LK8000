@@ -4494,17 +4494,13 @@ int ival;
   }
 
   if (fontschanged) {
-      #if TESTBENCH
-      StartupStore(_T("..... dlgConfiguration: fontschanged requested\n"));
-      #endif
+      TestLog(_T("..... dlgConfiguration: fontschanged requested"));
       FONTSCHANGED=true;
       fontschanged=false;
   }
 
   if (snailchanged) {
-      #if TESTBENCH
-      StartupStore(_T("..... dlgConfiguration: snailchanged requested\n"));
-      #endif
+      TestLog(_T("..... dlgConfiguration: snailchanged requested"));
       SNAILCHANGED=true;
       snailchanged=false;
   }

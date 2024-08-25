@@ -20,9 +20,7 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 
 
 void OpenTopology() {
-  #if TESTBENCH
-  StartupStore(TEXT(". OpenTopology%s"),NEWLINE);
-  #endif
+  TestLog(_T(". OpenTopology"));
   CreateProgressDialog(MsgToken<902>()); // Loading Topology File...
 
   // Start off by getting the names and paths
@@ -271,9 +269,7 @@ void OpenTopology() {
 
 
 void CloseTopology() {
-  #if TESTBENCH
-  StartupStore(TEXT(". CloseTopology%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(". CloseTopology"));
 
   LockTerrainDataGraphics();
   std::for_each(std::begin(TopoStore), std::end(TopoStore), safe_delete());

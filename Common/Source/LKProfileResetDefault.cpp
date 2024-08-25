@@ -54,9 +54,7 @@ void LKProfileResetDefault() {
 
   int i;
 
-  #if TESTBENCH
-  StartupStore(TEXT("... ProfileResetDefault%s"),NEWLINE);
-  #endif
+  TestLog(TEXT("... ProfileResetDefault"));
 
   Units::ResetSettings();
   

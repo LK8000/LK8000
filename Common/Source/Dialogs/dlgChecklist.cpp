@@ -250,9 +250,7 @@ static bool LoadChecklist(const TCHAR* fileName, bool warn) {
     return(false);
   }
 
-  #if TESTBENCH
-  StartupStore(_T(". Loading UTF notes <%s>%s"),fileName,NEWLINE);
-  #endif
+  TestLog(_T(". Loading UTF notes <%s>"), fileName);
 
   TCHAR TempString[MAXNOTETITLE+1];
   TCHAR Details[MAXNOTEDETAILS+1];

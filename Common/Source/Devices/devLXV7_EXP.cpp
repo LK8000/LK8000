@@ -81,9 +81,7 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 
   if(bLinkEnable)
   {
-	#if TESTBENCH
-	StartupStore(TEXT("V7: enable LX V7 direct Link %s"), NEWLINE);
-	#endif
+	TestLog(_T("V7: enable LX V7 direct Link"));
 	LXV7_EXP_iPDABaudrate = d->Com->GetBaudrate();
 
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
@@ -93,9 +91,7 @@ if(LXV7_EXP_iGPSBaudrate ==0)
     if(LXV7_EXP_iPDABaudrate != LXV7_EXP_iGPSBaudrate)
     {
 	  d->Com->SetBaudrate(LXV7_EXP_iGPSBaudrate);
-	#if TESTBENCH
-	  StartupStore(TEXT("V7: Set Baudrate %i %s"),LXV7_EXP_iGPSBaudrate, NEWLINE);
-	#endif
+	  TestLog(_T("V7: Set Baudrate %i"),LXV7_EXP_iGPSBaudrate);
 	  Sleep(CHANGE_DELAY);
     }
 	Sleep(CHANGE_DELAY);
@@ -106,16 +102,12 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 
     if(LXV7_EXP_iPDABaudrate != LXV7_EXP_iGPSBaudrate)
     {
-	#if TESTBENCH
-	  StartupStore(TEXT("V7: Set Baudrate %i %s"),LXV7_EXP_iPDABaudrate, NEWLINE);
-	#endif
+	  TestLog(_T("V7: Set Baudrate %i"), LXV7_EXP_iPDABaudrate);
 	  d->Com->SetBaudrate(LXV7_EXP_iPDABaudrate);
 	  Sleep(CHANGE_DELAY);
     }
 
-	#if TESTBENCH
-	StartupStore(TEXT("v7: Return from V7 link %s"), NEWLINE);
-	#endif
+	TestLog(_T("v7: Return from V7 link"));
 	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);

@@ -18,11 +18,8 @@ extern void InitializeOneFont (LKFont& theFont, LOGFONT logfont);
 //
 // IF WE ADD A FONT, WE MUST ADD ALSO THE NEW DEINIT FOR IT , REMEMBER
 //
-void Init_Fonts_2(void)
-{
-  #if TESTBENCH
-  StartupStore(_T(". Init_Fonts_2%s"),NEWLINE);
-  #endif
+void Init_Fonts_2() {
+  TestLog(_T(". Init_Fonts_2"));
 
   LOGFONT logfontTarget;	// StatisticsWindow
   LOGFONT logfontBig;		// InfoWindow
@@ -565,9 +562,9 @@ void Init_Fonts_2(void)
   }
 
 
-  #if TESTBENCH
-  if (ScreenSize==0) StartupStore(_T("... (LKFonts) Forcing font resize%s"),NEWLINE);
-  #endif
+  if (ScreenSize==0) {
+	StartupStore(_T("... (LKFonts) Forcing font resize"));
+  }
 
   // BUILD UP ALL-RES AUTOMATIC FONTS
   //

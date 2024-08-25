@@ -24,9 +24,7 @@ void CloseCalculations() {
 
 
 void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  #if TESTBENCH
-  StartupStore(TEXT(". Init Calculations%s"),NEWLINE);
-  #endif
+  TestLog(TEXT(". Init Calculations"));
 
   ResetFlightStats(Basic, Calculated);
 

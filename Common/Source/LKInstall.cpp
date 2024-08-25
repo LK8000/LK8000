@@ -35,9 +35,7 @@ void InstallSystem() {
 
   bool failure=false;
 
-  #if TESTBENCH
-  StartupStore(_T(". Welcome to InstallSystem v1.2%s"),NEWLINE);
-  #endif
+  TestLog(_T(". Welcome to InstallSystem v1.2"));
   SystemPath(srcdir,TEXT(LKD_SYSTEM));
 
 
@@ -51,9 +49,7 @@ void InstallSystem() {
 	StartupStore(_T("------ Missing checkfile <%s>%s"),srcfile,NEWLINE);
 	failure=true;
   } else {
-	#if TESTBENCH
-	StartupStore(_T(". InstallSystem source directory <%s> is available%s"),srcdir,NEWLINE);
-	#endif
+	TestLog(_T(". InstallSystem source directory <%s> is available"), srcdir);
   }
 
 #ifdef PNA
@@ -194,15 +190,11 @@ void InstallSystem() {
   // we cannot check directory existance without the risk of hanging for many seconds
   // we can only rely on singe real file existance, not on directories
 
-  #if TESTBENCH
-  StartupStore(_T(". Checking TAHOMA font%s"),NEWLINE);
-  #endif
+  TestLog(_T(". Checking TAHOMA font"));
   _stprintf(srcfile,TEXT("%s\\TAHOMA.TTF"),srcdir);
   _stprintf(dstfile,TEXT("%s\\TAHOMA.TTF"),dstdir);
   if ( lk::filesystem::exist(dstfile) ) {
-	#if TESTBENCH
-	StartupStore(_T(". Font TAHOMA.TTF is already installed%s"),NEWLINE);
-	#endif
+	TestLog(_T(". Font TAHOMA.TTF is already installed"));
   } else {
 	if ( !lk::filesystem::copyFile(srcfile,dstfile,false) )  {
 		StartupStore(_T("------ Could not copy TAHOMA.TTF on device, not good.%s"),NEWLINE);
@@ -214,15 +206,11 @@ void InstallSystem() {
   // not needed, cannot overwrite tahoma while in use! Tahoma bold not used for some reason in this case.
   // Problem solved, look at FontPath !!
 
-  #if TESTBENCH
-  StartupStore(_T(". Checking TAHOMABD font%s"),NEWLINE);
-  #endif
+  TestLog(_T(". Checking TAHOMABD font"));
   _stprintf(srcfile,TEXT("%s\\TAHOMABD.TTF"),srcdir);
   _stprintf(dstfile,TEXT("%s\\TAHOMABD.TTF"),dstdir);
   if ( lk::filesystem::exist(dstfile) ) {
-	#if TESTBENCH
-	StartupStore(_T(". Font TAHOMABD.TTF is already installed%s"),NEWLINE);
-	#endif
+	TestLog(_T(". Font TAHOMABD.TTF is already installed"));
   } else {
 	if ( !lk::filesystem::copyFile(srcfile,dstfile,false))  {
 		StartupStore(_T("------ Could not copy TAHOMABD.TTF on device, not good.%s"),NEWLINE);
@@ -231,9 +219,7 @@ void InstallSystem() {
 		StartupStore(_T("... Font TAHOMABD.TTF installed on device%s"),NEWLINE);
   }
 
-  #if TESTBENCH
-  StartupStore(_T(". InstallSystem completed OK%s"),NEWLINE);
-  #endif
+  TestLog(_T(". InstallSystem completed OK"));
 #endif
 }
 

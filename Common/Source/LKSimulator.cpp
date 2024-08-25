@@ -70,9 +70,7 @@ void LKSimulator(void) {
 		UnlockFlightData();
 		return;
 	}
-	#if TESTBENCH
-	StartupStore(_T(". SIMULATOR: real init%s"),NEWLINE);
-	#endif
+	TestLog(_T(". SIMULATOR: real init"));
 
 	// Add a couple of thermals for the boys
 	InsertThermalHistory(GPS_INFO.Time-1887, GPS_INFO.Latitude-0.21, GPS_INFO.Longitude+0.13, 873, 1478,1.5);

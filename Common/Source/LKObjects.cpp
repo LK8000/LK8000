@@ -27,10 +27,7 @@ extern void SnailTrail_Delete(void);
 
 
 void LKObjects_Create() {
-
-  #if TESTBENCH
-  StartupStore(_T("... LKObjects_Create\n"));
-  #endif
+  TestLog(_T("... LKObjects_Create\n"));
 
   // CUSTOM BRUSHES
   LKBrush_Petrol.Create(RGB_PETROL);
@@ -192,10 +189,7 @@ void LKObjects_Create() {
 
 
 void LKObjects_Delete() {
-
-  #if TESTBENCH
-  StartupStore(_T("... LKObjects_Delete\n"));
-  #endif
+  TestLog(_T("... LKObjects_Delete"));
 
   // No need to delete stock objects
   LKBrush_Petrol.Release();

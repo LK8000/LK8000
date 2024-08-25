@@ -91,9 +91,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       if (LKSW_ResetOdometer) {
 		Calculated->Odometer = 0;
-		#if TESTBENCH
-		StartupStore(_T("... Odometer RESET by request\n"));
-		#endif
+		TestLog(_T("... Odometer RESET by request"));
 		LKSW_ResetOdometer=false;
       }
 

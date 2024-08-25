@@ -16,9 +16,7 @@ RECT WindowResize(unsigned int x, unsigned int y) {
   w.top=0;
   w.bottom=y;
 
-  #if TESTBENCH
-  StartupStore(_T("..... WindowResize RECT (rltb) %d %d %d %d%s"),w.right, w.left, w.top, w.bottom,NEWLINE);
-  #endif
+  TestLog(_T("..... WindowResize RECT (rltb) %d %d %d %d"),w.right, w.left, w.top, w.bottom);
 
   return w;
 

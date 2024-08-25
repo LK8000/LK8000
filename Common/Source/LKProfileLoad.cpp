@@ -41,9 +41,7 @@ void LKParseProfileString(const char *sname, const char *svalue);
 // excluded comments and empty lines
 //
 bool LKProfileLoad(const TCHAR *szFile) {
-#if TESTBENCH
-  StartupStore(_T("... LoadProfile <%s>%s"), szFile, NEWLINE);
-#endif
+  TestLog(_T("... LoadProfile <%s>"), szFile);
 
   if (!szFile || !szFile[0]) {
     // nullptr or empty string.
@@ -561,9 +559,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistrySafteySpeed, SAFTEYSPEED)) {
     SAFTEYSPEED /= 1000.0;
     if (SAFTEYSPEED < 8.0) {
-#if TESTBENCH
-      StartupStore(_T("... SAFTEYSPEED<8 set to 50 = 180kmh\n"));
-#endif
+      TestLog(_T("... SAFTEYSPEED<8 set to 50 = 180km/h"));
       SAFTEYSPEED = 50.0;
     }
     return;

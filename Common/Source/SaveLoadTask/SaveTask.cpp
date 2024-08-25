@@ -18,9 +18,7 @@ void SaveTask(const TCHAR *szFileName) {
         TaskModified = false; // task successfully saved
         TargetModified = false;
         _tcscpy(LastTaskFileName, szFileName);
-#if TESTBENCH
-        StartupStore(_T(".... SaveTask: Ok%s"), NEWLINE);
-#endif
+        TestLog(_T(".... SaveTask: Ok"));
     } else {
 
         MessageBoxX(

@@ -186,9 +186,7 @@ void SetInitialModeTypes(void) {
 // Requires restart if activated from config menu
 void InitLK8000()
 {
-        #if TESTBENCH
-	StartupStore(_T(". Init LK8000%s"),NEWLINE);
-        #endif
+	TestLog(_T(". Init LK8000"));
 	LoadRecentList();
 
 	InitModeTable();
@@ -202,9 +200,7 @@ void InitLK8000()
 void InitModeTable() {
 
 	short i,j;
-	#if TESTBENCH
-	StartupStore(_T(". Init ModeTable for LK8000:") NEWLINE);
-	#endif
+	TestLog(_T(". Init ModeTable for LK8000:"));
 
 	for (i=0; i<=LKMODE_TOP; i++)
 		for (j=0; j<=MSM_TOP; j++)

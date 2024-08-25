@@ -139,6 +139,8 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
     /****************************************************************/
     switch (LKevent) {
+        case LKEVENT_NONE:
+            break;
         case LKEVENT_NEWRUN:
             // CALLED ON ENTRY: when we select this page coming from another mapspace
             ///fZOOMScale = 1.0;
@@ -253,9 +255,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
             // and we ignore it.
             break;
         default:
-#if TESTBENCH
-            if (LKevent != 0) StartupStore(_T("... RenderAirspace, UNKNOWN EVENT: %d\n"), LKevent);
-#endif
+            TestLog(_T("... RenderAirspace, UNKNOWN EVENT: %d"), LKevent);
             break;
     }
     LKevent = LKEVENT_NONE;

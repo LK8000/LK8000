@@ -150,20 +150,18 @@ void WhereAmI::Run() {
   NearestTopoItem *item=NULL;
   bool found=false, over=false, saynear=false, needmorewp=false, secondwpdone=false;
 
-  #if TESTBENCH
   if (NearestBigCity.Valid)
-	StartupStore(_T("... NEAREST BIG CITY <%s>  at %.0f km brg=%.0f\n"),
+	TestLog(_T("... NEAREST BIG CITY <%s>  at %.0f km brg=%.0f"),
 		NearestBigCity.Name,NearestBigCity.Distance/1000,NearestBigCity.Bearing);
   if (NearestCity.Valid)
-	StartupStore(_T("... NEAREST CITY <%s>  at %.0f km brg=%.0f\n"),
+	TestLog(_T("... NEAREST CITY <%s>  at %.0f km brg=%.0f"),
 		NearestCity.Name,NearestCity.Distance/1000,NearestCity.Bearing);
   if (NearestSmallCity.Valid)
-	StartupStore(_T("... NEAREST TOWN <%s>  at %.0f km brg=%.0f\n"),
+	TestLog(_T("... NEAREST TOWN <%s>  at %.0f km brg=%.0f"),
 		NearestSmallCity.Name,NearestSmallCity.Distance/1000,NearestSmallCity.Bearing);
   if (NearestWaterArea.Valid)
-	StartupStore(_T("... NEAREST WATER AREA <%s>  at %.0f km brg=%.0f\n"),
+	TestLog(_T("... NEAREST WATER AREA <%s>  at %.0f km brg=%.0f"),
 		NearestWaterArea.Name,NearestWaterArea.Distance/1000,NearestWaterArea.Bearing);
-  #endif
 
 
   _stprintf(toracle,_T("%s\n\n"), MsgToken<1724>()); // YOUR POSITION:

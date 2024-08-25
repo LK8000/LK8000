@@ -74,9 +74,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			if ( !Basic->NAVWarning ) { // and do we have a valid fix now?
 				// YES, so recalculate to update the very first position and avoid waiting for 
 				// 3 minutes until next pass!
-				#if TESTBENCH
-				StartupStore(_T("...... Got first valid FIX, we need to DoRangeWaypoint!\n"));
-				#endif
+				TestLog(_T("...... Got first valid FIX, we need to DoRangeWaypoint!"));
 				if ( DoRangeWaypointList(Basic,Calculated) )
 					LastDoRangeWaypointListTime=Basic->Time;
 
