@@ -235,7 +235,7 @@ void Globals_Init(void) {
 
   EnableAutoBacklight=true;
   EnableAutoSoundVolume=true;
-  AircraftCategory=0;
+  AircraftCategory = AircraftCategory_t::umGlider;
 
   HideUnits=false;
   CheckSum=true;

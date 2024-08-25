@@ -917,10 +917,10 @@ static const double PI = (4*atan(1));
 // SHORTCUTS
 //
 
-#define ISGLIDER (AircraftCategory == (AircraftCategory_t)umGlider)
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
-#define ISCAR (AircraftCategory == (AircraftCategory_t)umCar)
-#define ISGAAIRCRAFT (AircraftCategory == (AircraftCategory_t)umGAaircraft)
+#define ISGLIDER (AircraftCategory == AircraftCategory_t::umGlider)
+#define ISPARAGLIDER (AircraftCategory == AircraftCategory_t::umParaglider)
+#define ISCAR (AircraftCategory == AircraftCategory_t::umCar)
+#define ISGAAIRCRAFT (AircraftCategory == AircraftCategory_t::umGAaircraft)
 
 #define CURTYPE ModeType[ModeIndex]
 // CURMODE is the MSM_xxx page, independent from Type, any place. Example: check if we are in MSM_TRAFFIC

@@ -377,7 +377,7 @@ bool Startup(const TCHAR* szCmdLine) {
 #endif // non PNA
 
 // TODO until startup graphics are settled, no need to delay PC start
-    if (AircraftCategory == (AircraftCategory_t) umParaglider) {
+    if (AircraftCategory == AircraftCategory_t::umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
         CreateProgressDialog(MsgToken<1210>());
         Sleep(MSGDELAY);

@@ -178,7 +178,7 @@ GEXTERN bool DeviceNeedClipping;
 GEXTERN bool EnableAutoBacklight;
 GEXTERN bool EnableAutoSoundVolume;
 GEXTERN unsigned EnableFLARMMap;
-GEXTERN short AircraftCategory;
+GEXTERN AircraftCategory_t AircraftCategory;
 GEXTERN bool CheckSum;
 GEXTERN bool HideUnits;
 GEXTERN short OutlinedTp;

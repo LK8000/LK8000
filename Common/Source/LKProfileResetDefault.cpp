@@ -149,7 +149,7 @@ void LKProfileResetDefault() {
 
   EnableAutoSoundVolume = 0;
 
-  AircraftCategory = 0;
+  AircraftCategory = AircraftCategory_t::umGlider;
 
   gTaskType=TSK_DEFAULT;
 

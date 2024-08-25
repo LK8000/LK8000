@@ -35,10 +35,10 @@ enum aircraft_t : uint8_t {
 
 aircraft_t type() {
   switch (AircraftCategory) {
-    case umGlider: return aircraft_t::glider;
-    case umParaglider: return aircraft_t::paraglider;
-    case umCar : return aircraft_t::otherAircraft;
-    case umGAaircraft: return aircraft_t::poweredAircraft;
+    case AircraftCategory_t::umGlider: return aircraft_t::glider;
+    case AircraftCategory_t::umParaglider: return aircraft_t::paraglider;
+    case AircraftCategory_t::umCar : return aircraft_t::otherAircraft;
+    case AircraftCategory_t::umGAaircraft: return aircraft_t::poweredAircraft;
   }
   return aircraft_t::otherAircraft;
 }

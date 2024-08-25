@@ -58,12 +58,13 @@ typedef struct{
   int CapitalHeight;
 }FontHeightInfo_t;
 
-typedef enum{
-	umGlider=0,
-	umParaglider,
-	umCar,
-        umGAaircraft,
-} AircraftCategory_t;
+enum class AircraftCategory_t : uint8_t {
+  umGlider = 0,
+  umParaglider,
+  umCar,
+  umGAaircraft,
+};
+
 typedef enum{
 	amDisabled=0,
 	amEnabled,

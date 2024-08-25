@@ -151,16 +151,16 @@ void InputEvents::readFile() {
     // No special XCI in engineering, or nonexistent file.. go ahead with language check
     // Remember: DEFAULT_MENU existance is already been checked upon startup.
     switch(AircraftCategory) {
-      case umGlider:
+      case AircraftCategory_t::umGlider:
         xcifile = _T("MENU_GLIDER.TXT");
         break;
-      case umParaglider:
+      case AircraftCategory_t::umParaglider:
         xcifile = _T("MENU_PARAGLIDER.TXT");
         break;
-      case umCar:
+      case AircraftCategory_t::umCar:
         xcifile = _T("MENU_CAR.TXT");
         break;
-      case umGAaircraft:
+      case AircraftCategory_t::umGAaircraft:
         xcifile = _T("MENU_GA.TXT");
         break;
       default:
@@ -2704,14 +2704,14 @@ double step=0;
 step = getIncStep(misc, step);
 
 if (_tcscmp(misc, TEXT("up")) == 0){
-    if (AircraftCategory == (AircraftCategory_t)umParaglider)
+    if (AircraftCategory == AircraftCategory_t::umParaglider)
 		GPS_INFO.Speed += step;
 	else
 		GPS_INFO.Speed += step*5;
 	return;
   }
   if (_tcscmp(misc, TEXT("down")) == 0){
-	if (AircraftCategory == (AircraftCategory_t)umParaglider)
+	if (AircraftCategory == AircraftCategory_t::umParaglider)
 		GPS_INFO.Speed -= step;
 	else
 		GPS_INFO.Speed -= step*5;

@@ -2479,15 +2479,15 @@ DataField* dfe = wp->GetDataField();
   wp = pForm->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M328_ = "Glider" 
-    dfe->addEnumText(MsgToken<328>());
-	// LKTOKEN  _@M520_ = "Paraglider/Delta" 
-    dfe->addEnumText(MsgToken<520>());
-	// LKTOKEN  _@M163_ = "Car" 
-    dfe->addEnumText(MsgToken<2148>());
-	// LKTOKEN  _@M313_ = "GA Aircraft" 
-    dfe->addEnumText(MsgToken<313>());
-    dfe->Set(AircraftCategory);
+    if (dfe) {
+      dfe->addEnumList({
+        MsgToken<328>(), // "Glider"
+        MsgToken<520>(), // "Paraglider/Delta"
+        MsgToken<2148>(), // "Car,Bike & Trekking"
+        MsgToken<313>(), // "GA Aircraft"
+      });
+      dfe->Set(static_cast<unsigned>(AircraftCategory));
+    }
     wp->RefreshDisplay();
   }
 
@@ -4529,12 +4529,11 @@ void UpdateAircraftConfig(WndForm* pForm){
  WndProperty *wp;
  int ival;
 
- wp = pForm->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpAircraftCategory"));
   if (wp) {
-    if (AircraftCategory != (AircraftCategory_t)
-        (wp->GetDataField()->GetAsInteger())) {
-      AircraftCategory = (AircraftCategory_t)
-        (wp->GetDataField()->GetAsInteger());
+    auto value = static_cast<AircraftCategory_t>(wp->GetDataField()->GetAsInteger());
+    if (AircraftCategory != value) {
+      AircraftCategory = value;
       requirerestart = true;
       AIRCRAFTTYPECHANGED=true;
     }

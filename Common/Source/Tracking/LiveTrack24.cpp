@@ -384,13 +384,20 @@ static bool SendStartOfTrackPacket(http_session& http, unsigned int *packet_id,
 
 	to_utf8(AircraftType_Config, txbuf);
 	UrlEncode(txbuf, vehicle_name, std::size(vehicle_name));
-	vehicle_type = 8;
-	if (AircraftCategory == umParaglider)
+	switch (AircraftCategory) {
+	case AircraftCategory_t::umParaglider:
 		vehicle_type = 1;
-	if (AircraftCategory == umCar)
+		break;
+	case AircraftCategory_t::umCar:
 		vehicle_type = 17100;
-	if (AircraftCategory == umGAaircraft)
+		break;
+	case AircraftCategory_t::umGAaircraft:
 		vehicle_type = 64;
+		break;
+	default:
+		vehicle_type = 8;
+		break;
+	}
 
 	*packet_id = 1;
 	rnd = rand();
