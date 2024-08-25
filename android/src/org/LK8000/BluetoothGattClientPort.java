@@ -261,15 +261,23 @@ public class BluetoothGattClientPort
 
   @SuppressLint("MissingPermission")
   private void enableNotification(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-    if (characteristic == null) {
-      queueCommand.completed();
-      return;
+    try {
+      if (characteristic != null) {
+        if (gatt.setCharacteristicNotification(characteristic, true)) {
+          enableDescriptor(gatt, characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION));
+          return;
+        }
+      }
+    } catch (Exception e) {
+      error(e.getMessage());
     }
-    if (gatt.setCharacteristicNotification(characteristic, true)) {
-      enableDescriptor(gatt, characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION));
-    } else {
-      queueCommand.completed();
-    }
+    queueCommand.completed();
+  }
+
+  private void error(String msg) {
+    PortListener portListener = this.portListener;
+    if (portListener != null)
+      portListener.portError(msg);
   }
 
   @SuppressLint("MissingPermission")
@@ -418,8 +426,15 @@ public class BluetoothGattClientPort
   @Override
   public void writeGattCharacteristic(UUID service, UUID characteristic, byte[] data, int length) {
     final BluetoothGattService sv = gatt.getService(service);
+    if (sv == null) {
+      Log.d(TAG, "writeGattCharacteristic: unavailable service <" + service.toString() + ">");
+      return; // unavailable service
+    }
     final BluetoothGattCharacteristic ch = sv.getCharacteristic(characteristic);
-
+    if (ch == null) {
+      Log.d(TAG, "writeGattCharacteristic: unavailable characteristic <" + characteristic.toString() + ">");
+      return; // unavailable characteristic
+    }
     queueCommand.add(() -> {
       if (!LeGattHelper.writeCharacteristic(gatt, ch, Arrays.copyOf(data, length))) {
         queueCommand.completed();
