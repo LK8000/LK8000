@@ -78,11 +78,16 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
  public:
 
   template <auto callback>
-  bool Enable() const {
+  bool EnableCharacteristic() const {
     ScopeLock lock(CritSec_Comm);
     auto port = devGetDeviceOnPort(GetPortIndex());
     return port && port->*callback;
   }
+
+  template<>
+  bool EnableCharacteristic<true>() const {
+    return true;
+  };
 
   template <auto callback, typename... Args>
   void OnSensorData(Args&& ...args) {
@@ -94,7 +99,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
   }
 
   void DeviceName(const std::vector<uint8_t>& data);
-  bool DeviceNameEnable() const;
+  void SerialNumber(const std::vector<uint8_t>& data);
 
   void BatteryLevel(const std::vector<uint8_t>& data);
 

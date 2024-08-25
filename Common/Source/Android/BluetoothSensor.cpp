@@ -166,17 +166,17 @@ const service_table_t& service_table() {
     { gatt_uuid(0x180D), {{ // Heart Rate
         { gatt_uuid(0x2A37), {
             &BluetoothSensor::HeartRateMeasurement,
-            &BluetoothSensor::Enable<&DeviceDescriptor_t::OnHeartRate>,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnHeartRate>,
         }}
     }}},
     { gatt_uuid(0x181A), {{ // Environmental Sensing Service
         { gatt_uuid(0x2A6D), {
             &BluetoothSensor::BarometricPressure,
-            &BluetoothSensor::Enable<&DeviceDescriptor_t::OnBarometricPressure>,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBarometricPressure>,
         }},
         { gatt_uuid(0x2A6E), {
             &BluetoothSensor::OutsideTemperature,
-            &BluetoothSensor::Enable<&DeviceDescriptor_t::OnOutsideTemperature>,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnOutsideTemperature>,
         }},
     }}},
     { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
@@ -188,15 +188,21 @@ const service_table_t& service_table() {
     { gatt_uuid(0x1800), {{ // Generic Access
         { gatt_uuid(0x2A00), {
             &BluetoothSensor::DeviceName,
-            &BluetoothSensor::DeviceNameEnable
+            &BluetoothSensor::EnableCharacteristic<true>
+        }}
+    }}},
+    { gatt_uuid(0x180A), {{ // Device Information Service
+        { gatt_uuid(0x2A25), { // Serial Number String
+            &BluetoothSensor::SerialNumber, 
+            &BluetoothSensor::EnableCharacteristic<true>
         }}
     }}},
     { gatt_uuid(0x180F), {{ // Battery Service
         { gatt_uuid(0x2A19), { // Battery Level
             &BluetoothSensor::BatteryLevel,
-            &BluetoothSensor::Enable<&DeviceDescriptor_t::OnBatteryLevel>
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBatteryLevel>
         }}
-    }}}
+    }}},
   }};
   return table;
 }
@@ -239,8 +245,12 @@ void BluetoothSensor::DeviceName(const std::vector<uint8_t>& data) {
   StatusMessage("%s connected", name.c_str());
 }
 
-bool BluetoothSensor::DeviceNameEnable() const {
-  return true;
+void BluetoothSensor::SerialNumber(const std::vector<uint8_t>& data) {
+  ScopeLock lock(CritSec_Comm);
+  auto port = devGetDeviceOnPort(GetPortIndex());
+  if (port) {
+    port->SerialNumber = { data.begin(), data.end() };
+  }
 }
 
 void BluetoothSensor::BatteryLevel(const std::vector<uint8_t>& data) {

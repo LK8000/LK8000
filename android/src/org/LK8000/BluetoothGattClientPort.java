@@ -227,16 +227,6 @@ public class BluetoothGattClientPort
   private void configureCharacteristics(BluetoothGatt gatt) {
     queueCommand.completed();
 
-    BluetoothGattService genericService = gatt.getService(GENERIC_ACCESS_SERVICE);
-    if (genericService != null) {
-      deviceNameCharacteristic = genericService.getCharacteristic(DEVICE_NAME_CHARACTERISTIC_UUID);
-      if (deviceNameCharacteristic != null) {
-        if ((deviceNameCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0) {
-          queueCommand.add(() -> readCharacteristic(gatt, deviceNameCharacteristic));
-        }
-      }
-    }
-
     BluetoothGattService hm10Service = gatt.getService(HM10_SERVICE);
     if (hm10Service != null) {
       hm10DataCharacteristic = hm10Service.getCharacteristic(RX_TX_CHARACTERISTIC_UUID);
@@ -246,9 +236,13 @@ public class BluetoothGattClientPort
 
     for (BluetoothGattService service : gatt.getServices()) {
       for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-        if ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
-          if (doEnableNotification(service.getUuid(), characteristic.getUuid())) {
+        if (doEnableNotification(service.getUuid(), characteristic.getUuid())) {
+          int properties = characteristic.getProperties();
+          if (( properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
             queueCommand.add(() -> enableNotification(gatt, characteristic));
+          }
+          else if (( properties & BluetoothGattCharacteristic.PROPERTY_READ) != 0) {
+            queueCommand.add(() -> readCharacteristic(gatt, characteristic));
           }
         }
       }
