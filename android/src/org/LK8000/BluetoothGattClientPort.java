@@ -146,6 +146,7 @@ public class BluetoothGattClientPort
       else {
         gatt = device.connectGatt(context, true, this);
       }
+      gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
     } catch (SecurityException e) {
       e.printStackTrace();
     }
