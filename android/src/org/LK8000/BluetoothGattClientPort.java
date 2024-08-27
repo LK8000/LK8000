@@ -55,12 +55,6 @@ public class BluetoothGattClientPort
   private static final int STATE_FAILED = 1;
   private static final int STATE_LIMBO = 2;
 
-  private static final UUID GENERIC_ACCESS_SERVICE =
-          UUID.fromString("00001800-0000-1000-8000-00805F9B34FB");
-
-  private static final UUID DEVICE_NAME_CHARACTERISTIC_UUID =
-          UUID.fromString("00002A00-0000-1000-8000-00805F9B34FB");
-
   private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION =
           UUID.fromString("00002902-0000-1000-8000-00805F9B34FB");
   /**
@@ -93,7 +87,6 @@ public class BluetoothGattClientPort
 
   private BluetoothGatt gatt = null;
   private BluetoothGattCharacteristic hm10DataCharacteristic;
-  private BluetoothGattCharacteristic deviceNameCharacteristic;
   private volatile boolean shutdown = false;
 
   private int maxChunkSize = 20;
@@ -169,7 +162,6 @@ public class BluetoothGattClientPort
       }
     } else {
       hm10DataCharacteristic = null;
-      deviceNameCharacteristic = null;
       if ((BluetoothProfile.STATE_DISCONNECTED == newState) && !shutdown) {
         if (!gatt.connect()) {
           Log.w(TAG,
