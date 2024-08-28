@@ -21,11 +21,22 @@
 #include <sstream>
 #include <regex>
 
-ComPort::ComPort(unsigned idx, const tstring& sName) : Thread("ComPort"), StopEvt(false), devIdx(idx), sPortName(sName) {
+ComPort::ComPort(unsigned idx, const tstring& sName) 
+        : Thread("ComPort"), StopEvt(false)
+        , devIdx(idx), sPortName(sName)
+        , status_thread("ComPort::status_thread", *this)
+{
     pLastNmea = std::begin(_NmeaString);
 }
 
 bool ComPort::Close() {
+    if (status_thread.IsDefined()) {
+        WithLock(status_mutex, [&]() {
+            status_thread_stop = true;
+            status_cv.Signal();
+        });
+        status_thread.Join();
+    }
     StopRxThread();
     return true;
 }
@@ -205,4 +216,62 @@ void ComPort::StatusMessage(const TCHAR *fmt, ...) {
 
     tmp[126] = _T('\0');
     DoStatusMessage(tmp);
+}
+
+tstring ComPort::GetDeviceName() {
+    return GetPortName();
+}
+
+void ComPort::NotifyConnected() {
+    ScopeLock lock(status_mutex);
+    status_connected = true;
+    if (status_disconnected_notify) {
+        status_cv.Signal();
+        return;
+    }
+
+    // notify user
+    tstring name = GetDeviceName();
+    StatusMessage(_T("%s connected"), name.c_str());
+    TestLog(_T("ble_notify: %s connected"), name.c_str());
+}
+
+void ComPort::status_thread_loop() {
+    try {
+        ScopeLock lock(status_mutex);
+        while (!status_thread_stop) { // until stop not request
+            if (status_disconnected_notify) { // if disconnect notify requested
+                tstring name = GetDeviceName();
+                status_cv.Wait(status_mutex, 10000); // wait 10s for reconnecting
+                if(status_thread_stop) {
+                  return; // must exit otherwise thread never end ...
+                }
+                if (!status_connected) { // if not reconnected notify user
+                    StatusMessage(_T("%s disconnected"), name.c_str());
+                    TestLog(_T("ble_notify: %s disconnected"), name.c_str());
+                }
+                else { // if reconnected don't notify user
+                    TestLog(_T("ble_notify: %s reconnected"), name.c_str());
+                }
+                status_disconnected_notify = false; // reset notify request
+            }
+            status_cv.Wait(status_mutex);  // wait for notification request or stop
+        }
+    }
+    catch (std::exception& e) {
+        StartupStore(_T("ComPort::status_thread_loop : %s"), to_tstring(e.what()).c_str());
+    }
+}
+
+void ComPort::NotifyDisconnected() {
+    tstring name = GetDeviceName();
+    DebugLog(_T("ble_notify: %s request disconnected"), name.c_str());
+    // notify user in next 10 sec, notification canceled if reconnect happen...
+    ScopeLock lock(status_mutex);
+    status_connected = false;
+    if (!status_thread.IsDefined()) {
+        status_thread.Start();
+    }
+    status_disconnected_notify = true;
+    status_cv.Signal();
 }

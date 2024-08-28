@@ -230,11 +230,14 @@ unsigned AndroidPort::RxThread() {
             });
             rxthread_buffer.clear();
         }
-        else if (!connected && state == STATE_READY) {
+
+        if (!connected && state == STATE_READY) {
             connected = true;
             devOpen(devGetDeviceOnPort(GetPortIndex()));
+            NotifyConnected();
         }
         else if (connected) {
+          NotifyDisconnected();
           connected = false;
         }
 

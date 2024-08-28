@@ -117,10 +117,7 @@ unsigned BluetoothSensor::RxThread() {
 
     if (connected && state != STATE_READY) {
       connected = false;
-      auto name = WithLock(mutex, [&]() {
-        return device_name;
-      });
-      StatusMessage("%s disconnected", name.c_str());
+      NotifyDisconnected();
     }
 
     for (auto& data : rxthread_queue) {
@@ -242,7 +239,12 @@ void BluetoothSensor::DeviceName(const std::vector<uint8_t>& data) {
   WithLock(mutex, [&]() {
     device_name = name;
   });
-  StatusMessage("%s connected", name.c_str());
+  NotifyConnected();
+}
+
+tstring BluetoothSensor::GetDeviceName() {
+  ScopeLock lock(mutex);
+  return device_name;
 }
 
 void BluetoothSensor::SerialNumber(const std::vector<uint8_t>& data) {

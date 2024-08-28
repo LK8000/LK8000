@@ -18,6 +18,8 @@
 #include "Util/tstring.hpp"
 #include "Poco/Event.h"
 #include "Thread/Thread.hpp"
+#include "Thread/Mutex.hpp"
+#include "Thread/Cond.hpp"
 #include "utils/uuid.h"
 
 class ComPort : public Thread {
@@ -85,6 +87,8 @@ protected:
     static
     void StatusMessage(const TCHAR *fmt, ...) gcc_printf(1,2) gcc_nonnull(1);
 
+    virtual tstring GetDeviceName();
+
     void AddStatRx(unsigned dwBytes) const;
     void AddStatErrRx(unsigned dwBytes) const;
     void AddStatTx(unsigned dwBytes) const;
@@ -121,6 +125,33 @@ public:
         WriteGattCharacteristic(service, characteristic, &data, sizeof(data));
     }
 
+protected:
+    void NotifyConnected();
+    void NotifyDisconnected();
+
+private:
+    void status_thread_loop();
+
+    bool status_thread_stop = false;
+    bool status_disconnected_notify = false;
+    bool status_connected = false;
+
+    Mutex status_mutex;
+    Cond status_cv;
+
+    class NotifyThread : public Thread {
+    public:
+        NotifyThread(const char* name, ComPort& p) : Thread(name), port(p) {}
+
+        void Run() override {
+            port.status_thread_loop();
+        }
+
+    private:
+        ComPort& port;
+    };
+
+    NotifyThread status_thread;
 };
 
 #endif	/* COMPORT_H */

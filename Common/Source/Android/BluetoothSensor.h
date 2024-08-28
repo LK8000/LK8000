@@ -51,6 +51,8 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
  protected:
   unsigned RxThread() override;
 
+  tstring GetDeviceName() override;
+
  private:
   bool Write_Impl(const void* data, size_t size) override;
 
