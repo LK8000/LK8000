@@ -131,22 +131,26 @@ public class BluetoothGattClientPort
   }
 
   private void connectDevice(Context context, BluetoothDevice device) {
+    final boolean autoConnect = true; // TODO: try with false and retry in onConnectionStateChange if failed ?
     try {
       if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
         // handler usage is broken until SDK 27
         // https://android.googlesource.com/platform/frameworks/base/+/eb6b3da4fc54ca4cfcbb8ee3b927391eed981725%5E%21/#F0
-        gatt = device.connectGatt(context, true, this,
+        gatt = device.connectGatt(context, autoConnect, this,
                 BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M_MASK,
                 queueCommand.queueHandler);
       }
       else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        gatt = device.connectGatt(context, true, this,
+        gatt = device.connectGatt(context, autoConnect, this,
                 BluetoothDevice.TRANSPORT_LE);
       }
       else {
-        gatt = device.connectGatt(context, true, this);
+        gatt = device.connectGatt(context, autoConnect, this);
       }
-      gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+
+      if (gatt != null) {
+        gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+      }
     } catch (SecurityException e) {
       e.printStackTrace();
     }
@@ -163,12 +167,11 @@ public class BluetoothGattClientPort
       }
     } else {
       hm10DataCharacteristic = null;
-      if ((BluetoothProfile.STATE_DISCONNECTED == newState) && !shutdown) {
-        if (!gatt.connect()) {
-          Log.w(TAG,
-              "Received GATT disconnected event, and reconnect attempt failed");
-          newPortState = STATE_FAILED;
-        }
+      queueCommand.clear();
+      if (!shutdown && !gatt.connect()) {
+        Log.w(TAG,
+            "Received GATT disconnected event, and reconnect attempt failed");
+        newPortState = STATE_FAILED;
       }
     }
     writeBuffer.clear();
@@ -183,7 +186,7 @@ public class BluetoothGattClientPort
   @SuppressLint("MissingPermission")
   void requestMtu(BluetoothGatt gatt) {
     maxChunkSize = 20; // default mtu - 3
-    if (!gatt.requestMtu(517)) {
+    if (!gatt.requestMtu(517)) { // TODO: check if OnMtuChanged is always called ... ?
       queueCommand.completed();
     }
   }

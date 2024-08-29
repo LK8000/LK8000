@@ -17,13 +17,12 @@ import java.util.Queue;
 
 public final class AsyncCompletionQueue {
   private final Queue<Runnable> commandQueue = new LinkedList<>();
-  private final HandlerThread handlerThread;
   public final Handler queueHandler;
   private final Object commandQueueLock = new Object();
   private boolean commandQueueBusy = false;
 
   AsyncCompletionQueue() {
-    handlerThread = new HandlerThread("BLE Handler queue");
+    HandlerThread handlerThread = new HandlerThread("BLE Handler queue");
     handlerThread.start();
     queueHandler = new Handler(handlerThread.getLooper());
   }
@@ -55,6 +54,13 @@ public final class AsyncCompletionQueue {
           queueHandler.post(command);
         }
       }
+    }
+  }
+
+  public void clear() {
+    synchronized (commandQueueLock) {
+      commandQueue.clear();
+      commandQueueBusy = false;
     }
   }
 }
