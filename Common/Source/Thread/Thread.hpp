@@ -11,6 +11,7 @@
 #define _THREAD_THREAD_HPP_
 
 #include "Poco/Thread.h"
+#include <functional>
 
 class Thread : protected Poco::Runnable {
 public:
@@ -42,6 +43,18 @@ protected:
 
 private:
     Poco::Thread _thread;
+};
+
+class InvokeThread : public Thread {
+public:
+    InvokeThread(const char* name, std::function<void()>&& func) : Thread(name) , _func(std::move(func)) {}
+
+    void Run() override {
+        _func();
+    }
+
+private:
+    std::function<void()> _func;
 };
 
 #endif //_THREAD_THREAD_HPP_
