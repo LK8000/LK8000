@@ -22,7 +22,7 @@
 #include "Thread/Cond.hpp"
 #include "utils/uuid.h"
 
-class ComPort : public Thread {
+class ComPort {
 public:
     ComPort(unsigned idx, const tstring& sName);
 
@@ -33,6 +33,8 @@ public:
 
     ComPort( ComPort&& ) = delete;
     ComPort& operator=( ComPort&& ) = delete;
+
+    virtual ~ComPort() {}
 
     virtual bool StopRxThread();
     virtual bool StartRxThread();
@@ -100,13 +102,15 @@ protected:
 
     void ProcessData(const char* data, size_t size);
 
-    Poco::Event StopEvt;
+    Poco::Event StopEvt = { false };
 
 private:
+    InvokeThread rx_thread = { 
+        "ComPort",
+        [&]() { this->RxThread(); }
+    };
 
     using _NmeaString_t = char[MAX_NMEA_LEN];
-
-    void Run() override;
 
     const unsigned devIdx;
     const tstring sPortName;
@@ -139,19 +143,10 @@ private:
     Mutex status_mutex;
     Cond status_cv;
 
-    class NotifyThread : public Thread {
-    public:
-        NotifyThread(const char* name, ComPort& p) : Thread(name), port(p) {}
-
-        void Run() override {
-            port.status_thread_loop();
-        }
-
-    private:
-        ComPort& port;
+    InvokeThread status_thread = {
+        "ComPort::status_thread",
+        [&]() { this->status_thread_loop(); }
     };
-
-    NotifyThread status_thread;
 };
 
 #endif	/* COMPORT_H */

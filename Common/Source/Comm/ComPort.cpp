@@ -22,9 +22,7 @@
 #include <regex>
 
 ComPort::ComPort(unsigned idx, const tstring& sName) 
-        : Thread("ComPort"), StopEvt(false)
-        , devIdx(idx), sPortName(sName)
-        , status_thread("ComPort::status_thread", *this)
+        : devIdx(idx), sPortName(sName)
 {
     pLastNmea = std::begin(_NmeaString);
 }
@@ -99,9 +97,9 @@ bool ComPort::StopRxThread() {
     DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), GetPortIndex() + 1);
     CancelWaitEvent();
 
-    if (IsDefined()) {
+    if (rx_thread.IsDefined()) {
         DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), GetPortIndex() + 1);
-        Join();
+        rx_thread.Join();
     }
     StopEvt.reset();
 
@@ -113,9 +111,9 @@ bool ComPort::StartRxThread() {
       StopEvt.reset();
 
       // Create a read thread for reading data from the communication port.
-      Start();
+      rx_thread.Start();
 
-      if (!IsDefined()) {
+      if (!rx_thread.IsDefined()) {
           // Could not create the read thread.
           StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread"),
                        GetPortIndex() + 1, GetPortName());
@@ -135,12 +133,6 @@ bool ComPort::StartRxThread() {
       StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), GetPortIndex() + 1, GetPortName(), error.c_str());
       return false;
   }
-}
-
-void ComPort::Run() {
-    StartupStore(_T(". ComPort %u ReadThread : started"), GetPortIndex() + 1);
-    RxThread();
-    StartupStore(_T(". ComPort %u ReadThread : terminated"), GetPortIndex() + 1);
 }
 
 void ComPort::ProcessChar(char c) {
