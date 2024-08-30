@@ -174,10 +174,10 @@ class MultiPort implements AndroidPort, InputListener {
   }
 
   @Override
-  public void onCharacteristicChanged(UUID service, UUID characteristic, byte[] value, int length) {
+  public void onCharacteristicChanged(long serviceMsb, long serviceLsb, long characteristicMsb, long characteristicLsb, byte[] value, int length) {
     InputListener l = inputListener;
     if (l != null)
-      l.onCharacteristicChanged(service, characteristic, value, length);
+      l.onCharacteristicChanged(serviceMsb, serviceLsb, characteristicMsb, characteristicLsb, value, length);
   }
 
   protected void stateChanged() {

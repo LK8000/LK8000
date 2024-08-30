@@ -25,6 +25,10 @@ abstract class LeScanCallback extends ScanCallback {
 
     @Override
     public void onScanFailed(int errorCode) {
+
+        if (errorCode == ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED) {
+            // TODO : ask to user for device reboot
+        }
         Log.e(TAG, "onScanFailed " + errorCode);
     }
 }

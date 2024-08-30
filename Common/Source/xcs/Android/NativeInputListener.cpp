@@ -55,10 +55,9 @@ Java_org_LK8000_NativeInputListener_dataReceived(JNIEnv *env, jobject obj,
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_LK8000_NativeInputListener_onCharacteristicChanged(JNIEnv* env, jobject obj,
-                                                                 jobject service, jobject characteristic,
+                                                                 jlong serviceMsb, jlong serviceLsb,
+                                                                 jlong characteristicMsb, jlong characteristicLsb,
                                                                  jbyteArray data, jint length) {
-
-  using namespace Java::UUID;
 
   if (length > 0) {
     jlong ptr = env->GetLongField(obj, ptr_field);
@@ -70,7 +69,7 @@ Java_org_LK8000_NativeInputListener_onCharacteristicChanged(JNIEnv* env, jobject
     auto& handler = *reinterpret_cast<DataHandler*>(ptr);
 
     Java::ByteArrayElements array(env, data);
-    handler.OnCharacteristicChanged(to_uuid_t(env, service), to_uuid_t(env, characteristic), array, length);
+    handler.OnCharacteristicChanged( uuid_t(serviceMsb, serviceLsb), uuid_t(characteristicMsb, characteristicLsb), array, length);
   }
 }
 

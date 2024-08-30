@@ -231,6 +231,7 @@ final class BluetoothHelper {
                 .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT);
       }
 
+      // TODO: check for no more 5 call in 30sec time frame...
       scanner.startScan(buildFilter(address), settings.build(), cb);
       return true;
     }

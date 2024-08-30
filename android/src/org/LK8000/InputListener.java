@@ -33,5 +33,5 @@ public interface InputListener {
 
   boolean doEnableNotification(UUID service, UUID characteristic);
 
-  void onCharacteristicChanged(UUID service, UUID characteristic, byte[] value, int length);
+  void onCharacteristicChanged(long serviceMsb, long serviceLsb, long characteristicMsb, long characteristicLsb, byte[] value, int length);
 }

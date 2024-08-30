@@ -127,7 +127,13 @@ public class BluetoothGattClientPort
   }
 
   public BluetoothGattClientPort(Context context, BluetoothDevice device) {
-    startLeScan(context, device.getAddress());
+    if (BluetoothHelper.isUnknownType(device)) {
+      // unknown device : scan for device...
+      startLeScan(context, device.getAddress());
+    }
+    else {
+      connectDevice(context, device);
+    }
   }
 
   private void connectDevice(Context context, BluetoothDevice device) {
@@ -165,12 +171,15 @@ public class BluetoothGattClientPort
         Log.e(TAG, "Discovering GATT services request failed");
         newPortState = STATE_FAILED;
       }
-    } else {
+    }
+    else if (BluetoothProfile.STATE_DISCONNECTED == newState) {
       hm10DataCharacteristic = null;
-      queueCommand.clear();
-      if (!shutdown && !gatt.connect()) {
-        Log.w(TAG,
-            "Received GATT disconnected event, and reconnect attempt failed");
+      if (shutdown) {
+        gatt.close();
+        this.gatt = null;
+      }
+      else if (!gatt.connect()) {
+        Log.w(TAG, "Received GATT disconnected event, and reconnect attempt failed");
         newPortState = STATE_FAILED;
       }
     }
@@ -184,19 +193,11 @@ public class BluetoothGattClientPort
   }
 
   @SuppressLint("MissingPermission")
-  void requestMtu(BluetoothGatt gatt) {
-    maxChunkSize = 20; // default mtu - 3
-    if (!gatt.requestMtu(517)) { // TODO: check if OnMtuChanged is always called ... ?
-      queueCommand.completed();
-    }
-  }
-
   @Override
   public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = 20; // default mtu - 3
-      queueCommand.add(() -> requestMtu(gatt));
-      queueCommand.add(() -> configureCharacteristics(gatt));
+      gatt.requestMtu(517);
     } else {
       Log.e(TAG, "Discovering GATT services failed");
       portState = STATE_FAILED;
@@ -209,8 +210,8 @@ public class BluetoothGattClientPort
     super.onMtuChanged(gatt, mtu, status);
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = mtu - 3;
+      configureCharacteristics(gatt);
     }
-    queueCommand.completed();
   }
 
   private boolean doEnableNotification(UUID service, UUID characteristic) {
@@ -221,8 +222,6 @@ public class BluetoothGattClientPort
   }
 
   private void configureCharacteristics(BluetoothGatt gatt) {
-    queueCommand.completed();
-
     BluetoothGattService hm10Service = gatt.getService(HM10_SERVICE);
     if (hm10Service != null) {
       hm10DataCharacteristic = hm10Service.getCharacteristic(RX_TX_CHARACTERISTIC_UUID);
@@ -346,7 +345,10 @@ public class BluetoothGattClientPort
     if (listener != null) {
       final UUID service = characteristic.getService().getUuid();
       final UUID uuid = characteristic.getUuid();
-      listener.onCharacteristicChanged(service, uuid, value, value.length);
+      listener.onCharacteristicChanged(
+              service.getMostSignificantBits(), service.getLeastSignificantBits(),
+              uuid.getMostSignificantBits(), uuid.getLeastSignificantBits(),
+              value, value.length);
     }
   }
 
@@ -369,8 +371,6 @@ public class BluetoothGattClientPort
     if (gatt != null) {
       gatt.disconnect();
       waitForClose();
-      gatt.close();
-      gatt = null;
     }
   }
 

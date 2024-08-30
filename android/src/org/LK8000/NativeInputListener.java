@@ -46,5 +46,5 @@ class NativeInputListener implements InputListener {
   public native boolean doEnableNotification(UUID service, UUID characteristic);
 
   @Override
-  public native void onCharacteristicChanged(UUID service, UUID characteristic, byte[] value, int length);
+  public native void onCharacteristicChanged(long serviceMsb, long serviceLsb, long characteristicMsb, long characteristicLsb, byte[] value, int length);
 }
