@@ -10,6 +10,16 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.20]
+* Improve BLE connection reliability
+* FlyBeeper Fanet : 
+ - automatic radio setting depending of position
+ - use Serial nhumber to calculate Fanet Id
+ - send ground tracking message when not flying
+* Fix :
+ - don't display disabled bottom bar at startup
+ - BT_SPP connection faield after restart 
+
 [version 7.4.19]
 * Android :
  - Support standart BLE Sensor (Heart rate, Pressure, Temperature, Battery)
