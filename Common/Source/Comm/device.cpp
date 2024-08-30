@@ -403,6 +403,9 @@ void DeviceDescriptor_t::InitStruct(unsigned i) {
     OnOutsideTemperature = nullptr;
     OnBatteryLevel = nullptr;
 
+    DoEnableGattCharacteristic = nullptr;
+    OnGattCharacteristic = nullptr;
+
     Disabled = true;
 
     SerialNumber = {};
