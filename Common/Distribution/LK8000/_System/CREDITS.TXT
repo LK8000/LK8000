@@ -10,6 +10,9 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.21]
+* fix invalid comport disconnected notification
+
 [version 7.4.20]
 * Improve BLE connection reliability
 * FlyBeeper Fanet : 
