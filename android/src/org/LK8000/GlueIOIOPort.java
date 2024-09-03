@@ -135,8 +135,6 @@ final class GlueIOIOPort extends IOIOPort implements IOIOConnectionListener {
   }
 
   @Override public int getState() {
-    Log.d(TAG, "getState");
-
     boolean ready;
     synchronized(this) {
       ready = connected && !constructing;

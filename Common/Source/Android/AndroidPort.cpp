@@ -236,9 +236,9 @@ unsigned AndroidPort::RxThread() {
             devOpen(devGetDeviceOnPort(GetPortIndex()));
             NotifyConnected();
         }
-        else if (connected) {
-          NotifyDisconnected();
+        if (connected && state != STATE_READY) {
           connected = false;
+          NotifyDisconnected();
         }
 
         ScopeLock lock(mutex);
