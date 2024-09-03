@@ -26,7 +26,6 @@ package org.LK8000;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import android.util.Log;
 import android.content.ContextWrapper;
 import ioio.lib.api.IOIO;
@@ -34,7 +33,6 @@ import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.util.IOIOConnectionRegistry;
 import ioio.lib.util.android.ContextWrapperDependent;
 import ioio.lib.spi.IOIOConnectionBootstrap;
-import ioio.lib.spi.IOIOConnectionFactory;
 
 /**
  * A utility class which wraps the Java API into an easier API for the
@@ -44,21 +42,21 @@ final class IOIOHelper implements IOIOConnectionHolder,
                                   IOIOAgent.Listener {
   private static final String TAG = "IOIOHelper";
 
-  private IOIOMultiAgent agent;
+  private final IOIOMultiAgent agent;
 
   private IOIO ioio_;
 
   /**
    * The list of listeners that believe there is no IOIO connection.
    */
-  private Collection<IOIOConnectionListener> closedListeners =
+  private final Collection<IOIOConnectionListener> closedListeners =
     new LinkedList<IOIOConnectionListener>();
 
   /**
    * The list of listeners that believe a IOIO connection is
    * established.
    */
-  private Collection<IOIOConnectionListener> openListeners =
+  private final Collection<IOIOConnectionListener> openListeners =
     new LinkedList<IOIOConnectionListener>();
 
   static {
@@ -120,9 +118,7 @@ final class IOIOHelper implements IOIOConnectionHolder,
         /* got an interrupt from another thread; try again */
         listener.onIOIOConnect(ioio);
       }
-    } catch (InterruptedException e) {
-      Log.e(TAG, "Failed to open IOIO device " + listener, e);
-    } catch (RuntimeException e) {
+    } catch (InterruptedException | RuntimeException e) {
       Log.e(TAG, "Failed to open IOIO device " + listener, e);
     }
   }
