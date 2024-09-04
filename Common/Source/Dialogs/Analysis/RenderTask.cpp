@@ -11,7 +11,7 @@
 #include "DrawFAIOpti.h"
 #include "Asset.hpp"
 
-void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode)
+void Statistics::RenderTask(LKSurface& Surface, const RECT& rc, bool olcmode)
 {
   int i, j;
   unsigned int ui;

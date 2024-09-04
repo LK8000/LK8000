@@ -64,7 +64,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
 }
 
 
-void Statistics::FormatTicText(TCHAR *text, const double val, const double step) {
+void Statistics::FormatTicText(TCHAR *text, double val, double step) {
   if (step<1.0) {
     _stprintf(text, TEXT("%.1f"), val);
   } else {

@@ -50,17 +50,17 @@ class Statistics {
 				  const LKColor& thecolor);
 
   static void DrawLineGraph(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
-                            const int Style);
+                            int Style);
   static void DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
-                        const int Style);
+                        int Style);
   static void DrawTrendN(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
-                         const int Style);
+                         int Style);
 
   static void DrawLine(LKSurface& Surface, const RECT& rc,
-		       const double xmin,
-		       const double ymin,
-                       const double xmax,
-		       const double ymax, const int Style);
+		       double xmin,
+		       double ymin,
+                       double xmax,
+		       double ymax, int Style);
 
   static int ScaleX(const RECT& rc, double x);
 
@@ -68,11 +68,11 @@ class Statistics {
 
   static void ScaleYFromData(const RECT& rc, LeastSquares* lsdata);
   static void ScaleXFromData(const RECT& rc, LeastSquares* lsdata);
-  static void ScaleYFromValue(const RECT& rc, const double val);
-  static void ScaleXFromValue(const RECT& rc, const double val);
+  static void ScaleYFromValue(const RECT& rc, double val);
+  static void ScaleXFromValue(const RECT& rc, double val);
   static void ScaleMakeSquare(const RECT& rc);
 
-  static void StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2, const int Style, const RECT& rc);
+  static void StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2, int Style, const RECT& rc);
 
 
 
@@ -84,27 +84,21 @@ class Statistics {
   static bool unscaled_y;
   static void ResetScale();
 
-  static void FormatTicText(TCHAR *text, const double val, const double step);
+  static void FormatTicText(TCHAR *text, double val, double step);
   static void DrawXGrid(LKSurface& Surface, const RECT& rc,
-			const double tic_step,
-			const double zero,
-                        const int Style,
-			const double unit_step,
-			bool draw_units=false);
+                        double tic_step, double zero, int Style,
+                        double unit_step, bool draw_units=false);
   static void DrawYGrid(LKSurface& Surface, const RECT& rc,
-			const double tic_step,
-			const double zero,
-                        const int Style,
-			const double unit_step, bool draw_units=false);
+                        double tic_step, double zero, int Style,
+                        double unit_step, bool draw_units=false);
   static void DrawYGrid_cor(LKSurface& Surface, const RECT& rc,
-			const double tic_step,
-			const double zero,
-                        const int Style,
-			const double unit_step, bool draw_units=false);
+			double tic_step,
+			double zero,
+                        int Style,
+			double unit_step, bool draw_units=false);
   static void DrawXLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text);
   static void DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text);
-  static void DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text,
-			const double xv, const double yv);
+  static void DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text, double xv, double yv);
   static void DrawNoData(LKSurface& Surface, const RECT& rc);
 
   ///
@@ -115,7 +109,7 @@ class Statistics {
     static void RenderGlidePolar(LKSurface& Surface, const RECT& rc);
     static void RenderWind(LKSurface& Surface, const RECT& rc);
     static void RenderTemperature(LKSurface& Surface, const RECT& rc);
-    static void RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode);
+    static void RenderTask(LKSurface& Surface, const RECT& rc, bool olcmode);
     static void RenderContest(LKSurface& Surface, const RECT& rc);
     static void RenderFAIOptimizer(LKSurface& Surface, const RECT& rc);
     static void RenderSpeed(LKSurface& Surface, const RECT& rc);

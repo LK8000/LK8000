@@ -9,8 +9,7 @@
 #include "Sideview.h"
 #include "Asset.hpp"
 
-void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text,
-			   const double xv, const double yv) {
+void Statistics::DrawLabel(LKSurface& Surface, const RECT& rc, const TCHAR *text, double xv, double yv) {
 
   SIZE tsize;
   Surface.GetTextSize(text, &tsize);
@@ -70,8 +69,7 @@ void Statistics::DrawYLabel(LKSurface& Surface, const RECT& rc, const TCHAR *tex
 }
 
 
-void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata,
-			   const int Style)
+void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata, int Style)
 {
   if (lsdata->sum_n<2) {
     return;
@@ -102,9 +100,7 @@ void Statistics::DrawTrend(LKSurface& Surface, const RECT& rc, LeastSquares* lsd
 }
 
 
-void Statistics::DrawTrendN(LKSurface& Surface, const RECT& rc,
-			    LeastSquares* lsdata,
-                            const int Style)
+void Statistics::DrawTrendN(LKSurface& Surface, const RECT& rc, LeastSquares* lsdata, int Style)
 {
   if (lsdata->sum_n<2) {
     return;
@@ -137,9 +133,9 @@ void Statistics::DrawTrendN(LKSurface& Surface, const RECT& rc,
 
 
 void Statistics::DrawLine(LKSurface& Surface, const RECT& rc,
-			  const double xmin, const double ymin,
-                          const double xmax, const double ymax,
-                          const int Style) {
+                          double xmin, double ymin,
+                          double xmax, double ymax,
+                          int Style) {
 
   if (unscaled_x || unscaled_y) {
     return;

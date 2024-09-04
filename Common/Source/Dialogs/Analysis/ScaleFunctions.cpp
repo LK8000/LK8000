@@ -71,7 +71,7 @@ void Statistics::ScaleXFromData(const RECT& rc, LeastSquares* lsdata)
 }
 
 
-void Statistics::ScaleYFromValue(const RECT& rc, const double value)
+void Statistics::ScaleYFromValue(const RECT& rc, double value)
 {
   if (unscaled_y) {
     y_min = value;
@@ -89,7 +89,7 @@ void Statistics::ScaleYFromValue(const RECT& rc, const double value)
 }
 
 
-void Statistics::ScaleXFromValue(const RECT& rc, const double value)
+void Statistics::ScaleXFromValue(const RECT& rc, double value)
 {
   if (unscaled_x) {
     x_min = value;

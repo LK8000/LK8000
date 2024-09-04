@@ -15,7 +15,7 @@ extern LKPen penThinSignal;
 
 
 void Statistics::StyleLine(LKSurface& Surface, const POINT& l1, const POINT& l2,
-                           const int Style, const RECT& rc) {
+                           int Style, const RECT& rc) {
 #ifdef NO_DASH_LINES
   int minwidth = IBLSCALE(2);
 #else

@@ -10,10 +10,8 @@
 #include "Asset.hpp"
 
 void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
-			   const double tic_step,
-			   const double zero,
-                           const int Style,
-			   const double unit_step, bool draw_units) {
+                           double tic_step, double zero, int Style,
+                           double unit_step, bool draw_units) {
 
   if(INVERTCOLORS || IsDithered())
     Surface.SelectObject(LK_BLACK_PEN);
@@ -96,10 +94,8 @@ void Statistics::DrawXGrid(LKSurface& Surface, const RECT& rc,
 
 
 void Statistics::DrawYGrid(LKSurface& Surface, const RECT& rc,
-			   const double tic_step,
-			   const double zero,
-                           const int Style,
-			   const double unit_step, bool draw_units) {
+                           double tic_step, double zero, int Style,
+                           double unit_step, bool draw_units) {
 
   POINT line[2];
   SIZE tsize;
