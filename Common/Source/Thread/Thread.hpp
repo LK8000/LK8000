@@ -13,6 +13,11 @@
 #include "Poco/Thread.h"
 #include <functional>
 
+#ifdef __linux__
+#include <linux/prctl.h>  /* Definition of PR_* constants */
+#include <sys/prctl.h>
+#endif
+
 class Thread : protected Poco::Runnable {
 public:
     explicit Thread(const char* name) : _thread(name) {}
@@ -38,6 +43,9 @@ protected:
     virtual void Run() = 0;
 
     void run() override {
+#ifdef __linux__
+        prctl(PR_SET_NAME, _thread.name().c_str());
+#endif
         Run();
     }
 
