@@ -118,8 +118,6 @@ class Statistics {
     static void RenderTask(LKSurface& Surface, const RECT& rc, const bool olcmode);
     static void RenderContest(LKSurface& Surface, const RECT& rc);
     static void RenderFAIOptimizer(LKSurface& Surface, const RECT& rc);
-    static void RenderFAIAssistant(LKSurface& Surface, const RECT& rc);
-    static int  RenderFAISector (LKSurface& Surface, const RECT& rc , double lat1, double lon1, double lat2, double lon2, double lat_c, double lon_c , int iOpposite , const LKColor& fillcolor);
     static void RenderSpeed(LKSurface& Surface, const RECT& rc);
 };
 

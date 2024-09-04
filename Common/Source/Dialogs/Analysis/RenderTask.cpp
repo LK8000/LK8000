@@ -249,8 +249,6 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 			if(fDist_c > Units::FromDistance(500)) fTic = Units::FromDistance(250);
 
 
-// RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,1, RGB_LIGHTGREY );
-// RenderFAISector ( Surface, rc, lat1, lon1, lat2, lon2, lat_c, lon_c,0, RGB_GREY   );
       if (!IsDithered()) {
         TaskFAISector[MAXTASKPOINTS - 1].CalcSectorCache(lat1, lon1, lat2, lon2, fTic, 1);
         TaskFAISector[MAXTASKPOINTS - 1].AnalysisDrawFAISector(Surface, rc, GeoPoint(lat_c, lon_c), RGB_LIGHTYELLOW);
