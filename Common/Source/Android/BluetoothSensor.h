@@ -123,7 +123,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
   /* override DataHandler */
  public:
   void DataReceived(const void* data, size_t size) override;
-  void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, const void* data, size_t size) override;
+  void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) override;
   bool DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const override;
 };
 

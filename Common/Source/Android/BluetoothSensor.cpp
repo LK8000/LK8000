@@ -138,12 +138,9 @@ void BluetoothSensor::PortError(const char* msg) {
   StartupStore("BluetoothSensor Error : %s", msg);
 }
 
-void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteristic, const void* data, size_t size) {
-  auto first = static_cast<const uint8_t*>(data);
-  auto last = std::next(first, size);
-
+void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) {
   ScopeLock lock(mutex);
-  data_queue.emplace_back(std::move(service), std::move(characteristic), std::vector<uint8_t>(first, last));
+  data_queue.emplace_back(std::move(service), std::move(characteristic), std::move(data));
   newdata.Signal();
 }
 

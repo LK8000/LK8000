@@ -38,7 +38,7 @@ public:
   virtual void DataReceived(const void *data, size_t length) { };
 
   gcc_nonnull_all
-  virtual void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, const void* data, size_t size) { }
+  virtual void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) { }
 
   virtual bool DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {
     return false;
