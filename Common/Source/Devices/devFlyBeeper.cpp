@@ -166,6 +166,11 @@ class tx_power {
   public:
     constexpr tx_power() = default;
     constexpr tx_power(int8_t dbm) : value(Clamp<int8_t>(dbm, -9, 22)) { }
+
+    operator int8_t () const {
+      return value;
+    }
+
   private:
     int8_t value = 14;
 };
@@ -240,9 +245,9 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
     auto& params = get_region_settings({ Basic.Latitude, Basic.Longitude });
     if (current_region != params.name) {
       current_region = params.name;
-      d->Com->WriteGattCharacteristic(radio_uuid, frequency_uuid, params.mac.khz);
-      d->Com->WriteGattCharacteristic(radio_uuid, bandwidth_uuid, params.mac.bw);
-      d->Com->WriteGattCharacteristic(radio_uuid, tx_power_uuid, params.mac.dBm);
+      d->Com->WriteGattCharacteristic(radio_uuid, frequency_uuid, ToLE32(static_cast<uint32_t>(params.mac.khz)));
+      d->Com->WriteGattCharacteristic(radio_uuid, bandwidth_uuid, static_cast<int8_t>(params.mac.bw));
+      d->Com->WriteGattCharacteristic(radio_uuid, tx_power_uuid, static_cast<int8_t>(params.mac.dBm));
     }
 
     static PeriodClock timeState;
@@ -301,8 +306,8 @@ bool EnableFanet(DeviceDescriptor_t& d) {
   current_region = ""; // reset regional settings, will be set by SendData
 
   // check if this must be changed ?
-  d.Com->WriteGattCharacteristic(radio_uuid, spreading_factor_uuid, spreading_factor::sf_7);
-  d.Com->WriteGattCharacteristic(radio_uuid, coding_rate_uuid, coding_rate::cr_4_5);
+  d.Com->WriteGattCharacteristic(radio_uuid, spreading_factor_uuid, static_cast<int8_t >(spreading_factor::sf_7));
+  d.Com->WriteGattCharacteristic(radio_uuid, coding_rate_uuid, static_cast<int8_t >(coding_rate::cr_4_5));
 
   d.SendData = SendData;
   return true;
