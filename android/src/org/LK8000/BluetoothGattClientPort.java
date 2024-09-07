@@ -217,8 +217,9 @@ public class BluetoothGattClientPort
   }
 
   private boolean doEnableNotification(UUID service, UUID characteristic) {
-    if (listener != null) {
-      return listener.doEnableNotification(service, characteristic);
+    InputListener l = listener;
+    if (l != null) {
+      return l.doEnableNotification(service, characteristic);
     }
     return false;
   }
@@ -344,10 +345,11 @@ public class BluetoothGattClientPort
 
   @Override
   public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
-    if (listener != null) {
+    InputListener l = listener;
+    if (l != null) {
       final UUID service = characteristic.getService().getUuid();
       final UUID uuid = characteristic.getUuid();
-      listener.onCharacteristicChanged(
+      l.onCharacteristicChanged(
               service.getMostSignificantBits(), service.getLeastSignificantBits(),
               uuid.getMostSignificantBits(), uuid.getLeastSignificantBits(),
               value, value.length);
