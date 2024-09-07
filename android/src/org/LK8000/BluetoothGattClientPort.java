@@ -197,7 +197,9 @@ public class BluetoothGattClientPort
   public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
       maxChunkSize = 20; // default mtu - 3
-      gatt.requestMtu(517);
+      if (!gatt.requestMtu(517)) {
+        configureCharacteristics(gatt);
+      }
     } else {
       Log.e(TAG, "Discovering GATT services failed");
       portState = STATE_FAILED;
