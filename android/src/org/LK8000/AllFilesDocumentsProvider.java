@@ -98,8 +98,12 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     }
 
     private void notifyChildDocumentsChange(String parentDocumentId) {
-        ContentResolver contentResolver = getContentResolver();
-        contentResolver.notifyChange(getChildDocumentsUri(parentDocumentId),null, false);
+        getContentResolver().notifyChange(getChildDocumentsUri(parentDocumentId),null, false);
+    }
+
+    private File getRootDir() {
+        Context context = Objects.requireNonNull(getContext());
+        return context.getExternalFilesDir(null);
     }
 
     @Override
@@ -114,8 +118,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
 
         Context context = Objects.requireNonNull(getContext());
 
-
-        File file = context.getExternalFilesDir(null);
+        File file = getRootDir();
 
         row.add(Root.COLUMN_ROOT_ID, "RootId");
         row.add(Root.COLUMN_DOCUMENT_ID, getDocIdForFile(file));
@@ -171,7 +174,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     }
 
     private String getDocIdForFile(@NonNull File file) {
-        File rootFile = getContext().getExternalFilesDir(null);
+        File rootFile = getRootDir();
         return "root:" + rootFile.toURI().relativize(file.toURI()).toString();
     }
 
@@ -179,7 +182,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
         String decoded = Uri.decode(documentId);
         final int splitIndex = decoded.indexOf(':', 1);
         final String path = decoded.substring(splitIndex + 1);
-        final File rootFile = getContext().getExternalFilesDir(null);
+        final File rootFile = getRootDir();
         File file = new File(rootFile, path);
         if (file.exists()) {
             return file;
@@ -238,7 +241,7 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
     @Override
     public Cursor querySearchDocuments(String rootId, String query, String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-        final File parent = getContext().getExternalFilesDir(null);
+        final File parent = getRootDir();
         final LinkedList<File> pending = new LinkedList<>();
         final String lowerQuery = query.toLowerCase();
 
