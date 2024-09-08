@@ -10,6 +10,7 @@ package org.LK8000.LKMap;
 
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import org.LK8000.databinding.ActivityLkmapBinding;
 import java.io.File;
 
 public class LKMAPActivity extends AppCompatActivity {
+    final String TAG = "LKMAPActivity";
 
     private String currentURL = "";
     private ActivityLkmapBinding binding;
@@ -113,7 +115,6 @@ public class LKMAPActivity extends AppCompatActivity {
     }
 
     private void downloadFile(String url,String dest) {
-
         File dir = new File(getExternalFilesDir(null), dest);
         if (dir.exists() || dir.mkdirs()) {
 
@@ -128,9 +129,6 @@ public class LKMAPActivity extends AppCompatActivity {
     }
 
     private void downloadFile(String url, String dest, String filename, File dstFile) {
-        if (dstFile.exists()) {
-           dstFile.delete(); // to overwrite existing files
-        }
 
         Uri destUri = Uri.fromFile(dstFile);
         Uri srcUri = Uri.parse(url);
@@ -138,13 +136,42 @@ public class LKMAPActivity extends AppCompatActivity {
         final DownloadManager downloadManager =
                 (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
 
+        cancelPendingDownload(downloadManager, url);
+
+        if (dstFile.exists()) {
+            dstFile.delete(); // to overwrite existing files
+        }
+
+
         downloadManager.enqueue(new DownloadManager.Request(srcUri)
                         .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI |
                                 DownloadManager.Request.NETWORK_MOBILE)
-                        .setAllowedOverRoaming(false)
+                        .setAllowedOverRoaming(true)
                         .setTitle(getString(R.string.download_title))
                         .setDescription(new File(dest, filename).getAbsolutePath())
                         .setDestinationUri(destUri));
+    }
+
+    interface Callback {
+        void execute(Cursor cursor);
+    }
+
+    private void ForEachPendingDownload(DownloadManager downloadManager, String url, Callback callback) {
+        try (Cursor cursor = downloadManager.query(new DownloadManager.Query())) {
+            int idxUri = cursor.getColumnIndex(DownloadManager.COLUMN_URI);
+            while (cursor.moveToNext()) {
+                if (url.equals(cursor.getString(idxUri))) {
+                    callback.execute(cursor);
+                }
+            }
+        }
+    }
+
+    private void cancelPendingDownload(DownloadManager downloadManager, String url) {
+        ForEachPendingDownload(downloadManager, url, cursor -> {
+            int idxId = cursor.getColumnIndex(DownloadManager.COLUMN_ID);
+            downloadManager.remove(cursor.getInt(idxId));
+        });
     }
 
     private void showConfirmDialog(String url, String dest, String filename, File dstFile)  {
