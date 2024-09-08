@@ -29,7 +29,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc) {
     message = MsgToken<974>(); // GPS NOT CONNECTED
     for (const auto& dev : DeviceList) {
       ScopeLock Lock(CritSec_Comm);
-      if (dev.IsReady()) {
+      if (dev.IsGPS()) {
         message = nullptr;
       }
     }

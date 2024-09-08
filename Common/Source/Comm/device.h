@@ -76,6 +76,8 @@ struct DeviceDescriptor_t {
   DeviceDescriptor_t& operator= (DeviceDescriptor_t&&) = delete;
 
   bool IsReady() const;
+  bool IsGPS() const ;
+
 
   ComPort *Com = nullptr;
   TCHAR	Name[DEVNAMESIZE+1];

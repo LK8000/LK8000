@@ -369,6 +369,13 @@ bool DeviceDescriptor_t::IsReady() const {
   return Com && Com->IsReady();
 }
 
+bool DeviceDescriptor_t::IsGPS() const {
+  if (Disabled) {
+    return false;
+  }
+  return IsReady() && nmeaParser.connected;
+}
+
 void DeviceDescriptor_t::InitStruct(unsigned i) {
     PortNumber = i;
 
