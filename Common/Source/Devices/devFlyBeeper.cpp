@@ -96,7 +96,7 @@ payload_t serialize_gound_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& C
 
 
   /* state & Online Tracking */
-  constexpr uint8_t state = 0;
+  constexpr auto state = static_cast<uint8_t>(ground_type::Walking);
   constexpr uint8_t online_tracking = 0x01;
 
   out_it = (state&0x0F)<<4 | online_tracking;

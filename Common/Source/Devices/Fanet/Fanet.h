@@ -19,6 +19,20 @@
 #include "tchar.h"
 #include "frame.h"
 
+enum class ground_type : uint8_t {
+  Other = 0,
+  Walking,
+  Vehicle,
+  Bike,
+  Boot,
+  Need_a_ride,
+  Landed_well,
+  Need_technical_support,
+  Need_medical_help,
+  Distress_call,
+  Distress_call_automatically
+};
+
 struct NMEA_INFO;
 struct DeviceDescriptor_t;
 
