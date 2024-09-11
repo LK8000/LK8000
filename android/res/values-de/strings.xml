@@ -2,4 +2,8 @@
 <resources>
     <string name="default_language_code">de</string>
     <string name="upgrade_storage">"LK8000 verschiebt deine Daten (%1$d MB) aus dem Verzeichnis LK8000/ nach Android/data/%2$s/files/.\n\nDies wird von Google im Rahmen einer Massnahme zur Verbesserung deiner Privatsphäre verlangt."</string>
+    <string name="loading">LK8000 wird geladen …</string>
+    <string name="quit">LK8000 wird heruntergefahren …</string>
+    <string name="warning">Warnung!</string>
+    <string name="close">Schließen</string>
 </resources>
