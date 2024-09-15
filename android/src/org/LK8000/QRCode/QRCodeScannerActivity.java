@@ -1,7 +1,6 @@
 package org.LK8000.QRCode;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,7 +24,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.ExecutionException;
 
-@TargetApi(21)
 public class QRCodeScannerActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CAMERA = 0;
 

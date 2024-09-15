@@ -1,7 +1,5 @@
 package org.LK8000.QRCode;
 
-import android.annotation.TargetApi;
-
 import androidx.annotation.NonNull;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
@@ -21,7 +19,6 @@ import static android.graphics.ImageFormat.YUV_420_888;
 import static android.graphics.ImageFormat.YUV_422_888;
 import static android.graphics.ImageFormat.YUV_444_888;
 
-@TargetApi(21)
 public class QRCodeImageAnalyzer implements ImageAnalysis.Analyzer {
     private final QRCodeFoundListener listener;
     private final QRCodeMultiReader analyser = new QRCodeMultiReader();

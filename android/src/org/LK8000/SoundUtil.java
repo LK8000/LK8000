@@ -23,13 +23,10 @@ Copyright_License {
 
 package org.LK8000;
 
-import android.annotation.TargetApi;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.content.Context;
 import android.media.SoundPool;
-import android.os.Build;
 import androidx.annotation.Nullable;
 
 import android.os.ParcelFileDescriptor;
@@ -64,7 +61,7 @@ public class SoundUtil {
         return false;
     }
 
-    @Nullable @TargetApi(21)
+    @Nullable
     private static SoundPool createSoundPool() {
         AudioAttributes attributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
@@ -76,24 +73,12 @@ public class SoundUtil {
                 .build();
     }
 
-    @Nullable @SuppressWarnings("deprecation")
-    private static SoundPool createSoundPoolCompat() {
-        return new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-    }
-
-
     SoundUtil() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                soundPool = createSoundPool();
-            } else {
-                soundPool = createSoundPoolCompat();
-            }
-
+            soundPool = createSoundPool();
             if (soundPool != null) {
                 soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f));
             }
-
         } catch (Exception e) {
             Log.e(TAG, e.toString());
             soundPool = null;

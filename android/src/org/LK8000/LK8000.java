@@ -480,10 +480,8 @@ public class LK8000 extends Activity {
   private final int SCAN_QRCODE = 0;
 
   void scanQRCode() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      Intent intent = new Intent(this, QRCodeScannerActivity.class);
-      startActivityForResult(intent, SCAN_QRCODE);
-    }
+    Intent intent = new Intent(this, QRCodeScannerActivity.class);
+    startActivityForResult(intent, SCAN_QRCODE);
   }
 
   @Override

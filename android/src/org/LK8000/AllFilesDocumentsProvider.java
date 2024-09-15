@@ -34,7 +34,6 @@ import android.content.pm.ApplicationInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
@@ -211,10 +210,8 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
 
             // allow to delete Existing file or directory
             flags |= Document.FLAG_SUPPORTS_DELETE;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // allow to rename existing file or directory
-                flags |= Document.FLAG_SUPPORTS_RENAME;
-            }
+            // allow to rename existing file or directory
+            flags |= Document.FLAG_SUPPORTS_RENAME;
         }
         row.add(Document.COLUMN_FLAGS, flags);
     }
