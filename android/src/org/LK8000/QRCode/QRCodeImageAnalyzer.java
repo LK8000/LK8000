@@ -30,21 +30,8 @@ public class QRCodeImageAnalyzer implements ImageAnalysis.Analyzer {
     @Override
     public void analyze(@NonNull ImageProxy image) {
         if (image.getFormat() == YUV_420_888 || image.getFormat() == YUV_422_888 || image.getFormat() == YUV_444_888) {
-            ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
-            byte[] imageData = new byte[byteBuffer.capacity()];
-            byteBuffer.get(imageData);
-
-            PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
-                    imageData,
-                    image.getWidth(), image.getHeight(),
-                    0, 0,
-                    image.getWidth(), image.getHeight(),
-                    false
-            );
-
-            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
-
             try {
+                BinaryBitmap binaryBitmap = getBinaryBitmap(image);
                 Result result = analyser.decode(binaryBitmap);
                 listener.onQRCodeFound(result.getText());
             } catch (FormatException | ChecksumException | NotFoundException ignore) {
@@ -52,5 +39,21 @@ public class QRCodeImageAnalyzer implements ImageAnalysis.Analyzer {
         }
 
         image.close();
+    }
+
+    private static @NonNull BinaryBitmap getBinaryBitmap(@NonNull ImageProxy image) {
+        ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
+        byte[] imageData = new byte[byteBuffer.capacity()];
+        byteBuffer.get(imageData);
+
+        PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
+                imageData,
+                image.getWidth(), image.getHeight(),
+                0, 0,
+                image.getWidth(), image.getHeight(),
+                false
+        );
+
+        return new BinaryBitmap(new HybridBinarizer(source));
     }
 }
