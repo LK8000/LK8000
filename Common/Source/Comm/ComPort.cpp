@@ -80,15 +80,13 @@ bool ComPort::StopRxThread() {
 
     StopEvt.set();
 
-    DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), GetPortIndex() + 1);
+    DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), GetPortIndex() + 1U);
     CancelWaitEvent();
 
-    if (rx_thread.IsDefined()) {
-        DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), GetPortIndex() + 1);
-        rx_thread.Join();
-    }
-    StopEvt.reset();
+    DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), GetPortIndex() + 1);
+    rx_thread.Join();
 
+	StopEvt.reset();
     return true;
 }
 
@@ -110,10 +108,6 @@ bool ComPort::StartRxThread() {
           return false;
       }
       return true;
-  } catch(Poco::Exception& e) {
-      const tstring error = to_tstring(e.displayText());
-      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), GetPortIndex() + 1, GetPortName(), error.c_str());
-      return false;
   } catch(std::exception& e) {
       const tstring error = to_tstring(e.what());
       StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), GetPortIndex() + 1, GetPortName(), error.c_str());
