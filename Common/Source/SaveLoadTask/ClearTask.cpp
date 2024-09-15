@@ -21,12 +21,17 @@ inline void ResetStartPoint(START_POINT& StartPt) {
 
 } // namespace
 
-void ClearTask(void) {
+void ClearTask() {
+  ScopeLock lock(CritSec_TaskData);
 
-  LockTaskData();
-  AtScopeExit() {
-    UnlockTaskData();
-  };
+  EnableFAIFinishHeight = false;
+  FinishMinHeight = 0;
+
+  StartHeightRef = 0;
+  StartMaxHeight = 0;
+  StartMaxHeightMargin = 0;
+  StartMaxSpeed = 0;
+  StartMaxSpeedMargin = 0;
 
   TaskModified = true;
   TargetModified = true;
