@@ -177,6 +177,8 @@ struct DERIVED_INFO {
   double ThermalEstimate_W;
   double ThermalEstimate_R;
 
+  double AverageGS;
+
   THERMAL_SOURCE_INFO ThermalSources[MAX_THERMAL_SOURCES];
 
 #ifdef ENABLE_OPENGL

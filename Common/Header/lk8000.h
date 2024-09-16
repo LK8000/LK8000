@@ -142,7 +142,9 @@ struct ldrotary_s {
 	int distance[MAXLDROTARYSIZE]; // rotary array with a predefined max capacity
 	int altitude[MAXLDROTARYSIZE];
 	double ias[MAXLDROTARYSIZE];
+	double gs[MAXLDROTARYSIZE];
 	double totalias;
+    double totalgs;
 	int totaldistance;
 	int totalaltitude;
 	int prevaltitude;

@@ -1819,5 +1819,7 @@
     "_@H000935_": "[Altitude QNE]\nWysokość QNE odnosi się do ciśnienia standardowego kiedy na wysokościomierzu, w okienku Kollsmana jest ustawione 1013.25 mb lub 29.92 inHg. Wysokość QNE jest powszechnie wykorzystywana w przelotach powyżej bezwzględnej wysokości przejściowej (FL - poziomy przelotu)",
     "_@M001887_": "Nakładka Wartości",
     "_@M001886_": "Nakładka Cel",
-    "_@M000210_": "Cylinder"
+    "_@M000210_": "Cylinder",
+    "_@M002502_": "Średnia Ground Speed",
+    "_@H000958_": "[Średnia Ground Speed]\nŚrednia Ground Speed jest obliczana w czasie rzeczywistym dla ostatniego okresu lotu określanego w parametrze [Okres uśredniania doskonałości].\nObliczenie średniej jest możliwe po określonym czasie lotu. Do tego momentu wyświetlana jest Ground Speed (nie uśredniona) oraz klepsydra."
 }
