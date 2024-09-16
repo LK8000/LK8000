@@ -59,10 +59,12 @@ FILE *fp;
 		buf->distance[i]=0;
 		buf->altitude[i]=0;
 		buf->ias[i]=0;
+		buf->gs[i]=0;
 	}
 	buf->totaldistance=0;
     buf->totalaltitude=0;
 	buf->totalias=0;
+    buf->totalgs=0;
 	buf->start=-2;
 	buf->size=bsize;
 	buf->valid=false;
@@ -183,16 +185,20 @@ _noautoreset:
 		buf->totalaltitude-=buf->altitude[buf->start];
 
 		buf->totalias-=buf->ias[buf->start];
+		buf->totalgs-=buf->gs[buf->start];
 	}
-	buf->totaldistance+=iround(distance*100);
-	buf->distance[buf->start]=iround(distance*100);
+    buf->totaldistance+=iround(distance*100);
+    buf->distance[buf->start]=iround(distance*100);
 
     buf->totalaltitude+=diffAlt;
-	buf->altitude[buf->start]=diffAlt;
+    buf->altitude[buf->start]=diffAlt;
 
-	// insert IAS in the rotary buffer, either real or estimated
-	if (Basic->AirspeedAvailable) {
-                buf->totalias += (int)(Basic->IndicatedAirspeed*100);
+    buf->totalgs+=Basic->Speed;
+    buf->gs[buf->start] = Basic->Speed;
+
+    // insert IAS in the rotary buffer, either real or estimated
+    if (Basic->AirspeedAvailable) {
+        buf->totalias += (int)(Basic->IndicatedAirspeed*100);
                 buf->ias[buf->start] = (int)(Basic->IndicatedAirspeed*100);
 	} else {
 		if (ISCAR) {
@@ -300,7 +306,12 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
                         GlidePolar::SinkRateBestLd(), 
                         Units::To(unKiloMeterPerHour, GlidePolar::Vbestld()), 
                         Units::To(unKiloMeterPerHour, GlidePolar::Vminsink()));
-		#endif
+        #endif
+
+        //Calculating AverageGS
+         Calculated->AverageGS=bc.totalgs/bc.size;;
+        //End calculating AverageGS
+
 
 	} else {
 		Calculated->EqMc=-1;

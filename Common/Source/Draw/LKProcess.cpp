@@ -3396,6 +3396,21 @@ lkfin_ete:
 			_stprintf(BufferUnit, TEXT("bpm"));
 			_tcscpy(BufferTitle, DataOptionsTitle(LK_HEART_RATE));
 			break;
+
+        case LK_AVERAGE_GS:
+            if (DerivedDrawInfo.AverageGS>0) {
+                value=Units::ToHorizontalSpeed(DerivedDrawInfo.AverageGS);
+                _tcscpy(BufferTitle, DataOptionsTitle(lkindex));;
+            } else {
+                value=Units::ToHorizontalSpeed(DrawInfo.Speed);
+                _tcscpy(BufferTitle, MsgToken<2504>());
+            }
+            valid=true;
+            if (value<0||value>9999) value=0; else valid=true;
+            _stprintf(BufferValue, TEXT("%.0f"),value);
+            _stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+            break;
+
 		case LK_DUMMY:
 			_stprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
