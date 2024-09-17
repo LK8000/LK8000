@@ -836,7 +836,6 @@ GEXTERN bool Flags_DrawXC;
 GEXTERN unsigned int Trip_Moving_Time;
 GEXTERN unsigned int Trip_Steady_Time;
 
-GEXTERN double Rotary_Speed;
 GEXTERN double Rotary_Distance;
 
 GEXTERN unsigned short Multimap1;

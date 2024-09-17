@@ -3368,7 +3368,7 @@ lkfin_ete:
 			break;
 
 		case LK_SPEED_AVG:
-			_stprintf(BufferValue, _T("%.1f"), Units::ToHorizontalSpeed(Rotary_Speed));
+			_stprintf(BufferValue, _T("%.1f"), Units::ToHorizontalSpeed(DerivedDrawInfo.AverageGS));
 			_stprintf(BufferTitle, _T("AvgSpd"));
 			_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
 			valid = true;

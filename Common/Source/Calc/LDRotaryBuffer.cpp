@@ -79,7 +79,6 @@ bool InitLDRotary(ldrotary_s *buf) {
 
 	Log("InitLdRotary size=%d\r\n", buf->size);
 
-	Rotary_Speed=0;
 	Rotary_Distance=0;
 
 	return false;
@@ -243,10 +242,6 @@ double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calcul
 	if ( (bc.valid == true) && bc.size>0 ) {
 		averias = bc.totalias/bc.size;
 		averias/=100;
-
-		if (ISCAR) {
-			Rotary_Speed=averias;
-		}
 
 		// We use GPS altitude to be sure that the tas is correct, we dont know in fact
 		// if qnh is correct, while gps is generally accurate for the purpose.
