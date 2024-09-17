@@ -16,9 +16,7 @@
 #include "LiveTrack24.h"
 #include "LiveTrack24APIKey.h"
 #include "utils/stringext.h"
-#include "Poco/Event.h"
-#include "Poco/Thread.h"
-#include "Poco/ThreadTarget.h"
+#include "Thread/Thread.hpp"
 #include "picojson.h"
 #include "utils/hmac_sha2.h"
 #include "FlarmCalculations.h"
@@ -89,11 +87,8 @@ static int createSID();
 static std::string passwordToken(const std::string& plainTextPassword,
 		const std::string& sessionID);
 
-Poco::Thread _ThreadTracker("ThreadTracker"); //worker thread for Tracker
-Poco::Thread _ThreadRadar("ThreadRadar");     //worker thread for Radar
-Poco::ThreadTarget _ThreadTargetTracker(LiveTrackerThread);
-Poco::ThreadTarget _ThreadTargetTracker2(LiveTrackerThread2);
-Poco::ThreadTarget _ThreadTargetRadar(LiveTrackRadarThread2);
+std::unique_ptr<InvokeThread> _ThreadTracker;
+std::unique_ptr<InvokeThread> _ThreadRadar;
 
 template<typename T>
 std::string toString(const T& value) {
@@ -188,22 +183,21 @@ void LiveTrackerInit() {
 		if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
 			v2_sid = createSID();
 			v2_pwt = passwordToken(_password, toString(v2_sid));
-			_ThreadTracker.start(_ThreadTargetTracker2);
-			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
+			_ThreadTracker = std::make_unique<InvokeThread>("ThreadTracker", LiveTrackerThread2);
 			StartupStore(_T(". LiveTracker API V2 will use server %s if available."),
 							tracking::server_config);
 		} else {
-			_ThreadTracker.start(_ThreadTargetTracker);
-			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
+			_ThreadTracker = std::make_unique<InvokeThread>("ThreadTracker", LiveTrackerThread);
 			StartupStore(_T(". LiveTracker API V1 will use server %s if available."),
 							tracking::server_config);
 		}
+		_ThreadTracker->Start();
 	}
 
 	// Create a thread fo getting radar data from livetrack24.com
 	if (tracking::radar_config && EnableFLARMMap) {
-		_ThreadRadar.start(_ThreadTargetRadar);
-		_ThreadRadar.setPriority(Poco::Thread::PRIO_NORMAL);
+		_ThreadRadar = std::make_unique<InvokeThread>("ThreadRadar", LiveTrackRadarThread2);
+		_ThreadRadar->Start();
 		StartupStore(_T(". LiveTracker Radar Enabled."));
 	}
 	_inited = true;
@@ -211,17 +205,20 @@ void LiveTrackerInit() {
 
 // Shutdown Live Tracker
 void LiveTrackerShutdown() {
-	if (_ThreadTracker.isRunning()) {
+
+	if (_ThreadTracker && _ThreadTracker->IsDefined()) {
 		_t_run = false;
 		NewDataEvent.set();
-		_ThreadTracker.join();
+		_ThreadTracker->Join();
+		_ThreadTracker = nullptr;
 		StartupStore(_T(". LiveTracker closed."));
 	}
 
-	if (_ThreadRadar.isRunning()) {
+	if (_ThreadRadar && _ThreadRadar->IsDefined()) {
 		_t_radar_run = false;
 		NewDataEvent.set();
-		_ThreadRadar.join();
+		_ThreadRadar->Join();
+		_ThreadRadar = nullptr;
 		StartupStore(_T(". LiveRadar closed."));
 	}
 }
