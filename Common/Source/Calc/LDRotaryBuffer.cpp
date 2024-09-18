@@ -10,14 +10,17 @@
 #include "McReady.h"
 #include "utils/unique_file_ptr.h"
 
-#define DEBUG_ROTARY
+// #define DEBUG_ROTARY
 
 template<typename... Args>
-static void Log(const char* fmt, Args&&... args) {
+static void Log(const char* fmt, ...) {
 #ifdef DEBUG_ROTARY
 	auto fp = make_unique_file_ptr("Rotary_Debug.TXT", "a");
 	if (fp) {
-		fprintf(fp.get(), fmt, std::forward<Args>(args)...);
+          va_list args;
+          va_start(args, fmt);
+          vfprintf(fp.get(), fmt, args);
+          va_end(args);
 	}
 #endif
 }
