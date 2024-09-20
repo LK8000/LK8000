@@ -35,32 +35,61 @@ constexpr TCHAR infinity[] = { '\xE2', '\x88', '\x9E', '\0' };
 
 
 /**
- * return -1 if NextETE is Invalid.
- */
-static double GetNextETE(const DERIVED_INFO& info) {
-	double value = -1;
-	if(ISPARAGLIDER) {
-		LockTaskData();
-		if (ValidTaskPointFast(ActiveTaskPoint)) {
-			int index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) ? RESWP_OPTIMIZED: Task[ActiveTaskPoint].Index;
-			value = WayPointCalc[index].NextETE;
-		}
-		UnlockTaskData();
-	} else  if (ISCAR || ISGAAIRCRAFT) {
-		LockTaskData();
-		if (ValidTaskPointFast(ActiveTaskPoint)) {
-			value = WayPointCalc[TASKINDEX].NextETE;
-		}
-		UnlockTaskData();
-	} else {
-		value = info.LegTimeToGo;
-	}
+* return -1 if NextETE is Invalid.
+*/
+double GetGlNextETE(const DERIVED_INFO& info) {
+    double value = -1;
+    if(ISPARAGLIDER) {
+        LockTaskData();
+        if (ValidTaskPointFast(ActiveTaskPoint)) {
+            int index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) ? RESWP_OPTIMIZED: Task[ActiveTaskPoint].Index;
+            value = WayPointCalc[index].NextETE;
+        }
+        UnlockTaskData();
+    } else  if (ISCAR || ISGAAIRCRAFT) {
+        LockTaskData();
+        if (ValidTaskPointFast(ActiveTaskPoint)) {
+            value = WayPointCalc[TASKINDEX].NextETE;
+        }
+        UnlockTaskData();
+    } else {
+        value = info.LegTimeToGo;
+    }
 
-	if((value <= 0) || value >= (0.9*ERROR_TIME)) {
-		value = -1;
-	}
-	return value;
-} 
+    if((value <= 0) || value >= (0.9*ERROR_TIME)) {
+        value = -1;
+    }
+    return value;
+}
+
+double GetAvgNextETE(const DERIVED_INFO &info) {
+    double value = -1;
+    if(ISPARAGLIDER) {
+        LockTaskData();
+        if (ValidTaskPointFast(ActiveTaskPoint)) {
+            int index = (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) ? RESWP_OPTIMIZED: Task[ActiveTaskPoint].Index;
+            value = WayPointCalc[index].NextAvrETE;
+        }
+        UnlockTaskData();
+    } else  if (ISCAR || ISGAAIRCRAFT) {
+        LockTaskData();
+        if (ValidTaskPointFast(ActiveTaskPoint)) {
+            value = WayPointCalc[TASKINDEX].NextAvrETE;
+        }
+        UnlockTaskData();
+    } else {
+        value = info.LegTimeToGo;
+    }
+
+    if((value <= 0) || value >= (0.9*ERROR_TIME)) {
+        value = -1;
+    }
+    return value;
+}
+
+
+
+
 
 static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR *BufferValue, TCHAR *BufferUnit) {
 	bool valid = false;
@@ -937,7 +966,7 @@ goto_bearing:
 			_tcscpy(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
 			_stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
-			value = GetNextETE(DerivedDrawInfo);
+			value = GetGlNextETE(DerivedDrawInfo);
 			if (value > 0) {
 				valid = true;
 				if (Units::TimeToTextDown(BufferValue, value))  // 091112
@@ -1004,7 +1033,7 @@ goto_bearing:
 			_tcscpy(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
 			_stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
-			value = GetNextETE(DerivedDrawInfo);
+			value = GetGlNextETE(DerivedDrawInfo);
 			if(value > 0) {
 				valid = true;
 				Units::TimeToText(BufferValue, value + LocalTime(DrawInfo.Time));
@@ -3410,6 +3439,34 @@ lkfin_ete:
             _stprintf(BufferValue, TEXT("%.0f"),value);
             _stprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
             break;
+
+        case LK_NEXT_AVG_ETE:
+            _tcscpy(BufferValue,_T(NULLLONG));
+            _stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
+            value = GetAvgNextETE(DerivedDrawInfo);
+            if (value > 0) {
+                valid = true;
+                if (Units::TimeToTextDown(BufferValue, value))  // 091112
+                    _tcscpy(BufferUnit, TEXT("h"));
+                else
+                    _tcscpy(BufferUnit, TEXT("m"));
+            } else {
+                _tcscpy(BufferValue, TEXT(NULLTIME));
+            }
+            break;
+
+        case LK_NEXT_AVG_ETA:
+            _tcscpy(BufferValue,_T(NULLLONG));
+            _stprintf(BufferTitle, TEXT("%s"), DataOptionsTitle(lkindex));
+            value = GetAvgNextETE(DerivedDrawInfo);
+            if(value > 0) {
+                valid = true;
+                Units::TimeToText(BufferValue, value + LocalTime(DrawInfo.Time));
+            } else {
+                _tcscpy(BufferValue, TEXT(NULLTIME));
+            }
+            break;
+
 
 		case LK_DUMMY:
 			_stprintf(BufferValue,_T(NULLLONG));

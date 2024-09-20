@@ -2622,5 +2622,13 @@
     "_@M002502_": "Average Ground Speed",
     "_@M002503_": "AvgGS",
     "_@M002504_": "\u231BAvgGS",
-    "_@H000958_": "[Average Ground Speed]\nAverage Ground Speed is calculated in real time for the last seconds of the flight determined by Average Efficiency period.\nThe calculation is possible after a certain flight time - until then the Ground Speed (not average) and the hourglass are displayed."
+    "_@H000958_": "[Average Ground Speed]\nAverage Ground Speed is calculated in real time for the last seconds of the flight determined by Average Efficiency period.\nThe calculation is possible after a certain flight time - until then the Ground Speed (not average) and the hourglass are displayed.",
+
+    "_@M002505_": "Next Time To Go for AVG GS",
+    "_@M002506_": "NxAvETE",
+    "_@H000959_": "[Next Time To Go for AVG GS]\nNext Time To Go calculated with Average Ground Speed.",
+
+    "_@M002507_": "Next Arrival Time for AVG GS",
+    "_@M002508_": "NxAvETA",
+    "_@H000960_": "[Next Arrival Time for AVG GS]\nNext Arrival Time calculated with Average Ground Speed."
 }

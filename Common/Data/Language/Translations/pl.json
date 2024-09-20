@@ -1821,5 +1821,9 @@
     "_@M001886_": "Nakładka Cel",
     "_@M000210_": "Cylinder",
     "_@M002502_": "Średnia Ground Speed",
-    "_@H000958_": "[Średnia Ground Speed]\nŚrednia Ground Speed jest obliczana w czasie rzeczywistym dla ostatniego okresu lotu określanego w parametrze [Okres uśredniania doskonałości].\nObliczenie średniej jest możliwe po określonym czasie lotu. Do tego momentu wyświetlana jest Ground Speed (nie uśredniona) oraz klepsydra."
+    "_@H000958_": "[Średnia Ground Speed]\nŚrednia Ground Speed jest obliczana w czasie rzeczywistym dla ostatniego okresu lotu określanego w parametrze [Okres uśredniania doskonałości].\nObliczenie średniej jest możliwe po określonym czasie lotu. Do tego momentu wyświetlana jest Ground Speed (nie uśredniona) oraz klepsydra.",
+    "_@M002505_": "Next Time To Go przy AvgGS",
+    "_@H000959_": "[Next Time To Go przy AvgGS]\nCzas do osiągnięcia następnego punktu liczony na podstawie średniej GS (AvgGS).",
+    "_@M002507_": "Next Arrival Time przy AVG GS",
+    "_@H000960_": "[Next Arrival Time przy AVG GS]\nGodzina osiągnięcia następnego punktu liczona na podstawie średniej GS (AvgGS)."
 }
