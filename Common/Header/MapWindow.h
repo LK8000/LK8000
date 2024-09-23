@@ -195,6 +195,7 @@ struct WPCALC
   double Bearing;  // used for radial
   double AltArriv[ALTA_SIZE];
   double NextETE;
+  double NextAvrETE;
   bool Preferred;  // Flag to be used by Preferred quick selection WP page (TODO) and by BestAlternate
   double AltReqd[ALTA_SIZE];
   short WpType;

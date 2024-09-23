@@ -735,6 +735,8 @@
 #define LK_XC_TYPE            156 // type of best result in XC 
 #define LK_HEART_RATE   157 // pilot heart rate in bpm
 #define LK_AVERAGE_GS   158 // average ground speed
+#define LK_NEXT_AVG_ETE   159 // next ETE for AvgGS
+#define LK_NEXT_AVG_ETA   160 // next ETA for AvgGS
 
 // The following values are not available for custom configuration
 

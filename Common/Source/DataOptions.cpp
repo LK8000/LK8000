@@ -16,7 +16,7 @@ namespace {
 		MsgToken_t Title;
 	};
 
-	constexpr size_t NUMDATAOPTIONS_MAX = 159;
+	constexpr size_t NUMDATAOPTIONS_MAX = 161;
 	DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
 
 	template <int index, unsigned DescriptionId, unsigned TitleId>
@@ -336,6 +336,8 @@ void FillDataOptions() {
 	SetDataOption<LK_TIMETASK, 2427, 2488>();		   // Elapsed task time (time since start
 	SetDataOption<LK_HEART_RATE, 2500, 2501>();		   // Pilot Heart rate in bpm
 	SetDataOption<LK_AVERAGE_GS, 2502, 2503>();		   // Average speed for Eff Time
+	SetDataOption<LK_NEXT_AVG_ETE, 2505, 2506>();		   // NextETE with AvgGS
+	SetDataOption<LK_NEXT_AVG_ETA, 2507, 2508>();		   // NextETA with AvgGS
 
 	// Fill all null string pointer with empty string, avoid to check all time is used.
 	for(auto& tag : Data_Options) {

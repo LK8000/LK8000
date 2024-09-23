@@ -53,7 +53,7 @@ const TCHAR *LKGetText(const TCHAR *TextIn);
  * array used to store all localized string with "_@Mxxx_" token
  * decalred extern to allow compil time index check by MsgToken function
  */
-using LKLanguages_t = std::array<TCHAR*, 2505>;
+using LKLanguages_t = std::array<TCHAR*, 2509>;
 extern LKLanguages_t LKMessages;
 
 /**
