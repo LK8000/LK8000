@@ -76,8 +76,3 @@ output.map
 /Common/Utils/test_tools/CMakeSettings.json
 /cov-int/
 /Scripts/kobo-build-rootfs/build-config-user.sh
-<<<<<<< Updated upstream
-=======
-android-studio/build.gradle
-CMakeLists.txt
->>>>>>> Stashed changes
