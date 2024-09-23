@@ -21,7 +21,7 @@ void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
    if (Calculated->AverageGS>0) {
        WayPointCalc[i].NextAvrETE = WayPointCalc[i].Distance / Calculated->AverageGS;
    } else {
-       WayPointCalc[i].NextAvrETE= WayPointCalc[i].NextETE;
+       WayPointCalc[i].NextAvrETE= -1;
    }
 }
 
