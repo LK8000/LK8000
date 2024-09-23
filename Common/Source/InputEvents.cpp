@@ -1521,42 +1521,6 @@ void InputEvents::eventSendNMEA(const TCHAR *misc) {
 }
 
 
-
-void InputEvents::eventSendNMEAPort1(const TCHAR *misc) {
-  if (misc) {
-    devWriteNMEA<0>(misc);
-  }
-}
-
-void InputEvents::eventSendNMEAPort2(const TCHAR *misc) {
-  if (misc) {
-    devWriteNMEA<1>(misc);
-  }
-}
-
-void InputEvents::eventSendNMEAPort3(const TCHAR *misc) {
-  if (misc) {
-    devWriteNMEA<2>(misc);
-  }
-}
-
-void InputEvents::eventSendNMEAPort4(const TCHAR *misc) {
-  if (misc) {
-    devWriteNMEA<3>(misc);
-  }
-}
-
-void InputEvents::eventSendNMEAPort5(const TCHAR *misc) {
-  if (misc) {
-    devWriteNMEA<4>(misc);
-  }
-}
-
-void InputEvents::eventSendNMEAPort6(const TCHAR *misc) {
-  if (misc) {
-    devWriteNMEA<5>(misc);
-  }
-}
 // AdjustWaypoint
 // Adjusts the active waypoint of the task
 //  next: selects the next waypoint, stops at final waypoint
@@ -3426,8 +3390,6 @@ namespace {
     DELARE_EVENT(Run),
     DELARE_EVENT(ScreenModes),
     DELARE_EVENT(SendNMEA),
-    DELARE_EVENT(SendNMEAPort1),
-    DELARE_EVENT(SendNMEAPort2),
     DELARE_EVENT(Setup),
     DELARE_EVENT(SnailTrail),
     DELARE_EVENT(VisualGlide),
@@ -3473,6 +3435,20 @@ namespace {
     DELARE_EVENT(ShowMultiselect),
     DELARE_EVENT(ChangeNettoVario),
     DELARE_EVENT(Wifi),
+
+    { _T("SendNMEAPort1"), &InputEvents::eventSendNMEAPort<0> },
+    { _T("SendNMEAPort2"), &InputEvents::eventSendNMEAPort<1> },
+    { _T("SendNMEAPort3"), &InputEvents::eventSendNMEAPort<2> },
+    { _T("SendNMEAPort4"), &InputEvents::eventSendNMEAPort<3> },
+    { _T("SendNMEAPort5"), &InputEvents::eventSendNMEAPort<4> },
+    { _T("SendNMEAPort6"), &InputEvents::eventSendNMEAPort<5> },
+
+    { _T("SendDataPort1"), &InputEvents::eventSendDataPort<0> },
+    { _T("SendDataPort2"), &InputEvents::eventSendDataPort<1> },
+    { _T("SendDataPort3"), &InputEvents::eventSendDataPort<2> },
+    { _T("SendDataPort4"), &InputEvents::eventSendDataPort<3> },
+    { _T("SendDataPort5"), &InputEvents::eventSendDataPort<4> },
+    { _T("SendDataPort6"), &InputEvents::eventSendDataPort<5> },
   });
 
   #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }

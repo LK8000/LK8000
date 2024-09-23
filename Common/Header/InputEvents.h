@@ -12,6 +12,16 @@
 #include "types.h"
 #include "stdint.h"
 
+/**
+ * forward declaration
+ */
+template<size_t idx>
+void devWriteNMEA(const TCHAR *Text);
+
+template<size_t idx>
+void devWriteData(const TCHAR *Text);
+/******/
+
 typedef void (*pt2Event)(const TCHAR *);
 
 // GCE = Glide Computer Event
@@ -124,12 +134,6 @@ public:
   static void eventRun(const TCHAR *misc);
   static void eventScreenModes(const TCHAR *misc);
   static void eventSendNMEA(const TCHAR *misc);
-  static void eventSendNMEAPort1(const TCHAR *misc);
-  static void eventSendNMEAPort2(const TCHAR *misc);
-  static void eventSendNMEAPort3(const TCHAR *misc);
-  static void eventSendNMEAPort4(const TCHAR *misc);
-  static void eventSendNMEAPort5(const TCHAR *misc);
-  static void eventSendNMEAPort6(const TCHAR *misc);
   static void eventSetup(const TCHAR *misc);
   static void eventSnailTrail(const TCHAR *misc);
   static void eventVisualGlide(const TCHAR *misc); // VENTA3
@@ -176,6 +180,17 @@ public:
   static void eventModeType(const TCHAR *misc);
 
   static void eventShowMultiselect(const TCHAR *misc);
+
+  template<size_t idx>
+  static void eventSendDataPort(const TCHAR *misc) {
+    devWriteData<idx>(misc);
+  }
+
+  template<size_t idx>
+  static void eventSendNMEAPort(const TCHAR *misc) {
+    devWriteNMEA<idx>(misc);
+  }
+
   // -------
 
   static void showErrors();

@@ -1056,14 +1056,16 @@ uint8_t nmea_crc(const char *text) {
 // creating a possible deadlock situation.
 void devWriteNMEAString(DeviceDescriptor_t* d, const TCHAR *text)
 {
-  ScopeLock Lock(CritSec_Comm);
-  if (d && !d->Disabled && d->Com) {
-    char tmp[512];
-    devFormatNMEAString(tmp, to_utf8(text).c_str());
+  if (text) {
+    ScopeLock Lock(CritSec_Comm);
+    if (d && !d->Disabled && d->Com) {
+      char tmp[512];
+      devFormatNMEAString(tmp, to_utf8(text).c_str());
 
-    devDirectLink(d, true);
-    d->Com->WriteString(tmp);
-    devDirectLink(d, false);
+      devDirectLink(d, true);
+      d->Com->WriteString(tmp);
+      devDirectLink(d, false);
+    }
   }
 }
 

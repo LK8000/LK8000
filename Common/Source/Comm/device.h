@@ -251,6 +251,18 @@ void devWriteNMEA(const TCHAR *Text) {
   devWriteNMEAString(&DeviceList[idx], Text);
 }
 
+template<size_t idx>
+void devWriteData(const TCHAR *Text) {
+  static_assert(idx < std::size(DeviceList), "invalid index");
+  if (Text) {
+    ScopeLock Lock(CritSec_Comm);
+    DeviceDescriptor_t& d = DeviceList[idx];
+    if (!d.Disabled && d.Com) {
+      d.Com->WriteString(Text);
+    }
+  }
+}
+
 void SendDataToExternalDevice(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
 TCHAR devLetter(unsigned idx);
