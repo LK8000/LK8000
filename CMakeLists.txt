@@ -35,26 +35,21 @@ if("${ANDROID_ABI}" MATCHES "arm")
     )
 endif()
 
-list(APPEND	BUILD_FLAGS
+add_compile_options(
     -Werror
     -Wall
     -fno-math-errno
     -fopenmp
     -fsigned-char
-    -Wunused-label 
-    -Wunused-variable 
-    -Wunused-value 
-    -Wuninitialized 
+    -Wunused-label
+    -Wunused-variable
+    -Wunused-value
+    -Wuninitialized
     -Wmissing-field-initializers
     -Wparentheses
     -Wredundant-decls
     -Wno-unknown-warning-option
 )
-string(REPLACE ";" " " BUILD_FLAGS "${BUILD_FLAGS}")
-
-set(CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} ${BUILD_FLAGS} ")
-set(CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS} ")
-
 
 add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
@@ -926,5 +921,6 @@ target_link_libraries(LK8000 PRIVATE
     z
     EGL
     GLESv2
+    -fopenmp
     -static-openmp
 )
