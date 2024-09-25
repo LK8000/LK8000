@@ -13,22 +13,26 @@
 namespace  {
 
 BOOL OnHeartRate(DeviceDescriptor_t& d, NMEA_INFO& info, unsigned bpm) {
+  ScopeLock lock(CritSec_FlightData);
   UpdateHeartRate(info, d, bpm);
   return TRUE;
 }
 
 BOOL OnBarometricPressure(DeviceDescriptor_t& d, NMEA_INFO& info, double Pa) {
+  ScopeLock lock(CritSec_FlightData);
   UpdateBaroSource(&info, &d, StaticPressureToQNHAltitude(Pa));
   return TRUE;
 }
 
 BOOL OnOutsideTemperature(DeviceDescriptor_t& d, NMEA_INFO& info, double temp) {
+  ScopeLock lock(CritSec_FlightData);
   info.TemperatureAvailable = TRUE;
   info.OutsideAirTemperature = temp;
   return TRUE;
 }
 
 BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
+  ScopeLock lock(CritSec_FlightData);
   switch (d.PortNumber) {
     case 0:
       info.ExtBatt1_Voltage = level + 1000;

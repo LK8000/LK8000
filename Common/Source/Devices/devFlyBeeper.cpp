@@ -277,6 +277,8 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
 void TAS(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {
   // TAS
   if (data.size() == 2) {
+    ScopeLock lock(CritSec_FlightData);
+
     info.AirspeedAvailable = true;
     info.TrueAirspeed = Units::From(unKiloMeterPerHour, FromLE16(*reinterpret_cast<const int16_t*>(data.data())) / 10.);
     info.IndicatedAirspeed = IndicatedAirSpeed(info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
@@ -297,6 +299,7 @@ void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& d
   // FANET
   Frame frame(data.data(), data.size());
   const fanet_parse_function& parse = function_table.get(frame.type, FanetParseUnknown);
+  ScopeLock lock(CritSec_FlightData);
   parse(&d, &info, frame.src.get(), frame.payload);
 }
 
