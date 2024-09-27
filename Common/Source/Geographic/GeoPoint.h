@@ -13,6 +13,7 @@
 #define _GEOGRAPHIC_GEOPOINT_H_
 
 #include <type_traits>
+#include "NavFunctions.h"
 
 struct GeoPoint {
 
@@ -21,12 +22,33 @@ struct GeoPoint {
     constexpr GeoPoint(double lat, double lon) 
             : latitude(lat), longitude(lon) {}
 
-    GeoPoint Direct(double bearing, double distance) const;
+    [[nodiscard]]
+    GeoPoint Direct(double bearing, double distance) const {
+      GeoPoint Out;
+      FindLatitudeLongitude(latitude, longitude, bearing, distance,
+                            &Out.latitude, &Out.longitude);
+      return Out;
+    }
 
-    void Reverse(const GeoPoint& point, double& bearing, double& distance) const;
+    void Reverse(const GeoPoint& point, double& bearing, double& distance) const {
+      DistanceBearing(latitude, longitude, point.latitude, point.longitude,
+                      &distance, &bearing);
+    }
 
-    double Distance(const GeoPoint& point) const;
-    double Bearing(const GeoPoint& point) const;
+    [[nodiscard]]
+    double Distance(const GeoPoint& point) const {
+      double d;
+      DistanceBearing(latitude, longitude, point.latitude, point.longitude,
+                      &d, nullptr );
+      return d;
+    }
+
+    [[nodiscard]]
+    double Bearing(const GeoPoint& point) const {
+      double d;
+      DistanceBearing(latitude, longitude, point.latitude, point.longitude, nullptr, &d);
+      return d;
+    }
 
     bool operator== (const GeoPoint &point) const {
         return (longitude == point.longitude && latitude == point.latitude);
@@ -68,9 +90,15 @@ struct AGeoPoint: public GeoPoint {
 
 static_assert(std::is_trivial<AGeoPoint>::value, "type is not trivial");
 
+inline
+double ProjectedDistance(const GeoPoint& p1, const GeoPoint& p2, const GeoPoint& p3,
+                         double *xtd, double *crs) {
 
-double ProjectedDistance(const GeoPoint p1, const GeoPoint p2, const GeoPoint p3,
-                         double *xtd, double *crs);
+  return ProjectedDistance(p1.longitude, p1.latitude,
+                           p2.longitude, p1.latitude,
+                           p3.longitude, p1.latitude,
+                           xtd, crs);
+}
 
 double CrossTrackError(const GeoPoint& from, const GeoPoint& to, const GeoPoint& current);
 
