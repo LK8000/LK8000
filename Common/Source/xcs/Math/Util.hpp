@@ -26,28 +26,7 @@
 #include "Compiler.h"
 
 #include <math.h>
-
-/**
- * Convert this number to a signed integer, with rounding.
- */
-gcc_const
-static inline int
-iround(double x)
-{
-  return (int)lround(x);
-}
-
-/**
- * Convert this number to an unsigned integer, with rounding.
- *
- * The parameter must not be negative.  The result for a negative
- * parameter is undefined.
- */
-static inline constexpr unsigned
-uround(const double x)
-{
-  return (unsigned)(x + 0.5);
-}
+#include "Math/fixed.hpp"
 
 template<typename T>
 static inline constexpr T

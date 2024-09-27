@@ -26,8 +26,12 @@ Copyright_License {
 
 #include <math.h>
 
+#ifndef DEG_TO_RAD
 #define DEG_TO_RAD .0174532925199432958
+#endif
+#ifndef RAD_TO_DEG
 #define RAD_TO_DEG 57.2957795131
+#endif
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
