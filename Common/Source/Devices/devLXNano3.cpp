@@ -36,6 +36,7 @@
 #include "utils/printf.h"
 #include "Comm/UpdateQNH.h"
 #include "Comm/ExternalWind.h"
+#include "LocalPath.h"
 
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32

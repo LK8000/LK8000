@@ -33,6 +33,7 @@
 #include "Library/TimeFunctions.h"
 #include "Baro.h"
 #include "utils/lookup_table.h"
+#include "LocalPath.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;

@@ -18,6 +18,7 @@
 #include <optional>
 #include "Thread/Thread.hpp"
 #include "Thread/Cond.hpp"
+#include "LocalPath.h"
 
 #define PCM_DEVICE "default"
 

@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "LocalPath.h"
 
 void CreateDirectoryIfAbsent(const TCHAR *filename) {
   TCHAR fullname[MAX_PATH];

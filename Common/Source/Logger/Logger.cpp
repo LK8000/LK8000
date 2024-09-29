@@ -22,6 +22,7 @@
 #include <memory>
 #include <deque>
 #include "Baro.h"
+#include "LocalPath.h"
 #ifdef ANDROID
   #include "Android/AndroidFileUtils.h"
 #endif

@@ -13,7 +13,7 @@
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
 #include "utils/zzip_stream.h"
-
+#include "LocalPath.h"
 
 
 extern Topology* TopoStore[MAXTOPOLOGY];

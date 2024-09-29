@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "utils/zzip_stream.h"
+#include "LocalPath.h"
 
 int globalFileNum = 0;
 

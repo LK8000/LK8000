@@ -16,6 +16,7 @@
 #include "resource.h"
 #include "utils/zzip_stream.h"
 #include <vector>
+#include "LocalPath.h"
 
 
 #define MAXNOTETITLE 200	// max number of characters in a title note

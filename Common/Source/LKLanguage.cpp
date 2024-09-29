@@ -11,6 +11,7 @@
 #include "utils/zzip_stream.h"
 #include "picojson.h"
 #include <istream>
+#include "LocalPath.h"
 #ifdef ANDROID
   #include "Android/Main.hpp"
   #include "Android/NativeView.hpp"

@@ -13,6 +13,7 @@
 #include "externs.h"
 #include "sound_table.h"
 #include <functional>
+#include "LocalPath.h"
 using namespace std::placeholders;
 
 void sound_table::set(sound_code_t code, const TCHAR * nmeaStr) {

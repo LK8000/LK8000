@@ -17,6 +17,7 @@
 #include "dlgFlarmIGCDownload.h"
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
+#include "LocalPath.h"
 
 #define MAX_FLARM_ANSWER_LEN 640 
       // FLARM Docu does not tell the max. answer len
@@ -367,11 +368,9 @@ static void OnMultiSelectListListInfo(WndListFrame *Sender,
   }
 }
 
-bool GetIGCFilename(TCHAR *IGCFilename, int Idx) {
-  if (IGCFilename == NULL)
-    return false;
+static
+bool GetIGCFilename(TCHAR (&IGCFilename)[MAX_PATH], int Idx) {
   TCHAR Tmp[MAX_PATH];
-
   _tcscpy(Tmp, IGCFileList.at(Idx).Line1);
   TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next(TEXT(" "));
   if(Filename) {

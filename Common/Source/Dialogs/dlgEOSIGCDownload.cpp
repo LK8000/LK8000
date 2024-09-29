@@ -17,6 +17,7 @@
 #include "dlgIGCProgress.h"
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
+#include "LocalPath.h"
 
 #define EOS_PRPGRESS_DLG    
   
@@ -201,10 +202,8 @@ static void OnMultiSelectListListInfo(WndListFrame *Sender, WndListFrame::ListIn
   }
 
 }
-
-bool GetEOSIGCFilename(TCHAR *IGCFilename, TCHAR *InFilename) {
-  if (IGCFilename == NULL)
-    return false;
+static
+bool GetEOSIGCFilename(TCHAR (&IGCFilename)[MAX_PATH], TCHAR *InFilename) {
   TCHAR Tmp[MAX_PATH];
 
   _tcscpy(Tmp, InFilename);

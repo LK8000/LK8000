@@ -19,6 +19,7 @@
 #include <Tracking/Tracking.h>
 #include "utils/printf.h"
 #include "utils/unique_file_ptr.h"
+#include "LocalPath.h"
 
 #ifdef ANDROID
   #include "Android/BluetoothHelper.hpp"

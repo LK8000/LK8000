@@ -39,6 +39,7 @@
 #include "utils/lookup_table.h"
 #include <type_traits>
 #include "Waypoints/SetHome.h"
+#include "LocalPath.h"
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 

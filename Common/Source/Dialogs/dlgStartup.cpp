@@ -22,6 +22,7 @@
 #include "InfoBoxLayout.h"
 #include "LKInterface.h"
 #include "utils/printf.h"
+#include "LocalPath.h"
 
 #ifdef KOBO
   #include "Kobo/Kernel.hpp"

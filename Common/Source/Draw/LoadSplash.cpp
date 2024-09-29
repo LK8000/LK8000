@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "resource.h"
 #include "ScreenGeometry.h"
+#include "LocalPath.h"
 
 #ifdef USE_GDI
 #define IMG_EXT "BMP"

@@ -10,6 +10,7 @@
 #include "RasterTerrain.h"
 #include "Dialogs/dlgProgress.h"
 #include "Message.h"
+#include "LocalPath.h"
 
 std::unique_ptr<RasterMap> RasterTerrain::TerrainMap;
 Mutex RasterTerrain::mutex;

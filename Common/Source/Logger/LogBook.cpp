@@ -12,6 +12,7 @@
 #include "utils/fileext.h"
 #include "utils/printf.h"
 #include "Library/TimeFunctions.h"
+#include "LocalPath.h"
 
 //
 // Called by Calculations at landing detection (not flying anymore)

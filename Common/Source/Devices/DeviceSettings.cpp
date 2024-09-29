@@ -11,6 +11,7 @@
 #include "externs.h"
 #include "Utils.h"
 #include <fstream>
+#include "LocalPath.h"
 
 namespace {
 

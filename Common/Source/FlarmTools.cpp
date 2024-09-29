@@ -11,6 +11,7 @@
 #include "utils/zzip_stream.h"
 #include <unordered_map>
 #include <memory>
+#include "LocalPath.h"
 
 namespace {
 

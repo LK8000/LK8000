@@ -10,6 +10,7 @@
 #include "utils/zzip_stream.h"
 #include "utils/charset_helper.h"
 #include <iostream>
+#include "LocalPath.h"
 
 namespace {
 

@@ -30,6 +30,7 @@
 #include "Util/Clamp.hpp"
 #include "utils/array_adaptor.h"
 #include "utils/stringext.h"
+#include "LocalPath.h"
 
 #ifndef USE_GDI
 #include "Screen/SubCanvas.hpp"

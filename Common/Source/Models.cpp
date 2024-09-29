@@ -10,6 +10,7 @@
 #include "Modeltype.h"
 #include "Settings/read.h"
 #include "Settings/write.h"
+#include "LocalPath.h"
 
 namespace ModelType {
 

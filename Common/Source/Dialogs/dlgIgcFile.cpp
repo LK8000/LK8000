@@ -17,6 +17,7 @@
 #include <iterator>
 #include "utils/stl_utils.h"
 #include "resource.h"
+#include "LocalPath.h"
 
 #ifdef ANDROID
 #include "Android/LK8000Activity.h"

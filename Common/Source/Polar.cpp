@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "utils/zzip_stream.h"
 #include "Utils.h"
+#include "LocalPath.h"
 
 // This is calculating the weight difference for the chosen wingloading
 // Remember that polar files have a weight indicated that includes the pilot..

@@ -12,6 +12,7 @@
 #include "AirfieldDetails.h"
 #include "Waypointparser.h"
 #include "utils/zzip_stream.h"
+#include "LocalPath.h"
 
 void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
   TCHAR UName[NAME_SIZE + 1];

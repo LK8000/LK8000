@@ -12,6 +12,7 @@
 #include "Modeltype.h"
 #include "Dialogs.h"
 #include "Util/Clamp.hpp"
+#include "LocalPath.h"
 
 int GetUTCOffset() {
     return UTCOffset;

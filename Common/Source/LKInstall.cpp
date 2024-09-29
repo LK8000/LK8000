@@ -16,6 +16,7 @@
 #endif
 #endif
 #include "utils/openzip.h"
+#include "LocalPath.h"
 
 
 

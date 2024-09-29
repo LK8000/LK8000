@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include <time.h>
 #include "NavFunctions.h"
+#include "LocalPath.h"
 
 extern int NumLoggerBuffered;
 

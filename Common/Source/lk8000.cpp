@@ -58,6 +58,7 @@
 #include "Baro.h"
 #include "OS/Sleep.h"
 #include "Comm/ExternalWind.h"
+#include "LocalPath.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>

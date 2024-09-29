@@ -43,17 +43,6 @@ void TrimRight(TCHAR* str);
 // Parse string (new lines etc) and malloc the string
 TCHAR* StringMallocParse(const TCHAR* old_string);
 
-void LocalPath(TCHAR* buf, const TCHAR* file = TEXT("")) gcc_nonnull_all;
-void LocalPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) gcc_nonnull_all;
-
-void SystemPath(TCHAR* buf, const TCHAR* file = TEXT("")) gcc_nonnull_all;
-void SystemPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) gcc_nonnull_all;
-
-void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) gcc_nonnull_all;
-
-const TCHAR *LKGetLocalPath();
-const TCHAR *LKGetSystemPath();
-
 void LK_tsplitpath(const TCHAR* path, TCHAR* drv, TCHAR* dir, TCHAR* name, TCHAR* ext);
 
 void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);

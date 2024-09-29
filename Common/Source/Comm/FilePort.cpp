@@ -13,6 +13,7 @@
 #include <functional>
 #include "utils/stringext.h"
 #include "OS/Sleep.h"
+#include "LocalPath.h"
 
 using namespace std::placeholders;
 

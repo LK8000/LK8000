@@ -17,6 +17,7 @@
 #include "resource.h"
 #include "utils/printf.h"
 #include "Waypoints/SetHome.h"
+#include "LocalPath.h"
 
 #ifdef ANDROID
 #include "Android/LK8000Activity.h"

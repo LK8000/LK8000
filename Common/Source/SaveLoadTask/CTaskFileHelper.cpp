@@ -18,6 +18,7 @@
 #include "Waypointparser.h"
 #include "Waypoints/SetHome.h"
 #include "utils/zzip_stream.h"
+#include "LocalPath.h"
 
 #include <fstream>
 #include "Library/rapidxml/rapidxml.hpp"

@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
+#include "LocalPath.h"
 
 #ifdef _UNICODE
 #define PF_ASCIISTR    "%S"

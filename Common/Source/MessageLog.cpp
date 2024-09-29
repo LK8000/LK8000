@@ -12,6 +12,7 @@
 #include "utils/stringext.h"
 #include "utils/unique_file_ptr.h"
 #include "OS/Memory.h"
+#include "LocalPath.h"
 
 #ifdef ANDROID
 #include <android/log.h>

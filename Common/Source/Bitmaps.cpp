@@ -15,6 +15,7 @@
 #include "Bitmaps.h"
 #include "resource_data.h"
 #include "Asset.hpp"
+#include "LocalPath.h"
 
 
 using std::placeholders::_1;

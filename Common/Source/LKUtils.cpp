@@ -16,6 +16,7 @@
 #include "Library/TimeFunctions.h"
 #include "Baro.h"
 #include "InputEvents.h"
+#include "LocalPath.h"
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 

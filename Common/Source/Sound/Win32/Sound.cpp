@@ -8,6 +8,7 @@
 
 #include "../Sound.h"
 #include "externs.h"
+#include "LocalPath.h"
 #if defined(PNA) && defined(UNDER_CE)
 #include "Modeltype.h"
 #include "Devices/LKHolux.h"
@@ -19,14 +20,12 @@ static bool bSoundFile = false; // this is true only if "_System/_Sounds" direct
 static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  #SoundGlobalInit end never change;
 
 SoundGlobalInit::SoundGlobalInit() {
-    TCHAR srcfile[MAX_PATH];
-    SystemPath(szSoundPath,TEXT(LKD_SOUNDS));
-    _stprintf(srcfile,TEXT("%s%s_SOUNDS"), szSoundPath, _T(DIRSEP));
-    if ( lk::filesystem::exist(srcfile) ) {
+    SystemPath(szSoundPath, _T(LKD_SOUNDS), _T("_SOUNDS"));
+    if ( lk::filesystem::exist(szSoundPath) ) {
         bSoundFile = true;
     } else {
-        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
-        StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
+        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>"), szSoundPath);
+        StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!"));
     }
 }
 

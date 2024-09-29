@@ -9,6 +9,7 @@
 
 #include "externs.h"
 #include "utils/printf.h"
+#include "LocalPath.h"
 
 
 bool	EnableLogNMEA = false;

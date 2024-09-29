@@ -7,8 +7,10 @@
 */
 
 #include "externs.h"
+#include "LocalPath.h"
 #include "DoInits.h"
 #include "Asset.hpp"
+#include "utils/printf.h"
 
 
 #ifdef ANDROID
@@ -148,8 +150,8 @@ BOOL GetFontPath(TCHAR *pPos)
   pPos[0]= '\0';
   hRes = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\FontPath"), 0, KEY_READ /*KEY_ALL_ACCESS*/, &hKey);
   if (hRes != ERROR_SUCCESS) {
-	RegCloseKey(hKey);
-	return FALSE;
+    RegCloseKey(hKey);
+    return FALSE;
   }
 
   dwSize *= 2;  // BUGFIX 100913 ?? to remove? check
@@ -162,54 +164,62 @@ BOOL GetFontPath(TCHAR *pPos)
 }
 #endif
 
+namespace {
+
+bool IsDirectorySeparator(TCHAR c) {
+  return (c == _T('\\')) || (c == _T('/'));
+}
+
+const TCHAR* RemoveLeadingSeparator(const TCHAR* path) {
+  while (IsDirectorySeparator(*path)) {
+    ++path;
+  }
+  return path;
+}
+
+} // namespace
+
 static gcc_nonnull_all
-void GetPath(TCHAR* buffer, const TCHAR* subpath, const TCHAR* file, const TCHAR* lkPath) {
-  // remove leading directory separator from file.
-  const TCHAR* pfile = file;
-  while( (*pfile) == _T('\\') && (*pfile) == _T('/') ) {
-      ++pfile;
+void GetPath(TCHAR* buffer, size_t size, const TCHAR* subpath, const TCHAR* file, const TCHAR* lkPath) {
+  // remove leading directory separator from file and subpath.
+  const TCHAR* pfile = RemoveLeadingSeparator(file);
+  const TCHAR* psub = RemoveLeadingSeparator(subpath);
+
+  size_t len = lk::snprintf(buffer, size, _T("%s"), lkPath);
+  while (IsDirectorySeparator(buffer[len - 1])) {
+    --len;
+  }
+  len += lk::snprintf(buffer + len, size - len, _T("%s"), _T(DIRSEP));
+
+  if (psub[0] != _T('\0')) {
+    len += lk::snprintf(buffer + len, size - len, _T("%s"), psub);
+    while (IsDirectorySeparator(buffer[len - 1])) {
+      --len;
+    }
+    len += lk::snprintf(buffer + len, size - len, _T("%s"), _T(DIRSEP));
   }
 
-  // remove leading directory separator from subpath.
-  const TCHAR* psub = subpath;
-  while( (*psub) == _T('\\') || (*psub) == _T('/')) {
-    ++psub;
-  }
-
-  _tcscpy(buffer,lkPath);
-
-  if( _tcslen(psub) > 0) {
-      _tcscat(buffer,psub);
-      // remove trailing directory separator;
-      size_t len = _tcslen(buffer);
-      while(len > 1 && ( buffer[len-1] == _T('\\') || buffer[len-1] == _T('/'))) {
-          buffer[--len] = _T('\0');
-      }
-      // add right (platform depends) trailing separator
-      _tcscat(buffer, _T(DIRSEP));
-  }
-
-  if (_tcslen(pfile)>0) {
-      _tcscat(buffer,pfile);
+  if (pfile[0] != _T('\0')) {
+    len += lk::snprintf(buffer + len, size - len, _T("%s"), pfile);
   }
 
   lk::filesystem::fixPath(buffer);
 }
 
-void SystemPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) {
-    GetPath(buffer, SubPath, file,  LKGetSystemPath());
+void SystemPath(TCHAR* buffer, size_t size, const TCHAR* SubPath, const TCHAR* file) {
+  GetPath(buffer, size, SubPath, file,  LKGetSystemPath());
 }
 
-void LocalPath(TCHAR* buffer, const TCHAR* SubPath, const TCHAR* file) {
-    GetPath(buffer, SubPath, file, LKGetLocalPath());
+void LocalPath(TCHAR* buffer, size_t size, const TCHAR* SubPath, const TCHAR* file) {
+  GetPath(buffer, size, SubPath, file, LKGetLocalPath());
 }
 
-void SystemPath(TCHAR* buffer, const TCHAR* file) {
-    GetPath(buffer, _T(""), file, LKGetSystemPath());
+void SystemPath(TCHAR* buffer, size_t size, const TCHAR* file) {
+  GetPath(buffer, size, _T(""), file, LKGetSystemPath());
 }
 
-void LocalPath(TCHAR* buffer, const TCHAR* file) {
-    GetPath(buffer, _T(""), file, LKGetLocalPath());
+void LocalPath(TCHAR* buffer, size_t size, const TCHAR* file) {
+  GetPath(buffer, size, _T(""), file, LKGetLocalPath());
 }
 
 /**
@@ -220,20 +230,69 @@ void LocalPath(TCHAR* buffer, const TCHAR* file) {
  *  required for compatibility with old config file
  */
 void RemoveFilePathPrefix(const TCHAR* szPrefix, TCHAR* szFilePath) {
-    const TCHAR* ptr = _tcsstr(szFilePath, szPrefix);
-    if(ptr && szFilePath == ptr) {
-        ptr += _tcslen(szPrefix);
-    } else {
-        ptr = nullptr;
-    }
+  const TCHAR* ptr = _tcsstr(szFilePath, szPrefix);
+  if(ptr && szFilePath == ptr) {
+    ptr += _tcslen(szPrefix);
+  } else {
+    ptr = nullptr;
+  }
 
-    // remove prefix only if followed by directory separator
-    bool found = false;
-    while (ptr && ((*ptr) == '\\' || (*ptr) == '/')) {
-        ++ptr;
-        found = true;
-    }
-    if(found && ptr) {
-        _tcscpy(szFilePath, ptr);
-    }
+  // remove prefix only if followed by directory separator
+  bool found = false;
+
+  while (ptr && IsDirectorySeparator(*ptr)) {
+    ++ptr;
+    found = true;
+  }
+  if(found && ptr) {
+    // memmove is required for overlapping src and dst
+    std::memmove(szFilePath, ptr, (_tcslen(ptr) + 1) * sizeof(TCHAR));
+  }
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+#include "Util/tstring.hpp"
+
+TEST_CASE("LocalPath") {
+
+	SUBCASE("RemoveFilePathPrefix") {
+    TCHAR path[MAX_PATH] = { _T("prefix/file") };
+    RemoveFilePathPrefix(_T("prefix"), path);
+    CHECK(tstring_view(_T("file")) == path);
+  }
+
+  const tstring_view result(_T("path" DIRSEP "sub" DIRSEP "file"));
+	SUBCASE("GetPath test 1") {
+    TCHAR path[MAX_PATH];
+    GetPath(path, MAX_PATH, _T("sub"), _T("file"), _T("path"));
+    CHECK(result == path);
+  }
+	SUBCASE("GetPath test 2") {
+    TCHAR path[MAX_PATH];
+    GetPath(path, MAX_PATH, _T("/sub/"), _T("/file"), _T("path/"));
+    CHECK(result == path);
+  }
+	SUBCASE("GetPath test 3") {
+    TCHAR path[MAX_PATH];
+    GetPath(path, MAX_PATH, _T("\\sub\\"), _T("\\file"), _T("path\\"));
+    CHECK(result == path);
+  }
+	SUBCASE("GetPath test 4") {
+    TCHAR path[MAX_PATH];
+    GetPath(path, MAX_PATH, _T(""), _T("file"), _T("path"));
+    CHECK(tstring_view(_T("path" DIRSEP "file")) == path);
+  }
+	SUBCASE("GetPath test 5") {
+    TCHAR path[MAX_PATH];
+    GetPath(path, MAX_PATH, _T("sub"), _T(""), _T("path"));
+    CHECK(tstring_view(_T("path" DIRSEP "sub" DIRSEP)) == path);
+  }
+	SUBCASE("GetPath test 6") {
+    TCHAR path[MAX_PATH];
+    GetPath(path, MAX_PATH, _T(""), _T(""), _T("path"));
+    CHECK(tstring_view(_T("path" DIRSEP)) == path);
+  }
+}
+
+#endif

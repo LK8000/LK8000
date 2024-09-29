@@ -13,6 +13,7 @@
 #include "WindowControls.h"
 #include "resource.h"
 #include "utils/printf.h"
+#include "LocalPath.h"
 
 static WndForm *wf=NULL;
 static short profilemode=0;

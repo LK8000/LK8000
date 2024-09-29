@@ -15,6 +15,7 @@
 #include "dlgLXIGCDownload.h"
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
+#include "LocalPath.h"
 
 #define LST_STRG_LEN          100
 
@@ -167,9 +168,8 @@ static void OnMultiSelectListListInfo(WndListFrame *Sender, WndListFrame::ListIn
 
 }
 
-bool GetLXIGCFilename(TCHAR *IGCFilename, TCHAR *InFilename) {
-  if (IGCFilename == NULL)
-    return false;
+static
+bool GetLXIGCFilename(TCHAR (&IGCFilename)[MAX_PATH], TCHAR *InFilename) {
   TCHAR Tmp[MAX_PATH];
 
   _tcscpy(Tmp, InFilename);
