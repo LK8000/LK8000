@@ -88,7 +88,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version "3.30.3"
+            version "3.30.4"
             path "../../CMakeLists.txt"
         }
     }
@@ -104,9 +104,9 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "androidx.camera:camera-camera2:1.4.0-rc01"
-    implementation "androidx.camera:camera-lifecycle:1.4.0-rc01"
-    implementation "androidx.camera:camera-view:1.4.0-rc01"
+    implementation "androidx.camera:camera-camera2:1.4.0-rc03"
+    implementation "androidx.camera:camera-lifecycle:1.4.0-rc03"
+    implementation "androidx.camera:camera-view:1.4.0-rc03"
 
     implementation "androidx.core:core:1.13.1"
 
