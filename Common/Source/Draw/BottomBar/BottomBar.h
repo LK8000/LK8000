@@ -32,10 +32,10 @@ class bottom_bar final {
   void draw(LKSurface& Surface, const PixelRect& rc);
 
  private:
-  unsigned get_current_mode();
+  static unsigned get_current_mode();
 
   void refresh_layout(LKSurface& Surface, const PixelRect& rc);
-  void fill_backgroud(LKSurface& Surface);
+  void fill_background(LKSurface& Surface);
   void draw_data(LKSurface& Surface);
 
   void draw_fly_mode_data(LKSurface& Surface, MapWindow::Mode::TModeFly mode) const;
@@ -55,7 +55,9 @@ class bottom_bar final {
 
   void draw_box(LKSurface& Surface, unsigned box_num, TCHAR* Value, TCHAR* Unit, TCHAR* Title, DrawBmp_t& Bmp) const;
 
-  unsigned get_box_count() const { return _row_count * _col_count; }
+  unsigned get_box_count() const {
+    return _row_count * _col_count;
+  }
 
  private:
   PixelRect _screen_rect = {};
@@ -65,8 +67,8 @@ class bottom_bar final {
   PixelSize _value_size = {};
   PixelSize _box_size = {};
 
-  unsigned _row_count;  // 1 => landscape; 2 => portrait
-  unsigned _col_count;  // <= 10
+  unsigned _row_count = {};  // 1 => landscape; 2 => portrait
+  unsigned _col_count = {};  // <= 10
 
   LKColor _text_color = {};  // set by `fill_background()`
 

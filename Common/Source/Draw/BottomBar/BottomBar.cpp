@@ -24,7 +24,7 @@ void bottom_bar::draw(LKSurface& Surface, const PixelRect& rect) {
     // screen has changed => refresh layout
     refresh_layout(Surface, rect);
   }
-  fill_backgroud(Surface);
+  fill_background(Surface);
   draw_data(Surface);
 }
 
@@ -97,7 +97,7 @@ void bottom_bar::refresh_layout(LKSurface& Surface, const PixelRect& rect) {
   _screen_rect = rect;
 }
 
-void bottom_bar::fill_backgroud(LKSurface& Surface) {
+void bottom_bar::fill_background(LKSurface& Surface) {
   const auto& brush_bar = INVERTCOLORS ? LKBrush_Black : LKBrush_Nlight;
 
   if (LKSurface::AlphaBlendSupported() && MapSpaceMode == MSM_MAP && BarOpacity < 100) {
