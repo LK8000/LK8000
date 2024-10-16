@@ -334,8 +334,7 @@ void InputEvents::readFile() {
 	if (_tcslen(value) < 256) {
 	  _tcscpy(d_event, TEXT(""));
 	  _tcscpy(d_misc, TEXT(""));
-	  int ef;
-	    ef = _stscanf(value, TEXT("%[^ ] %[A-Za-z0-9 \\/().,]"), d_event, d_misc);
+	  int ef = _stscanf(value, TEXT("%[^ ] %[^\r\n]"), d_event, d_misc);
 
 	  // TODO code: Can't use token here - breaks
 	  // other token - damn C - how about
