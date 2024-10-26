@@ -121,19 +121,6 @@ _forcereset:
     Rate = -50;
   }
 
-  // average rate, to detect essing
-  static double rate_history[60];
-  double rate_ave=0;
-  for (int i=59; i>0; i--) {
-    rate_history[i] = rate_history[i-1];
-    rate_ave += rate_history[i];
-  }
-  rate_history[0] = Rate;
-  rate_ave /= 60;
- 
-  // THIS IS UNUSED in 4.0 
-  Calculated->Essing = fabs(rate_ave)*100/MinTurnRate;
-
   if (MODE==CLIMB||MODE==WAITCRUISE)
 	Rate = LowPassFilter(LastRate,Rate,0.9);
   else

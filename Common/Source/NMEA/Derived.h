@@ -72,8 +72,6 @@ struct DERIVED_INFO {
   double NextAltitudeRequired0; // mc=0
   double NextAltitudeDifference;
   double NextAltitudeDifference0; // difference with mc=0
-  double FinalAltitudeRequired;
-  double FinalAltitudeDifference;
   double TaskDistanceToGo;
   double TaskDistanceCovered;
   double TaskTimeToGo;
@@ -91,7 +89,6 @@ struct DERIVED_INFO {
   double LegActualTrueCourse;
   double LegTimeToGo;
   double LegStartTime;
-  double LegSpeed;
   double NextLatitude;
   double NextLongitude;
   double NextAltitude;
@@ -116,8 +113,6 @@ struct DERIVED_INFO {
   double FarObstacle_Lon;
   double FarObstacle_Dist;
 
-  double FarObstacle_Height;
-  double FarObstacle_AltReqd;
   double FarObstacle_AltArriv;
 
   double Odometer;
@@ -129,7 +124,6 @@ struct DERIVED_INFO {
 
   double WaypointBearing;
   double WaypointDistance;
-  double WaypointSpeed;
 
   // JMW thermal band data
   double MaxThermalHeight;
@@ -158,7 +152,6 @@ struct DERIVED_INFO {
 
   // reflects whether aircraft is in a start/finish/aat/turn sector
   bool IsInSector;
-  bool IsInAirspace;
 
   // detects when glider is on ground for several seconds
   bool OnGround;
@@ -195,8 +188,6 @@ struct DERIVED_INFO {
   TCHAR OwnTeamCode[10];
   double TeammateBearing;
   double TeammateRange;
-  double TeammateLatetude;
-  double TeammateLongitude;
   double FlightTime;
   double TakeOffTime;
   double FreeFlightStartTime;
@@ -228,11 +219,8 @@ struct DERIVED_INFO {
   double GPSVario;
   double TurnRateWind;
   double BankAngle;
-  double PitchAngle;
   double TotalHeightClimb;
-  double GliderSinkRate;
   double Gload;
-  double Essing;
   double TerrainBase; // lowest height within glide range
   double GRFinish;	// GRadient to final destination, 090203
 			// Note: we don't need GRNext since this value is used when going to a landing

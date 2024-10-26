@@ -16,7 +16,6 @@ extern double CRUISE_EFFICIENCY;
 
 static 
 void ResetTaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double this_maccready) {
-    Calculated->LegSpeed = 0;
     Calculated->LegDistanceToGo = 0;
     Calculated->LegDistanceCovered = 0;
     Calculated->LegTimeToGo = 0;
@@ -107,7 +106,6 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     if (flightstats.LegStartTime[ActiveTaskPoint] < 0) {
       flightstats.LegStartTime[ActiveTaskPoint] = Basic->Time;
     }
-    Calculated->LegSpeed = Calculated->LegDistanceCovered / (Basic->Time - Calculated->LegStartTime);
   }
 
   // Now add distances from start to previous waypoint

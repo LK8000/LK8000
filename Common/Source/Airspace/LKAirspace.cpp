@@ -2871,8 +2871,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
                 }
             }
 
-            // This is used nowhere.
-            Calculated->IsInAirspace = false;
             // Give the sideview the nearest instance calculated
             _sideview_nearest = CAirspace::GetSideviewNearestInstance();
 

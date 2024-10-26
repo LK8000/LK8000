@@ -82,17 +82,6 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
     LastTime = Basic->Time;
 
-    // estimate pitch angle (assuming balanced turn)
-/*
-    Calculated->PitchAngle = RAD_TO_DEG*
-      atan2(Calculated->GPSVario-Calculated->Vario,
-           Calculated->TrueAirspeedEstimated);
-*/
-	// should be used as here only when no real vario available
-    Calculated->PitchAngle = RAD_TO_DEG*	
-      atan2(Calculated->Vario,
-           Calculated->TrueAirspeedEstimated);
-
     // update zigzag wind
     if (  ((AutoWindMode==D_AUTOWIND_ZIGZAG) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG))
         && (!ReplayLogger::IsEnabled()) ) {
