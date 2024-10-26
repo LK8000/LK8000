@@ -17,7 +17,7 @@ if (rootProject.file(keystorePropertiesFile).exists()) {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
     ndkVersion "27.2.12479018"
 
 
@@ -26,7 +26,7 @@ android {
     defaultConfig {
         applicationId "org.lk8000"
         minSdkVersion 21 // Lollipop
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 124
         versionName "7.4.21"
         setProperty("archivesBaseName", "LK8000-$versionName")
@@ -88,7 +88,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version "3.30.4"
+            version "3.30.5"
             path "../../CMakeLists.txt"
         }
     }
@@ -104,9 +104,9 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "androidx.camera:camera-camera2:1.4.0-rc03"
-    implementation "androidx.camera:camera-lifecycle:1.4.0-rc03"
-    implementation "androidx.camera:camera-view:1.4.0-rc03"
+    implementation "androidx.camera:camera-camera2:1.4.0-rc04"
+    implementation "androidx.camera:camera-lifecycle:1.4.0-rc04"
+    implementation "androidx.camera:camera-view:1.4.0-rc04"
 
     implementation "androidx.core:core:1.13.1"
 
