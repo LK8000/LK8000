@@ -210,8 +210,6 @@
 // Size of internal rotary buffer for TrueWind
 #define WCALC_ROTARYSIZE        90
 
-#define MAXLDROTARYSIZE 180 // max size of rotary buffer for LD calculation
-
 #define MAXEFFICIENCYSHOW 200  // over this, show INVALID_GR
 
 

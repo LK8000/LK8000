@@ -11,6 +11,7 @@
 #include "windanalyser.h"
 #include "Atmosphere.h"
 #include "ThermalLocator.h"
+#include "LDRotaryBuffer.h"
 
 
 extern void PercentCircling(NMEA_INFO *Basic, DERIVED_INFO *Calculated,const double Rate);
@@ -357,7 +358,7 @@ _forcereset:
 
 	}
 
-	InitLDRotary(&rotaryLD);
+	rotaryLD.Init();
 	InitWindRotary(&rotaryWind);
         
         flightstats.Altitude_Ceiling.

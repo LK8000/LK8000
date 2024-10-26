@@ -3404,8 +3404,8 @@ lkfin_ete:
 			break;
 
 		case LK_DIST_AVG:
-			if (Rotary_Distance < 100000) {
-				_stprintf(BufferValue, _T("%.2f"), Units::ToDistance(Rotary_Distance));
+			if (DerivedDrawInfo.AverageDistance < 100000) {
+				_stprintf(BufferValue, _T("%.2f"), Units::ToDistance(DerivedDrawInfo.AverageDistance));
 			} else {
 				_stprintf(BufferValue, _T("%.2f"), 0.0);
 			}

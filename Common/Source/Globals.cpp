@@ -620,8 +620,6 @@ void Globals_Init(void) {
   Trip_Moving_Time=0;
   Trip_Steady_Time=0;
 
-  Rotary_Distance=0;
-
   Flags_DrawTask=true;
 
   // Runtime

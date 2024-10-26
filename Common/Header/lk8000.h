@@ -138,21 +138,6 @@ struct windrotary_s {
 	int	size;
 };
 
-struct ldrotary_s {
-	int distance[MAXLDROTARYSIZE]; // rotary array with a predefined max capacity
-	int altitude[MAXLDROTARYSIZE];
-	double ias[MAXLDROTARYSIZE];
-	double gs[MAXLDROTARYSIZE];
-	double totalias;
-    double totalgs;
-	int totaldistance;
-	int totalaltitude;
-	int prevaltitude;
-	short start; // pointer to current first item in rotarybuf if used
-	short size; // real size of rotary buffer (0-size)
-	bool valid;
-};
-
 typedef struct {
 	int triggervalue;	// example altitude limit
 	int lastvalue;

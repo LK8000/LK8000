@@ -40,7 +40,6 @@ struct DERIVED_INFO {
   double Vario;
   double LD;
   double CruiseLD;
-  double AverageLD;
   double VMacCready;
   double Average30s;
   double BestCruiseTrack;
@@ -177,7 +176,9 @@ struct DERIVED_INFO {
   double ThermalEstimate_W;
   double ThermalEstimate_R;
 
+  double AverageLD;
   double AverageGS;
+  double AverageDistance;
 
   THERMAL_SOURCE_INFO ThermalSources[MAX_THERMAL_SOURCES];
 

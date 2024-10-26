@@ -12,11 +12,10 @@
 #include "Sideview.h"
 #include "Multimap.h"
 #include "Comm/ExternalWind.h"
+#include "LDRotaryBuffer.h"
+#include "LD.h"
 
-
-extern void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-extern void CruiseLD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void LastThermalStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -32,7 +31,6 @@ extern void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-extern double CalculateLDRotary(ldrotary_s *buf, NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -119,7 +117,7 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // We do assume that GA planes will NOT use extended polars
   if (GlidePolar::FlapsPosCount >0) Flaps(Basic,Calculated);
 
-  Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Basic,Calculated); 
+  rotaryLD.Calculate(*Basic, *Calculated); 
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
   AverageClimbRate(Basic,Calculated);

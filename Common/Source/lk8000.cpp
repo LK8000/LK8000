@@ -59,6 +59,7 @@
 #include "OS/Sleep.h"
 #include "Comm/ExternalWind.h"
 #include "LocalPath.h"
+#include "Calc/LDRotaryBuffer.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -414,7 +415,7 @@ bool Startup(const TCHAR* szCmdLine) {
 
   ReadWayPoints();
   StartupStore(_T(". LOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
-  InitLDRotary(&rotaryLD);
+  rotaryLD.Init();
   InitWindRotary(&rotaryWind); // 100103
   MapWindow::zoom.Reset();
   InitLK8000();

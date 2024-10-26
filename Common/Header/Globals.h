@@ -420,7 +420,6 @@ GEXTERN short LKevent;
 GEXTERN bool LKForceComPortReset;
 GEXTERN bool LKDoNotResetComms;
 
-GEXTERN ldrotary_s rotaryLD;
 GEXTERN windrotary_s rotaryWind;
 GEXTERN lkalarms_s LKalarms[MAXLKALARMS];
 // airspace data
@@ -835,8 +834,6 @@ GEXTERN bool Flags_DrawXC;
 
 GEXTERN unsigned int Trip_Moving_Time;
 GEXTERN unsigned int Trip_Steady_Time;
-
-GEXTERN double Rotary_Distance;
 
 GEXTERN unsigned short Multimap1;
 GEXTERN unsigned short Multimap2;

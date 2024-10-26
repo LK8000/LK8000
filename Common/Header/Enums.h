@@ -153,7 +153,8 @@ typedef enum{
 	gbNextTurnpoint,
 	gbFinish,
 } GlideBarMode_t;
-typedef enum{
+
+enum AverEffTime_t {
 	ae3seconds=0,
 	ae5seconds,
 	ae10seconds,
@@ -164,7 +165,8 @@ typedef enum{
 	ae90seconds,
 	ae2minutes,
 	ae3minutes,
-} AverEffTime_t;
+};
+
 typedef enum{
 	avAltitude=0,
 	avGR,
