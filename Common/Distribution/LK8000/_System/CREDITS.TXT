@@ -10,6 +10,25 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.22]
+* New events : SendDataPort[X]
+* New InfoBoxes:
+  - Average Ground Speed.
+  - Next ETE based on avg groud speed
+  - Next ETA based on avg groud speed
+* FlyBeeper Fanet : set state to `Walking` for ground tracking
+* Android Download Manager, Add hightRes map:
+  - Chech Republic
+  - Lithuania
+  - Slovakia
+  - Poland
+* Android Usb devices : 
+  - add SoftRF Eco, Ink and Card 
+* Fix : 
+  - reset Start / Finish height rules on ClearTask
+  - display "GPS NOT CONNECTED" if the only connected 
+    device is not a GPS.
+
 [version 7.4.21]
 * fix invalid comport disconnected notification
 
