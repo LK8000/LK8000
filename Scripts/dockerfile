@@ -30,10 +30,11 @@ RUN wget http://lk8000.it/toolchain/arm-kobo-linux-gnueabihf-8.3.buster.x86_64.t
 ENV PATH=$PATH:/opt/arm-kobo-linux-gnueabihf/bin
 
 #build KOBO library dependencies
-ADD install-kobo-depends.sh /tmp/kobo/install-kobo-depends.sh
-RUN BUILD_DIR=/tmp/kobo && \
-        ./install-kobo-depends.sh && \
-        rm -rf /tmp/kobo
+COPY ./kobo-build-rootfs /tmp/kobo-build-rootfs
+WORKDIR /tmp/kobo-build-rootfs
+RUN ./build-all.sh && \
+        rm -rf /tmp/kobo-build-rootfs
+ENV KOBO=/opt/kobo-rootfs
 
 # Install WinCE toolchain
 WORKDIR /tmp/WinCE
