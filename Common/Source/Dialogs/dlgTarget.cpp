@@ -558,24 +558,20 @@ void dlgTarget(int TaskPoint) {
   TargetDialogOpen = true;
   TargetMoveMode = false;
 
-  WndFrame *wf2 = wf->FindByName<WndFrame>(TEXT("frmTarget"));
-  if (wf2) {
-    if (ScreenLandscape)
-    {// make flush right in landscape mode (at top in portrait mode)
-      dlgSize = wf2->GetWidth();
-      wf->SetLeft(main_window->GetRight() - dlgSize);
-    }
-    else {
-      dlgSize = wf2->GetHeight();
-    }
+  if (ScreenLandscape) {
+    // make flush right in landscape mode (at top in portrait mode)
+    dlgSize = wf->GetWidth();
+    wf->SetLeft(main_window->GetRight() - dlgSize);
+  }
+  else {
+    dlgSize = wf->GetHeight();
   }
 
   btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));
 
   wf->SetKeyDownNotify(FormKeyDown);
 
-  WndProperty *wp;
-  wp = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
+  WndProperty *wp = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   DataField* dfe = wp->GetDataField();
   TCHAR tp_label[80];
   TCHAR tp_short[21];
