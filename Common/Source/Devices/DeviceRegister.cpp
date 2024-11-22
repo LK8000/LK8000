@@ -91,6 +91,7 @@ DeviceRegister_t device_list[] = {
     CompeoRegister(),
     xcom760Register(),
     condorRegister(),
+    Condor3Register(),
     DigiflyRegister(), // 100209
     IlecRegister(),
     CDevIMI::Register(),

@@ -11,11 +11,17 @@
 
 #include "Devices/DeviceRegister.h"
 
-void condorInstall(DeviceDescriptor_t* d);
+void CondorInstall(DeviceDescriptor_t* d);
+void Condor3Install(DeviceDescriptor_t* d);
 
 inline constexpr
 DeviceRegister_t condorRegister() {
-  return devRegister(_T("Condor"), condorInstall);
+  return devRegister(_T("Condor"), CondorInstall);
+}
+
+inline constexpr
+DeviceRegister_t Condor3Register() {
+  return devRegister(_T("Condor 3"), Condor3Install);
 }
 
 #endif
