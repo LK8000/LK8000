@@ -15,8 +15,9 @@ void CalculateAATIsoLines(void) {
   int awp = ActiveTaskPoint;
   double stepsize = 25.0;
 
-  if(gTaskType==TSK_AAT)
+  if(gTaskType != TSK_AAT) {
     return;
+  }
 
   LockTaskData();
 
