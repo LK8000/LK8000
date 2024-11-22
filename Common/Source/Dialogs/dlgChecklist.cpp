@@ -73,10 +73,6 @@ void NextPage(WndForm* pForm, int Step) {
     return;
   }
 
-  LKWindowSurface Surface(*wDetailsEntry);
-  Surface.SelectObject(wDetailsEntry->GetFont());
-  aTextLine.update(Surface, wDetailsEntry->GetWidth(), checklist_data[page].text.c_str());
-
   switch (checklist_data.size()) {
     case 0:
       _stprintf(buffer, _T("%s %s"), NoteModeTitle, MsgToken<1750>());  // empty
@@ -89,10 +85,16 @@ void NextPage(WndForm* pForm, int Step) {
       break;
   }
 
-  const auto& title = checklist_data[page].title;
-  if (!title.empty() && title.size() < 60) {
-    _tcscat(buffer, _T(": "));
-    _tcscat(buffer, title.c_str());
+  if (!checklist_data.empty()) {
+    LKWindowSurface Surface(*wDetailsEntry);
+    Surface.SelectObject(wDetailsEntry->GetFont());
+    aTextLine.update(Surface, wDetailsEntry->GetWidth(), checklist_data[page].text.c_str());
+
+    const auto& title = checklist_data[page].title;
+    if (!title.empty() && title.size() < 60) {
+      _tcscat(buffer, _T(": "));
+      _tcscat(buffer, title.c_str());
+    }
   }
 
   pForm->SetCaption(buffer);
