@@ -18,10 +18,6 @@ int GetUTCOffset() {
     return UTCOffset;
 }
 
-void TriggerGPSUpdate() {
-    dataTriggerEvent.set();
-}
-
 // This is currently doing nothing.
 
 void TriggerVarioUpdate() {

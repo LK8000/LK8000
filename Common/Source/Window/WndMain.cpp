@@ -46,7 +46,7 @@ WndMain::WndMain() : WndMainBase(), _MouseButtonDown(), _isRunning() {
 WndMain::~WndMain() {
 }
 
-extern void WaitThreadCalculation();
+extern void StopThreadCalculation();
 
 void BeforeShutdown(void) {
 
@@ -110,7 +110,7 @@ void BeforeShutdown(void) {
   MapWindow::CloseDrawingThread();
 
   // Stop calculating too (wake up)
-  dataTriggerEvent.set();
+  StopThreadCalculation();
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
@@ -154,13 +154,7 @@ void BeforeShutdown(void) {
   TestLog(TEXT(".... Delete Objects"));
 
   // Kill graphics objects
-
-   CAirspaceManager::Instance().CloseAirspaces();
-  TestLog(TEXT(".... Delete Critical Sections"));
-
-  // Wait end of Calculation thread before deinit critical section.
-  WaitThreadCalculation();
-
+  CAirspaceManager::Instance().CloseAirspaces();
   TestLog(TEXT(".... Close Calculations"));
   CloseCalculations();
 

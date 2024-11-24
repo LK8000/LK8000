@@ -71,7 +71,6 @@ struct Radio_t {
 };
 
 GEXTERN bool MenuActive GEXTFALSE;
-GEXTERN Poco::Event dataTriggerEvent;
 
 GEXTERN unsigned short HaveSystemInfo GEXTZERO; // Normally only on linux
 GEXTERN bool HaveBatteryInfo GEXTFALSE;
