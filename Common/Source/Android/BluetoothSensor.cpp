@@ -177,7 +177,11 @@ const service_table_t& service_table() {
         { gatt_uuid(0xFFE1), {
             &BluetoothSensor::Hm10Data,
             &BluetoothSensor::Hm10DataEnable
-        }}
+        }},
+        { gatt_uuid(0xFFE4), { // SkyDrop2
+            &BluetoothSensor::Hm10Data,
+            &BluetoothSensor::Hm10DataEnable
+        }},
     }}},
     { gatt_uuid(0x1800), {{ // Generic Access
         { gatt_uuid(0x2A00), {
