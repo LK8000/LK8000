@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "InputEvents.h"
 #include "windanalyser.h"
-#include "Atmosphere.h"
 #include "ThermalLocator.h"
 #include "LDRotaryBuffer.h"
 #include "Calc/ThermalHistory.h"
@@ -400,10 +399,6 @@ _forcereset:
       thermallocator.Reset();
     }
   }
-
-  // update atmospheric model
-  CuSonde::updateMeasurements(Basic, Calculated);
-
 }
 
 

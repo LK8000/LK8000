@@ -14,6 +14,8 @@
 #include "Comm/ExternalWind.h"
 #include "LDRotaryBuffer.h"
 #include "LD.h"
+#include "Atmosphere.h"
+
 
 extern void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -110,6 +112,8 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   }
 
   Turning(Basic, Calculated);
+  // update atmospheric model
+  CuSonde::updateMeasurements(Basic, Calculated);
   LD(Basic,Calculated);
   CruiseLD(Basic,Calculated);
 
