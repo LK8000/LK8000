@@ -120,7 +120,7 @@ private:
 
 template<typename ScreenPoint>
 struct GeoToScreen final {
-    GeoToScreen(const ScreenProjection& Proj) : _Proj(Proj) {}
+    explicit GeoToScreen(const ScreenProjection& Proj) : _Proj(Proj) {}
 
     GeoToScreen(const GeoToScreen&) = delete;
     GeoToScreen(GeoToScreen&&) = delete;
