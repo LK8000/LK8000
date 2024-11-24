@@ -121,9 +121,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// Don't allow 'OnGround' calculations if in IGC replay mode
 	// This is creating a possible problem: there is a time when we are not
 	// OnGround and we are not Flying! Careful.
-        #ifdef TESTBENCH
-        if (Calculated->OnGround) StartupStore(_T("... We are NOT OnGround%s"),NEWLINE);
-        #endif
+	if (Calculated->OnGround) {
+		TestLog(_T("... We are NOT OnGround"));
+	}
 	Calculated->OnGround = false;
   }
 
@@ -186,9 +186,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	}
 	if (time_on_ground>10) {
-                #ifdef TESTBENCH
-                if (!Calculated->OnGround) StartupStore(_T("... We are OnGround%s"),NEWLINE);
-                #endif
+		if (!Calculated->OnGround) {
+			TestLog(_T("... We are OnGround"));
+		}
 		Calculated->OnGround = true;
 		DoAutoQNH(Basic, Calculated);
 		// Do not reset QFE after landing.
