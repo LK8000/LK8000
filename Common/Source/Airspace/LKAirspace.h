@@ -559,7 +559,10 @@ private:
 
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
-  
+  void CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center,
+                      int Type, const AIRSPACE_ALT& Base, const AIRSPACE_ALT& Top, const tstring& Comment,
+                      bool flyzone, bool enabled, bool except_saturday, bool except_sunday);
+
   static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
   static void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt);
   static bool ReadCoords(TCHAR *Text, double *X, double *Y);

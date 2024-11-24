@@ -1620,7 +1620,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     TCHAR sTmp[READLINE_LENGTH + 1];
     int linecount = 0;
     int parsing_state = 0;
-    CAirspace *newairspace = NULL;
     // Variables to store airspace parameters
     tstring ASComment;
     TCHAR Name[NAME_SIZE +1] = {0};
@@ -1740,37 +1739,11 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                     case _T('C'): //AC
                         p++; // skip C
                         if (parsing_state == 10) { // New airspace begin, store the old one, reset parser
-                            newairspace = NULL;
-                            if (Name[0] != '\0') { // FIX: do not add airspaces with no name defined.
-                                if (Radius > 0) {
-                                    // Last one was a circle
-                                    newairspace = new (std::nothrow) CAirspace_Circle(Center, Radius);
-                                } else {
-                                    // Last one was an area
-                                    if (CorrectGeoPoints(points)) { // Skip it if we don't have minimum 3 points
-                                        newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
-                                        points.clear(); // required, otherwise vector state is undefined;
-                                    }
-                                }
+                            if (InsideMap) {
+                                CreateAirspace(Name, points, Radius, Center, Type,
+                                            Base, Top, ASComment, flyzone, enabled,
+                                            except_saturday, except_sunday);
                             }
-                            if(newairspace) {
-                              if (InsideMap) {
-                                newairspace->Init(Name, Type, Base, Top, flyzone, ASComment.c_str());
-                                newairspace->Enabled(enabled);
-                                newairspace->ExceptSaturday(except_saturday);
-                                newairspace->ExceptSunday(except_sunday);
-
-                                { // Begin Lock
-                                    ScopeLock guard(_csairspaces);
-                                    _airspaces.push_back(newairspace);
-                                    accept_cnt++;
-                                } // End Lock
-                              } else {
-                            	  delete newairspace;
-                            	  newairspace = NULL;
-                                  skiped_cnt++;
-                              }
-                            };
 
                             Name[0] = '\0';
                             Radius = 0;
@@ -1783,7 +1756,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             enabled = true;
                             except_saturday = false;
                             except_sunday = false;
-                            newairspace = NULL;
                             parsing_state = 0;
                             InsideMap = !( WaypointsOutOfRange > 1); // exclude?
                         }
@@ -1887,7 +1859,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                 break;
 
             case _T('D'):
-                p++;
+                p++; // Skip D
                 switch (*p) {
                     case _T('A'): //DA - Sector
                         p++;
@@ -2023,35 +1995,10 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     }//wh readline
 
     // Push last one to the list
-    if (parsing_state == 10) {
-        LKASSERT(!newairspace);
-        if (Radius > 0) {
-            // Last one was a circle
-            newairspace = new (std::nothrow) CAirspace_Circle(Center, Radius);
-        } else {
-            // Last one was an area
-            if (CorrectGeoPoints(points)) { // Skip it if we dont have minimum 3 points
-              newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
-              points.clear(); // required, otherwise vector state is undefined;
-            }
-        }
-
-      if(newairspace)
-      {
-        if(InsideMap)
-        {
-          if(newairspace) {
-            newairspace->Init(Name, Type, Base, Top, flyzone , ASComment.c_str());
-            newairspace->Enabled(enabled);
-            newairspace->ExceptSaturday(except_saturday);
-            newairspace->ExceptSunday(except_sunday);
-            { // Begin Lock
-              ScopeLock guard(_csairspaces);
-              _airspaces.push_back(newairspace);
-            } // End Lock
-          }
-        }
-      }
+    if (parsing_state == 10 && InsideMap) {
+        CreateAirspace(Name, points, Radius, Center, Type,
+                    Base, Top, ASComment, flyzone, enabled,
+                    except_saturday, except_sunday);
     }
 
     unsigned airspaces_count = 0;
@@ -2069,6 +2016,38 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     //CAirspaceList::iterator it;
     //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
     return true;
+}
+
+void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center, int Type,
+                           const AIRSPACE_ALT& Base, const AIRSPACE_ALT& Top, const tstring& Comment, bool flyzone,
+                           bool enabled, bool except_saturday, bool except_sunday) {
+    try {
+        std::unique_ptr<CAirspace> airspace;
+        if (Radius > 0) {
+            // Was a circle
+            airspace = std::make_unique<CAirspace_Circle>(Center, Radius);
+        } else if (CorrectGeoPoints(Polygon)) {
+            // Was an area
+            // Skip it if we dont have minimum 3 points
+            airspace = std::make_unique<CAirspace_Area>(std::move(Polygon));
+        }
+        Polygon.clear(); // required, otherwise vector state is undefined;
+
+        if (airspace) {
+
+            airspace->Init(Name, Type, Base, Top, flyzone , Comment.c_str());
+            airspace->Enabled(enabled);
+            airspace->ExceptSaturday(except_saturday);
+            airspace->ExceptSunday(except_sunday);
+
+            WithLock(_csairspaces, [&] {
+                _airspaces.push_back(airspace.release());
+            });
+        }
+    }
+    catch(std::exception& e) {
+        StartupStore(_T("failed to create airspace : %s"), to_tstring(e.what()).c_str());
+    }
 }
 
 bool CAirspaceManager::ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *Alt) const {
