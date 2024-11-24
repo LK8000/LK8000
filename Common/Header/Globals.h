@@ -322,14 +322,6 @@ GEXTERN LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 // Number of asps (items) of existing airspaces updated from DoAirspaces
 GEXTERN int LKNumAirspaces;
 
-// The Thermal History internal database
-GEXTERN THERMAL_HISTORY	ThermalHistory[MAX_THERMAL_HISTORY+1];
-// Copy of runtime thermal history structure for instant use
-GEXTERN THERMAL_HISTORY	CopyThermalHistory[MAX_THERMAL_HISTORY+1];
-// Number of Thermals updated from DoThermalHistory
-GEXTERN int LKNumThermals;
-GEXTERN int LKSortedThermals[MAX_THERMAL_HISTORY+1];
-
 GEXTERN NearestTopoItem NearestBigCity;
 GEXTERN NearestTopoItem NearestCity;
 GEXTERN NearestTopoItem NearestSmallCity;

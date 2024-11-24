@@ -1,53 +1,24 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: dlgThermalDetails.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: dlgThermalDetails.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
+ */
 
 #include "externs.h"
 #include "LKInterface.h"
-#include "NavFunctions.h"
 #include "TeamCodeCalculation.h"
-#include "Dialogs.h"
 #include "dlgTools.h"
-#include "WindowControls.h"
 #include "resource.h"
+#include "Calc/ThermalHistory.h"
+#include "utils/printf.h"
 
+namespace {
 
-static WndForm *wf=NULL;
-static void SetValues(int indexid);
+void OnSelectClicked(WndButton* pWnd, int thermal_idx) {
 
-static int s_selected;
-
-static void OnSelectClicked(WndButton* pWnd) {
-
-  if (s_selected<0 || s_selected>=MAXTHISTORY) {
-	StartupStore(_T("... Invalid thermal selected to multitarget, out of range:%d %s"),s_selected,NEWLINE);
-	DoStatusMessage(_T("ERR-126 invalid thermal"));
-	return;
-  }
-
-  if (!ThermalHistory[s_selected].Valid) {
-	DoStatusMessage(LKGetText(TEXT("ERR-127 invalid thermal selection")));
-	return;
-  }
-
-  TestLog(_T("... Selected thermal n.%d <%s>"),s_selected,ThermalHistory[s_selected].Name);
-
-  SetThermalMultitarget(s_selected); // update selected multitarget
-
-  LockTaskData();
-  // now select the new one
-
-  WayPointList[RESWP_LASTTHERMAL].Latitude  = ThermalHistory[s_selected].Latitude;
-  WayPointList[RESWP_LASTTHERMAL].Longitude = ThermalHistory[s_selected].Longitude;
-  WayPointList[RESWP_LASTTHERMAL].Altitude  = ThermalHistory[s_selected].HBase;
-  
-  _tcscpy(WayPointList[RESWP_LASTTHERMAL].Name, ThermalHistory[s_selected].Name);
-
-  UnlockTaskData();
+  SetThermalMultitarget(thermal_idx, _T("")); // update selected multitarget
 
   // switch to L> multitarget, and force moving map mode
   OvertargetMode=OVT_THER;
@@ -61,7 +32,7 @@ static void OnSelectClicked(WndButton* pWnd) {
   }
 }
 
-static void OnCloseClicked(WndButton* pWnd) {
+void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -70,104 +41,88 @@ static void OnCloseClicked(WndButton* pWnd) {
   }
 }
 
-static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnSelectClicked),
-  EndCallBackEntry()
-};
+void SetValues(WndForm* pForm, int indexid) {
+  auto thermal = GetThermalHistory(indexid);
+  if (!thermal) { // TODO check
+    StartupStore(_T("... LK thermal setvalues invalid indexid=%d"),indexid);
+    DoStatusMessage(_T("ERR-216 INVALID THERMAL INDEXID"));
+    return;
+  }
 
+  if (!thermal->Near.empty()) {
+    TCHAR tcap[100];
+    lk::snprintf(tcap,_T("%s %s: %s"),
+                 MsgToken<905>(), // Thermal
+                 MsgToken<456>(), // Near
+                 thermal->Near.c_str());
+    pForm->SetCaption(tcap);
+  }
 
-static void SetValues(int indexid) {
-  WndProperty* wp;
+  auto wp = pForm->FindByName<WndProperty>(TEXT("prpName"));
+  if (wp) {
+    wp->SetText(thermal->Name.c_str());
+    wp->RefreshDisplay();
+  }
+
   TCHAR buffer[80];
 
-  if (indexid<0 || indexid>MAXTHISTORY) { // TODO check
-	StartupStore(_T("... LK thermal setvalues invalid indexid=%d%s"),indexid,NEWLINE);
-	DoStatusMessage(_T("ERR-216 INVALID THERMAL INDEXID"));
-	return;
-  }
-  if ( !ThermalHistory[indexid].Valid ) {
-	DoStatusMessage(_T("ERR-217 INVALID THERMAL INDEXID"));
-	return;
-  }
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpName"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpHTop"));
   if (wp) {
-	_tcscpy(buffer,ThermalHistory[indexid].Name);
-	CharUpper(buffer);
-	wp->SetText(buffer);
-	wp->RefreshDisplay();
+    Units::FormatAltitude(thermal->HTop, buffer, 80);
+    wp->SetText(buffer);
+    wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpHTop"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpHBase"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),Units::ToAltitude(ThermalHistory[indexid].HTop), Units::GetAltitudeName());
-	wp->SetText(buffer);
-	wp->RefreshDisplay();
+    Units::FormatAltitude(thermal->HBase, buffer, 80);
+    wp->SetText(buffer);
+    wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpHBase"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpLift"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),Units::ToAltitude(ThermalHistory[indexid].HBase), Units::GetAltitudeName());
-	wp->SetText(buffer);
-	wp->RefreshDisplay();
+    _stprintf(buffer,_T("%+.1f %s"),Units::ToVerticalSpeed(thermal->Lift), Units::GetVerticalSpeedName());
+    wp->SetText(buffer);
+    wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpLift"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpTeamCode"));
   if (wp) {
-	_stprintf(buffer,_T("%+.1f %s"),Units::ToVerticalSpeed(ThermalHistory[indexid].Lift), Units::GetVerticalSpeedName());
-	wp->SetText(buffer);
-	wp->RefreshDisplay();
+    // Taken from CalculateTeamBear..
+    if (WayPointList.empty()) return;
+    if (TeamCodeRefWaypoint < 0) return;
+
+    double distance=0, bearing=0;
+
+    DistanceBearing( WayPointList[TeamCodeRefWaypoint].Latitude,
+            WayPointList[TeamCodeRefWaypoint].Longitude,
+            thermal->position.latitude,
+            thermal->position.longitude,
+            &distance, &bearing);
+
+    GetTeamCode(buffer, bearing, distance);
+
+    buffer[5]='\0';
+    wp->SetText(buffer);
+    wp->RefreshDisplay();
   }
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpTeamCode"));
-  if (wp) {
-	// Taken from CalculateTeamBear..
-	if (WayPointList.empty()) return;
-	if (TeamCodeRefWaypoint < 0) return;
-
-	double distance=0, bearing=0;
-
-	DistanceBearing( WayPointList[TeamCodeRefWaypoint].Latitude,
-           WayPointList[TeamCodeRefWaypoint].Longitude,
-           ThermalHistory[indexid].Latitude,
-           ThermalHistory[indexid].Longitude,
-           &distance, &bearing);
-
-	GetTeamCode(buffer, bearing, distance);
-
-	buffer[5]='\0';
-	wp->SetText(buffer);
-	wp->RefreshDisplay();
-  }
-
 }
 
+} // namespace
 
 void dlgThermalDetails(int indexid) {
+  using std::placeholders::_1;
 
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_THERMALDETAILS);
+  const CallBackTableEntry_t CallBackTable[] = {
+    ClickNotifyCallbackEntry(OnCloseClicked),
+    { "OnSelectClicked", std::bind(&OnSelectClicked, _1, indexid) },
+    EndCallBackEntry()
+  };
 
-  if (!wf) return;
-
-  SetValues(indexid);
-
-  s_selected=indexid;
-
-  if (_tcslen(ThermalHistory[indexid].Near) >0) {
-	TCHAR tcap[100];
-	_stprintf(tcap,_T("%s %s: %s"),
-		MsgToken<905>(), // Thermal
-		MsgToken<456>(), // Near
-		ThermalHistory[indexid].Near
-	);
-	wf->SetCaption(tcap);
+  std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, IDR_XML_THERMALDETAILS));
+  if (pForm) {
+    SetValues(pForm.get(), indexid);
+    pForm->ShowModal();
   }
-
-  wf->ShowModal();
-
-  delete wf;
-  wf = NULL;
-  return;
 }
-

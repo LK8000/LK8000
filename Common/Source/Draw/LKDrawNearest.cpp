@@ -15,6 +15,7 @@
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
 #include "Util/TruncateString.hpp"
+#include "Calc/ThermalHistory.h"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
@@ -56,7 +57,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     RECT invsel;
     TCHAR Buffer[LKSIZEBUFFERLARGE];
     TCHAR text[30];
-    short n, i, j, k, iRaw, rli = 0, curpage, drawn_items_onpage;
+    short n, i, j, k, iRaw, curpage, drawn_items_onpage;
     double value;
     LKColor rcolor;
     short curmapspace = MapSpaceMode;
@@ -570,7 +571,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             headertoken[4] = MsgToken<2186>(); // *
             break;
         case MSM_THERMALS:
-            pSortedIndex = LKSortedThermals;
+            pSortedIndex = LKSortedThermals.data();
             pSortedNumber = &LKNumThermals;
             pLastDoNearest = &LastDoThermalH;
             pNearestDataReady = NULL;
@@ -651,21 +652,13 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             }
 
             if (MSMTHERMALS) {
-                if ((i < 0) || (i >= MAXTHISTORY) || (CopyThermalHistory[i].Valid != true)) {
-#if 0 // selection while waiting for data ready
-                    if (LKNumThermals > 0)
-                        DoStatusMessage(_T("ERR-045 Invalid selection"));
-#endif
+                if ((i < 0) || (i >= MAXTHISTORY)) {
                     break;
                 }
                 InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
             }
             if (MSMTRAFFIC) {
                 if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].RadioId <= 0)) {
-#if 0 // selection while waiting for data ready
-                    if (LKNumTraffic > 0)
-                        DoStatusMessage(_T("ERR-045 Invalid selection"));
-#endif
                     break;
                 }
                 InputEvents::processPopupDetails(InputEvents::PopupTraffic, i);
@@ -813,8 +806,15 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         if (curraw >= MAXNEAREST) {
             break;
         }
-
-        rli = pSortedIndex?pSortedIndex[curraw]:curraw;
+        size_t rli = curraw;
+        if (pSortedNumber && pSortedIndex) {
+            if (curraw < (*pSortedNumber)) {
+                rli = pSortedIndex[curraw];
+            }
+            else {
+                rli = ~0;
+            }
+        }
 
         if (!ndr) {
             if (MSMCOMMONS) goto _KeepOldCommonsValues;
@@ -1029,17 +1029,18 @@ _KeepOldAirspacesValues:
         } // MSMAIRSPACES
 
         if (MSMTHERMALS) {
-            if ((rli >= 0) && (CopyThermalHistory[rli].Valid == true)) {
+        	if (rli < CopyThermalHistory.size()) {
+                const auto& thermal = CopyThermalHistory[rli];
 
                 TCHAR* pOut = Buffer1[i][curpage];
                 if (IsThermalMultitarget(rli)) {
                     _tcscpy(pOut, _T(">"));
                     pOut += _tcslen(pOut);
                 }
-                CopyTruncateString(pOut, s_maxnlname[curmapspace], CopyThermalHistory[rli].Name);
+                CopyTruncateString(pOut, s_maxnlname[curmapspace], thermal.Name.c_str());
 
                 // Distance
-                value = Units::ToDistance(CopyThermalHistory[rli].Distance);
+                value = Units::ToDistance(thermal.Distance);
                 if (usetwolines)
                     _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
                 else
@@ -1048,13 +1049,7 @@ _KeepOldAirspacesValues:
                 // relative bearing
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-                    value = CopyThermalHistory[rli].Bearing - DrawInfo.TrackBearing;
-                    if (value < -180.0)
-                        value += 360.0;
-                    else
-                        if (value > 180.0)
-                        value -= 360.0;
-
+                    value = AngleLimit180(thermal.Bearing - DrawInfo.TrackBearing);
                     if (value > 1)
                         _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
                     else
@@ -1063,12 +1058,12 @@ _KeepOldAirspacesValues:
                     else
                         _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
                 } else {
-                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), CopyThermalHistory[rli].Bearing, MsgToken<2179>());
+                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), thermal.Bearing, MsgToken<2179>());
                 }
 
 
                 // Average lift
-                value = Units::ToVerticalSpeed(CopyThermalHistory[rli].Lift);
+                value = Units::ToVerticalSpeed(thermal.Lift);
                 if (value<-99 || value > 99)
                     _stprintf(Buffer4[i][curpage], _T("----"));
                 else {
@@ -1076,7 +1071,7 @@ _KeepOldAirspacesValues:
                 }
 
                 // Altitude
-                value = Units::ToAltitude(CopyThermalHistory[rli].Arrival);
+                value = Units::ToAltitude(thermal.Arrival);
                 if (value<-1000 || value > 45000)
                     _stprintf(Buffer5[i][curpage], _T("----"));
                 else {
@@ -1094,9 +1089,10 @@ _KeepOldAirspacesValues:
                 _stprintf(Buffer5[i][curpage], _T("----"));
             }
 
-            if ((rli >= 0) && (CopyThermalHistory[rli].Valid == true)) {
+        	if (rli < CopyThermalHistory.size()) {
+                const auto& thermal = CopyThermalHistory[rli];
                 drawn_items_onpage++;
-                if (CopyThermalHistory[rli].Arrival >= 0) {
+                if (thermal.Arrival >= 0) {
                     rcolor = RGB_WHITE;
                     Surface.SelectObject(bigFont);
                 } else {
@@ -1109,7 +1105,7 @@ _KeepOldAirspacesValues:
         } // MSMTHERMALS
 
         if (MSMTRAFFIC) {
-            if ((rli >= 0) && (LKTraffic[rli].RadioId > 0)) {
+            if (rli < std::size(LKTraffic) && (LKTraffic[rli].RadioId > 0)) {
 
                 // Traffic name
                 int wlen = _tcslen(LKTraffic[rli].Name);
@@ -1209,7 +1205,7 @@ _KeepOldAirspacesValues:
             }
 
 
-            if ((rli >= 0) && (LKTraffic[rli].RadioId > 0)) {
+            if (rli < std::size(LKTraffic) && (LKTraffic[rli].RadioId > 0)) {
                 drawn_items_onpage++;
                 if (LKTraffic[rli].Status == LKT_REAL) {
                     rcolor = RGB_WHITE;

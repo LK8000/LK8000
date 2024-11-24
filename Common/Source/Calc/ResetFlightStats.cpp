@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "AATDistance.h"
+#include "ThermalHistory.h"
 
 
 

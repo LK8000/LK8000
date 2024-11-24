@@ -315,9 +315,6 @@ void Globals_Init(void) {
   _tcscpy(TAKEOFFWP_Name,_T(""));
   _tcscpy(LANDINGWP_Name,_T(""));
 
-  // Number of Thermals updated from DoThermalHistory
-  LKNumThermals=0;
-
   // LK8000 Hearth beats at 2Hz
   LKHearthBeats=0;
   // number of reporting messages from Portmonitor.

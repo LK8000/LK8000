@@ -26,7 +26,6 @@
 	MDI_DOTRAFFIC,			// FLARM trigger
 	MDI_DETECTFREEFLYING,		// force detect FF
 	MDI_MCREADYCACHE,		// Reset cache for MC
-	MDI_DOTHERMALHISTORY,		// Reset thermal history storage
 	MDI_BATTERYMANAGER,		// Reset warnings on battery power
 	MDI_EVENTINVERTCOLOR,		// OutlinedTp  , to be checked TODO
 	MDI_GETLOCALPATH,		// system path change!

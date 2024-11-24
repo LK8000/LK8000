@@ -223,9 +223,6 @@
 #define MAXRANGETURNPOINT	500
 #define DSTRANGETURNPOINT	100
 
-// How many thermals we shall remember
-#define MAX_THERMAL_HISTORY	100
-
 // Nearest calculations are made on this list
 // if we enlarge, resize also MAXNUMPAGES
 #define MAXNEAREST		50

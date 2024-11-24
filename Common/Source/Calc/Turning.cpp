@@ -12,6 +12,7 @@
 #include "Atmosphere.h"
 #include "ThermalLocator.h"
 #include "LDRotaryBuffer.h"
+#include "Calc/ThermalHistory.h"
 
 
 extern void PercentCircling(NMEA_INFO *Basic, DERIVED_INFO *Calculated,const double Rate);
@@ -334,15 +335,14 @@ _forcereset:
 		AverageThermal(Basic,Calculated);
 
 		if (EnableThermalLocator) {
-			InsertThermalHistory(Calculated->ClimbStartTime, 
-				Calculated->ThermalEstimate_Latitude, Calculated->ThermalEstimate_Longitude,
+			InsertThermalHistory(Calculated->ClimbStartTime,
+				{ Calculated->ThermalEstimate_Latitude, Calculated->ThermalEstimate_Longitude },
 				Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
 		} else {
-			InsertThermalHistory(Calculated->ClimbStartTime, 
-				Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
+			InsertThermalHistory(Calculated->ClimbStartTime,
+				{ Calculated->ClimbStartLat, Calculated->ClimbStartLong },
 				Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
 		}
-
 	}
 
 	rotaryLD.Init();

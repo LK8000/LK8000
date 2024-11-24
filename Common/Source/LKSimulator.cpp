@@ -13,10 +13,11 @@
 #include "McReady.h"
 #include "Asset.hpp"
 #include "NavFunctions.h"
-#include "Calc/Vario.h"
 #include "Tracking/Tracking.h"
 #include "Comm/ExternalWind.h"
 #include "Baro.h"
+#include "Calc/Vario.h"
+#include "Calc/ThermalHistory.h"
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
@@ -41,7 +42,7 @@ extern void SimFlarmTraffic(uint32_t RadioId, double offset);
 //
 void LKSimulator(void) {
 
-  LockFlightData();
+  ScopeLock lock(CritSec_FlightData);
 
   //
   GPS_INFO.NAVWarning = false;
@@ -67,19 +68,16 @@ void LKSimulator(void) {
 
     if (doinit) {
 	if (counter++<4) {
-		UnlockFlightData();
 		return;
 	}
 	TestLog(_T(". SIMULATOR: real init"));
 
 	// Add a couple of thermals for the boys
-	InsertThermalHistory(GPS_INFO.Time-1887, GPS_INFO.Latitude-0.21, GPS_INFO.Longitude+0.13, 873, 1478,1.5);
-	InsertThermalHistory(GPS_INFO.Time-1250, GPS_INFO.Latitude+0.15, GPS_INFO.Longitude-0.19, 991, 1622,0.9);
-	InsertThermalHistory(GPS_INFO.Time-987, GPS_INFO.Latitude-0.11, GPS_INFO.Longitude+0.13, 762, 1367,1.8);
-	InsertThermalHistory(GPS_INFO.Time-100, GPS_INFO.Latitude-0.02, GPS_INFO.Longitude-0.03, 650, 1542,2.2);
-	WayPointList[RESWP_LASTTHERMAL].Latitude  = GPS_INFO.Latitude-0.022;
-	WayPointList[RESWP_LASTTHERMAL].Longitude = GPS_INFO.Longitude-0.033;
-	WayPointList[RESWP_LASTTHERMAL].Altitude  = 650;
+	InsertThermalHistory(GPS_INFO.Time-1887, { GPS_INFO.Latitude-0.21, GPS_INFO.Longitude+0.13 }, 873, 1478, 1.5);
+	InsertThermalHistory(GPS_INFO.Time-1250, { GPS_INFO.Latitude+0.15, GPS_INFO.Longitude-0.19 }, 991, 1622, 0.9);
+	InsertThermalHistory(GPS_INFO.Time-987, { GPS_INFO.Latitude-0.11, GPS_INFO.Longitude+0.13 }, 762, 1367, 1.8);
+	InsertThermalHistory(GPS_INFO.Time-100, { GPS_INFO.Latitude-0.022, GPS_INFO.Longitude-0.033 }, 650, 1542, 2.2);
+
 	ThLatitude=GPS_INFO.Latitude-0.022;
 	ThLongitude=GPS_INFO.Longitude-0.033;
 
@@ -300,8 +298,6 @@ void LKSimulator(void) {
   GPS_INFO.Hour = tsec/3600;
   GPS_INFO.Minute = (tsec-GPS_INFO.Hour*3600)/60;
   GPS_INFO.Second = (tsec-GPS_INFO.Hour*3600-GPS_INFO.Minute*60);
-
-  UnlockFlightData();
 }
 
 

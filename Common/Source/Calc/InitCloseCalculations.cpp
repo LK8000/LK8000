@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "windanalyser.h"
+#include "ThermalHistory.h"
 
 extern void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 

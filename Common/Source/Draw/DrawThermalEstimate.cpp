@@ -10,6 +10,7 @@
 #include "Bitmaps.h"
 #include "LKObjects.h"
 #include "ScreenProjection.h"
+#include "Calc/ThermalHistory.h"
 
 //
 // Draw circles and gadgets for thermals
@@ -57,8 +58,6 @@ void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const Sc
 //
 void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
 
-  int idx=0;
-
   // do not mix old and new thermals
   if (mode.Is(Mode::MODE_CIRCLING))
     return;
@@ -66,12 +65,13 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
   // draw only when visible , at high zoom level
   if ( MapWindow::zoom.RealScale() >1 ) return;
 
-  idx=GetThermalMultitarget();
+  auto thermal = GetThermalMultitarget();
   // no L> target destination
-  if (idx <0)
+  if (!thermal) {
     return;
+  }
 
-  const POINT screen = _Proj.ToRasterPoint(ThermalHistory[idx].Latitude, ThermalHistory[idx].Longitude);
+  auto screen = _Proj.ToScreen<RasterPoint>(thermal->position);
 
   double tradius;
   if (ISPARAGLIDER)

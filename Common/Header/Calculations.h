@@ -12,25 +12,6 @@
 #include "NMEA/Info.h"
 #include "NMEA/Derived.h"
 
-typedef struct _THERMAL_HISTORY
-{
-  bool   Valid;
-  TCHAR  Name[10];	// TH1055
-  TCHAR  Near[20];	// nearby waypoint, if available
-  double Time;		// start circling time
-  double Latitude;
-  double Longitude;
-  double HBase;		// thermal base
-  double HTop;		// total thermal gain
-  double Lift;		// Avg lift rate
-
-  double Distance;	// recalculated values
-  double Bearing;
-  double Arrival;
-} THERMAL_HISTORY;
-
-
-
 
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
 bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -43,10 +24,6 @@ void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-bool IsThermalMultitarget(int idx);
-void SetThermalMultitarget(int idx);
-int  GetThermalMultitarget(void);
 void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -123,9 +100,6 @@ bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin);
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin);
-
-void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThBase,double ThTop, double ThAvg);
-void InitThermalHistory(void);
 
 double FinalGlideThroughTerrain(const double bearing,
                                 const double start_lat,
