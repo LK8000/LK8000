@@ -9,6 +9,7 @@
 #include "utils/charset_helper.h"
 #include "Sound/Sound.h"
 #include "Message.h"
+#include "Calc/ThermalHistory.h"
 
 static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
@@ -42,10 +43,16 @@ uint16_t to_uint16_t(const uint8_t *buf) {
  * Convert 6Byte buffer to Latitude/longitude
  */
 void payload_absolut2coord(double &lat, double &lon, const uint8_t *buf) {
-  if(buf == nullptr)
-    return;
-  lat = to_int32_t(&buf[0]) / 93206.0;
-  lon = to_int32_t(&buf[3]) / 46603.0;
+  if(buf) {
+    lat = to_int32_t(&buf[0]) / 93206.0;
+    lon = to_int32_t(&buf[3]) / 46603.0;
+  }
+}
+
+GeoPoint payload_absolut2coord(const uint8_t *buf) {
+  GeoPoint position = {};
+  payload_absolut2coord(position.latitude, position.longitude, buf);
+  return position;
 }
 
 void UpdateName(FLARM_TRAFFIC& traffic) {
@@ -440,8 +447,7 @@ bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
 
   /*
   TODO: display static object ?
-  GeoPoint pos;
-  payload_absolut2coord(pos.latitude,pos.longitude,&data[0]);
+  GeoPoint pos = payload_absolut2coord(&data[0]);
   uint8_t type = data[6] > 4;
   bool online_tracking = data[6] & 0x01;
   */
@@ -477,17 +483,28 @@ bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   */
   d->nmeaParser.setFlarmAvailable(pGPS);
 
-  /*
-  TODO: Add Receved thermal to ThermalHistory  ?
+  GeoPoint pos = payload_absolut2coord(&data[0]);
 
-  GeoPoint pos;
-  payload_absolut2coord(pos.latitude,pos.longitude,&data[0]);
+  // ignore this thermal if already in history...
+  if (IsThermalExist(pos, Units::From(unMeter, 25))) {
+    return true;
+  }
 
-  */
+  uint16_t Type = to_uint16_t(&data[6]);
+  double altitude = Type & 0x3FF;
+  if (Type & 0x0400) {
+    altitude *= 4.;
+  }
 
+  double avg = static_cast<int8_t>(data[8] & 0x7F) | ((data[8]&0x40) ? 0xFF : 0x00);
+  if (data[8] & 0x80) {
+    avg *= 5.;
+  }
+  avg = Units::From(Units_t::unMeterPerSecond, avg * 10.);
+
+  InsertThermalHistory(pGPS->Time, pos, altitude, altitude, avg, false);
   return true;
 }
-
 
 bool FanetParseUnknown(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
   DebugLog(_T("Unknown Fanet Message : id = %x, payloadsize %zu"), id, data.size());
