@@ -16,7 +16,6 @@
 #include "types.h"
 #include "Enums.h"
 #include "Util/tstring.hpp"
-#include "Poco/Event.h"
 #include "Thread/Thread.hpp"
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
@@ -102,13 +101,17 @@ protected:
 
     void ProcessData(const char* data, size_t size);
 
-    Poco::Event StopEvt = { false };
+    bool WaitForStop(int time);
 
 private:
     InvokeThread rx_thread = { 
         "ComPort",
         [&]() { this->RxThread(); }
     };
+
+    bool stop = false;
+    Mutex stop_mtx;
+    Cond stop_cond;
 
     using _NmeaString_t = char[MAX_NMEA_LEN];
 

@@ -279,7 +279,7 @@ unsigned TTYPort::RxThread() {
     Purge();
 
     bool opened = false;  // Call devOpen() once at startup
-    while ((_tty != -1) && !StopEvt.tryWait(5)) {
+    while ((_tty != -1) && !WaitForStop(5)) {
         if (!opened) {
             opened = true;
             devOpen(devGetDeviceOnPort(GetPortIndex()));

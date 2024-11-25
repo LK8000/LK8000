@@ -52,7 +52,7 @@ bool ComPort::Write(const void *data, size_t size) {
 
         bool success = Write_Impl(data, size);
 
-        DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),
+        DebugLog(_T(R"(<%s> ComPort::Write("%s"))"),
                     success ? _T("success"): _T("failed"),
                     data_string(data, size).c_str());
 
@@ -78,7 +78,10 @@ int ComPort::GetChar() {
 
 bool ComPort::StopRxThread() {
 
-    StopEvt.set();
+    WithLock(stop_mtx, [&]() {
+        stop = true;
+    });
+    stop_cond.Signal();
 
     DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), GetPortIndex() + 1U);
     CancelWaitEvent();
@@ -86,13 +89,14 @@ bool ComPort::StopRxThread() {
     DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), GetPortIndex() + 1);
     rx_thread.Join();
 
-	StopEvt.reset();
     return true;
 }
 
 bool ComPort::StartRxThread() {
   try {
-      StopEvt.reset();
+      WithLock(stop_mtx, [&]() {
+          stop = false;
+      });
 
       // Create a read thread for reading data from the communication port.
       rx_thread.Start();
@@ -113,6 +117,15 @@ bool ComPort::StartRxThread() {
       StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), GetPortIndex() + 1, GetPortName(), error.c_str());
       return false;
   }
+}
+
+bool ComPort::WaitForStop(int time) {
+    ScopeLock lock(stop_mtx);
+    if (stop) {
+        return true;
+    }
+    stop_cond.Wait(stop_mtx, time);
+    return stop;
 }
 
 void ComPort::ProcessChar(char c) {

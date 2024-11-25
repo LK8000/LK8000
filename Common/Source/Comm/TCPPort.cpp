@@ -224,7 +224,7 @@ unsigned TCPServerPort::RxThread() {
         // if failed, socket still in blocking mode, it's big problem
     }  
     
-    while (mServerSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+    while (mServerSocket != INVALID_SOCKET && !WaitForStop(5)) {
 
         fd_set readfs;
         FD_ZERO(&readfs);
@@ -299,7 +299,7 @@ unsigned UDPServerPort::RxThread() {
     bool opened = false;  // Call devOpen() once at startup
     char szString[1024];
 
-	while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+	while (mSocket != INVALID_SOCKET && !WaitForStop(5)) {
 		if (!opened) {
     	    opened = true;
 	        devOpen(devGetDeviceOnPort(GetPortIndex()));

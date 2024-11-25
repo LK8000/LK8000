@@ -25,6 +25,7 @@
 #include "utils/base64.h"
 #include "Library/TimeFunctions.h"
 #include "OS/Sleep.h"
+#include "Poco/Event.h"
 
 #ifdef KOBO
 #include "Kobo/System.hpp"

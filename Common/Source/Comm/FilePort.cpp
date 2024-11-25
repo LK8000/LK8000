@@ -96,15 +96,14 @@ unsigned FilePort::RxThread()
   int32_t ms =0;
 
   bool opened = false;  // Call devOpen() once at startup
-  while (!StopEvt.tryWait(5) /*&& FileStream*/ ) 
-  {
+  while (!WaitForStop(5)) {
     if (!opened) {
         opened = true;
         devOpen(devGetDeviceOnPort(GetPortIndex()));
     }
 
     int32_t speed = Port.ReplaySpeed;
-#define THRESHOLD 10 // max 10Hz GPS Map refresh
+    #define THRESHOLD 10 // max 10Hz GPS Map refresh
 
     nRecv =  ReadLine(szString, MAX_NMEA_LEN-1);
 
