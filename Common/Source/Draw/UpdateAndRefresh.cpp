@@ -23,7 +23,7 @@ void MapWindow::RequestFastRefresh() {
     main_window->Redraw(MapRect);
   }
 #else
-  drawTriggerEvent.set();
+  _draw_cv.Signal();
 #endif
 }
 

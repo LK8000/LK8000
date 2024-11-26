@@ -463,10 +463,10 @@ bool Startup(const TCHAR* szCmdLine) {
 
   TestLog(TEXT(".... ProgramStarted=InitDone"));
   ProgramStarted = psInitDone;
+  GlobalRunning = true;
 #ifdef ENABLE_OPENGL
   main_window->Invalidate();
 #endif
-  GlobalRunning = true;
 	
 	InitAirspaceSonar();
 

@@ -311,7 +311,8 @@ void WndMain::OnTimer() {
         if (ProgramStarted == psFirstDrawDone) {
             AfterStartup();
             ProgramStarted = psNormalOp;
-            StartupStore(_T(". ProgramStarted=NormalOp %s%s"), WhatTimeIsIt(), NEWLINE);
+
+            StartupStore(_T(". ProgramStarted=NormalOp %s"), WhatTimeIsIt());
             StartupLogFreeRamAndStorage();
         }
     }

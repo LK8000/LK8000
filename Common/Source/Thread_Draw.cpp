@@ -26,7 +26,7 @@ atomic_shared_flag MapWindow::ThreadSuspended;
 
 #ifndef ENABLE_OPENGL
 Mutex MapWindow::Surface_Mutex;
-Poco::Event MapWindow::drawTriggerEvent;
+Cond MapWindow::_draw_cv;
 
 LKBitmapSurface MapWindow::BackBufferSurface;
 Mutex MapWindow::BackBuffer_Mutex;
@@ -104,228 +104,217 @@ void MapWindow::Initialize() {
     // Signal that draw thread can run now
     Initialised = TRUE;
 #ifndef ENABLE_OPENGL
-    drawTriggerEvent.set();
+    _draw_cv.Signal();
 #endif
 }
 
 #ifndef ENABLE_OPENGL
 
-void MapWindow::DrawThread ()
-{
-  while ((!ProgramStarted) || (!Initialised)) {
-	Sleep(50);
-  }
-
-  TestLog(_T("... DrawThread START"));
+void MapWindow::DrawThread() {
+  TestLog(_T("... Thread_Draw : started"));
+  ScopeLock Lock(Surface_Mutex);
 
   THREADEXIT = FALSE;
 
-  bool lastdrawwasbitblitted=false;
+  while ((!ProgramStarted) || (!Initialised)) {
+    TestLog(_T("... Thread_Draw : wait for init"));
+    _draw_cv.Wait(Surface_Mutex);
+  }
 
   //
   // Big LOOP
   //
 
-  while (!CLOSETHREAD)
-  {
-	if(drawTriggerEvent.tryWait(5000))
-	if (CLOSETHREAD) break; // drop out without drawing
-
-	if (ThreadSuspended || (!GlobalRunning)) {
-        Sleep(50);
-		continue;
-	}
-    drawTriggerEvent.reset();
+  TestLog(_T("... Thread_Draw : loop start"));
+  while (!CLOSETHREAD) {
+    if (!ThreadSuspended && GlobalRunning) {
+      bool lastdrawwasbitblitted = false;
 
 #ifdef HAVE_CPU_FREQUENCY
-    const ScopeLockCPU cpu;
+      const ScopeLockCPU cpu;
 #endif
 
-    ScopeLock Lock(Surface_Mutex);
+      // Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
+      // This is intended for very fast immediate screen refresh.
+      //
+      // MapDirty is set true by:
+      //   - TriggerRedraws()  in calculations thread
+      //   - RefreshMap()      in drawthread generally
+      //
 
-	// Until MapDirty is set true again, we shall only repaint the screen. No Render, no calculations, no updates.
-	// This is intended for very fast immediate screen refresh.
-	//
-	// MapDirty is set true by:
-	//   - TriggerRedraws()  in calculations thread
-	//   - RefreshMap()      in drawthread generally
-	//
+      extern POINT startScreen, targetScreen;
+      extern bool OnFastPanning;
+      // While we are moving in bitblt mode, ignore RefreshMap requests from LK
+      // unless a timeout was triggered by MapWndProc itself.
+      if (OnFastPanning) {
+        MapDirty = false;
+      }
 
+      // We must check if we are on FastPanning, because we may be in pan mode even while
+      // the menu buttons are active and we are using them, accessing other functions.
+      // In that case, without checking OnFastPanning, we would fall back here and repaint
+      // with bitblt everytime, while instead we were asked a simple fastrefresh!
+      //
+      // Notice: we could be !MapDirty without OnFastPanning, of course!
+      //
+      if (!MapDirty && !ForceRenderMap && OnFastPanning && !first_run) {
+        if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
+          const int fromX = startScreen.x - targetScreen.x;
+          const int fromY = startScreen.y - targetScreen.y;
 
-	extern POINT startScreen, targetScreen;
-	extern bool OnFastPanning;
-	// While we are moving in bitblt mode, ignore RefreshMap requests from LK
-	// unless a timeout was triggered by MapWndProc itself.
-	if (OnFastPanning) {
-		MapDirty=false;
-	}
+          PixelRect clipSourceArea(MapRect);                      // Source Rectangle
+          RasterPoint clipDestPoint(clipSourceArea.GetOrigin());  // destination origin position
+          PixelRect WhiteRectV(MapRect);                          // vertical White band (left or right)
+          PixelRect WhiteRectH(MapRect);                          // horizontal White band (top or bottom)
 
-	// We must check if we are on FastPanning, because we may be in pan mode even while
-	// the menu buttons are active and we are using them, accessing other functions.
-	// In that case, without checking OnFastPanning, we would fall back here and repaint
-	// with bitblt everytime, while instead we were asked a simple fastrefresh!
-	//
-	// Notice: we could be !MapDirty without OnFastPanning, of course!
-	//
-	if (!MapDirty && !ForceRenderMap && OnFastPanning && !first_run) {
+          if (fromX < 0) {
+            clipSourceArea.right += fromX;  // negative fromX
+            clipDestPoint.x -= fromX;
+            WhiteRectV.right = WhiteRectV.left - fromX;
+            WhiteRectH.left = WhiteRectV.right;
+          } else {
+            clipSourceArea.left += fromX;
+            WhiteRectV.left = WhiteRectV.right - fromX;
+            WhiteRectH.right = WhiteRectV.left;
+          }
 
-		if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
+          if (fromY < 0) {
+            clipSourceArea.bottom += fromY;  // negative fromX
+            clipDestPoint.y -= fromY;
+            WhiteRectH.bottom = WhiteRectH.top - fromY;
+          } else {
+            clipSourceArea.top += fromY;
+            WhiteRectH.top = WhiteRectH.bottom - fromY;
+          }
 
-			const int fromX=startScreen.x-targetScreen.x;
-			const int fromY=startScreen.y-targetScreen.y;
+          ScopeLock Lock(BackBuffer_Mutex);
 
-            PixelRect  clipSourceArea(MapRect); // Source Rectangle
-            RasterPoint clipDestPoint(clipSourceArea.GetOrigin()); // destination origin position
-            PixelRect  WhiteRectV(MapRect); // vertical White band (left or right)
-            PixelRect  WhiteRectH(MapRect); // horizontal White band (top or bottom)
+          BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx,
+                                      WhiteRectV.GetSize().cy);
+          BackBufferSurface.Whiteness(WhiteRectH.left, WhiteRectH.top, WhiteRectH.GetSize().cx,
+                                      WhiteRectH.GetSize().cy);
+          BackBufferSurface.Copy(clipDestPoint.x, clipDestPoint.y, clipSourceArea.GetSize().cx,
+                                 clipSourceArea.GetSize().cy, DrawSurface, clipSourceArea.left, clipSourceArea.top);
 
-            if (fromX<0) {
-                clipSourceArea.right += fromX; // negative fromX
-                clipDestPoint.x -= fromX;
-                WhiteRectV.right = WhiteRectV.left - fromX;
-                WhiteRectH.left = WhiteRectV.right;
-            } else {
-                clipSourceArea.left += fromX;
-                WhiteRectV.left = WhiteRectV.right - fromX;
-                WhiteRectH.right = WhiteRectV.left;
-            }
+          const RasterPoint centerscreen = {ScreenSizeX / 2, ScreenSizeY / 2};
+          const ScreenProjection _Proj = GetProjection();
+          DrawMapScale(BackBufferSurface, MapRect, _Proj);
+          DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
+          lastdrawwasbitblitted = true;
+        } else {
+          // THIS IS NOT GOING TO HAPPEN!
+          //
+          // The map was not dirty, and we are not in fastpanning mode.
+          // FastRefresh!  We simply redraw old bitmap.
+          //
+          ScopeLock Lock(BackBuffer_Mutex);
+          DrawSurface.CopyTo(BackBufferSurface);
 
-            if (fromY<0) {
-                clipSourceArea.bottom += fromY; // negative fromX
-                clipDestPoint.y -= fromY;
-                WhiteRectH.bottom = WhiteRectH.top - fromY;
-            } else {
-                clipSourceArea.top += fromY;
-                WhiteRectH.top = WhiteRectH.bottom - fromY;
-            }
+          lastdrawwasbitblitted = true;
+        }
 
-            ScopeLock Lock(BackBuffer_Mutex);
-
-            BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx, WhiteRectV.GetSize().cy);
-            BackBufferSurface.Whiteness(WhiteRectH.left, WhiteRectH.top, WhiteRectH.GetSize().cx, WhiteRectH.GetSize().cy);
-            BackBufferSurface.Copy(clipDestPoint.x,clipDestPoint.y,
-                clipSourceArea.GetSize().cx,
-                clipSourceArea.GetSize().cy,
-                DrawSurface,
-                clipSourceArea.left,clipSourceArea.top);
-
-
-			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            const ScreenProjection _Proj = GetProjection();
-			DrawMapScale(BackBufferSurface,MapRect,_Proj);
-			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
-			lastdrawwasbitblitted=true;
-		} else {
-			// THIS IS NOT GOING TO HAPPEN!
-			//
-			// The map was not dirty, and we are not in fastpanning mode.
-			// FastRefresh!  We simply redraw old bitmap.
-			//
-            ScopeLock Lock(BackBuffer_Mutex);
-            DrawSurface.CopyTo(BackBufferSurface);
-
-			lastdrawwasbitblitted=true;
-		}
-
-		// Now we can clear the flag. If it was off already, no problems.
-//		OnFastPanning=false;
+        // Now we can clear the flag. If it was off already, no problems.
+        //		OnFastPanning=false;
         main_window->Redraw(MapRect);
-		continue;
+        continue;
 
-	} else {
-		//
-		// Else the map wasy dirty, and we must render it..
-		// Notice: if we were fastpanning, than the map could not be dirty.
-		//
+      } else {
+        //
+        // Else the map wasy dirty, and we must render it..
+        // Notice: if we were fastpanning, than the map could not be dirty.
+        //
 
-		#if 1 // --------------------- EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
-		static unsigned lasthere=0;
-		// Only for special case: PAN mode, map not dirty (including requests for zooms!)
-		// not in the ForceRenderMap run and last time was a real rendering. THEN, at these conditions,
-		// we simply redraw old bitmap, for the scope of accelerating touch response.
-		// In fact, if we are panning the map while rendering, there would be an annoying delay.
-		// This is using lastdrawwasbitblitted
-		if (INPAN && !MapDirty && !lastdrawwasbitblitted && !ForceRenderMap && !first_run) {
-			// In any case, after 5 seconds redraw all
-			if ( (LKHearthBeats-8) >lasthere ) {
-				lasthere=LKHearthBeats;
-				goto _dontbitblt;
-			}
+#if 1  // --------------------- EXPERIMENTAL, CHECK ZOOM IS WORKING IN PNA
+        static unsigned lasthere = 0;
+        // Only for special case: PAN mode, map not dirty (including requests for zooms!)
+        // not in the ForceRenderMap run and last time was a real rendering. THEN, at these conditions,
+        // we simply redraw old bitmap, for the scope of accelerating touch response.
+        // In fact, if we are panning the map while rendering, there would be an annoying delay.
+        // This is using lastdrawwasbitblitted
+        if (INPAN && !MapDirty && !lastdrawwasbitblitted && !ForceRenderMap && !first_run) {
+          // In any case, after 5 seconds redraw all
+          if ((LKHearthBeats - 8) > lasthere) {
+            lasthere = LKHearthBeats;
+            goto _dontbitblt;
+          }
 
-            ScopeLock Lock(BackBuffer_Mutex);
-            DrawSurface.CopyTo(BackBufferSurface);
+          ScopeLock Lock(BackBuffer_Mutex);
+          DrawSurface.CopyTo(BackBufferSurface);
 
-			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            const ScreenProjection _Proj = GetProjection();
-			DrawMapScale(BackBufferSurface,MapRect,_Proj);
-			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
-            main_window->Redraw(MapRect);
-			continue;
-		}
-		#endif // --------------------------
+          const RasterPoint centerscreen = {ScreenSizeX / 2, ScreenSizeY / 2};
+          const ScreenProjection _Proj = GetProjection();
+          DrawMapScale(BackBufferSurface, MapRect, _Proj);
+          DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
+          main_window->Redraw(MapRect);
+          continue;
+        }
+#endif  // --------------------------
+
 _dontbitblt:
-		MapDirty = false;
-		PanRefreshed=true;
-	} // MapDirty
 
-	lastdrawwasbitblitted=false;
-	MapWindow::UpdateInfo(GPS_INFO, CALCULATED_INFO);
-	RenderMapWindow(DrawSurface, MapRect);
+        MapDirty = false;
+        PanRefreshed = true;
+      }  // MapDirty
 
-    {
-        ScopeLock Lock(BackBuffer_Mutex);
+      lastdrawwasbitblitted = false;
+      MapWindow::UpdateInfo(GPS_INFO, CALCULATED_INFO);
+      RenderMapWindow(DrawSurface, MapRect);
+
+      WithLock(BackBuffer_Mutex, [&]() {
         if (!ForceRenderMap && !first_run) {
-            DrawSurface.CopyTo(BackBufferSurface);
+          DrawSurface.CopyTo(BackBufferSurface);
         }
 
         // Draw cross sight for pan mode, in the screen center,
         // after a full repaint while not fastpanning
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
-            POINT centerscreen;
-            centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-            const ScreenProjection _Proj = GetProjection();
-            DrawMapScale(BackBufferSurface,MapRect,_Proj);
-            DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
-            DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
+          POINT centerscreen;
+          centerscreen.x = ScreenSizeX / 2;
+          centerscreen.y = ScreenSizeY / 2;
+          const ScreenProjection _Proj = GetProjection();
+          DrawMapScale(BackBufferSurface, MapRect, _Proj);
+          DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
+          DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
         }
+      });
+
+      // we do caching after screen update, to minimise perceived delay
+      // UpdateCaches is updating topology bounds when either forced (only here)
+      // or because MapWindow::ForceVisibilityScan  is set true.
+      const ScreenProjection _Proj = GetProjection();
+      UpdateCaches(_Proj, first_run);
+      first_run = false;
+
+      ForceRenderMap = false;
+
+      if (ProgramStarted == psInitDone) {
+        ProgramStarted = psFirstDrawDone;
+      }
+      main_window->Redraw(MapRect);
     }
 
-	// we do caching after screen update, to minimise perceived delay
-	// UpdateCaches is updating topology bounds when either forced (only here)
-	// or because MapWindow::ForceVisibilityScan  is set true.
-    const ScreenProjection _Proj = GetProjection();
-	UpdateCaches(_Proj, first_run);
-	first_run=false;
+    _draw_cv.Wait(Surface_Mutex);
+  }
 
-	ForceRenderMap = false;
-
-	if (ProgramStarted==psInitDone) {
-		ProgramStarted = psFirstDrawDone;
-	}
-    main_window->Redraw(MapRect);
-
-  } // Big LOOP
-
-  TestLog(_T("... Thread_Draw terminated"));
   THREADEXIT = TRUE;
 
+  TestLog(_T("... Thread_Draw : terminated"));
 }
 
 class ThreadDraw : public Thread {
-public:
-    ThreadDraw() : Thread("MapWindow") {}
+ public:
+  ThreadDraw() : Thread("MapWindow") {}
 
-protected:
-    void Run() override {
-        MapWindow::DrawThread();
-    }
+ protected:
+  void Run() override {
+    MapWindow::DrawThread();
+  }
 };
 
 ThreadDraw MapWindowThread;
 #endif
 
-void MapWindow::CreateDrawingThread(void)
-{
+void MapWindow::CreateDrawingThread() {
   Initialize();
 
   CLOSETHREAD = FALSE;
@@ -344,29 +333,18 @@ void MapWindow::ResumeDrawingThread() {
     ThreadSuspended = false;
 }
 
-void MapWindow::CloseDrawingThread(void)
-{
+void MapWindow::CloseDrawingThread() {
 #ifndef ENABLE_OPENGL
-  TestLog(_T("... CloseDrawingThread started"));
-  CLOSETHREAD = TRUE;
-  drawTriggerEvent.set(); // wake self up
-  SuspendDrawingThread();
+  WithLock(Surface_Mutex, [&]() {
+    TestLog(_T("... Thread_Draw : close request"));
+    CLOSETHREAD = TRUE;
+    _draw_cv.Signal();
+  });
 
-  TestLog(_T("... CloseDrawingThread waitforsingleobject"));
-  #ifdef __linux__
-  #else
-  drawTriggerEvent.reset(); // on linux this is delaying 5000
-  #endif
+  TestLog(_T("... Thread_Draw : wait end of thread"));
   MapWindowThread.Join();
 
-  TestLog(_T("... CloseDrawingThread wait THREADEXIT"));
-  while(!THREADEXIT) {
-    Sleep(50);
-  }
-  TestLog(_T("... CloseDrawingThread finished"));
-#else
-  CLOSETHREAD = TRUE;
-  THREADEXIT = TRUE;
+  TestLog(_T("... Thread_Draw : finished"));
 #endif
 }
 
