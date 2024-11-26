@@ -67,7 +67,7 @@ void BeforeShutdown(void) {
 	return;
   }
 
-  StartupStore(_T(". Entering shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
+  StartupStore(_T(". Entering shutdown %s"), WhatTimeIsIt());
   MapWindow::Event_Pan(0);  // return from PAN restores the Task in case of Turnpoint moving
   #if TESTBENCH
   StartupLogFreeRamAndStorage();
@@ -311,7 +311,8 @@ void WndMain::OnTimer() {
         if (ProgramStarted == psFirstDrawDone) {
             AfterStartup();
             ProgramStarted = psNormalOp;
-            StartupStore(_T(". ProgramStarted=NormalOp %s%s"), WhatTimeIsIt(), NEWLINE);
+
+            StartupStore(_T(". ProgramStarted=NormalOp %s"), WhatTimeIsIt());
             StartupLogFreeRamAndStorage();
         }
     }

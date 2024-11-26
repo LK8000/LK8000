@@ -32,7 +32,7 @@
 
 
 #ifndef ENABLE_OPENGL
-#include "Poco/Event.h"
+#include "Thread/Cond.hpp"
 #endif
 #define SCALELISTSIZE  24
 
@@ -537,8 +537,6 @@ class MapWindow {
 
   static void SetAirspaceColor(Airspace::Type type, std::optional<RGB8Color> color);
 
-  static BOOL CLOSETHREAD;
-
   static LKColor AirspaceColor(size_t idx) {
     return LKColor(Colours[idx % std::size(Colours)]);
   }
@@ -804,23 +802,21 @@ public:
   static void DrawThread ();
 
 private:
-  static Poco::Event drawTriggerEvent;
-
   static LKBitmapSurface DrawSurface;
 
 public:
   static Mutex Surface_Mutex; // Fast Mutex allow recursive lock only on Window Platform !
+  static Cond _draw_cv;
 
 protected:
-  static LKBitmapSurface BackBufferSurface;
   static Mutex BackBuffer_Mutex;
 #else
 protected:
   void Render(LKSurface& Surface, const PixelRect& Rect);
+#endif
+
   static LKBitmapSurface BackBufferSurface;
 
-
-#endif
 private:
   static int iSnailNext;
   static int iLongSnailNext;
@@ -859,6 +855,7 @@ private:
 
   static atomic_shared_flag ThreadSuspended;
 
+  static BOOL CLOSETHREAD;
   static BOOL THREADEXIT;
 
   static double LimitMapScale(double value);
