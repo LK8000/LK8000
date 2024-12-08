@@ -292,9 +292,9 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic.TrackBearing         );// GPS_INFO.TrackBearing;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.Vario                );// GPS_INFO.Vario;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.NettoVario           );// GPS_INFO.NettoVario;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Basic.AccelX               );// GPS_INFO.AccelX
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Basic.AccelY               );// GPS_INFO.AccelY
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Basic.AccelZ               );// GPS_INFO.AccelZ
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Calculated.Acceleration.x  );// GPS_INFO.AccelX
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Calculated.Acceleration.y  );// GPS_INFO.AccelY
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Calculated.Acceleration.z  );// GPS_INFO.AccelZ
 #define GLOBAL_MC
 #ifdef GLOBAL_MC
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  BALLAST*100.0               );// GPS_INFO.Ballast
@@ -363,9 +363,10 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
   fValue[i++] = Basic.TrackBearing;
   fValue[i++] = Basic.Vario;
   fValue[i++] = Basic.NettoVario;
-  fValue[i++] = Basic.AccelX ;
-  fValue[i++] = Basic.AccelY ;
-  fValue[i++] = Basic.AccelZ ;
+
+  fValue[i++] = Calculated.Acceleration.x;
+  fValue[i++] = Calculated.Acceleration.y;
+  fValue[i++] = Calculated.Acceleration.z;
 
 #ifdef GLOBAL_MC
   fValue[i++] = BALLAST*100.0 ;

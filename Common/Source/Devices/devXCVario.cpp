@@ -14,6 +14,7 @@
 #include "Util/Clamp.hpp"
 #include "Comm/UpdateQNH.h"
 #include "devXCVario.h"
+#include "devGeneric.h"
 
 using std::string_view_literals::operator""sv;
 
@@ -117,16 +118,15 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
     pGPS->Pitch = Pitch;
   }
 
-  double x, y, z;
-  if (ReadChecked(params[12], x) 
-      && ReadChecked(params[13], y) 
-      && ReadChecked(params[14], z))
-  {
-    // Acceleration in X-Y-Z Axis
-    pGPS->AccelerationAvailable = true;
-    pGPS->AccelX = x;
-    pGPS->AccelY = y;
-    pGPS->AccelZ = z;
+  if (d->OnAcceleration) {
+    double x, y, z;
+    if (ReadChecked(params[12], x) 
+        && ReadChecked(params[13], y) 
+        && ReadChecked(params[14], z))
+    {
+      // Acceleration in X-Y-Z Axis
+      d->OnAcceleration(*d, *pGPS, x, y, z);
+    }    
   }
 
   return TRUE;
@@ -250,6 +250,8 @@ BOOL Open(DeviceDescriptor_t* d) {
 }  // namespace
 
 void XCVario::Install(DeviceDescriptor_t* d) {
+  genInstall(d);
+
   d->Open = Open;
   d->ParseNMEA = ParseNMEA;
   d->PutMacCready = PutMacCready;

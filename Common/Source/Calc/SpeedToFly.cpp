@@ -45,8 +45,9 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     if (netto > MACCREADY) {
         // this air mass is better than maccready, so don't fly at speed less than minimum sink speed adjusted for load factor
-        double n = fabs((Basic->AccelerationAvailable) ? Basic->AccelZ : Calculated->Gload);
-        VOptnew = max(VOptnew, GlidePolar::Vminsink() * sqrt(n));
+        const double GLoad = Calculated->Gload;
+
+        VOptnew = max(VOptnew, GlidePolar::Vminsink() * sqrt(GLoad));
     } else {
         // never fly at speed less than min sink speed
         VOptnew = max(VOptnew, GlidePolar::Vminsink());

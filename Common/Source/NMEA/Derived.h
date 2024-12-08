@@ -222,11 +222,13 @@ struct DERIVED_INFO {
   double TurnRateWind = {};
   double BankAngle = {};
   double TotalHeightClimb = {};
-  double Gload = {};
   double TerrainBase = {}; // lowest height within glide range
   double GRFinish = {};	// GRadient to final destination, 090203
 			// Note: we don't need GRNext since this value is used when going to a landing
 			// point, which is always a final glide.
+
+  double Gload = {};
+  Point3D Acceleration = {};
 
   double TaskAltitudeArrival = {}; // this is estimated task arrival height above ground
   bool   TaskFAI = {};             // Ist Task FAI ?

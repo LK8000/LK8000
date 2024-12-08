@@ -15,6 +15,7 @@
 #include "LDRotaryBuffer.h"
 #include "LD.h"
 #include "Atmosphere.h"
+#include "Calc/DoCalculationsGLoad.h"
 #include "Calc/Vario.h"
 
 
@@ -60,6 +61,8 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   }
 
   UpdateFlarmTarget(*Basic);
+
+  DoCalculationsGLoad(*Basic, *Calculated); // Calculate GLoad From sensor data
 
   Heading(Basic, Calculated); // also calculate Gload from TurnRate
 

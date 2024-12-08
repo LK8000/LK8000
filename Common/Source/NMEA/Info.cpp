@@ -26,3 +26,11 @@ void UpdateHeartRate(NMEA_INFO& info, const DeviceDescriptor_t& d, unsigned bpm)
     info.HeartRate = bpm;
   }
 }
+
+void ResetAccelerationAvailable(NMEA_INFO& info) {
+  info.AccelerationIdx = NUMDEV;
+}
+
+bool AccelerationAvailable(const NMEA_INFO& info) {
+  return info.AccelerationIdx < NUMDEV;
+}

@@ -19,9 +19,7 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 
   // get load factor
-  const double GLoad = (Basic->AccelerationAvailable)
-          ? fabs(Basic->AccelZ)
-          : fabs(Calculated->Gload);
+  const double GLoad = Calculated->Gload;
 
   // calculate sink rate of glider for calculating netto vario
   const bool replay_disabled = !ReplayLogger::IsEnabled();

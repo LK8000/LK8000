@@ -13,6 +13,7 @@
 #include "resource.h"
 #include "Baro.h"
 #include "Calc/Vario.h"
+#include "devGeneric.h"
 
 
 DeviceDescriptor_t* CDevCProbe::m_pDevice=NULL;
@@ -25,6 +26,8 @@ TCHAR CDevCProbe::m_szVersion[15]={0};
 
 
 void CDevCProbe::Install(DeviceDescriptor_t* d) {
+	genInstall(d);
+
 	d->ParseNMEA = ParseNMEA;
 	d->Open = Open;
 	d->Close = Close;
@@ -184,10 +187,12 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 		pINFO->GyroscopeAvailable=FALSE;
 	}
 
-	pINFO->AccelerationAvailable=TRUE;
-	pINFO->AccelX = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
-	pINFO->AccelY = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
-	pINFO->AccelZ = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001;
+    if (d->OnAcceleration) {
+      d->OnAcceleration(*d, *pINFO, 
+	  			int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001, 
+	  			int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001,
+				int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001);
+    }
 
 	pINFO->TemperatureAvailable=TRUE;
 	pINFO->OutsideAirTemperature = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.1;
@@ -455,22 +460,24 @@ void CDevCProbe::Update(WndForm* pWnd) {
 		wp->SetText(Temp);
 	}
 
-	wp = pWnd->FindByName<WndProperty>(TEXT("prpGx"));
-	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelX);
-		wp->SetText(Temp);
+	if (!_INFO.Acceleration.empty()) {
+		wp = pWnd->FindByName<WndProperty>(TEXT("prpGx"));
+		if(wp){
+			_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.back().x);
+			wp->SetText(Temp);
+		}
+		wp = pWnd->FindByName<WndProperty>(TEXT("prpGy"));
+		if(wp){
+			_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.back().y);
+			wp->SetText(Temp);
+		}
+		wp = pWnd->FindByName<WndProperty>(TEXT("prpGz"));
+		if(wp){
+			_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.back().z);
+			wp->SetText(Temp);
+		}
 	}
-	wp = pWnd->FindByName<WndProperty>(TEXT("prpGy"));
-	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelY);
-		wp->SetText(Temp);
-	}
-	wp = pWnd->FindByName<WndProperty>(TEXT("prpGz"));
-	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelZ);
-		wp->SetText(Temp);
-	}
-
+	
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpTemp"));
 	if(wp){
 		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature, MsgToken<2179>());

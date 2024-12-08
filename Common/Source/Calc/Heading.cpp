@@ -18,7 +18,6 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double x0, y0, mag=0;
   static double LastTime = 0;
   static double lastHeading = 0;
-  static double lastSpeed = 0;
 
   if (DoInit[MDI_HEADING]) {
 	LastTime = 0;
@@ -46,8 +45,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       LKASSERT(dT!=0);
       if (dT!=0)
-      Calculated->TurnRateWind = AngleLimit180(Calculated->Heading
-                                               - lastHeading)/dT;
+      Calculated->TurnRateWind = AngleLimit180(Calculated->Heading - lastHeading)/dT;
 
       lastHeading = Calculated->Heading;
     }
@@ -62,24 +60,23 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
     double qne_altitude = QNHAltitudeToQNEAltitude(Basic->Altitude);
     Calculated->IndicatedAirspeedEstimated = IndicatedAirSpeed(Calculated->TrueAirspeedEstimated, qne_altitude);
-    
-    // estimate bank angle (assuming balanced turn)
-    double angle = atan(DEG_TO_RAD*Calculated->TurnRateWind*
-			Calculated->TrueAirspeedEstimated/9.81);
 
-    Calculated->BankAngle = RAD_TO_DEG*angle;
+    // estimate bank angle (assuming balanced turn)
+    double angle = atan(DEG_TO_RAD * Calculated->TurnRateWind * Calculated->TrueAirspeedEstimated / 9.80665);
+
+    Calculated->BankAngle = RAD_TO_DEG * angle;
 
     if (ISCAR) {
-	if(Basic->Time > LastTime) {
-		Calculated->Gload = ((Basic->Speed - lastSpeed) / (Basic->Time-LastTime))/9.81;
-		lastSpeed=Basic->Speed;
-	} else {
-		Calculated->Gload = 0;
-	}
-    } else {
-	Calculated->Gload = 1.0/max(0.001,fabs(cos(angle)));
+      if (Basic->Time > LastTime) {
+        static double lastSpeed = 0;
+        Calculated->Gload = ((Basic->Speed - lastSpeed) / (Basic->Time - LastTime)) / 9.80665;
+        lastSpeed = Basic->Speed;
+      } else {
+        Calculated->Gload = 0;
+      }
+    } else if (!AccelerationAvailable(*Basic)) {
+      Calculated->Gload = 1.0 / std::max(0.001, std::abs(cos(angle)));
     }
-
     LastTime = Basic->Time;
 
     // update zigzag wind

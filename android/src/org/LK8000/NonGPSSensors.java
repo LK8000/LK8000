@@ -55,7 +55,7 @@ public class NonGPSSensors implements SensorEventListener, Runnable {
   private static final int[] SUPPORTED_SENSORS = {
     Sensor.TYPE_PRESSURE,
   // TODO : Could be used for AHRS but actualy not...
-    // Sensor.TYPE_ACCELEROMETER,
+    Sensor.TYPE_ACCELEROMETER,
     // Sensor.TYPE_GYROSCOPE,
     // Sensor.TYPE_MAGNETIC_FIELD,
   // TODO: Maybe add the following sensors if we can find a use for them.

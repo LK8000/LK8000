@@ -43,6 +43,7 @@
 #include "utils/printf.h"
 #include "Comm/UpdateQNH.h"
 #include "Comm/ExternalWind.h"
+#include "devGeneric.h"
 
 unsigned int uiEOSDebugLevel = 1;
 
@@ -126,6 +127,8 @@ extern void UpdateValueTxt(WndProperty *wp,  ValueStringIndex Idx);
 ///
 //static
 void DevLX_EOS_ERA::Install(DeviceDescriptor_t* d) {
+  genInstall(d);
+
   d->Open         = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = EOSPutMacCready;
@@ -1553,10 +1556,9 @@ BOOL DevLX_EOS_ERA::LXBC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
         }
         if(IsDirInput(PortIO.GFORCEDir))
         {
-          info->AccelX  = fX;
-          info->AccelY  = fY;
-          info->AccelZ  = fZ;
-          info->AccelerationAvailable = true;
+          if (d->OnAcceleration) {
+            d->OnAcceleration(*d, *info, fX, fY, fZ);
+          }
           if(bAHRS)
           {
             info->Pitch = fPitch;

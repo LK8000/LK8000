@@ -511,6 +511,7 @@ add_library( LK8000 SHARED
     Common/Source/Calc/WindEKF.cpp
     Common/Source/Calc/WindKalman.cpp
     Common/Source/Calc/Radio.cpp
+    Common/Source/Calc/DoCalculationsGLoad.cpp
 
     Common/Source/Calc/Task/AATCalculateIsoLines.cpp
     Common/Source/Calc/Task/AATDistance.cpp

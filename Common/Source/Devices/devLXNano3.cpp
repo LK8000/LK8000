@@ -1567,10 +1567,9 @@ BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       }
       if(IsDirInput(PortIO.GFORCEDir))
       {
-        info->AccelX  = fX;
-        info->AccelY  = fY;
-        info->AccelZ  = fZ;
-        info->AccelerationAvailable = true;
+        if (d->OnAcceleration) {
+          d->OnAcceleration(*d, *info, fX, fY, fZ);
+        }
       }
     }
   }

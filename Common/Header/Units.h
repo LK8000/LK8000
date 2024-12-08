@@ -44,6 +44,8 @@ enum Units_t {
   unPa, // pascal
   unhPa, // hectopascal
   unInHg, // Inch of mercury
+  unG,
+  unMeterSquareSecond,
   unLastUnit // must be the last
 };
 
@@ -171,6 +173,8 @@ namespace Units {
       {_T("Pa"), 1.0, 0},                        // unPa
       {_T("hPa"), 0.01, 0},                      // unhPa
       {_T("inHg"), 1.0 / 33.86389, 0},           // unInHg
+      {_T("G"), 1.0, 0},                         // unG,
+      {_T("m/s²"), 1.0 / 9.80665, 0},            // unMeterSquareSecond,
       {_T(""), 1.0, 0},                          // unLastUnit
   };
 

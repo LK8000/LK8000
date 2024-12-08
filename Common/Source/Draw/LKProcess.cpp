@@ -891,18 +891,12 @@ goto_bearing:
 
 		// B37
 		case LK_GLOAD:
-			if ( DrawInfo.AccelerationAvailable) { 
-				value=DrawInfo.AccelZ;
-				_stprintf(BufferValue,TEXT("%+.1f"), value);
-				valid=true;
-				// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
-				_tcscpy(BufferTitle, MsgToken<1076>());
-			} else {
-				value=DerivedDrawInfo.Gload;
-				_stprintf(BufferValue,TEXT("%+.1f"), value);
-				valid=true;
-				_stprintf(BufferTitle, TEXT("e%s"), MsgToken<1076>());
-			}
+			value=DerivedDrawInfo.Gload;
+			_stprintf(BufferValue,TEXT("%+.1f"), value);
+			valid=true;
+			_stprintf(BufferTitle, TEXT("%s%s"),
+						AccelerationAvailable(DrawInfo) ? _T("") : _T("e"),
+						MsgToken<1076>());
 			break;
 
 		// B38

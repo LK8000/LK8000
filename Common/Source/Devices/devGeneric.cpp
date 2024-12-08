@@ -44,6 +44,14 @@ BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
   return TRUE;
 }
 
+BOOL OnAcceleration(DeviceDescriptor_t& d, NMEA_INFO& info, double gx, double gy, double gz) {
+  if (d.PortNumber <= info.AccelerationIdx) {
+    info.AccelerationIdx = d.PortNumber;
+    info.Acceleration.push_back({ gx, gy, gz });
+  }
+  return TRUE;
+}
+
 } // namespace
 
 void genInstall(DeviceDescriptor_t* d) {
@@ -51,8 +59,9 @@ void genInstall(DeviceDescriptor_t* d) {
   d->OnBarometricPressure = OnBarometricPressure;
   d->OnOutsideTemperature = OnOutsideTemperature;
   d->OnBatteryLevel = OnBatteryLevel;
+  d->OnAcceleration = OnAcceleration;
 }
 
-void internalInstall(DeviceDescriptor_t* d) {
-
+void internalInstall(DeviceDescriptor_t* d){
+  d->OnAcceleration = OnAcceleration;
 }

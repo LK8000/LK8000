@@ -261,10 +261,9 @@ bool PVCOM_ProcessPEYI(DeviceDescriptor_t* d, const char *sentence, NMEA_INFO *i
     info->MagneticHeadingAvailable = true;
     info->MagneticHeading = data.magneticHeading;
 
-    info->AccelerationAvailable = false; //true;
-    info->AccelX = data.accelX;
-    info->AccelY = data.accelY;
-    info->AccelZ = data.accelZ;
+    if (d->OnAcceleration) {
+      d->OnAcceleration(*d, *info, data.accelX, data.accelY, data.accelZ);
+    }
   }
 
 #ifdef TEST_TRI_PAGE
@@ -436,5 +435,8 @@ void PVCOMInstall(DeviceDescriptor_t* d) {
   d->StationSwap = PVCOMStationSwap;
   d->ParseNMEA    = PVCOMParseString;
   d->PutRadioMode    = PVCOMRadioMode;
+
+  d->OnAcceleration = nullptr; // explicitly disabled ?
+
   StartupStore(_T(". PVCOMInstall %s%s"), WhatTimeIsIt(),NEWLINE);
 }

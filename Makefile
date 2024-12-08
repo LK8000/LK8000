@@ -1028,6 +1028,7 @@ CALC	:=\
 	$(CLC)/DoCalculations.cpp \
 	$(CLC)/DoCalculationsSlow.cpp \
 	$(CLC)/DoCalculationsVario.cpp \
+	$(CLC)/DoCalculationsGLoad.cpp \
 	$(CLC)/DoCommon.cpp \
 	$(CLC)/DoLogging.cpp \
 	$(CLC)/DoNearest.cpp \

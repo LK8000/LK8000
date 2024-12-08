@@ -18,6 +18,7 @@
 #include "Comm/UpdateQNH.h"
 #include "Comm/ExternalWind.h"
 #include "OS/Sleep.h"
+#include "devGeneric.h"
 
 int iLXV7_EXP_RxUpdateTime=0;
 double LXV7_EXP_oldMC = MACCREADY;
@@ -51,6 +52,8 @@ BOOL Open(DeviceDescriptor_t* d) {
 //static
 void DevLXV7_EXP::Install(DeviceDescriptor_t* d)
 {
+  genInstall(d);
+
   d->Open = Open;
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LXV7_EXPPutMacCready;
@@ -573,10 +576,12 @@ bool DevLXV7_EXP::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* 
   double alt=0, airspeed=0;
 
 
-  if (ParToDouble(sentence, 1, &info->AccelX))
-    if (ParToDouble(sentence, 2, &info->AccelY))
-      if (ParToDouble(sentence, 3, &info->AccelZ))
-        info->AccelerationAvailable = true;
+  if (d->OnAcceleration) {
+    double ddx, ddy, ddz;
+    if (ParToDouble(sentence, 1, &ddx) && ParToDouble(sentence, 2, &ddy) && ParToDouble(sentence, 3, &ddz)) {
+      d->OnAcceleration(*d, *info, ddx, ddy, ddz);
+    }
+  }
 
   if (ParToDouble(sentence, 5, &airspeed))
   {

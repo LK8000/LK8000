@@ -25,10 +25,13 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc)
   const double ScaleX = (rc.right - rc.left)/10;
   const double ScaleY = (rc.top - rc.bottom)/10;
   const double ScaleZ = (rc.top - rc.bottom)/20;
-  POINT Pos;
-  Pos.x = (rc.right - rc.left)/2 + (int)(DrawInfo.AccelY * ScaleX);
-  Pos.y = (rc.bottom - rc.top)/2 - (int)((DrawInfo.AccelZ - 1) * ScaleY);
-  const double radius = NIBLSCALE(15) + (int)(DrawInfo.AccelX * ScaleZ);
+  POINT Pos = {
+      static_cast<decltype(POINT::x)>(
+          std::round((rc.right - rc.left) / 2 + (DerivedDrawInfo.Acceleration.y * ScaleX))),
+      static_cast<decltype(POINT::x)>(
+          std::round((rc.bottom - rc.top) / 2 - ((DerivedDrawInfo.Acceleration.z - 1) * ScaleY)))
+  };
+  const double radius = NIBLSCALE(15) + (DerivedDrawInfo.Acceleration.x * ScaleZ);
 
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
@@ -184,8 +187,9 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   const auto hbOld = Surface.SelectObject(hbWhite);
   Surface.DrawCircle(Start.x, Start.y, radius, true );
 
-  if(DrawInfo.AccelerationAvailable)
+  if(AccelerationAvailable(DrawInfo)) {
     DrawAcceleration(Surface, rc);
+  }
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);
@@ -504,8 +508,9 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   /***************************************************************************************/
 
 
-  if(DrawInfo.AccelerationAvailable)
+  if(AccelerationAvailable(DrawInfo)) {
     DrawAcceleration(Surface, rc);
+  }
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);

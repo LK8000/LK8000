@@ -219,12 +219,17 @@ gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NonGPSSensors_setAcceleration(
     JNIEnv* env, jobject obj, jfloat ddx, jfloat ddy, jfloat ddz) {
-  // TODO
-  /*
-  const unsigned int index = getDeviceIndex(env, obj);
-  ScopeLock protect(device_blackboard->mutex);
-  NMEAInfo &basic = device_blackboard->SetRealState(index);
-  */
+
+  unsigned index = getDeviceIndex(env, obj);
+  WithLock(CritSec_Comm, [&]() {
+    DeviceDescriptor_t* pdev = devGetDeviceOnPort(index);
+    if(pdev && pdev->OnAcceleration) {
+      pdev->OnAcceleration(*pdev, GPS_INFO,
+                           Units::From(unMeterSquareSecond, ddx),
+                           Units::From(unMeterSquareSecond, ddy),
+                           Units::From(unMeterSquareSecond, ddz));
+    }
+  });
 }
 
 extern "C"
