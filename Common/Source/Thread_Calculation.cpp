@@ -67,11 +67,6 @@ public:
             // make local copy before editing...
             UpdateLocalFlightData();
 
-            DoCalculationsVario(&Local_NMEA, &Local_DERIVED);
-            if (!VarioAvailable(Local_NMEA)) {
-                TriggerVarioUpdate(); // emulate vario update
-            }
-
             bool needcalculationsslow = false;
 
             if (DoCalculations(&Local_NMEA, &Local_DERIVED)) {

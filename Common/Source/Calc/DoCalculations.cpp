@@ -15,6 +15,7 @@
 #include "LDRotaryBuffer.h"
 #include "LD.h"
 #include "Atmosphere.h"
+#include "Calc/Vario.h"
 
 
 extern void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -60,7 +61,13 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   UpdateFlarmTarget(*Basic);
 
-  Heading(Basic, Calculated);
+  Heading(Basic, Calculated); // also calculate Gload from TurnRate
+
+  DoCalculationsVario(Basic, Calculated); // Require GLoad
+  if (!VarioAvailable(*Basic)) {
+      TriggerVarioUpdate(); // emulate vario update
+  }
+
   DistanceToNext(Basic, Calculated);
   DistanceToHome(Basic, Calculated);
   DetectFreeFlying(Basic,Calculated);	// check ongoing powerless flight
@@ -124,7 +131,7 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   rotaryLD.Calculate(*Basic, *Calculated); 
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
-  AverageClimbRate(Basic,Calculated);
+  AverageClimbRate(Basic,Calculated); // require Gload
   ThermalGain(Basic,Calculated);
   LastThermalStats(Basic, Calculated);
   //  ThermalBand(Basic, Calculated); moved to % circling function
