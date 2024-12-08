@@ -16,6 +16,8 @@
 
 struct DeviceDescriptor_t;
 
+#define	NUMDEV		 6
+
 /**
  * used to manage Baro Altitude Source priority
  *   - Flarm device First ordered by port index
@@ -25,8 +27,8 @@ struct DeviceDescriptor_t;
  */
 struct BaroIndex {
 
-    bool is_flarm;
-    unsigned device_index;
+    bool is_flarm = false;
+    unsigned device_index = NUMDEV;
 
     bool operator <= (BaroIndex& idx) const {
         if (is_flarm == idx.is_flarm) {
@@ -36,82 +38,84 @@ struct BaroIndex {
     }
 };
 
-struct NMEA_INFO {
-    double Latitude;
-    double Longitude;
-    double TrackBearing;
-    double Speed;
-    double Altitude; // GPS Altitude
+struct NMEA_INFO final {
+    NMEA_INFO() = default;
 
-    double Time;
-    int Hour;
-    int Minute;
-    int Second;
-    int Month;
-    int Day;
-    int Year;
-    bool NAVWarning;
-    double IndicatedAirspeed;
-    double TrueAirspeed;
+    double Latitude = {};
+    double Longitude = {};
+    double TrackBearing = {};
+    double Speed = {};
+    double Altitude = {}; // GPS Altitude
 
-    unsigned ExternalWindIdx;
-    double ExternalWindSpeed;
-    double ExternalWindDirection;
-    
-    bool NettoVarioAvailable;
-    bool AirspeedAvailable;
+    double Time = {};
+    int Hour = {};
+    int Minute = {};
+    int Second = {};
+    int Month = {};
+    int Day = {};
+    int Year = {};
+    bool NAVWarning = {};
+    double IndicatedAirspeed = {};
+    double TrueAirspeed = {};
 
-    BaroIndex BaroSourceIdx;
-    double BaroAltitude;
+    unsigned ExternalWindIdx = {};
+    double ExternalWindSpeed = {};
+    double ExternalWindDirection = {};
 
-    unsigned VarioSourceIdx;
-    double Vario;
+    bool NettoVarioAvailable = {};
+    bool AirspeedAvailable = {};
 
-    double NettoVario;
+    BaroIndex BaroSourceIdx = {};
+    double BaroAltitude = {};
 
-    bool AccelerationAvailable;
-    double AccelX;
-    double AccelY;
-    double AccelZ;
-    int SatellitesUsed;
-    bool TemperatureAvailable;
-    double OutsideAirTemperature;
-    bool HumidityAvailable;
-    double RelativeHumidity;
+    unsigned VarioSourceIdx = NUMDEV;
+    double Vario = {};
 
-    int	ExtBatt_Bank;
-    double ExtBatt1_Voltage;
-    double ExtBatt2_Voltage;
+    double NettoVario = {};
 
-    unsigned short FLARM_RX;
-    unsigned short FLARM_TX;
-    unsigned short FLARM_GPS;
-    unsigned short FLARM_AlarmLevel;
-    bool FLARM_Available;
+     bool AccelerationAvailable = {};
+    double AccelX = {};
+    double AccelY = {};
+    double AccelZ = {};
+    int SatellitesUsed = {};
+    bool TemperatureAvailable = {};
+    double OutsideAirTemperature = {};
+    bool HumidityAvailable = {};
+    double RelativeHumidity = {};
 
-    double FLARM_SW_Version;
-    double FLARM_HW_Version;
-    FLARM_TRAFFIC FLARM_Traffic[FLARM_MAX_TRAFFIC];
-    FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES];
-    bool FLARMTRACE_bBuffFull;
-    int  FLARMTRACE_iLastPtr;
-    FANET_WEATHER FANET_Weather[MAXFANETWEATHER];
-    FANET_NAME FanetName[MAXFANETDEVICES];
+    int	ExtBatt_Bank = {};
+    double ExtBatt1_Voltage = {};
+    double ExtBatt2_Voltage = {};
 
-    double SupplyBatteryVoltage;
+    unsigned short FLARM_RX = {};
+    unsigned short FLARM_TX = {};
+    unsigned short FLARM_GPS = {};
+    unsigned short FLARM_AlarmLevel = {};
+    bool FLARM_Available = {};
 
-    bool MagneticHeadingAvailable;
-    double MagneticHeading;
+    double FLARM_SW_Version = {};
+    double FLARM_HW_Version = {};
+    FLARM_TRAFFIC FLARM_Traffic[FLARM_MAX_TRAFFIC] = {};
+    FLARM_TRACE	FLARM_RingBuf[MAX_FLARM_TRACES] = {};
+    bool FLARMTRACE_bBuffFull = {};
+    int  FLARMTRACE_iLastPtr = {};
+    FANET_WEATHER FANET_Weather[MAXFANETWEATHER] = {};
+    FANET_NAME FanetName[MAXFANETDEVICES] = {};
 
-    bool GyroscopeAvailable;
-    double Pitch;
-    double Roll;
+    double SupplyBatteryVoltage = {};
 
-    unsigned HeartRateIdx;
-    unsigned HeartRate;
+    bool MagneticHeadingAvailable = {};
+    double MagneticHeading = {};
+
+    bool GyroscopeAvailable = {};
+    double Pitch = {};
+    double Roll = {};
+
+    unsigned HeartRateIdx = NUMDEV;
+    unsigned HeartRate = {};
 };
 
-static_assert(std::is_trivial_v<NMEA_INFO>, "mandatory while memset/memcpy is used to init/copy this struct");
+static_assert(std::is_copy_constructible_v<NMEA_INFO>, "mandatory...");
 
 inline
 AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {

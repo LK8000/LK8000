@@ -2003,7 +2003,7 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
     }
 
     if(ProgramStarted >= psNormalOp && THREADRUNNING) {
-        UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+        UpdateInfo(GPS_INFO, CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 
         const ScreenProjection _Proj;

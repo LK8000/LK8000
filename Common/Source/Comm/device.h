@@ -13,9 +13,6 @@
 #include "Comm/wait_ack.h"
 #include <optional>
 
-#define	NUMDEV		 6
-
-
 class COMMPortItem_t {
 public:
     inline COMMPortItem_t(const TCHAR* szName, const TCHAR* szLabel =_T("")) :

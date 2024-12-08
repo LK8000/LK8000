@@ -82,7 +82,7 @@ void MapWindow::Initialize() {
 #endif
 
     // This is just here to give fully rendered start screen
-    UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+    UpdateInfo(GPS_INFO, CALCULATED_INFO);
     MapDirty = true;
 
     FillScaleListForEngineeringUnits();
@@ -270,7 +270,7 @@ _dontbitblt:
 	} // MapDirty
 
 	lastdrawwasbitblitted=false;
-	MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
+	MapWindow::UpdateInfo(GPS_INFO, CALCULATED_INFO);
 	RenderMapWindow(DrawSurface, MapRect);
 
     {

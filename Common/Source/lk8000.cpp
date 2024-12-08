@@ -324,8 +324,9 @@ bool Startup(const TCHAR* szCmdLine) {
   memset( &(Task), 0, sizeof(Task_t));
   memset( &(StartPoints), 0, sizeof(Start_t));
   ClearTask();
-  memset( &(GPS_INFO), 0, sizeof(GPS_INFO));
-  memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
+
+  GPS_INFO = {};
+  CALCULATED_INFO = {};
 
   memset( SnailTrail, 0, sizeof(SnailTrail));
   memset( LongSnailTrail, 0, sizeof(LongSnailTrail));

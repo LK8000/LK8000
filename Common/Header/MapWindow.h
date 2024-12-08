@@ -541,8 +541,7 @@ class MapWindow {
   static bool Event_InteriorAirspaceDetails(double lon, double lat);
   static bool Event_NearestWaypointDetails(double lon, double lat);
 
-  static void UpdateInfo(NMEA_INFO *nmea_info,
-			 DERIVED_INFO *derived_info);
+  static void UpdateInfo(const NMEA_INFO& nmea_info, const DERIVED_INFO& derived_info);
   static rectObj CalculateScreenBounds(double scale, const RECT& rc, const ScreenProjection& _Proj);
   static void ScanVisibility(rectObj *bounds_active);
 
