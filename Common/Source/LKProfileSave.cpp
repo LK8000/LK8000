@@ -217,7 +217,6 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryTskOptimizeRoute, TskOptimizeRoute_Config);
   write_settings(szRegistryGliderSymbol, GliderSymbol);
 
-  write_settings(szRegistryPressureHg, PressureHg);
   write_settings(szRegistrySafetyAltitudeArrival, SAFETYALTITUDEARRIVAL);
   write_settings(szRegistrySafetyAltitudeMode, SafetyAltitudeMode);
   write_settings(szRegistrySafetyAltitudeTerrain, SAFETYALTITUDETERRAIN);

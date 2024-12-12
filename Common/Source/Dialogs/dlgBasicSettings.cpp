@@ -43,18 +43,11 @@ static void OnBallastDump(WndButton* pWnd) {
 static void OnQnhData(DataField* Sender, DataField::DataAccessKind_t Mode) {
   switch (Mode) {
     case DataField::daGet:
-      if (PressureHg) {
-        Sender->Set(QNH / TOHPA);
-      } else {
-        Sender->Set(QNH);
-      }
+      Sender->Set(Units::ToPressure(QNH));
       break;
     case DataField::daPut:
     case DataField::daChange: {
-      double newqnh = Sender->GetAsFloat();
-      if (PressureHg) {
-        newqnh *= TOHPA;
-      }
+      double newqnh = Units::FromPressure(Sender->GetAsFloat());
       if (UpdateQNH(newqnh)) {
         devPutQNH(newqnh);
       }
@@ -79,11 +72,7 @@ static void OnAltitudeData(DataField* Sender, DataField::DataAccessKind_t Mode) 
       double newqnh = FindQNH(GPS_INFO.BaroAltitude, Units::FromAltitude(newalt));  // 100411
       auto wp = wf->FindByName<WndProperty>(TEXT("prpQNH"));
       if (wp) {
-        if (PressureHg) {
-          wp->GetDataField()->SetAsFloat(newqnh / TOHPA);
-        } else {
-          wp->GetDataField()->SetAsFloat(newqnh);
-        }
+        wp->GetDataField()->SetAsFloat(Units::ToPressure(newqnh));
         wp->RefreshDisplay();
       }
       if (UpdateQNH(newqnh)) {

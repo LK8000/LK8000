@@ -29,6 +29,7 @@ Units_t HorizontalSpeedUnit = unKiloMeterPerHour;
 Units_t VerticalSpeedUnit = unMeterPerSecond;
 Units_t WindSpeedUnit = unKiloMeterPerHour;
 Units_t TaskSpeedUnit = unKiloMeterPerHour;
+Units_t PressureUnit = unhPa;
 
 const char szRegistrySpeedUnitsValue[] = "SpeedUnits";
 const char szRegistryTaskSpeedUnitsValue[] = "TaskSpeedUnits";
@@ -36,6 +37,7 @@ const char szRegistryVerticalSpeedUnit[] = "LiftUnits";
 const char szRegistryAltitudeUnitsValue[] = "AltitudeUnits";
 const char szRegistryDistanceUnitsValue[] = "DistanceUnits";
 const char szRegistryLatLonUnits[] = "LatLonUnits";
+const char szRegistryPressureHg[] = "PressureHg";
 
 } // namespace
 
@@ -46,6 +48,7 @@ int Units::DistanceUnit_Config = 2;	    // default is km
 int Units::VerticalSpeedUnit_Config = 1; // default m/s
 int Units::AltitudeUnit_Config = 1;	    // default m
 int Units::LatLonUnits_Config = 0;       // default is  DDMMSS;
+int Units::PressureUnits_Config = 0; // default is hPa
 
 void Units::ResetSettings() {
   SpeedUnit_Config = 2;		      // default is kmh
@@ -54,6 +57,7 @@ void Units::ResetSettings() {
   VerticalSpeedUnit_Config = 1; // default m/s
   AltitudeUnit_Config = 1;	    // default m
   LatLonUnits_Config = 0;       // default is  DDMMSS;
+  PressureUnits_Config = 0;     // default is hPa
 }
 
 bool Units::LoadSettings(const char *key, const char *value) {
@@ -62,7 +66,8 @@ bool Units::LoadSettings(const char *key, const char *value) {
       || settings::read(key, value, szRegistryVerticalSpeedUnit, VerticalSpeedUnit_Config)
       || settings::read(key, value, szRegistryAltitudeUnitsValue, AltitudeUnit_Config)
       || settings::read(key, value, szRegistryDistanceUnitsValue, DistanceUnit_Config)
-      || settings::read(key, value, szRegistryLatLonUnits, LatLonUnits_Config);
+      || settings::read(key, value, szRegistryLatLonUnits, LatLonUnits_Config)
+      || settings::read(key, value, szRegistryPressureHg, PressureUnits_Config);
 }
 
 void Units::SaveSettings(settings::writer& write_settings) {
@@ -72,6 +77,7 @@ void Units::SaveSettings(settings::writer& write_settings) {
   write_settings(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
   write_settings(szRegistryDistanceUnitsValue, DistanceUnit_Config);
   write_settings(szRegistryLatLonUnits, LatLonUnits_Config);
+  write_settings(szRegistryPressureHg, PressureUnits_Config);
 }
 
 void Units::LongitudeToDMS(double Longitude,
@@ -287,6 +293,10 @@ Units_t Units::GetWindSpeedUnit() {
   return WindSpeedUnit;
 }
 
+Units_t Units::GetPressureUnit() {
+  return PressureUnit;
+}
+
 void Units::NotifyUnitChanged() {
   switch (SpeedUnit_Config) {
     case 0 :
@@ -369,6 +379,16 @@ void Units::NotifyUnitChanged() {
       break;
     case 4:
       CoordinateFormat = cfUTM;
+      break;
+  }
+
+  switch(PressureUnits_Config) {
+    case 0:
+    default:
+      PressureUnit = unhPa;
+      break;
+    case 1:
+      PressureUnit = unInHg;
       break;
   }
 }

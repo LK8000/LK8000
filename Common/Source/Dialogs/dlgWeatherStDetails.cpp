@@ -101,11 +101,7 @@ void dlgWeatherStDetails(int indexid) {
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpBaro"));
   if (wp) {
-    if (PressureHg) {
-      _stprintf(buffer,_T("%.2f inHg"),Station.pressure/TOHPA);
-    }else{
-      _stprintf(buffer,_T("%.1f hPa"),Station.pressure);
-    }
+    _stprintf(buffer, _T("%.2f %s"), Units::ToPressure(Station.pressure), Units::GetPressureName());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }

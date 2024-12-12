@@ -360,24 +360,18 @@ int BuildWEATHERText(FANET_WEATHER* pWeather, TCHAR (&text1)[MAX_LEN],TCHAR (&te
   double Distance, Bear;
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, pWeather->Latitude,  pWeather->Longitude, &Distance, &Bear);
   float press = pWeather->pressure;
-  if (PressureHg){
-    press /= TOHPA;
-    lk::snprintf(Comment, _T("%d° %d|%d %3.3finHg"), 
+  lk::snprintf(Comment, _T("%d° %d|%d %3.3f%s"), 
             (int)round(pWeather->windDir),
             (int)round(Units::ToWindSpeed(pWeather->windSpeed)),
             (int)round(Units::ToWindSpeed(pWeather->windGust)),
-            press);
-  }else{
-    lk::snprintf(Comment, _T("%d° %d|%d %3.1fhPa"), 
-            (int)round(pWeather->windDir), 
-            (int)round(Units::ToWindSpeed(pWeather->windSpeed)), 
-            (int)round(Units::ToWindSpeed(pWeather->windGust)),
-            press);      
-  }
-  if(_tcslen(name) == 0)
+            Units::ToPressure(press), Units::GetPressureName());
+
+  if(_tcslen(name) == 0) {
     lk::snprintf(text1, _T("%X %s"),pWeather->ID,Comment);
-  else
+  }
+  else {
     lk::snprintf(text1, _T("%s %s"),name,Comment);
+  }
 
   lk::snprintf(Comment, _T("%d°C %d%% %d%%"), (int)round(pWeather->temp)
                                             , (int)round(pWeather->hum)

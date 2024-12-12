@@ -16,9 +16,6 @@ namespace settings {
     class writer;
 }
 
-// inHg to hPa
-#define TOHPA 33.86417
-
 enum CoordinateFormats_t {
   cfDDMMSS=0,
   cfDDMMSSss,
@@ -44,6 +41,9 @@ enum Units_t {
   unGradCelcius,    // K = °C + 273,15
   unGradFahrenheit, // K = (°F + 459,67) / 1,8
   unFeetPerSecond,
+  unPa, // pascal
+  unhPa, // hectopascal
+  unInHg, // Inch of mercury
   unLastUnit // must be the last
 };
 
@@ -56,7 +56,7 @@ namespace Units {
   extern int VerticalSpeedUnit_Config;
   extern int AltitudeUnit_Config;
   extern int LatLonUnits_Config;
-
+  extern int PressureUnits_Config;
 
   void ResetSettings();
   bool LoadSettings(const char *key, const char *value);
@@ -71,6 +71,7 @@ namespace Units {
   Units_t GetTaskSpeedUnit() gcc_pure;
   Units_t GetVerticalSpeedUnit() gcc_pure;
   Units_t GetWindSpeedUnit() gcc_pure;
+  Units_t GetPressureUnit() gcc_pure;
 
   void LongitudeToDMS(double Longitude, int *dd, int *mm, int *ss, bool *east) gcc_nonnull(2,3,4,5);
   void LatitudeToDMS(double Latitude, int *dd, int *mm, int *ss, bool *north) gcc_nonnull(2,3,4,5);
@@ -131,6 +132,10 @@ namespace Units {
     return GetName(GetWindSpeedUnit());
   }
 
+  inline const TCHAR* GetPressureName() {
+    return GetName(GetPressureUnit());
+  }
+
   void FormatAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
   void FormatAlternateAltitude(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2);
   void FormatArrival(double Altitude, TCHAR *Buffer, size_t size) gcc_nonnull(2); // VENTA3
@@ -163,6 +168,9 @@ namespace Units {
       {_T("°C"), 1.0, -273.15},                  // unGradCelcius
       {_T("°F"), 9.0 / 5.0, -459.67},            // unGradFahrenheit
       {_T("fps"), 1.0 / 0.3048, 0},              // unFeetPerSecond
+      {_T("Pa"), 1.0, 0},                        // unPa
+      {_T("hPa"), 0.01, 0},                      // unhPa
+      {_T("inHg"), 1.0 / 33.86389, 0},           // unInHg
       {_T(""), 1.0, 0},                          // unLastUnit
   };
 
@@ -207,6 +215,10 @@ namespace Units {
     return To(GetTaskSpeedUnit(), speed);
   }
 
+  inline double ToPressure(double pressure) {
+    return To(GetPressureUnit(), pressure);
+  }
+
   /**
    * convert value from @unit to System Unit
    */
@@ -240,6 +252,10 @@ namespace Units {
 
   inline double FromTaskSpeed(double speed) {
     return From(GetTaskSpeedUnit(), speed);
+  }
+
+  inline double FromPressure(double pressure) {
+    return From(GetPressureUnit(), pressure);
   }
 
 

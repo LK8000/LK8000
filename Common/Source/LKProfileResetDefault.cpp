@@ -221,8 +221,6 @@ void LKProfileResetDefault() {
 
   UseGeoidSeparation = true;
 
-  PressureHg = 0;
-
   CustomKeyTime = 700;
 
   CustomKeyModeCenter = CustomKeyMode_t::ckToggleMap;

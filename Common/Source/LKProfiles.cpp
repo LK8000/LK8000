@@ -390,7 +390,6 @@ const char* szRegistryIpPort[] = {
 static_assert(std::size(PortConfig) == std::size(szRegistryIpPort), "invalid array size");
 
 const char szRegistryIOValues[] = "Val_IO_Dir";
-const char szRegistryPressureHg[] = "PressureHg";
 const char szRegistrySafetyAltitudeArrival[] = "SafetyAltitudeArrival1";
 const char szRegistrySafetyAltitudeMode[] = "SafetyAltitudeMode";
 const char szRegistrySafetyAltitudeTerrain[] = "SafetyAltitudeTerrain1";

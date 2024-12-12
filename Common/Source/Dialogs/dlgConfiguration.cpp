@@ -3159,7 +3159,7 @@ wp->RefreshDisplay();
     DataField* dfe = wp->GetDataField();
     dfe->addEnumText(TEXT("hPa"));
     dfe->addEnumText(TEXT("inHg"));
-    dfe->Set(PressureHg);
+    dfe->Set(Units::PressureUnits_Config);
     wp->RefreshDisplay();
   }
 
@@ -4262,9 +4262,10 @@ int ival;
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpPressureHg"));
   if (wp) {
-	if (PressureHg != (wp->GetDataField()->GetAsInteger())) {
-		PressureHg = (wp->GetDataField()->GetAsInteger());
-	}
+    if (Units::PressureUnits_Config != (wp->GetDataField()->GetAsInteger())) {
+      Units::PressureUnits_Config = (wp->GetDataField()->GetAsInteger());
+      notify_units_change =true;
+    }
   }
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpAverEffTime"));

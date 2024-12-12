@@ -199,7 +199,6 @@ extern const char* szRegistryIpPort[];
 
 extern const char szRegistryIOValues[];
 
-extern const char szRegistryPressureHg[];
 extern const char szRegistrySafetyAltitudeArrival[];
 extern const char szRegistrySafetyAltitudeMode[];
 extern const char szRegistrySafetyAltitudeTerrain[];

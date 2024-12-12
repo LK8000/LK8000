@@ -546,7 +546,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
 
-  if (settings::read(sname, svalue, szRegistryPressureHg, PressureHg)) return;
   if (settings::read(sname, svalue, szRegistrySafetyAltitudeArrival, SAFETYALTITUDEARRIVAL)) return;
   if (settings::read(sname, svalue, szRegistrySafetyAltitudeMode, SafetyAltitudeMode)) return;
   if (settings::read(sname, svalue, szRegistrySafetyAltitudeTerrain, SAFETYALTITUDETERRAIN)) return;

@@ -213,7 +213,6 @@ void Globals_Init(void) {
   bAutoPassiv = false;
   GPSAltitudeOffset = 0;
   UseGeoidSeparation=false;
-  PressureHg=false;
 
   CustomKeyTime=700;
 
