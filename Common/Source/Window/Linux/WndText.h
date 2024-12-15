@@ -92,7 +92,7 @@ public:
             PixelRect rc(0, 0, _canvas.GetWidth(), _canvas.GetHeight());
 
             _canvas.DrawFilledRectangle(rc, this->GetBkColor());
-            _canvas.DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom, COLOR_BLACK);
+            _canvas.DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom, RGB_BLACK);
 
             if (!this->_Text.empty()) {
 

@@ -5,85 +5,88 @@
 
    $Id: RGB.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 */
+#ifndef _RGB_H_
+#define _RGB_H_
+
 #include "Screen/LKColor.h"
 
 // MapWindow::TextColor() supported colours
-#define RGB_BLACK	LKColor(0,0,0)
-#define RGB_WHITE	LKColor(255,255,255)
-#define RGB_WHITENOREV	LKColor(254,254,254)		// this color will not be reversed
-#define RGB_BLUE	LKColor(0x00,0x00,0xff)
-#define RGB_LIGHTBLUE	LKColor(0x81,0xd4,0xfa)
-#define RGB_GREY	LKColor(0x99,0x99,0x99)
-#define RGB_LIGHTGREY	LKColor(0xcc,0xcc,0xcc)
-#define RGB_VDARKGREY	LKColor(0xf,0xf,0xf)		// was 0x0d
-#define RGB_LIGHTORANGE	LKColor(255,184,51)
-#define RGB_ORANGE	LKColor(255,165,0)
-#define RGB_GREEN	LKColor(0,255,0)
-#define RGB_DARKGREEN	LKColor(40,80,40)
-#define RGB_LIGHTGREEN	LKColor(0xc2,0xff,0xc2)
-#define RGB_RED		LKColor(255,0,0)
-#define RGB_LIGHTRED	LKColor(0xff,0xc2,0xc2)
-#define RGB_YELLOW	LKColor(255,255,0)
-#define RGB_LIGHTYELLOW	LKColor(0xff,0xff,0xc2)
-#define RGB_CYAN	LKColor(0,255,255)
-#define RGB_LIGHTCYAN	LKColor(0xc2,0xff,0xff)
-#define RGB_MAGENTA	LKColor(255,0,255)
+constexpr	LKColor RGB_BLACK(0,0,0);
+constexpr	LKColor RGB_WHITE(255,255,255);
+constexpr	LKColor RGB_WHITENOREV(254,254,254);		// this color will not be reversed
+constexpr	LKColor RGB_BLUE(0x00,0x00,0xff);
+constexpr	LKColor RGB_LIGHTBLUE(0x81,0xd4,0xfa);
+constexpr	LKColor RGB_GREY(0x99,0x99,0x99);
+constexpr	LKColor RGB_LIGHTGREY(0xcc,0xcc,0xcc);
+constexpr	LKColor RGB_VDARKGREY(0xf,0xf,0xf);		// was 0x0d
+constexpr	LKColor RGB_LIGHTORANGE(255,184,51);
+constexpr	LKColor RGB_ORANGE(255,165,0);
+constexpr	LKColor RGB_GREEN(0,255,0);
+constexpr	LKColor RGB_DARKGREEN(40,80,40);
+constexpr	LKColor RGB_LIGHTGREEN(0xc2,0xff,0xc2);
+constexpr	LKColor RGB_RED(255,0,0);
+constexpr	LKColor RGB_LIGHTRED(0xff,0xc2,0xc2);
+constexpr	LKColor RGB_YELLOW(255,255,0);
+constexpr	LKColor RGB_LIGHTYELLOW(0xff,0xff,0xc2);
+constexpr	LKColor RGB_CYAN(0,255,255);
+constexpr	LKColor RGB_LIGHTCYAN(0xc2,0xff,0xff);
+constexpr	LKColor RGB_MAGENTA(255,0,255);
 // unsupported
-#define RGB_AMBER	LKColor(0xff,0xbe,0x00)
-#define RGB_AMBERNOREV	LKColor(0xff,0xbd,0x01)		// amber not reversed
-#define RGB_INDIGO	LKColor(0x4b,0x00,0x82)
-#define RGB_DARKRED	LKColor(200,0,0)
-#define RGB_VDARKRED	LKColor(160,0,0)
-#define RGB_DARKBLUE	LKColor(0x00,0x00,160)
-#define RGB_DARKYELLOW	LKColor(255,100,0)
+constexpr	LKColor RGB_AMBER(0xff,0xbe,0x00);
+constexpr	LKColor RGB_AMBERNOREV(0xff,0xbd,0x01);		// amber not reversed
+constexpr	LKColor RGB_INDIGO(0x4b,0x00,0x82);
+constexpr	LKColor RGB_DARKRED(200,0,0);
+constexpr	LKColor RGB_VDARKRED(160,0,0);
+constexpr	LKColor RGB_DARKBLUE(0x00,0x00,160);
+constexpr	LKColor RGB_DARKYELLOW(255,100,0);
 // dy2 for vario
-#define RGB_DARKYELLOW2	LKColor(255,215,0)
-#define RGB_ICEWHITE	LKColor(0xf0,0xf0,0xf0)
-#define RGB_DARKWHITE	LKColor(0xd9,0xd9,0xd9)
+constexpr	LKColor RGB_DARKYELLOW2(255,215,0);
+constexpr	LKColor RGB_ICEWHITE(0xf0,0xf0,0xf0);
+constexpr	LKColor RGB_DARKWHITE(0xd9,0xd9,0xd9);
 // unsupported, special use
-#define RGB_SBLACK	LKColor(0,0,1)
-#define RGB_SWHITE	LKColor(255,255,254)
+constexpr	LKColor RGB_SBLACK(0,0,1);
+constexpr	LKColor RGB_SWHITE(255,255,254);
 // background mapspace
-#define RGB_MDARK	RGB_BLACK
-#define RGB_MLIGHT	RGB_DARKWHITE
+constexpr	LKColor RGB_MDARK(RGB_BLACK);
+constexpr	LKColor RGB_MLIGHT(RGB_DARKWHITE);
 // background navboxes
-#define RGB_NDARK	RGB_VDARKGREY
-#define RGB_NLIGHT	RGB_ICEWHITE
+constexpr	LKColor RGB_NDARK(RGB_VDARKGREY);
+constexpr	LKColor RGB_NLIGHT(RGB_ICEWHITE);
 // inverted things on map
-#define RGB_INVDRAW	RGB_LIGHTGREEN
+constexpr	LKColor RGB_INVDRAW(RGB_LIGHTGREEN);
 // background moving map with no terrrain
-#define RGB_LCDGREEN	LKColor(197,223,194)
-#define RGB_LAKE	LKColor(88,158,253)
-#define RGB_GGREY	LKColor(117,160,150)
-#define RGB_LCDDARKGREEN	LKColor(59,179,158)
-#define RGB_EMERALD	LKColor(5,139,111)
-#define RGB_DARKSLATE	LKColor(89,113,125)
-#define RGB_RIFLEGREY	LKColor(41,52,46)
+constexpr	LKColor RGB_LCDGREEN(197,223,194);
+constexpr	LKColor RGB_LAKE(88,158,253);
+constexpr	LKColor RGB_GGREY(117,160,150);
+constexpr	LKColor RGB_LCDDARKGREEN(59,179,158);
+constexpr	LKColor RGB_EMERALD(5,139,111);
+constexpr	LKColor RGB_DARKSLATE(89,113,125);
+constexpr	LKColor RGB_RIFLEGREY(41,52,46);
 
-#define RGB_MIDDLEGREY	LKColor(128,128,128)
+constexpr	LKColor RGB_MIDDLEGREY(128,128,128);
 // Original colors
 // MessageBoxX
-#define RGB_BADYELLOW	RGB(0xda, 0xdb, 0xab)
+constexpr	LKColor RGB_BADYELLOW(0xda, 0xdb, 0xab);
 // mapwindows crosshair
-#define RGB_DARKGREY	LKColor(50,50,50)
+constexpr	LKColor RGB_DARKGREY(50,50,50);
 // task line color, originally darg green
-#define RGB_DGREEN1	LKColor(0,120,0)
+constexpr	LKColor RGB_DGREEN1(0,120,0);
 // buttons
 // #define RGB_BUTTGREEN	LKColor(0xA0,0xE0,0xA0) // 1.22b button green
 
 // 2.0 button green
-#define RGB_BUTTGREEN	LKColor(160,255,190)
+constexpr	LKColor RGB_BUTTGREEN	(160,255,190);
 
 // LK8000 colors
-#define RGB_LGREEN1	LKColor(0xa9,0xda,0xc3)
-#define RGB_LBLUE1	LKColor(0xa9,0xd9,0xda)
-#define RGB_PETROLGREEN	LKColor(0,66,66)
-#define RGB_PETROLBLUE	LKColor(28,67,90)
-#define RGB_PETROL	RGB_PETROLBLUE
+constexpr	LKColor RGB_LGREEN1(0xa9,0xda,0xc3);
+constexpr	LKColor RGB_LBLUE1(0xa9,0xd9,0xda);
+constexpr	LKColor RGB_PETROLGREEN(0,66,66);
+constexpr	LKColor RGB_PETROLBLUE(28,67,90);
+constexpr	LKColor RGB_PETROL(RGB_PETROLBLUE);
 
 // -------------  PROGRAM COLORS IN USE ---------------------
 // MessageBox 
-#define RGB_TASKLINECOL RGB_DGREEN1
+constexpr	LKColor RGB_TASKLINECOL(RGB_DGREEN1);
 
 
 #define RGB_BUTTONS	      (IsDithered() ? RGB_WHITE : RGB_BUTTGREEN) // Color of Menu Buttons
@@ -94,19 +97,20 @@
 
 
 // The box title background, originally yellow
-#define RGB_MENUTITLEBG	RGB_BLACK
-#define RGB_MENUTITLEFG RGB_WHITE
+constexpr	LKColor RGB_MENUTITLEBG(RGB_BLACK);
+constexpr	LKColor RGB_MENUTITLEFG(RGB_WHITE);
 
 // LK new colors for windows
 // WindowControls,
-#define RGB_LISTHIGHLIGHTBG	LKColor(133,255,133)
-#define RGB_LISTHIGHLIGHTCORNER RGB_PETROL
-#define RGB_LISTFG		RGB_BLACK
+constexpr	LKColor RGB_LISTHIGHLIGHTBG(133,255,133);
+constexpr	LKColor RGB_LISTHIGHLIGHTCORNER(RGB_PETROL);
+constexpr	LKColor RGB_LISTFG(RGB_BLACK);
 // slider: borders and box
-#define RGB_SCROLLBARBORDER	RGB_BLACK
-#define RGB_SCROLLBARBOX	RGB_BLACK
+constexpr	LKColor RGB_SCROLLBARBORDER(RGB_BLACK);
+constexpr	LKColor RGB_SCROLLBARBOX(RGB_BLACK);
 
 // Config buttons,  BG not yet used, cannot change!
-#define RGB_BUTTONFG		RGB_BLACK
-#define RGB_BUTTONBG		LKColor(154,184,195)
+constexpr	LKColor RGB_BUTTONFG(RGB_BLACK);
+constexpr	LKColor RGB_BUTTONBG(154,184,195);
 
+#endif // _RGB_H_

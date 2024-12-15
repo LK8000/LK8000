@@ -453,7 +453,7 @@ class MapWindow {
 
 
   // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
-  static void InitAirSpaceSldBrushes(const LKColor colours[]);
+  static void InitAirSpaceSldBrushes(const LKColor (&colours)[NUMAIRSPACECOLORS]);
 
 
  private:
@@ -466,7 +466,26 @@ class MapWindow {
  public:
 
   // 12 is number of airspace types
-  static LKColor Colours[NUMAIRSPACECOLORS];
+  constexpr static LKColor Colours[NUMAIRSPACECOLORS] = {
+    LKColor(0xFF,0x00,0x00),
+    LKColor(0x00,0xFF,0x00),
+    LKColor(0x00,0x00,0xFF),
+    LKColor(0xFF,0xFF,0x00),
+    LKColor(0xFF,0x00,0xFF),
+    LKColor(0x00,0xFF,0xFF),
+    LKColor(0x7F,0x00,0x00),
+    LKColor(0x00,0x7F,0x00),
+    LKColor(0x00,0x00,0x7F),
+    LKColor(0x7F,0x7F,0x00),
+    LKColor(0x7F,0x00,0x7F),
+    LKColor(0x00,0x7F,0x7F),
+    LKColor(0xFF,0xFF,0xFF),
+    LKColor(0xC0,0xC0,0xC0),
+    LKColor(0x7F,0x7F,0x7F),
+    LKColor(0x00,0x00,0x00),
+    LKColor(0x7F,0x7F,0x7F)
+  };
+
   static LKPen hAirspacePens[AIRSPACECLASSCOUNT];
   static LKPen hBigAirspacePens[AIRSPACECLASSCOUNT];
   static LKPen hAirspaceBorderPen;

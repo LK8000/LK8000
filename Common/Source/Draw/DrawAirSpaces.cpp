@@ -14,10 +14,9 @@
 
 void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
 #ifndef ENABLE_OPENGL
-  const LKColor whitecolor = LKColor(0xff,0xff,0xff);
-  TempSurface.SetTextColor(whitecolor);
+  TempSurface.SetTextColor(RGB_WHITE);
   TempSurface.SetBackgroundTransparent();
-  TempSurface.SetBkColor(whitecolor);
+  TempSurface.SetBkColor(RGB_WHITE);
   TempSurface.SelectObject(LK_WHITE_PEN);
   TempSurface.SelectObject(LKBrush_White);
 

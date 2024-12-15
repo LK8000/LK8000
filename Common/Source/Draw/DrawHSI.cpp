@@ -653,21 +653,26 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
         //Draw VSI background
         if(DerivedDrawInfo.TerrainValid) {
+
             const double altAGLft = Units::To(unFeet, DerivedDrawInfo.AltitudeAGL);
             int groundLevel=VSIscaleInPixel;
             if(fabs(altAGLft)<scale) groundLevel=(int)round(altAGLft*pixelPerFeet);
             else if(altAGLft<0) groundLevel=-VSIscaleInPixel;
             if(groundLevel>-VSIscaleInPixel) { //sky part
-                LKPen PenSky(PEN_SOLID,NIBLSCALE(1),LKColor(0,153,153));
-                LKBrush BrushSky(LKColor(0,153,153));
+                constexpr LKColor SkyColor(0,153,153);
+
+                LKPen PenSky(PEN_SOLID,NIBLSCALE(1),SkyColor);
+                LKBrush BrushSky(SkyColor);
                 const auto oldPen = Surface.SelectObject(PenSky);
                 Surface.SelectObject(BrushSky);
                 Surface.Rectangle(VSIleftBorder,centerY+groundLevel,VSIrightBorder,VSItopBorder);
                 Surface.SelectObject(oldPen);
             }
             if(groundLevel<VSIscaleInPixel) { //ground part
-                LKPen PenGround(PEN_SOLID,NIBLSCALE(1),LKColor(204,102,0));
-                LKBrush BrushGround(LKColor(204,102,0));
+                constexpr LKColor GroundColor(204,102,0);
+
+                LKPen PenGround(PEN_SOLID,NIBLSCALE(1),GroundColor);
+                LKBrush BrushGround(GroundColor);
                 const auto oldPen = Surface.SelectObject(PenGround);
                 Surface.SelectObject(BrushGround);
                 Surface.Rectangle(VSIleftBorder,VSIbottomBorder,VSIrightBorder,centerY+groundLevel+1);

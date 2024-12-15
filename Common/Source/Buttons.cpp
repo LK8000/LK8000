@@ -257,7 +257,7 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
         TCHAR s[100];
         bool greyed = ExpandMacros(text, s, std::size(s));
         if (greyed) {
-            currentButton.SetTextColor(LKColor(0x80, 0x80, 0x80));
+            currentButton.SetTextColor(COLOR_GRAY);
             currentButton.EnableMenu(false);
         } else {
             currentButton.SetTextColor(RGB_BLACK);

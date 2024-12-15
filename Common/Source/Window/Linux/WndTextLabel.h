@@ -28,7 +28,7 @@ public:
 class WndTextLabel : public WndText<Window> {
     typedef WndText<Window> __super;
 public:
-    WndTextLabel() : __super(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
+    WndTextLabel() : __super(RGB_BLACK, RGB_WHITE) {
 
     }
 

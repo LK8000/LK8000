@@ -31,26 +31,24 @@
 #define BORDERBOTTOM (1<<bkBottom)
 #define BORDERLEFT   (1<<bkLeft)
 
-#define clBlack   RGB_BLACK;
-#define clMaroon  LKColor(0x00,0x00,0x80)
-#define clGreen   LKColor(0x00,0x80,0x00)
-#define clOlive   LKColor(0x00,0x80,0x80)
-#define clNavy    LKColor(0x80,0x00,0x00)
-#define clPurple  LKColor(0x80,0x00,0x80)
-#define clTeal    LKColor(0x80,0x80,0x00)
-#define clGray    LKColor(0x80,0x80,0x80)
-#define clSilver  LKColor(0xC0,0xC0,0xC0)
-#define clRed     LKColor(0xFF,0x00,0xFF)
-#define clLime    LKColor(0x00,0xFF,0x00)
-#define clYellow  LKColor(0x00,0xFF,0xFF)
-#define clBlue    LKColor(0xFF,0x00,0x00)
-#define clFuchsia LKColor(0xFF,0x00,0xFF)
-#define clAqua    LKColor(0xFF,0xFF,0x00)
-#define clLtGray  LKColor(0xC0,0xC0,0xC0)
-#define clDkGray  LKColor(0x80,0x80,0x80)
-#define clWhite   LKColor(0xFF,0xFF,0xFF)
-#define clNone    0x1FFFFFFF
-#define clDefault 0x20000000
+constexpr LKColor clBlack(0x00,0x00,0x00);
+constexpr LKColor clMaroon(0x00,0x00,0x80);
+constexpr LKColor clGreen(0x00,0x80,0x00);
+constexpr LKColor clOlive(0x00,0x80,0x80);
+constexpr LKColor clNavy(0x80,0x00,0x00);
+constexpr LKColor clPurple(0x80,0x00,0x80);
+constexpr LKColor clTeal(0x80,0x80,0x00);
+constexpr LKColor clGray(0x80,0x80,0x80);
+constexpr LKColor clSilver(0xC0,0xC0,0xC0);
+constexpr LKColor clRed(0xFF,0x00,0xFF);
+constexpr LKColor clLime(0x00,0xFF,0x00);
+constexpr LKColor clYellow(0x00,0xFF,0xFF);
+constexpr LKColor clBlue(0xFF,0x00,0x00);
+constexpr LKColor clFuchsia(0xFF,0x00,0xFF);
+constexpr LKColor clAqua(0xFF,0xFF,0x00);
+constexpr LKColor clLtGray(0xC0,0xC0,0xC0);
+constexpr LKColor clDkGray(0x80,0x80,0x80);
+constexpr LKColor clWhite(0xFF,0xFF,0xFF);
 
 #define FORMATSIZE 32
 #define UNITSIZE 10
@@ -974,29 +972,17 @@ protected:
 #define LEDMODE_OFFGREEN    2
 #define LEDMODE_MANUAL      3
 
-#define LEDCOLOR_BLACK    0
-#define LEDCOLOR_RED      1
-#define LEDCOLOR_GREEN    2
-#define LEDCOLOR_BLUE     3
-#define LEDCOLOR_YELLOW   4
-#define LEDCOLOR_ORANGE   5
-#define LEDCOLOR_LGREEN   6
-#define LEDCOLOR_DGREEN   7
-#define LEDCOLOR_CYAN     8
-#define MAXLEDCOLORS      9
-//
-// blending from rgb1 to rgb2 colors, bottom->up
-//
-typedef struct _LEDCOLORRAMP
-{
-     unsigned char r1;
-     unsigned char g1;
-     unsigned char b1;
-     unsigned char r2;
-     unsigned char g2;
-     unsigned char b2;
-     unsigned short l;
-} LEDCOLORRAMP;
+#define LEDCOLOR_BLACK    0U
+#define LEDCOLOR_RED      1U
+#define LEDCOLOR_GREEN    2U
+#define LEDCOLOR_BLUE     3U
+#define LEDCOLOR_YELLOW   4U
+#define LEDCOLOR_ORANGE   5U
+#define LEDCOLOR_LGREEN   6U
+#define LEDCOLOR_DGREEN   7U
+#define LEDCOLOR_CYAN     8U
+#define MAXLEDCOLORS      9U
+
 
 
 class WndButton:public WindowControl{

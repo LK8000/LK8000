@@ -560,7 +560,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
         TCHAR text2[MAX_LEN] = {TEXT("empty")};
         TCHAR Comment[MAX_COMMENT] = {TEXT("")};
         TCHAR Comment1[MAX_COMMENT] = {TEXT("")};
-        Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+        Surface.SetBkColor(RGB_WHITE);
 
         switch (el.type) {
             /************************************************************************************************

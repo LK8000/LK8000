@@ -46,16 +46,25 @@
 //
 // Led button color ramps
 //
-const LEDCOLORRAMP LedRamp[MAXLEDCOLORS]= {
-     {   0,   0,   0,     140,  140,  140,   10 },  // black
-     { 160,   0,   0,     255,  130,  130,   10 },  // red ok
-     {   0, 123,   0,      80,  255,   80,   10 },  // green ok
-     {   0,   0, 160,     120,  120,  255,   10 },  // blue ok
-     { 130, 130,   0,     255,  255,    0,   10 },  // yellow ok
-     { 255, 128,   0,     255,  185,  140,   10 },  // orange ok
-     { 164, 255, 164,     255,  255,  255,    5 },  // light green for dithering
-     {   0, 0,   0,        70,  140,   70,   10 },  // very dark green 
-     {   0,  90,  90,       0,  255,  255,   10 }   // cyan
+//
+// blending from rgb1 to rgb2 colors, bottom->up
+//
+struct LEDCOLORRAMP {
+  LKColor color1;
+  LKColor color2;
+  unsigned short l;
+};
+
+constexpr LEDCOLORRAMP LedRamp[MAXLEDCOLORS]= {
+     { {   0,   0,   0 }, { 140,  140,  140 }, 10 },  // black
+     { { 160,   0,   0 }, { 255,  130,  130 }, 10 },  // red ok
+     { {   0, 123,   0 }, {  80,  255,   80 }, 10 },  // green ok
+     { {   0,   0, 160 }, { 120,  120,  255 }, 10 },  // blue ok
+     { { 130, 130,   0 }, { 255,  255,    0 }, 10 },  // yellow ok
+     { { 255, 128,   0 }, { 255,  185,  140 }, 10 },  // orange ok
+     { { 164, 255, 164 }, { 255,  255,  255 },  5 },  // light green for dithering
+     { {   0, 0,   0   }, {  70,  140,   70 }, 10 },  // very dark green
+     { {   0,  90,  90 }, {   0,  255,  255 }, 10 }   // cyan
 };
 
 //
@@ -2091,7 +2100,7 @@ void WndButton::Paint(LKSurface& Surface){
 
      RECT lrc={rc.left+(LEDBUTTONBORDER-1),rc.bottom-(LEDBUTTONBORDER+DLGSCALE(mLedSize)),
                rc.right-LEDBUTTONBORDER,rc.bottom-LEDBUTTONBORDER};
-     unsigned short lcol=0;
+     unsigned lcol=0;
      switch(mLedMode) {
         case LEDMODE_REDGREEN:
            if (IsDithered())
@@ -2120,13 +2129,7 @@ void WndButton::Paint(LKSurface& Surface){
            LKASSERT(0);
            break;
      }
-     RenderSky(Surface, lrc,
-        LKColor( LedRamp[lcol].r1, LedRamp[lcol].g1, LedRamp[lcol].b1 ), 
-        LKColor( LedRamp[lcol].r2, LedRamp[lcol].g2, LedRamp[lcol].b2 ), 
-        LedRamp[lcol].l 
-     );
-                           
-
+     RenderSky( Surface, lrc, LedRamp[lcol].color1, LedRamp[lcol].color2, LedRamp[lcol].l );
   }
 
   const TCHAR * szCaption = GetWndText();

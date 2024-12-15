@@ -42,9 +42,9 @@ void MapWindow::DrawWindAtAircraft2(LKSurface& Surface, const POINT& Orig, const
   
   // optionally draw dashed line for wind arrow
 #ifdef NO_DASH_LINE
-  Surface.DrawLine(PEN_SOLID, ScreenThinSize, Tail[0], Tail[1], LKColor(0,0,0), rc);
+  Surface.DrawLine(PEN_SOLID, ScreenThinSize, Tail[0], Tail[1], RGB_BLACK, rc);
 #else
-  Surface.DrawDashLine(ScreenThinSize, Tail[0], Tail[1], LKColor(0,0,0), rc);
+  Surface.DrawDashLine(ScreenThinSize, Tail[0], Tail[1], RGB_BLACK, rc);
 #endif
 
   // Paint wind value only while circling

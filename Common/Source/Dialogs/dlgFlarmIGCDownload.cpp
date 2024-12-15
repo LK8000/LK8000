@@ -455,7 +455,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender,
 
 
     _stprintf(text2, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line2);
-    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+    Surface.SetBkColor(RGB_WHITE);
 
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
                     static_cast<PixelScalar>(Sender->GetHeight())};

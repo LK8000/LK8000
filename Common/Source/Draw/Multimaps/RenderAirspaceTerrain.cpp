@@ -18,8 +18,8 @@
 using std::min;
 using std::max;
 
-#define RGB_ROYAL_BLUE  LKColor(18,32,139)
-#define RGB_STEEL_BLUE  LKColor(70,130,180)
+constexpr LKColor RGB_ROYAL_BLUE(18,32,139);
+constexpr LKColor RGB_STEEL_BLUE(70,130,180);
 
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern LKColor Sideview_TextColor;

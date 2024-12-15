@@ -89,8 +89,8 @@ void Message::InitFont() {
     // change message font for different resolutions
     // Caution, remember to set font also in Resize..
     WndMsg.SetFont(ScreenLandscape ? LK8InfoBigFont : MapWindowBoldFont);
-    WndMsg.SetTextColor(LKColor(0x00,0x00,0x00));
-    WndMsg.SetBkColor(LKColor(0xFF,0xFF,0xFF));
+    WndMsg.SetTextColor(RGB_BLACK);
+    WndMsg.SetBkColor(RGB_WHITE);
 }
 
 

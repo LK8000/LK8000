@@ -43,18 +43,18 @@
 
 #define ZOOMFACTOR 1.3
 
-#define GROUND_COLOUR	LKColor(184,152,137)
-#define GROUND_TEXT_COLOUR RGB_WHITE
-#define INV_GROUND_TEXT_COLOUR   LKColor(0,0,0)
+constexpr LKColor GROUND_COLOUR(184, 152, 137);
+constexpr LKColor GROUND_TEXT_COLOUR = RGB_WHITE;
+constexpr LKColor INV_GROUND_TEXT_COLOUR(0, 0, 0);
+
 #if (WINDOWSPC>0)
 #define GC_NO_COLOR_STEPS  50
 #else
 #define GC_NO_COLOR_STEPS  25
 #endif
-#define SKY_SPACE_COL  LKColor(150,150,255)
-#define SKY_HORIZON_COL  RGB_WHITE
 
-
+constexpr LKColor SKY_SPACE_COL(150, 150, 255);
+constexpr LKColor SKY_HORIZON_COL = RGB_WHITE;
 
 #define ID_NO_LABLE    0
 #define ID_SHORT_LABLE 1

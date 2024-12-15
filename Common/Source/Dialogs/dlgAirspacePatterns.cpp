@@ -21,8 +21,8 @@ protected:
   void DrawItem(LKSurface& Surface, const PixelRect& DrawRect, size_t ItemIndex) const override {
     Surface.SelectObject(LK_BLACK_PEN);
     Surface.SelectObject(LKBrush_White);
-    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
-    Surface.SetTextColor(LKColor(0x00, 0x00, 0x00));
+    Surface.SetBkColor(RGB_WHITE);
+    Surface.SetTextColor(RGB_BLACK);
     Surface.SelectObject(MapWindow::GetAirspaceBrush(ItemIndex));
 
     Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);

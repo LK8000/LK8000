@@ -309,7 +309,6 @@
 #define FAI_NORMAL_PERCENTAGE	   0.28    /* min % of FAI triangle if distance < 750km */
 #define FAI_BIG_PERCENTAGE         0.25    /* min % of FAI triangle if distance >= 750km */
 #define FAI_BIG_MAX_PERCENTAGE     0.45    /* min % of FAI triangle if distance >= 750km */
-#define FAI_SECTOR_COLOR           LKColor(0x50,0x0A,0x8B)
 
 #define D_AUTOWIND_MANUAL	0	// totally manual
 #define D_AUTOWIND_CIRCLING	1	// while circling

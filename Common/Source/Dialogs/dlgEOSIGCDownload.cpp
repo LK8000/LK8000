@@ -299,7 +299,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
        lk::snprintf(text1, _T("* %s"), Tmp);// already copied
     }
-    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+    Surface.SetBkColor(RGB_WHITE);
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),
                     static_cast<PixelScalar>(Sender->GetHeight()) };
 

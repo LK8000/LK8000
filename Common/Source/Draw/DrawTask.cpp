@@ -160,9 +160,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
     const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
-
-    LKColor whitecolor = RGB_WHITE;
-    LKColor origcolor = Surface.SetTextColor(whitecolor);
+    LKColor origcolor = Surface.SetTextColor(RGB_WHITE);
 
     static short size_tasklines=0;
 
@@ -265,6 +263,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 		}
 
 		if (flip) {
+			constexpr LKColor color(0, 0, 255);
 			if(ValidTaskPoint(ActiveTaskPoint)) {
 				TASKSTATS_POINT& StatPt =  TaskStats[ActiveTaskPoint];
 				for (int j = 0; j < MAXISOLINES - 1; j++) {
@@ -272,7 +271,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 						Surface.DrawLine(PEN_SOLID, IBLSCALE(2),
 									StatPt.IsoLine_Screen[j],
 									StatPt.IsoLine_Screen[j + 1],
-									LKColor(0, 0, 255), rc);
+									color, rc);
 					}
 				}
 			}
@@ -283,7 +282,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 						Surface.DrawLine(PEN_SOLID, IBLSCALE(2),
 									StatPt.IsoLine_Screen[j],
 									StatPt.IsoLine_Screen[j + 1],
-									LKColor(0, 0, 255), rc);
+									color, rc);
 					}
 				}
 			}

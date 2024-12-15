@@ -61,9 +61,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         rcDraw.left = std::max(rc.left, rcDraw.left);
         rcDraw.right = std::min(rc.right, rcDraw.right);
 
-
-        LKColor whitecolor = RGB_WHITE;
-        LKColor origcolor = TempSurface.SetTextColor(whitecolor);
+        LKColor origcolor = TempSurface.SetTextColor(RGB_WHITE);
 
         const auto oldpen = TempSurface.SelectObject(LK_WHITE_PEN);
         const auto oldbrush = TempSurface.SelectObject(LKBrush_White);
@@ -85,7 +83,7 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
         // this color is used as the black bit
         TempSurface.SetTextColor(Colours[iAirspaceColour[AATASK]]);
         // this color is the transparent bit
-        TempSurface.SetBkColor(whitecolor);
+        TempSurface.SetBkColor(RGB_WHITE);
 
         LKSurface & AliasSurface = TempSurface;
 #else

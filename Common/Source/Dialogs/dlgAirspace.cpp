@@ -56,7 +56,7 @@ static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surfa
       Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
 
       Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(i));
-      Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+      Surface.SetBkColor(RGB_WHITE);
       Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(i));
       Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
 

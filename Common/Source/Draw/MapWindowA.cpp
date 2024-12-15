@@ -41,7 +41,7 @@ LKBrush MapWindow::hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
 
 // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
 //static
-void MapWindow::InitAirSpaceSldBrushes(const LKColor colours[]) {
+void MapWindow::InitAirSpaceSldBrushes(const LKColor (&colours)[NUMAIRSPACECOLORS]) {
 #ifdef ENABLE_OPENGL
     const int8_t alpha = 0xFF * AirspaceOpacity/100;
 #endif

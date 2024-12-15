@@ -20,7 +20,7 @@ protected:
     Surface.SelectObject(LK_BLACK_PEN);
     Surface.SelectObject(MapWindow::GetAirspaceSldBrush(ItemIndex));  // this is the solid brush
 
-    Surface.SetBkColor(LKColor(0xFF, 0xFF, 0xFF));
+    Surface.SetBkColor(RGB_WHITE);
     Surface.SetTextColor(MapWindow::GetAirspaceColour(ItemIndex));
 
     Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);

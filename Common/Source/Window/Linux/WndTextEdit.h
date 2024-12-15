@@ -27,7 +27,7 @@ public:
 class WndTextEdit : public WndText<Window> {
     typedef WndText<Window> __super;
 public:
-    WndTextEdit() : WndText<Window>(LKColor(0,0,0), LKColor(0xFF, 0xFF, 0xFF)) {
+    WndTextEdit() : WndText<Window>(RGB_BLACK, RGB_WHITE) {
 
     }
 

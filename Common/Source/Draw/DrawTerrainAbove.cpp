@@ -36,16 +36,14 @@ void MapWindow::DrawTerrainAbove(LKSurface& Surface, const RECT& rc) {
 _doit:
 
 #ifndef ENABLE_OPENGL
-  LKColor whitecolor = LKColor(0xff,0xff,0xff);
-  LKColor graycolor = LKColor(0xf0,0xf0,0xf0);
-  LKColor origcolor = TempSurface.SetTextColor(whitecolor);
+  LKColor origcolor = TempSurface.SetTextColor(RGB_WHITE);
 
   TempSurface.SetBackgroundTransparent();
 
-  TempSurface.SetBkColor(whitecolor);
+  TempSurface.SetBkColor(RGB_WHITE);
 
   TempSurface.SelectObject(LK_WHITE_PEN);
-  TempSurface.SetTextColor(graycolor);
+  TempSurface.SetTextColor(RGB_ICEWHITE);
   TempSurface.SelectObject(hAboveTerrainBrush);
   TempSurface.Rectangle(rc.left,rc.top,rc.right,rc.bottom);
   TempSurface.SelectObject(LK_WHITE_PEN);
