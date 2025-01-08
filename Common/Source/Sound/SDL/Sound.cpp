@@ -15,6 +15,7 @@
 #include "Util/ConstBuffer.hpp"
 #include "resource_data.h"
 #include "LKAssert.h"
+#include "LocalPath.h"
 
 // libsdl-mixer1.2-dev package required
 
