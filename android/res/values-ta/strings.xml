@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="quit">LK8000 ஐ மூடுகிறது…</string>
+    <string name="error_external_storage">வெளிப்புற சேமிப்பு கிடைக்கவில்லை, தயவுசெய்து யூ.எச்.பி சேமிப்பிடத்தை அணைக்கவும்.</string>
+    <string name="error_native_library">சொந்த எல்.கே 8000 நூலகத்தை ஏற்றுவதில் தோல்வி.\n இந்த சிக்கலை எங்களிடம் புகாரளித்து, பின்வரும் தகவல்களைச் சேர்க்கவும்:\n</string>
+    <string name="upgrade_storage">LK8000 உங்கள் தரவை (%1$d MB) LK8000/Android/data/%2$s/கோப்புகள்/க்கு நகர்த்துகிறது.\n உங்கள் தனியுரிமையை மேம்படுத்துவதற்கான முயற்சியின் ஒரு பகுதியாக இது கூகிள் தேவைப்படுகிறது.\n தயவுசெய்து காத்திருங்கள், இடம்பெயர்வு சில நிமிடங்கள் ஆகலாம்.</string>
+    <string name="overwrite_download">கோப்பு ஏற்கனவே உள்ளது. அதை மீண்டும் பதிவிறக்கம் செய்ய விரும்புகிறீர்களா?</string>
+    <string name="download_title">LK8000 பதிவிறக்கம் \"</string>
+    <string name="default_language_code">என்</string>
+    <string name="loading">LK8000 ஏற்றுகிறது…</string>
+    <string name="close">மூடு</string>
+    <string name="warning">எச்சரிக்கை!</string>
+</resources>
