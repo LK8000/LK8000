@@ -10,6 +10,19 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.23]
+* New : 
+ - Add "Condor-3" device driver
+ - Fanet : Receiv "Thermal" from nearby...
+ - Add "Tamil" language
+* Android :
+ - Add SkyDrop2 RX support 
+ - Use Accelerometer to calculate G-Load
+* Fix : 
+ - AAT Task : fix missing isoline
+ - crash on empty logbook
+...
+
 [version 7.4.22]
 * New events : SendDataPort[X]
 * New InfoBoxes:
