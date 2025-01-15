@@ -27,7 +27,7 @@ static void getVariables(WndForm * pForm) {
           str = _T("");
         }
         if(_tcscmp(szAirspaceFile[i], str)!= 0) {
-          _tcscpy(szAirspaceFile[i], str);
+          lk::strcpy(szAirspaceFile[i], str);
           AIRSPACEFILECHANGED= true;
         }
       }

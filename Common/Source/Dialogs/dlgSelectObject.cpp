@@ -60,12 +60,12 @@ void SetNameCaption(WndButton* pWnd, const TCHAR* tFilter) {
 
   TCHAR NameFilter[50] = _T("");
   if (tFilter[0] == '\0' || _tcscmp(tFilter, _T("*")) == 0) {
-    _tcscpy(NameFilter, _T("*"));
+    lk::strcpy(NameFilter, _T("*"));
   } else {
     if (_tcslen(tFilter) < 6) {
       _stprintf(NameFilter, _T("*%s*"), tFilter);
     } else {
-      _tcscpy(NameFilter, _T("*"));
+      lk::strcpy(NameFilter, _T("*"));
       CopyTruncateString(NameFilter + 1, (50 - 1), tFilter, 5);
       _tcscat(NameFilter, _T("..*"));
     }
@@ -184,7 +184,7 @@ void dlgSelectObject::OnFilterName(WndButton* pWnd) {
 
   TCHAR newNameFilter[dlgSelectObject::NAMEFILTERLEN];
 
-  _tcscpy(newNameFilter, GetNameFilter());
+  lk::strcpy(newNameFilter, GetNameFilter());
 
   key_filter filter(*this);
   dlgTextEntryShowModal(newNameFilter, dlgSelectObject::NAMEFILTERLEN, &filter); // todo : implement keyFilter
@@ -527,7 +527,7 @@ void dlgSelectObject::SetTypeFilterIdx(int idx) {
 
 
 void dlgSelectObject::SetNameFilter(const TCHAR (&filter)[dlgSelectObject::NAMEFILTERLEN]) {
-  _tcscpy(sNameFilter, filter);
+  lk::strcpy(sNameFilter, filter);
 }
 
 

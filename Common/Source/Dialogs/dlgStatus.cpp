@@ -350,13 +350,13 @@ static void UpdateValuesSystem() {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpBattery"));
   if (wp) {
-    _tcscpy(Temp,TEXT("\0"));
+    lk::strcpy(Temp,TEXT("\0"));
     if (HaveBatteryInfo) {
         _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
         _tcscat(Temp, Temp2);
     }
     if (GPS_INFO.SupplyBatteryVoltage == 0) {
-      _tcscpy(Temp2,TEXT("\0"));
+      lk::strcpy(Temp2,TEXT("\0"));
     } else {
       _stprintf(Temp2,TEXT("%.1f V"),GPS_INFO.SupplyBatteryVoltage);
     }
@@ -628,7 +628,7 @@ static void UpdateValuesTask(void) {
     if (IsValidTaskTimeToGo(CALCULATED_INFO)) {
       Units::TimeToText(Temp, CALCULATED_INFO.TaskTimeToGo);
     } else {
-      _tcscpy(Temp, _T("--:--"));
+      lk::strcpy(Temp, _T("--:--"));
     }
     wp->SetText(Temp);
   }

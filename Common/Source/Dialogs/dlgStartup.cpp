@@ -871,7 +871,7 @@ short dlgStartupShowModal(void) {
                     const TCHAR* szFileName = dfe->GetPathFile();
                     if (_tcscmp(szFileName, _T("PROFILE_RESET")) == 0) {
                         TestLog(_T("... Selected FULL RESET virtual profile"));
-                        _tcscpy(startProfileFile,szFileName);
+                        lk::strcpy(startProfileFile,szFileName);
 
                         MessageBoxX(MsgToken<1758>(), MsgToken<1757>(), mbOk);
                         FullResetAsked = true;

@@ -24,7 +24,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
   TCHAR *pToken;
   TCHAR TempString[READLINE_LENGTH];
 
-  _tcscpy(TempString, String);
+  lk::strcpy(TempString, String);
   // 20060513:sgi added wor on a copy of the string, do not modify the
   // source string, needed on error messages
 
@@ -82,7 +82,7 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
     pToken[NAME_SIZE-1]= _T('\0');
   }
 
-  _tcscpy(Temp->Name, pToken);
+  lk::strcpy(Temp->Name, pToken);
   int i;
   for (i=_tcslen(Temp->Name)-1; i>1; i--) {
     if (Temp->Name[i]==' ') {

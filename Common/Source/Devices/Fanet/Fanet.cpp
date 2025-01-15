@@ -10,6 +10,7 @@
 #include "Sound/Sound.h"
 #include "Message.h"
 #include "Calc/ThermalHistory.h"
+#include "utils/strcpy.h"
 
 static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
@@ -65,7 +66,7 @@ void UpdateName(FLARM_TRAFFIC& traffic) {
     if (cname) {
       int cnamelen = _tcslen(cname);
       if (cnamelen <= MAXFLARMCN) {
-        _tcscpy(traffic.Cn, cname);
+        lk::strcpy(traffic.Cn, cname);
       } else {
         // else probably it is the Name again, and we create a fake Cn
         traffic.Cn[0] = cname[0];
@@ -75,13 +76,13 @@ void UpdateName(FLARM_TRAFFIC& traffic) {
       }
     }
     else {
-      _tcscpy(traffic.Cn, _T("Err"));
+      lk::strcpy(traffic.Cn, _T("Err"));
     }
   }
   else {
     // Else we NEED to set a name, otherwise it will constantly search for it over and over..
-    _tcscpy(traffic.Name, _T("?"));
-    _tcscpy(traffic.Cn, _T("?"));
+    lk::strcpy(traffic.Name, _T("?"));
+    lk::strcpy(traffic.Cn, _T("?"));
   }
 }
 

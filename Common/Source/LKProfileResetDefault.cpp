@@ -23,11 +23,11 @@
 
 void InitDefaultComPort() {
 #ifdef ANDROID
-  _tcscpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
+  lk::strcpy(PortConfig[0].szDeviceName, DEV_INTERNAL_NAME);
 
   if (StringIsEqual(native_view->GetProduct(), "AIR3")) {
     // Configure Fanet on Air3 7.3+
-    _tcscpy(PortConfig[1].szDeviceName, Fanet::DeviceName);
+    lk::strcpy(PortConfig[1].szDeviceName, Fanet::DeviceName);
     PortConfig[1].SetPort(_T("/dev/ttyMT2"));
     PortConfig[1].dwSpeedIndex = std::distance(std::begin(baudrate), std::find(std::begin(baudrate), std::end(baudrate), 115200));
     PortConfig[1].dwBitIndex = bit8N1;
@@ -394,21 +394,21 @@ void LKProfileResetDefault() {
   //szPolarFile[0] = TEXT('\0');
 
 
-  _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
+  lk::strcpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
   for(unsigned int i = 0; i < NO_AS_FILES; i++)
-    _tcscpy(szAirspaceFile[0],_T(""));
-  _tcscpy(szAirspaceFile[0],_T("DEMO.txt"));
+    lk::strcpy(szAirspaceFile[0],_T(""));
+  lk::strcpy(szAirspaceFile[0],_T("DEMO.txt"));
 
   for(unsigned int i = 0; i < NO_WP_FILES; i++)
-    _tcscpy(szWaypointFile[0],_T(""));
-  _tcscpy(szWaypointFile[0],_T("DEMO.cup"));
+    lk::strcpy(szWaypointFile[0],_T(""));
+  lk::strcpy(szWaypointFile[0],_T("DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
-  _tcscpy(szTerrainFile,_T("DEMO.DEM"));
-  _tcscpy(szAirfieldFile,_T("WAYNOTES.txt"));
+  lk::strcpy(szTerrainFile,_T("DEMO.DEM"));
+  lk::strcpy(szAirfieldFile,_T("WAYNOTES.txt"));
   szLanguageCode[0] = TEXT('\0');
 
   szInputFile[0] = TEXT('\0');
-  _tcscpy(szMapFile,_T("DEMO.LKM"));
+  lk::strcpy(szMapFile,_T("DEMO.LKM"));
 
   // Ports and device settings
   for (auto& Port : PortConfig) {
@@ -417,14 +417,14 @@ void LKProfileResetDefault() {
 
   InitDefaultComPort();
 
-  _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
+  lk::strcpy(PilotName_Config,_T("WOLF.HIRTH"));
 
   tracking::ResetSettings();
 
-  _tcscpy(AircraftType_Config,_T("CIRRUS-STD"));
-  _tcscpy(AircraftRego_Config,_T("D-1900"));
-  _tcscpy(CompetitionClass_Config,_T("CLUB"));
-  _tcscpy(CompetitionID_Config,_T("WH"));
+  lk::strcpy(AircraftType_Config,_T("CIRRUS-STD"));
+  lk::strcpy(AircraftRego_Config,_T("D-1900"));
+  lk::strcpy(CompetitionClass_Config,_T("CLUB"));
+  lk::strcpy(CompetitionID_Config,_T("WH"));
 
   LockSettingsInFlight = false;
   LoggerShortName = false;

@@ -25,7 +25,7 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 
   for(unsigned i=NUMRESWP;i<WayPointList.size();++i) {
 
-	_tcscpy(UName, WayPointList[i].Name);
+	lk::strcpy(UName, WayPointList[i].Name);
 
 	CharUpper(UName); // WP name
 	CharUpper(Name);  // AIR name  If airfields name was not uppercase it was not recon

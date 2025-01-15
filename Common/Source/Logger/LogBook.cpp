@@ -273,27 +273,27 @@ bool UpdateLogBookCSV(bool welandedforsure) {
     Units::TimeToTextS(slandingutc, utc_landing_time);
   } else {
     TestLog(_T(".... LogBookCSV, logging but still flying!"));
-    _tcscpy(slanding,_T("???"));
-    _tcscpy(slandingutc,_T("???"));
+    lk::strcpy(slanding,_T("???"));
+    lk::strcpy(slandingutc,_T("???"));
   }
 
   ivalue=CContestMgr::TYPE_OLC_CLASSIC;
   if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
     _stprintf(solcdist, _T("%.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
   } else {
-    _tcscpy(solcdist, _T("---"));
+    lk::strcpy(solcdist, _T("---"));
   }
 
   Units::TimeToTextS(sflighttime, (int)CALCULATED_INFO.FlightTime);
 
   TCHAR simmode[8];
   if (SIMMODE)
-    _tcscpy(simmode,_T(",SIM"));
+    lk::strcpy(simmode,_T(",SIM"));
   else
-    _tcscpy(simmode,_T(""));
+    lk::strcpy(simmode,_T(""));
 
   TCHAR towtime[20];
-  _tcscpy(towtime,_T(""));
+  lk::strcpy(towtime,_T(""));
   int towaltitude=0;
   if (ISGLIDER && (CALCULATED_INFO.FreeFlightStartTime>0)) {
     Units::TimeToTextS(towtime, (int)(CALCULATED_INFO.FreeFlightStartTime-CALCULATED_INFO.TakeOffTime) );
@@ -364,17 +364,17 @@ bool UpdateLogBookLST(bool welandedforsure) {
     lk::snprintf(slandingutc,_T("(UTC %s)"),Temp);
   } else {
     TestLog(_T(".... LogBookLST, logging but still flying!"));
-    _tcscpy(slanding,_T("???"));
-    _tcscpy(slandingutc,_T(""));
+    lk::strcpy(slanding,_T("???"));
+    lk::strcpy(slandingutc,_T(""));
   }
 
   Units::TimeToTextS(sflighttime, (int)CALCULATED_INFO.FlightTime);
 
   if (_tcslen(PilotName_Config)>0) {
-    _tcscpy(pilotname,PilotName_Config);
+    lk::strcpy(pilotname,PilotName_Config);
     pilotname[20]=0;
   } else
-    _tcscpy(pilotname,_T(""));
+    lk::strcpy(pilotname,_T(""));
 
   if (!dofirstline) {
     file.WriteLn(_T("________________________________________"));

@@ -128,7 +128,7 @@ void FlarmIdFile::LoadOgnDb() {
         // new item instead ?
         auto flarmId = std::make_unique<FlarmId>();
 
-        _tcscpy(flarmId->id, id);
+        lk::strcpy(flarmId->id, id);
         ExtractOgnField(t_line, flarmId->reg, 3);
         if (_tcslen(flarmId->reg) == 0) {
           // reg empty use id...

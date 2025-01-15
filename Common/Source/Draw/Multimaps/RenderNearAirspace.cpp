@@ -538,7 +538,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         else
             bLeft = true;
 
-        _tcscpy(text, _T(" "));
+        lk::strcpy(text, _T(" "));
         Units::FormatDistance(iABS_AS_HorDistance, text + 1, 7);
         Surface.GetTextSize(text, &tsize); 
 
@@ -570,7 +570,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
         Surface.DrawDashLine(THICK_LINE, line[0], line[1], Sideview_TextColor, rc);
         #endif
 
-        _tcscpy(text, _T(" "));
+        lk::strcpy(text, _T(" "));
         Units::FormatAltitude((double) abs(iAS_VertDistance), text + 1, 7);
         Surface.GetTextSize(text, &tsize);
 

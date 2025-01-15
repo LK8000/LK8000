@@ -83,7 +83,7 @@ void LKSound(const TCHAR *lpName) {
     }
     
     // Suppress file name extension
-    _tcscpy(soundFileStr,lpName);
+    lk::strcpy(soundFileStr,lpName);
     ptrExt = _tcsrchr(soundFileStr, '.');
     if (ptrExt==NULL) {
         // malformed sound file name

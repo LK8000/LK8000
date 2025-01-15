@@ -140,7 +140,7 @@ bool ReadWinPilotPolar(void) {
 
     if (_tcscmp(szPolarFile,_T(""))==0) {
         StartupStore(_T("... Empty polar file, using Default" NEWLINE));
-        _tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
+        lk::strcpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
     }
 
     /**
@@ -155,7 +155,7 @@ bool ReadWinPilotPolar(void) {
      */
 
     tstring str (szPolarFile);
-    _tcscpy(szFile, str.c_str());
+    lk::strcpy(szFile, str.c_str());
     zzip_stream stream(szFile, "rt");
     if(!stream) {
         // failed to open absolute. try LocalPath
@@ -243,7 +243,7 @@ bool ReadWinPilotPolar(void) {
 	// Reset flaps values after loading a new polar, and init FlapsPos for the first time
 	for (i=0; i<MAX_FLAPS; i++) {
 		GlidePolar::FlapsPos[i]=0.0;
-		_tcscpy(GlidePolar::FlapsName[i],_T("???"));
+		lk::strcpy(GlidePolar::FlapsName[i],_T("???"));
 	}
 	GlidePolar::FlapsPosCount=0;
 	GlidePolar::FlapsMass=0.0;
@@ -275,13 +275,13 @@ bool ReadWinPilotPolar(void) {
 		ctemp[MAXFLAPSNAME]='\0';
 		if (ctemp[_tcslen(ctemp)-1]=='\r' || ctemp[_tcslen(ctemp)-1]=='\n')
 			ctemp[_tcslen(ctemp)-1]='\0'; // remove trailing cr
-		_tcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
+		lk::strcpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
 		if (currentFlapsPos >= (MAX_FLAPS-1)) break; // safe check
 	        currentFlapsPos++;
 	   }
-	   _tcscpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
+	   lk::strcpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
            GlidePolar::FlapsPos[currentFlapsPos] = MAXSPEED;
-           _tcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
+           lk::strcpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos;
 	   break;
@@ -305,7 +305,7 @@ bool ReadWinPilotPolar(void) {
 		GlidePolar::WingArea = 10.04;
 		gcc_unused bool bok = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
 		assert(bok);
-		_tcscpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
+		lk::strcpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 
 		MessageBoxX(MsgToken<920>(), // Error loading Polar file!
 								MsgToken<791>(), // Warning

@@ -194,10 +194,10 @@ static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
       NMEAParser::ExtractParameter(String, ctemp, 0);
       d->HardwareId = StrToDouble(ctemp, nullptr);
       switch (d->HardwareId) {
-        case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
-        case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
-        case 23:  _tcscpy(d->Name, TEXT("VW1030")); break;
-        default:  _tcscpy(d->Name, TEXT("Westerboer")); break;
+        case 21:  lk::strcpy(d->Name, TEXT("VW1010")); break;
+        case 22:  lk::strcpy(d->Name, TEXT("VW1020")); break;
+        case 23:  lk::strcpy(d->Name, TEXT("VW1030")); break;
+        default:  lk::strcpy(d->Name, TEXT("Westerboer")); break;
       }
 
       TCHAR str[255];
@@ -427,11 +427,11 @@ static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
       NMEAParser::ExtractParameter(String, ctemp, 0);
       d->HardwareId = StrToDouble(ctemp, nullptr);
       switch (d->HardwareId) {
-        case 21:  _tcscpy(d->Name, TEXT("VW1010")); break;
-        case 22:  _tcscpy(d->Name, TEXT("VW1020")); break;
-        case 23:  _tcscpy(d->Name, TEXT("VW1030")); break;
-        case 60:  _tcscpy(d->Name, TEXT("VW1150")); break;
-        default:  _tcscpy(d->Name, TEXT("Westerboer")); break;
+        case 21:  lk::strcpy(d->Name, TEXT("VW1010")); break;
+        case 22:  lk::strcpy(d->Name, TEXT("VW1020")); break;
+        case 23:  lk::strcpy(d->Name, TEXT("VW1030")); break;
+        case 60:  lk::strcpy(d->Name, TEXT("VW1150")); break;
+        default:  lk::strcpy(d->Name, TEXT("Westerboer")); break;
       }
     }
     NMEAParser::ExtractParameter(String, ctemp, 1);

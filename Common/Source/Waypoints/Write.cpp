@@ -55,7 +55,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	if (wpt->Comment!=NULL) {
 		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
 	} else
-		_tcscpy(comment,_T(""));
+		lk::strcpy(comment,_T(""));
 
 	fprintf(fp,"%d," PF_ASCIISTR "," PF_ASCIISTR ",%dM," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "\r\n",
 		wpt->Number,
@@ -78,7 +78,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	if (wpt->Comment!=NULL) {
 		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
 	} else
-		_tcscpy(comment,_T(""));
+		lk::strcpy(comment,_T(""));
 
 	fprintf(fp,"W  " PF_ASCIISTR " A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f " PF_ASCIISTR "\r\n",
 	wpt->Name,
@@ -103,26 +103,26 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	if (wpt->RunwayDir >= 0)
 		_stprintf(rwdirection,_T("%d"),wpt->RunwayDir);
 	else
-		_tcscpy(rwdirection,_T(""));
+		lk::strcpy(rwdirection,_T(""));
 	if (wpt->RunwayLen > 0)
 		_stprintf(rwlen,_T("%d.0m"),wpt->RunwayLen);
 	else
-		_tcscpy(rwlen,_T(""));
+		lk::strcpy(rwlen,_T(""));
 
 	if ( (_tcslen(wpt->Freq)>0) && (_tcslen(wpt->Freq)<=CUPSIZE_FREQ)) { // 100221 buffer overflow fix
 		_stprintf(cupFreq,_T("\"%s\""),wpt->Freq);
 	} else
-		_tcscpy(cupFreq,_T(""));
+		lk::strcpy(cupFreq,_T(""));
 
 	if ( (_tcslen(wpt->Code)>0)&&(_tcslen(wpt->Code)<=CUPSIZE_CODE)) {
 		_stprintf(cupCode,_T("\"%s\""),wpt->Code);
 	} else
-		_tcscpy(cupCode,_T(""));
+		lk::strcpy(cupCode,_T(""));
 
 	if (wpt->Comment!=NULL) {
 		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
 	} else
-		_tcscpy(comment,_T(""));
+		lk::strcpy(comment,_T(""));
 	fprintf(fp,"\"" PF_ASCIISTR"\"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR ",%d.0m,%d," PF_ASCIISTR"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "\r\n",
 		wpt->Name,
 		cupCode,
@@ -144,7 +144,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	if (wpt->Comment!=NULL) {
 		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
 	} else
-		_tcscpy(comment,_T(""));
+		lk::strcpy(comment,_T(""));
 
 	if(_tcslen(comment) > 40){
 		comment[40] = _T('\0');

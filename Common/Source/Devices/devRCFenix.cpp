@@ -260,7 +260,7 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
   Declare(true);
 
   TCHAR Pilot[64];
-  _tcscpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
+  lk::strcpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
 
   TCHAR PilotName[12] = _T("");
   TCHAR PilotSurName[12] = _T("");;

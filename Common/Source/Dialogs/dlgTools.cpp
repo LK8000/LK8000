@@ -273,7 +273,7 @@ void GetDefaultWindowControlProps(const xml_node& Node, TCHAR (&Name)[64], int& 
   const TCHAR* translated = LKGetText(Caption);
   if(translated != Caption) {
     // avoid to copy to itself if token is not found in language table.
-    _tcscpy(Caption, LKGetText(Caption));
+    lk::strcpy(Caption, LKGetText(Caption));
   }
 }
 

@@ -285,7 +285,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       } else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
-        _tcscpy(stmp2,MsgToken<1259>());
+        lk::strcpy(stmp2,MsgToken<1259>());
       }
       wp->SetText(stmp2);
       wp->RefreshDisplay();
@@ -306,7 +306,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       } else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
-        _tcscpy(stmp2,MsgToken<1259>());
+        lk::strcpy(stmp2,MsgToken<1259>());
       }
       wp->SetText(stmp2);
       wp->RefreshDisplay();

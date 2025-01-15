@@ -99,8 +99,8 @@ BOOL ListUpdate = false;
 
 void AddElement(const TCHAR* Line1, const TCHAR* Line2) {
   ListElementType NewElement;
-  _tcscpy(NewElement.Line1, Line1);
-  _tcscpy(NewElement.Line2, Line2);
+  lk::strcpy(NewElement.Line1, Line1);
+  lk::strcpy(NewElement.Line2, Line2);
   LX_IGCReadDialog.FileList()->push_back(NewElement);
 
   ListUpdate = true;
@@ -172,7 +172,7 @@ static
 bool GetLXIGCFilename(TCHAR (&IGCFilename)[MAX_PATH], TCHAR *InFilename) {
   TCHAR Tmp[MAX_PATH];
 
-  _tcscpy(Tmp, InFilename);
+  lk::strcpy(Tmp, InFilename);
   TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next({_T(' ')});
   if(Filename) {
     LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
@@ -194,7 +194,7 @@ static void OnEnterClicked(WndButton *pWnd) {
   if (LX_IGCReadDialog.FileList()->size() < (uint) LX_IGCReadDialog.CurIndex()) return;
   LX_IGCReadDialog.DownloadIndex(LX_IGCReadDialog.CurIndex());
   TCHAR szTmp[MAX_NMEA_LEN];
-  _tcscpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
+  lk::strcpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
 
   TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next({_T(' ')});
 
@@ -225,9 +225,9 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     TCHAR szTmp[MAX_NMEA_LEN] ;
     TCHAR text1[MAX_NMEA_LEN] = {TEXT("IGC File")};
     TCHAR text2[MAX_NMEA_LEN] = {TEXT("date")};
-    _tcscpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
-    _tcscpy(text1, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
-    _tcscpy(text2, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line2);
+    lk::strcpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
+    lk::strcpy(text1, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
+    lk::strcpy(text2, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line2);
 
     /* extract filname */
     TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
@@ -237,7 +237,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
     _tcscat(IGCFilename, _T(".IGC"));
     TCHAR Tmp[MAX_NMEA_LEN];
-    _tcscpy(Tmp, text1);     // missing
+    lk::strcpy(Tmp, text1);     // missing
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists

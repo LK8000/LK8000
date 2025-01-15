@@ -146,7 +146,7 @@ void InputEvents::readFile() {
 
   if (!stream) {
     // invalid ENGINEERING MODE: SELECTED XCI, reset config.
-    _tcscpy(szInputFile, _T(""));
+    lk::strcpy(szInputFile, _T(""));
 
     const TCHAR * xcifile = nullptr;
     // No special XCI in engineering, or nonexistent file.. go ahead with language check
@@ -305,11 +305,11 @@ void InputEvents::readFile() {
 
       // Clear all data.
       some_data = false;
-      _tcscpy(d_mode, TEXT(""));
-      _tcscpy(d_type, TEXT(""));
-      _tcscpy(d_data, TEXT(""));
+      lk::strcpy(d_mode, TEXT(""));
+      lk::strcpy(d_type, TEXT(""));
+      lk::strcpy(d_data, TEXT(""));
       event_id = 0;
-      _tcscpy(d_label, TEXT(""));
+      lk::strcpy(d_label, TEXT(""));
       d_location = 0;
       new_label = NULL;
 
@@ -322,18 +322,18 @@ void InputEvents::readFile() {
       if (_tcscmp(key, TEXT("mode")) == 0) {
 	if (_tcslen(value) < 1024) {
 	  some_data = true;	// Success, we have a real entry
-	  _tcscpy(d_mode, value);
+	  lk::strcpy(d_mode, value);
 	}
       } else if (_tcscmp(key, TEXT("type")) == 0) {
 	if (_tcslen(value) < 256)
-	  _tcscpy(d_type, value);
+	  lk::strcpy(d_type, value);
       } else if (_tcscmp(key, TEXT("data")) == 0) {
 	if (_tcslen(value) < 256)
-	  _tcscpy(d_data, value);
+	  lk::strcpy(d_data, value);
       } else if (_tcscmp(key, TEXT("event")) == 0) {
 	if (_tcslen(value) < 256) {
-	  _tcscpy(d_event, TEXT(""));
-	  _tcscpy(d_misc, TEXT(""));
+	  lk::strcpy(d_event, TEXT(""));
+	  lk::strcpy(d_misc, TEXT(""));
 	  int ef = _stscanf(value, TEXT("%[^ ] %[^\r\n]"), d_event, d_misc);
 
 	  // TODO code: Can't use token here - breaks
@@ -358,7 +358,7 @@ void InputEvents::readFile() {
 	  }
 	}
       } else if (_tcscmp(key, TEXT("label")) == 0) {
-        _tcscpy(d_label, value);
+        lk::strcpy(d_label, value);
       } else if (_tcscmp(key, TEXT("location")) == 0) {
         _stscanf(value, TEXT("%d"), &d_location);
 
@@ -468,7 +468,7 @@ void InputEvents::setMode(const TCHAR *mode) {
         (_tcscmp(mode, TEXT("MTarget")) == 0))
     {
       IsMultimapConfigShown = false;
-      _tcscpy(mode_current, _T("default"));
+      lk::strcpy(mode_current, _T("default"));
       thismode = mode2int(_T("default"), false);
     } else {
       //
@@ -1279,7 +1279,7 @@ void InputEvents::eventStatusMessage(const TCHAR *misc) {
   if (_tcslen(misc)>4) {
 	if (misc[0]=='Z' && misc[1]=='Y' && misc[2]=='X') {	// ZYX synthetic tokens inside XCIs
 		TCHAR nmisc[10];
-		_tcscpy(nmisc,_T("_@M"));
+		lk::strcpy(nmisc,_T("_@M"));
 		_tcscat(nmisc,&misc[3]);
 		_tcscat(nmisc,_T("_"));
 		DoStatusMessage(LKGetText(nmisc));
@@ -1604,31 +1604,31 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	switch(resw) {
 		case WCALC_INVALID_SPEED:
 	// LKTOKEN  _@M369_ = "KEEP SPEED LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken<369>());
+			lk::strcpy(mbuf,MsgToken<369>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_TRACK:
 	// LKTOKEN  _@M367_ = "KEEP HEADING LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken<367>());
+			lk::strcpy(mbuf,MsgToken<367>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_ALL:
 	// LKTOKEN  _@M368_ = "KEEP SPEED AND HEADING LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken<368>());
+			lk::strcpy(mbuf,MsgToken<368>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_HEADING:
 	// LKTOKEN  _@M344_ = "INACCURATE HEADING OR TOO STRONG WIND"
-			_tcscpy(mbuf,MsgToken<344>());
+			lk::strcpy(mbuf,MsgToken<344>());
 			break;
 		case WCALC_INVALID_IAS:
 	// LKTOKEN  _@M366_ = "KEEP AIRSPEED CONSTANT LONGER PLEASE"
-			_tcscpy(mbuf,MsgToken<366>());
+			lk::strcpy(mbuf,MsgToken<366>());
 			reschedule=true;
 			break;
 		case WCALC_INVALID_NOIAS:
 	// LKTOKEN  _@M345_ = "INVALID AIRSPEED"
-			_tcscpy(mbuf,MsgToken<345>());
+			lk::strcpy(mbuf,MsgToken<345>());
 			break;
 		default:
 			_stprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw);
@@ -1828,10 +1828,10 @@ void InputEvents::eventService(const TCHAR *misc) {
 	TCHAR mtext[80];
 	if (LockMode(1)) {
 		// LKTOKEN  _@M960_ = "CONFIRM SCREEN UNLOCK?"
-		_tcscpy(mtext, MsgToken<960>());
+		lk::strcpy(mtext, MsgToken<960>());
 	} else {
 		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?"
-		_tcscpy(mtext, MsgToken<961>());
+		lk::strcpy(mtext, MsgToken<961>());
 	}
 	if (MessageBoxX(
 		mtext, _T(""),

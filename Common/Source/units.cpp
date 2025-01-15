@@ -192,7 +192,7 @@ bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
       lk::snprintf(Buffer, size, _T("%c%08.4f°"), EW[sign], Longitude);
     break;
     case cfUTM:
-      _tcscpy(Buffer,_T(""));
+      lk::strcpy(Buffer, _T(""), size);
       break;
     default:
       assert(false);

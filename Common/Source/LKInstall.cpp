@@ -146,7 +146,7 @@ void InstallSystem() {
   } else {
 	StartupStore(_T(". InstallSystem: Windows path reported from device is: <%s>%s"),dstdir,NEWLINE);
   }
-  _tcscpy(maindir,dstdir);
+  lk::strcpy(maindir,dstdir);
 
   // we are shure that \Windows does exist already.
   TCHAR fontdir[MAX_PATH];
@@ -161,12 +161,12 @@ void InstallSystem() {
 		StartupStore(tbuf);
 		_stprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
 		StartupStore(tbuf);
-		_tcscpy(dstdir,maindir);
+		lk::strcpy(dstdir,maindir);
 	}
   } else {
 	StartupStore(_T(". RegKey Font directory is <%s>%s"),fontdir,NEWLINE);
 	lk::filesystem::createDirectory(fontdir);
-	_tcscpy(dstdir,fontdir);
+	lk::strcpy(dstdir,fontdir);
   }
   #else
   UNUSED(fontdir);
@@ -177,7 +177,7 @@ void InstallSystem() {
 	StartupStore(tbuf);
 	_stprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
 	StartupStore(tbuf);
-	_tcscpy(dstdir,maindir);
+	lk::strcpy(dstdir,maindir);
   }
   #endif
 

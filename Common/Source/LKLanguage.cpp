@@ -179,14 +179,14 @@ void LKLoadLanguageFile() {
     if(native_view) {
       const char* default_language = native_view->GetDefaultLanguage();
       if(default_language) {
-        _tcscpy(szLanguageCode, default_language);
+        lk::strcpy(szLanguageCode, default_language);
       }
     }
   }
 #endif
 
   if (szLanguageCode[0] == _T('\0')) {
-    _tcscpy(szLanguageCode, _T(LKD_DEFAULT_LANGUAGE));
+    lk::strcpy(szLanguageCode, _T(LKD_DEFAULT_LANGUAGE));
   }
 
   LKLoadMessages(GetLanguageJson(szLanguageCode));

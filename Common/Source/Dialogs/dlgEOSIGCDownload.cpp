@@ -145,8 +145,8 @@ LK_EOS_IGCReadDlg EOS_IGCReadDialog;
 
 void AddEOSElement(TCHAR Line1[], TCHAR Line2[], uint32_t size) {
   EOSListElementType NewElement;
-  _tcscpy(NewElement.Line1, Line1);
-  _tcscpy(NewElement.Line2, Line2);
+  lk::strcpy(NewElement.Line1, Line1);
+  lk::strcpy(NewElement.Line2, Line2);
   NewElement.filesize = size;
   EOS_IGCReadDialog.FileList()->push_back(NewElement);
   UpdateList();
@@ -206,7 +206,7 @@ static
 bool GetEOSIGCFilename(TCHAR (&IGCFilename)[MAX_PATH], TCHAR *InFilename) {
   TCHAR Tmp[MAX_PATH];
 
-  _tcscpy(Tmp, InFilename);
+  lk::strcpy(Tmp, InFilename);
   TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next({_T(' ')});
   if(Filename) {
     LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
@@ -239,12 +239,12 @@ static void OnEnterClicked(WndButton *pWnd) {
   
   
   TCHAR szTmp[MAX_NMEA_LEN];
-  _tcscpy(szTmp, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.CurIndex()).Line1);
+  lk::strcpy(szTmp, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.CurIndex()).Line1);
   
 
   TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
   _tcscat(IGCFilename, _T(".IGC"));  
-  _tcscpy(DownoadIGCFilename, IGCFilename);
+  lk::strcpy(DownoadIGCFilename, IGCFilename);
   _stprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(), IGCFilename);
   if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes)  // _@2404 "Download"
   {
@@ -279,9 +279,9 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     TCHAR szTmp[MAX_NMEA_LEN] ;
     TCHAR text1[MAX_NMEA_LEN] = {TEXT("IGC File")};
     TCHAR text2[MAX_NMEA_LEN] = {TEXT("date")};
-    _tcscpy(szTmp, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line1);
-    _tcscpy(text1, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line1);
-    _tcscpy(text2, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line2);
+    lk::strcpy(szTmp, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line1);
+    lk::strcpy(text1, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line1);
+    lk::strcpy(text2, EOS_IGCReadDialog.FileList()->at(EOS_IGCReadDialog.DrawIndex()).Line2);
 
     /* extract filname */
     TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
@@ -290,7 +290,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender, LKSurface 
     _tcscat(IGCFilename, _T(".IGC"));
     LocalPath(PathAndFilename, _T(LKD_LOGS), IGCFilename);     // add path
     TCHAR Tmp[MAX_NMEA_LEN];
-    _tcscpy(Tmp, text1);     // missing
+    lk::strcpy(Tmp, text1);     // missing
     if (Appearance.UTF8Pictorials)                             // use UTF8 symbols?
     {
       if (lk::filesystem::exist(PathAndFilename))                // check if file exists
@@ -800,31 +800,31 @@ static bool OnTimer(WndForm *pWnd) {
                        DownoadIGCFilename, MsgToken<2406>());
             break; // 	_@M2406_ "IGC File download complete"
           case REC_TIMEOUT_ERROR:
-            _tcscpy(Tmp, MsgToken<2407>());
+            lk::strcpy(Tmp, MsgToken<2407>());
             break; // _@M2407_ "Error: receive timeout
           case REC_CRC_ERROR:
-            _tcscpy(Tmp, MsgToken<2408>());
+            lk::strcpy(Tmp, MsgToken<2408>());
             break; // _@M2408_ "Error: CRC checksum fail"
           case REC_ABORTED:
-            _tcscpy(Tmp, MsgToken<2415>());
+            lk::strcpy(Tmp, MsgToken<2415>());
             break; // _@M2415_ "IGC Download aborted!"
           case FILENAME_ERROR:
-            _tcscpy(Tmp, MsgToken<2409>());
+            lk::strcpy(Tmp, MsgToken<2409>());
             break; // _@M2409_ "Error: invalid filename"
           case FILE_OPEN_ERROR:
-            _tcscpy(Tmp, MsgToken<2410>());
+            lk::strcpy(Tmp, MsgToken<2410>());
             break; // _@M2410_ "Error: can't open file"
           case IGC_RECEIVE_ERROR:
-            _tcscpy(Tmp, MsgToken<2411>());
+            lk::strcpy(Tmp, MsgToken<2411>());
             break; // _@M2411_ "Error: Block invalid"
           case REC_NO_DEVICE:
-            _tcscpy(Tmp, MsgToken<2475>());
+            lk::strcpy(Tmp, MsgToken<2475>());
             break; // _@M2401_ "No Device found"
           case REC_WRONG_BLOCK: 
-             _tcscpy(Tmp, MsgToken<2474>()); // _@M2474_ "wrong block received"
+             lk::strcpy(Tmp, MsgToken<2474>()); // _@M2474_ "wrong block received"
             break;
           default:            
-            _tcscpy(Tmp, MsgToken<2412>());
+            lk::strcpy(Tmp, MsgToken<2412>());
             break; // _@M2412_ "Error: unknown"
           }
           if (MessageBoxX(Tmp, MsgToken<2398>(), mbOk) ==

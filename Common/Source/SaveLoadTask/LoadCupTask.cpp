@@ -734,12 +734,12 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
       lk::tokenizer<TCHAR> tok(text);
       TCHAR* pToken = tok.Next({_T(',')});
       if(pToken) {
-        _tcscpy(text1, pToken);
+        lk::strcpy(text1, pToken);
         if(*text1 == '\0') {
-          _tcscpy(text1, _T("???") );
+          lk::strcpy(text1, _T("???") );
         }
         tok.Next({_T(',')}); // remove takeof point
-        _tcscpy(text2, tok.Remaining());
+        lk::strcpy(text2, tok.Remaining());
       }
       /********************
        * show text

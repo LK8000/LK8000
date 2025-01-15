@@ -57,15 +57,15 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
 		// After the first run on entry, this will be no more passed until next time
 		// you enter a new mapspace again.
-		_tcscpy(ttext,_T("Event = NEW RUN"));
+		lk::strcpy(ttext,_T("Event = NEW RUN"));
 		break;
 	case LKEVENT_UP:
 		// click on upper part of screen, excluding center
-		_tcscpy(ttext,_T("Event = UP"));
+		lk::strcpy(ttext,_T("Event = UP"));
 		break;
 	case LKEVENT_DOWN:
 		// click on lower part of screen,  excluding center
-		_tcscpy(ttext,_T("Event = DOWN"));
+		lk::strcpy(ttext,_T("Event = DOWN"));
 		break;
 	case LKEVENT_LONGCLICK:
 		_stprintf(ttext,_T("Event = LONG CLICK"));
@@ -81,22 +81,22 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		_stprintf(ttext,_T("Event = SHORT CLICK"));
 		break;
 	case LKEVENT_PAGEUP:
-		_tcscpy(ttext,_T("Event = PAGE UP"));
+		lk::strcpy(ttext,_T("Event = PAGE UP"));
 		break;
 	case LKEVENT_PAGEDOWN:
-		_tcscpy(ttext,_T("Event = PAGE DOWN"));
+		lk::strcpy(ttext,_T("Event = PAGE DOWN"));
 		break;
 	case LKEVENT_TOPLEFT:
 		//
 		// NOT AVAILABLE IN SHARED MULTIMAPS
 		//
-		_tcscpy(ttext,_T("Event = TOP LEFT"));
+		lk::strcpy(ttext,_T("Event = TOP LEFT"));
 	break;
 	case LKEVENT_TOPRIGHT:
 		//
 		// NOT AVAILABLE IN SHARED MULTIMAPS
 		//
-		_tcscpy(ttext,_T("Event = TOP RIGHT"));
+		lk::strcpy(ttext,_T("Event = TOP RIGHT"));
 	break;
 
 
@@ -107,24 +107,24 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 	case LKEVENT_ENTER:
 		// WORKING ONLY in nearest pages
 		// click longer on center, like to confirm a selection
-		_tcscpy(ttext,_T("Event = ENTER"));
+		lk::strcpy(ttext,_T("Event = ENTER"));
 		break;
 	case LKEVENT_NEWPAGE:
 		// WORKING ONLY in nearest pages
 		// swipe gesture up/down produces NEW PAGE in this case
-		_tcscpy(ttext,_T("Event = NEW PAGE"));
+		lk::strcpy(ttext,_T("Event = NEW PAGE"));
 		break;
 
 
 
 	case LKEVENT_NONE:
 		// Normally no event.
-		_tcscpy(ttext,_T("Event = NONE"));
+		lk::strcpy(ttext,_T("Event = NONE"));
 		break;
 
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
-		_tcscpy(ttext,_T("Event = unknown"));
+		lk::strcpy(ttext,_T("Event = unknown"));
 		break;
   }
 

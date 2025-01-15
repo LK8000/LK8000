@@ -264,7 +264,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
             const double varioFtMin=Units::To(unFeetPerMinutes, DerivedDrawInfo.Vario); //Convert vertical speed to Ft/min
 
             //Print vertical speed in Ft/min
-            _tcscpy(Buffer,MsgToken<784>()); //"Vario"
+            lk::strcpy(Buffer,MsgToken<784>()); //"Vario"
             Surface.SelectObject(LK8PanelSmallFont);
             if (!IsDithered()) {
             	LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedLabelY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_LIGHTGREEN,false);

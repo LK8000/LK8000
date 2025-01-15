@@ -17,7 +17,7 @@ void SaveTask(const TCHAR *szFileName) {
     if (helper.Save(szFileName)) {
         TaskModified = false; // task successfully saved
         TargetModified = false;
-        _tcscpy(LastTaskFileName, szFileName);
+        lk::strcpy(LastTaskFileName, szFileName);
         TestLog(_T(".... SaveTask: Ok"));
     } else {
 

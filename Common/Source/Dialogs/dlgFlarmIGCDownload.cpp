@@ -371,7 +371,7 @@ static void OnMultiSelectListListInfo(WndListFrame *Sender,
 static
 bool GetIGCFilename(TCHAR (&IGCFilename)[MAX_PATH], int Idx) {
   TCHAR Tmp[MAX_PATH];
-  _tcscpy(Tmp, IGCFileList.at(Idx).Line1);
+  lk::strcpy(Tmp, IGCFileList.at(Idx).Line1);
   TCHAR *Filename = lk::tokenizer<TCHAR>(Tmp).Next(TEXT(" "));
   if(Filename) {
     LocalPath(IGCFilename, _T(LKD_LOGS), Filename);
@@ -441,14 +441,14 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender,
     TCHAR FileExist[5] = _T("");
     TCHAR text1[180] = {TEXT("IGC File")};
     TCHAR text2[180] = {TEXT("date")};   
-    _tcscpy(text1, IGCFileList.at(IGC_DrawListIndex).Line1);
+    lk::strcpy(text1, IGCFileList.at(IGC_DrawListIndex).Line1);
     if (GetIGCFilename(IGCFilename, IGC_DrawListIndex)) {
       if (lk::filesystem::exist(IGCFilename)) // file exists
       {
         if (Appearance.UTF8Pictorials) // use UTF8 symbols?
-          _tcscpy(FileExist, _T("✔")); // check! already copied
+          lk::strcpy(FileExist, _T("✔")); // check! already copied
         else
-          _tcscpy(FileExist, _T("*")); // * already copied
+          lk::strcpy(FileExist, _T("*")); // * already copied
         _stprintf(text1, _T("%s %s"), FileExist,IGCFileList.at(IGC_DrawListIndex).Line1);   
       }   
     }
@@ -535,29 +535,29 @@ static bool OnTimer(WndForm *pWnd) {
                        IGCFileList.at(IGC_DLIndex).Line1, MsgToken<2406>());
             break; // 	_@M2406_ "IGC File download complete"
           case REC_TIMEOUT_ERROR:
-            _tcscpy(Tmp, MsgToken<2407>());
+            lk::strcpy(Tmp, MsgToken<2407>());
             break; // _@M2407_ "Error: receive timeout
           case REC_CRC_ERROR:
-            _tcscpy(Tmp, MsgToken<2408>());
+            lk::strcpy(Tmp, MsgToken<2408>());
             break; // _@M2408_ "Error: CRC checksum fail"
           case REC_ABORTED:
-            _tcscpy(Tmp, MsgToken<2415>());
+            lk::strcpy(Tmp, MsgToken<2415>());
             break; // _@M2415_ "IGC Download aborted!"
           case FILENAME_ERROR:
-            _tcscpy(Tmp, MsgToken<2409>());
+            lk::strcpy(Tmp, MsgToken<2409>());
             break; // _@M2409_ "Error: invalid filename"
           case FILE_OPEN_ERROR:
-            _tcscpy(Tmp, MsgToken<2410>());
+            lk::strcpy(Tmp, MsgToken<2410>());
             break; // _@M2410_ "Error: can't open file"
           case IGC_RECEIVE_ERROR:
-            _tcscpy(Tmp, MsgToken<2411>());
+            lk::strcpy(Tmp, MsgToken<2411>());
             break; // _@M2411_ "Error: Block invalid"
           case REC_NO_DEVICE:
-            _tcscpy(Tmp, MsgToken<2401>());
+            lk::strcpy(Tmp, MsgToken<2401>());
             break; // _@M2401_ "No Device found"
 
           default:
-            _tcscpy(Tmp, MsgToken<2412>());
+            lk::strcpy(Tmp, MsgToken<2412>());
             break; // _@M2412_ "Error: unknown"
           }
           bShowMsg = false;
@@ -795,7 +795,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
         ListElementType NewElement;
         _sntprintf(NewElement.Line1, LST_STRG_LEN, _T("        PING Flarm %u/15"),
                     retrys);
-        _tcscpy(NewElement.Line2, _T("        ... "));
+        lk::strcpy(NewElement.Line2, _T("        ... "));
         IGCFileList.clear();
         IGCFileList.push_back(NewElement);
         SendBinBlock(d, Sequence++, PING, NULL, 0);
@@ -919,7 +919,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
       case ERROR_STATE:		                    
         deb_Log(TEXT("ERROR_STATE"));
   //   ListElementType NewElement;
-        _tcscpy(NewElement.Line1, _T("        Error:"));
+        lk::strcpy(NewElement.Line1, _T("        Error:"));
         _sntprintf(NewElement.Line2, LST_STRG_LEN, _T("         %s"),
                     MsgToken<2401>()); // _@M2401_ "No Device found"
         IGCFileList.clear();

@@ -38,9 +38,9 @@ TCHAR *AltDiffToText(double youralt, double wpalt) {
 
   int altdiff=(int) (youralt - wpalt);
   if (altdiff >=0)
-	_tcscpy(sAdiff,_T("over"));
+	lk::strcpy(sAdiff,_T("over"));
   else
-	_tcscpy(sAdiff,_T("below"));
+	lk::strcpy(sAdiff,_T("below"));
 
  return (sAdiff);
 
@@ -336,7 +336,7 @@ _dowp:
 		_stprintf(wptype,_T("%s "), MsgToken<1722>());	// the airport of
 		break;
 	default:
-		_tcscpy(wptype,_T(""));
+		lk::strcpy(wptype,_T(""));
 		needmorewp=true;
 		break;
   }
@@ -351,7 +351,7 @@ _dowp:
 	}
   } else {
 	if (_tcslen(wptype)==0 ) {
-		_tcscpy(wptype,_T(""));
+		lk::strcpy(wptype,_T(""));
 		needmorewp=true;
 	}
   }

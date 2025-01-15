@@ -150,7 +150,7 @@ bool UpdateStationName(TCHAR (&Name)[NAME_SIZE + 1], unsigned khz) {
 		}
 	}
 
-	_tcscpy(Name, (idx >= 0) ? WayPointList[idx].Name : _T(""));
+	lk::strcpy(Name, (idx >= 0) ? WayPointList[idx].Name : _T(""));
 
 	UnlockTaskData();		
 

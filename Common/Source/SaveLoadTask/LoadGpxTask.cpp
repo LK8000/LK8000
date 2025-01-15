@@ -154,7 +154,7 @@ bool LoadGpxTask(LPCTSTR szFileName) {
     if (file) {
         std::istream stream(&file);
         if (LoadGpxTask(stream)) {
-            _tcscpy(LastTaskFileName, szFileName);
+            lk::strcpy(LastTaskFileName, szFileName);
             return true;
         }
     }

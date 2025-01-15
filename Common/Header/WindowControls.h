@@ -19,7 +19,7 @@
 #include <string.h>
 #include <functional>
 #include <list>
-
+#include "utils/strcpy.h"
 #include "Time/PeriodClock.hpp"
 
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
@@ -226,8 +226,8 @@ class DataFieldBoolean:public DataField{
     DataFieldBoolean(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, int Default, const TCHAR *TextTrue, const TCHAR *TextFalse, DataAccessCallback_t&& OnDataAccess):
       DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)){
 		  if (Default) {mValue=true;} else {mValue=false;}
-      _tcscpy(mTextTrue, TextTrue);
-      _tcscpy(mTextFalse, TextFalse);
+      lk::strcpy(mTextTrue, TextTrue);
+      lk::strcpy(mTextFalse, TextFalse);
       SupportCombo=true;
 
      (mOnDataAccess)(this, daGet);
@@ -553,7 +553,7 @@ class DataFieldString:public DataField{
   public:
     DataFieldString(WndProperty& Owner, const char *EditFormat, const char *DisplayFormat, const TCHAR *Default, DataAccessCallback_t&& OnDataAccess):
       DataField(Owner, EditFormat, DisplayFormat, std::move(OnDataAccess)){
-      _tcscpy(mValue, Default);
+      lk::strcpy(mValue, Default);
       SupportCombo=false;
     };
 

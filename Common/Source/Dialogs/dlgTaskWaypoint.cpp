@@ -184,7 +184,7 @@ static void UpdateCaption(void) {
     switch (twType) {
     case 0:
 	// LKTOKEN  _@M657_ = "Start" 
-      _tcscpy(title, MsgToken<657>());
+      lk::strcpy(title, MsgToken<657>());
       break;
     case 1:
 	// LKTOKEN  _@M749_ = "Turnpoint"
@@ -192,7 +192,7 @@ static void UpdateCaption(void) {
       break;
     case 2:
 	// LKTOKEN  _@M299_ = "Finish" 
-      _tcscpy(title, MsgToken<299>());
+      lk::strcpy(title, MsgToken<299>());
       break;
     };
 

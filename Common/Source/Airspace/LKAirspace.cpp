@@ -2399,7 +2399,7 @@ void CAirspaceManager::ReadAirspaces() {
                 StartupStore(TEXT("... Airspace file %d without extension.%s"), fileCounter, NEWLINE);
             }
             if(!readOk) { // if file was OK remember otherwise forget it
-                _tcscpy(szAirspaceFile[i], _T(""));
+                lk::strcpy(szAirspaceFile[i], _T(""));
             }
 
         } else {
@@ -3268,7 +3268,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
     BUGSTOP_LKASSERT(alt!=NULL);
     if (buffer==NULL) return;
     if (alt==NULL) {
-        _tcscpy(buffer,_T(""));
+        lk::strcpy(buffer,_T(""), bufferlen);
         return;
     }
 

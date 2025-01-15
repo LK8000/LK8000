@@ -19,6 +19,7 @@
 #include "Settings/read.h"
 #include "Settings/write.h"
 #include "FFVLTracking.h"
+#include "utils/strcpy.h"
 
 extern int LKTime_Real;
 extern int LKTime_Ghost;
@@ -160,11 +161,11 @@ namespace tracking {
         radar_config = false;
         always_config = false;
 
-        _tcscpy(server_config,_T("www.livetrack24.com"));
+        lk::strcpy(server_config,_T("www.livetrack24.com"));
         port_config = 80;
 
-        _tcscpy(usr_config,_T("LK8000"));
-        _tcscpy(pwd_config,_T(""));
+        lk::strcpy(usr_config,_T("LK8000"));
+        lk::strcpy(pwd_config,_T(""));
 
         ffvl_user_key.clear();
     }

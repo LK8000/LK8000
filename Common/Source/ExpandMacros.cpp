@@ -69,12 +69,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 	switch(i) {
 		case 0:	// LOCKMODE
-			_tcscpy(OutBuffer,_T(""));	// default is button invisible
+			lk::strcpy(OutBuffer, _T(""), Size);	// default is button invisible
 			if (LockMode(0)) {	// query availability
 				if (LockMode(1)) // query status
-					_tcscpy(OutBuffer,MsgToken<965>()); // UNLOCK\nSCREEN
+					lk::strcpy(OutBuffer,  MsgToken<965>(), Size); // UNLOCK\nSCREEN
 				else
-					_tcscpy(OutBuffer,MsgToken<966>()); // LOCK\nSCREEN
+					lk::strcpy(OutBuffer, MsgToken<966>(), Size); // LOCK\nSCREEN
 
 				if (!LockMode(3)) invalid=true; // button not usable
 			}
@@ -95,7 +95,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 3: // DISABLED
-			_tcscpy(OutBuffer,MsgToken<2023>()); // Reserved
+			lk::strcpy(OutBuffer, MsgToken<2023>(), Size); // Reserved
 			invalid=true;
 			break;
 
@@ -138,26 +138,26 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		case 6: // WaypointNext
 			invalid = !ValidTaskPoint(ActiveTaskPoint+1);
 			if (!ValidTaskPoint(ActiveTaskPoint+2))
-				_tcscpy(OutBuffer,MsgToken<801>()); // Waypoint Finish
+				lk::strcpy(OutBuffer, MsgToken<801>(), Size); // Waypoint Finish
 			else
-				_tcscpy(OutBuffer,MsgToken<802>()); // Waypoint Next
+				lk::strcpy(OutBuffer, MsgToken<802>(), Size); // Waypoint Next
 			break;
 
 		case 7: // WaypointPrevious
 
 			if (ActiveTaskPoint==1) {
 				invalid = !ValidTaskPoint(ActiveTaskPoint-1);
-				_tcscpy(OutBuffer,MsgToken<804>()); // Waypoint Start
+				lk::strcpy(OutBuffer, MsgToken<804>(), Size); // Waypoint Start
 			} else if (EnableMultipleStartPoints) {
 				invalid = !ValidTaskPoint(0);
 
 				if (ActiveTaskPoint==0)
-					_tcscpy(OutBuffer,_T("StartPnt\nCycle"));
+					lk::strcpy(OutBuffer, _T("StartPnt\nCycle"), Size);
 				else
-					_tcscpy(OutBuffer,MsgToken<803>()); // Waypoint Previous
+					lk::strcpy(OutBuffer, MsgToken<803>(), Size); // Waypoint Previous
 			} else {
 				invalid = (ActiveTaskPoint<=0);
-				_tcscpy(OutBuffer,MsgToken<803>()); // Waypoint Previous
+				lk::strcpy(OutBuffer, MsgToken<803>(), Size); // Waypoint Previous
 			}
 			break;
 
@@ -167,14 +167,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				invalid=true;
 			}
 
-			_tcscpy(OutBuffer,MsgToken<2019>()); // Task reset
+			lk::strcpy(OutBuffer, MsgToken<2019>(), Size); // Task reset
 			break;
 
 		case 9: // TerrainVisible for ChangeBack topology color
 			if (CALCULATED_INFO.TerrainValid && IsMultimapTerrain() && !LKVarioBar) {
 				invalid = true;
 			}
-			_tcscpy(OutBuffer,MsgToken<2037>()); // Change topo back
+			lk::strcpy(OutBuffer, MsgToken<2037>(), Size); // Change topo back
 			break;
 
 		case 10: // TOGGLEHBAR HBARAVAILABLE for Toggle HBAR button
@@ -192,9 +192,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 11: // SIM MENU SIMONLY
 			if (SIMMODE)
-				_tcscpy(OutBuffer,MsgToken<2074>()); // SIM MENU
+				lk::strcpy(OutBuffer, MsgToken<2074>(), Size); // SIM MENU
 			else
-				_tcscpy(OutBuffer,_T(""));
+				lk::strcpy(OutBuffer, _T(""), Size);
 			break;
 
 		case 12: // THIS MACRO IS AVAILABLE FOR USE
@@ -417,55 +417,55 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 35: // SIM PAN MODE REPOSITION, PANREPOS
 			if (SIMMODE)
-				_tcscpy(OutBuffer,MsgToken<2133>()); // Position
+				lk::strcpy(OutBuffer, MsgToken<2133>(), Size); // Position
 			else
-				_tcscpy(OutBuffer,_T(""));
+				lk::strcpy(OutBuffer, _T(""), Size);
 			break;
 
 		case 36: //
 			// Order is:  ALL ON, TASK ONLY, FAI ONLY, ALL OFF
 			if (Flags_DrawTask&&Flags_DrawFAI) {
-				_tcscpy(OutBuffer,MsgToken<2238>()); // Draw Task
+				lk::strcpy(OutBuffer, MsgToken<2238>(), Size); // Draw Task
 			} else {
 				if (Flags_DrawTask&&!Flags_DrawFAI) {
-					_tcscpy(OutBuffer,MsgToken<2239>()); // Draw FAI
+					lk::strcpy(OutBuffer, MsgToken<2239>(), Size); // Draw FAI
 				} else {
 					if (!Flags_DrawTask&&Flags_DrawFAI) {
-						_tcscpy(OutBuffer,MsgToken<2240>()); // NoDraw TaskFAI
+						lk::strcpy(OutBuffer, MsgToken<2240>(), Size); // NoDraw TaskFAI
 					} else {
-						_tcscpy(OutBuffer,MsgToken<2241>()); // Draw TaskFAI
+						lk::strcpy(OutBuffer, MsgToken<2241>(), Size); // Draw TaskFAI
 					}
 				}
 			}
 			break;
 		case 37: //
 			if (SonarWarning)
-				_tcscpy(OutBuffer,MsgToken<2243>()); // Sonar OFF
+				lk::strcpy(OutBuffer, MsgToken<2243>(), Size); // Sonar OFF
 			else
-				_tcscpy(OutBuffer,MsgToken<2242>()); // Sonar ON
+				lk::strcpy(OutBuffer, MsgToken<2242>(), Size); // Sonar ON
 			break;
 		case 38: //
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
-			_tcscpy(OutBuffer,MsgToken<2081>()); // Set Map
+			lk::strcpy(OutBuffer, MsgToken<2081>(), Size); // Set Map
 			break;
 		case 39:
 			if (! (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1))) {
 				invalid=true;
 			}
 
-			_tcscpy(OutBuffer,MsgToken<1850>()); // Task reverse
+			lk::strcpy(OutBuffer, MsgToken<1850>(), Size); // Task reverse
 			break;
         case 40:
             if(IsKobo()) {
 #ifdef KOBO
                 if(IsKoboWifiOn()) {
-                    _tcscpy(OutBuffer,_T("Wifi\nOff"));
+                    lk::strcpy(OutBuffer, _T("Wifi\nOff"), Size);
                 } else {
-                    _tcscpy(OutBuffer,_T("Wifi\nOn"));
+                    lk::strcpy(OutBuffer, _T("Wifi\nOn"), Size);
                 }
 #endif
             } else {
-                _tcscpy(OutBuffer,_T(""));
+              lk::strcpy(OutBuffer,  _T(""), Size);
             }
             break;
 		case 41:
@@ -692,7 +692,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   if (_tcsstr(OutBuffer, TEXT("$(PCONLY)"))) {
       if(IsEmbedded()) {
-        _tcscpy(OutBuffer,_T(""));
+        lk::strcpy(OutBuffer, _T(""), Size);
         invalid = true;
       } else {
         ReplaceInString(OutBuffer, TEXT("$(PCONLY)"), TEXT(""), Size);
@@ -703,7 +703,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       if(IsEmbedded()) {
         ReplaceInString(OutBuffer, TEXT("$(NOTPC)"), TEXT(""), Size);
       } else {
-        _tcscpy(OutBuffer,_T(""));
+        lk::strcpy(OutBuffer, _T(""), Size);
         invalid = true;
       }
       if (--items<=0) goto label_ret;
@@ -720,7 +720,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       if(CanRotateScreen()) {
         ReplaceInString(OutBuffer, TEXT("$(SCREENROTATE)"), TEXT(""), Size);
       } else {
-        _tcscpy(OutBuffer,_T(""));
+        lk::strcpy(OutBuffer, _T(""), Size);
         invalid = true;
       }
       if (--items<=0) goto label_ret;
@@ -740,10 +740,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     // test mode only
     CustomKeyMode_t key = CustomKeyFromMenu(i);
     if (key != CustomKeyMode_t::ckDisabled) {
-      _tcscpy(OutBuffer, CustomKeyLabel(key));
+      lk::strcpy(OutBuffer,  CustomKeyLabel(key), Size);
     } else {
       invalid = true;              // non selectable
-      _tcscpy(OutBuffer, _T(""));  // make it invisible
+      lk::strcpy(OutBuffer,  _T(""), Size);  // make it invisible
     }                              // MM
   }
 label_ret:

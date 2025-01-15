@@ -102,32 +102,32 @@ void InitFlightDataRecorder() {
 
 
   i=0;
-  _tcscpy( FDR[i++].szName , _T("External Batt. 1"));
-  _tcscpy( FDR[i++].szName , _T("External Batt. 2"));
-  _tcscpy( FDR[i++].szName , _T("supply  voltage"));
-  _tcscpy( FDR[i++].szName , _T("PDA Batt. %"));
-  _tcscpy( FDR[i++].szName , _T("Outside Air Temperature"));
-  _tcscpy( FDR[i++].szName , _T("Longitude"));
-  _tcscpy( FDR[i++].szName , _T("Latitude"));
-  _tcscpy( FDR[i++].szName , _T("Altitude"));
-  _tcscpy( FDR[i++].szName , _T("Baro Altitude"));
-  _tcscpy( FDR[i++].szName , _T("Alt AGL"));
-  _tcscpy( FDR[i++].szName , _T("Indcated Airspeed"));
-  _tcscpy( FDR[i++].szName , _T("True Airspeed"));
-  _tcscpy( FDR[i++].szName , _T("Ground Speed"));
-  _tcscpy( FDR[i++].szName , _T("TrackBearing"));
-  _tcscpy( FDR[i++].szName , _T("Vario"));
-  _tcscpy( FDR[i++].szName , _T("NettoVario"));
+  lk::strcpy( FDR[i++].szName , _T("External Batt. 1"));
+  lk::strcpy( FDR[i++].szName , _T("External Batt. 2"));
+  lk::strcpy( FDR[i++].szName , _T("supply  voltage"));
+  lk::strcpy( FDR[i++].szName , _T("PDA Batt. %"));
+  lk::strcpy( FDR[i++].szName , _T("Outside Air Temperature"));
+  lk::strcpy( FDR[i++].szName , _T("Longitude"));
+  lk::strcpy( FDR[i++].szName , _T("Latitude"));
+  lk::strcpy( FDR[i++].szName , _T("Altitude"));
+  lk::strcpy( FDR[i++].szName , _T("Baro Altitude"));
+  lk::strcpy( FDR[i++].szName , _T("Alt AGL"));
+  lk::strcpy( FDR[i++].szName , _T("Indcated Airspeed"));
+  lk::strcpy( FDR[i++].szName , _T("True Airspeed"));
+  lk::strcpy( FDR[i++].szName , _T("Ground Speed"));
+  lk::strcpy( FDR[i++].szName , _T("TrackBearing"));
+  lk::strcpy( FDR[i++].szName , _T("Vario"));
+  lk::strcpy( FDR[i++].szName , _T("NettoVario"));
 
 
-  _tcscpy( FDR[i++].szName , _T("Acceleration X"));
-  _tcscpy( FDR[i++].szName , _T("Acceleration Y"));
-  _tcscpy( FDR[i++].szName , _T("Acceleration Z"));
-  _tcscpy( FDR[i++].szName , _T("Ballast"));
-  _tcscpy( FDR[i++].szName , _T("Bugs"));
-  _tcscpy( FDR[i++].szName , _T("MacReady"));
-  _tcscpy( FDR[i++].szName , _T("Wind speed"));
-  _tcscpy( FDR[i++].szName , _T("Wind direction"));
+  lk::strcpy( FDR[i++].szName , _T("Acceleration X"));
+  lk::strcpy( FDR[i++].szName , _T("Acceleration Y"));
+  lk::strcpy( FDR[i++].szName , _T("Acceleration Z"));
+  lk::strcpy( FDR[i++].szName , _T("Ballast"));
+  lk::strcpy( FDR[i++].szName , _T("Bugs"));
+  lk::strcpy( FDR[i++].szName , _T("MacReady"));
+  lk::strcpy( FDR[i++].szName , _T("Wind speed"));
+  lk::strcpy( FDR[i++].szName , _T("Wind direction"));
 
   if(iLogDelay == 0) return;  // Nothing to do
 

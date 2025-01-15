@@ -29,7 +29,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	TCHAR TempString[READLINE_LENGTH];
 	memset(TempString, 0, sizeof(TempString)); // clear TempString
 
-	_tcscpy(TempString, String);
+	lk::strcpy(TempString, String);
 
 	TCHAR *pToken = NULL;
 
@@ -52,7 +52,7 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	// remove trailing spaces
 	for (int i=_tcslen(pToken)-1; i>1; i--) if (pToken[i]==' ') pToken[i]=0; else break;
 
-	_tcscpy(Temp->Name, pToken);
+	lk::strcpy(Temp->Name, pToken);
 
 	//	Field 3 : Latitude - decimal degrees.
 	if ((pToken = tok.Next({_T(',')})) == NULL)

@@ -104,7 +104,7 @@ static int	iRectangleSize = 4;
       painted++;
 
       POINT sc = _Proj.ToRasterPoint(target_lat, target_lon);
-      _tcscpy(lbuffer,_T(""));
+      lk::strcpy(lbuffer,_T(""));
       if (DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
         _tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
       }
@@ -167,7 +167,7 @@ static int	iRectangleSize = 4;
 		sc_name.y -= NIBLSCALE(16);
 		sc_av = sc_name;
 
-		_tcscpy(lbuffer,_T(""));
+		lk::strcpy(lbuffer,_T(""));
 		if (DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
 			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
 		}

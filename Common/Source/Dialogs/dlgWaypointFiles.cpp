@@ -27,7 +27,7 @@ static void getVariables(WndForm * pForm) {
           str = _T("");
         }
         if(_tcscmp(szWaypointFile[i], str)!= 0) {
-          _tcscpy(szWaypointFile[i], str);
+          lk::strcpy(szWaypointFile[i], str);
           WAYPOINTFILECHANGED= true;
         }
       }

@@ -70,7 +70,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->LD = INVALID_GR;
     Calculated->LDvario = INVALID_GR;
     Calculated->Odometer = 0; // 091228
-    _tcscpy(Calculated->Flaps,_T("???"));
+    lk::strcpy(Calculated->Flaps,_T("???"));
 
     for (i=0; i<MAXAVERAGECLIMBRATESIZE; i++) {
       Calculated->AverageClimbRate[i]= 0;

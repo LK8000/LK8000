@@ -230,7 +230,7 @@ namespace {
 
 		MapWaypointLabel_t* E = &MapWaypointLabelList[MapWaypointLabelListCount];
 
-		_tcscpy(E->Name, Name);
+		lk::strcpy(E->Name, Name);
 		E->Pos = pos;
 		memcpy((void*)&(E->Mode), Mode, sizeof(TextInBoxMode_t));     // E->Mode = Mode;
 		E->AltArivalAGL = AltArivalAGL;
@@ -518,7 +518,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			if(DisplayTextType == DISPLAYNONE) {
 				Buffer2[0] = _T('\0'); // 
 			} else if (DisplayTextType == DISPLAYICAO) {
-				_tcscpy(Buffer2,tp.Code);
+				lk::strcpy(Buffer2,tp.Code);
 			} else if (DisplayTextType == DISPLAYNUMBER) {
 				_stprintf(Buffer2, _T("%d"),tp.Number);
 			} else if(intask || (DisplayTextType != DISPLAYNAMEIFINTASK)) {
@@ -529,7 +529,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 				switch ( ArrivalValue ) {
 					default:
 					case avNone :
-						_tcscpy(Buffer,Buffer2);
+						lk::strcpy(Buffer,Buffer2);
 					break;
 
 					case avGR :
@@ -552,7 +552,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 				}
 				TextDisplayMode.Color=RGB_WHITE;
 			} else {
-				_tcscpy(Buffer,Buffer2);
+				lk::strcpy(Buffer,Buffer2);
 				if (islandable && isairport) {
 					TextDisplayMode.WhiteBold = 1; // outlined
 					TextDisplayMode.Color=RGB_WHITE;

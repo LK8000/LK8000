@@ -749,7 +749,7 @@ int iCnt = 0;
     }
     GPS_Gridline_t NewGrid;
     NewGrid.fValue = (int)Units::ToDistance(fDistTri+0.5);
-    _tcscpy(NewGrid.szLable, text);
+    lk::strcpy(NewGrid.szLable, text);
 
     for(i =0 ;i < FAI_SECTOR_STEPS; i++)
     {

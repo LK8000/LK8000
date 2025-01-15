@@ -227,8 +227,8 @@ _skip1:
 
 _skip2:
 
-    _tcscpy(Scale,TEXT(""));
-    _tcscpy(Scale1,TEXT(""));
+    lk::strcpy(Scale,TEXT(""));
+    lk::strcpy(Scale1,TEXT(""));
 
     //if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) ) {
     if (inpanmode) {

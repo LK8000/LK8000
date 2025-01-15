@@ -51,7 +51,7 @@ void ClearOptimizedTargetPos() {
 	WayPointList[RESWP_OPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_OPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
 	// name will be assigned by function dynamically
-	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
+	lk::strcpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
     }
 
 	for(int i = 0; ValidWayPoint(Task[i].Index); ++i) {

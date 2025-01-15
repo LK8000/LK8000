@@ -156,10 +156,10 @@ static void UpdateButtons(WndForm* pForm) {
 
   auto buttonPilotName = (pForm->FindByName<WndButton>(TEXT("cmdPilotName")));
   if (buttonPilotName) {
-    _tcscpy(val,PilotName_Config);
+    lk::strcpy(val,PilotName_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, MsgToken<7>());
+      lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M524_ = "Pilot name" 
     _stprintf(text,TEXT("%s: %s"), MsgToken<524>(), val);
@@ -168,10 +168,10 @@ static void UpdateButtons(WndForm* pForm) {
 
   auto buttonAircraftType = (pForm->FindByName<WndButton>(TEXT("cmdAircraftType")));
   if (buttonAircraftType) {
-    _tcscpy(val,AircraftType_Config);
+    lk::strcpy(val,AircraftType_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, MsgToken<7>());
+      lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M59_ = "Aircraft type" 
     _stprintf(text,TEXT("%s: %s"), MsgToken<59>(), val);
@@ -180,10 +180,10 @@ static void UpdateButtons(WndForm* pForm) {
 
   auto buttonAircraftRego = (pForm->FindByName<WndButton>(TEXT("cmdAircraftRego")));
   if (buttonAircraftRego) {
-    _tcscpy(val,AircraftRego_Config);
+    lk::strcpy(val,AircraftRego_Config);
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, MsgToken<7>());
+      lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M57_ = "Aircraft Reg" 
     _stprintf(text,TEXT("%s: %s"), MsgToken<57>(), val);
@@ -192,10 +192,10 @@ static void UpdateButtons(WndForm* pForm) {
 
   auto buttonCompetitionClass = (pForm->FindByName<WndButton>(TEXT("cmdCompetitionClass")));
   if (buttonCompetitionClass) {
-    _tcscpy(val,CompetitionClass_Config);
+    lk::strcpy(val,CompetitionClass_Config);
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, MsgToken<7>());
+      lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M936_ = "Competition Class" 
     _stprintf(text,TEXT("%s: %s"), MsgToken<936>(), val);
@@ -204,10 +204,10 @@ static void UpdateButtons(WndForm* pForm) {
 
   auto buttonCompetitionID = (pForm->FindByName<WndButton>(TEXT("cmdCompetitionID")));
   if (buttonCompetitionID) {
-    _tcscpy(val,CompetitionID_Config);
+    lk::strcpy(val,CompetitionID_Config);
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
-      _tcscpy(val, MsgToken<7>());
+      lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M938_ = "Competition ID" 
     _stprintf(text,TEXT("%s: %s"), MsgToken<938>(), val);
@@ -341,7 +341,7 @@ static void UpdateDeviceSetupButton(WndForm* pForm,size_t idx /*, const TCHAR *N
     const TCHAR* Name = df->GetAsString();
     if (tstring_view(Name) != Port.szDeviceName) {
       COMPORTCHANGED = true;
-      _tcscpy(Port.szDeviceName, Name);
+      lk::strcpy(Port.szDeviceName, Name);
     }
   }
 
@@ -491,17 +491,17 @@ static void OnGearWarningModeChange(DataField *Sender, DataField::DataAccessKind
 
 static void OnAircraftRegoClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, AircraftRego_Config);
+  lk::strcpy(Temp, AircraftRego_Config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(AircraftRego_Config, Temp);
+  lk::strcpy(AircraftRego_Config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnAircraftTypeClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, AircraftType_Config);
+  lk::strcpy(Temp, AircraftType_Config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(AircraftType_Config, Temp);
+  lk::strcpy(AircraftType_Config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
@@ -515,7 +515,7 @@ extern bool Sysop(TCHAR *command);
 
 static void OnPilotNameClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, PilotName_Config);
+  lk::strcpy(Temp, PilotName_Config);
   dlgTextEntryShowModal(Temp, 100);
 
   //
@@ -523,7 +523,7 @@ static void OnPilotNameClicked(WndButton* pWnd) {
   //
   if (!SysOpMode) {
     if (!_tcscmp(Temp, _T("OPSYS"))) {
-      _tcscpy(Temp, _T("SYSOP"));
+      lk::strcpy(Temp, _T("SYSOP"));
       Sysop(Temp);  // activate sysop mode and exit dialog
       if (pWnd) {
         WndForm* pForm = pWnd->GetParentWndForm();
@@ -549,7 +549,7 @@ static void OnPilotNameClicked(WndButton* pWnd) {
   }
 
   if (!SysOpMode)
-    _tcscpy(PilotName_Config, Temp);
+    lk::strcpy(PilotName_Config, Temp);
 
   UpdateButtons(pWnd->GetParentWndForm());
 }
@@ -583,9 +583,9 @@ static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKin
 
 static void OnLiveTrackersrvClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, tracking::server_config);
+  lk::strcpy(Temp, tracking::server_config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(tracking::server_config, Temp);
+  lk::strcpy(tracking::server_config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
@@ -599,33 +599,33 @@ static void OnLiveTrackerportClicked(WndButton* pWnd) {
 
 static void OnLiveTrackerusrClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, tracking::usr_config);
+  lk::strcpy(Temp, tracking::usr_config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(tracking::usr_config, Temp);
+  lk::strcpy(tracking::usr_config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, tracking::pwd_config);
+  lk::strcpy(Temp, tracking::pwd_config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(tracking::pwd_config, Temp);
+  lk::strcpy(tracking::pwd_config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnCompetitionClassClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, CompetitionClass_Config);
+  lk::strcpy(Temp, CompetitionClass_Config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(CompetitionClass_Config, Temp);
+  lk::strcpy(CompetitionClass_Config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
 static void OnCompetitionIDClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _tcscpy(Temp, CompetitionID_Config);
+  lk::strcpy(Temp, CompetitionID_Config);
   dlgTextEntryShowModal(Temp, 100);
-  _tcscpy(CompetitionID_Config, Temp);
+  lk::strcpy(CompetitionID_Config, Temp);
   UpdateButtons(pWnd->GetParentWndForm());
 }
 
@@ -1232,7 +1232,7 @@ void UpdateComPortSetting(WndForm* pForm,  size_t idx, const TCHAR* szPortName) 
     }
     }
     TCHAR StateText[255];
-    _tcscpy(StateText,_T(""));
+    lk::strcpy(StateText,_T(""));
     if( DeviceList[SelectedDevice].nmeaParser.gpsValid) _tcscat(StateText,TEXT("GPSFix "));
     if( DeviceList[SelectedDevice].nmeaParser.isFlarm) _tcscat(StateText,TEXT("Flarm "));
     if( devIsBaroSource(DeviceList[SelectedDevice])) _tcscat(StateText,TEXT("Baro "));
@@ -2374,9 +2374,9 @@ DataField* dfe = wp->GetDataField();
   }
 
   if (_tcscmp(szPolarFile,_T(""))==0) 
-    _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
+    lk::strcpy(temptext,_T(LKD_DEFAULT_POLAR));
   else
-    _tcscpy(temptext,szPolarFile);
+    lk::strcpy(temptext,szPolarFile);
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpPolarFile"));
   if (wp) {
@@ -2403,7 +2403,7 @@ DataField* dfe = wp->GetDataField();
 #endif
   }
 
-  _tcscpy(temptext,szMapFile);
+  lk::strcpy(temptext,szMapFile);
   wp = pForm->FindByName<WndProperty>(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2418,7 +2418,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  _tcscpy(temptext,szTerrainFile);
+  lk::strcpy(temptext,szTerrainFile);
   wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2429,7 +2429,7 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  _tcscpy(temptext,szAirfieldFile);
+  lk::strcpy(temptext,szAirfieldFile);
   wp = pForm->FindByName<WndProperty>(TEXT("prpAirfieldFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -2455,7 +2455,7 @@ DataField* dfe = wp->GetDataField();
   }
 
 
-  _tcscpy(temptext,szInputFile);
+  lk::strcpy(temptext,szInputFile);
   wp = pForm->FindByName<WndProperty>(TEXT("prpInputFile"));
   if (wp) {
     DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
@@ -3923,9 +3923,9 @@ int ival;
   wp = pForm->FindByName<WndProperty>(TEXT("prpMapFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
+    lk::strcpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,szMapFile)) {
-      _tcscpy(szMapFile,temptext);
+      lk::strcpy(szMapFile,temptext);
       MAPFILECHANGED= true;
     }
   }
@@ -3933,9 +3933,9 @@ int ival;
   wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
+    lk::strcpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,szTerrainFile)) {
-      _tcscpy(szTerrainFile,temptext);
+      lk::strcpy(szTerrainFile,temptext);
       TERRAINFILECHANGED= true;
       if(WaypointsOutOfRange > 1)
       {
@@ -3948,9 +3948,9 @@ int ival;
   wp = pForm->FindByName<WndProperty>(TEXT("prpAirfieldFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
+    lk::strcpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,szAirfieldFile)) {
-      _tcscpy(szAirfieldFile,temptext);
+      lk::strcpy(szAirfieldFile,temptext);
       AIRFIELDFILECHANGED= true;
     }
   }
@@ -3958,9 +3958,9 @@ int ival;
   wp = pForm->FindByName<WndProperty>(TEXT("prpLanguageCode"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    _tcscpy(temptext, dfe->GetAsString());
+    lk::strcpy(temptext, dfe->GetAsString());
     if (_tcscmp(temptext,szLanguageCode)) {
-      _tcscpy(szLanguageCode,temptext);
+      lk::strcpy(szLanguageCode,temptext);
       requirerestart = true; // restart needed for language load
       // LKLoadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
     }
@@ -3969,9 +3969,9 @@ int ival;
   wp = pForm->FindByName<WndProperty>(TEXT("prpInputFile"));
   if (wp) {
     DataFieldFileReader* dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
+    lk::strcpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,szInputFile)) {
-      _tcscpy(szInputFile,temptext);
+      lk::strcpy(szInputFile,temptext);
       requirerestart = true;
     }
   }
@@ -4540,13 +4540,13 @@ void UpdateAircraftConfig(WndForm* pForm){
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
+    lk::strcpy(temptext, dfe->GetPathFile());
     if (_tcscmp(temptext,_T(""))==0) {
-        _tcscpy(temptext,_T(LKD_DEFAULT_POLAR));
+        lk::strcpy(temptext,_T(LKD_DEFAULT_POLAR));
     }
 
     if (_tcscmp(temptext,szPolarFile)) {
-      _tcscpy(szPolarFile,temptext);
+      lk::strcpy(szPolarFile,temptext);
       POLARFILECHANGED = true;
       GlidePolar::SetBallast();
     }

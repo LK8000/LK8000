@@ -33,7 +33,7 @@ static void OnStartPointPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Sur
     int i = DrawListIndex;
 
     if ((StartPoints[i].Index != -1)&&(StartPoints[i].Active)) {
-      _tcscpy(label, WayPointList[StartPoints[i].Index].Name);
+      lk::strcpy(label, WayPointList[StartPoints[i].Index].Name);
     } else {
       int j;
       int i0=0;
@@ -44,9 +44,9 @@ static void OnStartPointPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Sur
         }
       }
       if (i==i0) {
-        _tcscpy(label, TEXT("(add waypoint)"));
+        lk::strcpy(label, TEXT("(add waypoint)"));
       } else {
-        _tcscpy(label, TEXT(" "));
+        lk::strcpy(label, TEXT(" "));
       }
     }
     Surface.SetTextColor(RGB_BLACK);

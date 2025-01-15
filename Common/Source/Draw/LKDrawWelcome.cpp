@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include "RGB.h"
 #include "OS/Memory.h"
+#include "utils/strcpy.h"
 
 void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
@@ -65,7 +66,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
 
 
-  _tcscpy(Buffer, (SIMMODE) ? _T("SIMU") : _T("FLY"));
+  lk::strcpy(Buffer, (SIMMODE) ? _T("SIMU") : _T("FLY"));
   #if TESTBENCH
   _tcscat(Buffer,_T(",TEST"));
   #endif
@@ -105,7 +106,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
       LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
 
-  _tcscpy(Buffer,MsgToken<874>()); // Click on center screen to begin
+  lk::strcpy(Buffer,MsgToken<874>()); // Click on center screen to begin
   y= rc.bottom-BottomSize-textSize.cy-NIBLSCALE(2);
   LKWriteText(Surface, Buffer,(rc.right-rc.left)/2, y , WTMODE_NORMAL, WTALIGN_CENTER,RGB_WHITENOREV, false);
 

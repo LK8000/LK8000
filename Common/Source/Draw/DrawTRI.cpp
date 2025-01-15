@@ -247,7 +247,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   else if (beta < -1)
 	_stprintf(Buffer, TEXT("%2.0f%s"), -beta, MsgToken<2179>());
   else
-	_tcscpy(Buffer, TEXT("--"));
+	lk::strcpy(Buffer, TEXT("--"));
 
   LKWriteText(Surface, Buffer, Start.x , bankindy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
@@ -619,7 +619,7 @@ double vscale = 0.25;
   else if (beta < -1)
 	_stprintf(Buffer, TEXT("%2.0f%s"), -beta, MsgToken<2179>());
   else
-	_tcscpy(Buffer, TEXT("--"));
+	lk::strcpy(Buffer, TEXT("--"));
 
   LKWriteText(Surface, Buffer, Start.x , bankindy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 

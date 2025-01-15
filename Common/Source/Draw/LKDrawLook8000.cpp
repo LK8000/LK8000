@@ -278,7 +278,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
         if (gateinuse < 0) {
             // LKTOKEN  _@M157_ = "CLOSED"
-            _tcscpy(Buffer, MsgToken<157>());
+            lk::strcpy(Buffer, MsgToken<157>());
         } else {
             const TCHAR* StartGateName = ScreenLandscape ? _T("Start ") : _T("ST ");
             _stprintf(Buffer, _T("%s%d/%d"), StartGateName, gateinuse + 1, PGNumberOfGates);
@@ -416,7 +416,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             _stprintf(BufferValue, _T("START %s"), BufferTitle);
         } else {
             // LKTOKEN  _@M316_ = "GATES CLOSED"
-            _tcscpy(BufferValue, MsgToken<316>());
+            lk::strcpy(BufferValue, MsgToken<316>());
         }
         rcy = yrightoffset - SizeBigFont.cy - (SizeGatesFont.cy * 2);
         rcx = rc.right - RIGHTMARGIN;
@@ -427,20 +427,20 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         if (HaveGates()) {
             if (!DerivedDrawInfo.Flying) {
                 // LKTOKEN  _@M922_ = "NOT FLYING"
-                _tcscpy(BufferValue, MsgToken<922>());
+                lk::strcpy(BufferValue, MsgToken<922>());
             } else {
                 bool from_inside = ExitStart(DerivedDrawInfo);
                 if (gatechrono > 0) {
                     // IsInSector works reversed!
                     if (!from_inside && DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                        _tcscpy(BufferValue, MsgToken<923>());
+                        lk::strcpy(BufferValue, MsgToken<923>());
                     } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                        _tcscpy(BufferValue, MsgToken<924>());
+                        lk::strcpy(BufferValue, MsgToken<924>());
                     } else {
                         // LKTOKEN  _@M921_ = "countdown"
-                        _tcscpy(BufferValue, MsgToken<921>());
+                        lk::strcpy(BufferValue, MsgToken<921>());
                     }
                 } else {
                     BufferValue[0] = _T('\0');
@@ -459,22 +459,22 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                             // IsInSector works reversed!
                             if (!from_inside && DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                                _tcscpy(BufferValue, MsgToken<923>());
+                                lk::strcpy(BufferValue, MsgToken<923>());
                             } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                                 // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                                _tcscpy(BufferValue, MsgToken<924>());
+                                lk::strcpy(BufferValue, MsgToken<924>());
                             }
                         }
                     }
                     if (BufferValue[0] == _T('\0')) {
                         // LKTOKEN  _@M314_ = "GATE OPEN"
-                        _tcscpy(BufferValue, MsgToken<314>());
+                        lk::strcpy(BufferValue, MsgToken<314>());
                     }
                 }
             }
         } else {
             // LKTOKEN  _@M925_ = "NO TSK START"
-            _tcscpy(BufferValue, MsgToken<925>());
+            lk::strcpy(BufferValue, MsgToken<925>());
         }
         LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
@@ -488,7 +488,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 LKFormatValue(getCustomOverlay(Overlay_RightMid), true, BufferValue, BufferUnit, BufferTitle,&bmpValue,&bmpTitle);
             } else {
                 if (OverTargetIndex < 0) goto _skip_glider_RightMid;
-               _tcscpy(BufferTitle, _T(""));
+               lk::strcpy(BufferTitle, _T(""));
                 LKFormatGR(OverTargetIndex, BufferValue, BufferUnit);
             }
             rcy = yrightoffset - SizeBigFont.cy;
@@ -526,7 +526,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 LKFormatValue(getCustomOverlay(Overlay_RightBottom), true, BufferValue, BufferUnit, BufferTitle,&bmpValue,&bmpTitle);
             } else {
               if (OverTargetIndex < 0)  goto _skip_glider_RightBottom;
-              _tcscpy(BufferTitle, _T(""));
+              lk::strcpy(BufferTitle, _T(""));
               LKFormatAltDiff(OverTargetIndex, BufferValue, BufferUnit);
             }
 
@@ -560,8 +560,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             _skip_glider_RightBottom: ;
         } else { // ISGLIDER
             int unit_len=0;
-            _tcscpy(BufferTitle, _T(""));
-            _tcscpy(BufferUnit, _T(""));
+            lk::strcpy(BufferTitle, _T(""));
+            lk::strcpy(BufferUnit, _T(""));
             Surface.SelectObject(LK8OverlayBigFont);
             if (isOverlayHidden(Overlay_RightMid)) goto _skip_para_RightMid;
             bmpValue = BmpNone;
@@ -598,8 +598,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             _skip_para_RightMid:
 
 
-            _tcscpy(BufferTitle, _T(""));
-            _tcscpy(BufferUnit, _T(""));
+            lk::strcpy(BufferTitle, _T(""));
+            lk::strcpy(BufferUnit, _T(""));
             // Altitude difference with current MC
             if (isOverlayHidden(Overlay_RightBottom)) goto _skip_para_RightBottom;
             bmpValue = BmpNone;
@@ -696,22 +696,22 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 TCHAR amcmode[10];
                 switch (AutoMcMode) {
                     case amcFinalGlide:
-                        _tcscpy(amcmode, MsgToken<1676>());
+                        lk::strcpy(amcmode, MsgToken<1676>());
                         break;
                     case amcAverageClimb:
-                        _tcscpy(amcmode, MsgToken<1678>());
+                        lk::strcpy(amcmode, MsgToken<1678>());
                         break;
                     case amcFinalAndClimb:
                         if (DerivedDrawInfo.FinalGlide)
-                            _tcscpy(amcmode, MsgToken<1676>());
+                            lk::strcpy(amcmode, MsgToken<1676>());
                         else
-                            _tcscpy(amcmode, MsgToken<1678>());
+                            lk::strcpy(amcmode, MsgToken<1678>());
                         break;
                     case amcEquivalent:
-                        _tcscpy(amcmode, MsgToken<1680>());
+                        lk::strcpy(amcmode, MsgToken<1680>());
                         break;
                     default:
-                        _tcscpy(amcmode, _T("?"));
+                        lk::strcpy(amcmode, _T("?"));
                         break;
                 }
                 Surface.Rectangle( rightmargin, yMcMode, rc.right, yMcMode + SizeMcModeFont.cy);
@@ -781,12 +781,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 switch (LKVarioVal) {
                     case vValVarioNetto:
                         LKFormatValue(LK_NETTO, false, BufferValue, BufferUnit, BufferTitle);
-                        _tcscpy(BufferUnit, _T("NT"));
+                        lk::strcpy(BufferUnit, _T("NT"));
                         break;
                     case vValVarioSoll:
                     default:
                         LKFormatValue(LK_SPEED_DOLPHIN, false, BufferValue, BufferUnit, BufferTitle);
-                        _tcscpy(BufferUnit, _T("SF"));
+                        lk::strcpy(BufferUnit, _T("SF"));
                         break;
                 }
             }

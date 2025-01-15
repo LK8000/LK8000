@@ -104,7 +104,7 @@ void DetectKeyboardModel() {
 
 bool Startup(const TCHAR* szCmdLine) {
 
-  _tcscpy(LK8000_Version, _T(LKFORK " v" LKVERSION "." LKRELEASE " " __DATE__));
+  lk::strcpy(LK8000_Version, _T(LKFORK " v" LKVERSION "." LKRELEASE " " __DATE__));
   StartupStore(_T("------------------------------------------------------------"));
 #ifdef KOBO
   StartupStore(TEXT(". Starting %s %s"), LK8000_Version,_T("KOBO"));
@@ -268,13 +268,13 @@ bool Startup(const TCHAR* szCmdLine) {
   InstallSystem();
 
   LocalPath(defaultProfileFile, _T(LKD_CONF), _T(LKPROFILE));
-  _tcscpy(startProfileFile, defaultProfileFile);
+  lk::strcpy(startProfileFile, defaultProfileFile);
   LocalPath(defaultAircraftFile,_T(LKD_CONF), _T(LKAIRCRAFT));
-  _tcscpy(startAircraftFile, defaultAircraftFile);
+  lk::strcpy(startAircraftFile, defaultAircraftFile);
   LocalPath(defaultPilotFile,_T(LKD_CONF), _T(LKPILOT));
-  _tcscpy(startPilotFile, defaultPilotFile);
+  lk::strcpy(startPilotFile, defaultPilotFile);
   LocalPath(defaultDeviceFile,_T(LKD_CONF), _T(LKDEVICE));
-  _tcscpy(startDeviceFile, defaultDeviceFile);
+  lk::strcpy(startDeviceFile, defaultDeviceFile);
 
 #if !defined(UNDER_CE) || (defined(__linux__) && !defined(ANDROID))
   if (!LK8000GetOpts(szCmdLine)) return 0;

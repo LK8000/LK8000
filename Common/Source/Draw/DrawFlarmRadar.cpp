@@ -964,7 +964,7 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 		asFLARMPos[i].iColorIdx = min( asFLARMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
 
-		_tcscpy(asFLARMPos[i].szGliderType,_T(""));
+		lk::strcpy(asFLARMPos[i].szGliderType,_T(""));
 
 		const FlarmId* flarmId = LookupFlarmId(LKTraffic[i].RadioId);
 		if(flarmId!= NULL) {
@@ -1264,7 +1264,7 @@ if(bSideview)
 			RenderFlarmPlaneSideview(Surface,   rc, fx,  fFlarmAlt, asFLARMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
 			break;
 	  }
-	  _tcscpy(lbuffer,_T(""));
+	  lk::strcpy(lbuffer,_T(""));
 	  if (LKTraffic[i].Cn[0]!=_T('?')) { // 100322
 	    _stprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
 	  }

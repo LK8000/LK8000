@@ -475,7 +475,7 @@ static void OnSaveClicked(WndButton* pWnd){
   int file_index = dfe->GetAsInteger();
 
   // TODO enhancement: suggest a good new name not already in the list
-  _tcscpy(task_name,TEXT("NEW"));
+  lk::strcpy(task_name,TEXT("NEW"));
   dlgTextEntryShowModal(task_name, 10); // max length
 
   if (_tcslen(task_name)>0) {

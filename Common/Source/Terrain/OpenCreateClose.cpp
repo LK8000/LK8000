@@ -25,7 +25,7 @@ void RasterTerrain::OpenTerrain() {
   if ((_tcslen(szFile) > 0) && (_tcsstr(szFile, _T(".DEM")) || _tcsstr(szFile, _T(".dem")))) {
     if (!CreateTerrainMap(szFile)) {
       // If no terrain will be found, the registry will be invalid on next run
-      _tcscpy(szTerrainFile, _T(""));
+      lk::strcpy(szTerrainFile, _T(""));
       StartupStore(_T("... INVALID TERRAIN file <%s>"), szFile);
       Message::AddMessage(12000, MSG_UNKNOWN, _T("Failed to load terrain, invalid dem file."));
     }

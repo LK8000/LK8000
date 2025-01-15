@@ -74,7 +74,7 @@ void Globals_Init(void) {
   int i;
 
 
-//  _tcscpy(LK8000_Version,_T("")); // No, this is initialised by lk8000 on startup as the first thing
+//  lk::strcpy(LK8000_Version,_T("")); // No, this is initialised by lk8000 on startup as the first thing
 
   ProgramStarted = psInitInProgress;
 
@@ -311,8 +311,8 @@ void Globals_Init(void) {
   LKNumAirspaces=0;
 
   // Name of nearest wp to takeoff and landings
-  _tcscpy(TAKEOFFWP_Name,_T(""));
-  _tcscpy(LANDINGWP_Name,_T(""));
+  lk::strcpy(TAKEOFFWP_Name,_T(""));
+  lk::strcpy(LANDINGWP_Name,_T(""));
 
   // LK8000 Hearth beats at 2Hz
   LKHearthBeats=0;
@@ -417,8 +417,8 @@ void Globals_Init(void) {
 
   NearestAirspaceHDist=-1;
   NearestAirspaceVDist=0;
-  _tcscpy(NearestAirspaceName,_T(""));
-  _tcscpy(NearestAirspaceVName,_T(""));
+  lk::strcpy(NearestAirspaceName,_T(""));
+  lk::strcpy(NearestAirspaceVName,_T(""));
 
   //Airspace Warnings
   AIRSPACEWARNINGS = TRUE;

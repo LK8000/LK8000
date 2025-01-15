@@ -48,7 +48,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
   static short	row[PANELROWS+1], hrow[(PANELCOLUMNS*2)+1], qrow[(PANELROWS*4)+1];
 
   bool showunit=false;
-  _tcscpy(Empty,_T(""));
+  lk::strcpy(Empty,_T(""));
 
   if (forceinit) DoInit[MDI_DRAWINFOPAGE]=true;
 
@@ -233,26 +233,26 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
 				index = Task[ActiveTaskPoint].Index;
 				if ( index >=0 ) {
-					_tcscpy(Buffer, WayPointList[index].Name);
+					lk::strcpy(Buffer, WayPointList[index].Name);
 				} else {
-					_tcscpy(Buffer,MsgToken<912>()); // [no dest]
+					lk::strcpy(Buffer,MsgToken<912>()); // [no dest]
 					icolor=AMBERCOLOR;
 				}
 			} else {
-				_tcscpy(Buffer,MsgToken<912>()); // [no dest]
+				lk::strcpy(Buffer,MsgToken<912>()); // [no dest]
 				icolor=AMBERCOLOR;
 			}
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_tcscpy(Buffer,MsgToken<913>()); // Experimental
+			lk::strcpy(Buffer,MsgToken<913>()); // Experimental
 #else
-			_tcscpy(Buffer,_T("---"));
+			lk::strcpy(Buffer,_T("---"));
 #endif
 			break;
 		case IM_CONTEST:
 		case IM_HSI: //for the HSI the title text is computed in his section down
-			_tcscpy(Buffer,TEXT(""));
+			lk::strcpy(Buffer,TEXT(""));
 			break;
 		case IM_TRF+IM_TOP:
 		case IM_TARGET+IM_TOP:
@@ -276,7 +276,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 
 			} else {
-				_tcscpy(Buffer,MsgToken<914>()); // [no target]
+				lk::strcpy(Buffer,MsgToken<914>()); // [no target]
 				icolor=AMBERCOLOR;
 			}
 
@@ -453,26 +453,26 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
               showunit=LKFormatValue(LK_XC_DIST, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_3TPS_DIST, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16],
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(4);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16],
 											&qrow[3],&qrow[4],&qrow[2],&BmpValue);
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_ALTARRIV, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16],
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16],
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
@@ -558,8 +558,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
             if (AdditionalContestRule != CContestMgr::ContestRule::OLC)
               showunit=LKFormatValue(LK_XC_FAI_SCORE, true, BufferValue, BufferUnit, BufferTitle);
             else {
-              _tcscpy(BufferValue, _T(""));
-              _tcscpy(BufferTitle, _T(""));
+              lk::strcpy(BufferValue, _T(""));
+              lk::strcpy(BufferTitle, _T(""));
             }
 			break;
 		case IM_AUX:
@@ -591,19 +591,19 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
               showunit=LKFormatValue(LK_XC_SCORE, true, BufferValue, BufferUnit, BufferTitle);
             else
 			  showunit=LKFormatValue(LK_OLC_3TPS_PREDICTED_DIST, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(8);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_EMPTY, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 	}
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5],&BmpValue);
@@ -659,8 +659,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CONTEST:
             if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
-				_tcscpy(BufferValue, _T(""));
-				_tcscpy(BufferTitle, _T(""));
+				lk::strcpy(BufferValue, _T(""));
+				lk::strcpy(BufferTitle, _T(""));
 			} else
 			  showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8]);
@@ -695,8 +695,8 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CONTEST:
             if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
-              _tcscpy(BufferValue, _T(""));
-              _tcscpy(BufferTitle, _T(""));
+              lk::strcpy(BufferValue, _T(""));
+              lk::strcpy(BufferTitle, _T(""));
             } else
               showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle);
 			break;
@@ -720,7 +720,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	switch(curtype) {
 		case IM_THERMAL:
 			showunit=LKFormatValue(LK_TC_ALL, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		case IM_CRUISE:
 			showunit=LKFormatValue(LK_FL, false, BufferValue, BufferUnit, BufferTitle);
@@ -730,24 +730,24 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CONTEST:
             if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
-              _tcscpy(BufferValue, _T(""));
-              _tcscpy(BufferTitle, _T(""));
+              lk::strcpy(BufferValue, _T(""));
+              lk::strcpy(BufferTitle, _T(""));
             } else
               showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(12);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_TARGET_AVGVARIO, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 	}
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8],&BmpValue);
@@ -880,24 +880,24 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 			break;
 		case IM_CONTEST:
             if (AdditionalContestRule != CContestMgr::ContestRule::OLC) {
-              _tcscpy(BufferValue, _T(""));
-              _tcscpy(BufferTitle, _T(""));
+              lk::strcpy(BufferValue, _T(""));
+              lk::strcpy(BufferTitle, _T(""));
             } else {
-              _tcscpy(BufferValue, _T(""));
-              _tcscpy(BufferTitle, _T(""));
+              lk::strcpy(BufferValue, _T(""));
+              lk::strcpy(BufferTitle, _T(""));
             }
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(16);
 			showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle,&BmpValue);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 		case IM_TRF+IM_TOP:
 			showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle);
 			break;
 		default:
 			LKFormatValue(LK_ERROR, false, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			break;
 	}
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11],&BmpValue);
@@ -937,21 +937,21 @@ label_TRI:
 	} else {
 		// right
 		LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
+		lk::strcpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[14], &qcolumn[14],&qrow[3],&qrow[4],&qrow[2]);
 		LKFormatValue(LK_GNDSPEED, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
+		lk::strcpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
 		LKFormatValue(LK_HNAV, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
+		lk::strcpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[9],&qrow[10],&qrow[8]);
 		LKFormatValue(LK_VARIO, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
+		lk::strcpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 
 		// left
 		LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-		_tcscpy(BufferUnit,_T(""));
+		lk::strcpy(BufferUnit,_T(""));
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 		LKFormatValue(LK_BANK_ANGLE, true, BufferValue, BufferUnit, BufferTitle);
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
@@ -962,7 +962,7 @@ label_TRI:
 	}
 #if 0
 	_stprintf(BufferValue,_T("%0.1f"),CALCULATED_INFO.TurnRate);
-	_tcscpy(BufferTitle,_T("Rate"));
+	lk::strcpy(BufferTitle,_T("Rate"));
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
 
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
@@ -1009,13 +1009,13 @@ label_HSI:
 		} else { //show next waypoint name
 			icolor=RGB_WHITE;
 			if(ValidTaskPoint(ActiveTaskPoint)) {
-				if(Task[ActiveTaskPoint].Index >=0) _tcscpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
+				if(Task[ActiveTaskPoint].Index >=0) lk::strcpy(Buffer, WayPointList[Task[ActiveTaskPoint].Index].Name);
 				else {
-					_tcscpy(Buffer,MsgToken<912>()); // [no dest]
+					lk::strcpy(Buffer,MsgToken<912>()); // [no dest]
 					icolor=AMBERCOLOR;
 				}
 			} else {
-				_tcscpy(Buffer,MsgToken<912>()); // [no dest]
+				lk::strcpy(Buffer,MsgToken<912>()); // [no dest]
 				icolor=AMBERCOLOR;
 			}
 		}
@@ -1024,26 +1024,26 @@ label_HSI:
 		showunit=true;
 		if (ScreenLandscape) {
 			LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 			LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[7],&qrow[8],&qrow[6]);
 			LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 			if(!approach) { //if not landing print also dist, ETE and ETA respect task end
 				LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
 				LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
 				if(ScreenSize==ss800x480 || ScreenSize==ss480x272)
 					WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[15], &qcolumn[15],&qrow[7],&qrow[8],&qrow[6]);
 				else {
-					_tcscpy(BufferUnit,_T(""));
+					lk::strcpy(BufferUnit,_T(""));
 					WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[7],&qrow[8],&qrow[6]);
 				}
 				LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 			} else { //show other interesting things for landing
 				int col=16;
@@ -1053,38 +1053,38 @@ label_HSI:
 					unitInvisible=false;
 				}
 				LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-				if(unitInvisible) _tcscpy(BufferUnit,_T(""));
+				if(unitInvisible) lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[3],&qrow[4],&qrow[2]);
 				LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
-				if(unitInvisible) _tcscpy(BufferUnit,_T(""));
+				if(unitInvisible) lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[col], &qcolumn[col],&qrow[12],&qrow[13],&qrow[11]);
 			}
 		} else {
 			LKFormatValue(LK_NEXT_ETE, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 			LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 			LKFormatValue(LK_NEXT_ETA, true, BufferValue, BufferUnit, BufferTitle);
-			_tcscpy(BufferUnit,_T(""));
+			lk::strcpy(BufferUnit,_T(""));
 			WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 			if(!approach) { //if not landing print also dist, ETE and ETA respect task end
 				LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
 				LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[6],&qrow[7],&qrow[5]);
 				LKFormatValue(LK_FIN_ETA, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 			} else {
 				LKFormatValue(LK_IAS, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[3],&qrow[4],&qrow[2]);
 				LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
-				_tcscpy(BufferUnit,_T(""));
+				lk::strcpy(BufferUnit,_T(""));
 				WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16], &qcolumn[16],&qrow[12],&qrow[13],&qrow[11]);
 			}
 		}

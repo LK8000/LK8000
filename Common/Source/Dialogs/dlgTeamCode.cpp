@@ -41,10 +41,10 @@ static void Update()
 		if (Value < -1)
 			_stprintf(Text, TEXT("<%2.0f%s"), -Value, MsgToken<2179>());
 		else
-			_tcscpy(Text, TEXT("<>"));
+			lk::strcpy(Text, TEXT("<>"));
 
   } else {
-	_tcscpy(Text, TEXT("---"));
+	lk::strcpy(Text, TEXT("---"));
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRelBearing"));

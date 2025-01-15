@@ -461,7 +461,7 @@ int BuildLandableText(int idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (
   if (WayPointList[idx].Comment != NULL) {
     CopyTruncateString(Comment, MAX_COMMENT, WayPointList[idx].Comment);
   } else {
-      _tcscpy(Comment, TEXT(""));
+      lk::strcpy(Comment, TEXT(""));
   }
 
   if (_tcslen(WayPointList[idx].Freq) > 0) {
@@ -723,7 +723,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
               if (WayPointList[idx].Comment != NULL) {
                 CopyTruncateString(Comment, MAX_COMMENT, WayPointList[idx].Comment);
               } else {
-                  _tcscpy(Comment, TEXT(""));
+                  lk::strcpy(Comment, TEXT(""));
               }
               DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
                               WayPointList[idx].Longitude, &Distance, NULL);

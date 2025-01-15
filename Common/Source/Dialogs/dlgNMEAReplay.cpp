@@ -36,7 +36,7 @@ static void OnStartClicked(WndButton* pWnd) {
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(Port.Replay_FileName,dfe->GetPathFile());
+    lk::strcpy(Port.Replay_FileName,dfe->GetPathFile());
 
   }
   if( Port.ReplaySpeed ==0)
@@ -65,7 +65,7 @@ static void OnCloseClicked(WndButton* pWnd) {
       DataFieldFileReader* dfe;
       dfe = (DataFieldFileReader*)wp->GetDataField();
 
-      _tcscpy(Port.Replay_FileName,dfe->GetPathFile());
+      lk::strcpy(Port.Replay_FileName,dfe->GetPathFile());
 
     }
     wp = wf->FindByName<WndProperty>(TEXT("prpRate"));

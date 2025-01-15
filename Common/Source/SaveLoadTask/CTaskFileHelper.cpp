@@ -268,7 +268,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
 
         LocalPath(taskFileName, _T(LKD_TASKS),  _T("DEMO.lkt"));
     } else {
-        _tcscpy(taskFileName, szFileName);
+        lk::strcpy(taskFileName, szFileName);
     }
 
     try {
@@ -280,7 +280,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
         std::istream stream(&file_stream);
         if (Load(stream)) {
             // We are not using the DEMO.lkt forced by FULL RESET. We use the original task filename.
-            _tcscpy(LastTaskFileName, szFileName);
+            lk::strcpy(LastTaskFileName, szFileName);
             return true;
         }
 

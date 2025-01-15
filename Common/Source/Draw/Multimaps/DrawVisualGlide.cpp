@@ -373,7 +373,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
         TCHAR line2[140], line3[50];
         TCHAR name[NAME_SIZE + 1];
         double ar = Units::ToAltitude(WayPointCalc[wp].AltArriv[AltArrivMode]);
-        _tcscpy(name, WayPointList[wp].Name);
+        lk::strcpy(name, WayPointList[wp].Name);
         CharUpper(name);
 
         if (IsSafetyAltitudeInUse(wp))

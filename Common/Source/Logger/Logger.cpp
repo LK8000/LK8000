@@ -632,11 +632,11 @@ void LoggerDeviceDeclare() {
   }
   #endif
 
-  _tcscpy(Decl.PilotName, PilotName_Config);		// max 64
-  _tcscpy(Decl.AircraftType,AircraftType_Config);	// max 32
-  _tcscpy(Decl.AircraftRego,AircraftRego_Config);	// max 32
-  _tcscpy(Decl.CompetitionClass,CompetitionClass_Config);   //
-  _tcscpy(Decl.CompetitionID,CompetitionID_Config);	// max 32
+  lk::strcpy(Decl.PilotName, PilotName_Config);		// max 64
+  lk::strcpy(Decl.AircraftType,AircraftType_Config);	// max 32
+  lk::strcpy(Decl.AircraftRego,AircraftRego_Config);	// max 32
+  lk::strcpy(Decl.CompetitionClass,CompetitionClass_Config);   //
+  lk::strcpy(Decl.CompetitionID,CompetitionID_Config);	// max 32
 
   for (i = 0; i < MAXTASKPOINTS; i++) {
     if (Task[i].Index == -1)

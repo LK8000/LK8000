@@ -222,7 +222,7 @@ static void OnActiveButton(WndButton* pWnd){
       unsigned khz = ExtractFrequency(wpt.Freq);
       if(ValidFrequency(khz)) {
         devPutFreqActive(khz, wpt.Name);
-        _tcscpy(RadioPara.ActiveName, wpt.Name);
+        lk::strcpy(RadioPara.ActiveName, wpt.Name);
         RadioPara.ActiveKhz = khz;
         ActiveRadioIndex = res;  
         OnUpdate();
@@ -246,7 +246,7 @@ static void OnPassiveButton(WndButton* pWnd){
       }
       else {
         devPutFreqStandby(khz, WayPointList[res].Name);
-        _tcscpy(RadioPara.PassiveName, WayPointList[res].Name);
+        lk::strcpy(RadioPara.PassiveName, WayPointList[res].Name);
         RadioPara.PassiveKhz = khz;
         PassiveRadioIndex = res;
         OnUpdate();

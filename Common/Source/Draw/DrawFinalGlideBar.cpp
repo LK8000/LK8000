@@ -188,7 +188,7 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
 
         // in case of invalid bar because finish mode with real task but no valid start, we skip
         if (invalidbar) {
-            _tcscpy(Value, _T("---"));
+            lk::strcpy(Value, _T("---"));
             goto _skipout;
         }
 

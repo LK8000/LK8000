@@ -172,7 +172,7 @@ void bottom_bar::draw_lkvalues_data(LKSurface& Surface, unsigned box_num, short 
 
     bool valid = MapWindow::LKFormatValue(value_id, true, Value, Unit, Title, &Bmp);
     if (custom_title) {
-      _tcscpy(Title, custom_title);
+      lk::strcpy(Title, custom_title);
     }
     draw_box(Surface, box_num, Value, valid ? Unit : nullptr, Title, Bmp);
   }

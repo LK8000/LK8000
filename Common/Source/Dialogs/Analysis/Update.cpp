@@ -44,7 +44,7 @@ void UpdateAnalysis(WndForm* pForm){
                 MsgToken<127>());
       pForm->SetCaption(sTmp);
       if (flightstats.Altitude_Ceiling.sum_n<2) {
-        _tcscpy(sTmp, TEXT("\0"));
+        lk::strcpy(sTmp, TEXT("\0"));
       } else if (flightstats.Altitude_Ceiling.sum_n<4) {
         _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s"),
 	// LKTOKEN  _@M823_ = "Working band"
@@ -78,7 +78,7 @@ void UpdateAnalysis(WndForm* pForm){
       pForm->SetCaption(sTmp);
 
       if (flightstats.ThermalAverage.sum_n==0) {
-        _tcscpy(sTmp, TEXT("\0"));
+        lk::strcpy(sTmp, TEXT("\0"));
       } else if (flightstats.ThermalAverage.sum_n==1) {
         _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s"),
 	// LKTOKEN  _@M116_ = "Av climb"
@@ -166,7 +166,7 @@ void UpdateAnalysis(WndForm* pForm){
       if(CALCULATED_INFO.TaskFAI)
 	_stprintf(FAI, TEXT("FAI"));
       else
-	_tcscpy(FAI, TEXT(""));
+	lk::strcpy(FAI, TEXT(""));
 
     _stprintf(sTmp, TEXT("%s: %s %.0f%s %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
@@ -182,14 +182,14 @@ void UpdateAnalysis(WndForm* pForm){
 
     if (!ValidTaskPoint(ActiveTaskPoint)) {
 	// LKTOKEN  _@M476_ = "No task"
-      _tcscpy(sTmp, MsgToken<476>());
+      lk::strcpy(sTmp, MsgToken<476>());
     } else
    {
       TCHAR timetext1[100];
       if (IsValidTaskTimeToGo(CALCULATED_INFO)) {
         Units::TimeToText(timetext1, CALCULATED_INFO.TaskTimeToGo);
       } else {
-        _tcscpy(timetext1, _T("--:--"));
+        lk::strcpy(timetext1, _T("--:--"));
       }
 
       TCHAR timetext2[100];

@@ -55,6 +55,9 @@
 #include "MathFunctions.h"
 
 #include "ScreenGeometry.h"
+
+#include "utils/strcpy.h"
+
 //
 // Common Functions
 //

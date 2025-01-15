@@ -723,7 +723,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
   if (!item->Valid || (item->Distance > distance)) {
 	item->Latitude=lat;
 	item->Longitude=lon;
-	_tcscpy(item->Name,label);
+	lk::strcpy(item->Name,label);
 	item->Distance=distance;
 	item->Bearing=bearing;
 	item->Valid=true;

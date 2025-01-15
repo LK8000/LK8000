@@ -451,7 +451,7 @@ void ReplayLogger::SetFilename(const TCHAR *name) {
     return;
   }
   if (_tcscmp(FileName,name)!=0) {
-    _tcscpy(FileName,name);
+    lk::strcpy(FileName,name);
   }
 }
 

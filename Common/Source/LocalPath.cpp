@@ -113,7 +113,7 @@ const TCHAR * LKGetLocalPath(void) {
 #ifdef ANDROID
     const tstring path = context->GetExternalFilesDir(Java::GetEnv()).ToString();
     if (!path.empty()) {
-        _tcscpy(localpath, path.c_str());
+        lk::strcpy(localpath, path.c_str());
         _tcscat(localpath, _T("/"));
         lk::filesystem::createDirectory(localpath);
         return localpath;
@@ -123,7 +123,7 @@ const TCHAR * LKGetLocalPath(void) {
      * fallback to the default mount point of the SD card on Android.
      */
     __android_log_print(ANDROID_LOG_DEBUG, "L8000", "Fallback : " "/sdcard");
-    _tcscpy(localpath, _T("/sdcard"));
+    lk::strcpy(localpath, _T("/sdcard"));
     return localpath;
 #else
 

@@ -218,7 +218,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
 
   if(iNano3_GPSBaudrate ==0)
   {
-    _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
+    lk::strcpy(szTmp, TEXT("PLXV0,BRGPS,R"));
     SendNmea(d,szTmp);
     Sleep(CHANGE_DELAY);
     SendNmea(d, szTmp);
@@ -231,7 +231,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
     TestLog(_T("LAXNav: enable LX LAXNav direct Link"));
     iNano3_PDABaudrate = d->Com->GetBaudrate();
 
-    _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,DIRECT"));
+    lk::strcpy(szTmp, TEXT("PLXV0,CONNECTION,W,DIRECT"));
     SendNmea(d, szTmp);
     Sleep(CHANGE_DELAY);
     if((iNano3_PDABaudrate > 0) && (iNano3_GPSBaudrate >0) && (iNano3_PDABaudrate != iNano3_GPSBaudrate))
@@ -254,7 +254,7 @@ TCHAR  szTmp[MAX_NMEA_LEN];
     }
 
     TestLog(TEXT("LAXNav: Return from LAXNav link"));
-    _tcscpy(szTmp, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
+    lk::strcpy(szTmp, TEXT("PLXV0,CONNECTION,W,VSEVEN"));
     SendNmea(d,szTmp);
     Sleep(CHANGE_DELAY);
 
@@ -331,7 +331,7 @@ BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_I
   }
 #ifdef EEE
   if (iNano3_GPSBaudrate == 0) {
-    _tcscpy(szTmp, TEXT("PLXV0,BRGPS,R"));
+    lk::strcpy(szTmp, TEXT("PLXV0,BRGPS,R"));
     SendNmea(d, szTmp);
   }
 #endif

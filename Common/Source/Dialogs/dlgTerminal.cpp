@@ -23,7 +23,7 @@ static TCHAR tmps[100];
 TCHAR* DeviceName(int dev)
 {
   static TCHAR NewName[50];
-  _tcscpy(NewName,MsgToken<232>());
+  lk::strcpy(NewName,MsgToken<232>());
   NewName[(_tcslen(NewName))-1] ='A'+dev;
   return NewName;
 }
@@ -219,7 +219,7 @@ WndProperty* wp = NULL;
     short active=ComCheck_ActivePort; // can change in thread
     _tcsncpy(Tmp, wp->GetDataField()->GetAsString(), MAX_NMEA_LEN - 6);
     Tmp[MAX_NMEA_LEN - 6]= '\0'; // additional space for the checksum
-    _tcscpy(TxText, Tmp);
+    lk::strcpy(TxText, Tmp);
 
     AddCheckSumStrg(Tmp);
 

@@ -660,7 +660,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
   Declare(true);
 
   TCHAR Pilot[64];
-  _tcscpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
+  lk::strcpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
 
   TCHAR PilotName[12];
   TCHAR PilotSurName[12];

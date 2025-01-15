@@ -22,7 +22,7 @@ void guiStartLogger(bool noAsk) {
 
 	if (!noAsk) {
 		TCHAR TaskMessage[1024];
-		_tcscpy(TaskMessage,MsgToken<876>()); // Start Logger With Declaration\r\n;
+		lk::strcpy(TaskMessage,MsgToken<876>()); // Start Logger With Declaration\r\n;
 		_tcscat(TaskMessage,_T("\r\n"));
 
 		if(ValidTaskPoint(0)) {

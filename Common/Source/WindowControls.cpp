@@ -228,7 +228,7 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
 
     TCHAR FileName[MAX_PATH];
 
-    _tcscpy(FileName, sPath);
+    lk::strcpy(FileName, sPath);
     _tcscat(FileName, TEXT(DIRSEP));
     if(_tcslen(subdir) > 0) {
         _tcscat(FileName, subdir);
@@ -241,7 +241,7 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
     for (lk::filesystem::directory_iterator It(FileName); It; ++It) {
         if (It.isDirectory()) {
 
-            _tcscpy(FileName, subdir);
+            lk::strcpy(FileName, subdir);
             if(_tcslen(FileName) > 0) {
                 _tcscat(FileName, TEXT(DIRSEP));
             }
@@ -250,7 +250,7 @@ BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdi
             ScanDirectories(sPath, FileName, suffix_filters, filter_count);
         } else if(checkFilter(It.getName(), suffix_filters, filter_count)) {
 
-            _tcscpy(FileName, subdir);
+            lk::strcpy(FileName, subdir);
             if(_tcslen(FileName) > 0) {
               _tcscat(FileName, TEXT(DIRSEP));
             }
@@ -442,11 +442,11 @@ void DataField::Clear() {
 
 void DataField::SetDisplayFormat(const TCHAR *Value){
   LKASSERT(_tcslen(Value)<=FORMATSIZE);
-  _tcscpy(mDisplayFormat, Value);
+  lk::strcpy(mDisplayFormat, Value);
 }
 void DataField::SetEditFormat(const TCHAR *Value){
   LKASSERT(_tcslen(Value)<=FORMATSIZE);
-  _tcscpy(mEditFormat, Value);
+  lk::strcpy(mEditFormat, Value);
 }
 
 void DataField::CopyString(TCHAR * szbuffOut, bool bFormatted) {
@@ -957,7 +957,7 @@ int DataFieldInteger::CreateComboList(void) {
 
 bool DataFieldInteger::CreateKeyboard(void){
 	TCHAR szText[20];
-	_tcscpy(szText, GetAsString());
+	lk::strcpy(szText, GetAsString());
 	dlgNumEntryShowModal(szText,20);
 
 	SetAsFloat((int)floor((StrToDouble(szText, nullptr)/mStep)+0.5)*mStep);
@@ -1105,7 +1105,7 @@ int DataFieldFloat::SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {
 
 bool DataFieldFloat::CreateKeyboard(void){
 	TCHAR szText[20];
-	_tcscpy(szText, GetAsString());
+	lk::strcpy(szText, GetAsString());
 	dlgNumEntryShowModal(szText,20);
 
 	SetAsFloat(floor((StrToDouble(szText, nullptr)/mStep)+0.5)*mStep);
@@ -1138,7 +1138,7 @@ const TCHAR *DataFieldString::SetAsString(const TCHAR *Value){
 }
 
 void DataFieldString::Set(const TCHAR *Value){
-  _tcscpy(mValue, Value);
+  lk::strcpy(mValue, Value);
 }
 
 const TCHAR *DataFieldString::GetAsString(void){

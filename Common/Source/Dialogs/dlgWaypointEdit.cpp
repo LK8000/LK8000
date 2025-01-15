@@ -67,7 +67,7 @@ static void OnCommentClicked(WndButton* pWnd) {
 	if (global_wpt->Comment != NULL) {
 		LK_tcsncpy(comment,global_wpt->Comment, COMMENT_SIZE);
 	} else {
-		_tcscpy(comment,_T(""));
+		lk::strcpy(comment,_T(""));
 	}
 	dlgTextEntryShowModal(comment, COMMENT_SIZE);
 	SetWaypointComment(*global_wpt, comment);

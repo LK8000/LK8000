@@ -321,7 +321,7 @@ bool ParseCOMPEWayPointString(const TCHAR *String, WAYPOINT *Temp) {
 
   if (_tcslen(tName) > NAME_SIZE)
     tName[NAME_SIZE - 1] = _T('\0');
-  _tcscpy(Temp->Name, tName);
+  lk::strcpy(Temp->Name, tName);
 
   Temp->Latitude = _tcstod(tLatitude, NULL);
   if (!north)

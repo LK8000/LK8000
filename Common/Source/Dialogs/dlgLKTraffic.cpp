@@ -124,14 +124,14 @@ static void OnRenameClicked(WndButton* pWnd){
 
 	// Since we don-t know if a new PFLAA with this ID will arrive, and the UpdateNameFlag will be used,
 	// we must change the name here now.
-	_tcscpy(GPS_INFO.FLARM_Traffic[SelectedTraffic].Name,newName);
+	lk::strcpy(GPS_INFO.FLARM_Traffic[SelectedTraffic].Name,newName);
 	// ... and here also, because SetValues is using this copy 
-	_tcscpy(LKTraffic[SelectedTraffic].Name,newName);
+	lk::strcpy(LKTraffic[SelectedTraffic].Name,newName);
 
 	// we assume that no Cn is available, or in any case cannot be kept
 	// If newName is smaller or equal to possible Cn, we use it entirely
 	if (newnamelen<=MAXFLARMCN) {
-		_tcscpy( GPS_INFO.FLARM_Traffic[SelectedTraffic].Cn, newName);
+		lk::strcpy( GPS_INFO.FLARM_Traffic[SelectedTraffic].Cn, newName);
 	} else {
 		// else we create a fake Cn
 		GPS_INFO.FLARM_Traffic[SelectedTraffic].Cn[0]=newName[0];
@@ -140,7 +140,7 @@ static void OnRenameClicked(WndButton* pWnd){
 		GPS_INFO.FLARM_Traffic[SelectedTraffic].Cn[3]=_T('\0');
 	}
 	// update it temporarily so that it appears updated leaving the edit page
-	_tcscpy(LKTraffic[SelectedTraffic].Cn,GPS_INFO.FLARM_Traffic[SelectedTraffic].Cn);
+	lk::strcpy(LKTraffic[SelectedTraffic].Cn,GPS_INFO.FLARM_Traffic[SelectedTraffic].Cn);
 
 	// It will be useless, because we already updated the name.. but never mind.
 	GPS_INFO.FLARM_Traffic[SelectedTraffic].UpdateNameFlag=true;
@@ -250,16 +250,16 @@ static void SetValues(int indexid) {
   if (wp) {
 	switch(LKTraffic[indexid].Status) {
 		case LKT_REAL:
-			_tcscpy(status,_T("LIVE"));
+			lk::strcpy(status,_T("LIVE"));
 			break;
 		case LKT_GHOST:
-			_tcscpy(status,_T("GHOST"));
+			lk::strcpy(status,_T("GHOST"));
 			break;
 		case LKT_ZOMBIE:
-			_tcscpy(status,_T("ZOMBIE"));
+			lk::strcpy(status,_T("ZOMBIE"));
 			break;
 		default:
-			_tcscpy(status,_T("UNKNOWN"));
+			lk::strcpy(status,_T("UNKNOWN"));
 			break;
 	}
 	wp->SetText(status);
@@ -271,7 +271,7 @@ static void SetValues(int indexid) {
   if (wp) {
 	if ( _tcslen(LKTraffic[indexid].Cn) == 1 ) {
 		if (LKTraffic[indexid].Cn[0] == _T('?')) {
-			_tcscpy(buffer,_T(""));
+			lk::strcpy(buffer,_T(""));
 		} else {
 			LK_tcsncpy(buffer,LKTraffic[indexid].Cn,MAXFLARMCN);
 		}
@@ -408,7 +408,7 @@ void dlgLKTrafficDetails(int indexid) {
   if (buttonTarget) {
 	if ( LKTraffic[indexid].Locked ) {
 	// LKTOKEN  _@M754_ = "UNLOCK" 
-		_tcscpy(status,MsgToken<754>());
+		lk::strcpy(status,MsgToken<754>());
 		buttonTarget->SetCaption(status);
 	}
   }
@@ -416,7 +416,7 @@ void dlgLKTrafficDetails(int indexid) {
 
   SetValues(indexid);
 
-  _tcscpy(status,_T("Traffic: "));
+  lk::strcpy(status,_T("Traffic: "));
   if (LKTraffic[indexid].Locked) _tcscat(status,_T("TARGET "));
   switch(LKTraffic[indexid].Status) {
 	case LKT_REAL:

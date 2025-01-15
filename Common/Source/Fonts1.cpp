@@ -160,7 +160,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer1, LOGFONT* lplf)
 
   if ((pToken = tok.Next({_T(',')})) == NULL) return;
 
-  _tcscpy(lfTmp.lfFaceName, pToken);
+  lk::strcpy(lfTmp.lfFaceName, pToken);
 
   memcpy((void *)lplf, (void *)&lfTmp, sizeof (LOGFONT));
 

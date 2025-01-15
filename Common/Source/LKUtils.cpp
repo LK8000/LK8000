@@ -90,7 +90,7 @@ void GotoWaypoint(const int wpnum) {
   }
   if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1)) {
 	TCHAR wpname[NAME_SIZE+1];
-	_tcscpy(wpname,WayPointList[wpnum].Name);
+	lk::strcpy(wpname,WayPointList[wpnum].Name);
 	wpname[10] = '\0';
 
 	if (MessageBoxX(

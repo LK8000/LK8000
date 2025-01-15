@@ -994,7 +994,7 @@ void CContestMgr::SolveXC() {
     WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
 
     SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken<1541>());
-    _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
+    lk::strcpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
     switch (_XCFAIStatus) {
       case XCTriangleStatus::INVALID:
         _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI*%.0f"),predicted_distance_fai/1000.);
@@ -1019,7 +1019,7 @@ void CContestMgr::SolveXC() {
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = TRUE;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = TRUE;
     SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken<1525>());
-    _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
+    lk::strcpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
     switch (_XCFTStatus) {
       case XCTriangleStatus::INVALID:
         _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI*%.0f"),predicted_distance_ft/1000.);
@@ -1036,7 +1036,7 @@ void CContestMgr::SolveXC() {
     WayPointList[RESWP_FAIOPTIMIZED].Reachable = false;
     WayPointList[RESWP_FAIOPTIMIZED].Visible = false;
     SetWaypointComment(WayPointList[RESWP_FAIOPTIMIZED], MsgToken<1526>());
-    _tcscpy(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("NO TRIANGLE"));
+    lk::strcpy(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("NO TRIANGLE"));
   }
 
   // Mean Speed. We use current 3TP distance as XCTrack does here.

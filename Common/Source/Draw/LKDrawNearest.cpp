@@ -825,7 +825,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             if (ValidWayPoint(rli)) {
                 LK_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname[curmapspace]);
                 CharUpper(Buffer);
-                _tcscpy(Buffer1[i][curpage], Buffer);
+                lk::strcpy(Buffer1[i][curpage], Buffer);
 
                 value = Units::ToDistance(WayPointCalc[rli].Distance);
                 if (usetwolines)
@@ -862,7 +862,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
                 value = Units::ToAltitude(WayPointCalc[rli].AltArriv[AltArrivMode]);
                 if (value <-9999 || value > 9999)
-                    _tcscpy(text, _T("----"));
+                    lk::strcpy(text, _T("----"));
                 else
                     _stprintf(text, _T("%+.0f"), value);
                 if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%s %s"), text, Units::GetAltitudeName());
@@ -925,7 +925,7 @@ _KeepOldCommonsValues:
                 //
                 LK_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname[curmapspace]);
                 CharUpper(Buffer);
-                _tcscpy(Buffer1[i][curpage], Buffer);
+                lk::strcpy(Buffer1[i][curpage], Buffer);
 
 
                 //
@@ -933,7 +933,7 @@ _KeepOldCommonsValues:
                 //
                 LK_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN);
                 CharUpper(Buffer);
-                _tcscpy(Buffer2[i][curpage], Buffer);
+                lk::strcpy(Buffer2[i][curpage], Buffer);
 
 
                 //
@@ -1034,7 +1034,7 @@ _KeepOldAirspacesValues:
 
                 TCHAR* pOut = Buffer1[i][curpage];
                 if (IsThermalMultitarget(rli)) {
-                    _tcscpy(pOut, _T(">"));
+                    lk::strcpy(pOut, _T(">"), std::size(Buffer1[i][curpage]));
                     pOut += _tcslen(pOut);
                 }
                 CopyTruncateString(pOut, s_maxnlname[curmapspace], thermal.Name.c_str());
@@ -1122,7 +1122,7 @@ _KeepOldAirspacesValues:
                         unsigned short cnlen = _tcslen(LKTraffic[rli].Cn);
                         // if cn is XY create XY I-ABCD
                         if (cnlen == 1 || cnlen == 2) {
-                            _tcscpy(Buffer, LKTraffic[rli].Cn);
+                            lk::strcpy(Buffer, LKTraffic[rli].Cn);
                             _tcscat(Buffer, _T(" "));
                             _tcscat(Buffer, LKTraffic[rli].Name);
                             // for safety
@@ -1137,7 +1137,7 @@ _KeepOldAirspacesValues:
 
                 TCHAR* pOut = Buffer1[i][curpage];
                 if (LKTraffic[rli].Locked) {
-                    _tcscpy(pOut, _T("*"));
+                    lk::strcpy(pOut, _T("*"), std::size(Buffer1[i][curpage]));
                     pOut += _tcslen(pOut);
                 }
                 CopyTruncateString(pOut, s_maxnlname[curmapspace], Buffer);
@@ -1180,7 +1180,7 @@ _KeepOldAirspacesValues:
                 // Vario
                 value = Units::ToVerticalSpeed(LKTraffic[rli].Average30s);
                 if (value<-6 || value > 6)
-                    _tcscpy(Buffer4[i][curpage], _T("----"));
+                    lk::strcpy(Buffer4[i][curpage], _T("----"));
                 else {
                     _stprintf(Buffer4[i][curpage], _T("%+.1f"), value);
                 }
@@ -1188,7 +1188,7 @@ _KeepOldAirspacesValues:
                 // Altitude
                 value = Units::ToAltitude(LKTraffic[rli].Altitude);
                 if (value<-1000 || value > 45000)
-                    _tcscpy(Buffer5[i][curpage], _T("----"));
+                    lk::strcpy(Buffer5[i][curpage], _T("----"));
                 else {
                     if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
                     else _stprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
@@ -1197,11 +1197,11 @@ _KeepOldAirspacesValues:
 
             } else {
                 // Empty traffic, fill in all empty data and maybe break loop
-                _tcscpy(Buffer1[i][curpage], _T("------------"));
-                _tcscpy(Buffer2[i][curpage], _T("----"));
-                _tcscpy(Buffer3[i][curpage], _T("----"));
-                _tcscpy(Buffer4[i][curpage], _T("----"));
-                _tcscpy(Buffer5[i][curpage], _T("----"));
+                lk::strcpy(Buffer1[i][curpage], _T("------------"));
+                lk::strcpy(Buffer2[i][curpage], _T("----"));
+                lk::strcpy(Buffer3[i][curpage], _T("----"));
+                lk::strcpy(Buffer4[i][curpage], _T("----"));
+                lk::strcpy(Buffer5[i][curpage], _T("----"));
             }
 
 

@@ -88,7 +88,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
   //
   pC = _tcsstr(MyCommandLine, TEXT("-x="));
   if (pC != NULL) {
-     _tcscpy(mytext1,_T(""));
+     lk::strcpy(mytext1,_T(""));
       pC += strlen("-x=");
      if (*pC == '"'){
         pC++;
@@ -106,7 +106,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-y="));
   if (pC != NULL) {
-     _tcscpy(mytext2,_T(""));
+     lk::strcpy(mytext2,_T(""));
       pC += strlen("-y=");
      if (*pC == '"') {
         pC++;
@@ -135,7 +135,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-lcdsize="));
   if (pC != NULL){
-     _tcscpy(mytext1,_T(""));
+     lk::strcpy(mytext1,_T(""));
      pC += strlen("-lcdsize=");
      if (*pC == '"'){
         pC++;
@@ -159,7 +159,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-dpi="));
   if (pC != NULL){
-     _tcscpy(mytext1,_T(""));
+     lk::strcpy(mytext1,_T(""));
      pC += strlen("-dpi=");
      if (*pC == '"'){
         pC++;
@@ -183,7 +183,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-refdpi="));
   if (pC != NULL){
-     _tcscpy(mytext1,_T(""));
+     lk::strcpy(mytext1,_T(""));
      pC += strlen("-refdpi=");
      if (*pC == '"'){
         pC++;
@@ -207,7 +207,7 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine) {
 
   pC = _tcsstr(MyCommandLine, TEXT("-quant="));
   if (pC != NULL){
-     _tcscpy(mytext1,_T(""));
+     lk::strcpy(mytext1,_T(""));
      pC += strlen("-quant=");
      if (*pC == '"'){
         pC++;

@@ -79,7 +79,7 @@ void OpenTopology() {
 
     // File name
     PExtractParameter(TempString, ctemp, 0);
-    _tcscpy(ShapeName, ctemp);
+    lk::strcpy(ShapeName, ctemp);
 
     _stprintf(wShapeFilename, _T("%s%s.shp"), Directory, ShapeName);
     _stprintf(wCPGFilename, _T("%s%s.cpg"), Directory, ShapeName);

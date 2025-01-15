@@ -120,7 +120,7 @@ void SimFlarmTraffic(uint32_t RadioId, double offset)
 		if (cname) {
 			int cnamelen=_tcslen(cname);
 			if (cnamelen<=MAXFLARMCN) {
-				_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
+				lk::strcpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, cname);
 			} else {
 				// else probably it is the Name again, and we create a fake Cn
 				GPS_INFO.FLARM_Traffic[flarm_slot].Cn[0]=cname[0];
@@ -129,7 +129,7 @@ void SimFlarmTraffic(uint32_t RadioId, double offset)
 				GPS_INFO.FLARM_Traffic[flarm_slot].Cn[3]=_T('\0');
 			}
 		} else {
-			_tcscpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, _T("Err"));
+			lk::strcpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, _T("Err"));
 		}
 
 		#ifdef DEBUG_SIMLKT

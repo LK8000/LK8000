@@ -85,7 +85,7 @@ static void OnSaveNewClicked(WndButton* pWnd) {
   if (!wp) return;
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
-  _tcscpy(profile_name,_T(""));
+  lk::strcpy(profile_name,_T(""));
   dlgTextEntryShowModal(profile_name, 13); // max length including termination 0
 
   if (_tcslen(profile_name)<=0) return;
