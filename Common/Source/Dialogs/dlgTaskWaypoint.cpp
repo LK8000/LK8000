@@ -22,12 +22,6 @@ static WndForm *wf=NULL;
 static int twType = 0; // start, turnpoint, finish
 
 
-static WndFrame *wStart=NULL;
-static WndFrame *wTurnpoint=NULL;
-static WndFrame *wAATTurnpoint=NULL;
-static WndFrame *wFinish=NULL;
-
-
 //frmTaskPointPicto
 
 
@@ -97,10 +91,10 @@ static void UpdateCaption(void) {
       wMove->SetVisible(FALSE);
     }
   }
-  wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
-  wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));
-  wAATTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmAATTurnpoint")));
-  wFinish    = (wf->FindByName<WndFrame>(TEXT("frmFinish")));
+  auto wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
+  auto wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));
+  auto wAATTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmAATTurnpoint")));
+  auto wFinish    = (wf->FindByName<WndFrame>(TEXT("frmFinish")));
 
   LKASSERT(wStart!=NULL);
   LKASSERT(wTurnpoint!=NULL);
@@ -710,10 +704,10 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
   //ASSERT(wf!=NULL);
   //  wf->SetKeyDownNotify(FormKeyDown);
-  wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
-  wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));
-  wAATTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmAATTurnpoint")));
-  wFinish    = (wf->FindByName<WndFrame>(TEXT("frmFinish")));
+  auto wStart     = (wf->FindByName<WndFrame>(TEXT("frmStart")));
+  auto wTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmTurnpoint")));
+  auto wAATTurnpoint = (wf->FindByName<WndFrame>(TEXT("frmAATTurnpoint")));
+  auto wFinish    = (wf->FindByName<WndFrame>(TEXT("frmFinish")));
 
   LKASSERT(wStart!=NULL);
   LKASSERT(wTurnpoint!=NULL);
