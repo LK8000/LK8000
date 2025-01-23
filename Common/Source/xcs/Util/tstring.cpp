@@ -2,27 +2,34 @@
 #include <tchar.h>
 #include "ConvertString.hpp"
 
-#define WHITESPACE _T(" \r\t")
+namespace {
 
-tstring &
-trim_inplace(tstring &s)
-{
-  tstring::size_type n;
+struct white_space {
+  operator const wchar_t*() const { return L" \r\t\n\v\f"; }
+  operator const char*() const { return " \r\t\n\v\f"; }
+};
 
-  n = s.find_first_not_of(WHITESPACE);
-  if (n != tstring::npos)
-    s.erase(0, n);
-
-  n = s.find_last_not_of(WHITESPACE);
-  if (n != tstring::npos)
-    s.erase(n + 1, s.length());
-
+template <typename CharT>
+std::basic_string<CharT>&
+trim_inplace(std::basic_string<CharT>& s) {
+  s.erase(0, s.find_first_not_of(white_space()));
+  s.erase(s.find_last_not_of(white_space()) + 1);
   return s;
+}
+
+} // namespace
+
+std::string& trim_inplace(std::string &s) {
+  return trim_inplace<std::string::value_type>(s);
+}
+
+std::wstring& trim_inplace(std::wstring &s) {
+  return trim_inplace<std::wstring::value_type>(s);
 }
 
 #ifdef _UNICODE
 std::wstring to_wstring(const char* sz) {
-  tstring tsz;
+  std::wstring tsz;
   const ACPToWideConverter converter(sz);
   if(converter.IsValid()) {
     tsz = converter;

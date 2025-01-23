@@ -101,8 +101,8 @@ std::string to_utf8(const char* sz) {
 
 #endif
 
-tstring &
-trim_inplace(tstring &s);
+std::string& trim_inplace(std::string &s);
+std::wstring& trim_inplace(std::wstring &s);
 
 
 /**
