@@ -13,74 +13,79 @@
 #include "Waypointparser.h"
 #include "utils/zzip_stream.h"
 #include "LocalPath.h"
+#include "utils/charset_helper.h"
+#include <regex>
 
-void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
-  TCHAR UName[NAME_SIZE + 1];
-  TCHAR NameA[100];
-  TCHAR NameB[100];
-  TCHAR NameC[100];
-  TCHAR NameD[100];
-  TCHAR TmpName[100];
-  bool isHome, isPreferred, isLandable;
+namespace {
 
-  for(unsigned i=NUMRESWP;i<WayPointList.size();++i) {
-
-	lk::strcpy(UName, WayPointList[i].Name);
-
-	CharUpper(UName); // WP name
-	CharUpper(Name);  // AIR name  If airfields name was not uppercase it was not recon
-
-	_stprintf(NameA,TEXT("%s A/F"),Name);
-	_stprintf(NameB,TEXT("%s AF"),Name);
-	_stprintf(NameC,TEXT("%s A/D"),Name);
-	_stprintf(NameD,TEXT("%s AD"),Name);
-
-	isHome=false;
-	isPreferred=false;
-    isLandable = (((WayPointList[i].Flags & AIRPORT) == AIRPORT) ||
-                 ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT));
-
-	_stprintf(TmpName,TEXT("%s=HOME"),UName);
-	if ( (_tcscmp(Name, TmpName)==0) )  isHome=true;
-
-  // Only bother checking whether it's preferred if it's landable.
-  if (isLandable) {
-	_stprintf(TmpName,TEXT("%s=PREF"),UName);
-	if ( (_tcscmp(Name, TmpName)==0) )  isPreferred=true;
-	_stprintf(TmpName,TEXT("%s=PREFERRED"),UName);
-	if ( (_tcscmp(Name, TmpName)==0) )  isPreferred=true;
+// get waypoint name without A/F suffix
+tstring get_wp_mane(const TCHAR* Name) {
+  const std::basic_regex<TCHAR> re(_T(R"(^(.*?)(?: A\/?F)?$)"));
+  std::match_results<const TCHAR*> match;
+  if (!std::regex_match(Name, match, re)) {
+    return Name;
   }
-
-	if ( isHome==true ) {
-      if (isLandable) WayPointCalc[i].Preferred = true;
-	  HomeWaypoint = i;
-	  AirfieldsHomeWaypoint = i; // make it survive a reset..
-	}
-	if ( isPreferred==true ) {
-	  WayPointCalc[i].Preferred = true;
-	}
-
-	if ((_tcscmp(UName, Name)==0)
-	    ||(_tcscmp(UName, NameA)==0)
-	    ||(_tcscmp(UName, NameB)==0)
-	    ||(_tcscmp(UName, NameC)==0)
-	    ||(_tcscmp(UName, NameD)==0)
-	    || isHome || isPreferred )
-	  {
-		SetWaypointDetails(WayPointList[i], Details);
-	  }
-    }
+  return match[1].str();
 }
 
+// extract waypoint name and flag from the lookup string
+std::tuple<tstring, tstring> get_lookup(const TCHAR* Name) {
+  const std::basic_regex<TCHAR> re(_T(R"(^(.*?)(?:=((?:PREF)|(?:HOME)|(?:PREFERRED)))?$)"));
+  std::match_results<const TCHAR*> match;
+  if (!std::regex_match(Name, match, re)) {
+    return { Name, _T("") };
+  }
+  return { match[1], match[2] };
+}
 
-#define DETAILS_LENGTH 5000
+bool compare_nocase(const tstring& a, const tstring& b) {
+  return _tcsicmp(a.c_str(), b.c_str()) == 0;
+}
 
-/*
- * fix: if empty lines, do not set details for the waypoint
- * fix: remove CR from text appearing as a spurious char in waypoint details
- */
+void SetAirfieldDetail(const TCHAR* Name, const TCHAR* Details) {
+  const auto [lookup_name, lookup_flag] = get_lookup(Name);
+
+  bool isHome = lookup_flag == _T("HOME");
+  bool isPreferred = lookup_flag == _T("PREF") || lookup_flag == _T("PREFERRED");
+
+  for (unsigned i = NUMRESWP; i < WayPointList.size(); ++i) {
+    auto& wp = WayPointList[i];
+    auto wp_name = get_wp_mane(wp.Name);
+
+    if (!compare_nocase(lookup_name, wp_name)) {
+      continue;
+    }
+
+    if (isHome) {
+      if (wp.Flags & (AIRPORT | LANDPOINT)) {
+        WayPointCalc[i].Preferred = true;
+      }
+      HomeWaypoint = AirfieldsHomeWaypoint = i;  // make it survive a reset..
+    }
+
+    if (isPreferred) {
+      WayPointCalc[i].Preferred = true;
+    }
+
+    if (Details) {
+      SetWaypointDetails(wp, Details);
+    }
+  }
+}
+
+void SetAirfieldDetail(const std::string& Name, const std::string& Details) {
+  tstring tname = from_unknown_charset(Name.c_str());
+  trim_inplace(tname);
+
+  tstring tdetails = from_unknown_charset(Details.c_str());
+  trim_inplace(tdetails);
+
+  if (!tname.empty()) {
+    SetAirfieldDetail(tname.c_str(), tdetails.empty() ? nullptr : tdetails.c_str());
+  }
+}
+
 void ParseAirfieldDetails() {
-
 
   zzip_stream stream;
 
@@ -97,79 +102,88 @@ void ParseAirfieldDetails() {
 
   StartupStore(_T(". open AirfieldFile <%s>"), szAirfieldFile);
 
-  TCHAR TempString[READLINE_LENGTH+1];
-  TCHAR CleanString[READLINE_LENGTH+1];
-  TCHAR Details[DETAILS_LENGTH+1];
-  TCHAR Name[201];
+  std::string name;
+  std::string new_name;
+  std::string detail;
 
-  Details[0]= 0;
-  Name[0]= 0;
-  TempString[0]=0;
-  CleanString[0]=0;
+  enum class state { comment, line_start, name, detail };
 
-  bool inDetails = false;
-  bool hasDetails = false;
-  int i, n;
-  unsigned int j;
+  state s = state::line_start;
 
-  while(stream.read_line(TempString))
-    {
-      if(TempString[0]=='[') { // Look for start
-
-	if (inDetails) {
-	  LookupAirfieldDetail(Name, Details);
-	  Details[0]= 0;
-	  Name[0]= 0;
-	  hasDetails=false;
-	}
-
-	// extract name
-	for (i=1; i<200; i++) {
-	  if (TempString[i]==']') {
-	    break;
-	  }
-	  Name[i-1]= TempString[i];
-	}
-	Name[i-1]= 0;
-
-	inDetails = true;
-
-      } else {
-	// VENTA3: append text to details string
-	if (inDetails)  // BUGFIX 100711
-	for (j=0; j<_tcslen(TempString); j++ ) {
-	  if ( TempString[j] > 0x20 ) {
-	    hasDetails = true;
-	    break;
-	  }
-	}
-	// first hasDetails set TRUE for rest of details
-	if (hasDetails==true) {
-
-	  // Remove carriage returns
-	  for (j=0, n=0; j<_tcslen(TempString); j++) {
-	    if ( TempString[j] == 0x0d ) continue;
-	    CleanString[n++]=TempString[j];
-	  }
-	  CleanString[n]='\0';
-
-	  if (_tcslen(Details)+_tcslen(CleanString)+3<DETAILS_LENGTH) {
-	    _tcscat(Details,CleanString);
-	    _tcscat(Details,TEXT("\r\n"));
-	  }
-	}
-      }
+  for (std::istreambuf_iterator<char> it(&stream); it != std::istreambuf_iterator<char>(); ++it) {
+    switch (s) {
+      case state::comment:
+        switch (*it) {
+          // skip comment lines
+          case '\r':
+          case '\n':
+            s = state::line_start;
+            break;
+        }
+        break;
+      case state::line_start:
+        switch (*it) {
+          case '#':
+            // start of comment
+            s = state::comment;
+            break;
+          case '[':
+            // start of airfield name
+            s = state::name;
+            break;
+          case '\r':
+          case '\n':
+            break;
+          default:
+            s = state::detail;
+            detail += *it;
+            break;
+        }
+        break;
+      case state::name:
+        switch (*it) {
+          case ']':
+            // end of airfield name
+            s = state::line_start;
+            SetAirfieldDetail(name, detail);
+            name = std::exchange(new_name, {});
+            detail.clear();
+            break;
+          case '\r':
+          case '\n':
+            // if we have newlines in the name, it's not a valid airfield name
+            // append to detail instead
+            s = state::detail;
+            detail += '[' + new_name + '\n';
+            new_name.clear();
+            break;
+          default:
+            new_name += *it;
+            break;
+        }
+        break;
+      case state::detail:
+        switch (*it) {
+          case '\r':
+          case '\n':
+            s = state::line_start;
+            detail += '\n';
+            break;
+          default:
+            detail += *it;
+            break;
+        }
+        break;
     }
-
-  if (inDetails) {
-    LookupAirfieldDetail(Name, Details);
   }
 
+  SetAirfieldDetail(name, detail);
 }
 
+}  // namespace
 
 void ReadAirfieldFile() {
-	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..."
+  // LKTOKEN  _@M400_ = "Loading Waypoint Notes File..."
   CreateProgressDialog(MsgToken<400>());
   ParseAirfieldDetails();
 }
