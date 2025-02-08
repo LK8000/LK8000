@@ -38,7 +38,6 @@ public:
   static void Initialise(JNIEnv *env);
   static void Deinitialise(JNIEnv *env) {}
 
-  gcc_pure
   static void Recycle(JNIEnv *env, jobject bitmap) {
     assert(env != nullptr);
     assert(bitmap != nullptr);
