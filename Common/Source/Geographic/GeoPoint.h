@@ -95,8 +95,8 @@ double ProjectedDistance(const GeoPoint& p1, const GeoPoint& p2, const GeoPoint&
                          double *xtd, double *crs) {
 
   return ProjectedDistance(p1.longitude, p1.latitude,
-                           p2.longitude, p1.latitude,
-                           p3.longitude, p1.latitude,
+                           p2.longitude, p2.latitude,
+                           p3.longitude, p3.latitude,
                            xtd, crs);
 }
 
