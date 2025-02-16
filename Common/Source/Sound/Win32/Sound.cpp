@@ -17,14 +17,14 @@
 #include "mmsystem.h"
 
 static bool bSoundFile = false; // this is true only if "_System/_Sounds" directory exists.
-static TCHAR szSoundPath[MAX_PATH] = {}; // path of Sound file, initialized by  #SoundGlobalInit end never change;
 
 SoundGlobalInit::SoundGlobalInit() {
-    SystemPath(szSoundPath, _T(LKD_SOUNDS), _T("_SOUNDS"));
-    if ( lk::filesystem::exist(szSoundPath) ) {
+    TCHAR srcfile[MAX_PATH];
+    SystemPath(srcfile, _T(LKD_SOUNDS), _T("_SOUNDS"));
+    if (lk::filesystem::exist(srcfile)) {
         bSoundFile = true;
     } else {
-        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>"), szSoundPath);
+        StartupStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>"), srcfile);
         StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!"));
     }
 }
@@ -92,9 +92,10 @@ void LKSound(const TCHAR *lpName) {
   #endif
 
   if (!bSoundFile) return;
+
   TCHAR sndfile[MAX_PATH];
-  _stprintf(sndfile,_T("%s%s%s"),szSoundPath, _T(DIRSEP), lpName);
-  sndPlaySound (sndfile, SND_ASYNC| SND_NODEFAULT );
+  SystemPath(sndfile, _T(LKD_SOUNDS), lpName);
+  sndPlaySound(sndfile, SND_ASYNC | SND_NODEFAULT);
 }
 
 bool SetSoundVolume() {
