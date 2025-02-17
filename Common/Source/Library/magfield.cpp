@@ -71,15 +71,13 @@
 **
 
 ** DEEPLY CUT FOR LK8000 USAGE, NO USE OF MODEL (always using WMM2015)
-*/ 
+*/
 
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<math.h>
-#include        "magfield.h"
-#include        "LKAssert.h"
-
-#define	max(a,b)	(((a) > (b)) ? (a) : (b))
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "magfield.h"
+#include "LKAssert.h"
 
 static const double pi = 3.14159265358979;
 static const double a = 6378.16;	/* major radius (km) IAU66 ellipsoid */
@@ -162,31 +160,16 @@ static double root[14];
 static double roots[14][14][2];
 
 /* Convert date to Julian day    1950-2049 */
-unsigned long int yymmdd_to_julian_days(int yy,int mm,int dd)
-{
+unsigned long int yymmdd_to_julian_days(int yy, int mm, int dd) {
   unsigned long jd;
- 
+
   yy = (yy < 50) ? (2000 + yy) : (1900 + yy);
-  jd = dd - 32075L + 1461L * (yy + 4800L + (mm - 14) / 12 ) / 4;
-  jd = jd + 367L * (mm - 2 - (mm - 14) / 12*12) / 12;
+  jd = dd - 32075L + 1461L * (yy + 4800L + (mm - 14) / 12) / 4;
+  jd = jd + 367L * (mm - 2 - (mm - 14) / 12 * 12) / 12;
   jd = jd - 3 * ((yy + 4900L + (mm - 14) / 12) / 100) / 4;
 
-  return(jd);
-} 
-
-/* Convert degrees to radians */
-double deg_to_rad(double deg)
-{
-return deg*pi/180.;
+  return (jd);
 }
-
-/* Convert radians to degrees */
-double rad_to_deg(double rad)
-{
-return rad*180./pi;
-}
-	     
-
 
 
 /* 
@@ -201,142 +184,136 @@ return rad*180./pi;
    We are all grateful to Ed for his work!
 */
 
-double SGMagVar( double lat, double lon, double h, long dat)
-{
-    /* output field B_r,B_th,B_phi,B_x,B_y,B_z */
-    int n,m,nmaxl;
-    double yearfrac,sr,r,theta,c,s,psi,fn,fn_0,B_r,B_theta,B_phi,X,Y;
-    double sinpsi, cospsi, inv_s;
+double SGMagVar(double lat, double lon, double h, long dat) {
+  /* output field B_r,B_th,B_phi,B_x,B_y,B_z */
+  int n, m, nmaxl;
+  double yearfrac, sr, r, theta, c, s, psi, fn, fn_0, B_r, B_theta, B_phi, X, Y;
+  double sinpsi, cospsi, inv_s;
 
-    static int been_here = 0;
-	
-    double sinlat = sin(lat);
-    double coslat = cos(lat);
+  static int been_here = 0;
 
-    /* convert to geocentric */ 
-    sr = sqrt(a*a*coslat*coslat + b*b*sinlat*sinlat);
-    /* sr is effective radius */
-    theta = atan2(coslat * (h*sr + a*a), sinlat * (h*sr + b*b));
-		  
-    /* theta is geocentric co-latitude */
-    LKASSERT((a*a - (a*a - b*b) * sinlat*sinlat) !=0);
+  double sinlat = sin(lat);
+  double coslat = cos(lat);
 
-    r = h*h + 2.0*h * sr +
-	(a*a*a*a - ( a*a*a*a - b*b*b*b ) * sinlat*sinlat ) / 
-	(a*a - (a*a - b*b) * sinlat*sinlat );
+  /* convert to geocentric */
+  sr = sqrt(a * a * coslat * coslat + b * b * sinlat * sinlat);
+  /* sr is effective radius */
+  theta = atan2(coslat * (h * sr + a * a), sinlat * (h * sr + b * b));
 
-    r = sqrt(r);
+  /* theta is geocentric co-latitude */
+  LKASSERT((a * a - (a * a - b * b) * sinlat * sinlat) != 0);
 
-    /* r is geocentric radial distance */
-    c = cos(theta);
-    s = sin(theta);
-      /* protect against zero divide at geographic poles */
-    inv_s =  1.0 / (s + (s == 0.)*1.0e-8); 
+  r = h * h + 2.0 * h * sr +
+      (a * a * a * a - (a * a * a * a - b * b * b * b) * sinlat * sinlat) / (a * a - (a * a - b * b) * sinlat * sinlat);
 
-    /*zero out arrays */
-    for ( n = 0; n <= nmax; n++ ) {
-      for ( m = 0; m <= n; m++ ) {
-	P[n][m] = 0;
-	DP[n][m] = 0;
+  r = sqrt(r);
+
+  /* r is geocentric radial distance */
+  c = cos(theta);
+  s = sin(theta);
+  /* protect against zero divide at geographic poles */
+  inv_s = 1.0 / (s + (s == 0.) * 1.0e-8);
+
+  /*zero out arrays */
+  for (n = 0; n <= nmax; n++) {
+    for (m = 0; m <= n; m++) {
+      P[n][m] = 0;
+      DP[n][m] = 0;
+    }
+  }
+
+  /* diagonal elements */
+  P[0][0] = 1;
+  P[1][1] = s;
+  DP[0][0] = 0;
+  DP[1][1] = c;
+  P[1][0] = c;
+  DP[1][0] = -s;
+
+  /* these values will not change for subsequent function calls */
+  if (!been_here) {
+    for (n = 2; n <= nmax; n++) {
+      root[n] = sqrt((2.0 * n - 1) / (2.0 * n));
+    }
+
+    for (m = 0; m <= nmax; m++) {
+      double mm = m * m;
+      for (n = std::max(m + 1, 2); n <= nmax; n++) {
+        roots[m][n][0] = sqrt((n - 1) * (n - 1) - mm);
+        roots[m][n][1] = 1.0 / sqrt(n * n - mm);
       }
     }
+    been_here = 1;
+  }
 
-    /* diagonal elements */
-    P[0][0] = 1;
-    P[1][1] = s;
-    DP[0][0] = 0;
-    DP[1][1] = c;
-    P[1][0] = c ;
-    DP[1][0] = -s;
+  for (n = 2; n <= nmax; n++) {
+    /*  double root = sqrt((2.0*n-1) / (2.0*n)); */
+    P[n][n] = P[n - 1][n - 1] * s * root[n];
+    DP[n][n] = (DP[n - 1][n - 1] * s + P[n - 1][n - 1] * c) * root[n];
+  }
 
-    /* these values will not change for subsequent function calls */
-    if( !been_here ) {
-      for ( n = 2; n <= nmax; n++ ) {
-	root[n] = sqrt((2.0*n-1) / (2.0*n));
-      }
-	
-      for ( m = 0; m <= nmax; m++ ) {
-	double mm = m*m;
-	for ( n = max(m + 1, 2); n <= nmax; n++ ) {
-	  roots[m][n][0] = sqrt((n-1)*(n-1) - mm);
-	  roots[m][n][1] = 1.0 / sqrt( n*n - mm);
-	}
-      }
-      been_here = 1;
+  /* lower triangle */
+  for (m = 0; m <= nmax; m++) {
+    /*  double mm = m*m;  */
+    for (n = std::max(m + 1, 2); n <= nmax; n++) {
+      /* double root1 = sqrt((n-1)*(n-1) - mm); */
+      /* double root2 = 1.0 / sqrt( n*n - mm);  */
+      P[n][m] = (P[n - 1][m] * c * (2.0 * n - 1) - P[n - 2][m] * roots[m][n][0]) * roots[m][n][1];
+      DP[n][m] =
+          ((DP[n - 1][m] * c - P[n - 1][m] * s) * (2.0 * n - 1) - DP[n - 2][m] * roots[m][n][0]) * roots[m][n][1];
     }
-	
-    for ( n=2; n <= nmax; n++ ) {
-      /*  double root = sqrt((2.0*n-1) / (2.0*n)); */
-      P[n][n] = P[n-1][n-1] * s * root[n];
-      DP[n][n] = (DP[n-1][n-1] * s + P[n-1][n-1] * c) * root[n];
+  }
+
+  /* compute gnm, hnm at dat */
+  nmaxl = 12; /* models except IGRF2005 */
+
+  yearfrac = (dat - yymmdd_to_julian_days(15, 1, 1)) / 365.25;
+  for (n = 1; n <= nmaxl; n++) {
+    for (m = 0; m <= nmaxl; m++) {
+      gnm[n][m] = gnm_wmm2025[n][m] + yearfrac * gtnm_wmm2025[n][m];
+      hnm[n][m] = hnm_wmm2025[n][m] + yearfrac * htnm_wmm2025[n][m];
     }
+  }
 
-    /* lower triangle */
-    for ( m = 0; m <= nmax; m++ ) {
-      /*  double mm = m*m;  */
-      for ( n = max(m + 1, 2); n <= nmax; n++ ) {
-	/* double root1 = sqrt((n-1)*(n-1) - mm); */
-	/* double root2 = 1.0 / sqrt( n*n - mm);  */
-	P[n][m] = (P[n-1][m] * c * (2.0*n-1) -
-		   P[n-2][m] * roots[m][n][0]) * roots[m][n][1];
-	DP[n][m] = ((DP[n-1][m] * c - P[n-1][m] * s) *
-		    (2.0*n-1) - DP[n-2][m] * roots[m][n][0]) * roots[m][n][1];
-      }
+  /* compute sm (sin(m lon) and cm (cos(m lon)) */
+  for (m = 0; m <= nmaxl; m++) {
+    sm[m] = sin(m * lon);
+    cm[m] = cos(m * lon);
+  }
+
+  /* compute B fields */
+  B_r = 0.0;
+  B_theta = 0.0;
+  B_phi = 0.0;
+  fn_0 = r_0 / r;
+  fn = fn_0 * fn_0;
+
+  for (n = 1; n <= nmaxl; n++) {
+    double c1_n = 0;
+    double c2_n = 0;
+    double c3_n = 0;
+    for (m = 0; m <= n; m++) {
+      double tmp = (gnm[n][m] * cm[m] + hnm[n][m] * sm[m]);
+      c1_n += tmp * P[n][m];
+      c2_n += tmp * DP[n][m];
+      c3_n += m * (gnm[n][m] * sm[m] - hnm[n][m] * cm[m]) * P[n][m];
     }
+    /* fn=pow(r_0/r,n+2.0);   */
+    fn *= fn_0;
+    B_r += (n + 1) * c1_n * fn;
+    B_theta -= c2_n * fn;
+    B_phi += c3_n * fn * inv_s;
+  }
 
-    /* compute gnm, hnm at dat */
-    nmaxl = 12;  /* models except IGRF2005 */
+  /* Find geodetic field components: */
+  psi = theta - (pi / 2.0 - lat);
+  sinpsi = sin(psi);
+  cospsi = cos(psi);
+  X = -B_theta * cospsi - B_r * sinpsi;
+  Y = B_phi;
 
-    yearfrac = (dat - yymmdd_to_julian_days(15,1,1)) / 365.25;
-    for (n=1;n<=nmaxl;n++) {
-      for (m = 0; m <= nmaxl; m++) {
-        gnm[n][m] = gnm_wmm2025[n][m] + yearfrac * gtnm_wmm2025[n][m];
-        hnm[n][m] = hnm_wmm2025[n][m] + yearfrac * htnm_wmm2025[n][m];
-      }
-    }
-
-    /* compute sm (sin(m lon) and cm (cos(m lon)) */
-    for (m = 0;m<=nmaxl;m++) {
-      sm[m] = sin(m * lon);
-      cm[m] = cos(m * lon);
-    }
-
-    /* compute B fields */
-    B_r = 0.0;
-    B_theta = 0.0;
-    B_phi = 0.0;
-    fn_0 = r_0/r;
-    fn = fn_0 * fn_0;
-	
-    for ( n = 1; n <= nmaxl; n++ ) {
-      double c1_n=0;
-      double c2_n=0;
-      double c3_n=0;
-      for ( m = 0; m <= n; m++ ) {
-	double tmp = (gnm[n][m] * cm[m] + hnm[n][m] * sm[m]); 
-	c1_n += tmp * P[n][m];
-	c2_n += tmp * DP[n][m];
-	c3_n +=  m * (gnm[n][m] * sm[m] - hnm[n][m] * cm[m]) * P[n][m];
-      }
-      /* fn=pow(r_0/r,n+2.0);   */
-      fn *= fn_0;
-      B_r += (n + 1) * c1_n * fn;
-      B_theta -= c2_n * fn;
-      B_phi += c3_n * fn * inv_s;
-    }
-
-
-
-    /* Find geodetic field components: */
-    psi = theta - (pi / 2.0 - lat);
-    sinpsi = sin(psi);
-    cospsi = cos(psi);
-    X = -B_theta * cospsi - B_r * sinpsi;
-    Y = B_phi;
-
-    /* find variation in radians */
-    /* return zero variation at magnetic pole X=Y=0. */
-    /* E is positive */
-    return (X != 0. || Y != 0.) ? atan2(Y, X) : (double) 0.; 
+  /* find variation in radians */
+  /* return zero variation at magnetic pole X=Y=0. */
+  /* E is positive */
+  return (X != 0. || Y != 0.) ? atan2(Y, X) : (double)0.;
 }
-
