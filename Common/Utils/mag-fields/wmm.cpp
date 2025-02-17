@@ -30,13 +30,13 @@ int main()
     double epoch = 0;
     char model[20] = {};
 
-    double gnm_wmm2020[13][13] = {};
-    double hnm_wmm2020[13][13] = {};
-    double gtnm_wmm2020[13][13] = {};
-    double htnm_wmm2020[13][13] = {};
+    double gnm_wmm2025[13][13] = {};
+    double hnm_wmm2025[13][13] = {};
+    double gtnm_wmm2025[13][13] = {};
+    double htnm_wmm2025[13][13] = {};
 
     try {
-        std::ifstream wmm_file("WMM_2020.COF");
+        std::ifstream wmm_file("WMM_2025.COF");
         if (wmm_file.is_open())
         {
             std::string line;
@@ -52,19 +52,19 @@ int main()
                 double gnm, hnm, dgnm, dhnm;
                 if (sscanf(line.c_str(), "%u%u%lf%lf%lf%lf", &n, &m, &gnm, &hnm, &dgnm, &dhnm) == 6) {
                     if (n < 13 && m < 13) {
-                        gnm_wmm2020[n][m] = gnm;
-                        hnm_wmm2020[n][m] = hnm;
-                        gtnm_wmm2020[n][m] = dgnm;
-                        htnm_wmm2020[n][m] = dhnm;
+                        gnm_wmm2025[n][m] = gnm;
+                        hnm_wmm2025[n][m] = hnm;
+                        gtnm_wmm2025[n][m] = dgnm;
+                        htnm_wmm2025[n][m] = dhnm;
                     }
                 }
             }
             wmm_file.close();
 
-            print(std::cout, "gnm_wmm", static_cast<int>(epoch), gnm_wmm2020);
-            print(std::cout, "hnm_wmm", static_cast<int>(epoch), hnm_wmm2020);
-            print(std::cout, "gtnm_wmm", static_cast<int>(epoch), gtnm_wmm2020);
-            print(std::cout, "htnm_wmm", static_cast<int>(epoch), htnm_wmm2020);
+            print(std::cout, "gnm_wmm", static_cast<int>(epoch), gnm_wmm2025);
+            print(std::cout, "hnm_wmm", static_cast<int>(epoch), hnm_wmm2025);
+            print(std::cout, "gtnm_wmm", static_cast<int>(epoch), gtnm_wmm2025);
+            print(std::cout, "htnm_wmm", static_cast<int>(epoch), htnm_wmm2025);
 
         }
     }

@@ -21,7 +21,7 @@ double CalculateMagneticVariation() {
   double lon=GPS_INFO.Longitude;
 
   if (  GPS_INFO.NAVWarning ||
-	GPS_INFO.Year > 2025 || GPS_INFO.Year < 2020 ||
+	GPS_INFO.Year > 2029 || GPS_INFO.Year < 2025 ||
 	lat == 0 || lon == 0
      )  return 0.0;
 
