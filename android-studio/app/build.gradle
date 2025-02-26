@@ -116,7 +116,7 @@ dependencies {
     implementation "com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07"
     implementation "com.github.ytai.ioio:IOIOLibAndroidDevice:5.07"
 
-    implementation "com.github.felHR85:UsbSerial:6.1.0"
+    implementation "com.github.felHR85:UsbSerial:6.0.3"
 
     implementation "com.github.brunotl:geographiclib-prefab:2.1.2"
 
@@ -129,7 +129,7 @@ dependencies {
     implementation "com.github.brunotl.ndk.thirdparty:openssl:3.2.1-beta-4"
     implementation "com.github.brunotl.ndk.thirdparty:curl:7.85.0-beta-4"
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"
 }
 
 clean() {
