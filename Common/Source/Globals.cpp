@@ -553,10 +553,12 @@ void Globals_Init(void) {
 
   szPolarFile[0] = TEXT('\0');
   szPolarName[0] = TEXT('\0');
-  for(unsigned int i = 0; i < NO_AS_FILES; i++)
-    szAirspaceFile[i][0] = TEXT('\0');
-  for(unsigned int i = 0; i < NO_WP_FILES; i++)
-    szWaypointFile[i][0] = TEXT('\0');
+  for (auto& file : szAirspaceFile) {
+    lk::strcpy(file, _T(""));
+  }
+  for (auto& file : szWaypointFile) {
+    lk::strcpy(file, _T(""));
+  }
   szAdditionalWaypointFile[0] = TEXT('\0');
   szTerrainFile[0] = TEXT('\0');
   szAirfieldFile[0] = TEXT('\0');

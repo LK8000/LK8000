@@ -395,12 +395,13 @@ void LKProfileResetDefault() {
 
 
   lk::strcpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
-  for(unsigned int i = 0; i < NO_AS_FILES; i++)
-    lk::strcpy(szAirspaceFile[0],_T(""));
+  for (auto& file : szAirspaceFile) {
+    lk::strcpy(file, _T(""));
+  }
   lk::strcpy(szAirspaceFile[0],_T("DEMO.txt"));
-
-  for(unsigned int i = 0; i < NO_WP_FILES; i++)
-    lk::strcpy(szWaypointFile[0],_T(""));
+  for (auto& file : szWaypointFile) {
+    lk::strcpy(file, _T(""));
+  }
   lk::strcpy(szWaypointFile[0],_T("DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
   lk::strcpy(szTerrainFile,_T("DEMO.DEM"));
