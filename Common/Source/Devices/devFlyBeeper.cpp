@@ -236,7 +236,7 @@ BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   return TRUE;
 }
 
-std::string_view current_region; // TODO : must be stored in DeviceDescriptor_t...
+std::string current_region; // TODO : must be stored in DeviceDescriptor_t...
 
 BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
   try {
