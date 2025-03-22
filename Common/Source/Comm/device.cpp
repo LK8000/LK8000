@@ -545,7 +545,7 @@ void RestartCommPorts() {
 // is in turn called with LockComm
 BOOL devOpen(DeviceDescriptor_t* d) {
 
-  StartupStore(_T("Device %c ready @%s"), devLetter(d->PortNumber), WhatTimeIsIt());
+  StartupStore(_T(". Device %c ready @%s"), devLetter(d->PortNumber), WhatTimeIsIt());
 
   if (d && d->Open) {
     return d->Open(d);
@@ -709,7 +709,7 @@ BOOL devInit() {
 
         dev.Disabled = Config.IsDisabled();
         if (dev.Disabled) {
-            StartupStore(_T(". Device %c is DISABLED."), devLetter(i));
+            StartupStore(_T("Device %c is DISABLED."), devLetter(i));
             continue;
         }
 
@@ -746,7 +746,7 @@ BOOL devInit() {
             continue;
         }
 
-        StartupStore(_T(". Device %c is <%s> Port=%s"), devLetter(i), Config.szDeviceName, Port);
+        StartupStore(_T("Device %c is <%s> Port=%s"), devLetter(i), Config.szDeviceName, Port);
 
         ComPort* Com = make_ComPort(i, Config);
         if (Com && Com->Initialize()) {
@@ -1187,6 +1187,8 @@ BOOL FlarmDeclareSetGet(DeviceDescriptor_t* d, const char* key, const TCHAR* val
   d->Com->WriteString(tmp_s);
 
   bool success = wait_ack->wait(20000);
+
+  wait_ack = nullptr;
 
   TestLog(_T(". Flarm Decl: < %s"), success ? to_tstring(tmp_a).c_str() : _T("failed"));
   return success;
