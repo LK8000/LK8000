@@ -20,7 +20,6 @@ extern Topology* TopoStore[MAXTOPOLOGY];
 
 
 void OpenTopology() {
-  TestLog(_T(". OpenTopology"));
   CreateProgressDialog(MsgToken<902>()); // Loading Topology File...
 
   // Start off by getting the names and paths
@@ -31,6 +30,9 @@ void OpenTopology() {
   LKWaterTopology=false;
 
   LocalPath(Directory, _T(LKD_MAPS), szMapFile);
+
+  StartupStore(_T(". OpenTopology <%s>"), Directory);
+
   _tcscat(Directory, _T("/"));
   // Look for the file within the map zip file...
   int ret = _sntprintf(szFile, MAX_PATH, _T("%stopology.tpl"), Directory);
