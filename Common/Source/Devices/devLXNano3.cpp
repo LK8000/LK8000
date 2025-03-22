@@ -762,6 +762,7 @@ BOOL DevLXNanoIII::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDec
     if (status) {
       status = wait_ack->wait(10000);
     }
+    wait_ack = nullptr;
 
     TestLog(_T(". NANO Decl: < %s"), status ? to_tstring(wait_str).c_str() : _T("failed"));
 
