@@ -166,9 +166,8 @@ Topology::Topology(const TCHAR* shpname, int field1) {
 bool Topology::initCache_0() {
   cache_mode = 0;
 
-#ifdef DEBUG_TFC
-  StartupStore(_T("Topology cache using mode 0%s"), NEWLINE);
-#endif  
+  StartupStore(_T("Topology cache using mode 0"));
+
   return true;
 }
 
@@ -177,9 +176,7 @@ bool Topology::initCache_0() {
 bool Topology::initCache_1() {
   cache_mode = 1;
 
-#ifdef DEBUG_TFC
-  StartupStore(_T(". Topology cache using mode 1%s"), NEWLINE);
-#endif
+  StartupStore(_T(". Topology cache using mode 1"));
   
   shpBounds = (rectObj*) malloc(sizeof (rectObj) * shpfile.numshapes);
   if (shpBounds == NULL) {
@@ -210,9 +207,7 @@ bool Topology::initCache_1() {
 bool Topology::initCache_2() {
   cache_mode = 2;
 
-#ifdef DEBUG_TFC
-  StartupStore(_T(". Topology cache using mode 2%s"), NEWLINE);
-#endif
+  StartupStore(_T(". Topology cache using mode 2"));
   
   shpBounds = nullptr;
   shps = (XShape**) malloc(sizeof (XShape*) * shpfile.numshapes);
