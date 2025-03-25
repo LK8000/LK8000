@@ -12,6 +12,7 @@
 #include "igc_file_writer.h"
 #include <cstdio>
 #include <cassert>
+#include "MessageLog.h"
 
 namespace {
   // return c if valid char for IGC files
@@ -51,7 +52,14 @@ bool igc_file_writer::append(const char *data, size_t size) {
   if (!stream) {
     stream = _tfopen(file_path.c_str(), _T("wb"));
   }
-  assert(stream); // invalid file path or missing right on target directory ?
+  if (!stream) {
+    // invalid file path or missing right on target directory ?
+    static bool error_reported = false;
+    if (!error_reported) {
+      error_reported = true;
+      StartupStore(_T("ERROR: Unable to open IGC file <%s> for writing"), file_path.c_str());
+    }
+  }
   if (stream) {
     fseek(stream, next_record_position, SEEK_SET);
 
