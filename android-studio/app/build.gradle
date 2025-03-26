@@ -78,7 +78,6 @@ android {
             applicationIdSuffix ".debug"
             debuggable true
             jniDebuggable true
-            renderscriptDebuggable true
         }
         beta {
             initWith(buildTypes.release)
@@ -88,7 +87,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version "3.31.5"
+            version "3.31.6"
             path "../../CMakeLists.txt"
         }
     }
@@ -104,9 +103,9 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "androidx.camera:camera-camera2:1.4.1"
-    implementation "androidx.camera:camera-lifecycle:1.4.1"
-    implementation "androidx.camera:camera-view:1.4.1"
+    implementation "androidx.camera:camera-camera2:1.4.2"
+    implementation "androidx.camera:camera-lifecycle:1.4.2"
+    implementation "androidx.camera:camera-view:1.4.2"
 
     implementation "androidx.core:core:1.15.0"
 
