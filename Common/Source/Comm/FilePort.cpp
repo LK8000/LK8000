@@ -45,7 +45,7 @@ int FilePort::ReadLine(char* pString, size_t size) {
 		return -1;
 	}
 
-	if (fgets(pString, size, FileStream.get())==NULL) {
+	if (FileStream.fgets(pString, size)==NULL) {
 		pString[0] = '\0';
 		return -1;
 	}

@@ -105,13 +105,13 @@ void Utf8File::WriteLn(const TCHAR* unicode) {
     const char* cstr = unicode;
 #endif
   
-    fputs(cstr, fp.get());
+    fp.fputs(cstr);
   }
-  fputc('\n', fp.get());
-  fflush(fp.get());
+  fp.fputc('\n');
+  fp.fflush();
 } // WriteLn()
 
 
 bool Utf8File::Empty() const {
-  return (std::ftell(fp.get()) == 0);
+  return fp.ftell() == 0;
 }

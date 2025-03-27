@@ -30,11 +30,9 @@
 
 #include <cstdio>
 #include <memory>
+#include <cassert>
+#include <cstdarg>
 
-/*
- * using custom deleter to check null file ptr is useless for unique_ptr but mandatory for shared_ptr
- *   shared_ptr can be instantiated from unique_ptr, so to avoid mistake it's better to always use this custom deleter...
- */
 struct file_deleter {
 	void operator()(FILE* pFile) {
 		if (pFile) {
@@ -43,7 +41,62 @@ struct file_deleter {
 	}
 };
 
-using unique_file_ptr = std::unique_ptr<FILE, file_deleter>;
+struct unique_file_ptr : public std::unique_ptr<FILE, file_deleter> {
+	using std::unique_ptr<FILE, file_deleter>::unique_ptr;
+
+ 	int fseek(long _Offset, int _Origin) const {
+		assert(*this);
+		return std::fseek(get(), _Offset, _Origin);
+	}
+
+	size_t fwrite(const void* __restrict__ _Str, size_t _Size, size_t _Count) const {
+		assert(*this);
+		return std::fwrite(_Str, _Size, _Count, get());
+	}
+
+	size_t fread(void* __restrict__ _Str, size_t _Size, size_t _Count) const {
+		assert(*this);
+		return std::fread(_Str, _Size, _Count, get());
+	}
+
+	char* fgets(char* __restrict__ __dst, int __n) const {
+		assert(*this);
+		return std::fgets(__dst, __n, get());
+	}
+
+	int fputs(const char* __restrict__ _Str) const {
+		assert(*this);
+		return std::fputs(_Str, get());
+	}
+
+	int fputc(int _Ch) const {
+		assert(*this);
+		return std::fputc(_Ch, get());
+	}
+
+	int fflush() const {
+		assert(*this);
+		return std::fflush(get());
+	}
+
+	int vfprintf (const char* __format, va_list __local_argv) const {
+		assert(*this);
+		return std::vfprintf(get(), __format, __local_argv);
+	}
+
+	int fprintf (const char* __format, ...) const {
+		va_list local_argv;
+		va_start(local_argv, __format);
+		int retval = vfprintf(__format, local_argv);
+		va_end(local_argv);
+		return retval;
+	}
+
+	long ftell() const {
+		assert(*this);
+		return std::ftell(get());
+	}
+};
 
 inline
 unique_file_ptr make_unique_file_ptr(const char* filename, const char* flags) {

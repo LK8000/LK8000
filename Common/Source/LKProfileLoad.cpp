@@ -66,7 +66,7 @@ bool LKProfileLoad(const TCHAR *szFile) {
   char value[nMaxValueValueSize];
 
   // UTF8 file
-  while (fgets(inval, nMaxValueValueSize, fp.get())) {
+  while (fp.fgets(inval, nMaxValueValueSize)) {
 
     if (sscanf(inval, "%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]", name, value) == 2) {
       if (strlen(name) > 0) {

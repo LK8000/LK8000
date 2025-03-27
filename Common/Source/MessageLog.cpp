@@ -41,7 +41,7 @@ void DebugStore(const char* fmt, ...) {
   if(stream) {
       va_list args;
       va_start(args, fmt);
-      vfprintf(stream.get(), fmt, args);
+      stream.vfprintf(fmt, args);
       va_end(args);
   }
 #endif
@@ -99,7 +99,7 @@ void StartupStoreV(const TCHAR* fmt, va_list args)
 #endif
 
     if (i > 0) {
-      fprintf(startupStoreFile.get(), "[%09u] %s" SNEWLINE, MonotonicClockMS(), sbuf);
+      startupStoreFile.fprintf("[%09u] %s" SNEWLINE, MonotonicClockMS(), sbuf);
     }
   }
 }

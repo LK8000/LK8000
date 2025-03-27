@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cassert>
 #include "MessageLog.h"
+#include "utils/unique_file_ptr.h"
 
 namespace {
   // return c if valid char for IGC files
@@ -26,16 +27,16 @@ namespace {
     return ' ';
   }
 
-  void write_g_record(FILE *stream, const MD5_Base &md5) {
+  void write_g_record(const unique_file_ptr& stream, const MD5_Base &md5) {
     // we made copy to allow to continue to update hash after Final call.
     MD5 md5_tmp(md5);
     std::string digest = md5_tmp.Final();
     if (digest.size() >= 32) {
-      fwrite("G", 1, 1, stream);
-      fwrite(digest.data(), 1, 16, stream);
-      fwrite("\r\nG", 1, 3, stream);
-      fwrite(digest.data() + 16, 1, 16, stream);
-      fwrite("\r\n", 1, 2, stream);
+      stream.fwrite("G", 1, 1);
+      stream.fwrite(digest.data(), 1, 16);
+      stream.fwrite("\r\nG", 1, 3);
+      stream.fwrite(digest.data() + 16, 1, 16);
+      stream.fwrite("\r\n", 1, 2);
     }
   }
 } // namespace
@@ -48,9 +49,9 @@ igc_file_writer::igc_file_writer(const TCHAR *file, bool grecord)
 
 bool igc_file_writer::append(const char *data, size_t size) {
 
-  FILE *stream = _tfopen(file_path.c_str(), _T("rb+"));
+  auto stream = make_unique_file_ptr(file_path.c_str(), _T("rb+"));
   if (!stream) {
-    stream = _tfopen(file_path.c_str(), _T("wb"));
+    stream = make_unique_file_ptr(file_path.c_str(), _T("wb"));
   }
   if (!stream) {
     // invalid file path or missing right on target directory ?
@@ -61,7 +62,7 @@ bool igc_file_writer::append(const char *data, size_t size) {
     }
   }
   if (stream) {
-    fseek(stream, next_record_position, SEEK_SET);
+    stream.fseek(next_record_position, SEEK_SET);
 
     for (; *(data) && size > 1; ++data, --size) {
       if ((*data) != 0x0D && (*data) != 0x0A) {
@@ -73,13 +74,13 @@ bool igc_file_writer::append(const char *data, size_t size) {
           md5_c.Update(c);
           md5_d.Update(c);
         }
-        fwrite(&c, 1, 1, stream);
+        stream.fwrite(&c, 1, 1);
       } else {
-        fwrite(data, 1, 1, stream);
+        stream.fwrite(data, 1, 1);
       }
     }
 
-    next_record_position = ftell(stream);
+    next_record_position = stream.ftell();
 
     if (add_grecord) {
       write_g_record(stream, md5_a);
@@ -87,7 +88,6 @@ bool igc_file_writer::append(const char *data, size_t size) {
       write_g_record(stream, md5_c);
       write_g_record(stream, md5_d);
     }
-    fclose(stream);
     return true;
   }
   return false;
