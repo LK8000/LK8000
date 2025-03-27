@@ -116,6 +116,12 @@ BOOL ParseConfiguration(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GP
     return TRUE;
   }
 
+  constexpr auto qnh_prefix = "ALT,QNH,"sv;
+  if (start_with(String, qnh_prefix)) {
+    UpdateQNH(StrToDouble(String + vol_prefix.size(), nullptr) / 100.);
+    return TRUE;
+  }
+
   // TODO :
   DebugLog(_T("ACD unknown: $PAAVC,A,%s"), to_tstring(String).c_str());
 
