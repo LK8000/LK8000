@@ -493,10 +493,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         return;
     } // doinit
 
-
-
-    int *pSortedNumber;
-    int *pSortedIndex=nullptr;
+    int* pSortedNumber = nullptr;
+    int* pSortedIndex = nullptr;
     const TCHAR* headertoken[5];
     double *pLastDoNearest;
     bool *pNearestDataReady;
@@ -605,12 +603,20 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
     }
 
+    if (!pSortedNumber || !pSortedIndex) {
+        return;
+    }
+
     if (MSMTHERMALS) DoThermalHistory(&DrawInfo, &DerivedDrawInfo);
     if (MSMTRAFFIC) DoTraffic(&DrawInfo, &DerivedDrawInfo);
 
-    Numpages = roundupdivision(*pSortedNumber*lincr, numraws);
-    if (Numpages > MAXNUMPAGES) Numpages = MAXNUMPAGES;
-    else if (Numpages < 1) Numpages = 1;
+    Numpages = roundupdivision(*pSortedNumber * lincr, numraws);
+    if (Numpages > MAXNUMPAGES) {
+        Numpages = MAXNUMPAGES;
+    }
+    else if (Numpages < 1) {
+        Numpages = 1;
+    }
 
     curpage = SelectedPage[curmapspace];
     if (curpage < 0 || curpage >= MAXNUMPAGES) { // TODO also >Numpages
@@ -807,13 +813,11 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
         }
         size_t rli = curraw;
-        if (pSortedNumber && pSortedIndex) {
-            if (curraw < (*pSortedNumber)) {
-                rli = pSortedIndex[curraw];
-            }
-            else {
-                rli = ~0;
-            }
+        if (curraw < (*pSortedNumber)) {
+            rli = pSortedIndex[curraw];
+        }
+        else {
+            rli = ~0;
         }
 
         if (!ndr) {
