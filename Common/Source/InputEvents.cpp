@@ -824,21 +824,22 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 
   LKSound(TEXT("DROPMARKER.WAV"));
 
-  LockFlightData();
-
   if (_tcscmp(misc, TEXT("pan")) == 0) {
-    RasterTerrain::Lock();
-	short th= RasterTerrain::GetTerrainHeight(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude());
-    RasterTerrain::Unlock();
-	if (th==TERRAIN_INVALID) th=0;
-	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th );
-	ForceRenderMap=true;
+    short th = WithLock(RasterTerrain::mutex, []() {
+      return RasterTerrain::GetTerrainHeight(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude());
+    });
+    if (th == TERRAIN_INVALID) {
+      th = 0;
+    }
+
+    MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th);
+    ForceRenderMap = true;
   } else {
-	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude, CALCULATED_INFO.NavAltitude );
+    auto pos = WithLock(CritSec_FlightData, [&]() -> AGeoPoint {
+      return {{GPS_INFO.Longitude, GPS_INFO.Latitude}, CALCULATED_INFO.NavAltitude};
+    });
+    MarkLocation(pos.longitude, pos.latitude, pos.altitude);
   }
-
-  UnlockFlightData();
-
 }
 
 void InputEvents::eventSounds(const TCHAR *misc) {

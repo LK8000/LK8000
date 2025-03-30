@@ -96,10 +96,10 @@ void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     return; // nothing to do, wait until level transition
   }
 
-  RasterTerrain::Lock();
-  hGround =
-    RasterTerrain::GetTerrainHeight(Basic->Latitude, Basic->Longitude);
-  RasterTerrain::Unlock();
+  hGround = WithLock(RasterTerrain::mutex, [&]() {
+    return RasterTerrain::GetTerrainHeight(Basic->Latitude, Basic->Longitude);
+  });
+    
   if (hGround == TERRAIN_INVALID) hGround=0; //@ 101027 FIX
 
   if (level>last_level) {

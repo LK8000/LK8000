@@ -57,8 +57,6 @@ double FinalGlideThroughTerrain(const double this_bearing,
   double last_dh=0;
   double altitude;
 
-  // Warning: leave this part locked, RasterTerrain need no changes on the map position while working
-  RasterTerrain::Lock();  //@ 101031 WE DO NEED IT!   BUG 101027:  no need, locking individually
   double retval = 0;
   int i=0;
   bool start_under = false;
@@ -70,6 +68,10 @@ double FinalGlideThroughTerrain(const double this_bearing,
 
   double Xrounding = fabs(lon-start_lon)/2;
   double Yrounding = fabs(lat-start_lat)/2;
+
+  // Warning: leave this part locked, RasterTerrain need no changes on the map position while working
+  ScopeLock lock(RasterTerrain::mutex);
+
   RasterTerrain::SetTerrainRounding(Xrounding, Yrounding);
 
   lat = last_lat = start_lat;
@@ -191,6 +193,5 @@ double FinalGlideThroughTerrain(const double this_bearing,
   retval = glide_max_range;
 
  OnExit:
-  RasterTerrain::Unlock();
   return retval;
 }

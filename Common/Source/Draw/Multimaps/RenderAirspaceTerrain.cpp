@@ -33,7 +33,6 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     double range = psDiag->fXMax - psDiag->fXMin; // km
     double hmax = psDiag->fYMax;
     double lat, lon;
-    int i, j;
 
     if (!IsDithered() && IsMultimapTerrain()) {
         RenderSky(Surface, rc, SKY_HORIZON_COL, SKY_SPACE_COL, GC_NO_COLOR_STEPS);
@@ -47,19 +46,18 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     double d_h[AIRSPACE_SCANSIZE_X] = {};
 
 #define   FRAMEWIDTH 2
-    RasterTerrain::Lock(); // want most accurate rounding here
-    RasterTerrain::SetTerrainRounding(0, 0);
-    double fj;
-    for (j = 0; j < AIRSPACE_SCANSIZE_X; j++) { // scan range
-        fj = (double) j * 1.0 / (double) (AIRSPACE_SCANSIZE_X - 1);
-        FindLatitudeLongitude(lat, lon, brg, range*fj, &d_lat[j], &d_lon[j]);
-        d_h[j] = RasterTerrain::GetTerrainHeight(d_lat[j], d_lon[j]);
-        if (d_h[j] == TERRAIN_INVALID) d_h[j] = 0; //@ 101027 BUGFIX
-        hmax = max(hmax, d_h[j]);
-    }
-
-    RasterTerrain::Unlock();
-
+    WithLock(RasterTerrain::mutex, [&]() {
+        RasterTerrain::SetTerrainRounding(0, 0);
+        for (size_t j = 0; j < AIRSPACE_SCANSIZE_X; j++) { // scan range
+            double fj = (double) j * 1.0 / (double) (AIRSPACE_SCANSIZE_X - 1);
+            FindLatitudeLongitude(lat, lon, brg, range*fj, &d_lat[j], &d_lon[j]);
+            d_h[j] = RasterTerrain::GetTerrainHeight(d_lat[j], d_lon[j]);
+            if (d_h[j] == TERRAIN_INVALID) {
+                d_h[j] = 0; //@ 101027 BUGFIX
+            }
+            hmax = max(hmax, d_h[j]);
+        }
+    });
 
     /********************************************************************************
      * scan line
@@ -75,12 +73,12 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
      * bubble sort to start with biggest airspaces
      ********************************************************************************/
     int iSizeLookupTable[MAX_NO_SIDE_AS];
-    for (i = 0; i < Sideview_iNoHandeldSpaces; i++)
+    for (int i = 0; i < Sideview_iNoHandeldSpaces; i++)
         iSizeLookupTable[i] = i;
 
-    for (i = 0; i < Sideview_iNoHandeldSpaces; i++) {
+    for (int i = 0; i < Sideview_iNoHandeldSpaces; i++) {
         BUGSTOP_LKASSERT(iSizeLookupTable[i] < MAX_NO_SIDE_AS);
-        for (j = i; j < Sideview_iNoHandeldSpaces; j++) {
+        for (int j = i; j < Sideview_iNoHandeldSpaces; j++) {
             BUGSTOP_LKASSERT(iSizeLookupTable[j] < MAX_NO_SIDE_AS);
             if (iSizeLookupTable[i] >= MAX_NO_SIDE_AS) continue;
             if (iSizeLookupTable[j] >= MAX_NO_SIDE_AS) continue;
@@ -98,7 +96,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     double dx1 = (double) (rc.right) / (double) (AIRSPACE_SCANSIZE_X - 1);
     int x0 = rc.left;
     LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
-    for (i = 0; i < Sideview_iNoHandeldSpaces; i++) {
+    for (int i = 0; i < Sideview_iNoHandeldSpaces; i++) {
         Sideview_pHandeled[i].rc.left = (long) ((Sideview_pHandeled[i].rc.left) * dx1) + x0 - FRAMEWIDTH / 2;
         Sideview_pHandeled[i].rc.right = (long) ((Sideview_pHandeled[i].rc.right) * dx1) + x0 + FRAMEWIDTH / 2;
 
@@ -113,7 +111,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         if (iN >= GC_MAX_POLYGON_PTS) iN = GC_MAX_POLYGON_PTS - 1;
 
         if (Sideview_pHandeled[i].bRectAllowed == false) {
-            for (j = 0; j < iN; j++) {
+            for (int j = 0; j < iN; j++) {
                 Sideview_pHandeled[i].apPolygon[j].x = (long) (((Sideview_pHandeled[i].apPolygon[j].x) * dx1) + x0);
                 Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double) Sideview_pHandeled[i].apPolygon[j].y, psDiag);
                 if (j != iN - 1) {
@@ -284,7 +282,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     const auto oldPen = Surface.SelectObject(hpHorizonGround);
     const auto oldBrush = Surface.SelectObject(hbHorizonGround);
 
-    for (j = 0; j < AIRSPACE_SCANSIZE_X; j++) { // scan range
+    for (int j = 0; j < AIRSPACE_SCANSIZE_X; j++) { // scan range
         apTerrainPolygon[j].x = iround(j * dx1) + x0;
         apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag);
     }

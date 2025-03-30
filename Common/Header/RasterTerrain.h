@@ -186,13 +186,11 @@ public:
   static Mutex mutex;
 
 public:
-  static void Lock(void);
-  static void Unlock(void);
 
-  // RasterTerrain::Lock() Requiered
-  static short GetTerrainHeight(const double &Latitude, const double &Longitude);
+  // RasterTerrain::mutex Lock Required
+  static short GetTerrainHeight(double Latitude, double Longitude);
 
-  // RasterTerrain::Lock() Requiered
+  // RasterTerrain::mutex Lock Required
   static void SetTerrainRounding(double x, double y);
 
   static bool WaypointIsInTerrainRange(double latitude, double longitude);

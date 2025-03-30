@@ -251,9 +251,6 @@ void ThermalLocator::Drift(double t_0,
   }
 }
 
-#include "Calculations.h"
-
-
 void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
 					 double Thermal_Latitude,
 					 double altitude,
@@ -275,8 +272,6 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
   Tmax = (altitude/wthermal);
   double dt = Tmax/10;
 
-  RasterTerrain::Lock();
-
   double lat, lon;
   FindLatitudeLongitude(Thermal_Latitude, Thermal_Longitude,
                         wind_bearing,
@@ -284,6 +279,9 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
                         &lat, &lon);
   double Xrounding = fabs(lon-Thermal_Longitude)/2;
   double Yrounding = fabs(lat-Thermal_Latitude)/2;
+
+  ScopeLock lock(RasterTerrain::mutex);
+
   RasterTerrain::SetTerrainRounding(Xrounding, Yrounding);
 
 //  double latlast = lat;
@@ -310,7 +308,6 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
   }
   hground = RasterTerrain::GetTerrainHeight(lat, lon);
   if (hground==TERRAIN_INVALID) hground=0; //@ 101027 FIX
-  RasterTerrain::Unlock();
 
   *ground_longitude = lon;
   *ground_latitude = lat;

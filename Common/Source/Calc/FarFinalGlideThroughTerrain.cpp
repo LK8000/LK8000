@@ -52,8 +52,6 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
 //  int imax=0;
   double last_dh=0;
   double altitude;
- 
-  RasterTerrain::Lock();
   double retval = 0;
   int i=0;
   bool start_under = false;
@@ -65,6 +63,9 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
 
   double Xrounding = fabs(lon-start_lon)/2;
   double Yrounding = fabs(lat-start_lat)/2;
+
+  ScopeLock lock(RasterTerrain::mutex);
+
   RasterTerrain::SetTerrainRounding(Xrounding, Yrounding);
 
   lat = last_lat = start_lat;
@@ -179,7 +180,6 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
   retval = glide_max_range;
 
  OnExit:
-  RasterTerrain::Unlock();
   return retval;
 }
 

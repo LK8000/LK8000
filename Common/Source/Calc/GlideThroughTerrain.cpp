@@ -50,9 +50,10 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		Calculated->ObstacleDistance = distance_soarable;
 
-		RasterTerrain::Lock();
-		Calculated->ObstacleHeight =  max((short)0, RasterTerrain::GetTerrainHeight(lat,lon));
-		RasterTerrain::Unlock();
+		Calculated->ObstacleHeight = WithLock(RasterTerrain::mutex, [&]() {
+			return std::max<short>(0, RasterTerrain::GetTerrainHeight(lat,lon));
+		});
+
 		if (Calculated->ObstacleHeight == TERRAIN_INVALID) Calculated->ObstacleHeight=0; //@ 101027 FIX
 
 		// how much height I will loose to get there

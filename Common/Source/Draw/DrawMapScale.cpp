@@ -96,11 +96,13 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
 
     if (inpanmode) {
       if (DerivedDrawInfo.TerrainValid) {
-        RasterTerrain::Lock();
-        double alt = Units::ToAltitude(RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()));
-        RasterTerrain::Unlock();
+        double alt = WithLock(RasterTerrain::mutex, [&]() {
+          return RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude());
+        });
         if (alt == TERRAIN_INVALID) {
           alt = 0.0;
+        } else {
+          alt = Units::ToAltitude(alt);
         }
         _stprintf(Scale1, _T(" %.0f%s "), alt, Units::GetAltitudeName());
       }

@@ -10,16 +10,12 @@
 #include "Waypointparser.h"
 #include "RasterTerrain.h"
 
-
-
 double AltitudeFromTerrain(double Lat, double Lon) {
-  double myalt = 0.;
-  RasterTerrain::Lock();
-  RasterTerrain::SetTerrainRounding(0.0,0.0);
-  myalt = RasterTerrain::GetTerrainHeight(Lat, Lon);
-  RasterTerrain::Unlock();
-
-  return (myalt==TERRAIN_INVALID)?0:myalt;
+  double myalt = WithLock(RasterTerrain::mutex, [&]() {
+    RasterTerrain::SetTerrainRounding(0., 0.);
+    return RasterTerrain::GetTerrainHeight(Lat, Lon);
+  });
+  return (myalt == TERRAIN_INVALID) ? 0 : myalt;
 }
 
 void WaypointAltitudeFromTerrain(WAYPOINT* Temp) {

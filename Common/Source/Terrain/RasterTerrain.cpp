@@ -106,17 +106,7 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
 ////////// Map general /////////////////////////////////////////////
 
-
-void RasterTerrain::Lock(void) {
-  mutex.lock();
-}
-
-void RasterTerrain::Unlock(void) {
-  mutex.unlock();
-}
-
-short RasterTerrain::GetTerrainHeight(const double &Latitude,
-                                      const double &Longitude) {
+short RasterTerrain::GetTerrainHeight(double Latitude, double Longitude) {
   if (TerrainMap && TerrainMap->isMapLoaded()) {
     return TerrainMap->GetField(Latitude, Longitude);
   } else {
