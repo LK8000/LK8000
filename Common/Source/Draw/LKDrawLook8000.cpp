@@ -22,6 +22,7 @@
 #include "Bitmaps.h"
 #include "Asset.hpp"
 #include "Library/TimeFunctions.h"
+#include "utils/printf.h"
 #ifndef UNICODE
 #include "Util/UTF8.hpp"
 #endif
@@ -413,7 +414,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         if (HaveGates()) {
             Units::TimeToText(BufferTitle, GateTime(ActiveGate));
-            _stprintf(BufferValue, _T("START %s"), BufferTitle);
+            lk::snprintf(BufferValue, _T("START %s"), BufferTitle);
         } else {
             // LKTOKEN  _@M316_ = "GATES CLOSED"
             lk::strcpy(BufferValue, MsgToken<316>());
