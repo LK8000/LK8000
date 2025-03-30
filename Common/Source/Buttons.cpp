@@ -25,9 +25,7 @@ namespace {
 
 class MenuButton : public WndTextLabel {
 public:
-    MenuButton() : _MenuId(~0), _EnableMenu(), _LButtonDown() {
-
-    }
+    MenuButton() = default;
 
     void SetMenuId(unsigned MenuId) { _MenuId = MenuId; }
 
@@ -35,9 +33,9 @@ public:
     bool IsMenuEnabled() { return _EnableMenu; }
 
 protected:
-    unsigned _MenuId;
-    bool _EnableMenu;
-    bool _LButtonDown;
+    unsigned _MenuId = ~0;
+    bool _EnableMenu = false;
+    bool _LButtonDown = false;
 
     bool OnLButtonDblClick(const POINT& Pos) override {
         _LButtonDown = true;
@@ -59,10 +57,7 @@ protected:
 };
 
 
-/*
- * 
- * 
- * Landscape :
+/* Landscape :
  * 
  *                     0      1      2      3      4
  *                 +------+------+------+------+------+
@@ -78,10 +73,13 @@ protected:
  *                 +------+------+------+------+------+
  */
 std::array<MenuButton, NUMBUTTONLABELS> MenuButtons;
-constexpr struct {
-    PixelScalar row;
-    PixelScalar col;
-} LandscapeLayout[] {
+
+struct MenuLayout {
+    const PixelScalar row;
+    const PixelScalar col;
+};
+
+constexpr MenuLayout LandscapeLayout[] {
     {0,4},{1,4},{2,4},{3,4},
     {4,0},{4,1},{4,2},{4,3},
     {4,4},{0,0},{0,1},{0,2},
@@ -117,10 +115,7 @@ static_assert(NUMBUTTONLABELS == std::size(LandscapeMenuOrder), "Check array siz
  *                     +------+------+------+------+
  * 
  */
-constexpr struct {
-    PixelScalar row;
-    PixelScalar col;
-} PortraitLayout[] {
+constexpr MenuLayout PortraitLayout[] {
     {6,0},{6,1},{6,2},{6,3},
     {1,3},{2,3},{3,3},{4,3},
     {5,3},{0,0},{0,1},{0,2},
@@ -146,7 +141,7 @@ PixelRect GetButtonPosition(unsigned MenuID, const PixelRect& rcScreen) {
     LKASSERT(i < MenuButtons.size());
     
     const PixelScalar row   = ScreenLandscape ? LandscapeLayout[i].row : PortraitLayout[i].row;
-    const PixelScalar col   = ScreenLandscape ? LandscapeLayout[i].col :PortraitLayout[i].col;
+    const PixelScalar col   = ScreenLandscape ? LandscapeLayout[i].col : PortraitLayout[i].col;
     const PixelScalar nbRow = ScreenLandscape ? 5 : 7;
     const PixelScalar nbCol = ScreenLandscape ? 5 : 4;
 
@@ -277,12 +272,8 @@ void ButtonLabel::SetLabelText(unsigned MenuID, const TCHAR *text) {
 }
 
 bool ButtonLabel::IsVisible() {
-    for(auto& item : MenuButtons) {
-        if(item.IsVisible()) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(MenuButtons.begin(), MenuButtons.end(),
+                       std::bind(&MenuButton::IsVisible, _1));
 }
 
 bool ButtonLabel::IsVisible(unsigned MenuID) {
