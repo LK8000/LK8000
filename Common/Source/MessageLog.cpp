@@ -23,8 +23,6 @@ constexpr size_t MAX_LOG_SIZE = 1024*1024; // 1MB
 void DebugStore(const char* fmt, ...) {
 #ifndef NDEBUG
 
-  unique_file_ptr stream;
-
   static Mutex mutex;
   ScopeLock Lock(mutex);
 
@@ -32,11 +30,9 @@ void DebugStore(const char* fmt, ...) {
   static bool initialised = false;
   if (!initialised) {
     LocalPath(szFileName, TEXT(LKF_DEBUG));
-    stream = make_unique_file_ptr(szFileName,TEXT("w"));
     initialised = true;
-  } else {
-    stream = make_unique_file_ptr(szFileName,TEXT("w"));
   }
+  auto stream = make_unique_file_ptr(szFileName,TEXT("w"));
 
   if(stream) {
       va_list args;
