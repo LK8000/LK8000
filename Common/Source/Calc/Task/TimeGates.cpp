@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "LKProcess.h"
 #include "utils/stl_utils.h"
+#include "utils/printf.h"
 #include "Sound/Sound.h"
 #include "Library/TimeFunctions.h"
 
@@ -145,17 +146,16 @@ int InitActiveGate() {
 }
 
 void AlertGateOpen(int gate) {
-  TCHAR tag[100] ={0};
-  if (gate == (PGNumberOfGates-1)) {
-	// LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
-	_tcsncpy(tag,MsgToken<372>(), std::size(tag)-1);
+  TCHAR tag[100] = {0};
+  if (gate == (PGNumberOfGates - 1)) {
+    // LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
+    lk::strcpy(tag, MsgToken<372>());
   } else {
-	_sntprintf(tag, std::size(tag)-1, _T("%s %d of %d %s"),
-	// LKTOKEN  _@M315_ = "GATE" 
-		MsgToken<315>(),
-		gate+1, PGNumberOfGates,
-	// LKTOKEN  _@M347_ = "IS OPEN" 
-		MsgToken<347>());
+    lk::snprintf(tag, _T("%s %d of %d %s"),
+               // LKTOKEN  _@M315_ = "GATE"
+               MsgToken<315>(), gate + 1, PGNumberOfGates,
+               // LKTOKEN  _@M347_ = "IS OPEN"
+               MsgToken<347>());
   }
   DoStatusMessage(tag);
   LKSound(_T("LK_GATEOPEN.WAV"));

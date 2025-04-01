@@ -14,6 +14,7 @@
 #include "NavFunctions.h"
 #include "Waypointparser.h"
 #include "Library/TimeFunctions.h"
+#include "utils/printf.h"
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.
@@ -360,7 +361,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             Units::TimeToTextS(Temp, LocalTime(Calculated->FreeFlightStartTime));          
             TCHAR Comment[100];
 
-            _sntprintf(Comment, 99, _T("%s: %s  @%.0f%s QNH"),
+            lk::snprintf(Comment, _T("%s: %s  @%.0f%s QNH"),
                     MsgToken<1754>(), // Free flight start
                     Temp,
                     Units::ToAltitude(Calculated->FreeFlightStartQNH),

@@ -611,29 +611,20 @@ int DeviceASCIIConvert(TCHAR *pDest, const TCHAR *pSrc, int size)
   return 0;
 }
 
-static
-BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp)
-{
-  if(DeclStrings) {
-
-    int  lat =0; 
-    int  lon =0; 
-    TCHAR Name[60] =_T("");
-    if(wp)
-    {
-      lat = ( int)(wp->Latitude*60000.0);
-      lon = (int) (wp->Longitude*60000.0);  
-      DeviceASCIIConvert(Name, wp->Name,20) ;  
-    }
-
-    _stprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"),
-                  num, total+2, lat, lon, Name);
-    return true;
+template <size_t size>
+static BOOL FormatTP(TCHAR (&DeclStrings)[size], int num, int total, const WAYPOINT* wp) {
+  int lat = 0;
+  int lon = 0;
+  TCHAR Name[60] = _T("");
+  if (wp) {
+    lat = (int)(wp->Latitude * 60000.0);
+    lon = (int)(wp->Longitude * 60000.0);
+    DeviceASCIIConvert(Name, wp->Name, 20);
   }
-  return false;
+
+  lk::snprintf(DeclStrings, TEXT("LXDT,SET,TP,%i,%i,%i,%i,%s"), num, total + 2, lat, lon, Name);
+  return true;
 }
-
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the logger.
@@ -681,14 +672,16 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
   INT i = 0;
 
 
-  _stprintf(DeclStrings[i++], TEXT("LXDT,SET,PILOT,%s,%s"),(PilotName), (PilotSurName));
-  _stprintf(DeclStrings[i++], TEXT("LXDT,SET,GLIDER,%s,%s,%s,%s"), AircraftType, AircraftReg, AircraftCompID, AircraftClass);
+  lk::snprintf(DeclStrings[i++], TEXT("LXDT,SET,PILOT,%s,%s"),(PilotName), (PilotSurName));
+  lk::snprintf(DeclStrings[i++], TEXT("LXDT,SET,GLIDER,%s,%s,%s,%s"), AircraftType, AircraftReg, AircraftCompID, AircraftClass);
 
-  if(UseAATTarget())
-    _stprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,%02i:%02i"), (int)AATTaskLength/60,  (int)(AATTaskLength-((int)(AATTaskLength/60)*60)));
-  else
-    _stprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,00:00"));
-  int num=0;
+  if (UseAATTarget()) {
+    lk::snprintf(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,%02i:%02i"), (int)AATTaskLength / 60,
+                 (int)(AATTaskLength - ((int)(AATTaskLength / 60) * 60)));
+  } else {
+    lk::strcpy(DeclStrings[i++], TEXT("LXDT,SET,TSK_PAR,0,0,00:00"));
+  }
+  int num = 0;
 
   int dir=0,autonxt=1,isline=0,a1=45,a2=45,a21=5000,r1=5000,r2=500, elev = WayPointList[HomeWaypoint].Altitude;
 
@@ -717,7 +710,7 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
     }
 
     elev = WayPointList[HomeWaypoint].Altitude;
-    _stprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
+    lk::snprintf(DeclStrings[i++], TEXT("LXDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),num,dir,autonxt,isline,a1,a2,a21,r1,r2, elev);
     num++;
   }
 
@@ -985,7 +978,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
       if(Values(d)) 
       { 
         TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN,_T("%5.1fkm/h ($LXWP0)"), airspeed);
+        lk::snprintf(szTmp, _T("%5.1fkm/h ($LXWP0)"), airspeed);
         SetDataText( d,_SPEED,   szTmp);
       }
       if(IsDirInput(PortIO.SPEEDDir  ))
@@ -1001,7 +994,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
     {
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp, MAX_NMEA_LEN, _T("%5.1fm ($LXWP0)"),altitude);
+        lk::snprintf(szTmp, _T("%5.1fm ($LXWP0)"),altitude);
         SetDataText( d, _BARO,   szTmp);
       }
       if(IsDirInput(PortIO.BARODir  ))
@@ -1018,7 +1011,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
     {
       if(Values(d))
       { TCHAR szTmp[MAX_NMEA_LEN];
-        _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fm/s ($LXWP0)"), vario);
+        lk::snprintf(szTmp, _T("%5.1fm/s ($LXWP0)"), vario);
         SetDataText( d, _VARIO,   szTmp);
       }
       if(IsDirInput(PortIO.VARIODir  ))
@@ -1032,7 +1025,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
   if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {
     if(Values(d)) {
       TCHAR szTmp[MAX_NMEA_LEN];
-      _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.1fkm/h %3.0f° ($LXWP0)"),WindSpeed, WindDirection);
+      lk::snprintf(szTmp, _T("%5.1fkm/h %3.0f° ($LXWP0)"),WindSpeed, WindDirection);
       SetDataText( d, _WIND,   szTmp);
     }
     if(IsDirInput(PortIO.WINDDir)) {
@@ -1055,7 +1048,7 @@ BOOL DevLX_EOS_ERA::EOSSetMC(DeviceDescriptor_t* d,float fTmp, const TCHAR *info
   if(Values(d))
   {
     TCHAR szTmp[MAX_NMEA_LEN];
-    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%5.2fm/s %s"),fTmp,info);
+    lk::snprintf(szTmp, _T("%5.2fm/s %s"),fTmp,info);
     SetDataText( d, _MC,   szTmp);
   }
 
@@ -1079,9 +1072,9 @@ BOOL DevLX_EOS_ERA::EOSSetSTF(DeviceDescriptor_t* d,int  iTmp, const TCHAR *info
   {
     TCHAR szTmp[MAX_NMEA_LEN];
     if(iTmp > 0)
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("STF %s"), info);
+      lk::snprintf(szTmp,  _T("STF %s"), info);
     else
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("VARIO %s"), info);      
+      lk::snprintf(szTmp,  _T("VARIO %s"), info);      
     SetDataText( d,_STF,  szTmp);
   }
 
@@ -1120,7 +1113,7 @@ BOOL DevLX_EOS_ERA::EOSSetBAL(DeviceDescriptor_t* d,float fTmp, const TCHAR *inf
     TCHAR szTmp[MAX_NMEA_LEN];
     if(WEIGHTS[2] > 0)
     {
-      _sntprintf(szTmp,MAX_NMEA_LEN,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
+      lk::snprintf(szTmp,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
       SetDataText( d,_BAL,  szTmp);
     }
   }
@@ -1147,7 +1140,7 @@ BOOL DevLX_EOS_ERA::EOSSetBUGS(DeviceDescriptor_t* d,float fTmp, const TCHAR *in
   if(Values(d))
   {
     TCHAR szTmp[MAX_NMEA_LEN];
-    _sntprintf(szTmp,MAX_NMEA_LEN, _T("%3.0f%% %s"),fTmp, info);
+    lk::snprintf(szTmp, _T("%3.0f%% %s"),fTmp, info);
     SetDataText( d,_BUGS,  szTmp);
   }
 
@@ -1205,7 +1198,7 @@ BOOL DevLX_EOS_ERA::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
         TCHAR szTmp[MAX_NMEA_LEN];
         if(Values(d))
         {
-            _sntprintf(szTmp,MAX_NMEA_LEN, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
+            lk::snprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
             SetDataText( d, _POLAR,  szTmp);
         }
 
@@ -1218,11 +1211,11 @@ BOOL DevLX_EOS_ERA::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
             double v=POLARV[i]/100;
             POLARLD[i] = -(fa*v*v + fb*v + fc);
 #ifdef POLAR_DEBUG
-            _sntprintf(szTmp,MAX_NMEA_LEN, _T("V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
+            lk::snprintf(szTmp, _T("V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
             StartupStore(TEXT("EOS/ERA Polar: %s"), szTmp);
 #endif
           }
-          _stprintf (szPolarName, _T("%s"), d->Name );
+          lk::snprintf(szPolarName, _T("%s"), d->Name );
           PolarWinPilot2XCSoar(POLARV, POLARLD, WW);
           GlidePolar::SetBallast();
         }
@@ -1371,7 +1364,7 @@ BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       if(IsDirInput(PortIO.QNHDir))
       { 
         TCHAR szQNH[MAX_NMEA_LEN];
-        _stprintf( szQNH, _T("%6.1fhPa ($LXDT)"),fTmp);
+        lk::snprintf( szQNH, _T("%6.1fhPa ($LXDT)"), fTmp);
         if(Values(d)) SetDataText( d, _QNH,   szQNH);
         static double oldQNH = -1;
         if ( fabs( oldQNH - fTmp) > 0.1)
@@ -1390,9 +1383,7 @@ BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       && m_bTriggered)  // call next if triggerd from here only
     {
       EOSListFilled(false);
-      TCHAR szNmea[MAX_NMEA_LEN];
-      _sntprintf(szNmea, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),1);
-      SendNmea(d, szNmea);
+      SendNmea(d, _T("LXDT,GET,FLIGHT_INFO,1"));
     }
   }
   else if(strncmp(szTmp, "FLIGHT_INFO", 11) == 0)
@@ -1420,7 +1411,7 @@ BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
     if((iNo < iNoFlights) && m_bTriggered)
     {
       TCHAR szNmea[MAX_NMEA_LEN];
-      _sntprintf(szNmea, MAX_NMEA_LEN, _T("LXDT,GET,FLIGHT_INFO,%i"),iNo+1);
+      lk::snprintf(szNmea, _T("LXDT,GET,FLIGHT_INFO,%i"),iNo+1);
       SendNmea(d, szNmea);
     }
     else
@@ -1478,8 +1469,8 @@ BOOL DevLX_EOS_ERA::SENS(DeviceDescriptor_t* d,  const char* sentence, NMEA_INFO
   const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Outside air temperature in °C. Left empty if OAT value not valid
-    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2f°C ($LXDT)"),fTmp);
     if(Values(d)) {
+      lk::snprintf(szTmp, _T("%4.2f°C ($LXDT)"), fTmp);
       SetDataText( d,_OAT,  szTmp);
     }
     if(IsDirInput(PortIO.OATDir)) {
@@ -1488,8 +1479,8 @@ BOOL DevLX_EOS_ERA::SENS(DeviceDescriptor_t* d,  const char* sentence, NMEA_INFO
     }
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage
-    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
     if(Values(d)) {
+      lk::snprintf(szTmp, _T("%4.2fV ($LXDT)"),fTmp);
       SetDataText( d,_BAT1,  szTmp);
     }
     if(IsDirInput(PortIO.BAT1Dir)) {
@@ -1497,8 +1488,8 @@ BOOL DevLX_EOS_ERA::SENS(DeviceDescriptor_t* d,  const char* sentence, NMEA_INFO
     }
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // Backup battery voltage
-    _sntprintf(szTmp, MAX_NMEA_LEN, _T("%4.2fV ($LXDT)"),fTmp);
     if(Values(d)) {
+      lk::snprintf(szTmp, _T("%4.2fV ($LXDT)"),fTmp);
       SetDataText( d,_BAT2,  szTmp);
     }
     if(IsDirInput(PortIO.BAT2Dir)) {
@@ -1548,10 +1539,12 @@ BOOL DevLX_EOS_ERA::LXBC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       {
         if(Values(d))
         {
-          if(bAHRS)
-            _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($LXDT)"),fX,fY,fZ, fPitch, fRoll, fYaw, fSlip);
-          else
-            _sntprintf(szTmp, MAX_NMEA_LEN, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($LXDT)"),fX,fY,fZ);
+          if(bAHRS) {
+            lk::snprintf(szTmp, _T("gX:%5.2f gY:%5.2f gZ:%5.2f Pitch:%5.2f Roll:%5.2f Yaw:%5.2f Slip:%5.2f($LXDT)"),fX,fY,fZ, fPitch, fRoll, fYaw, fSlip);
+          }
+          else {
+            lk::snprintf(szTmp, _T("gX:%5.2f gY:%5.2f gZ:%5.2f($LXDT)"),fX,fY,fZ);
+          }
           SetDataText( d, _GFORCE,  szTmp);
         }
         if(IsDirInput(PortIO.GFORCEDir))
@@ -1582,7 +1575,7 @@ BOOL DevLX_EOS_ERA::EOSPutMacCready(DeviceDescriptor_t* d, double MacCready){
 
   if(!IsDirOutput(PortIO.MCDir)) return false;
 
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
+  lk::snprintf(szTmp, TEXT("LXDT,SET,MC_BAL,%.1f,,,,,,"), MacCready);
   TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
@@ -1600,7 +1593,7 @@ BOOL DevLX_EOS_ERA::EOSPutBallast(DeviceDescriptor_t* d, double Ballast){
 
   if(!IsDirOutput(PortIO.BALDir)) return false;
   
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
+  lk::snprintf(szTmp, TEXT("LXDT,SET,MC_BAL,,%.0f,,,,,"),GlidePolar::BallastLitres);
   TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
   
@@ -1618,7 +1611,7 @@ BOOL DevLX_EOS_ERA::EOSPutBugs(DeviceDescriptor_t* d, double Bugs){
   if(!IsDirOutput(PortIO.BUGDir)) return false;
   double fLXBugs = CalculateLXBugs( Bugs);
 
-  _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
+  lk::snprintf(szTmp, TEXT("LXDT,SET,MC_BAL,,,%.0f,,,,"),fLXBugs);
   TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d,szTmp);
 
@@ -1636,7 +1629,7 @@ BOOL DevLX_EOS_ERA::PutQNH(DeviceDescriptor_t* d, double qnh_mb) {
   } 
 
   TCHAR szTmp[MAX_NMEA_LEN];
-  _stprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
+  lk::snprintf(szTmp,  TEXT("LXDT,SET,MC_BAL,,,,,,,%.0f"), qnh_mb);
   TestLog(TEXT("Send: %s"), szTmp);
   SendNmea(d, szTmp);
 
@@ -1662,7 +1655,7 @@ BOOL DevLX_EOS_ERA::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt)
       rwdir    = wpt.RunwayDir;
     }
 
-    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
+    lk::snprintf(szTmp, TEXT("LXDT,SET,NAVIGATE,%i,%s,%i,%i,%i,%i,%s,%i"),
             1, 
             wpt.Name, 
             (int) (wpt.Latitude * 60000.0), 
@@ -1699,7 +1692,7 @@ BOOL DevLX_EOS_ERA::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt)
     }
     MinLon *=60;    
 
-    _sntprintf(szTmp,MAX_NMEA_LEN, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
+    lk::snprintf(szTmp, TEXT("GPRMB,A,,,%s,%02d%05.2f,%c,%03d%05.2f,%c,,,,A"),
                       wpt.Name, DegLat, MinLat, NoS, DegLon, MinLon, EoW);
 
     DevLX_EOS_ERA::SendNmea(d, szTmp);
@@ -1780,7 +1773,7 @@ BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(DeviceDescriptor_t* d)
 BOOL DevLX_EOS_ERA::EOSPutVolume(DeviceDescriptor_t* d, int Volume) {
   if (d && d->IsRadio) {
     TCHAR  szTmp[255];
-    _stprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
+    lk::snprintf(szTmp,_T("LXDT,SET,RADIO,,,%i,,,"),Volume)  ;
     SendNmea(d,szTmp);
     if(uiEOSDebugLevel) {
       StartupStore(_T(". EOS Volume  %i"), Volume);
@@ -1798,7 +1791,7 @@ BOOL DevLX_EOS_ERA::EOSPutVolume(DeviceDescriptor_t* d, int Volume) {
 BOOL DevLX_EOS_ERA::EOSPutSquelch(DeviceDescriptor_t* d, int Squelch) {
   if (d && d->IsRadio) {
     TCHAR  szTmp[255];
-    _stprintf(szTmp,_T("LXDT,SET,RADIO,,,,%i,,"),Squelch)  ;
+    lk::snprintf(szTmp, _T("LXDT,SET,RADIO,,,,%i,,"), Squelch)  ;
     SendNmea(d,szTmp);
     if(uiEOSDebugLevel) {
       StartupStore(_T(". EOS Squelch  %i"), Squelch);
@@ -1815,12 +1808,12 @@ BOOL DevLX_EOS_ERA::EOSPutSquelch(DeviceDescriptor_t* d, int Squelch) {
 BOOL DevLX_EOS_ERA::EOSPutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName) {
   if (d && d->IsRadio) {
     TCHAR  szTmp[255];
-    _stprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"), khz / 1000.);
+    lk::snprintf(szTmp,_T("LXDT,SET,RADIO,%7.3f,,,,,"), khz / 1000.);
     SendNmea(d,szTmp);
     EOSRequestRadioInfo(d);
     RadioPara.ActiveKhz = khz;
     if(StationName) {
-      _sntprintf(RadioPara.ActiveName, NAME_SIZE,_T("%s"),StationName) ;
+      lk::snprintf(RadioPara.ActiveName, NAME_SIZE, _T("%s"),StationName);
     }
     if(uiEOSDebugLevel) {
       StartupStore(_T(". EOS Active Station %7.3fMHz %s"), khz / 1000., StationName);
@@ -1834,12 +1827,12 @@ BOOL DevLX_EOS_ERA::EOSPutFreqActive(DeviceDescriptor_t* d, unsigned khz, const 
 BOOL DevLX_EOS_ERA::EOSPutFreqStandby(DeviceDescriptor_t* d, unsigned khz,  const TCHAR* StationName) {
   if (d && d->IsRadio) {
     TCHAR  szTmp[255];
-    _stprintf(szTmp,_T("LXDT,SET,RADIO,,%7.3f,,,,"), khz / 1000.);
+    lk::snprintf(szTmp, _T("LXDT,SET,RADIO,,%7.3f,,,,"), khz / 1000.);
     SendNmea(d,szTmp);
     EOSRequestRadioInfo(d);
     RadioPara.PassiveKhz = khz;
     if(StationName) {
-      _sntprintf(RadioPara.PassiveName , NAME_SIZE ,_T("%s"),StationName) ;
+      lk::snprintf(RadioPara.PassiveName, NAME_SIZE, _T("%s"), StationName) ;
     }
     if(uiEOSDebugLevel) {
       StartupStore(_T(". EOS Standby Station %7.3fMHz %s"), khz / 1000., StationName);
@@ -1866,7 +1859,7 @@ BOOL DevLX_EOS_ERA::EOSStationSwap(DeviceDescriptor_t* d) {
 BOOL DevLX_EOS_ERA::EOSRadioMode(DeviceDescriptor_t* d, int mode) {
   if (d && d->IsRadio) {
     TCHAR  szTmp[255];
-    _stprintf(szTmp,_T("LXDT,SET,R_DUAL,%i"),mode);
+    lk::snprintf(szTmp, _T("LXDT,SET,R_DUAL,%i"), mode);
     SendNmea(d, szTmp);
     EOSRequestRadioInfo(d);
     if(uiEOSDebugLevel) {

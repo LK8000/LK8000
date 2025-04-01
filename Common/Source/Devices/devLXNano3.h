@@ -207,7 +207,7 @@ class DevLXNanoIII::Decl
     //..........................................................................
 
     // Format waypoint
-    void WpFormat(TCHAR buf[], const WAYPOINT* wp, WpType type);
+    void WpFormat(TCHAR (&buf)[256], const WAYPOINT* wp, WpType type);
 
 }; // DevLXNanoIII::Decl
 

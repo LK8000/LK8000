@@ -10,6 +10,7 @@
 #include "Waypointparser.h"
 #include "LKStyle.h"
 #include "utils/lookup_table.h"
+#include "utils/printf.h"
 
 extern int globalFileNum;
 
@@ -145,25 +146,22 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
   }
 
   // ---------------- NAME ----------------
-  _sntprintf(Temp->Name,NAME_SIZE, _T("%s"), Entries[_T("name")].c_str());
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP NAME=<%s>%s"),Temp->Name,NEWLINE);
-  #endif
-
+  lk::snprintf(Temp->Name, _T("%s"), Entries[_T("name")].c_str());
+#ifdef CUPDEBUG
+  StartupStore(_T("   CUP NAME=<%s>%s"), Temp->Name, NEWLINE);
+#endif
 
   // ---------------- CODE ------------------
-  _sntprintf(Temp->Code,CUPSIZE_CODE, _T("%s"),  Entries[_T("code")].c_str() );
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP CODE=<%s>%s"),Temp->Code,NEWLINE);
-  #endif
-
+  lk::snprintf(Temp->Code, _T("%s"), Entries[_T("code")].c_str());
+#ifdef CUPDEBUG
+  StartupStore(_T("   CUP CODE=<%s>%s"), Temp->Code, NEWLINE);
+#endif
 
   // ---------------- COUNTRY ------------------
-  _sntprintf(Temp->Country,CUPSIZE_COUNTRY, _T("%s"),  Entries[_T("country")].c_str() );
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP COUNTRY=<%s>%s"),Temp->Country,NEWLINE);
-  #endif
-
+  lk::snprintf(Temp->Country, _T("%s"), Entries[_T("country")].c_str());
+#ifdef CUPDEBUG
+  StartupStore(_T("   CUP COUNTRY=<%s>%s"), Temp->Country, NEWLINE);
+#endif
 
   // ---------------- LATITUDE  ------------------
   Temp->Latitude = CUPToLat( Entries[_T("lat")].c_str() );
@@ -249,12 +247,10 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
 
   // ---------------- AIRPORT FREQ   ------------------
   const tstring& freq =  Entries[_T("freq")];
-  _sntprintf(Temp->Freq,CUPSIZE_FREQ, _T("%s"), freq.c_str() );
-
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP FREQ=<%s>%s"),Temp->Freq,NEWLINE);
-  #endif
-
+  lk::snprintf(Temp->Freq, _T("%s"), freq.c_str());
+#ifdef CUPDEBUG
+  StartupStore(_T("   CUP FREQ=<%s>%s"), Temp->Freq, NEWLINE);
+#endif
 
   // ---------------- COMMENT   ------------------
   SetWaypointComment(*Temp,  Entries[_T("desc")].c_str());

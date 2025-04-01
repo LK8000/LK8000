@@ -982,7 +982,7 @@ BOOL devDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBu
   
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M571_ = "START"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), MsgToken<1400>(), MsgToken<571>());
+  lk::snprintf(buffer, _T("%s: %s..."), MsgToken<1400>(), MsgToken<571>());
   CreateProgressDialog(buffer);
 
   WithLock(CritSec_Comm, [&]() {

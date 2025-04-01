@@ -13,6 +13,7 @@
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
 #include "utils/zzip_stream.h"
+#include "utils/printf.h"
 #include "LocalPath.h"
 
 
@@ -35,7 +36,7 @@ void OpenTopology() {
 
   _tcscat(Directory, _T("/"));
   // Look for the file within the map zip file...
-  int ret = _sntprintf(szFile, MAX_PATH, _T("%stopology.tpl"), Directory);
+  int ret = lk::snprintf(szFile, _T("%stopology.tpl"), Directory);
   if(ret >= (MAX_PATH-1)) {
     StartupStore(_T(". Invalid topology path : <%s>"), szFile);
     return;

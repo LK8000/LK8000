@@ -195,7 +195,7 @@ static void GetLongFileName(TCHAR* Filename, size_t size, const LoggerBuffer_t& 
     *    that is compatible with long file names, although the DOS versions of the DATA, CONV
     *    and VALI programs must continue to generate and use short file names. (AL3)
     */
-  _sntprintf(Filename, size,
+  lk::snprintf(Filename, size,
              _T("%04d-%02d-%02d-" LOGGER_MANUFACTURER "-%c%c%c-%02d.IGC"),
              point.year, point.month, point.day, asset[0], asset[1], asset[2], idx);
 }

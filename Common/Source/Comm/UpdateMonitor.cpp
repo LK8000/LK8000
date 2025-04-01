@@ -14,6 +14,7 @@
 #include <optional>
 #include "Baro.h"
 #include "Comm/ExternalWind.h"
+#include "utils/printf.h"
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 
@@ -458,7 +459,7 @@ bool UpdateMonitor() {
       if (last_active && active_dev.nmeaParser.gpsValid) {
         TCHAR vbuf[100];
 
-        _stprintf(vbuf,_T("%s %d\n< %s >"), MsgToken<277>(), active.value_or(0), active_dev.Name); // FALLBACK USING GPS ON PORT ..
+        lk::snprintf(vbuf,_T("%s %d\n< %s >"), MsgToken<277>(), active.value_or(0), active_dev.Name); // FALLBACK USING GPS ON PORT ..
         DoStatusMessage(vbuf);
         PortMonitorMessages++;
       } 

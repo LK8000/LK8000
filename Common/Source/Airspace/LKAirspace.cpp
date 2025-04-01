@@ -1807,9 +1807,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             unsigned khz = ExtractFrequency(p);
                             unsigned name_khz = ExtractFrequency(Name);
                             if (khz != name_khz) {
-							  _sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
-							  LK_tcsncpy(Name, sTmp, NAME_SIZE);
-							}
+                              lk::snprintf(sTmp, _T("%s %s"), Name, p);
+                              lk::strcpy(Name, sTmp);                                                        }
 						}
 						else {
                           flyzone = true;
@@ -1822,10 +1821,10 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         continue;
 
                     case _T('G'): //AG - Ground station name
-						if (parsing_state == 10) {
-							_sntprintf(sTmp,READLINE_LENGTH, TEXT("%s %s"),  Name, p );
-							LK_tcsncpy(Name, sTmp, NAME_SIZE);
-						}
+                        if (parsing_state == 10) {
+                            lk::snprintf(sTmp, TEXT("%s %s"),  Name, p );
+                            lk::strcpy(Name, sTmp);
+                        }
                         continue;
 
                     case _T('Y'): // AY
@@ -1846,9 +1845,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                     default:
                         if (maxwarning > 0) {
                             if (maxwarning == 1) {
-                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
+                                lk::snprintf(sTmp, _T("Parse error 9 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS."), linecount, p);
                             } else {
-                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 10 at line  %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                lk::snprintf(sTmp, _T("Parse error 10 at line  %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             }
                             maxwarning--;
                             // LKTOKEN  _@M68_ = "Airspace"
@@ -1867,7 +1866,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
                         p++; // skip A and space
                         if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
-                            _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            lk::snprintf(sTmp, _T("Parse error 1 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if(!InsideMap) {
                               if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
@@ -1882,7 +1881,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
                         p++; // skip B and space
                         if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
-                            _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            lk::snprintf(sTmp, _T("Parse error 2 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if(!InsideMap) {
                               if (RasterTerrain::WaypointIsInTerrainRange(CenterY,CenterX)) {
@@ -1917,7 +1916,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             }
                             AddGeodesicLine(points, lat, lon);
                         } else {
-                            _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                            lk::snprintf(sTmp, _T("Parse error 3 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             // LKTOKEN  _@M68_ = "Airspace"
                             if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) return false;
                         }
@@ -1928,9 +1927,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                     default:
                         if (maxwarning > 0) {
                             if (maxwarning == 1) {
-                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
+                                lk::snprintf(sTmp, _T("Parse error 4 at line %d\r\n\"%s\"\r\nNO OTHER WARNINGS"), linecount, p);
                             } else {
-                                _sntprintf(sTmp, READLINE_LENGTH, TEXT("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                                lk::snprintf(sTmp, _T("Parse error 5 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                             }
                             maxwarning--;
 
@@ -1967,7 +1966,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                     break;
                 }
 
-                _sntprintf(sTmp,READLINE_LENGTH, TEXT("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
+                lk::snprintf(sTmp, _T("Parse error 6 at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p);
                 // LKTOKEN  _@M68_ = "Airspace"
                 if (MessageBoxX(sTmp, MsgToken<68>(), mbOkCancel) == IdCancel) return false;
                 break;
@@ -2010,7 +2009,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     }  // End Lock
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     TCHAR msgbuf[128];
-   _sntprintf(msgbuf,128,TEXT("OpenAir: %u airspaces of %u excluded by Terrain Filter"), skiped_cnt, skiped_cnt+accept_cnt);
+    lk::snprintf(msgbuf, _T("OpenAir: %u airspaces of %u excluded by Terrain Filter"), skiped_cnt, skiped_cnt + accept_cnt);
  //   DoStatusMessage(msgbuf);
     StartupStore(TEXT(". %s"),msgbuf);
     OutsideAirspaceCnt += skiped_cnt;
@@ -2365,7 +2364,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     TCHAR msgbuf[128];
-   _sntprintf(msgbuf,128,TEXT("OpenAIP: %u of %u airspaces excluded by Terrain Filer"), skiped_cnt, skiped_cnt+ accept_cnt);
+    lk::snprintf(msgbuf, _T("OpenAIP: %u of %u airspaces excluded by Terrain Filer"), skiped_cnt, skiped_cnt + accept_cnt);
  //   DoStatusMessage(msgbuf);
     StartupStore(TEXT(".%s"),msgbuf);
     OutsideAirspaceCnt += skiped_cnt;
@@ -2419,10 +2418,11 @@ void CAirspaceManager::ReadAirspaces() {
     if((OutsideAirspaceCnt > 0) && ( WaypointsOutOfRange > 1) )
     {
       TCHAR msgbuf[128];
-      _sntprintf(msgbuf,128,TEXT(" %u of %u (%u%%) %s"), OutsideAirspaceCnt,
-		                                                 OutsideAirspaceCnt+airspaces_count,
-		                                                 (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
-		                                                 MsgToken<2347>());  //_@M2347  "airspaces excluded!"
+      lk::snprintf(msgbuf, _T(" %u of %u (%u%%) %s"),
+                        OutsideAirspaceCnt,
+                        OutsideAirspaceCnt+airspaces_count,
+                        (100*OutsideAirspaceCnt)/(OutsideAirspaceCnt +airspaces_count),
+                        MsgToken<2347>());  //_@M2347  "airspaces excluded!"
       DoStatusMessage(msgbuf);
       StartupStore(TEXT(".%s"),msgbuf);
 

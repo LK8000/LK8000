@@ -16,7 +16,7 @@
 #include "resource_data.h"
 #include "Asset.hpp"
 #include "LocalPath.h"
-
+#include "utils/printf.h"
 
 using std::placeholders::_1;
 
@@ -40,7 +40,7 @@ LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires) {
 #else
     TCHAR sDir[MAX_PATH];
     SystemPath(sDir,TEXT(LKD_BITMAPS));
-    int ret = _sntprintf(srcfile, MAX_PATH, _T("%s" DIRSEP "%s%s." IMG_EXT), sDir, sName, Hires?_T("_H"):_T(""));
+    int ret = lk::snprintf(srcfile, _T("%s" DIRSEP "%s%s." IMG_EXT), sDir, sName, Hires?_T("_H"):_T(""));
     bool success = (ret < (MAX_PATH - 1)); // path too long ? 
     if(success) { 
         success = hBmp.LoadFromFile(srcfile);

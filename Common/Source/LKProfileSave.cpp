@@ -14,6 +14,7 @@
 #include "Asset.hpp"
 #include "Tracking/Tracking.h"
 #include "Settings/write.h"
+#include "utils/printf.h"
 
 extern bool CommandResolution;
 
@@ -486,7 +487,7 @@ void LKDeviceSave(const TCHAR *szFile) {
     auto& PortIO = Port.PortIO;
 
     TCHAR szTmp[IO_PARAM_SIZE];
-    _sntprintf(szTmp,IO_PARAM_SIZE, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
+    lk::snprintf(szTmp, _T("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u"),
 	       (uint)PortIO.MCDir    ,(uint)PortIO.BUGDir  ,(uint)PortIO.BALDir   ,
 	       (uint)PortIO.STFDir   ,(uint)PortIO.WINDDir ,(uint)PortIO.BARODir  ,
 	       (uint)PortIO.VARIODir ,(uint)PortIO.SPEEDDir,(uint)PortIO.R_TRGTDir,

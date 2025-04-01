@@ -217,25 +217,19 @@ BOOL DevRCFenix::Config(DeviceDescriptor_t* d) {
 
 extern int DeviceASCIIConvert(TCHAR *pDest,const TCHAR *pSrc, int size=11);
 
-static
-BOOL FormatTP(TCHAR* DeclStrings, int num, int total,const WAYPOINT *wp) {
-  if(DeclStrings) {
-    int  lat = 0;
-    int  lon = 0;
-    TCHAR Name[60] =_T("");
-    if(wp) {
-      lat = (int)(wp->Latitude*60000.0);
-      lon = (int)(wp->Longitude*60000.0);
-      DeviceASCIIConvert(Name, wp->Name,20);
-    }
-    _stprintf(DeclStrings,
-              TEXT("RCDT,SET,TP,%i,%i,%i,%i,%s"),
-              num, total+2, lat, lon, Name);
-    return true;
+template <size_t size>
+static BOOL FormatTP(TCHAR (&DeclStrings)[size], int num, int total, const WAYPOINT* wp) {
+  int lat = 0;
+  int lon = 0;
+  TCHAR Name[60] = _T("");
+  if (wp) {
+    lat = (int)(wp->Latitude * 60000.0);
+    lon = (int)(wp->Longitude * 60000.0);
+    DeviceASCIIConvert(Name, wp->Name, 20);
   }
-  return false;
+  lk::snprintf(DeclStrings, TEXT("RCDT,SET,TP,%i,%i,%i,%i,%s"), num, total + 2, lat, lon, Name);
+  return true;
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the logger.
@@ -283,16 +277,16 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
   auto DeclStrings = std::make_unique<TCHAR[][256]>(totalLines);
   INT i = 0;
 
-  _stprintf(DeclStrings[i++], _T("RCDT,SET,PILOT,%s,%s"), PilotName, PilotSurName);
-  _stprintf(DeclStrings[i++], _T("RCDT,SET,GLIDER,%s,%s,%s,%s"), 
+  lk::snprintf(DeclStrings[i++], _T("RCDT,SET,PILOT,%s,%s"), PilotName, PilotSurName);
+  lk::snprintf(DeclStrings[i++], _T("RCDT,SET,GLIDER,%s,%s,%s,%s"), 
                               AircraftType, AircraftReg, AircraftCompID, AircraftClass);
 
   if (UseAATTarget()) {
-    _stprintf(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,%02i:%02i"), 
+    lk::snprintf(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,%02i:%02i"), 
                 (int)(AATTaskLength / 60),  (int)(AATTaskLength-((int)(AATTaskLength/60)*60)));
   }
   else {
-    _stprintf(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,00:00"));
+    lk::strcpy(DeclStrings[i++], TEXT("RCDT,SET,TSK_PAR,0,0,00:00"));
   }
   int num=0;
 
@@ -322,7 +316,7 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
     }
 
     elev = WayPointList[HomeWaypoint].Altitude;
-    _stprintf(DeclStrings[i++], _T("RCDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),
+    lk::snprintf(DeclStrings[i++], _T("RCDT,SET,ZONE,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i"),
                 num, dir, autonxt, isline, a1, a2, a21, r1, r2, elev);
     num++;
   }
@@ -452,7 +446,7 @@ BOOL DevRCFenix::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
       rwdir    = wpt.RunwayDir;
     }
 
-    _sntprintf( szTmp,MAX_NMEA_LEN, TEXT("RCDT,SET,NAVIGATE,1,%s,%i,%i,%i,%i,%s,%i"),
+    lk::snprintf(szTmp, _T("RCDT,SET,NAVIGATE,1,%s,%i,%i,%i,%i,%s,%i"),
                 wpt.Name, 
                 (int) (wpt.Latitude * 60000.0), 
                 (int) (wpt.Longitude * 60000.0),

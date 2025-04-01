@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "Dialogs.h"
-
+#include "utils/printf.h"
 
 
 
@@ -74,12 +74,12 @@ void RemoveWaypoint(int index) {
       // remove the active WP
       UnlockTaskData();
 
-	TCHAR tlkbuf[100];
-	_stprintf(tlkbuf,_T("%s\n%s"),
-	// LKTOKEN  _@M169_ = "Chosen Waypoint not in current task."
-        MsgToken<169>(),
-	// LKTOKEN  _@M551_ = "Remove active Waypoint?"
-	MsgToken<551>());
+      TCHAR tlkbuf[100];
+      lk::snprintf(tlkbuf, _T("%s\n%s"),
+                   // LKTOKEN  _@M169_ = "Chosen Waypoint not in current task."
+                   MsgToken<169>(),
+                   // LKTOKEN  _@M551_ = "Remove active Waypoint?"
+                   MsgToken<551>());
 
       int ret = MessageBoxX(
         tlkbuf,
