@@ -10,6 +10,15 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.24]
+* Fix :
+ - Wrong "Task Distance Covered" in racing task
+ - Missing sound on Win32 platform
+ - Update World Magnetic Model for 2025 to 2029
+ - Reset airspaces and waypoints files list to default
+ - ACD57 driver : get QNH setting at startup
+ - Possible crash on Thermal Multitarget
+
 [version 7.4.23]
 * New : 
  - Add "Condor-3" device driver
