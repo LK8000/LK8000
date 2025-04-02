@@ -240,9 +240,11 @@ std::optional<THERMAL_HISTORY> GetThermalHistory(size_t idx) {
 
 std::optional<THERMAL_HISTORY> GetThermalMultitarget() {
   ScopeLock lock(lst_mutex);
-  auto idx = ThermalMultitarget.value();
-  if (ThermalMultitarget && idx < ThermalHistory.size()) {
-    return ThermalHistory[idx];
+  if (ThermalMultitarget) {
+    auto idx = ThermalMultitarget.value();
+    if (idx < ThermalHistory.size()) {
+      return ThermalHistory[idx];
+    }
   }
   return {};
 }
