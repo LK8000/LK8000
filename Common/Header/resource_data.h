@@ -12,9 +12,10 @@
 #define	resource_data_h
 
 #include "Util/ConstBuffer.hpp"
+#include "utils/printf.h"
 #include <string.h>
 
-// for avoid uneeded copy when data is string, all resource are null termined!
+// to avoid useless copy when data is string, all resource are null termined!
 
 #define BIN_DATA(_NAME) \
     extern const unsigned char _NAME##_begin[]; \
@@ -194,13 +195,18 @@ BIN_DATA(IDB_LKVERYSMALLTOWN)
 
 #include <tchar.h>
 #include "resource.h"
+
 #define RESOURCE_ID(_NAME)  #_NAME
 #define NAMED_RESOURCE(_NAME) { _TEXT(RESOURCE_ID(_NAME)) , ConstBuffer<void>(_NAME##_begin, _NAME##_size) }
+
 #ifndef WIN32_RESOURCE
-static const struct {
+
+struct named_ressource_t {
     const TCHAR * szName;
     ConstBuffer<void> data;
-} named_resources[] = {
+};
+
+static const named_ressource_t named_resources[] = {
 
     NAMED_RESOURCE(IDR_XML_AIRSPACE_P),
 
@@ -356,7 +362,6 @@ static const struct {
 
 };
 
-
 #include <limits>
 #include <stdio.h>
 
@@ -372,17 +377,18 @@ static const struct {
 
 #endif //__linux__
 
-inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
+inline
+ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
 
     const TCHAR* szID = szName;
-    TCHAR szTmp[10] = {};
+    TCHAR szTmp[16] = {};
     if((ptrdiff_t)szName < (ptrdiff_t)std::numeric_limits<unsigned short>::max()) {
         // we have resource ID
-        _stprintf(szTmp, _T("%u"), (unsigned short)(ptrdiff_t)szName);
+        lk::snprintf(szTmp, _T("%u"), (unsigned short)(ptrdiff_t)szName);
         szID = szTmp;
     }
     if(szID) {
-        for (auto Resource : named_resources) {
+        for (const auto& Resource : named_resources) {
             if (_tcscmp(Resource.szName, szID) == 0) {
                 return Resource.data;
             }
@@ -392,7 +398,8 @@ inline ConstBuffer<void> GetNamedResource(const TCHAR* szName) {
     return ConstBuffer<void>::Null();
 }
 
-inline const char* GetNamedResourceString(const TCHAR* szName) {
+inline
+const char* GetNamedResourceString(const TCHAR* szName) {
     const ConstBuffer<void>& Resource = GetNamedResource(szName);
     const char* szText = static_cast<const char*>(Resource.data);
     assert(strlen(szText) == (Resource.size/sizeof(char)));
