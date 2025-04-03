@@ -10,6 +10,9 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.25]
+* Fix segfault on igc download from Flarm or EOS device   
+
 [version 7.4.24]
 * Fix :
  - Wrong "Task Distance Covered" in racing task
