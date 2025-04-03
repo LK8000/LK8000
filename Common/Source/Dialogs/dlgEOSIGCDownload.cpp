@@ -448,16 +448,16 @@ int8_t CRC_Update(int8_t m_byCrc, uint8_t d)
   return m_byCrc;
 }
 
-void SendBinBlock(DeviceDescriptor_t* d, uint8_t Command, uint8_t FileId, uint16_t Sequence) 
-{
-  if (d == NULL)
+void SendBinBlock(DeviceDescriptor_t* d, uint8_t Command, uint8_t FileId, uint16_t Sequence) {
+  if (d == nullptr || d->Com == nullptr) {
     return;
+  }
 
-uint8_t m_datagram[20];
-int8_t  m_byCrc = 0xFF;
-uint16_t byteCount=0;   
-ConvUnion BlkNo   ; 
-ConvUnion FLightNo; 
+  uint8_t m_datagram[20];
+  int8_t  m_byCrc = 0xFF;
+  uint16_t byteCount=0;   
+  ConvUnion BlkNo   ; 
+  ConvUnion FLightNo; 
 
   
       BlkNo.val = Sequence;

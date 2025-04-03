@@ -118,9 +118,6 @@ TCHAR szStatusText[STATUS_TXT_LEN];
 
 bool bShowMsg = false;
 
-void SendBinBlock(DeviceDescriptor_t* d, uint16_t Sequence, uint8_t Command,
-                  uint8_t *pBlock, uint16_t blocksize);
-
 uint16_t crc_update(uint16_t crc, uint8_t data) {
 
   crc = crc ^ ((uint16_t)data << 8);
@@ -162,8 +159,9 @@ void SendBinBlock(DeviceDescriptor_t* d, uint16_t Sequence, uint8_t Command,
   uint16_t CRC = 0;
   uint8_t blk[8];
 
-  if (d == NULL)
+  if (d == nullptr || d->Com == nullptr) {
     return;
+  }
 
   blk[0] = lowbyte(8 + blocksize);  // length
   blk[1] = highbyte(8 + blocksize); // length
