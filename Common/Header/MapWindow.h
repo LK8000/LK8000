@@ -537,8 +537,8 @@ class MapWindow {
   static void Initialize();
   static void CloseDrawingThread(void);
   static void CreateDrawingThread(void);
-  static void SuspendDrawingThread(void);
-  static void ResumeDrawingThread(void);
+  static void SuspendDrawingThread();
+  static void ResumeDrawingThread();
 
   static LKColor GetOutlineColor(LKColor color);
   static const LKIcon* GetDrawBmpIcon(DrawBmp_t bmp);
@@ -751,7 +751,11 @@ private:
   static short Y_Up, Y_Down; // Up and Down keys vertical limits, ex. for zoom in out on map
   static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
 
-  static BOOL THREADRUNNING;
+  static unsigned THREAD_STANDBY_COUNTER;
+  static bool THREADRUNNING() {
+    return THREAD_STANDBY_COUNTER == 0;
+  }
+
   static BOOL THREADEXIT;
 
   static double LimitMapScale(double value);

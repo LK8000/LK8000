@@ -19,7 +19,7 @@
 #endif
 
 BOOL MapWindow::CLOSETHREAD = FALSE;
-BOOL MapWindow::THREADRUNNING = TRUE;
+unsigned MapWindow::THREAD_STANDBY_COUNTER = 0;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
@@ -118,7 +118,6 @@ void MapWindow::DrawThread ()
 
   TestLog(_T("... DrawThread START"));
 
-  // THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
 
   bool lastdrawwasbitblitted=false;
@@ -132,7 +131,7 @@ void MapWindow::DrawThread ()
 	if(drawTriggerEvent.tryWait(5000))
 	if (CLOSETHREAD) break; // drop out without drawing
 
-	if ((!THREADRUNNING) || (!GlobalRunning)) {
+	if ((!THREADRUNNING()) || (!GlobalRunning)) {
         Sleep(50);
 		continue;
 	}
@@ -339,24 +338,20 @@ void MapWindow::CreateDrawingThread(void)
 #endif
 }
 
-void MapWindow::SuspendDrawingThread(void)
-{
+void MapWindow::SuspendDrawingThread() {
   LockTerrainDataGraphics();
-  assert(THREADRUNNING);
-  THREADRUNNING = FALSE;
+  ++THREAD_STANDBY_COUNTER;
   UnlockTerrainDataGraphics();
 }
 
-
-
-void MapWindow::ResumeDrawingThread(void)
-{
+void MapWindow::ResumeDrawingThread() {
   LockTerrainDataGraphics();
-  THREADRUNNING = TRUE;
+  assert(THREAD_STANDBY_COUNTER > 0); // Thread not Supended...
+  if (THREAD_STANDBY_COUNTER > 0) {
+    --THREAD_STANDBY_COUNTER;
+  }
   UnlockTerrainDataGraphics();
 }
-
-
 
 void MapWindow::CloseDrawingThread(void)
 {

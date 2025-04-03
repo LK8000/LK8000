@@ -1989,7 +1989,7 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
         ProgramStarted = psFirstDrawDone;
     }
 
-    if(ProgramStarted >= psNormalOp && THREADRUNNING) {
+    if(ProgramStarted >= psNormalOp && THREADRUNNING()) {
         UpdateInfo(GPS_INFO, CALCULATED_INFO);
         RenderMapWindow(Surface, Rect);
 
