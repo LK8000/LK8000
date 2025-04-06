@@ -113,6 +113,9 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
 
     @Override
     public synchronized boolean setBaudRate(int baud) {
+        if (_SerialPort == null) {
+            return false;
+        }
         _SerialPort.setBaudRate(baud);
         _baudRate = baud;
         return true;
@@ -120,6 +123,9 @@ public final class UsbSerialPort implements AndroidPort, UsbSerialInterface.UsbR
 
     @Override
     public synchronized int write(byte[] data, int length) {
+        if (_SerialPort == null) {
+            return 0;
+        }
         _SerialPort.write(Arrays.copyOf(data, length));
         return length;
     }
