@@ -70,7 +70,7 @@ void MapWindow::Initialize() {
     DrawRect = MapRect;
     UpdateActiveScreenZone(MapRect);
 
-    UpdateTimeStats(true);
+    UpdateTimeStats();
 
 #ifndef ENABLE_OPENGL
     // paint draw window black to start
@@ -289,8 +289,6 @@ _dontbitblt:
             DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
         }
     }
-
-	UpdateTimeStats(false);
 
 	// we do caching after screen update, to minimise perceived delay
 	// UpdateCaches is updating topology bounds when either forced (only here)

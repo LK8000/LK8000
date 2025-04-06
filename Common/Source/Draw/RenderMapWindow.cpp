@@ -31,10 +31,8 @@ void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
 
 
 
-void MapWindow::UpdateTimeStats(bool start) {
-  if (start) {
-    timestamp_newdata.Update();
-  }
+void MapWindow::UpdateTimeStats() {
+  timestamp_newdata.Update();
 }
 
 bool FastZoom;
@@ -85,7 +83,7 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 	}
   }
 
-  MapWindow::UpdateTimeStats(true);
+  MapWindow::UpdateTimeStats();
 
   SetAutoOrientation(); // false for no reset Old values
 

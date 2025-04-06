@@ -1983,7 +1983,7 @@ void MapWindow::key_next_mode() {
 
 #ifdef ENABLE_OPENGL
 void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
-    UpdateTimeStats(true);
+    UpdateTimeStats();
 
     if (ProgramStarted==psInitDone) {
         ProgramStarted = psFirstDrawDone;
@@ -2012,6 +2012,5 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
         UpdateCaches(_Proj, first_run);
         first_run=false;
     }
-    UpdateTimeStats(false);
 }
 #endif

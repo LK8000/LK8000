@@ -519,7 +519,7 @@ class MapWindow {
   static int GliderScreenPositionY;
   static void RequestFastRefresh();
 
-  static void UpdateTimeStats(bool start);
+  static void UpdateTimeStats();
 
   // Drawing primitives
 
