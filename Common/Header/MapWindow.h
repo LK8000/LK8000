@@ -26,6 +26,7 @@
 #include "Thread/Mutex.hpp"
 #include "Enums.h"
 #include "ContestMgr.h"
+#include "utils/atomic_shared_flag.h"
 
 #ifndef ENABLE_OPENGL
 #include "Poco/Event.h"
@@ -751,10 +752,7 @@ private:
   static short Y_Up, Y_Down; // Up and Down keys vertical limits, ex. for zoom in out on map
   static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
 
-  static unsigned THREAD_STANDBY_COUNTER;
-  static bool THREADRUNNING() {
-    return THREAD_STANDBY_COUNTER == 0;
-  }
+  static atomic_shared_flag ThreadSuspended;
 
   static BOOL THREADEXIT;
 

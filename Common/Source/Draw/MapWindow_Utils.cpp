@@ -34,7 +34,7 @@ double MapWindow::GetApproxScreenRange() {
 
 // Used only by Thread_Calculation main loop
 bool MapWindow::IsDisplayRunning() {
-  return (THREADRUNNING() && GlobalRunning && ProgramStarted);
+  return (!ThreadSuspended && GlobalRunning && ProgramStarted);
 }
 
 

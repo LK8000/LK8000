@@ -19,9 +19,9 @@
 #endif
 
 BOOL MapWindow::CLOSETHREAD = FALSE;
-unsigned MapWindow::THREAD_STANDBY_COUNTER = 0;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
+atomic_shared_flag MapWindow::ThreadSuspended;
 
 
 #ifndef ENABLE_OPENGL
@@ -131,7 +131,7 @@ void MapWindow::DrawThread ()
 	if(drawTriggerEvent.tryWait(5000))
 	if (CLOSETHREAD) break; // drop out without drawing
 
-	if ((!THREADRUNNING()) || (!GlobalRunning)) {
+	if (ThreadSuspended || (!GlobalRunning)) {
         Sleep(50);
 		continue;
 	}
@@ -337,18 +337,11 @@ void MapWindow::CreateDrawingThread(void)
 }
 
 void MapWindow::SuspendDrawingThread() {
-  LockTerrainDataGraphics();
-  ++THREAD_STANDBY_COUNTER;
-  UnlockTerrainDataGraphics();
+    ThreadSuspended = true;
 }
 
 void MapWindow::ResumeDrawingThread() {
-  LockTerrainDataGraphics();
-  assert(THREAD_STANDBY_COUNTER > 0); // Thread not Supended...
-  if (THREAD_STANDBY_COUNTER > 0) {
-    --THREAD_STANDBY_COUNTER;
-  }
-  UnlockTerrainDataGraphics();
+    ThreadSuspended = false;
 }
 
 void MapWindow::CloseDrawingThread(void)
