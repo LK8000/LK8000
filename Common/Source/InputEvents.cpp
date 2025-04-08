@@ -40,6 +40,8 @@
 #include <type_traits>
 #include "Waypoints/SetHome.h"
 #include "LocalPath.h"
+#include <variant>
+
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -85,17 +87,107 @@ static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 std::list<TCHAR*> LabelGarbage;
 
 namespace {
-  std::deque<gc_event> gce_queue;
-  std::deque<nmea_event> nmea_queue;
-}
+
+template <typename EventTypeT>
+class InputEventQueue {
+ public:
+  using queue_t = std::deque<EventTypeT>;
+
+  InputEventQueue() = default;
+
+  InputEventQueue(const InputEventQueue&) = delete;
+  InputEventQueue& operator=(const InputEventQueue&) = delete;
+
+  void push(const EventTypeT& event) {
+    ScopeLock Lock(_mtx);
+    _queue.push_back(event);
+  }
+
+  std::optional<EventTypeT> pop() {
+    ScopeLock Lock(_mtx);
+    if (_queue.empty()) {
+      return {};
+    }
+    EventTypeT event = _queue.front();
+    _queue.pop_front();
+    return event;
+  }
+
+  void clear() {
+    ScopeLock Lock(_mtx);
+    _queue.clear();
+  }
+
+ private:
+  Mutex _mtx;
+  queue_t _queue;
+};
 
 // popup object details event queue data.
-typedef struct {
-    InputEvents::PopupType type;
-    int index;
-} PopupEvent_t;
-typedef std::deque<PopupEvent_t> PopupEventQueue_t;
-PopupEventQueue_t PopupEventQueue;
+struct PopupEvent_t {
+  InputEvents::PopupType type;
+  int index;
+};
+
+InputEventQueue<std::variant<gc_event, nmea_event, PopupEvent_t>> _queue;
+
+// show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
+void processPopupDetails_real(const PopupEvent_t& event) {
+  switch (event.type) {
+    case InputEvents::PopupWaypoint:
+      // Do not update CommonList and Nearest Waypoint in details mode, max 60s
+      LockFlightData();
+      LastDoCommon = GPS_INFO.Time + NEARESTONHOLD;  //@ 101003
+      UnlockFlightData();
+
+      SelectedWaypoint = event.index;
+      PopupWaypointDetails();
+
+      LastDoNearest = LastDoCommon = 0;  //@ 101003
+      break;
+    case InputEvents::PopupThermal:
+      // Do not update while in details mode, max 10m
+      LockFlightData();
+      LastDoThermalH = GPS_INFO.Time + 600;
+      UnlockFlightData();
+
+      dlgThermalDetails(event.index);
+
+      LastDoThermalH = 0;
+      break;
+    case InputEvents::PopupTraffic:
+      // Do not update Traffic while in details mode, max 10m
+      LockFlightData();
+      LastDoTraffic = GPS_INFO.Time + 600;
+      UnlockFlightData();
+
+      dlgLKTrafficDetails(event.index);
+
+      LastDoTraffic = 0;
+      break;
+    case InputEvents::PopupOracle:
+      // Do not update Traffic while in details mode, max 10m
+      dlgOracleShowModal();
+      break;
+    case InputEvents::PopupTeam:
+      // Do not update Traffic while in details mode, max 10m
+      dlgTeamCodeShowModal();
+      break;
+    case InputEvents::PopupBasic:
+      // Do not update Traffic while in details mode, max 10m
+      dlgBasicSettingsShowModal();
+      break;
+    case InputEvents::PopupWeatherSt:
+      // Do not update Traffic while in details mode, max 10m
+      dlgWeatherStDetails(event.index);
+      break;
+    default:
+      LKASSERT(false);
+      break;
+  }
+}
+
+}  // namespace
 
 // -----------------------------------------------------------------------
 // Initialisation and Defaults
@@ -111,18 +203,13 @@ PeriodClock LastActiveSelectMode;
 // This is set when multimaps are calling MMCONF menu.
 bool IsMultimapConfigShown=false;
 
-static Mutex  CritSec_EventQueue;
-
 static PeriodClock myPeriodClock;
 
 
 // Read the data files
 void InputEvents::readFile() {
-  WithLock(CritSec_EventQueue, [&]() {
-    // clear the GCE and NMEA queues
-    gce_queue.clear();
-    nmea_queue.clear();
-  });
+  // clear the GCE and NMEA queues
+  _queue.clear();
 
   // Get defaults
   if (!InitONCE) {
@@ -621,16 +708,14 @@ bool InputEvents::processKey(unsigned key_code) {
 
 bool InputEvents::processNmea(nmea_event ne_id) {
   // add an event to the bottom of the queue
-  ScopeLock Lock(CritSec_EventQueue);
-  nmea_queue.push_back(ne_id);
+  _queue.push(ne_id);
   return true; // ok.
 }
 
 
 bool InputEvents::processGlideComputer(gc_event gce_id) {
   // add an event to the bottom of the queue
-  ScopeLock Lock(CritSec_EventQueue);
-  gce_queue.push_back(gce_id);
+  _queue.push(gce_id);
   return true; // ok.
 }
 
@@ -664,19 +749,27 @@ void processEvent(const id_to_event_t& id_to_event, event_id_t id) {
   }
 }
 
+struct EventVisitor {
+  void operator()(gc_event gce_id) const {
+    processEvent(GC2Event, gce_id);
+  }
 
-template<typename event_queue_t, typename id_to_event_t>
-void ProcessQueue(event_queue_t& event_queue, const id_to_event_t& id_to_event) {
+  void operator()(nmea_event ne_id) const {
+    processEvent(N2Event, ne_id);
+  }
 
-  using event_id_t = typename event_queue_t::value_type;
+  void operator()(const PopupEvent_t& event) const {
+    processPopupDetails_real(event);
+  }
+};
 
-  ScopeLock Lock(CritSec_EventQueue);
-  while(!event_queue.empty()) {
-    event_id_t event_id = event_queue.front();
-    event_queue.pop_front();
-
-    ScopeUnlock Unlock(CritSec_EventQueue);
-    processEvent<id_to_event_t, event_id_t>(id_to_event, event_id);
+void ProcessQueue() {
+  // process all events in the queue
+  auto evt = _queue.pop();
+  while (evt) {
+    std::visit(EventVisitor(), evt.value());
+    // pop next event
+    evt = _queue.pop();
   }
 }
 
@@ -693,92 +786,20 @@ void InputEvents::DoQueuedEvents() {
 
   CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
 
-  processPopupDetails_real();
-
   if (RepeatWindCalc>0) { // 100203
     RepeatWindCalc=0;
     eventCalcWind(_T("AUTO"));
   }
 
-  ProcessQueue(gce_queue, GC2Event);
-  ProcessQueue(nmea_queue, N2Event);
+  ProcessQueue();
 
   blockqueue = false; // ok, ready to go on.
 }
 
 
 void InputEvents::processPopupDetails(PopupType type, int index) {
-    ScopeLock Lock(CritSec_EventQueue);
-    PopupEventQueue.push_back({type, index});
+  _queue.push(PopupEvent_t{type, index});
 }
-
-// show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
-void InputEvents::processPopupDetails_real() {
-
-    ScopeLock Lock(CritSec_EventQueue);
-    while (!PopupEventQueue.empty()) {
-
-        PopupEvent_t event = PopupEventQueue.front();
-        PopupEventQueue.pop_front(); // remove object event from fifo
-
-        ScopeUnlock Unlock(CritSec_EventQueue);
-
-
-        switch(event.type) {
-            case PopupWaypoint:
-                // Do not update CommonList and Nearest Waypoint in details mode, max 60s
-                LockFlightData();
-			LastDoCommon = GPS_INFO.Time + NEARESTONHOLD; //@ 101003
-                UnlockFlightData();
-
-                SelectedWaypoint = event.index;
-                PopupWaypointDetails();
-
-                LastDoNearest = LastDoCommon = 0; //@ 101003
-                break;
-            case PopupThermal:
-                // Do not update while in details mode, max 10m
-                LockFlightData();
-			LastDoThermalH = GPS_INFO.Time + 600;
-                UnlockFlightData();
-
-                dlgThermalDetails(event.index);
-
-                LastDoThermalH=0;
-                break;
-            case PopupTraffic:
-		// Do not update Traffic while in details mode, max 10m
-                LockFlightData();
-			LastDoTraffic = GPS_INFO.Time + 600;
-                UnlockFlightData();
-
-                dlgLKTrafficDetails(event.index);
-
-                LastDoTraffic = 0;
-                break;
-            case PopupOracle:
-                // Do not update Traffic while in details mode, max 10m
-                dlgOracleShowModal();
-                break;
-            case PopupTeam:
-                // Do not update Traffic while in details mode, max 10m
-                dlgTeamCodeShowModal();
-                break;
-            case PopupBasic:
-                // Do not update Traffic while in details mode, max 10m
-                dlgBasicSettingsShowModal();
-                break;
-            case PopupWeatherSt:
-                // Do not update Traffic while in details mode, max 10m
-                dlgWeatherStDetails(event.index);
-                break;
-            default:
-                LKASSERT(false);
-                break;
-        }
-    }
-}
-
 
 extern int MenuTimeOut;
 

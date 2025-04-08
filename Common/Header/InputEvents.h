@@ -206,9 +206,6 @@ public:
 #endif
   // This must be public in any case
   static void eventMinimapKey(const TCHAR *misc);
-
- private:
-  static void processPopupDetails_real();
 };
 
 #endif
