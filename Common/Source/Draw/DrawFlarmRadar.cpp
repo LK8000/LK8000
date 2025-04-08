@@ -1447,57 +1447,76 @@ return iCnt;
 void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf) {
 }
 #else
-//
-// THIS FUNCTION IS NOT THREADSAFE
-//
-void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
-{
+
+namespace {
+
+void DrawFlarmPictoRectangle(LKSurface& Surface, const RECT& rc) {
+  int cx = rc.right - rc.left;
+  int cy = rc.bottom - rc.top;
+  int iRectangleSize = cy / 5;
+  int x = rc.left + cx / 2;
+  int y = rc.top + cy / 2;
+
+  Surface.Rectangle(x - iRectangleSize, y - iRectangleSize, x + iRectangleSize, y + iRectangleSize);
+}
+
+void DrawFlarmPictoCircle(LKSurface& Surface, const RECT& rc) {
+  int cx = rc.right - rc.left;
+  int cy = rc.bottom - rc.top;
+  int x = rc.left + cx / 2;
+  int y = rc.top + cy / 2;
+  int iCircleSize = cy / 5;
+
+  Surface.DrawCircle(x, y, iCircleSize, rc, true);
+}
+
+void DrawFlarmPictoTriangle(LKSurface& Surface, const RECT& rc, double Bearing) {
+  int cx = rc.right - rc.left;
+  int cy = rc.bottom - rc.top;
+  int x = rc.left + cx / 2;
+  int y = rc.top + cy / 2;
+
+  double zoomfact = cy / NIBLSCALE<double>(18);
+  POINT Triangle[] = {
+    {-4.0 * zoomfact, 5.0 * zoomfact}, 
+    {0.0 * zoomfact, -6.0 * zoomfact}, 
+    {4.0 * zoomfact, 5.0 * zoomfact}, 
+    {0.0 * zoomfact, 2.0 * zoomfact}, 
+    {-4.0 * zoomfact, 5.0 * zoomfact}
+  };
+
+  threadsafePolygonRotateShift(Triangle, std::size(Triangle), x, y, Bearing);
+  Surface.Polygon(Triangle, std::size(Triangle));
+}
+
+} // namespace
+
+void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf) {
+
+  double fInteg30 = pTraf->Average30s;
+  int iVarioIdx = (int)(2 * fInteg30 - 0.5) + NO_VARIO_COLORS / 2;
+  if (iVarioIdx < 0)
+    iVarioIdx = 0;
+  if (iVarioIdx >= NO_VARIO_COLORS)
+    iVarioIdx = NO_VARIO_COLORS - 1;
+  const auto oldb = Surface.SelectObject(*variobrush[iVarioIdx]);
+
   if (pTraf->Speed <= 0) {
-    // do not draw flarm picto for static object 
+    DrawFlarmPictoCircle(Surface, rc);
     return;
   }
 
-	static POINT Arrow[5];
-int cx = rc.right-rc.left;
-int cy = rc.bottom-rc.top;
-int x = rc.left + cx/2;
-int y = rc.top + cy/2;
-double fInteg30 =  pTraf->Average30s;
-int iRectangleSize = cy/5;
-int iCircleSize    = cy/5;
-static double zoomfact = (double)cy/NIBLSCALE(18);
-//if (DoInit[MDI_DRAWFLARMTRAFFIC])
-{
-	Arrow[0].x = (long)(-4.0*zoomfact);
-	Arrow[0].y = (long) (5.0*zoomfact);
-	Arrow[1].x = (long) (0.0*zoomfact);
-	Arrow[1].y = (long) (-6.0*zoomfact);
-	Arrow[2].x = (long) (4.0*zoomfact);
-	Arrow[2].y = (long) (5.0*zoomfact);
-	Arrow[3].x = (long) (0.0*zoomfact);
-	Arrow[3].y = (long) (2.0*zoomfact);
-	Arrow[4].x = (long) (-4.0*zoomfact);
-	Arrow[4].y = (long) (5.0*zoomfact);
-}
-
-    int iVarioIdx = (int)(2*fInteg30-0.5)+NO_VARIO_COLORS/2;
-    if(iVarioIdx < 0) iVarioIdx =0;
-    if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
-	const auto oldb = Surface.SelectObject(*variobrush[iVarioIdx]);
-
-	    switch (pTraf->Status) { // 100321
-		  case LKT_GHOST:
-			Surface.Rectangle(x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
-			break;
-		  case LKT_ZOMBIE:
-			Surface.DrawCircle(x, y, iCircleSize, rc, true );
-			break;
-		  default:
-			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
-			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360(  pTraf->TrackBearing ));
-			Surface.Polygon(Triangle,5);
-	    }
-		Surface.SelectObject(oldb);
+  switch (pTraf->Status) {  // 100321
+    case LKT_GHOST:
+      DrawFlarmPictoRectangle(Surface, rc);
+      break;
+    case LKT_ZOMBIE:
+      DrawFlarmPictoCircle(Surface, rc);
+      break;
+    default:
+      DrawFlarmPictoTriangle(Surface, rc, AngleLimit360(pTraf->TrackBearing));
+  }
+  Surface.SelectObject(oldb);
 }
 // This is painting traffic icons on the screen.
 #endif

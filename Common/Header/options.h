@@ -114,7 +114,6 @@
 // Usability of task definition needed to be refactoring before remove that.
 
 #define UTF8PICTORIALS  false
-#define  FLARM_PICTO_THREADSAFE
 
 #define OWN_POS_MS
 #define ORACLE_MS

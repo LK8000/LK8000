@@ -518,26 +518,6 @@ if (Pict == NULL) return;
   Surface.SelectObject(OldFont);
 }
 
-void DrawUTF8FlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf)
-{
-if (pTraf == NULL) return;
-double fFact = fabs(pTraf->Average30s + 5.0) /10.0;
-if(fFact > 1.0 ) fFact = 1.0; else
-  if(fFact < 0.0 ) fFact = 0.0;
-LKColor BaseColor = RGB_GREEN ;
-if (IsDithered()) {
-  BaseColor = RGB_BLACK;
-} else {
-  BaseColor = BaseColor.MixColors(RGB_BLUE, fFact);
-}
-
-if(pTraf->Status == LKT_GHOST)  UTF8Pictorial( Surface,  rc, MsgToken<2382>() ,BaseColor); else     // _@M2382_ "■"
-  if(pTraf->Status == LKT_ZOMBIE) UTF8Pictorial( Surface,  rc,  MsgToken<2383>() ,BaseColor);else      // _@M2383_ "●"
-    UTF8Pictorial( Surface,  rc, MsgToken<2384>()  ,BaseColor);    // _@M2384_ "●"
-}
-
-
-
 static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 #define PICTO_WIDTH 50
     Surface.SetTextColor(RGB_BLACK);
@@ -618,11 +598,7 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame * Sender, LKSurface
             BuildFLARMText(&Target,text1,text2);
             ShowTextEntries(Surface, rc,  text1, text2);
 
-#ifdef FLARM_PICTO_THREADSAFE
             MapWindow::DrawFlarmPicto(Surface, rc, &Target);   // draw MAP icons
-#else
-            DrawUTF8FlarmPicto(Surface, rc, &Target);          // use alternate UTF8 icons
-#endif
             break;
 #endif // FLARM_MS
 
