@@ -24,17 +24,20 @@ int timer_counter;
 
 static void dlgLKAirspaceFill(WndForm* dlg);
 
-static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
-    if (Sender) {
-        Surface.SetBkColor(RGB_LIGHTGREY);
-        /****************************************************************
-         * for drawing the airspace pictorial, we need the original data.
-         * copy contain only base class property, not geo data,
-         * original data are shared ressources !
-         * for that we need to grant all called methods are thread safe
-         ****************************************************************/
-        msg.originator->DrawPicto(Surface, Sender->GetClientRect());
+static void OnPaintAirspacePicto(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+  if (Sender) {
+    auto pAsp = msg.originator.lock();
+    if (pAsp) {
+      Surface.SetBkColor(RGB_LIGHTGREY);
+      /****************************************************************
+       * for drawing the airspace pictorial, we need the original data.
+       * copy contain only base class property, not geo data,
+       * original data are shared ressources !
+       * for that we need to grant all called methods are thread safe
+       ****************************************************************/
+      pAsp->DrawPicto(Surface, Sender->GetClientRect());
     }
+  }
 }
 
 static void OnCloseClicked(WndButton* pWnd) {
@@ -47,8 +50,10 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 static void OnAckForTimeClicked(WndButton* pWnd) {
-  if (msg.originator == NULL) return;
-  CAirspaceManager::Instance().AirspaceSetAckLevel(*msg.originator, msg.warnlevel);
+  auto pAsp = msg.originator.lock();
+  if (pAsp) {
+    CAirspaceManager::Instance().AirspaceSetAckLevel(*pAsp, msg.warnlevel);
+  }
   OnCloseClicked(pWnd);
 }
 
@@ -62,9 +67,16 @@ static bool OnTimer(WndForm* pWnd){
   }
 
   //Get a new copy with current values from airspacemanager
-  if (msg.originator) {
-	airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
-	dlgLKAirspaceFill(pWnd);
+  bool valid = WithLock(CAirspaceManager::Instance().MutexRef(), [](){
+    auto pAsp = msg.originator.lock();
+    if (pAsp) {
+      airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pAsp);
+      return true;
+    }
+    return false;
+  });
+  if (valid) { 
+    dlgLKAirspaceFill(pWnd);
   }
   return true;
 }
@@ -340,16 +352,22 @@ static void dlgLKAirspaceFill(WndForm* dlg)
 // Called periodically to show new airspace warning messages to user
 // return 1 only for requesting run analysis
 // This is called by WINMAIN thread, every second (1hz)
-short ShowAirspaceWarningsToUser()
-{
-
-  if (msg.originator != NULL) return 0; // Warning in progress
-
+short ShowAirspaceWarningsToUser() {
+  auto pAsp = msg.originator.lock();
+  if (pAsp) {
+    return 0;  // Warning in progress
+  }
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
+  if (!there_is_message) {
+    return 0;  // no message to display
+  }
 
-  if (!there_is_message) return 0;        // no message to display
+  pAsp = msg.originator.lock();
+  if (!pAsp) {
+    return 0;  // no message to display airspace not valid
+  }
 
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pAsp);
 
   bool ackdialog_required = false;
   TCHAR msgbuf[128];
@@ -359,12 +377,12 @@ short ShowAirspaceWarningsToUser()
     default:
       // normally not show
       DoStatusMessage(TEXT("Unknown airspace warning message"));
-      break;    //Unknown msg type
+      break;  // Unknown msg type
 
     case aweNone:
-    case aweMovingInsideFly:            // normal, no msg, normally this msg type shouldn't get here
-    case awePredictedEnteringFly:       // normal, no msg, normally this msg type shouldn't get here
-    case aweMovingOutsideNonfly:        // normal, no msg, normally this msg type shouldn't get here
+    case aweMovingInsideFly:       // normal, no msg, normally this msg type shouldn't get here
+    case awePredictedEnteringFly:  // normal, no msg, normally this msg type shouldn't get here
+    case aweMovingOutsideNonfly:   // normal, no msg, normally this msg type shouldn't get here
       break;
 
     case awePredictedLeavingFly:
@@ -373,62 +391,66 @@ short ShowAirspaceWarningsToUser()
     case awePredictedEnteringNonfly:
     case aweNearInsideNonfly:
     case aweEnteringNonfly:
-    case aweMovingInsideNonfly:             // repeated messages
-    case aweMovingOutsideFly:               // repeated messages
+    case aweMovingInsideNonfly:  // repeated messages
+    case aweMovingOutsideFly:    // repeated messages
       ackdialog_required = true;
       break;
 
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
-	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
-		_stprintf(msgbuf,TEXT("%s %s"),MsgToken<1240>(),airspace_copy.Name());
-	  else
-		_stprintf(msgbuf,TEXT("%s %s %s"),MsgToken<1240>(),airspace_copy.TypeName(),airspace_copy.Name());
+      if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
+        _stprintf(msgbuf, TEXT("%s %s"), MsgToken<1240>(), airspace_copy.Name());
+      }
+      else {
+        _stprintf(msgbuf, TEXT("%s %s %s"), MsgToken<1240>(), airspace_copy.TypeName(), airspace_copy.Name());
+      }
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
       // LKTOKEN _@M1241_ "Leaving"
-      if(!airspace_copy.Acknowledged() )  // don't warn on leaving acknolaged airspaces
+      if (!airspace_copy.Acknowledged())  // don't warn on leaving acknolaged airspaces
       {
-        if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
-          _stprintf(msgbuf,TEXT("%s %s"),MsgToken<1241>(),airspace_copy.Name());
-        else
-          _stprintf(msgbuf,TEXT("%s %s %s"),MsgToken<1241>(),airspace_copy.TypeName(),airspace_copy.Name());
+        if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
+          _stprintf(msgbuf, TEXT("%s %s"), MsgToken<1241>(), airspace_copy.Name());
+        }
+        else {
+          _stprintf(msgbuf, TEXT("%s %s %s"), MsgToken<1241>(), airspace_copy.TypeName(), airspace_copy.Name());
+        }
         DoStatusMessage(msgbuf);
       }
       break;
-
   }
-
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
-    WndForm * dlg = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P);
-    if (dlg==NULL) {
-      StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
+    WndForm* dlg =
+        dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P);
+    if (dlg == NULL) {
+      StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"), NEWLINE);  //@ 101027
       return 0;
     }
 
     dlg->SetKeyDownNotify(OnKeyDown);
     dlg->SetTimerNotify(1000, OnTimer);
-    timer_counter = AirspaceWarningDlgTimeout;                    // Auto closing dialog in x secs
+    timer_counter = AirspaceWarningDlgTimeout;  // Auto closing dialog in x secs
 
-    WndButton *wb = dlg->FindByName<WndButton>(TEXT("cmdAckForTime"));
+    WndButton* wb = dlg->FindByName<WndButton>(TEXT("cmdAckForTime"));
     if (wb) {
       TCHAR stmp2[40];
-      _stprintf(stmp2,TEXT("%s (%dmin)"), MsgToken<46>(), AcknowledgementTime/60);
+      _stprintf(stmp2, TEXT("%s (%dmin)"), MsgToken<46>(), AcknowledgementTime / 60);
       wb->SetCaption(stmp2);
     }
 
     dlgLKAirspaceFill(dlg);
 
-    LKSound(_T("LK_AIRSPACE.WAV")); // 100819
+    LKSound(_T("LK_AIRSPACE.WAV"));  // 100819
 
-    if( _tcsnicmp( airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0) {
-			_stprintf(msgbuf,TEXT("%s"),airspace_copy.Name());
-    } else {
-		    _stprintf(msgbuf,TEXT("%s %s"),airspace_copy.TypeName(),airspace_copy.Name());
+    if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
+      _stprintf(msgbuf, TEXT("%s"), airspace_copy.Name());
+    }
+    else {
+      _stprintf(msgbuf, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
     }
     dlg->SetCaption(msgbuf);
     dlg->ShowModal();
@@ -437,7 +459,7 @@ short ShowAirspaceWarningsToUser()
     dlg = NULL;
   }
 
-  msg.originator = NULL;
+  msg.originator.reset();
 
   // If we clicked on Analysis button, we shall return 1 and the calling function will
   // detect and take care of it.

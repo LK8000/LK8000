@@ -14,107 +14,100 @@
 
 // Comparer to sort airspaces based on distance
 struct airspace_distance_sorter {
-
-  bool operator()( const CAirspace *a, const CAirspace *b ) const {
-    //nearest first
-    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) const {
+    // nearest first
+    return (a->LastCalculatedHDistance() < b->LastCalculatedHDistance());
   }
 };
 
 // Comparer to sort airspaces based on name
 struct airspace_name_sorter {
-
-  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) const {
     const int res = _tcscmp(a->Name(), b->Name());
     if (res) {
-        return res < 0;
+      return res < 0;
     }
     // if name is the same, get closer first
-    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+    return (a->LastCalculatedHDistance() < b->LastCalculatedHDistance());
   }
 };
 
 // Comparer to sort airspaces based on type
 struct airspace_type_sorter {
-
-  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) const {
     if (a->Type() != b->Type()) {
       return a->Type() < b->Type();
     }
 
     // if type is the same, get closer first
-    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+    return (a->LastCalculatedHDistance() < b->LastCalculatedHDistance());
   }
 };
 
 // Comparer to sort airspaces based on enabled
 struct airspace_enabled_sorter {
-    
-  bool operator()( const CAirspace *a, const CAirspace *b ) const {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) const {
     if (a->Enabled() != b->Enabled()) {
-        return a->Enabled() < b->Enabled();
+      return a->Enabled() < b->Enabled();
     }
 
     // if enabled is the same, get closer first
-    return ( a->LastCalculatedHDistance() < b->LastCalculatedHDistance() ); 
+    return (a->LastCalculatedHDistance() < b->LastCalculatedHDistance());
   }
 };
 
 // Comparer to sort airspaces based on bearing
 struct airspace_bearing_sorter {
-    
-  bool operator()( CAirspace *a, CAirspace *b ) const {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr b) const {
     int beara = a->LastCalculatedBearing();
     int bearb = b->LastCalculatedBearing();
     int da = a->LastCalculatedHDistance();
     int db = b->LastCalculatedHDistance();
 
     if (beara != bearb) {
-        return beara < bearb;
+      return beara < bearb;
     }
     // if bearing is the same, get closer first
-    return da<db;
+    return da < db;
   }
 };
 
 // During cruise, we sort bearing diff and use bearing diff in DrawAsp
 struct airspace_bearing_diff_sorter {
-    
-  bool operator()( CAirspace *a, CAirspace *b ) const {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) const {
     int beara = a->LastCalculatedBearing();
     int bearb = b->LastCalculatedBearing();
     int da = a->LastCalculatedHDistance();
     int db = b->LastCalculatedHDistance();
- 
+
     int beardiffa = beara - a->LastTrackBearing();
     if (beardiffa < -180) {
       beardiffa += 360;
     } else if (beardiffa > 180) {
       beardiffa -= 360;
     }
-    if (beardiffa<0) {
-      beardiffa*=-1;
+    if (beardiffa < 0) {
+      beardiffa *= -1;
     }
-  
+
     int beardiffb = bearb - b->LastTrackBearing();
     if (beardiffb < -180) {
       beardiffb += 360;
-    } else if (beardiffb > 180) { 
+    } else if (beardiffb > 180) {
       beardiffb -= 360;
     }
-    if (beardiffb<0) {
-      beardiffb*=-1;
+    if (beardiffb < 0) {
+      beardiffb *= -1;
     }
- 
+
     if (beardiffa != beardiffb) {
-      return beardiffa < beardiffb; 
+      return beardiffa < beardiffb;
     }
-  
+
     // if bearing difference is the same, get closer first
-    return da<db;
+    return da < db;
   }
 };
-
 
 // OBSOLETED comment..
 // Running every n seconds ONLY when the nearest airspace page is active and we are not drawing map.
@@ -204,7 +197,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           // in correct order in airspaces list, thanks to std::sort,
           // we just fill up LKAirspaces[] array in the right order.
 
-          std::transform(nearest_airspaces.begin(), nearest_airspaces.end(), std::begin(LKAirspaces), [](CAirspace* pAsp) {
+          std::transform(nearest_airspaces.begin(), nearest_airspaces.end(), std::begin(LKAirspaces), [](CAirspacePtr& pAsp) {
               LKAirspace_Nearest_Item OutItem = {};
 
               // copy name
@@ -240,7 +233,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
           std::for_each(std::next(LKAirspaces, LKNumAirspaces), std::end(LKAirspaces), [](LKAirspace_Nearest_Item& Item) {
               Item.Valid = false;
-              Item.Pointer = nullptr;
+              Item.Pointer.reset();
           });
 
           ret = true;       // ok to use new values.

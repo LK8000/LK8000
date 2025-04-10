@@ -68,8 +68,6 @@ int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAl
 	const CAirspaceBase* sel_pasp =	asAirspaces[i];
 	if(sel_pasp != NULL)
 	{
-		//SelectedAS = CAirspaceManager::Instance().GetAirspaceCopy( sel_pasp );
-		//bOK = SelectedAS.GetDistanceInfo(bAS_Inside, iAS_HorDist, iAS_Bearing, iAS_VertDist);
 		bOK = sel_pasp->GetDistanceInfo(bAS_Inside, iAS_HorDist, iAS_Bearing, iAS_VertDist);
 
 		if(bOK)
@@ -174,8 +172,8 @@ void DoSonar(void) {
   CAirspaceBase near_airspace;
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspace *found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
-    if (found == nullptr) {
+    CAirspacePtr found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
+    if (!found) {
 #if DEBUG_SONAR
       StartupStore(_T("SONAR: no aspfound, return\n"));
 #endif

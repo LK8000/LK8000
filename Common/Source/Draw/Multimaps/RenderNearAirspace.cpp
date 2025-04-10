@@ -56,8 +56,6 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     TCHAR text[TBSIZE + 1];
     TCHAR buffer[TBSIZE + 1];
 
-    CAirspaceBase near_airspace;
-    CAirspace *found = NULL;
     //  bool bFound = false;
     DiagrammStruct sDia;
     bool bAS_Inside = false;
@@ -214,11 +212,15 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     iAS_HorDistance = 5000;
     iAS_Bearing = (int) GPSbrg;
     iAS_VertDistance = 0;
-    found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
-    if (found != NULL) {
-        near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
-        bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
-    }
+
+    CAirspaceBase near_airspace;
+    WithLock(CAirspaceManager::Instance().MutexRef(), [&](){
+        auto found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
+        if (found) {
+            near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
+            bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
+        }
+    });
     iABS_AS_HorDistance = abs(iAS_HorDistance);
     wpt_brg = (long) AngleLimit360(GPSbrg - iAS_Bearing + 90.0);
 

@@ -5,8 +5,6 @@
 #include "Enums.h"
 #include <variant>
 
-class CAirspace;
-
 MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
 
 void StartupScreen();

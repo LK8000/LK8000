@@ -16,7 +16,7 @@ namespace {
 struct AirspaceInfo_t : public ObjectAdaptor_t {
   AirspaceInfo_t() = delete;
 
-  explicit AirspaceInfo_t(CAirspace * pAsp) : airspace(pAsp) {};
+  explicit AirspaceInfo_t(CAirspacePtr pAsp) : airspace(pAsp) {};
 
   void Select() const override {
     LKSound(TEXT("LK_TICK.WAV"));
@@ -56,7 +56,7 @@ struct AirspaceInfo_t : public ObjectAdaptor_t {
     }
   }
 
-  CAirspace *airspace;
+  CAirspacePtr airspace;
 };
 
 class dlgSelectAirspace_t final : public dlgSelectObject  {
@@ -103,7 +103,7 @@ protected:
 
       data.reserve(Airspaces.size());
 
-      auto ToSelectInfo = [&](CAirspace* pAsp) -> ObjectSelectInfo_t {
+      auto ToSelectInfo = [&](CAirspacePtr& pAsp) -> ObjectSelectInfo_t {
         double direction = 0;
         double distance = std::max(0., Units::ToDistance(pAsp->Range(position, direction)));
         return { distance, direction, std::make_unique<AirspaceInfo_t>(pAsp) };

@@ -35,7 +35,7 @@ static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface)
        ****************************************************************/
    {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       if(airspace) {
         airspace->DrawPicto(Surface, rc);
       }
@@ -46,7 +46,7 @@ static void OnFlyClicked(WndButton* pWnd) {
     (void) pWnd;
    {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       if(airspace) {
         CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
       }
@@ -60,9 +60,9 @@ static void OnSelectClicked(WndButton* pWnd) {
 
    {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       if(airspace) {
-        CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
+        CAirspaceManager::Instance().AirspaceSetSelect(airspace);
       }
    }
     SetValues(pWnd->GetParentWndForm());
@@ -74,7 +74,7 @@ static void OnAcknowledgeClicked(WndButton* pWnd){
   (void)pWnd;
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
       CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
       if (airspace_copy.Enabled()) {
@@ -175,11 +175,11 @@ static void SetValues(WndForm* wf) {
   bool inside = false;
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
         // Get an object instance copy with actual values
         airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
-        inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
+        inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspace, &hdist, &bearing, &vdist);
     } else {
         // error : CAirspaceManager are closed ?
         return;
@@ -253,7 +253,7 @@ static void SetValues(WndForm* wf) {
   WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
   if (wDetails) {
     bool HideDetail = WithLock(CAirspaceManager::Instance().MutexRef(), [](){
-      CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
       return airspace && airspace->Comment() && (_tcslen(airspace->Comment()) < 10);
     });
 
@@ -437,7 +437,7 @@ static void OnDetailsClicked(WndButton* pWnd){
   
   {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspace* airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
       if(airspace->Comment()) {
         _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());

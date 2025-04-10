@@ -399,7 +399,9 @@ struct PaintListItemVisitor {
   }
 
   void operator()(const im_airspace& elmt) const {
-    CAirspace* pAS = elmt.pAirspace;
+    auto& pAspMgr = CAirspaceManager::Instance();
+    ScopeLock guard(pAspMgr.MutexRef());
+    CAirspacePtr pAS = elmt.pAirspace;
     if (pAS) {
 
       TCHAR text1[MAX_LEN] = {TEXT("empty")};
@@ -407,23 +409,21 @@ struct PaintListItemVisitor {
       TCHAR Comment[MAX_COMMENT] = {TEXT("")};
       TCHAR Comment1[MAX_COMMENT] = {TEXT("")};
 
-      auto& pAspMgr = CAirspaceManager::Instance();
       /***********************************************************************
        * here we use a local copy of the airspace, only common property exists
        ***********************************************************************/
-      CAirspaceBase airspace_copy = pAspMgr.GetAirspaceCopy(pAS);
 
       // airspace type already in name?
-      if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-        lk::strcpy(text1, airspace_copy.Name());  // yes, take name only
+      if (_tcsnicmp(pAS->Name(), pAS->TypeName(), _tcslen(pAS->TypeName())) == 0) {
+        lk::strcpy(text1, pAS->Name());  // yes, take name only
       }
       else {
         // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
-        lk::snprintf(text1, _T("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
+        lk::snprintf(text1, _T("%s %s"), pAS->TypeName(), pAS->Name());
       }
 
-      pAspMgr.GetSimpleAirspaceAltText(Comment, std::size(Comment), airspace_copy.Top());
-      pAspMgr.GetSimpleAirspaceAltText(Comment1, std::size(Comment1), airspace_copy.Base());
+      pAspMgr.GetSimpleAirspaceAltText(Comment, std::size(Comment), pAS->Top());
+      pAspMgr.GetSimpleAirspaceAltText(Comment1, std::size(Comment1), pAS->Base());
 
       int HorDist, Bearing, VertDist;
       pAspMgr.AirspaceCalculateDistance(pAS, &HorDist, &Bearing, &VertDist);

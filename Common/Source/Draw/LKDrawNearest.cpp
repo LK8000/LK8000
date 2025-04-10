@@ -653,7 +653,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             if (MSMAIRSPACES) {
                 if (ValidAirspace(i)) {
                     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-                    CAirspaceManager::Instance().PopupAirspaceDetail(LKAirspaces[i].Pointer);
+                    CAirspacePtr pAsp = LKAirspaces[i].Pointer.lock();
+                    CAirspaceManager::Instance().PopupAirspaceDetail(pAsp);
                 }
             }
 

@@ -104,9 +104,8 @@ enum AirspaceWarningDrawStyle_t {
 //
 // AIRSPACE BASE CLASS
 //
-class CAirspaceBase
-{
-public:
+class CAirspaceBase {
+ public:
   CAirspaceBase() = default;
   virtual ~CAirspaceBase() {}
 
@@ -264,7 +263,14 @@ protected:
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
 };
 
-class CAirspace : public CAirspaceBase {
+class  CAirspace;
+using CAirspacePtr = std::shared_ptr<CAirspace>;
+using CAirspaceWeakPtr = std::weak_ptr<CAirspace>;
+
+class CAirspace : 
+        public CAirspaceBase, 
+        public std::enable_shared_from_this<CAirspace>
+{
 public:
 
     CAirspace() : CAirspaceBase() { }
@@ -304,8 +310,8 @@ public:
     // Calculate airspace distance from last known position (used by warning system and dialog boxes)
     bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
 
-    static void ResetSideviewNearestInstance() { _sideview_nearest_instance = NULL; }
-    static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
+    static void ResetSideviewNearestInstance() { _sideview_nearest_instance.reset(); }
+    static CAirspacePtr GetSideviewNearestInstance() { return _sideview_nearest_instance.lock(); }
 
 protected:
     // polygon points : circular airspace are also stored like polygon because that avoid to calculate geographic coordinate for each drawing
@@ -326,7 +332,7 @@ protected:
     virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList &screenpoints_picto) const;
     ////////////////////////////////////////////////////////////////////////////////
 
-    static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
+    static CAirspaceWeakPtr _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
 
 struct AirSpaceSideViewSTRUCT {
@@ -342,7 +348,7 @@ struct AirSpaceSideViewSTRUCT {
   BOOL bRectAllowed;
   BOOL bEnabled;
   TCHAR szAS_Name[NAME_SIZE + 1];
-  CAirspace *psAS;
+  CAirspacePtr psAS;
 };
 
 #define VERTICAL    false
@@ -427,13 +433,13 @@ protected:
 //
 // AIRSPACE MANAGER HELPERS
 //
-using CAirspaceList = std::deque<CAirspace*>;
+using CAirspaceList = std::deque<CAirspacePtr>;
 
 //Warning system generated message
 struct AirspaceWarningMessage {
-  CAirspace *originator;                // airspace instance
+  CAirspaceWeakPtr originator;           // airspace instance
   AirspaceWarningEvent event;            // message cause
-  AirspaceWarningLevel_t warnlevel;        // warning level
+  AirspaceWarningLevel_t warnlevel;      // warning level
 };
 // Warning message queue
 using AirspaceWarningMessageList = std::deque<AirspaceWarningMessage>;
@@ -477,13 +483,15 @@ public:
                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
                         AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const;
 
-  CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
+  CAirspacePtr FindNearestAirspace(const double &longitude, const double &latitude,
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces();
   bool ValidAirspaces() const;
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const;
+
+  void AirspaceApply(CAirspace &airspace, std::function<void(CAirspace&)> func);
 
   void AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate);
   void AirspaceAckWarn(CAirspace &airspace);
@@ -502,9 +510,9 @@ public:
   const CAirspaceList GetAllAirspaces() const;
   const CAirspaceList& GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
-  CAirspaceBase GetAirspaceCopy(const CAirspaceBase* airspace) const;
-  bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
-  void AirspaceSetSelect(CAirspace &airspace);
+  CAirspaceBase GetAirspaceCopy(const CAirspacePtr& airspace) const;
+  bool AirspaceCalculateDistance(const CAirspacePtr& airspace, int *hDistance, int *Bearing, int *vDistance);
+  void AirspaceSetSelect(const CAirspacePtr& airspace);
 
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
@@ -516,24 +524,27 @@ public:
   void CalculateDistancesForPage24();
   CAirspaceList GetAirspacesForPage24() const { return _airspaces_page24; }
 
-  //Sideview
-  CAirspace* GetNearestAirspaceForSideview() { return _sideview_nearest; }     // Get nearest instace for sideview drawing (use instance ptr as key only to asp manager (mutex!))
+  // Get nearest instance for sideview drawing & sonar system
+  CAirspacePtr GetNearestAirspaceForSideview() { return _sideview_nearest.lock(); }
 
   //Locking
   Mutex& MutexRef() const { return _csairspaces; }
 
   // Airspaces detail system accessor
-  void PopupAirspaceDetail(CAirspace * pAsp);
+  void PopupAirspaceDetail(const CAirspacePtr& pAsp);
   void ProcessAirspaceDetailQueue();
 
-  CAirspace* GetAirspacesForDetails() { return _detail_current; } // call this only inside Mutex Guard section !
+   // call this only inside Mutex Guard section !
+  CAirspacePtr GetAirspacesForDetails() {
+    return _detail_current.lock();
+  }
 
   /// to Enable/disable aispace depending of day num (SAT/SUN)
   void AutoDisable(const NMEA_INFO& info);
 
 private:
 
-  CAirspaceManager() { _selected_airspace = NULL; _sideview_nearest = NULL; }
+  CAirspaceManager() = default;
   CAirspaceManager(const CAirspaceManager&) = delete;
   CAirspaceManager& operator=(const CAirspaceManager&) = delete;
   ~CAirspaceManager() { CloseAirspaces(); }
@@ -543,8 +554,8 @@ private:
   CAirspaceList _airspaces;             // ALL
   CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page
-  CAirspace *_selected_airspace = nullptr;         // Selected airspace
-  CAirspace *_sideview_nearest = nullptr;         // Neasrest asp instance for sideview
+  CAirspaceWeakPtr _selected_airspace;         // Selected airspace
+  CAirspaceWeakPtr _sideview_nearest;         // Neasrest asp instance for sideview
 
   unsigned last_day_of_week = ~0; // used for auto disable airspace SAT/SUN
 
@@ -554,8 +565,8 @@ private:
   CAirspaceList _airspaces_of_interest;
 
   // Airspaces detail system data
-  CAirspace * _detail_current = nullptr;
-  CAirspaceList _detail_queue;
+  CAirspaceWeakPtr  _detail_current;
+  std::deque<CAirspaceWeakPtr> _detail_queue;
 
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
@@ -606,7 +617,7 @@ struct LKAirspace_Nearest_Item {
   AirspaceWarningLevel_t WarningLevel;      // 8)  Actual warning level fro this airspace
   AirspaceWarningLevel_t WarningAckLevel;   // 9)  Actual ack level fro this airspace
 
-  CAirspace *Pointer;                       // 10) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
+  CAirspaceWeakPtr Pointer;                     // 10) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
 };
 
 

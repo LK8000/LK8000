@@ -19,7 +19,7 @@
 class CAirspace;
 
 struct im_airspace {
-  CAirspace* pAirspace;
+  CAirspacePtr pAirspace;
 
   bool operator==(const im_airspace& rhs) const {
     return pAirspace == rhs.pAirspace;

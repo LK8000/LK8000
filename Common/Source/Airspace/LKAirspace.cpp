@@ -109,7 +109,7 @@ int CAirspaceBase::_lastknownagl = 0; // last known agl saved for calculations
 int CAirspaceBase::_lastknownheading = 0; // last known heading saved for calculations
 int CAirspaceBase::_lastknowntrackbearing = 0; // last known track bearing saved for calculations
 bool CAirspaceBase::_pred_blindtime = true; // disable predicted position based warnings near takeoff, and other conditions
-CAirspace* CAirspace::_sideview_nearest_instance = NULL; // collect nearest airspace instance for sideview during warning calculations
+CAirspaceWeakPtr CAirspace::_sideview_nearest_instance; // collect nearest airspace instance for sideview during warning calculations
 
 //
 // CAIRSPACE CLASS
@@ -230,7 +230,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _nearestvdistance = 100000;
 #endif
 
-    _sideview_nearest_instance = NULL; // Init nearest instance for sideview
+    _sideview_nearest_instance.reset(); // Init nearest instance for sideview
 
     // 110518 PENDING_QUESTION
     // From Paolo to Kalman: casting a double to a signed int won't create problems
@@ -267,13 +267,10 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     _warnevent = aweNone;
 
-    int alt;
-    int agl;
-
     //Check actual position
     _pos_inside_now = false;
-    alt = Calculated->NavAltitude;
-    agl = Calculated->AltitudeAGL;
+    int alt = Calculated->NavAltitude;
+    int agl = Calculated->AltitudeAGL;
     if (agl < 0) agl = 0; // Limit actual altitude to surface to not get warnings if close to ground
 
     // Calculate distances
@@ -320,12 +317,13 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 #endif
 
-    if (_sideview_nearest_instance == NULL) {
-        _sideview_nearest_instance = this;
+    auto nearest = _sideview_nearest_instance.lock();
+    if (!nearest) {
+        _sideview_nearest_instance = shared_from_this();
     } else {
         if (_3ddistance > 0) {
-            if (_3ddistance < _sideview_nearest_instance->_3ddistance) {
-                _sideview_nearest_instance = this;
+            if (_3ddistance < nearest->_3ddistance) {
+                _sideview_nearest_instance = shared_from_this();
             }
         }
     }
@@ -2042,7 +2040,7 @@ void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon,
             airspace->ExceptSunday(except_sunday);
 
             WithLock(_csairspaces, [&] {
-                _airspaces.push_back(airspace.release());
+                _airspaces.push_back(std::move(airspace));
             });
         }
     }
@@ -2339,7 +2337,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         }
 
         // Build the new airspace
-        CAirspace* newairspace = new (std::nothrow) CAirspace_Area(std::move(points));
+        auto newairspace = std::make_unique<CAirspace_Area>(std::move(points));
         points.clear(); // required, otherwise vector state is undefined;
         if(newairspace==nullptr) {
             StartupStore(TEXT(".. Failed to allocate new airspace.%s"), NEWLINE);
@@ -2351,7 +2349,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         // Add the new airspace
         { // Begin Lock
         ScopeLock guard(_csairspaces);
-        _airspaces.push_back(newairspace);
+        _airspaces.push_back(std::move(newairspace));
         accept_cnt++;
         } // End Lock
     } // for each ASP
@@ -2439,33 +2437,33 @@ void CAirspaceManager::CloseAirspaces() {
     SaveSettings();
 
     _detail_queue.clear();
-    _detail_current = nullptr;
+    _detail_current.reset();
 
     // need to cleanup, otherwise "Item.Pointer" still not null but invalid
     LKNumAirspaces = 0;
     for (LKAirspace_Nearest_Item& Item : LKAirspaces) {
         Item.Valid = false;
-        Item.Pointer = NULL;
+        Item.Pointer.reset();
     }
 
     // this is needed for avoid crash if airspaces configuration is changed
     // after Step 1 and before step 2 of multicalc inside AirspacesWarning
     CAirspace::ResetSideviewNearestInstance();
 
-    _selected_airspace = nullptr;
-    _sideview_nearest = nullptr;
+    _selected_airspace.reset();
+    _sideview_nearest.reset();
     _user_warning_queue.clear();
     _airspaces_near.clear();
     _airspaces_of_interest.clear();
     _airspaces_page24.clear();
-    std::for_each(_airspaces.begin(), _airspaces.end(), std::default_delete<CAirspace>());
     _airspaces.clear();
+
     StartupStore(TEXT(". CloseLKAirspace%s"), NEWLINE);
 }
 
 void CAirspaceManager::QnhChangeNotify() {
     ScopeLock guard(_csairspaces);
-    for (CAirspace* pAsp : _airspaces) {
+    for (auto& pAsp : _airspaces) {
         pAsp->QnhChangeNotify();
     }
 }
@@ -2505,7 +2503,7 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
                         if (iNoFoundAS < MAX_NO_SIDE_AS - 1) iNoFoundAS++;
                         airspacetype[iNoFoundAS].psAS = NULL; // increment and reset head
                         /*********************************************************************/
-                        airspacetype[iSelAS].psAS = (*it);
+                        airspacetype[iSelAS].psAS = *it;
                         airspacetype[iSelAS].iType = (*it)->Type();
 
                         LK_tcsncpy(airspacetype[iSelAS].szAS_Name, (*it)->Name(), NAME_SIZE - 1);
@@ -2620,67 +2618,60 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
 //
 // This only searches within a range of 100km of the target
 
-CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const double &latitude,
+CAirspacePtr CAirspaceManager::FindNearestAirspace(const double &longitude, const double &latitude,
         double *nearestdistance, double *nearestbearing, double *height) const {
     double nearestd = 100000; // 100km
     double nearestb = 0;
+    CAirspacePtr found;
 
-    bool iswarn;
-    bool isdisplay;
-    bool altok;
-    double bearing;
-    CAirspace *found = NULL;
-    int type;
-    double dist;
-    double calc_terrainalt;
+    double calc_terrainalt = WithLock(CritSec_FlightData, [](){
+        return CALCULATED_INFO.TerrainAlt;
+    });
 
-    LockFlightData();
-    calc_terrainalt = CALCULATED_INFO.TerrainAlt;
-    UnlockFlightData();
-
-    CAirspaceList::const_iterator it;
     ScopeLock guard(_csairspaces);
 
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-        if ((*it)->Enabled()) {
-            type = (*it)->Type();
+    for (auto& pAsp : _airspaces) {
+        if (pAsp->Enabled()) {
+            int type = pAsp->Type();
             //TODO check index
-            iswarn = (MapWindow::iAirspaceMode[type] >= 2);
-            isdisplay = ((MapWindow::iAirspaceMode[type] % 2) > 0);
+            bool iswarn = (MapWindow::iAirspaceMode[type] >= 2);
+            bool isdisplay = ((MapWindow::iAirspaceMode[type] % 2) > 0);
 
             if (!isdisplay || !iswarn) {
                 // don't want warnings for this one
                 continue;
             }
 
+            double altok = false;
             if (height) {
                 double basealt;
                 double topalt;
                 bool base_is_sfc = false;
 
-                if ((*it)->Base()->Base != abAGL) {
-                    basealt = (*it)->Base()->Altitude;
+                if (pAsp->Base()->Base != abAGL) {
+                    basealt = pAsp->Base()->Altitude;
                 } else {
-                    basealt = (*it)->Base()->AGL + calc_terrainalt;
-                    if ((*it)->Base()->AGL <= 0) base_is_sfc = true;
+                    basealt = pAsp->Base()->AGL + calc_terrainalt;
+                    if (pAsp->Base()->AGL <= 0) {
+                        base_is_sfc = true;
+                    }
                 }
-                if ((*it)->Top()->Base != abAGL) {
-                    topalt = (*it)->Top()->Altitude;
+                if (pAsp->Top()->Base != abAGL) {
+                    topalt = pAsp->Top()->Altitude;
                 } else {
-                    topalt = (*it)->Top()->AGL + calc_terrainalt;
+                    topalt = pAsp->Top()->AGL + calc_terrainalt;
                 }
-                altok = (((*height > basealt) || base_is_sfc) && (*height < topalt));
+                altok = ((*height > basealt) || base_is_sfc) && (*height < topalt);
             } else {
-                altok = CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top()) == TRUE;
+                altok = CheckAirspaceAltitude(*(pAsp->Base()), *(pAsp->Top()));
             }
             if (altok) {
-
-                dist = (*it)->Range(longitude, latitude, bearing);
-
+                double bearing = 0;
+                double dist = pAsp->Range(longitude, latitude, bearing);
                 if (dist < nearestd) {
                     nearestd = dist;
                     nearestb = bearing;
-                    found = *it;
+                    found = pAsp;
                     if (dist < 0) {
                         // no need to continue search, inside
                         break; //for
@@ -2696,7 +2687,7 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
 }
 
 struct airspace_sorter {
-  bool operator()(const CAirspace *a, const CAirspace *b) {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) {
     assert(a);
     assert(a->Top());
     assert(b);
@@ -2875,21 +2866,18 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 #endif
 
 #ifdef LKAIRSP_INFOBOX_USE_SELECTED
-            if (_selected_airspace != NULL) {
-                _selected_airspace->CalculateDistance(NULL, NULL, NULL);
-                LK_tcsncpy(NearestAirspaceName, _selected_airspace->Name(), NAME_SIZE);
-                NearestAirspaceHDist = _selected_airspace->LastCalculatedHDistance();
-
-                LK_tcsncpy(NearestAirspaceVName, _selected_airspace->Name(), NAME_SIZE);
-                NearestAirspaceVDist = _selected_airspace->LastCalculatedVDistance();
-            } else if (_sideview_nearest != NULL) {
-                //use nearest distances, if no selection
-                LK_tcsncpy(NearestAirspaceName, _sideview_nearest->Name(), NAME_SIZE);
-                NearestAirspaceHDist = _sideview_nearest->LastCalculatedHDistance();
-
-                LK_tcsncpy(NearestAirspaceVName, _sideview_nearest->Name(), NAME_SIZE);
-                NearestAirspaceVDist = _sideview_nearest->LastCalculatedVDistance();
-            } else {
+            auto pAsp = _selected_airspace.lock();
+            if (!pAsp) {
+                pAsp = _sideview_nearest.lock();
+            }
+            if (pAsp) {
+                pAsp->CalculateDistance(NULL, NULL, NULL);
+                lk::strcpy(NearestAirspaceName, pAsp->Name());
+                NearestAirspaceHDist = pAsp->LastCalculatedHDistance();
+                lk::strcpy(NearestAirspaceVName, pAsp->Name());
+                NearestAirspaceVDist = pAsp->LastCalculatedVDistance();
+            }
+            else {
                 NearestAirspaceName[0] = 0;
                 NearestAirspaceHDist = 0;
                 NearestAirspaceVName[0] = 0;
@@ -2904,27 +2892,26 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
 CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const {
     CAirspaceList res;
-    CAirspaceList::const_iterator it;
     ScopeLock guard(_csairspaces);
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-        if ((*it)->DrawStyle()) {
-            if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
+    for (const auto& pAsp : _airspaces) {
+        if (pAsp->DrawStyle()) {
+            if (pAsp->IsHorizontalInside(lon, lat)) {
+                res.push_back(pAsp);
+            }
         }
     }
     return res;
 }
 
 CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const double &lat, long searchrange) const {
-    int HorDist, Bearing, VertDist;
     CAirspaceList res;
-    CAirspaceList::const_iterator it;
     ScopeLock guard(_csairspaces);
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-        if ((*it)->DrawStyle() || (((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) 
-        {
-            (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
+    for (const auto& pAsp : _airspaces) {
+        if (pAsp->DrawStyle() || ((pAsp->Top()->Base == abMSL) && (pAsp->Top()->Altitude <= 0))) {
+            int HorDist, Bearing, VertDist;
+            pAsp->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
             if (HorDist < searchrange) {
-                res.push_back(*it);
+                res.push_back(pAsp);
             }
         }
     }
@@ -2932,26 +2919,14 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
 }
 
 void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
-    CAirspaceList::iterator it;
-#if DEBUG_NEAR_POINTS
-    int iCnt = 0;
-    StartupStore(_T("... enter SetFarVisible\n"));
-#endif
     ScopeLock guard(_csairspaces);
     _airspaces_near.clear();
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+    for (const auto& pAsp : _airspaces) {
         // Check if airspace overlaps given bounds
-        if ((msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE)
-                ) {
-            _airspaces_near.push_back(*it);
-#if DEBUG_NEAR_POINTS
-            iCnt++;
-#endif
+        if ((msRectOverlap(&bounds_active, &(pAsp->Bounds())) == MS_TRUE)) {
+            _airspaces_near.push_back(pAsp);
         }
     }
-#if DEBUG_NEAR_POINTS
-    StartupStore(_T("... leaving SetFarVisible %i airspaces\n"), iCnt);
-#endif
 }
 
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
@@ -2972,7 +2947,7 @@ const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
 
 // Comparer to sort airspaces based on label priority for drawing labels
 struct airspace_label_priority_sorter {
-  bool operator()(const CAirspace *a, const CAirspace *b) {
+  bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) {
     return a->LabelPriority() > b->LabelPriority();
   }
 };
@@ -3009,16 +2984,17 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
 // NOTE: virtual methods don't work on copied instances!
 //       they have to be mapped through airspacemanager class because of the mutex
 
-CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspaceBase* airspace) const {
-    LKASSERT(airspace != NULL);
-    ScopeLock guard(_csairspaces);
-    return *airspace;
+CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspacePtr& airspace) const {
+    if(airspace) {
+        ScopeLock guard(_csairspaces);
+        return *airspace;
+    }
+    return {};
 }
 
 // Calculate distances from a given airspace
 
-bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance) {
-    LKASSERT(airspace != NULL);
+bool CAirspaceManager::AirspaceCalculateDistance(const CAirspacePtr& airspace, int *hDistance, int *Bearing, int *vDistance) {
     ScopeLock guard(_csairspaces);
     return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
@@ -3046,122 +3022,57 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
 }
 
 
-
-// Ack an airspace for a given ack level and acknowledgement time
-
-void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate) {
+void CAirspaceManager::AirspaceApply(CAirspace &airspace, std::function<void(CAirspace&)> func) {
     ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
-
     if (!AirspaceAckAllSame) {
-        airspace.WarningAckLevel(ackstate);
-        airspace.SetAckTimeout();
-    } else {
-        for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            if ((*it)->IsSame(airspace)) {
-                (*it)->WarningAckLevel(ackstate);
-                (*it)->SetAckTimeout();
-
-                TestLog(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()"), (*it)->Name());
+        func(airspace);
+    }
+    else {
+        for (const auto& pAsp : _airspaces) {
+            if (pAsp->IsSame(airspace)) {
+                func(*pAsp);
             }
         }
     }
+}
+
+// Ack an airspace for a given ack level and acknowledgement timeout
+void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate) {
+    AirspaceApply(airspace, [&](CAirspace& asp) {
+        asp.WarningAckLevel(ackstate);
+        asp.SetAckTimeout();
+    });
 }
 
 // Ack an airspace for a current level
-
 void CAirspaceManager::AirspaceAckWarn(CAirspace &airspace) {
-    ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
-
-    if (!AirspaceAckAllSame) {
-        airspace.WarningAckLevel(airspace.WarningLevel());
-        airspace.SetAckTimeout();
-    } else {
-        for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            if ((*it)->IsSame(airspace)) {
-                (*it)->WarningAckLevel(airspace.WarningLevel());
-                (*it)->SetAckTimeout();
-
-                TestLog(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"), (*it)->Name(), NEWLINE);
-            }
-        }
-    }
+    AirspaceSetAckLevel(airspace, airspace.WarningLevel());
 }
 
 // Ack an airspace for all future warnings
-
 void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace) {
-    ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
-
-    if (!AirspaceAckAllSame) {
-        airspace.WarningAckLevel(awRed);
-    } else {
-        for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            if ((*it)->IsSame(airspace)) {
-                (*it)->WarningAckLevel(awRed);
-
-                TestLog(TEXT("LKAIRSP: %s AirspaceAckSpace()"), (*it)->Name());
-            }
-        }
-    }
+    AirspaceSetAckLevel(airspace, awRed);
 }
 
 // Disable an airspace
-
 void CAirspaceManager::AirspaceDisable(CAirspace &airspace) {
-    ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
-
-    if (!AirspaceAckAllSame) {
-        airspace.Enabled(false);
-    } else {
-        for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            if ((*it)->IsSame(airspace)) {
-                (*it)->Enabled(false);
-
-                TestLog(TEXT("LKAIRSP: %s AirspaceDisable()"), (*it)->Name());
-            }
-        }
-    }
+    AirspaceApply(airspace, [&](CAirspace& asp) {
+        asp.Enabled(false);
+    });
 }
 
 // Enable an airspace
-
 void CAirspaceManager::AirspaceEnable(CAirspace &airspace) {
-    ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
-
-    if (!AirspaceAckAllSame) {
-        airspace.Enabled(true);
-    } else {
-        for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            if ((*it)->IsSame(airspace)) {
-                (*it)->Enabled(true);
-
-                TestLog(TEXT("LKAIRSP: %s AirspaceEnable()"), (*it)->Name());
-            }
-        }
-    }
+    AirspaceApply(airspace, [&](CAirspace& asp) {
+        asp.Enabled(true);
+    });
 }
 
 // Toggle flyzone on an airspace
-
 void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
-    ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
-
-    if (!AirspaceAckAllSame) {
-        airspace.FlyzoneToggle();
-    } else {
-        for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            if ((*it)->IsSame(airspace)) {
-                (*it)->FlyzoneToggle();
-                TestLog(TEXT("LKAIRSP: %s FlyzoneToggle()"), (*it)->Name());
-            }
-        }
-    }
+    AirspaceApply(airspace, [&](CAirspace& asp) {
+        asp.FlyzoneToggle();
+    });
 }
 
 // Centralized function to get airspace type texts
@@ -3203,13 +3114,12 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
             return TEXT("AAT");
         case CLASSTMZ:
             return TEXT("TMZ");
-	case CLASSRMZ:
-	    return TEXT("RMZ");
-	case CLASSNOTAM:
-	    return TEXT("NOTAM");
-	case GLIDERSECT:
-	    return TEXT("GldSect");
-
+        case CLASSRMZ:
+            return TEXT("RMZ");
+        case CLASSNOTAM:
+            return TEXT("NOTAM");
+        case GLIDERSECT:
+            return TEXT("GldSect");
         case OTHER:
             // LKTOKEN  _@M765_ = "Unknown"
             return MsgToken<765>();
@@ -3274,79 +3184,76 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
         return;
     }
 
-    Units::FormatAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
-    Units::FormatAlternateAltitude(alt->Altitude, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
+    Units::FormatAltitude(alt->Altitude, sUnitBuffer, std::size(sUnitBuffer));
+    Units::FormatAlternateAltitude(alt->Altitude, sAltUnitBuffer, std::size(sAltUnitBuffer));
 
     switch (alt->Base) {
         case abUndef:
             if (Units::GetAltitudeUnit() == unMeter) {
-                _stprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
+                lk::snprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
             } else {
-                _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
+                lk::snprintf(intbuf, TEXT("%s"), sUnitBuffer);
             }
             break;
         case abMSL:
             if (Units::GetAltitudeUnit() == unMeter) {
-                _stprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
+                lk::snprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
             } else {
-                _stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
+                lk::snprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
             }
             break;
         case abAGL:
             if (alt->AGL <= 0)
-            	CopyTruncateString(intbuf, BUF_LEN, MsgToken<2387>()); // _@M2387_ "GND"
+            	lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
             else {
                 Units::FormatAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
                 Units::FormatAlternateAltitude(alt->AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
                 if (Units::GetAltitudeUnit() == unMeter) {
-                    _stprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
+                    lk::snprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
                 } else {
-                    _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
+                    lk::snprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
                 }
             }
             break;
         case abFL:
             if (Units::GetAltitudeUnit() == unMeter) {
-                _stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, Units::To(unMeter, alt->Altitude), Units::To(unFeet, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, Units::To(unMeter, alt->Altitude), Units::To(unFeet, alt->Altitude));
             } else {
-                _stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, Units::To(unFeet, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, Units::To(unFeet, alt->Altitude));
             }
             break;
     }
-    LK_tcsncpy(buffer, intbuf, bufferlen - 1);
+    lk::strcpy(buffer, intbuf, bufferlen);
 }
 
 void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
     TCHAR sUnitBuffer[24];
     TCHAR intbuf[128];
 
-    Units::FormatAltitude(alt->Altitude, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
+    Units::FormatAltitude(alt->Altitude, sUnitBuffer, std::size(sUnitBuffer));
 
     switch (alt->Base) {
         case abUndef:
-            _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
-            break;
         case abMSL:
-            //       _stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
-            _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
+            lk::strcpy(intbuf, sUnitBuffer);
             break;
         case abAGL:
-            if (alt->AGL <= 0)
-            	CopyTruncateString(intbuf, BUF_LEN, MsgToken<2387>()); // _@M2387_ "GND"
-            else {
-                Units::FormatAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
-                _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
+            if (alt->AGL <= 0) {
+                lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
+            } else {
+                Units::FormatAltitude(alt->AGL, sUnitBuffer, std::size(sUnitBuffer));
+                lk::snprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
             }
             break;
         case abFL:
             if (Units::GetAltitudeUnit() == unMeter) {
-                _stprintf(intbuf, TEXT("%.0fm"), Units::To(unMeter, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("%.0fm"), Units::To(unMeter, alt->Altitude));
             } else {
-                _stprintf(intbuf, TEXT("%.0fft"), Units::To(unFeet, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("%.0fft"), Units::To(unFeet, alt->Altitude));
             }
             break;
     }
-    LK_tcsncpy(buffer, intbuf, bufferlen - 1);
+    lk::strcpy(buffer, intbuf, bufferlen);
 }
 
 
@@ -3355,20 +3262,14 @@ void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, co
 // in this case not need to have a notifier facility if airspace list changed during calculations
 
 void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius) {
-    double lon, lat;
-    rectObj bounds;
 
     ScopeLock guard(_csairspaces);
     if (_airspaces.size() < 1) return;
 
     // Calculate area of interest
-    lon = longitude;
-    lat = latitude;
-    bounds.minx = lon;
-    bounds.maxx = lon;
-    bounds.miny = lat;
-    bounds.maxy = lat;
-
+    double lon = longitude;
+    double lat = latitude;
+    rectObj bounds = { lon, lon, lat, lat };
 
     {
         FindLatitudeLongitude(latitude, longitude, 0, interest_radius, &lat, &lon);
@@ -3409,31 +3310,37 @@ void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const dou
 
     // Select nearest ones (based on bounds)
     _airspaces_page24.clear();
-    for (CAirspaceList::iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-        if (msRectOverlap(&bounds, &(*it)->Bounds()) == MS_TRUE) _airspaces_page24.push_back(*it);
+    for (const auto& pAsp : _airspaces) {
+        if (msRectOverlap(&bounds, &(pAsp->Bounds())) == MS_TRUE) {
+            _airspaces_page24.push_back(pAsp);
+        }
     }
 }
 
 void CAirspaceManager::CalculateDistancesForPage24() {
     ScopeLock guard(_csairspaces);
-    for (CAirspaceList::iterator it = _airspaces_page24.begin(); it != _airspaces_page24.end(); ++it) {
-        (*it)->CalculateDistance(NULL, NULL, NULL);
+    for (const auto& pAsp : _airspaces_page24) {
+        pAsp->CalculateDistance(nullptr, nullptr, nullptr);
     }
 }
 
 // Set or change or deselect selected airspace
-void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace) {
+void CAirspaceManager::AirspaceSetSelect(const CAirspacePtr &airspace) {
     ScopeLock guard(_csairspaces);
+    auto old_selected = _selected_airspace.lock();
     // Deselect if we get the same asp
-    if (_selected_airspace == &airspace) {
-        _selected_airspace->Selected(false);
-        _selected_airspace = NULL;
+    if (old_selected == airspace) {
+        old_selected->Selected(false);
+        _selected_airspace.reset();
         return;
     }
 
-    if (_selected_airspace != NULL) _selected_airspace->Selected(false);
-    _selected_airspace = &airspace;
-    if (_selected_airspace != NULL) _selected_airspace->Selected(true);
+    if (old_selected) {
+        old_selected->Selected(false);
+    }
+
+    _selected_airspace = airspace;
+    airspace->Selected(true);
 }
 
 // Save airspace settings
@@ -3452,31 +3359,34 @@ void CAirspaceManager::SaveSettings() const {
         fprintf(f, "# THIS FILE IS GENERATED AUTOMATICALLY ON LK SHUTDOWN - DO NOT ALTER BY HAND, DO NOT COPY BEETWEEN DEVICES!\n");
 
         ScopeLock guard(_csairspaces);
-        for (CAirspaceList::const_iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-            std::string hash = (*it)->Hash();
+        for (const auto& pAsp : _airspaces) {
+            std::string hash = pAsp->Hash();
             //Asp hash
             fprintf(f, "%32s ", hash.c_str());
 
             //Settings chr1 - Flyzone or not
-            if ((*it)->Flyzone()) fprintf(f, "F");
+            if (pAsp->Flyzone()) fprintf(f, "F");
             else fprintf(f, "-");
             //Settings chr2 - Enabled or not
-            if ((*it)->Enabled()) fprintf(f, "E");
+            if (pAsp->Enabled()) fprintf(f, "E");
             else fprintf(f, "-");
             //Settings chr3 - Selected or not
-            if ((*it)->Selected()) fprintf(f, "S");
+            if (pAsp->Selected()) fprintf(f, "S");
             else fprintf(f, "-");
 
             //Comment
-            _stprintf(ubuf, TEXT(" #%s"), (*it)->Name());
+            _stprintf(ubuf, TEXT(" #%s"), pAsp->Name());
             to_utf8(ubuf, buf);
             fprintf(f, "%s", buf);
             //Newline
             fprintf(f, "\n");
         }
-        StartupStore(TEXT(". Settings for %u airspaces saved to file <%s>%s"), (unsigned)_airspaces.size(), szFileName, NEWLINE);
+        StartupStore(TEXT(". Settings for %u airspaces saved to file <%s>"), (unsigned)_airspaces.size(), szFileName);
         fclose(f);
-    } else StartupStore(TEXT("Failed to save airspace settings to file <%s>%s"), szFileName, NEWLINE);
+    } 
+    else {
+        StartupStore(TEXT("Failed to save airspace settings to file <%s>"), szFileName);
+    }
 }
 
 // Load airspace settings
@@ -3496,9 +3406,9 @@ void CAirspaceManager::LoadSettings() {
         // Generate hash map on loaded airspaces
         ScopeLock guard(_csairspaces);
 
-        std::map<std::string, CAirspace*> map;
-        for (auto asp : _airspaces) {
-            map.emplace(asp->Hash(), asp);
+        std::map<std::string, CAirspacePtr> map;
+        for (auto& pAsp : _airspaces) {
+            map.emplace(pAsp->Hash(), pAsp);
         }
 
         while (fgets(linebuf, MAX_PATH, f) != NULL) {
@@ -3511,7 +3421,7 @@ void CAirspaceManager::LoadSettings() {
                     it->second->Flyzone(flagstr[0] == 'F');
                     it->second->Enabled(flagstr[1] == 'E');
                     if (flagstr[2] == 'S') {
-                        AirspaceSetSelect(*(it->second));
+                        AirspaceSetSelect(it->second);
                     }
                     map.erase(it);
                     airspaces_restored++;
@@ -3529,17 +3439,15 @@ void CAirspaceManager::LoadSettings() {
 
 #if ASPWAVEOFF
 
-void CAirspaceManager::AirspaceDisableWaveSectors(void) {
+void CAirspaceManager::AirspaceDisableWaveSectors() {
     ScopeLock guard(_csairspaces);
-    CAirspaceList::const_iterator it;
 
+    for (const auto& pAsp : _airspaces) {
+        if (pAsp->Type() == WAVE) {
+            pAsp->Enabled(false);
+            pAsp->Flyzone(true);
 
-    for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-        if ((*it)->Type() == WAVE) {
-            (*it)->Enabled(false);
-            (*it)->Flyzone(true);
-
-            DebugLog(TEXT("LKAIRSP: %s AirspaceDisable()%s"), (*it)->Name());
+            DebugLog(TEXT("LKAIRSP: %s AirspaceDisable()"), pAsp->Name());
         }
     }
 
@@ -3548,9 +3456,11 @@ void CAirspaceManager::AirspaceDisableWaveSectors(void) {
 
 
 // queue new airspaces for popup details
-void CAirspaceManager::PopupAirspaceDetail(CAirspace * pAsp) {
+void CAirspaceManager::PopupAirspaceDetail(const CAirspacePtr& pAsp) {
     ScopeLock guard(_csairspaces);
-    _detail_queue.push_back(pAsp);
+    if (pAsp) {
+        _detail_queue.push_back(pAsp);
+    }
 }
 
 
@@ -3569,7 +3479,7 @@ void CAirspaceManager::ProcessAirspaceDetailQueue() {
             dlgAirspaceDetails();
         }
     }
-    _detail_current = nullptr;
+    _detail_current.reset();
 }
 
 void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
