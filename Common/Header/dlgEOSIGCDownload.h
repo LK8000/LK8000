@@ -11,7 +11,7 @@
 
 
 #define PRPGRESS_DLG 1
-  ListElement* dlgEOSIGCSelectListShowModal(  void) ;
+  void dlgEOSIGCSelectListShowModal() ;
   void AddEOSElement(TCHAR Line1[], TCHAR Line2[] , uint32_t size);
   void EOSListFilled(BOOL filled) ;
 

@@ -3,6 +3,8 @@
 
 #include "options.h"
 #include "Enums.h"
+#include <variant>
+
 class CAirspace;
 
 MsgReturn_t MessageBoxX(LPCTSTR lpText, LPCTSTR lpCaption, MsgType_t uType, bool wfullscreen=false);
@@ -15,38 +17,10 @@ void StopHourglassCursor();
 
 #define GC_SUB_STRING_THRESHOLD 1
 
-#define IM_AIRSPACE   1
-#define IM_WAYPOINT   2
-#define IM_FLARM      3
-#define IM_THERMAL_PT 4
-#define IM_TOPO_PT    5
-#define IM_TASK_PT    6
-#define IM_AIRFIELD   7
-#define IM_OUTLAND    8
-#define IM_OWN_POS    9
-#define IM_ORACLE     10
-#define IM_TEAM       11
-#define IM_WEATHERST  12
-
-
-typedef	struct{
-  char type;
-  void* ptr;
-
-  int iIdx;
-  double Dist;
-  char Subtype;
-
-} ListElement;
-
-
 int dlgSelectWaypoint(int type=-1, int FilterNear=0);
 void dlgSelectAirspace();
 
 int dlgAirspaceColoursShowModal();
-ListElement* dlgMultiSelectListShowModal(void);
-void dlgAddMultiSelectListItem(long* pNew ,int Idx, char type, double Distance);
-int dlgGetNoElements(void);
 #ifdef HAVE_HATCHED_BRUSH
 int dlgAirspacePatternsShowModal();
 #endif

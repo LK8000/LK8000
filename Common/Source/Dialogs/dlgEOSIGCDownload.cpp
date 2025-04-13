@@ -378,12 +378,9 @@ public:
 };
 
 
-ListElement *dlgEOSIGCSelectListShowModal(void) {
+void dlgEOSIGCSelectListShowModal() {
 
   EOSResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
-
-  ListElement *pIGCResult = NULL;
-
 
   WndForm* wf = dlgLoadFromXML(IGCCallBackTable,
                       ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
@@ -425,7 +422,6 @@ ListElement *dlgEOSIGCSelectListShowModal(void) {
     delete wf;
     wf = NULL;
   }
-  return pIGCResult;
 }
 
 

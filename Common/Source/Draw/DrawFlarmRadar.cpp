@@ -23,6 +23,7 @@
 #include "InputEvents.h"
 #include "ScreenGeometry.h"
 #include "Asset.hpp"
+#include "Dialogs/dlgMultiSelectList.h"
 
 extern POINT startScreen;
 
@@ -616,10 +617,9 @@ switch(LKevent)
 		  {
 		    for (int j = 0; j < FLARM_MAX_TRAFFIC; j++ ) {
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
-			  if(LKTraffic[aiSortArray[i]].RadioId == LKTraffic[j].RadioId)
-			  {
+			  if(LKTraffic[aiSortArray[i]].RadioId == LKTraffic[j].RadioId) {
 #ifdef FLARM_MS
-			    dlgAddMultiSelectListItem( (long*) &LKTraffic[j], j, IM_FLARM, LKTraffic[j].Distance);
+			    DlgMultiSelect::AddItem(im_flarm{i}, LKTraffic[j].Distance);
 #else
 			    InputEvents::processPopupDetails(InputEvents::PopupTraffic, j); // With no Multiselect
 #endif

@@ -13,6 +13,8 @@
 #include "Dialogs.h"
 #include "LKObjects.h"
 #include "InputEvents.h"
+#include "Dialogs/dlgMultiSelectList.h"
+
 
 #define THICK_LINE 3 // NOTICE v6.1: we should not use absolute values..TODO
 
@@ -116,7 +118,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
                 for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
                     if (Sideview_pHandeled[k].psAS != NULL) {
                         if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
-                            dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
+                            DlgMultiSelect::AddItem(im_airspace{Sideview_pHandeled[k].psAS}, 0);
                             bShow = true;
                         }
                     }

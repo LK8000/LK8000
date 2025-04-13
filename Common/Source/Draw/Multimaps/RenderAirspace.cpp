@@ -21,6 +21,7 @@
 #include "utils/2dpclip.h"
 #include "NavFunctions.h"
 #include "Asset.hpp"
+#include "Dialogs/dlgMultiSelectList.h"
 
 extern int Sideview_iNoHandeldSpaces;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
@@ -198,7 +199,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
                     if (Sideview_pHandeled[k].psAS != NULL) {
                         if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
-                            dlgAddMultiSelectListItem((long*) Sideview_pHandeled[k].psAS, 0, IM_AIRSPACE, 0);
+                            DlgMultiSelect::AddItem(im_airspace{Sideview_pHandeled[k].psAS}, 0);
                             bShow = true;
                         }
                     }

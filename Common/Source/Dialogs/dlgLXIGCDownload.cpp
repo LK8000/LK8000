@@ -335,12 +335,9 @@ public:
 };
 
 
-ListElement *dlgLX_IGCSelectListShowModal(void) {
+void dlgLX_IGCSelectListShowModal() {
 
   LXResourceLock ResourceGuard;  //simply need to exist for recource Lock/Unlock
-
-  ListElement *pIGCResult = NULL;
-
 
   WndForm* wf = dlgLoadFromXML(IGCCallBackTable,
                       ScreenLandscape ? IDR_XML_MULTISELECTLIST_L : IDR_XML_MULTISELECTLIST_P);
@@ -381,6 +378,5 @@ ListElement *dlgLX_IGCSelectListShowModal(void) {
     delete wf;
     wf = NULL;
   }
-  return pIGCResult;
 }
 

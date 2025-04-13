@@ -40,7 +40,7 @@
 #include <type_traits>
 #include "Waypoints/SetHome.h"
 #include "LocalPath.h"
-#include <variant>
+#include "Dialogs/dlgMultiSelectList.h"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
@@ -3378,7 +3378,7 @@ void InputEvents::eventModeType(const TCHAR *misc) {
 }
 
 void InputEvents::eventShowMultiselect(const TCHAR*) {
-    dlgMultiSelectListShowModal();
+  DlgMultiSelect::ShowModal();
 }
 
 namespace {

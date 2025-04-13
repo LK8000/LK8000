@@ -9,10 +9,8 @@
 #ifndef _DLGFLXIGCDOWNLOAD_H_
 #define _DLGFLXIGCDOWNLOAD_H_
 
-  ListElement* dlgLX_IGCSelectListShowModal(  void) ;
+  void dlgLX_IGCSelectListShowModal();
   void AddElement(const TCHAR* Line1, const TCHAR* Line2);
-
-
 
   enum error_states
   {

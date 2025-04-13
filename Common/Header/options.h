@@ -115,12 +115,6 @@
 
 #define UTF8PICTORIALS  false
 
-#define OWN_POS_MS
-#define ORACLE_MS
-#define TEAM_CODE_MS
-#define FLARM_MS
-#define WEATHERST_MS
-
 // ----------------------------------------------------------------------------------------
 //
 // OPTIONALs not in use within official LK versions, but still available for custom version
@@ -141,13 +135,13 @@
  */
 //
 // Team, Own and Oracle are introducing buttons for actions inside dialog.
-// They must be first enabled with BUTTONS_MS
 // WARNING THESE FUNCTIONS ARE NOT CHECKED FOR THREAD SAFETY AND CAN LEAD TO CRASHES
 //
-//  #define BUTTONS_MS		// this is REQUIRED to enable one of the following:
-//  #define TEAM_CODE_MS		// button to trigger team code
-//  #define OWN_POS_MS		// button to trigger basic settings
-//  #define ORACLE_MS		// button to trigger oracle
+#define TEAM_CODE_MS	// button to trigger team code
+#define OWN_POS_MS		// button to trigger basic settings
+#define ORACLE_MS		// button to trigger oracle
+#define FLARM_MS
+#define WEATHERST_MS
 
 // Modify best cruise track calculation to assume goal arrival
 // altitude of safety altitude (not current flight altitude).

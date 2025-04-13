@@ -10,6 +10,7 @@
 #include "Waypointparser.h"
 #include "InputEvents.h"
 #include "Dialogs.h"
+#include "Dialogs/dlgMultiSelectList.h"
 #include "Sound/Sound.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
@@ -18,7 +19,6 @@
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
 
     double Dist;
-    unsigned int i;
     const double range = zoom.RealScale()*500;
     double dyn_range = std::max(5000.0, range*1.0);
 
@@ -27,59 +27,51 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat) {
 
 start_search:
 
+  LockFlightData();
+  DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude, &Dist, NULL);
+  UnlockFlightData();
 
-    LockFlightData();
-    DistanceBearing(lat,lon, GPS_INFO.Latitude,GPS_INFO.Longitude, &Dist, NULL);
-    UnlockFlightData();
-
-    if(Dist < dyn_range) {
+  if (Dist < dyn_range) {
 #ifdef OWN_POS_MS
-	dlgAddMultiSelectListItem(NULL,0, IM_OWN_POS, Dist);
+    DlgMultiSelect::AddItem(im_own_pos(), Dist);
 #endif
 #ifdef ORACLE_MS
     LockFlightData();
-    int nearest_waypoint = FindNearestWayPoint(GPS_INFO.Longitude,
-                                               GPS_INFO.Latitude,
-                                               100000.0); // big range limit
+    int nearest_waypoint = FindNearestWayPoint(GPS_INFO.Longitude, GPS_INFO.Latitude,
+                                               100000.0);  // big range limit
     UnlockFlightData();
-	dlgAddMultiSelectListItem(NULL,nearest_waypoint, IM_ORACLE, Dist);
+    DlgMultiSelect::AddItem(im_oracle{nearest_waypoint}, Dist);
 #endif
 #ifdef TEAM_CODE_MS
-	if(ValidWayPoint(TeamCodeRefWaypoint)) 
-	dlgAddMultiSelectListItem(NULL,0, IM_TEAM, Dist);
+    if (ValidWayPoint(TeamCodeRefWaypoint))
+    DlgMultiSelect::AddItem(im_team(), Dist);
 #endif
+  }
+
+  for (size_t i = NUMRESWP; i < WayPointList.size(); ++i) {  // Consider only valid markers
+    if ((WayPointCalc[i].WpType == WPT_AIRPORT) || (WayPointCalc[i].WpType == WPT_OUTLANDING)) {
+      DistanceBearing(lat, lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
+      if (Dist < dyn_range) {
+        DlgMultiSelect::AddItem(im_waypoint{i}, Dist);
+      }
     }
-
-
-
-    for(size_t i=NUMRESWP;i<WayPointList.size();++i) {    // Consider only valid markers
-        if ((WayPointCalc[i].WpType==WPT_AIRPORT)|| (WayPointCalc[i].WpType==WPT_OUTLANDING)) {
-            DistanceBearing(lat,lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
-            if(Dist < dyn_range) {
-	        dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
-            }
-        }
-    }
+  }
 
 #ifdef FLARM_MS
-//    if((MapWindow::mode.Is(MapWindow::Mode::MODE_PAN) || MapWindow::mode.Is(MapWindow::Mode::MODE_TARGET_PAN)))
-    {
-        LastDoTraffic=0;
-        DoTraffic(&DrawInfo,&DerivedDrawInfo);
-        for (unsigned i=0; i<FLARM_MAX_TRAFFIC; ++i) {
-	    if (LKTraffic[i].Status != LKT_EMPTY) {
-	        LockFlightData();
-                DistanceBearing(lat,lon, LKTraffic[i].Latitude, LKTraffic[i].Longitude, &Dist, NULL);
-                UnlockFlightData();
-                StartupStore(_T("%s Dist=%6.0f\n"), LKTraffic[i].Name   ,Dist);
-                if(Dist < dyn_range/* 5*range*/) {
-                    StartupStore(_T("Inside=%6.0f\n"),dyn_range);
-	            dlgAddMultiSelectListItem((long*)&LKTraffic[i],i, IM_FLARM, Dist);
-                }
-
-            }
-        }
+  LastDoTraffic = 0;
+  DoTraffic(&DrawInfo, &DerivedDrawInfo);
+  for (int i = 0; i < FLARM_MAX_TRAFFIC; ++i) {
+    if (LKTraffic[i].Status != LKT_EMPTY) {
+      LockFlightData();
+      DistanceBearing(lat, lon, LKTraffic[i].Latitude, LKTraffic[i].Longitude, &Dist, NULL);
+      UnlockFlightData();
+      StartupStore(_T("%s Dist=%6.0f\n"), LKTraffic[i].Name, Dist);
+      if (Dist < dyn_range /* 5*range*/) {
+        StartupStore(_T("Inside=%6.0f\n"), dyn_range);
+        DlgMultiSelect::AddItem(im_flarm{i}, Dist);
+      }
     }
+  }
 #endif
 
 #ifdef WEATHERST_MS
@@ -89,8 +81,8 @@ start_search:
       DistanceBearing(lat,lon, GPS_INFO.FANET_Weather[i].Latitude, GPS_INFO.FANET_Weather[i].Longitude, &Dist, NULL);
       //StartupStore(_T("%s Dist=%6.0f\n"), GPS_INFO.FANET_Weather[i].Name   ,Dist);
       if(Dist < dyn_range/* 5*range*/) {
-        StartupStore(_T("Inside=%6.0f\n"),dyn_range);  
-        dlgAddMultiSelectListItem((long*)&GPS_INFO.FANET_Weather[i],i, IM_WEATHERST, Dist);    
+        StartupStore(_T("Inside=%6.0f\n"),dyn_range);
+        DlgMultiSelect::AddItem(im_weatherst{i}, Dist);
       }
     }
   }  
@@ -98,31 +90,28 @@ start_search:
 #endif
 
     int  HorDist=0, Bearing=0, VertDist=0;
-    CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, (int)(dyn_range/2));
+    CAirspaceList reslist = CAirspaceManager::Instance().GetNearAirspacesAtPoint(lon, lat, dyn_range / 2);
 
-    for (CAirspaceList::const_iterator it = reslist.begin(); it != reslist.end(); ++it) {
-        LKASSERT((*it));
-        (*it)->CalculateDistance(&HorDist, &Bearing, &VertDist,lon, lat);
-        dlgAddMultiSelectListItem((long*) (*it),0, IM_AIRSPACE, HorDist);
+    for (auto& pAsp : reslist) {
+      pAsp->CalculateDistance(&HorDist, &Bearing, &VertDist,lon, lat);
+      DlgMultiSelect::AddItem(im_airspace{pAsp}, HorDist);
     }
 
-
-    for(i=1;i<WayPointList.size();i++) {    // Consider only valid markers
-        if ((WayPointCalc[i].WpType != WPT_AIRPORT)|| (WayPointCalc[i].WpType != WPT_OUTLANDING)) {
-            DistanceBearing(lat,lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
-            if(Dist < (dyn_range)) {
-	        dlgAddMultiSelectListItem(NULL,i, IM_WAYPOINT, Dist);
-            }
+    for (size_t i = 1; i < WayPointList.size(); i++) {  // Consider only valid markers
+      if ((WayPointCalc[i].WpType != WPT_AIRPORT) || (WayPointCalc[i].WpType != WPT_OUTLANDING)) {
+        DistanceBearing(lat, lon, WayPointList[i].Latitude, WayPointList[i].Longitude, &Dist, NULL);
+        if (Dist < (dyn_range)) {
+          DlgMultiSelect::AddItem(im_waypoint{i}, Dist);
         }
+      }
     }
-
 
     // TASK MULTISELECT
     double Bear=0;
     bool Angleinside = false;
 
     LockTaskData();
-    for(i=0; ValidTaskPoint(i); i++) {
+    for(int i=0; ValidTaskPoint(i); i++) {
         LKASSERT(Task[i].Index <=(int)WayPointList.size());
         DistanceBearing(lat,lon,
             WayPointList[Task[i].Index].Latitude,
@@ -136,12 +125,12 @@ start_search:
         }
 
         if ((Dist < param.radius) && Angleinside) {
-          dlgAddMultiSelectListItem(NULL, i, IM_TASK_PT, Dist);
+          DlgMultiSelect::AddItem(im_task_pt{i}, Dist);
         }
     }
     UnlockTaskData();
 
-    if(dlgGetNoElements() ==0) {
+    if(DlgMultiSelect::GetItemCount() ==0) {
         if(dyn_range < 120000) {
             dyn_range *=2;
             goto start_search;
@@ -150,7 +139,7 @@ start_search:
         }
     } else {
         LKSound(TEXT("LK_TOCK.WAV"));
-        dlgMultiSelectListShowModal();
+        DlgMultiSelect::ShowModal();
         return true;
     }
 

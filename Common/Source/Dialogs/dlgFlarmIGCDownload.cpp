@@ -113,7 +113,6 @@ typedef struct {
 
 std::vector<ListElementType> IGCFileList;
 
-ListElement *pIGCResult = NULL;
 TCHAR szStatusText[STATUS_TXT_LEN];
 
 bool bShowMsg = false;
@@ -624,7 +623,7 @@ public:
   }
 };
 
-ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
+void dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
 
   FlarmResourceLock ResourceGuard; // simply need to exist for recource Lock/Unlock
   StartupStore(TEXT(".... StartIGCReadThread%s"), NEWLINE);
@@ -678,7 +677,6 @@ ListElement *dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
   LeaveBinMode(d);  //  Flarm exit BIN mode
 
   FlarmReadIGC.state(IDLE_STATE);
-  return pIGCResult;
 }
 
 void EnterBinMode(DeviceDescriptor_t* d)

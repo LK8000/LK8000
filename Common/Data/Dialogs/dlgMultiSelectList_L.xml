@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmMultiSelectList" Type="Dialog" X="0" Y="0"   Width="320" Height="240" Caption="_@M595_" Font="2"  >
-	<WndButton Name="cmdUp"    Caption="_@M2100_"  X="2" Y="2"   Width="98"  Height="50" Font="2" OnClickNotify="OnUpClicked"/>      	
-    <WndButton Name="cmdClose" Caption="_@M186_"   X="2" Y="190" Width="98"  Height="30" Font="2" OnClickNotify="OnCloseClicked"/>
-	<WndButton Name="cmdEnter" Caption="_@M1654_"  X="2" Y="70"  Width="98"  Height="50" Font="2" OnClickNotify="OnEnterClicked"/> 
-	<WndButton Name="cmdDown"  Caption="_@M2102_"  X="2" Y="140" Width="98"  Height="50" Font="2" OnClickNotify="OnDownClicked"/>  
-    
+  <WndForm Name="frmMultiSelectList" Type="Dialog" X="0" Y="0"   Width="320" Height="240" Caption="_@M595_" Font="2">
+    <WndButton Name="cmdClose" Caption="_@M186_"   X="2" Y="190" Width="98"  Height="30" Font="2" OnClickNotify="OnCloseClicked" />
+    <WndButton Name="cmdUp"    Caption="_@M2100_"  X="2" Y="2"   Width="98"  Height="50" Font="2" OnClickNotify="OnUpClicked" />
+    <WndButton Name="cmdEnter" Caption="_@M1654_"  X="2" Y="70"  Width="98"  Height="50" Font="2" OnClickNotify="OnEnterClicked" />
+    <WndButton Name="cmdDown"  Caption="_@M2102_"  X="2" Y="140" Width="98"  Height="50" Font="2" OnClickNotify="OnDownClicked" />
     <WndListFrame Name="frmMultiSelectListList" X="102" Y="2" Width="-2" Height="-2" Font="2" OnListInfo="OnMultiSelectListListInfo">
-      <WndOwnerDrawFrame Name="frmMultiSelectListListEntry" X="2" Y="2" Width="-2" Height="36" Font="2"  OnPaint="OnMultiSelectListPaintListItem"/>
+      <WndOwnerDrawFrame Name="frmMultiSelectListListEntry" X="2" Y="2" Width="-2" Height="36" Font="2"  OnPaint="OnMultiSelectListPaintListItem" />
     </WndListFrame>
   </WndForm>
 </PMML>
