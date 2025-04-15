@@ -41,7 +41,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
        ***********************************************************************/
 
       for (CAirspaceList::const_iterator it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if(!(((*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))) 
+        if(!(((*it)->Top().Base == abMSL) && ((*it)->Top().Altitude <= 0))) 
         {  // don't draw on map if upper limit is on sea level or below
           if ((*it)->DrawStyle() ) {
             if ( asp_selected_flash && (*it)->Selected() ) {

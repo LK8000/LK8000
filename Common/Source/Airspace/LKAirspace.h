@@ -139,8 +139,8 @@ class CAirspaceBase {
   const TCHAR* Name() const { return _name; }
   const TCHAR* Comment() const { return _shared_comment.get(); }
 
-  const AIRSPACE_ALT* Top() const { return &_top; }
-  const AIRSPACE_ALT* Base() const { return &_base; }
+  const AIRSPACE_ALT& Top() const { return _top; }
+  const AIRSPACE_ALT& Base() const { return _base; }
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
@@ -467,8 +467,8 @@ public:
   static bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top);
   static const TCHAR* GetAirspaceTypeText(int type);
   static const TCHAR* GetAirspaceTypeShortText(int type);
-  static void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt);
-  static void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt);
+  static void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt);
+  static void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt);
 
 
   // Upper level interfaces

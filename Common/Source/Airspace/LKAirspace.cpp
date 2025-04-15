@@ -2485,7 +2485,7 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
         LKASSERT((*it)->Type() < AIRSPACECLASSCOUNT);
         LKASSERT((*it)->Type() >= 0);
 
-        if ((CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top()) == TRUE)&& (iNoFoundAS < iMaxNoAs - 1) &&
+        if ((CheckAirspaceAltitude((*it)->Base(), (*it)->Top()) == TRUE)&& (iNoFoundAS < iMaxNoAs - 1) &&
                 ((MapWindow::iAirspaceMode[(*it)->Type()] % 2) > 0)) {
             for (i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
                 if ((*it)->IsHorizontalInside(lons[i], lats[i])) {
@@ -2514,15 +2514,15 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
                         /**********************************************************************
                          * allow rectangular shape if no AGL reference
                          **********************************************************************/
-                        if (((*it)->Top()->Base == abAGL) || (((*it)->Base()->Base == abAGL)))
+                        if (((*it)->Top().Base == abAGL) || (((*it)->Base().Base == abAGL)))
                             airspacetype[iSelAS].bRectAllowed = false;
                         /**********************************************************************
                          * init with minium rectangle right side may be extended
                          **********************************************************************/
                         airspacetype[iSelAS].rc.left = i;
                         airspacetype[iSelAS].rc.right = i + 1;
-                        airspacetype[iSelAS].rc.bottom = (unsigned int) (*it)->Base()->Altitude;
-                        airspacetype[iSelAS].rc.top = (unsigned int) (*it)->Top()->Altitude;
+                        airspacetype[iSelAS].rc.bottom = (unsigned int) (*it)->Base().Altitude;
+                        airspacetype[iSelAS].rc.top = (unsigned int) (*it)->Top().Altitude;
                         airspacetype[iSelAS].iNoPolyPts = 0;
 
                     }
@@ -2533,10 +2533,10 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
 
                     if ((airspacetype[iSelAS].psAS) && (!airspacetype[iSelAS].bRectAllowed)) {
 
-                        if (airspacetype[iSelAS].psAS->Base()->Base == abAGL)
-                            iHeight = (unsigned int) (airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[i]);
+                        if (airspacetype[iSelAS].psAS->Base().Base == abAGL)
+                            iHeight = (unsigned int) (airspacetype[iSelAS].psAS->Base().AGL + terrain_heights[i]);
                         else
-                            iHeight = (unsigned int) airspacetype[iSelAS].psAS->Base()->Altitude;
+                            iHeight = (unsigned int) airspacetype[iSelAS].psAS->Base().Altitude;
                         LKASSERT((airspacetype[iSelAS].iNoPolyPts) < GC_MAX_POLYGON_PTS);
                         airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){(LONG) i, (LONG) iHeight};
 
@@ -2571,10 +2571,10 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
                                 LKASSERT(iCnt < GC_MAX_POLYGON_PTS);
 
                                 airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN - iPt - 1];
-                                if (airspacetype[iSelAS].psAS->Top()->Base == abAGL)
-                                    airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) (airspacetype[iSelAS].psAS->Top()->AGL + terrain_heights[airspacetype[iSelAS].apPolygon[iCnt].x]);
+                                if (airspacetype[iSelAS].psAS->Top().Base == abAGL)
+                                    airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) (airspacetype[iSelAS].psAS->Top().AGL + terrain_heights[airspacetype[iSelAS].apPolygon[iCnt].x]);
                                 else
-                                    airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) airspacetype[iSelAS].psAS->Top()->Altitude;
+                                    airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) airspacetype[iSelAS].psAS->Top().Altitude;
                                 LKASSERT(iCnt >= iPt);
 
                                 LKASSERT(iPt >= 0);
@@ -2648,22 +2648,22 @@ CAirspacePtr CAirspaceManager::FindNearestAirspace(const double &longitude, cons
                 double topalt;
                 bool base_is_sfc = false;
 
-                if (pAsp->Base()->Base != abAGL) {
-                    basealt = pAsp->Base()->Altitude;
+                if (pAsp->Base().Base != abAGL) {
+                    basealt = pAsp->Base().Altitude;
                 } else {
-                    basealt = pAsp->Base()->AGL + calc_terrainalt;
-                    if (pAsp->Base()->AGL <= 0) {
+                    basealt = pAsp->Base().AGL + calc_terrainalt;
+                    if (pAsp->Base().AGL <= 0) {
                         base_is_sfc = true;
                     }
                 }
-                if (pAsp->Top()->Base != abAGL) {
-                    topalt = pAsp->Top()->Altitude;
+                if (pAsp->Top().Base != abAGL) {
+                    topalt = pAsp->Top().Altitude;
                 } else {
-                    topalt = pAsp->Top()->AGL + calc_terrainalt;
+                    topalt = pAsp->Top().AGL + calc_terrainalt;
                 }
                 altok = ((*height > basealt) || base_is_sfc) && (*height < topalt);
             } else {
-                altok = CheckAirspaceAltitude(*(pAsp->Base()), *(pAsp->Top()));
+                altok = CheckAirspaceAltitude((pAsp->Base()), (pAsp->Top()));
             }
             if (altok) {
                 double bearing = 0;
@@ -2689,10 +2689,8 @@ CAirspacePtr CAirspaceManager::FindNearestAirspace(const double &longitude, cons
 struct airspace_sorter {
   bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) {
     assert(a);
-    assert(a->Top());
     assert(b);
-    assert(b->Top());
-    return (a->Top()->Altitude < b->Top()->Altitude);
+    return (a->Top().Altitude < b->Top().Altitude);
   }
 };
 
@@ -2907,7 +2905,7 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
     CAirspaceList res;
     ScopeLock guard(_csairspaces);
     for (const auto& pAsp : _airspaces) {
-        if (pAsp->DrawStyle() || ((pAsp->Top()->Base == abMSL) && (pAsp->Top()->Altitude <= 0))) {
+        if (pAsp->DrawStyle() || ((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) {
             int HorDist, Bearing, VertDist;
             pAsp->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
             if (HorDist < searchrange) {
@@ -3171,23 +3169,18 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
     }
 }
 
-void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
+void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt) {
 #define	BUF_LEN 128
     TCHAR sUnitBuffer[24];
     TCHAR sAltUnitBuffer[24];
     TCHAR intbuf[BUF_LEN];
     BUGSTOP_LKASSERT(buffer!=NULL);
-    BUGSTOP_LKASSERT(alt!=NULL);
     if (buffer==NULL) return;
-    if (alt==NULL) {
-        lk::strcpy(buffer,_T(""), bufferlen);
-        return;
-    }
 
-    Units::FormatAltitude(alt->Altitude, sUnitBuffer, std::size(sUnitBuffer));
-    Units::FormatAlternateAltitude(alt->Altitude, sAltUnitBuffer, std::size(sAltUnitBuffer));
+    Units::FormatAltitude(alt.Altitude, sUnitBuffer, std::size(sUnitBuffer));
+    Units::FormatAlternateAltitude(alt.Altitude, sAltUnitBuffer, std::size(sAltUnitBuffer));
 
-    switch (alt->Base) {
+    switch (alt.Base) {
         case abUndef:
             if (Units::GetAltitudeUnit() == unMeter) {
                 lk::snprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
@@ -3203,11 +3196,11 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             }
             break;
         case abAGL:
-            if (alt->AGL <= 0)
+            if (alt.AGL <= 0)
             	lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
             else {
-                Units::FormatAltitude(alt->AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
-                Units::FormatAlternateAltitude(alt->AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
+                Units::FormatAltitude(alt.AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
+                Units::FormatAlternateAltitude(alt.AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
                 if (Units::GetAltitudeUnit() == unMeter) {
                     lk::snprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
                 } else {
@@ -3217,39 +3210,39 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             break;
         case abFL:
             if (Units::GetAltitudeUnit() == unMeter) {
-                lk::snprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, Units::To(unMeter, alt->Altitude), Units::To(unFeet, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt.FL, Units::To(unMeter, alt.Altitude), Units::To(unFeet, alt.Altitude));
             } else {
-                lk::snprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, Units::To(unFeet, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("FL%.0f %.0fft"), alt.FL, Units::To(unFeet, alt.Altitude));
             }
             break;
     }
     lk::strcpy(buffer, intbuf, bufferlen);
 }
 
-void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) {
+void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt) {
     TCHAR sUnitBuffer[24];
     TCHAR intbuf[128];
 
-    Units::FormatAltitude(alt->Altitude, sUnitBuffer, std::size(sUnitBuffer));
+    Units::FormatAltitude(alt.Altitude, sUnitBuffer, std::size(sUnitBuffer));
 
-    switch (alt->Base) {
+    switch (alt.Base) {
         case abUndef:
         case abMSL:
             lk::strcpy(intbuf, sUnitBuffer);
             break;
         case abAGL:
-            if (alt->AGL <= 0) {
+            if (alt.AGL <= 0) {
                 lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
             } else {
-                Units::FormatAltitude(alt->AGL, sUnitBuffer, std::size(sUnitBuffer));
+                Units::FormatAltitude(alt.AGL, sUnitBuffer, std::size(sUnitBuffer));
                 lk::snprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
             }
             break;
         case abFL:
             if (Units::GetAltitudeUnit() == unMeter) {
-                lk::snprintf(intbuf, TEXT("%.0fm"), Units::To(unMeter, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("%.0fm"), Units::To(unMeter, alt.Altitude));
             } else {
-                lk::snprintf(intbuf, TEXT("%.0fft"), Units::To(unFeet, alt->Altitude));
+                lk::snprintf(intbuf, TEXT("%.0fft"), Units::To(unFeet, alt.Altitude));
             }
             break;
     }

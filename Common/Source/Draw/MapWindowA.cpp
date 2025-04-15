@@ -214,7 +214,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
     for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
 
         if (((*it)->DrawStyle() == adsHidden) ||
-          ((  (*it)->Top()->Base == abMSL) && ((*it)->Top()->Altitude <= 0))){
+          ((  (*it)->Top().Base == abMSL) && ((*it)->Top().Altitude <= 0))){
           continue;  // don't draw on map if hidden or upper limit is on sea level or below
         }
 
