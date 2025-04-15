@@ -41,8 +41,6 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
 {
-  CAirspaceList::const_iterator it;
-  CAirspaceList::const_reverse_iterator itr;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
   bool found = false;
@@ -63,7 +61,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
        // The idea behind this, is lower top level airspaces are smaller. (statistically)
        // They have to be draw later, because inside border area have to be in correct color,
        // not the color of the bigger airspace above this small one.
-      for (itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
+      for (auto itr = airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
           if ((*itr)->DrawStyle() == adsFilled) {
             airspace_type = (*itr)->Type();
             if (!found) {
@@ -79,7 +77,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
         }
       }//for
     } else {
-      for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+      for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
           if ((*it)->DrawStyle() == adsFilled) {
             airspace_type = (*it)->Type();
             if (!found) {
@@ -112,7 +110,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc)
 
     if (1) {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+      for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
           airspace_type = (*it)->Type();
           if (!found) {

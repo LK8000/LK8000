@@ -40,17 +40,17 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc)
        * now draw airspaces on top (normal order) with thin pen
        ***********************************************************************/
 
-      for (CAirspaceList::const_iterator it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if(!(((*it)->Top().Base == abMSL) && ((*it)->Top().Altitude <= 0))) 
+      for (const auto& pAsp : airspaces_to_draw) {
+        if(!((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) 
         {  // don't draw on map if upper limit is on sea level or below
-          if ((*it)->DrawStyle() ) {
-            if ( asp_selected_flash && (*it)->Selected() ) {
+          if (pAsp->DrawStyle() ) {
+            if ( asp_selected_flash && pAsp->Selected() ) {
               Surface.SelectObject(LK_BLACK_PEN);
             } else {
-              Surface.SelectObject(hAirspacePens[(*it)->Type()]);
+              Surface.SelectObject(hAirspacePens[pAsp->Type()]);
             }
-            if((*it)->DrawStyle() != adsDisabled)
-              (*it)->Draw(Surface, false);
+            if(pAsp->DrawStyle() != adsDisabled)
+              pAsp->Draw(Surface, false);
           }
         }
       }//for

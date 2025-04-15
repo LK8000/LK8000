@@ -15,7 +15,6 @@
 void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT& Orig_Aircraft)
 {
   static short int label_sequencing_divider = 0;
-  CAirspaceList::const_iterator it;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
   
   if (label_sequencing_divider) --label_sequencing_divider;
@@ -23,13 +22,13 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
   // Draw warning position and label on top of all airspaces
   if (1) {
   ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-  for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if ((*it)->WarningLevel() > awNone) {
+  for (const auto& pAsp : airspaces_to_draw) {
+        if (pAsp->WarningLevel() > awNone) {
           double lon;
           double lat;
           int vdist;
           AirspaceWarningDrawStyle_t vlabeldrawstyle, hlabeldrawstyle;
-          bool distances_ready = (*it)->GetWarningPoint(lon, lat, hlabeldrawstyle, vdist, vlabeldrawstyle);
+          bool distances_ready = pAsp->GetWarningPoint(lon, lat, hlabeldrawstyle, vdist, vlabeldrawstyle);
           TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
           TextInBoxMode_t TextDisplayMode = {};
           bool hlabel_draws = false;
@@ -42,7 +41,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
               hAirspaceWarning.Draw(Surface, sc.x - NIBLSCALE(5), sc.y - NIBLSCALE(5), IBLSCALE(10), IBLSCALE(10));              
               
               Units::FormatAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
-              lk::strcpy(hbuf, (*it)->Name());
+              lk::strcpy(hbuf, pAsp->Name());
               _tcscat(hbuf, TEXT(" "));
               _tcscat(hbuf, vDistanceText);
               
@@ -77,7 +76,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
           if (distances_ready && vlabeldrawstyle > awsHidden) {
 
               Units::FormatAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
-              lk::strcpy(hbuf, (*it)->Name());
+              lk::strcpy(hbuf, pAsp->Name());
               _tcscat(hbuf, TEXT(" "));
               _tcscat(hbuf, vDistanceText);
               
@@ -107,7 +106,7 @@ void MapWindow::DrawAirspaceLabels(LKSurface& Surface, const RECT& rc, const Scr
 
               vlabel_draws = TextInBox(Surface, &rc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), &TextDisplayMode, true);
            }
-           if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(**it, hlabel_draws || vlabel_draws);
+           if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(*pAsp, hlabel_draws || vlabel_draws);
            
          }// if warnlevel>awnone
   }//for

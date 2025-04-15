@@ -840,8 +840,9 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
             _center.longitude,
             &distance, &bearing);
     distance -= _radius;
-    if (distance < 0) bearing += 180;
-    if (bearing > 360) bearing -= 360;
+    if (distance < 0) {
+        bearing = AngleLimit360(bearing + 180);
+    }
     return distance;
 }
 
@@ -2011,9 +2012,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
  //   DoStatusMessage(msgbuf);
     StartupStore(TEXT(". %s"),msgbuf);
     OutsideAirspaceCnt += skiped_cnt;
-    // For debugging, dump all readed airspaces to runtime.log
-    //CAirspaceList::iterator it;
-    //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
     return true;
 }
 
@@ -2476,22 +2474,20 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
 
     int iNoFoundAS = 0; // number of found airspaces in scan line
     unsigned int iSelAS = 0; // current selected airspace for processing
-    unsigned int i; // loop variable
-    CAirspaceList::const_iterator it;
     ScopeLock guard(_csairspaces);
 
     airspacetype[0].psAS = NULL;
-    for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-        LKASSERT((*it)->Type() < AIRSPACECLASSCOUNT);
-        LKASSERT((*it)->Type() >= 0);
+    for (const auto& pAsp : _airspaces_near) {
+        LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
+        LKASSERT(pAsp->Type() >= 0);
 
-        if ((CheckAirspaceAltitude((*it)->Base(), (*it)->Top()) == TRUE)&& (iNoFoundAS < iMaxNoAs - 1) &&
-                ((MapWindow::iAirspaceMode[(*it)->Type()] % 2) > 0)) {
-            for (i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
-                if ((*it)->IsHorizontalInside(lons[i], lats[i])) {
+        if ((CheckAirspaceAltitude(pAsp->Base(), pAsp->Top()) == TRUE)&& (iNoFoundAS < iMaxNoAs - 1) &&
+                ((MapWindow::iAirspaceMode[pAsp->Type()] % 2) > 0)) {
+            for (unsigned i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
+                if (pAsp->IsHorizontalInside(lons[i], lats[i])) {
                     BOOL bPrevIn = false;
                     if (i > 0)
-                        if ((*it)->IsHorizontalInside(lons[i - 1], lats[i - 1]))
+                        if (pAsp->IsHorizontalInside(lons[i - 1], lats[i - 1]))
                             bPrevIn = true;
 
                     if (!bPrevIn)/* new AS section in this view*/ {
@@ -2503,26 +2499,26 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
                         if (iNoFoundAS < MAX_NO_SIDE_AS - 1) iNoFoundAS++;
                         airspacetype[iNoFoundAS].psAS = NULL; // increment and reset head
                         /*********************************************************************/
-                        airspacetype[iSelAS].psAS = *it;
-                        airspacetype[iSelAS].iType = (*it)->Type();
+                        airspacetype[iSelAS].psAS = pAsp;
+                        airspacetype[iSelAS].iType = pAsp->Type();
 
-                        LK_tcsncpy(airspacetype[iSelAS].szAS_Name, (*it)->Name(), NAME_SIZE - 1);
+                        LK_tcsncpy(airspacetype[iSelAS].szAS_Name, pAsp->Name(), NAME_SIZE - 1);
 
                         airspacetype[iSelAS].iIdx = iSelAS;
                         airspacetype[iSelAS].bRectAllowed = true;
-                        airspacetype[iSelAS].bEnabled = (*it)->Enabled();
+                        airspacetype[iSelAS].bEnabled = pAsp->Enabled();
                         /**********************************************************************
                          * allow rectangular shape if no AGL reference
                          **********************************************************************/
-                        if (((*it)->Top().Base == abAGL) || (((*it)->Base().Base == abAGL)))
+                        if ((pAsp->Top().Base == abAGL) || ((pAsp->Base().Base == abAGL)))
                             airspacetype[iSelAS].bRectAllowed = false;
                         /**********************************************************************
                          * init with minium rectangle right side may be extended
                          **********************************************************************/
                         airspacetype[iSelAS].rc.left = i;
                         airspacetype[iSelAS].rc.right = i + 1;
-                        airspacetype[iSelAS].rc.bottom = (unsigned int) (*it)->Base().Altitude;
-                        airspacetype[iSelAS].rc.top = (unsigned int) (*it)->Top().Altitude;
+                        airspacetype[iSelAS].rc.bottom = (unsigned int) pAsp->Base().Altitude;
+                        airspacetype[iSelAS].rc.top = (unsigned int) pAsp->Top().Altitude;
                         airspacetype[iSelAS].iNoPolyPts = 0;
 
                     }
@@ -2713,11 +2709,15 @@ bool CAirspaceManager::ValidAirspaces(void) const {
 
 bool CAirspaceManager::AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const {
     if (agl < 0) agl = 0; // Limit alt to surface
-    for (CAirspaceList::const_iterator it = _airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
-        if ((!(*it)->Flyzone()) && ((*it)->WarningAckLevel() == awNone)) continue;
+    for (const auto& pAsp : _airspaces_of_interest) {
+        if ((!pAsp->Flyzone()) && (pAsp->WarningAckLevel() == awNone)) {
+            continue;
+        }
         // Check for altitude
-        if ((*it)->IsAltitudeInside(alt, agl)) {
-            if ((*it)->IsHorizontalInside(longitude, latitude)) return true;
+        if (pAsp->IsAltitudeInside(alt, agl)) {
+            if (pAsp->IsHorizontalInside(longitude, latitude)) {
+                return true;
+            }
         }
     }
     return false;
@@ -2731,18 +2731,17 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     static double lon = 0;
     static double lat = 0;
 
-    ScopeLock guard(_csairspaces);
+    // We need a valid GPS fix in FLY mode
+    if (Basic->NAVWarning && !SIMMODE) {
+        return;
+    }
 
+    ScopeLock guard(_csairspaces);
     if (_airspaces.empty()) {
         return; // no airspaces no nothing to do
     }
 
     AutoDisable(*Basic);
-
-    CAirspaceList::iterator it;
-
-    // We need a valid GPS fix in FLY mode
-    if (Basic->NAVWarning && !SIMMODE) return;
 
     switch (step) {
         default:
@@ -2793,9 +2792,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
             // JMW detect airspace that wraps across 180
             if ((bounds.minx< -90) && (bounds.maxx > 90)) {
-                double tmp = bounds.minx;
-                bounds.minx = bounds.maxx;
-                bounds.maxx = tmp;
+                std::swap(bounds.minx, bounds.maxx);
             }
 
             // Step1 Init calculations
@@ -2803,25 +2800,25 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
             // Step2 select airspaces in range, and do warning calculations on it, add to interest list
             _airspaces_of_interest.clear();
-            for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
+            for (const auto& pAsp : _airspaces_near) {
                 // Check for warnings enabled for this class
-                if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) {
-                    (*it)->ResetWarnings();
+                if (MapWindow::iAirspaceMode[pAsp->Type()] < 2) {
+                    pAsp->ResetWarnings();
                     continue;
                 }
                 // Check if in interest area
-                if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
-                    (*it)->ResetWarnings();
+                if (!msRectOverlap(&bounds, &pAsp->Bounds())) {
+                    pAsp->ResetWarnings();
                     continue;
                 }
                 // Check if it enabled
-                if (!(*it)->Enabled()) {
-                    (*it)->ResetWarnings();
+                if (!pAsp->Enabled()) {
+                    pAsp->ResetWarnings();
                     continue;
                 }
 
-                (*it)->CalculateWarning(Basic, Calculated);
-                _airspaces_of_interest.push_back(*it);
+                pAsp->CalculateWarning(Basic, Calculated);
+                _airspaces_of_interest.push_back(pAsp);
             }
             ++step;
             break;
@@ -2829,15 +2826,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         case 1:
             // MULTICALC STEP 2
             // Step3 Run warning fsms, refine warnings in fly zones, collect user messages
-            bool there_is_msg;
-            for (it = _airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
-                there_is_msg = (*it)->FinishWarning();
-                if (there_is_msg && AIRSPACEWARNINGS) { // Pass warning messages only if warnings enabled
-                    AirspaceWarningMessage msg;
-                    msg.originator = *it;
-                    msg.event = (*it)->WarningEvent();
-                    msg.warnlevel = (*it)->WarningLevel();
-                    _user_warning_queue.push_back(msg);
+            if (AIRSPACEWARNINGS) { // Pass warning messages only if warnings enabled
+                for (const auto& pAsp : _airspaces_of_interest) {
+                    if (pAsp->FinishWarning()) {
+                        _user_warning_queue.push_back({ pAsp, pAsp->WarningEvent(), pAsp->WarningLevel() });
+                    }
                 }
             }
 
@@ -2971,8 +2964,10 @@ void CAirspaceManager::AirspaceWarningLabelPrinted(CAirspace &airspace, bool suc
 CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
     CAirspaceList res;
     ScopeLock guard(_csairspaces);
-    for (CAirspaceList::const_iterator it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-        if ((*it)->WarningLevel() > awNone || (*it)->WarningAckLevel() > awNone) res.push_back(*it);
+    for (const auto& pAsp : _airspaces_near) {
+        if (pAsp->WarningLevel() > awNone || pAsp->WarningAckLevel() > awNone) {
+            res.push_back(pAsp);
+        }
     }
     return res;
 }
@@ -3199,8 +3194,8 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
             if (alt.AGL <= 0)
             	lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
             else {
-                Units::FormatAltitude(alt.AGL, sUnitBuffer, sizeof (sUnitBuffer) / sizeof (sUnitBuffer[0]));
-                Units::FormatAlternateAltitude(alt.AGL, sAltUnitBuffer, sizeof (sAltUnitBuffer) / sizeof (sAltUnitBuffer[0]));
+                Units::FormatAltitude(alt.AGL, sUnitBuffer, std::size(sUnitBuffer));
+                Units::FormatAlternateAltitude(alt.AGL, sAltUnitBuffer, std::size(sAltUnitBuffer));
                 if (Units::GetAltitudeUnit() == unMeter) {
                     lk::snprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
                 } else {
