@@ -46,10 +46,10 @@ enum AirspaceAltBase_t {
 };
 
 struct AIRSPACE_ALT {
-  double Altitude;
-  double FL;
-  double AGL;
-  AirspaceAltBase_t Base;
+  double Altitude = 0.;
+  double FL = 0.;
+  double AGL = 0.;
+  AirspaceAltBase_t Base = abUndef;
 };
 
 #ifdef HAVE_GLES

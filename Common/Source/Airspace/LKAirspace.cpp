@@ -757,15 +757,15 @@ void CAirspaceBase::ResetWarnings() {
 
 // Initialize instance attributes
 void CAirspaceBase::Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
-    CopyTruncateString(_name, NAME_SIZE, name);
+    lk::strcpy(_name, name);
 
     // always allocate string to avoid unchecked nullptr exception
     _shared_comment = std::shared_ptr<TCHAR>(_tcsdup(comment?comment:_T("")), free);
 	
     _type = type;
-    memcpy(&_base, &base, sizeof (_base));
-    memcpy(&_top, &top, sizeof (_top));
     _flyzone = flyzone;
+    _base = base;
+    _top = top;
 }
 
 //
