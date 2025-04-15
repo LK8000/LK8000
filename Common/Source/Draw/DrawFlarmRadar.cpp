@@ -1477,12 +1477,13 @@ void DrawFlarmPictoTriangle(LKSurface& Surface, const RECT& rc, double Bearing) 
   int y = rc.top + cy / 2;
 
   double zoomfact = cy / NIBLSCALE<double>(18);
+  using T = decltype(POINT::x);
   POINT Triangle[] = {
-    {-4.0 * zoomfact, 5.0 * zoomfact}, 
-    {0.0 * zoomfact, -6.0 * zoomfact}, 
-    {4.0 * zoomfact, 5.0 * zoomfact}, 
-    {0.0 * zoomfact, 2.0 * zoomfact}, 
-    {-4.0 * zoomfact, 5.0 * zoomfact}
+    { static_cast<T>(-4.0 * zoomfact),  static_cast<T>(5.0 * zoomfact) },
+    { static_cast<T>(0.0 * zoomfact),  static_cast<T>(-6.0 * zoomfact) },
+    { static_cast<T>(4.0 * zoomfact),  static_cast<T>(5.0 * zoomfact) },
+    { static_cast<T>(0.0 * zoomfact),  static_cast<T>(2.0 * zoomfact) },
+    { static_cast<T>(-4.0 * zoomfact),  static_cast<T>(5.0 * zoomfact) }
   };
 
   threadsafePolygonRotateShift(Triangle, std::size(Triangle), x, y, Bearing);
