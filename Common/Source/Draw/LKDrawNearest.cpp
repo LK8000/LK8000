@@ -603,7 +603,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
     }
 
-    if (!pSortedNumber || !pSortedIndex) {
+    if (!pSortedNumber) {
         return;
     }
 
@@ -633,7 +633,9 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             LKevent = LKEVENT_NONE;
 
             i = SelectedRaw[curmapspace] + (curpage * numraws / lincr);
-            i = pSortedIndex?pSortedIndex[i]:i;
+            if(pSortedIndex) {
+                i = pSortedIndex[i];    
+            }
 
             if (MSMCOMMONS) {
                 if (!ValidWayPoint(i)) {
@@ -814,11 +816,13 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
         }
         size_t rli = curraw;
-        if (curraw < (*pSortedNumber)) {
-            rli = pSortedIndex[curraw];
-        }
-        else {
-            rli = ~0;
+        if (pSortedIndex) {
+            if (curraw < (*pSortedNumber)) {
+                rli = pSortedIndex[curraw];
+            }
+            else {
+                rli = ~0;
+            }
         }
 
         if (!ndr) {

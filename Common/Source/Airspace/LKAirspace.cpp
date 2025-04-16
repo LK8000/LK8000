@@ -2700,8 +2700,7 @@ void CAirspaceManager::SortAirspaces(void) {
 
 bool CAirspaceManager::ValidAirspaces(void) const {
     ScopeLock guard(_csairspaces);
-    bool res = _airspaces.size() > 0;
-    return res;
+    return !_airspaces.empty();
 }
 
 
@@ -2899,8 +2898,8 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
     ScopeLock guard(_csairspaces);
     for (const auto& pAsp : _airspaces) {
         if (pAsp->DrawStyle() || ((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) {
-            int HorDist, Bearing, VertDist;
-            pAsp->CalculateDistance(&HorDist, &Bearing, &VertDist, lon, lat);
+            int HorDist;
+            pAsp->CalculateDistance(&HorDist, nullptr, nullptr, lon, lat);
             if (HorDist < searchrange) {
                 res.push_back(pAsp);
             }
@@ -3575,3 +3574,23 @@ void CAirspace_Area::CalculatePictPosition(const RECT& rcDraw, double zoom, Rast
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
+
+LKAirspace_Nearest_Item& LKAirspace_Nearest_Item::operator=(const CAirspacePtr& pAsp) {
+    Pointer = pAsp;
+    if (pAsp) {
+        Valid = true;
+        Distance = std::max(pAsp->LastCalculatedHDistance(), 0);
+        Bearing = pAsp->LastCalculatedBearing();
+        Enabled = pAsp->Enabled();
+        Selected = pAsp->Selected();
+        Flyzone = pAsp->Flyzone();
+        WarningLevel = pAsp->WarningLevel();
+        WarningAckLevel = pAsp->WarningAckLevel();
+        // Copy name and type
+        lk::strcpy(Name, pAsp->Name());
+        lk::strcpy(Type, CAirspaceManager::GetAirspaceTypeShortText(pAsp->Type()));
+    } else {
+        Valid = false;
+    }
+    return *this; 
+}

@@ -522,7 +522,7 @@ public:
   //Nearest page 2.4
   void SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius);
   void CalculateDistancesForPage24();
-  CAirspaceList GetAirspacesForPage24() const { return _airspaces_page24; }
+  CAirspaceList& GetAirspacesForPage24() { return _airspaces_page24; }
 
   // Get nearest instance for sideview drawing & sonar system
   CAirspacePtr GetNearestAirspaceForSideview() { return _sideview_nearest.lock(); }
@@ -606,8 +606,13 @@ short ShowAirspaceWarningsToUser();
 
 //Data struct for nearest airspace pages
 struct LKAirspace_Nearest_Item {
-  bool Valid;                               // Struct item is valid
-  TCHAR Name[NAME_SIZE+1];                  // 1)  Name of airspace . We shall use only 15 to 25 characters max in any case
+  LKAirspace_Nearest_Item() = default;
+  LKAirspace_Nearest_Item(const CAirspacePtr& pAsp) = delete;
+
+  LKAirspace_Nearest_Item& operator=(const CAirspacePtr& pAsp);
+
+  bool Valid = false;                       // Struct item is valid
+  TCHAR Name[NAME_SIZE + 1];                // 1)  Name of airspace . We shall use only 15 to 25 characters max in any case
   TCHAR Type[5];                            // 2)  Type of airspace    like CTR   A B C etc.    we use 3-4 chars
   double Distance;                          // 3)  Distance
   double Bearing;                           // 4)  Bearing (so we can sort by airspaces we have in front of us, for example)
@@ -617,8 +622,7 @@ struct LKAirspace_Nearest_Item {
   AirspaceWarningLevel_t WarningLevel;      // 8)  Actual warning level fro this airspace
   AirspaceWarningLevel_t WarningAckLevel;   // 9)  Actual ack level fro this airspace
 
-  CAirspaceWeakPtr Pointer;                     // 10) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
+  CAirspaceWeakPtr Pointer;                 // 10) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
 };
-
 
 #endif
