@@ -106,8 +106,8 @@ QuickRedraw:
         return;
     }
 
-    POINT Orig, Orig_Aircraft;
-    CalculateOrigin(rc, &Orig);
+    POINT Orig_Aircraft;
+    RasterPoint Orig = CalculateOrigin(rc);
     const ScreenProjection _Proj = CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
 
     // When no terrain is painted, set a background0

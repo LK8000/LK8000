@@ -791,7 +791,13 @@ private:
 
   static unsigned fpsTime0;
 
-  static void CalculateOrigin(const RECT& rc, POINT *Orig);
+
+  static RasterPoint GetOrigCenter(const RECT& rc);
+  static RasterPoint GetOrigTargetPan(const RECT& rc, int targetPanSize, bool isLandscape);
+  static RasterPoint GetOrigNorthSmart(const RECT& rc, double trackbearing, bool isLandscape);
+  static RasterPoint GetOrigAutoOrient(const RECT& rc, double scale, double autoOrientScale);
+
+  static RasterPoint CalculateOrigin(const RECT& rc);
 
 
 protected:
@@ -913,8 +919,9 @@ protected:
   static NMEA_INFO DrawInfo;
   static DERIVED_INFO DerivedDrawInfo;
 
-  static void CalculateOrientationTargetPan(void);
-  static void CalculateOrientationNormal(void);
+  static void SetOrientation(double Display, double Aircraft, bool Center);
+  static void CalculateOrientationTargetPan();
+  static void CalculateOrientationNormal();
 
 #ifdef ENABLE_OPENGL
   static std::array<FloatPoint, NUMTERRAINSWEEPS+2> Groundline;

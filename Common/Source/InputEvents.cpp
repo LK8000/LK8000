@@ -2868,48 +2868,31 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
 
 
 
-void InputEvents::eventOrientation(const TCHAR *misc){
-int iOrientation = DisplayOrientation ;
+void InputEvents::eventOrientation(const TCHAR* misc) {
+  int iOrientation = DisplayOrientation;
 
-  if (_tcscmp(misc, TEXT("northup")) == 0){
+  if (_tcscmp(misc, TEXT("northup")) == 0) {
     iOrientation = NORTHUP;
+  } else if (_tcscmp(misc, TEXT("northcircle")) == 0) {
+    iOrientation = NORTHCIRCLE;
+  } else if (_tcscmp(misc, TEXT("trackcircle")) == 0) {
+    iOrientation = TARGETCIRCLE;
+  } else if (_tcscmp(misc, TEXT("trackup")) == 0) {
+    iOrientation = TRACKUP;
+  } else if (_tcscmp(misc, TEXT("northtrack")) == 0) {
+    iOrientation = NORTHTRACK;
+  } else if (_tcscmp(misc, TEXT("northsmart")) == 0) {  // 100417
+    iOrientation = NORTHSMART;
+  } else if (_tcscmp(misc, TEXT("targetup")) == 0) {
+    iOrientation = TARGETUP;
   }
-  else if (_tcscmp(misc, TEXT("northcircle")) == 0){
-	iOrientation = NORTHCIRCLE;
-  }
-  else if (_tcscmp(misc, TEXT("targetcircle")) == 0){
-	iOrientation = TARGETCIRCLE;
-  }
-  else if (_tcscmp(misc, TEXT("trackup")) == 0){
-	iOrientation = TRACKUP;
-  }
-  else if (_tcscmp(misc, TEXT("northtrack")) == 0){
-	iOrientation = NORTHTRACK;
-  }
-  else if (_tcscmp(misc, TEXT("northsmart")) == 0){ // 100417
-	iOrientation = NORTHSMART;
-  }
-  else if (_tcscmp(misc, TEXT("targetup")) == 0){
-	iOrientation = TARGETUP;
-	/*
-	if (InfoBoxLayout::landscape)
-		DisplayOrientation = NORTHSMART;
-	else
-		DisplayOrientation = NORTHUP;
-	*/
-    }
 
-//  if(IsMultiMap())
-    if  (MapSpaceMode==MSM_MAP)
-    {
-	  DisplayOrientation = iOrientation;
-      MapWindow::SetAutoOrientation(); // 101008 reset it
-    }
-    else
-	  SetMMNorthUp(GetSideviewPage(),iOrientation);
-
-
-
+  if (MapSpaceMode == MSM_MAP) {
+    DisplayOrientation = iOrientation;
+    MapWindow::SetAutoOrientation();  // 101008 reset it
+  } else {
+    SetMMNorthUp(GetSideviewPage(), iOrientation);
+  }
 }
 
 void SwitchToMapWindow(void)
