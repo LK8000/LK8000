@@ -527,7 +527,7 @@ struct PaintListItemVisitor {
     TCHAR StationName[MAXFANETNAME + 1];
     StationName[0] = 0;
     WithLock(CritSec_FlightData, [&] {
-      memcpy(&Station, &GPS_INFO.FANET_Weather[idx], sizeof(FANET_WEATHER));
+      Station = GPS_INFO.FANET_Weather[idx];
       GetFanetName(Station.ID, GPS_INFO, StationName);
     });
     TCHAR text1[MAX_LEN] = {TEXT("empty")};
