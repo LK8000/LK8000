@@ -17,6 +17,7 @@
 #include "Sound/Sound.h"
 #include "resource.h"
 #include "Radio.h"
+#include "utils/printf.h"
 
 static CAirspaceBase airspace_copy;
 static void OnDetailsClicked(WndButton* pWnd);
@@ -33,55 +34,41 @@ static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface)
        * original data are shared ressources ! 
        * for that we need to grant all called methods are thread safe
        ****************************************************************/
-   {
+    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-      if(airspace) {
-        airspace->DrawPicto(Surface, rc);
-      }
-   }
+      airspace->DrawPicto(Surface, rc);
+    }
 }
 
 static void OnFlyClicked(WndButton* pWnd) {
-    (void) pWnd;
-   {
-      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-      if(airspace) {
-        CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
-      }
-   }
+    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
+      CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+    }
     SetValues(pWnd->GetParentWndForm());
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
 static void OnSelectClicked(WndButton* pWnd) {
-    (void) pWnd;
-
-   {
-      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-      if(airspace) {
-        CAirspaceManager::Instance().AirspaceSetSelect(airspace);
-      }
-   }
+    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    if(airspace) {
+      CAirspaceManager::Instance().AirspaceSetSelect(airspace);
+    }
     SetValues(pWnd->GetParentWndForm());
     PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
 
 static void OnAcknowledgeClicked(WndButton* pWnd){
-  (void)pWnd;
-  {
+  CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+  if(airspace) {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-    if(airspace) {
-      CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
-      if (airspace_copy.Enabled()) {
-        CAirspaceManager::Instance().AirspaceDisable(*airspace);
-      } else {
-        CAirspaceManager::Instance().AirspaceEnable(*airspace);
-      }
+    CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
+    if (airspace_copy.Enabled()) {
+      CAirspaceManager::Instance().AirspaceDisable(*airspace);
+    } else {
+      CAirspaceManager::Instance().AirspaceEnable(*airspace);
     }
   }
 
@@ -172,41 +159,23 @@ static void SetValues(WndForm* wf) {
   int vdist;
 
   
-  bool inside = false;
-  {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
-    if(airspace) {
-        // Get an object instance copy with actual values
-        airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
-        inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspace, &hdist, &bearing, &vdist);
-    } else {
-        // error : CAirspaceManager are closed ?
-        return;
-    }
+  CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+  if(!airspace) {
+    return;
   }
+  // Get an object instance copy with actual values
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
+  bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspace, &hdist, &bearing, &vdist);
   
+  const TCHAR* status = airspace_copy.Enabled() ? MsgToken<1643>() : MsgToken<1600>(); // ENABLED / DISABLED
 	TCHAR capbuffer[250];
-	_stprintf(capbuffer,_T("%s ("),airspace_copy.Name());
-        if (airspace_copy.Enabled()) {
-        	_tcscat(capbuffer,MsgToken<1643>()); // ENABLED
-        } else {
-        	_tcscat(capbuffer,MsgToken<1600>()); // DISABLED
-        }
-        _tcscat(capbuffer,_T(")")); // DISABLED
+	lk::snprintf(capbuffer,_T("%s (%s)"), airspace_copy.Name(), status);
 	wf->SetCaption(capbuffer);
 
   wp = wf->FindByName<WndProperty>(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
 	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()), TEXT("FLY"));
-/*
-	  if( _tcsnicmp(  airspace_copy.Name(),   airspace_copy.TypeName() ,_tcslen(airspace_copy.TypeName())) == 0)
-		_stprintf(buffer,TEXT("%s"),airspace_copy.Name());
-	  else
-	    _stprintf(buffer,TEXT("%s %s"),airspace_copy.TypeName()   // fixed strings max. 20
-			                          ,airspace_copy.Name());     // NAME_SIZE          30   => max. 30 char
-*/
 	} else {
 	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()));
 	}
@@ -435,19 +404,17 @@ static void OnDetailsClicked(WndButton* pWnd){
 	  TCHAR Name[NAME_SIZE +1]= _T("");
 
   
-  {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
     if(airspace) {
+      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       if(airspace->Comment()) {
-        _sntprintf(Details,READLINE_LENGTH, _T("%s"), airspace->Comment());
+        lk::strcpy(Details, airspace->Comment());
       } else {
-        _sntprintf(Details, READLINE_LENGTH,_T("%s"), airspace->TypeName());
+        lk::strcpy(Details, airspace->TypeName());
       }
-      _sntprintf(Name,NAME_SIZE, _T("%s %s:"), airspace->TypeName(), MsgToken<231>());
+      lk::snprintf(Name, _T("%s %s:"), airspace->TypeName(), MsgToken<231>());
     }
     DebugLog(_T(". Airspace Detail <%s>"),Details);
 
     dlgHelpShowModal(Name, Details, false);
-  }
 }

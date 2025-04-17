@@ -2626,7 +2626,7 @@ CAirspacePtr CAirspaceManager::FindNearestAirspace(const double &longitude, cons
 
     ScopeLock guard(_csairspaces);
 
-    for (auto& pAsp : _airspaces) {
+    for (const auto& pAsp : _airspaces) {
         if (pAsp->Enabled()) {
             int type = pAsp->Type();
             //TODO check index
@@ -2684,8 +2684,6 @@ CAirspacePtr CAirspaceManager::FindNearestAirspace(const double &longitude, cons
 
 struct airspace_sorter {
   bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) {
-    assert(a);
-    assert(b);
     return (a->Top().Altitude < b->Top().Altitude);
   }
 };
@@ -3394,7 +3392,7 @@ void CAirspaceManager::LoadSettings() {
         ScopeLock guard(_csairspaces);
 
         std::map<std::string, CAirspacePtr> map;
-        for (auto& pAsp : _airspaces) {
+        for (const auto& pAsp : _airspaces) {
             map.emplace(pAsp->Hash(), pAsp);
         }
 
@@ -3444,8 +3442,8 @@ void CAirspaceManager::AirspaceDisableWaveSectors() {
 
 // queue new airspaces for popup details
 void CAirspaceManager::PopupAirspaceDetail(const CAirspacePtr& pAsp) {
-    ScopeLock guard(_csairspaces);
     if (pAsp) {
+        ScopeLock guard(_csairspaces);
         _detail_queue.push_back(pAsp);
     }
 }

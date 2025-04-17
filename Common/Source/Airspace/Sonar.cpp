@@ -169,18 +169,12 @@ void DoSonar(void) {
 	
 	if(NAVWarning) return;
 
-  CAirspaceBase near_airspace;
-  {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    CAirspacePtr found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
-    if (!found) {
-#if DEBUG_SONAR
-      StartupStore(_T("SONAR: no aspfound, return\n"));
-#endif
-      return;
-    }
-    near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
+  CAirspacePtr found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
+  if (!found) {
+	return;
   }
+  CAirspaceBase near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
+  found = nullptr; // release the ownership on the airspace
 
   // we dont use these at all
   bool bAS_Inside;

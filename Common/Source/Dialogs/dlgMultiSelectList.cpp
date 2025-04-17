@@ -400,9 +400,9 @@ struct PaintListItemVisitor {
 
   void operator()(const im_airspace& elmt) const {
     auto& pAspMgr = CAirspaceManager::Instance();
-    ScopeLock guard(pAspMgr.MutexRef());
     CAirspacePtr pAS = elmt.pAirspace;
     if (pAS) {
+      ScopeLock guard(pAspMgr.MutexRef());
 
       TCHAR text1[MAX_LEN] = {TEXT("empty")};
       TCHAR text2[MAX_LEN] = {TEXT("empty")};
