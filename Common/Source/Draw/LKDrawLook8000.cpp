@@ -451,10 +451,10 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                         if ((ActiveGate < (PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
                             if (CloseTime < 86340) {
                                 Units::TimeToText(BufferTitle, CloseTime);
-                                _stprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
+                                lk::snprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
                             } else {
                                 Units::TimeToText(BufferTitle, GateTime(ActiveGate + 1));
-                                _stprintf(BufferValue, _T("NEXT %s"), BufferTitle);
+                                lk::snprintf(BufferValue, _T("NEXT %s"), BufferTitle);
                             }
                         } else {
                             // IsInSector works reversed!
