@@ -1747,7 +1747,7 @@ void InputEvents::eventResetQFE(const TCHAR *misc) { // 100211
 	// LKTOKEN  _@M559_ = "Reset zero QFE"
 		MsgToken<559>(),
 		mbYesNo) == IdYes) {
-			QFEAltitudeOffset=Units::ToAltitude(CALCULATED_INFO.NavAltitude); // 100211
+			QFEAltitudeOffset = CALCULATED_INFO.NavAltitude; // 100211
 	}
 
 }
