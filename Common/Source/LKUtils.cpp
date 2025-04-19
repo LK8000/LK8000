@@ -17,6 +17,7 @@
 #include "Baro.h"
 #include "InputEvents.h"
 #include "LocalPath.h"
+#include "utils/printf.h"
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 
@@ -327,20 +328,16 @@ void TaskStartMessage() {
   TCHAR TempTime[40];
   TCHAR TempAlt[40];
   TCHAR TempSpeed[40];
-  Units::TimeToText(TempTime, LocalTime(CALCULATED_INFO.TaskStartTime));  _stprintf(TempAlt, TEXT("%.0f %s"), Units::ToAltitude(CALCULATED_INFO.TaskStartAltitude), Units::GetAltitudeName());
-  _stprintf(TempSpeed, TEXT("%.0f %s"), Units::ToTaskSpeed(CALCULATED_INFO.TaskStartSpeed), Units::GetTaskSpeedName());
+  Units::TimeToText(TempTime, LocalTime(CALCULATED_INFO.TaskStartTime));
+  lk::snprintf(TempAlt, TEXT("%.0f %s"), Units::ToAltitude(CALCULATED_INFO.TaskStartAltitude), Units::GetAltitudeName());
+  lk::snprintf(TempSpeed, TEXT("%.0f %s"), Units::ToTaskSpeed(CALCULATED_INFO.TaskStartSpeed), Units::GetTaskSpeedName());
 
   TCHAR TempAll[300];
-  _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
-  // Altitude
-  MsgToken<89>(),
-  TempAlt,
-  // Speed
-  MsgToken<632>(),
-  TempSpeed,
-  // Time
-  MsgToken<720>(),
-  TempTime);
+  lk::snprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
+               MsgToken<89>(), TempAlt, // Altitude
+               MsgToken<632>(), TempSpeed, // Speed
+               MsgToken<720>(), TempTime); // Time
+               
 
   // ALWAYS issue DoStatusMessage BEFORE sounds, if possible.
   // LKTOKEN  _@M692_ = "Task Start"
@@ -355,25 +352,17 @@ void TaskFinishMessage() {
   TCHAR TempTskSpeed[40];
 
   Units::TimeToText(TempTime, LocalTime());
-  _stprintf(TempAlt, TEXT("%.0f %s"), Units::ToAltitude(CALCULATED_INFO.NavAltitude), Units::GetAltitudeName());
-  _stprintf(TempSpeed, TEXT("%.0f %s"), Units::ToTaskSpeed(GPS_INFO.Speed), Units::GetTaskSpeedName());
-  _stprintf(TempTskSpeed, TEXT("%.2f %s"), Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeedAchieved), Units::GetTaskSpeedName());
+  lk::snprintf(TempAlt, TEXT("%.0f %s"), Units::ToAltitude(CALCULATED_INFO.NavAltitude), Units::GetAltitudeName());
+  lk::snprintf(TempSpeed, TEXT("%.0f %s"), Units::ToTaskSpeed(GPS_INFO.Speed), Units::GetTaskSpeedName());
+  lk::snprintf(TempTskSpeed, TEXT("%.2f %s"), Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeedAchieved), Units::GetTaskSpeedName());
 
   TCHAR TempAll[300];
 
-  _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
-  // Altitude
-  MsgToken<89>(),
-  TempAlt,
-  // Speed
-  MsgToken<632>(),
-  TempSpeed,
-  // Time
-  MsgToken<720>(),
-  TempTime,
-  // task speed
-  MsgToken<697>(),
-  TempTskSpeed);
+  lk::snprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
+            MsgToken<89>(), TempAlt,  // Altitude
+            MsgToken<632>(), TempSpeed,  // Speed
+            MsgToken<720>(), TempTime,  // Time
+            MsgToken<697>(), TempTskSpeed);  // task speed
 
   // LKTOKEN  _@M687_ = "Task Finish"
   DoStatusMessage(MsgToken<687>(), TempAll);
