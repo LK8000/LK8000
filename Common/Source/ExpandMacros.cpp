@@ -16,31 +16,101 @@
 #ifdef KOBO
 #include "Kobo/System.hpp"
 #endif
+#include <algorithm>
 
 extern bool HaveGauges(void);
 
-static void ReplaceInString(TCHAR *String, const TCHAR *ToReplace,
-                            const TCHAR *ReplaceWith, size_t Size){
-  TCHAR TmpBuf[MAX_PATH];
-  int   iR;
-  TCHAR *pC;
+static void ReplaceInString(TCHAR* String, const TCHAR* ToReplace, const TCHAR* ReplaceWith, size_t Size) {
+  tstring str(String);
+  tstring_view toReplace(ToReplace);
+  tstring_view replaceWith(ReplaceWith);
 
-  while((pC = _tcsstr(String, ToReplace)) != NULL){
-    iR = _tcslen(ToReplace);
-    _tcscpy(TmpBuf, pC + iR);
-    _tcscpy(pC, ReplaceWith);
-    _tcscat(pC, TmpBuf);
+  size_t pos = 0;
+  while ((pos = str.find(toReplace, pos)) != tstring::npos) {
+    str.replace(pos, toReplace.size(), replaceWith);
+    pos += replaceWith.size();
   }
 
+  lk::strcpy(String, str.c_str(), Size);
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+using namespace std::string_view_literals;
+
+TEST_CASE("ReplaceInString") {
+
+  SUBCASE("overflow buffer") {
+    TCHAR pBuffer[23];
+    _tcscpy(pBuffer, _T("This is an old string."));
+    ReplaceInString(pBuffer, _T("an old"), _T("a to long"), std::size(pBuffer));
+    CHECK(pBuffer == _T("This is a to long stri"sv));
+  }
+  SUBCASE("overflow buffer (inside replaced value") {
+    TCHAR pBuffer[31];
+    _tcscpy(pBuffer, _T("This is an old string. an old"));
+    ReplaceInString(pBuffer, _T("an old"), _T("a longer"), std::size(pBuffer));
+    CHECK(pBuffer == _T("This is a longer string. a lon"sv));
+  }
+
+  SUBCASE(R"(Replace "old" with "new")") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T("This is an old string."));
+    ReplaceInString(pBuffer, _T("old"), _T("new"), std::size(pBuffer));
+    CHECK(pBuffer == _T("This is an new string."sv));
+  }
+
+  SUBCASE("No replacement") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T("This is a test string."));
+    ReplaceInString(pBuffer, _T("old"), _T("new"), std::size(pBuffer));
+    CHECK(pBuffer == _T("This is a test string."sv));
+  }
+
+  SUBCASE("Multiple replacements") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T("a old b old c old"));
+    ReplaceInString(pBuffer, _T("old"), _T("new"), std::size(pBuffer));
+    CHECK(pBuffer == _T("a new b new c new"sv));
+  }
+
+  SUBCASE("Empty string") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T(""));
+    ReplaceInString(pBuffer, _T("old"), _T("new"), std::size(pBuffer));
+    CHECK(pBuffer == _T(""sv));
+  }
+
+  SUBCASE("replace short string by longer one") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T("aa bb cc dd ee ff gg"));
+    ReplaceInString(pBuffer, _T("dd"), _T("dddd"), std::size(pBuffer));
+    CHECK(pBuffer == _T("aa bb cc dddd ee ff gg"sv));
+  }
+
+  SUBCASE("replace long string by shorter one") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T("aa bb cc dd ee ff gg"));
+    ReplaceInString(pBuffer, _T("dd"), _T("d"), std::size(pBuffer));
+    CHECK(pBuffer == _T("aa bb cc d ee ff gg"sv));
+  }
+
+  SUBCASE("replace long string by empty one") {
+    TCHAR pBuffer[100];
+    _tcscpy(pBuffer, _T("aa bb cc dd ee ff gg"));
+    ReplaceInString(pBuffer, _T("dd "), _T(""), std::size(pBuffer));
+    CHECK(pBuffer == _T("aa bb cc ee ff gg"sv));
+  }
+
+
+}
+
+#endif  // DOCTEST_CONFIG_DISABLE
 
 static void CondReplaceInString(bool Condition, TCHAR *Buffer,
                                 const TCHAR *Macro, const TCHAR *TrueText,
                                 const TCHAR *FalseText, size_t Size){
-  if (Condition)
-    ReplaceInString(Buffer, Macro, TrueText, Size);
-  else
-    ReplaceInString(Buffer, Macro, FalseText, Size);
+  ReplaceInString(Buffer, Macro, Condition ? TrueText : FalseText, Size);
 }
 
 //
