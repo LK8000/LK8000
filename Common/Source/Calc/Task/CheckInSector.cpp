@@ -49,11 +49,7 @@ struct is_circle<sector_type_t::ESS_CIRCLE> {
 struct is_circle_t {
   using result_type = bool;
 
-  static bool invalid() {
-    return false;
-  }
-
-  template<sector_type_t type>
+  template<sector_type_t type, int task_type>
   static bool invoke(int tp_index) {
     return is_circle<type>::value;
   }

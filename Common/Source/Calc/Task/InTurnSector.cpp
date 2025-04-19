@@ -62,31 +62,17 @@ bool InSector(const AGeoPoint& position, const task::line_data& data) {
   }
 }
 
-
 template <sector_type_t type, int task_type>
 bool InSector(int tp_index, const AGeoPoint& position) {
   return InSector(position, task::zone_data<type, task_type>::get(tp_index));
 }
 
-template <sector_type_t type>
-bool InSector(int tp_index, const AGeoPoint& position) {
-  if (UseAATTarget()) {
-    return InSector<type, TSK_AAT>(tp_index, position);
-  } else {
-    return InSector<type, TSK_DEFAULT>(tp_index, position);
-  }
-}
-
 struct InSector_t {
   using result_type = bool;
 
-  static bool invalid() {
-    return false;
-  }
-
-  template <sector_type_t type>
+  template <sector_type_t type, int task_type>
   static bool invoke(int tp_index, const AGeoPoint& position) {
-    return InSector<type>(tp_index, position);
+    return InSector<type, task_type>(tp_index, position);
   }
 };
 

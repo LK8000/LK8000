@@ -193,6 +193,32 @@ struct zone_data<sector_type_t::SGP_START, task_type> {
   }
 };
 
+template<typename _Fn, typename _Return = typename _Fn::result_type, typename ..._Args>
+struct invoke_for_task_point_t {
+
+  static _Return invalid_task_type(int task_type) {
+    assert(false);
+    return _Return();
+  }
+
+  static _Return invalid_tp_type(sector_type_t type) {
+    assert(false);
+    return _Return();
+  }
+
+  template <sector_type_t type>
+  static _Return invoke(int tp_index, _Args&& ...args) {
+    switch (gTaskType) {
+      case TSK_DEFAULT:
+        return _Fn::template invoke<type, TSK_DEFAULT>(tp_index, std::forward<_Args>(args)...);
+      case TSK_AAT:
+        return _Fn::template invoke<type, TSK_AAT>(tp_index, std::forward<_Args>(args)...);
+      case TSK_GP:
+        return _Fn::template invoke<type, TSK_GP>(tp_index, std::forward<_Args>(args)...);
+    }
+    return invalid_task_type(gTaskType);  // unknown task type
+  }
+};
 
 /**
  * call `_Fn::invoke<sector_type_t>(tp_index, ...)` if tp_index is valid task point,
@@ -201,31 +227,32 @@ struct zone_data<sector_type_t::SGP_START, task_type> {
 template<typename _Fn, typename ..._Args, typename _Return = typename _Fn::result_type>
 _Return invoke_for_task_point(int tp_index, _Args&& ...args) {
 
+  using invoke_t = invoke_for_task_point_t<_Fn, _Return, _Args...>;
+
   ScopeLock lock(CritSec_TaskData);
   if (!ValidTaskPointFast(tp_index)) {
-    return _Fn::invalid(); // invalid task point
+    return _Return(); // invalid task point
   }
 
-  switch (task::get_zone_type(tp_index)) {
+  switch (get_zone_type(tp_index)) {
     case sector_type_t::CIRCLE:
-      return _Fn::template invoke<sector_type_t::CIRCLE>(tp_index, std::forward<_Args>(args)...);
+      return invoke_t::template invoke<sector_type_t::CIRCLE>(tp_index, std::forward<_Args>(args)...);
     case sector_type_t::SECTOR:
-      return _Fn::template invoke<sector_type_t::SECTOR>(tp_index, std::forward<_Args>(args)...);
+      return invoke_t::template invoke<sector_type_t::SECTOR>(tp_index, std::forward<_Args>(args)...);
     case sector_type_t::DAe:
-      return _Fn::template invoke<sector_type_t::DAe>(tp_index, std::forward<_Args>(args)...);
+      return invoke_t::template invoke<sector_type_t::DAe>(tp_index, std::forward<_Args>(args)...);
     case sector_type_t::LINE:
-      return _Fn::template invoke<sector_type_t::LINE>(tp_index, std::forward<_Args>(args)...);
+      return invoke_t::template invoke<sector_type_t::LINE>(tp_index, std::forward<_Args>(args)...);
     case sector_type_t::ESS_CIRCLE:
-      return _Fn::template invoke<sector_type_t::ESS_CIRCLE>(tp_index, std::forward<_Args>(args)...);
+      return invoke_t::template invoke<sector_type_t::ESS_CIRCLE>(tp_index, std::forward<_Args>(args)...);
     case sector_type_t::SGP_START:
-      return _Fn::template invoke<sector_type_t::SGP_START>(tp_index, std::forward<_Args>(args)...);
+      return invoke_t::template invoke<sector_type_t::SGP_START>(tp_index, std::forward<_Args>(args)...);
   }
 
   /* invalid zone type, if this happens, there is an unchecked 
    cast to `sector_type_t` somewhere => bug ... */
-  return _Fn::invalid();
+  return invoke_t::invalid_tp_type(get_zone_type(tp_index));
 }
-
 
 } // task
 

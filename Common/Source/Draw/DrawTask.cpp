@@ -102,29 +102,12 @@ void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
   DrawTaskPicto(tp_index, task::zone_data<type, task_type>::get(tp_index), Surface, rc);
 }
 
-template <sector_type_t type>
-void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
-  switch (gTaskType) {
-    case TSK_AAT:
-      return DrawTaskPicto<type, TSK_AAT>(tp_index, Surface, rc);
-    case TSK_GP:
-      return DrawTaskPicto<type, TSK_GP>(tp_index, Surface, rc);
-    case TSK_DEFAULT:
-      return DrawTaskPicto<type, TSK_DEFAULT>(tp_index, Surface, rc);
-  }
-  assert(false); // unknown task type
-}
-
 struct DrawTaskPicto_t {
   using result_type = void;
 
-  static void invalid() {
-    assert(false);
-  }
-
-  template <sector_type_t type>
+  template <sector_type_t type, int task_type>
   static void invoke(int tp_index, LKSurface& Surface, const RECT& rc) {
-    DrawTaskPicto<type>(tp_index, Surface, rc);
+    DrawTaskPicto<type, task_type>(tp_index, Surface, rc);
   }
 };
 

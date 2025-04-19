@@ -50,23 +50,12 @@ void SetSectorRenderer(int tp_index) {
   SetSectorRenderer(tp_index, task::zone_data<type, task_type>::get(tp_index));
 }
 
-template <sector_type_t type>
-void SetSectorRenderer(int tp_index) {
-  if (UseAATTarget()) {
-    SetSectorRenderer<type, TSK_AAT>(tp_index);
-  } else {
-    SetSectorRenderer<type, TSK_DEFAULT>(tp_index);
-  }
-}
-
 struct SetSectorRenderer_t {
   using result_type = void;
 
-  static void invalid() {}
-
-  template <sector_type_t type>
+  template <sector_type_t type, int task_type>
   static void invoke(int tp_index) {
-    SetSectorRenderer<type>(tp_index);
+    SetSectorRenderer<type, task_type>(tp_index);
   }
 };
 
