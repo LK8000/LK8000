@@ -54,11 +54,11 @@ const TCHAR *WhatTimeIsIt(void) {
 
   Units::TimeToTextS(tlocal, LocalTime()),
   Units::TimeToText(tutc, GPS_INFO.Time);
-  _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
+  lk::snprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
   if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0))
-     _stprintf(time_temp, _T("h%s (NO FIX)"), tlocal);
+    lk::snprintf(time_temp, _T("h%s (NO FIX)"), tlocal);
   else
-     _stprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
+    lk::snprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
 
   return (time_temp);
 }
