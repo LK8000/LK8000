@@ -758,7 +758,7 @@ short dlgStartupShowModal(void) {
         TCHAR mes[MAX_PATH];
 
         SystemPath(mydir, _T(LKD_SYSTEM));
-        _stprintf(mes, _T("%s"), mydir);
+        lk::snprintf(mes, _T("%s"), mydir);
         MessageBoxX(_T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), mbOk);
         MessageBoxX(mes, _T("NO SYSTEM DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
@@ -772,7 +772,7 @@ short dlgStartupShowModal(void) {
         StartupStore(_T("... CHECK LANGUAGE DIRECTORY FAILED!%s"), NEWLINE);
 
         LocalPath(mydir, _T(LKD_LANGUAGE));
-        _stprintf(mes, _T("%s"), mydir);
+        lk::snprintf(mes, _T("%s"), mydir);
         MessageBoxX(_T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), mbOk);
         MessageBoxX(mes, _T("NO LANGUAGE DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
@@ -836,7 +836,7 @@ short dlgStartupShowModal(void) {
         StartupStore(_T("... CHECK POLARS DIRECTORY FAILED!%s"), NEWLINE);
 
         LocalPath(mydir, _T(LKD_POLARS));
-        _stprintf(mes, _T("%s"), mydir);
+        lk::snprintf(mes, _T("%s"), mydir);
         MessageBoxX(_T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), mbOk);
         MessageBoxX(mes, _T("NO POLARS DIRECTORY"), mbOk, true);
         RUN_MODE = RUN_EXIT;
