@@ -107,6 +107,10 @@ template<>
 struct zone_radius<sector_type_t::LINE, TSK_GP> 
     : public zone_radius<sector_type_t::LINE, TSK_AAT> {};
 
+template<>
+struct zone_radius<sector_type_t::CIRCLE, TSK_GP> 
+    : public zone_radius<sector_type_t::CIRCLE, TSK_AAT> {};
+
 /**
  *  helper to get zone data struct from Task definition.
  */
@@ -172,6 +176,13 @@ struct zone_data<sector_type_t::SECTOR, TSK_AAT> {
       Task[tp_index].AATFinishRadial,
       // TODO : implement AAT min radius
     };
+  }
+};
+
+template <>
+struct zone_data<sector_type_t::SECTOR, TSK_GP> {
+  static sector_data get(int tp_index) {
+    return zone_data<sector_type_t::SECTOR, TSK_AAT>::get(tp_index);
   }
 };
 

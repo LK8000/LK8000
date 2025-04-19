@@ -27,92 +27,125 @@ $Id$
 
 extern LKColor taskcolor;
 
+namespace {
+
+void DrawTaskPicto(int tp_index, const task::circle_data& data, LKSurface& Surface, const RECT& rc) {
+  int center_x = (rc.right - rc.left) / 2;
+  int center_y = (rc.bottom - rc.top) / 2;
+  int width = std::min(center_x - 2, center_y - 2);
+  Surface.DrawCircle(center_x, center_y, width - 2, true);
+}
+
+void DrawTaskPicto(int tp_index, const task::sector_data& data, LKSurface& Surface, const RECT& rc) {
+  int center_x = (rc.right - rc.left) / 2;
+  int center_y = (rc.bottom - rc.top) / 2;
+  int width = std::min(center_x - 2, center_y - 2);
+
+  Surface.Segment(
+    center_x,
+    center_y, width, rc,
+    data.start_radial,
+    data.end_radial);
+}
+
+void DrawTaskPicto(int tp_index, const task::dae_data& data, LKSurface& Surface, const RECT& rc) {
+  int center_x = (rc.right - rc.left) / 2;
+  int center_y = (rc.bottom - rc.top) / 2;
+  int width = std::min(center_x - 2, center_y - 2);
+
+  Surface.Segment(center_x, center_y, width / 8, rc, data.bisector + 45, data.bisector - 45);
+  Surface.Segment(center_x, center_y, width, rc, data.bisector - 45, data.bisector + 45);
+}
+
+double GetLineBearing(int tp_index, const task::line_data& data, bool finish) {
+  if (tp_index == 0) {
+    return data.outbound;
+  } else if (finish) {
+    return data.inbound;
+  } else {
+    return data.bisector;
+  }
+}
+
+std::array<RasterPoint, 4> GetLineTrack(int tp_index, const task::line_data& data, PixelScalar width, bool finish) {
+  if (finish) {
+    return {{{-width / 2, -width / 5}, {0, 0}, {-width / 2, width / 5}, {-width / 2, -width / 5}}};
+  } else {
+    return {{{0, -width / 5}, {width / 2, 0}, {0, width / 5}, {0, -width / 5}}};
+  }
+}
+
+void DrawTaskPicto(int tp_index, const task::line_data& data, LKSurface& Surface, const RECT& rc) {
+  int center_x = (rc.right - rc.left) / 2;
+  int center_y = (rc.bottom - rc.top) / 2;
+  int width = std::min(center_x - 2, center_y - 2);
+
+  bool finish = !ValidTaskPointFast(tp_index + 1);
+  double LineBrg = GetLineBearing(tp_index, data, finish) - 90;
+
+  RasterPoint startfinishline[2] = {{0, -width}, {0, width}};
+
+  protateshift(startfinishline[0], LineBrg, center_x, center_y);
+  protateshift(startfinishline[1], LineBrg, center_x, center_y);
+  Surface.Polyline(startfinishline, 2);
+  if ((tp_index == 0) || (finish)) {
+    auto track = GetLineTrack(tp_index, data, width, finish);
+    for (auto& pt : track) {
+      protateshift(pt, LineBrg, center_x, center_y);
+    }
+    Surface.Polygon(track.data(), track.size());
+  }
+}
+
+template <sector_type_t type, int task_type>
+void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
+  DrawTaskPicto(tp_index, task::zone_data<type, task_type>::get(tp_index), Surface, rc);
+}
+
+template <sector_type_t type>
+void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
+  switch (gTaskType) {
+    case TSK_AAT:
+      return DrawTaskPicto<type, TSK_AAT>(tp_index, Surface, rc);
+    case TSK_GP:
+      return DrawTaskPicto<type, TSK_GP>(tp_index, Surface, rc);
+    case TSK_DEFAULT:
+      return DrawTaskPicto<type, TSK_DEFAULT>(tp_index, Surface, rc);
+  }
+  assert(false); // unknown task type
+}
+
+struct DrawTaskPicto_t {
+  using result_type = void;
+
+  static void invalid() {
+    assert(false);
+  }
+
+  template <sector_type_t type>
+  static void invoke(int tp_index, LKSurface& Surface, const RECT& rc) {
+    DrawTaskPicto<type>(tp_index, Surface, rc);
+  }
+};
+
+} // namespace
+
+
 //
 // THIS FUNCTION IS THREAD SAFE, but not using optimized clipping
 //
-void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc)
-{
-int center_x = (rc.right-rc.left)/2;
-int center_y = (rc.bottom-rc.top)/2;
+void MapWindow::DrawTaskPicto(LKSurface& Surface,int TaskIdx, const RECT& rc) {
+  const auto oldbrush = Surface.SelectObject(UseAATTarget()
+                                            ? LKBrush_LightGrey
+                                            : LKBrush_Hollow);
+  const auto oldpen = Surface.SelectObject(hpStartFinishThin);
 
-int width = center_x-2;
-const auto oldbrush = Surface.SelectObject(UseAATTarget()
-                                           ? LKBrush_LightGrey
-                                           : LKBrush_Hollow);
-const auto oldpen = Surface.SelectObject(hpStartFinishThin);
-int finish=0;
+  WithLock(CritSec_TaskData, [&]() {
+    task::invoke_for_task_point<DrawTaskPicto_t>(TaskIdx, Surface, rc);
+  });
 
-while( ValidTaskPoint(finish))
- finish++;
-finish--;
-
-if(center_y < width)
-  width = center_y-2;
-
-POINT startfinishline[2] = {{0,-width},
-                            {0,width}};
-
-POINT track[] = {
-    {0,-width/5},
-    {width/2,0},
-    {0,width/5},
-    {0,-width/5}
-};
-if(TaskIdx == finish)
-{
-  track[0].x = -width/2; track[0].y= -width/5;
-  track[1].x = 0 ; track[1].y= 0;
-  track[2].x = -width/2 ; track[2].y= width/5;
-  track[3] = track[0];
-}
-
-LockTaskData(); // protect from external task changes
-double StartRadial = Task[TaskIdx].AATStartRadial;
-double FinishRadial = Task[TaskIdx].AATFinishRadial;
-
-    double LineBrg;
-    sector_type_t type = task::get_zone_type(TaskIdx);
-    switch (type) {
-        case sector_type_t::ESS_CIRCLE:
-        case sector_type_t::CIRCLE:
-            Surface.DrawCircle(center_x, center_y, width-2, true);
-            break;
-        case sector_type_t::SECTOR:
-            Surface.Segment(
-             center_x,
-             center_y, width, rc,
-             StartRadial,
-             FinishRadial);
-            break;
-        case sector_type_t::DAe:
-            // JMW added german rules
-            Surface.Segment(center_x, center_y, width / 8, rc, Task[TaskIdx].Bisector + 45, Task[TaskIdx].Bisector - 45);
-            Surface.Segment(center_x, center_y, width, rc, Task[TaskIdx].Bisector - 45, Task[TaskIdx].Bisector + 45);
-            break;
-       default:
-       case sector_type_t::LINE:
-            if (TaskIdx == 0) {
-                LineBrg = Task[TaskIdx].OutBound-90;
-            } else if (TaskIdx == finish) {
-                LineBrg = Task[TaskIdx].InBound-90;
-            } else {
-                LineBrg = Task[TaskIdx].Bisector;
-            }
-            protateshift(startfinishline[0], LineBrg, center_x, center_y);
-            protateshift(startfinishline[1], LineBrg, center_x, center_y);
-            Surface.Polyline(startfinishline, 2);
-            if ((TaskIdx == 0) || (TaskIdx == finish)) {
-                for(POINT& pt : track) {
-                    protateshift(pt, LineBrg, center_x, center_y);
-                }
-                Surface.Polygon(track, std::size(track));
-            }
-            break;
-    }
-UnlockTaskData();
-
-Surface.SelectObject(oldpen);
-Surface.SelectObject(oldbrush);
+  Surface.SelectObject(oldpen);
+  Surface.SelectObject(oldbrush);
 }
 
 static
@@ -152,11 +185,11 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
 
 void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const POINT &Orig_Aircraft) {
 
-#ifdef HAVE_GLES
-    typedef FloatPoint ScreenPoint;
-#else
-    typedef RasterPoint ScreenPoint;
-#endif
+  #ifdef HAVE_GLES
+      typedef FloatPoint ScreenPoint;
+  #else
+      typedef RasterPoint ScreenPoint;
+  #endif
 
     const GeoToScreen<ScreenPoint> ToScreen(_Proj);
 
