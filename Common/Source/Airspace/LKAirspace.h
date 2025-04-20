@@ -483,8 +483,6 @@ public:
                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
                         AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const;
 
-  CAirspacePtr FindNearestAirspace(const double &longitude, const double &latitude,
-             double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces();
   bool ValidAirspaces() const;
   //Warning system

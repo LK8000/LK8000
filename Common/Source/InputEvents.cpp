@@ -2284,16 +2284,7 @@ void InputEvents::eventRepeatStatusMessage(const TCHAR *misc) {
 
 
 void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
-  (void)misc;
-  //double nearestdistance=0; REMOVE ALL
-  //double nearestbearing=0;
-
-  // StartHourglassCursor();
-  //CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
-  //		      &nearestdistance, &nearestbearing );  REMOVE
-
   SetModeType(LKMODE_MAP,MP_MAPASP);
-
 }
 
 extern POINT startScreen;
