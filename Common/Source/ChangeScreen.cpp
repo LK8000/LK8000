@@ -147,7 +147,6 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_FLARMRADAR);
   Reset_Single_DoInits(MDI_DRAWBOTTOMBAR);
   Reset_Single_DoInits(MDI_DRAWFLIGHTMODE);
-  Reset_Single_DoInits(MDI_DRAWTASK);
 
   // Some parameters need to be reset in advance, otherwise they will be retuned only when the
   // relative DoInit is accomplished. This is a mistake of course.
