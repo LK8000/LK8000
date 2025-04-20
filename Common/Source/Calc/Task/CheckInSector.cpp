@@ -49,7 +49,7 @@ struct is_circle<sector_type_t::ESS_CIRCLE> {
 struct is_circle_t {
   using result_type = bool;
 
-  template<sector_type_t type, int task_type>
+  template<sector_type_t type, task_type_t task_type>
   static bool invoke(int tp_index) {
     return is_circle<type>::value;
   }
@@ -68,7 +68,7 @@ void CheckInSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   }
   AddAATPoint(Basic, Calculated, ActiveTaskPoint);
 
-  if (gTaskType == TSK_GP) {
+  if (gTaskType == task_type_t::GP) {
     if (IsCircle(ActiveTaskPoint)) {
       static bool last_isInSector = Calculated->IsInSector;
       if (last_isInSector != Calculated->IsInSector) {
@@ -79,7 +79,7 @@ void CheckInSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
     }
   }
 
-  if (gTaskType != TSK_AAT) {
+  if (gTaskType != task_type_t::AAT) {
     if (Calculated->IsInSector) {
       AdvanceToNext(Basic, Calculated);
       return;

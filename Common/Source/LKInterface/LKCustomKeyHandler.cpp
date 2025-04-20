@@ -225,8 +225,8 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 	case CustomKeyMode_t::ckOptimizeRoute:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
 		TskOptimizeRoute=!TskOptimizeRoute;
-		if(gTaskType==TSK_GP) {
-            ClearOptimizedTargetPos();
+		if(gTaskType == task_type_t::GP) {
+			ClearOptimizedTargetPos();
 		}
 		return true;
 	case CustomKeyMode_t::ckLockScreen:

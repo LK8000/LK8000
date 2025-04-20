@@ -122,37 +122,37 @@ const TCHAR* get_sectors_label(sector_type_t type) {
   return label();
 }
 
-std::unique_ptr<task_sectors> get_start_sectors(int type) {
+std::unique_ptr<task_sectors> get_start_sectors(task_type_t type) {
   switch (type) {  
   default:
-  case TSK_DEFAULT:
+  case task_type_t::DEFAULT:
     return make_task_sectors_adaptor(default_start_sectors);
-  case TSK_GP:
+  case task_type_t::GP:
     return make_task_sectors_adaptor(gp_start_sectors);
-  case TSK_AAT:
+  case task_type_t::AAT:
     return make_task_sectors_adaptor(aat_start_sectors);
   }
 }
 
-std::unique_ptr<task_sectors> get_finish_sectors(int type) {
+std::unique_ptr<task_sectors> get_finish_sectors(task_type_t type) {
   switch (type) {  
   default:
-  case TSK_DEFAULT:
-  case TSK_GP:
+  case task_type_t::DEFAULT:
+  case task_type_t::GP:
     return make_task_sectors_adaptor(default_finish_sectors);
-  case TSK_AAT:
+  case task_type_t::AAT:
     return make_task_sectors_adaptor(aat_finish_sectors);
   }
 }
 
-std::unique_ptr<task_sectors> get_task_sectors(int type) {
+std::unique_ptr<task_sectors> get_task_sectors(task_type_t type) {
   switch (type) {  
   default:
-  case TSK_DEFAULT:
+  case task_type_t::DEFAULT:
     return make_task_sectors_adaptor(default_task_sectors);
-  case TSK_AAT:
+  case task_type_t::AAT:
     return make_task_sectors_adaptor(aat_task_sectors);
-  case TSK_GP:
+  case task_type_t::GP:
     return make_task_sectors_adaptor(gp_task_sectors);
   }
 }

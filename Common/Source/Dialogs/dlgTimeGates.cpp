@@ -114,10 +114,10 @@ void dlgTimeGatesShowModal(void){
       TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
       changed = true;
 
-      if (gTaskType==TSK_GP) {
+      if (gTaskType == task_type_t::GP) {
         ClearOptimizedTargetPos();
-	  }
-	}
+      }
+    }
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
   if (wp) {

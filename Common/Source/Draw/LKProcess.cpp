@@ -1064,7 +1064,7 @@ goto_bearing:
                 // if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
                 if (true)
                 {
-					if (gTaskType==TSK_AAT)
+					if (gTaskType == task_type_t::AAT)
                         value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
                     else
                         value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;

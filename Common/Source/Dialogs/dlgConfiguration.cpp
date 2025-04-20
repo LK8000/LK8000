@@ -2995,7 +2995,7 @@ DataField* dfe = wp->GetDataField();
   wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    auto sectors = get_finish_sectors(TSK_DEFAULT);
+    auto sectors = get_finish_sectors(task_type_t::DEFAULT);
     if (dfe && sectors) {
       for (auto type : *sectors) {
         dfe->addEnumText(get_sectors_label(type));
@@ -3035,7 +3035,7 @@ DataField* dfe = wp->GetDataField();
   wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    auto sectors = get_task_sectors(TSK_DEFAULT);
+    auto sectors = get_task_sectors(task_type_t::DEFAULT);
     if (dfe && sectors) {
       for (auto type : *sectors) {
         dfe->addEnumText(get_sectors_label(type));
@@ -3993,7 +3993,7 @@ int ival;
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
-    auto sectors = get_finish_sectors(TSK_DEFAULT);
+    auto sectors = get_finish_sectors(task_type_t::DEFAULT);
     sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
     if (FinishLine != new_type) {
       FinishLine = new_type;
@@ -4031,7 +4031,7 @@ int ival;
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
-    auto sectors = get_task_sectors(TSK_DEFAULT);
+    auto sectors = get_task_sectors(task_type_t::DEFAULT);
     sector_type_t new_type = sectors->type(wp->GetDataField()->GetAsInteger());
     if (SectorType != new_type) {
       SectorType = new_type;
@@ -4168,7 +4168,7 @@ int ival;
     if (TskOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
       TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
 
-      if (gTaskType==TSK_GP) {
+      if (gTaskType == task_type_t::GP) {
         ClearOptimizedTargetPos();
 	  }
 	}

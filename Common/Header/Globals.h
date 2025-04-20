@@ -473,7 +473,7 @@ GEXTERN double StartRadius;
 GEXTERN sector_type_t FinishLine;
 GEXTERN double FinishRadius;
 GEXTERN double AATTaskLength;
-GEXTERN int gTaskType GEXTZERO;
+GEXTERN task_type_t gTaskType;
 GEXTERN bool EnableFAIFinishHeight;
 GEXTERN unsigned FinishMinHeight;
 GEXTERN unsigned StartMaxHeight;

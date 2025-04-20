@@ -62,7 +62,7 @@ bool InSector(const AGeoPoint& position, const task::line_data& data) {
   }
 }
 
-template <sector_type_t type, int task_type>
+template <sector_type_t type, task_type_t task_type>
 bool InSector(int tp_index, const AGeoPoint& position) {
   return InSector(position, task::zone_data<type, task_type>::get(tp_index));
 }
@@ -70,7 +70,7 @@ bool InSector(int tp_index, const AGeoPoint& position) {
 struct InSector_t {
   using result_type = bool;
 
-  template <sector_type_t type, int task_type>
+  template <sector_type_t type, task_type_t task_type>
   static bool invoke(int tp_index, const AGeoPoint& position) {
     return InSector<type, task_type>(tp_index, position);
   }

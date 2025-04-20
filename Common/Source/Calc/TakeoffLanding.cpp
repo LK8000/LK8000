@@ -28,7 +28,7 @@ GeoPoint GetWayPointPosition(size_t idx) {
 
 bool ExitStart(const DERIVED_INFO& Calculated) {
 	ScopeLock lock(CritSec_TaskData);
-	if (gTaskType != TSK_GP) {
+	if (gTaskType != task_type_t::GP) {
 		return true; // start IN and go out, OLD CLASSIC MODE
 	}
 	if (StartLine != sector_type_t::CIRCLE) {

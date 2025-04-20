@@ -296,13 +296,14 @@ void MasterTimeReset(void) {
 }
 
 bool UseAATTarget() {
-    return (gTaskType == TSK_AAT) || (gTaskType == TSK_GP);
+    return (gTaskType == task_type_t::AAT) || (gTaskType == task_type_t::GP);
 }
 
 bool DoOptimizeRoute() {
-
-  if (gTaskType!=TSK_GP) return false;
-  if (!TskOptimizeRoute) return false;
+  if (gTaskType != task_type_t::GP)
+    return false;
+  if (!TskOptimizeRoute)
+    return false;
 
   if (!ValidTaskPoint(0) || !ValidTaskPoint(1)) return false;
   if (!ValidTaskPoint(ActiveTaskPoint)) return false;

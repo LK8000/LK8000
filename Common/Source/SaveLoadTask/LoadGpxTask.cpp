@@ -138,7 +138,7 @@ bool LoadGpxTask(std::istream& stream) {
         FinishRadius=3000;
     }
     AutoAdvance=1; //Auto
-    gTaskType=TSK_DEFAULT;
+    gTaskType = task_type_t::DEFAULT;
     TskOptimizeRoute=false;
     StartHeightRef=1; //ASL
     RefreshTask();

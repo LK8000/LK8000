@@ -165,7 +165,7 @@ void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 
   if (WayPointList.empty() 
-      || gTaskType != TSK_AAT
+      || gTaskType != task_type_t::AAT
       || Calculated->ValidFinish) return ;
 
   AATStats_Distance(Basic, Calculated);

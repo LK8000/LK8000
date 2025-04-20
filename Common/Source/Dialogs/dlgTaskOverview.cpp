@@ -148,7 +148,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
     } else if ((DrawListIndex == (UpLimit + 1)) && ValidTaskPoint(1)) {
 
-      if (gTaskType!=TSK_AAT) {
+      if (gTaskType != task_type_t::AAT) {
         // LKTOKEN  _@M735_ = "Total:"
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken<735>());
         _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""), Units::ToDistance(lengthtotal), Units::GetDistanceName());
@@ -261,16 +261,16 @@ static void OverviewRefreshTask(WndForm* pWnd) {
     wTaskList->SetItemIndex(SelectedItem);
   }
 
-  EnableMultipleStartPoints = (gTaskType != TSK_GP);
+  EnableMultipleStartPoints = (gTaskType != task_type_t::GP);
 
   WindowControl *wTimeGates = pWnd->FindByName(TEXT("cmdTimegates"));
   if (wTimeGates) {
-    wTimeGates->SetVisible(gTaskType == TSK_GP);
+    wTimeGates->SetVisible(gTaskType == task_type_t::GP);
   }
 
   WindowControl *wDelete = pWnd->FindByName(TEXT("cmdDelete"));
   if (wDelete) {
-    wDelete->SetVisible(gTaskType != TSK_GP);
+    wDelete->SetVisible(gTaskType != task_type_t::GP);
   }
 
   UpdateCaption(pWnd);

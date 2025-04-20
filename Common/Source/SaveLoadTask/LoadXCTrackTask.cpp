@@ -349,7 +349,7 @@ bool LoadXctrackTask(const json::value& task_json) {
 
   ClearTask();
 
-  gTaskType=TSK_GP;
+  gTaskType = task_type_t::GP;
   TskOptimizeRoute=true;
 
   if (task_json.get("taskType").get<std::string>() == "CLASSIC") {

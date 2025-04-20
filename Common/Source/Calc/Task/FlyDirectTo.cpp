@@ -16,7 +16,7 @@ void FlyDirectTo(int index) {
 
   LockTaskData();
 
-  gTaskType = TSK_DEFAULT;
+  gTaskType = task_type_t::DEFAULT;
 
   InsertRecentList(index);
 

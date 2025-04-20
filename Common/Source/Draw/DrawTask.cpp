@@ -97,7 +97,7 @@ void DrawTaskPicto(int tp_index, const task::line_data& data, LKSurface& Surface
   }
 }
 
-template <sector_type_t type, int task_type>
+template <sector_type_t type, task_type_t task_type>
 void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
   DrawTaskPicto(tp_index, task::zone_data<type, task_type>::get(tp_index), Surface, rc);
 }
@@ -105,7 +105,7 @@ void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
 struct DrawTaskPicto_t {
   using result_type = void;
 
-  template <sector_type_t type, int task_type>
+  template <sector_type_t type, task_type_t task_type>
   static void invoke(int tp_index, LKSurface& Surface, const RECT& rc) {
     DrawTaskPicto<type, task_type>(tp_index, Surface, rc);
   }
@@ -228,7 +228,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
         }
       } else {  // normal sector
 
-        if (SectorType == sector_type_t::LINE && (gTaskType != TSK_AAT) &&
+        if (SectorType == sector_type_t::LINE && (gTaskType != task_type_t::AAT) &&
             ISGAAIRCRAFT) {  // this Type exist only if not AAT task
           double rotation = AngleLimit360(Task[i].Bisector - DisplayAngle);
           const int length =
@@ -252,7 +252,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
   }
 
   // Draw Iso Line
-  if (gTaskType == TSK_AAT) {
+  if (gTaskType == task_type_t::AAT) {
     // ELSE HERE IS *** AAT ***
     // JMW added iso lines
 
@@ -290,7 +290,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
     const TaskRenderer* pItem = gTaskSectorRenderer.GetRenderer(0);
     assert(pItem);
     if (pItem) {
-      if (StartLine == sector_type_t::SGP_START && gTaskType == TSK_GP) {
+      if (StartLine == sector_type_t::SGP_START && gTaskType == task_type_t::GP) {
         double rotation = AngleLimit360(Task[0].OutBound - DisplayAngle + 90);
         const int length =
             IBLSCALE(500);  // Make intermediate WP lines always of the same size independent by zoom level

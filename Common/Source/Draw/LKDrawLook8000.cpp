@@ -313,7 +313,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         LKFormatDist(OverTargetIndex, BufferValue, BufferUnit);
     }
 
-    if ( !OverlayClock && ScreenLandscape && (!((gTaskType==TSK_GP) && UseGates()))) {
+    if ( !OverlayClock && ScreenLandscape && (!((gTaskType == task_type_t::GP) && UseGates()))) {
         int dx = compass.cx ;
         int yDistUnit= topmargin + unitmediumoffset;
         if((!HideUnits) || Overlay_Title) {
@@ -849,7 +849,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     //
     // CLOCK
     //
-    if ((OverlayClock && Overlay_TopRight) || ((gTaskType==TSK_GP) && UseGates())) {
+    if ((OverlayClock && Overlay_TopRight) || ((gTaskType == task_type_t::GP) && UseGates())) {
         LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
         Surface.SelectObject(LK8OverlayMediumFont);
         int cx,cy;

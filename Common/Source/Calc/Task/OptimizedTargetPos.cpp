@@ -42,7 +42,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 // Clear PG
 void ClearOptimizedTargetPos() {
 
-	if (!(gTaskType==TSK_GP))
+	if (!(gTaskType==task_type_t::GP))
 		return;
 
 	LockTaskData();

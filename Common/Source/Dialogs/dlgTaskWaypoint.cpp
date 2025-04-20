@@ -255,9 +255,9 @@ static void SetValues(bool first) {
   if (wp) {
     // 110223 CAN ANYONE PLEASE CHECK WHAT THE HACK IS A BOOL FOR BILL GATES? BECAUSE IF FALSE IS -1 THEN
     // WE HAVE MANY PROBLEMS! I THINK IT IS TIME TO GO BACK TO bool AND GET RID OF MS BOOLS!!
-    wp->SetVisible(gTaskType==TSK_DEFAULT);
+    wp->SetVisible(gTaskType == task_type_t::DEFAULT);
     DataField* dfe = wp->GetDataField();
-    auto sectors = get_task_sectors(TSK_DEFAULT);
+    auto sectors = get_task_sectors(task_type_t::DEFAULT);
     if (first) {
       dfe->Clear();
       for (auto type : *sectors) {
@@ -272,7 +272,7 @@ static void SetValues(bool first) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskSectorRadius"));
   if (wp) {
-    wp->SetVisible(gTaskType==TSK_DEFAULT);
+    wp->SetVisible(gTaskType == task_type_t::DEFAULT);
     wp->GetDataField()->SetAsFloat(round(Units::ToDistance(SectorRadius)*DISTANCE_ROUNDING)/DISTANCE_ROUNDING);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
@@ -300,14 +300,14 @@ static void SetValues(bool first) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpMinTime"));
   if (wp) {
-    wp->SetVisible(gTaskType==TSK_AAT);
+    wp->SetVisible(gTaskType == task_type_t::AAT);
     wp->GetDataField()->SetAsFloat(AATTaskLength);
     wp->RefreshDisplay();
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpEnableMultipleStartPoints"));
   if (wp) {
-    wp->SetVisible(gTaskType!=TSK_GP);
+    wp->SetVisible(gTaskType != task_type_t::GP);
     wp->GetDataField()->Set(EnableMultipleStartPoints);
     wp->RefreshDisplay();
   }
@@ -329,14 +329,14 @@ static void SetValues(bool first) {
             dfe->addEnumText(MsgToken<1914>());
         }
     }
-    dfe->Set(gTaskType);
-    wp->RefreshDisplay();      
+    dfe->Set(static_cast<unsigned>(gTaskType));
+    wp->RefreshDisplay();
   }
 
   WndButton* wb;
   wb = wf->FindByName<WndButton>(TEXT("EditStartPoints"));
   if (wb) {
-    wb->SetVisible(EnableMultipleStartPoints!=0 && gTaskType!=TSK_GP);
+    wb->SetVisible(EnableMultipleStartPoints!=0 && gTaskType != task_type_t::GP);
   }
 
 }
@@ -413,7 +413,7 @@ static void ReadValues(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskType"));
   if (wp) {
     changed = CHECK_CHANGED(gTaskType,
-                  wp->GetDataField()->GetAsInteger());
+                  static_cast<task_type_t>(wp->GetDataField()->GetAsInteger()));
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
@@ -445,7 +445,7 @@ static void ReadValues(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskFAISector"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    auto sectors = get_task_sectors(TSK_DEFAULT);
+    auto sectors = get_task_sectors(task_type_t::DEFAULT);
     changed = CHECK_CHANGED(SectorType, sectors->type(dfe->GetAsInteger()));
   }
 
@@ -693,7 +693,7 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
   bMoveallowed = Moveallowed;
   bAddonly = addonly;
 
-  if (gTaskType!=TSK_GP) {
+  if (gTaskType != task_type_t::GP) {
 	EnableMultipleStartPoints=false;
   }
 

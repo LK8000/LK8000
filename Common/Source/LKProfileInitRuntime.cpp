@@ -80,11 +80,10 @@ void LKProfileInitRuntime() {
 
   InitActiveGate();
 
-
-  if ( ISPARAGLIDER ) {
-  	gTaskType=TSK_GP;
+  if (ISPARAGLIDER) {
+    gTaskType = task_type_t::GP;
   } else {
-	gTaskType=TSK_DEFAULT;
+    gTaskType = task_type_t::DEFAULT;
   }
 
   if ( ISPARAGLIDER || ISCAR ) {

@@ -149,7 +149,7 @@ void LKProfileResetDefault() {
 
   AircraftCategory = AircraftCategory_t::umGlider;
 
-  gTaskType=TSK_DEFAULT;
+  gTaskType = task_type_t::DEFAULT;
 
   CheckSum = 1;
 

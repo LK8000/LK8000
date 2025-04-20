@@ -110,7 +110,7 @@ bool InStartSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated, bool StartOut, in
   bool isInSector = InStartSector_Internal(Basic, Calculated, Task[0].Index, Task[0].OutBound, LastInSector);
 
   // StartOut only Valid if Start is Cylindre.
-  if (gTaskType == TSK_GP && StartLine == sector_type_t::CIRCLE && StartOut) {  // 100509
+  if (gTaskType == task_type_t::GP && StartLine == sector_type_t::CIRCLE && StartOut) {  // 100509
     // we crossed the start if we were outside sector and now we are in.
     *CrossedStart = !LastInSector.value_or(true) && isInSector;
   } else {

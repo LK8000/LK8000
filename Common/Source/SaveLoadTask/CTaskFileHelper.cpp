@@ -313,13 +313,13 @@ void CTaskFileHelper::LoadOptions(const xml_node* node) {
             const char* szType = GetAttribute(node, "type");
             if (szType) {
                 if (strcmp(szType, "AAT") == 0) {
-                    gTaskType = TSK_AAT;
+                    gTaskType = task_type_t::AAT;
                     LoadOptionAAT(nodeOpt);
                 } else if (strcmp(szType, "Race") == 0) {
-                    gTaskType = TSK_GP;
+                    gTaskType = task_type_t::GP;
                     LoadOptionRace(nodeOpt);
                 } else if (strcmp(szType, "Default") == 0) {
-                    gTaskType = TSK_DEFAULT;
+                    gTaskType = task_type_t::DEFAULT;
                     LoadOptionDefault(nodeOpt);
                 }
             }
@@ -730,25 +730,24 @@ bool CTaskFileHelper::SaveOption(xml_node* node) {
     }
 
     switch (gTaskType) {
-        case TSK_AAT:
-            // AAT Task
+        case task_type_t::AAT: // AAT Task
         SetAttribute(node, "type", "AAT");
         if (!SaveOptionAAT(OptNode)) {
             return false;
         }
-            break;
-        case TSK_GP: // Paraglider optimized Task
+        break;
+        case task_type_t::GP: // Paraglider optimized Task
         SetAttribute(node, "type", "Race");
         if (!SaveOptionRace(OptNode)) {
             return false;
         }
-            break;
-        default: // default Task
+        break;
+        case task_type_t::DEFAULT: // default Task
         SetAttribute(node, "type", "Default");
         if (!SaveOptionDefault(OptNode)) {
             return false;
         }
-            break;
+        break;
     }
 
     if (!SaveTaskRule(AddNode(node, "rules"))) {
@@ -988,7 +987,7 @@ bool CTaskFileHelper::SaveTaskPoint(xml_node* node, const unsigned long idx, con
                 break;
         }
 
-        if (gTaskType == TSK_AAT) {
+        if (gTaskType == task_type_t::AAT) {
             SetAttribute(node, "lock", TaskPt.AATTargetLocked);
             if (TaskPt.AATTargetLocked) {
                 SetAttribute(node, "target-lat", TaskPt.AATTargetLat);

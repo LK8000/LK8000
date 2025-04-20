@@ -1,12 +1,11 @@
 #if !defined(AFX_TASK_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_TASK_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-/////////////////
-// Task Type
-#define TSK_DEFAULT     0
-#define TSK_AAT         1
-#define TSK_GP          2 // Race To Goal in PG Mode
-/////////////////
+enum class task_type_t : int {
+  DEFAULT = 0,
+  AAT = 1,
+  GP = 2 // Race To Goal in PG Mode
+};
 
 enum class sector_type_t : int {
   CIRCLE = 0,
@@ -28,9 +27,9 @@ struct task_sectors {
   virtual sector_type_t type(unsigned idx) const = 0;
 };
 
-std::unique_ptr<task_sectors> get_start_sectors(int type);
-std::unique_ptr<task_sectors> get_finish_sectors(int type);
-std::unique_ptr<task_sectors> get_task_sectors(int type);
+std::unique_ptr<task_sectors> get_start_sectors(task_type_t type);
+std::unique_ptr<task_sectors> get_finish_sectors(task_type_t type);
+std::unique_ptr<task_sectors> get_task_sectors(task_type_t type);
 
 const TCHAR* get_sectors_label(sector_type_t type);
 

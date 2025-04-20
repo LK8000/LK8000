@@ -20,7 +20,7 @@ void ResetTaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const doubl
     Calculated->LegDistanceCovered = 0;
     Calculated->LegTimeToGo = 0;
 
-    if (gTaskType != TSK_AAT) {
+    if (gTaskType != task_type_t::AAT) {
       Calculated->AATTimeToGo = 0;
     }
 
@@ -109,7 +109,7 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   }
 
   // Now add distances from start to previous waypoint
-  if (gTaskType == TSK_AAT) {
+  if (gTaskType == task_type_t::AAT) {
     if (ActiveTaskPoint > 0) {
       // JMW added correction for distance covered
       Calculated->TaskDistanceCovered = aatdistance.DistanceCovered(cur_pos);

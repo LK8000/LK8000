@@ -34,7 +34,7 @@ void AATDistance::AddPoint(const GeoPoint& position, int taskwaypoint) {
   }
 
   ScopeLock lock(CritSec_TaskData);
-  if (gTaskType != TSK_AAT) {
+  if (gTaskType != task_type_t::AAT) {
     return;  // nothing else to do for non-AAT tasks
   }
 
