@@ -10,14 +10,13 @@
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "CalcTask.h"
-
+#include "Util/Clamp.hpp"
 
 extern bool TargetDialogOpen;
 
+void CalculateAATTaskSectors() {
+  ScopeLock lock(CritSec_TaskData);
 
-
-void CalculateAATTaskSectors()
-{
   int awp = ActiveTaskPoint;
 
   if(!UseAATTarget())
@@ -27,18 +26,16 @@ void CalculateAATTaskSectors()
   double longitude = GPS_INFO.Longitude;
   double altitude = GPS_INFO.Altitude;
 
-  LockTaskData();
-
   Task[0].AATTargetOffsetRadius = 0.0;
   Task[0].AATTargetOffsetRadial = 0.0;
-  if (Task[0].Index>=0) {
+  if (Task[0].Index >= 0) {
     Task[0].AATTargetLat = WayPointList[Task[0].Index].Latitude;
     Task[0].AATTargetLon = WayPointList[Task[0].Index].Longitude;
   }
 
   for(int i=1;i<MAXTASKPOINTS;i++) {
-    if(ValidTaskPoint(i)) {
-      if (!ValidTaskPoint(i+1)) {
+    if(ValidTaskPointFast(i)) {
+      if (!ValidTaskPointFast(i+1)) {
         // This must be the final waypoint, so it's not an AAT OZ
         Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;
         Task[i].AATTargetLon = WayPointList[Task[i].Index].Longitude;
@@ -46,65 +43,50 @@ void CalculateAATTaskSectors()
       }
 
       // JMWAAT: if locked, don't move it
-      if (i<awp) {
+      if (i < awp) {
         // only update targets for current/later waypoints
         continue;
       }
 
-      Task[i].AATTargetOffsetRadius =
-        min(1.0, max(Task[i].AATTargetOffsetRadius,-1.0));
+      Task[i].AATTargetOffsetRadius = Clamp(Task[i].AATTargetOffsetRadius, -1.0, 1.0);
+      Task[i].AATTargetOffsetRadial = Clamp(Task[i].AATTargetOffsetRadial, -90.0, 90.0);
 
-      Task[i].AATTargetOffsetRadial =
-        min(90.0, max(-90.0, Task[i].AATTargetOffsetRadial));
-
-      double targetbearing;
       double targetrange;
 
-      targetbearing = AngleLimit360(Task[i].Bisector+Task[i].AATTargetOffsetRadial);
+      double targetbearing = AngleLimit360(Task[i].Bisector+Task[i].AATTargetOffsetRadial);
 
       if(Task[i].AATType == sector_type_t::SECTOR) {
+        targetrange = ((Task[i].AATTargetOffsetRadius + 1.0) / 2.0);
 
-        //AATStartRadial
-        //AATFinishRadial
+        double aatbisector = HalfAngle(Task[i].AATStartRadial, Task[i].AATFinishRadial);
 
-        targetrange = ((Task[i].AATTargetOffsetRadius+1.0)/2.0);
-
-        double aatbisector = HalfAngle(Task[i].AATStartRadial,
-                                       Task[i].AATFinishRadial);
-
-        if (fabs(AngleLimit180(aatbisector-targetbearing))>90) {
+        if (fabs(AngleLimit180(aatbisector - targetbearing)) > 90) {
           // bisector is going away from sector
           targetbearing = Reciprocal(targetbearing);
-          targetrange = 1.0-targetrange;
+          targetrange = 1.0 - targetrange;
         }
-        if (!AngleInRange(Task[i].AATStartRadial,
-                          Task[i].AATFinishRadial,
-                          targetbearing,true)) {
-
+        if (!AngleInRange(Task[i].AATStartRadial, Task[i].AATFinishRadial, targetbearing, true)) {
           // Bisector is not within AAT sector, so
           // choose the closest radial as the target line
 
-          if (fabs(AngleLimit180(Task[i].AATStartRadial-targetbearing))
-              <fabs(AngleLimit180(Task[i].AATFinishRadial-targetbearing))) {
+          if (fabs(AngleLimit180(Task[i].AATStartRadial - targetbearing)) <
+              fabs(AngleLimit180(Task[i].AATFinishRadial - targetbearing))) {
             targetbearing = Task[i].AATStartRadial;
           } else {
             targetbearing = Task[i].AATFinishRadial;
           }
         }
 
-        targetrange*= Task[i].AATSectorRadius;
-
+        targetrange *= Task[i].AATSectorRadius;
       } else {
-        targetrange = Task[i].AATTargetOffsetRadius
-          *Task[i].AATCircleRadius;
+        targetrange = Task[i].AATTargetOffsetRadius * Task[i].AATCircleRadius;
       }
 
       // TODO accuracy: if i=awp and in sector, range parameter needs to
       // go from current aircraft position to projection of target
       // out to the edge of the sector
 
-      if (InTurnSector({{latitude, longitude}, altitude}, i) && (awp==i) && !Task[i].AATTargetLocked) {
-
+      if ((awp == i) && !Task[i].AATTargetLocked && InTurnSector({{latitude, longitude}, altitude}, i)) {
         // special case, currently in AAT sector/cylinder
 
         double dist;
@@ -141,7 +123,6 @@ void CalculateAATTaskSectors()
         // }
 
       } else {
-
         FindLatitudeLongitude (WayPointList[Task[i].Index].Latitude,
                                WayPointList[Task[i].Index].Longitude,
                                targetbearing,
@@ -151,7 +132,6 @@ void CalculateAATTaskSectors()
 
         UpdateTargetAltitude(Task[i]);
         TargetModified = true;
-
       }
     }
   }
@@ -161,6 +141,4 @@ void CalculateAATTaskSectors()
     TargetModified = false;
     // allow target dialog to detect externally changed targets
   }
-
-  UnlockTaskData();
 }
