@@ -19,6 +19,7 @@
 #include "Library/TimeFunctions.h"
 #include "Baro.h"
 #include "OS/CpuLoad.h"
+#include "utils/printf.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -452,27 +453,29 @@ goto_bearing:
 		// Arrival altitude using current MC  and total energy. Does not use safetymc.
 		// total energy is disabled!
 		case LK_NEXT_ALTDIFF:
-			_stprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
-				lk::strcpy(BufferTitle, MsgToken<1026>());
-			else
-				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
-            LockTaskData();
-			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
-				if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) index=RESWP_OPTIMIZED;
-				else index = Task[ActiveTaskPoint].Index;
-				if (index>=0) {
-					// don't use current MC...
-					value=Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
-					if ( value > ALTDIFFLIMIT ) {
-						valid=true;
-						_stprintf(BufferValue,TEXT("%+1.0f"), value);
+			lk::strcpy(BufferValue,_T(NULLLONG));
+			// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
+			lk::strcpy(BufferTitle, DataOptionsTitle(LK_NEXT_ALTDIFF));
+			lk::strcpy(BufferUnit, Units::GetAltitudeName());
+
+			WithLock(CritSec_TaskData, [&]() {
+				if (ValidTaskPointFast(ActiveTaskPoint)) {
+					if (ACTIVE_WP_IS_AAT_AREA || DoOptimizeRoute()) {
+						index = RESWP_OPTIMIZED;
+					}
+					else {
+						index = Task[ActiveTaskPoint].Index;
+					}
+					if (index>=0) {
+						// don't use current MC...
+						value = Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
+						if (value > ALTDIFFLIMIT) {
+							valid=true;
+							lk::snprintf(BufferValue,TEXT("%+1.0f"), value);
+						}
 					}
 				}
-			}
-            UnlockTaskData();
-			_stprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			});
 			break;
 
 		// B13
@@ -3205,24 +3208,24 @@ lkfin_ete:
 
 		// B250
 		case LK_NEXT_CENTER_ALTDIFF:
-			_stprintf(BufferValue,_T(NULLLONG));
+			lk::strcpy(BufferValue,_T(NULLLONG));
 			// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
 			lk::strcpy(BufferTitle, DataOptionsTitle(LK_NEXT_ALTDIFF));
 			lk::strcpy(BufferUnit, Units::GetAltitudeName());
             
-            LockTaskData();
-			if ( ValidTaskPoint(ActiveTaskPoint) != false ) {
-				index = Task[ActiveTaskPoint].Index;
-				if (index>=0) {
-					// don't use current MC...
-					value=Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
-					if ( value > ALTDIFFLIMIT ) {
-						valid=true;
-						_stprintf(BufferValue,TEXT("%+1.0f"), value);
+            WithLock(CritSec_TaskData, [&]() {
+				if (ValidTaskPointFast(ActiveTaskPoint)) {
+					int index = Task[ActiveTaskPoint].Index;
+					if (index>=0) {
+						// don't use current MC...
+						value = Units::ToAltitude(WayPointCalc[index].AltArriv[AltArrivMode]);
+						if (value > ALTDIFFLIMIT) {
+							valid=true;
+							lk::snprintf(BufferValue,TEXT("%+1.0f"), value);
+						}
 					}
 				}
-			}
-            UnlockTaskData();
+			});
 			break;
 
 		// B251
