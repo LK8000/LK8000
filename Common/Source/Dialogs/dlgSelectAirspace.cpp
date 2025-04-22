@@ -10,6 +10,7 @@
 #include "dlgSelectObject.h"
 #include "Sound/Sound.h"
 #include "utils/stringext.h"
+#include "InputEvents.h"
 
 namespace {
 
@@ -20,7 +21,7 @@ struct AirspaceInfo_t : public ObjectAdaptor_t {
 
   void Select() const override {
     LKSound(TEXT("LK_TICK.WAV"));
-    CAirspaceManager::Instance().PopupAirspaceDetail(airspace);
+    InputEvents::processPopupDetails(im_airspace{airspace});
   }
 
   bool Toggle() const override {

@@ -190,7 +190,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                              * we can't show dialog from Draw thread
                              * instead, new event is queued, dialog will be popup by main thread
                              */
-                            InputEvents::processPopupDetails(InputEvents::PopupWaypoint, Sideview_VGWpt[i]);
+                            InputEvents::processPopupDetails(im_waypoint{static_cast<size_t>(Sideview_VGWpt[i])});
                         }
                     }
                 }

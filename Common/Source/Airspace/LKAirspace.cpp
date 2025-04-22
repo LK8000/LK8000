@@ -34,6 +34,7 @@
 #include "Baro.h"
 #include "utils/lookup_table.h"
 #include "LocalPath.h"
+#include "InputEvents.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;
@@ -2434,9 +2435,6 @@ void CAirspaceManager::CloseAirspaces() {
     if (_airspaces.size() == 0) return;
     SaveSettings();
 
-    _detail_queue.clear();
-    _detail_current.reset();
-
     // need to cleanup, otherwise "Item.Pointer" still not null but invalid
     LKNumAirspaces = 0;
     for (LKAirspace_Nearest_Item& Item : LKAirspaces) {
@@ -3357,33 +3355,6 @@ void CAirspaceManager::AirspaceDisableWaveSectors() {
 }
 #endif
 
-
-// queue new airspaces for popup details
-void CAirspaceManager::PopupAirspaceDetail(const CAirspacePtr& pAsp) {
-    if (pAsp) {
-        ScopeLock guard(_csairspaces);
-        _detail_queue.push_back(pAsp);
-    }
-}
-
-
-void dlgAirspaceDetails();
-
-// show details for each airspaces queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
-void CAirspaceManager::ProcessAirspaceDetailQueue() {
-
-    ScopeLock Lock(_csairspaces);
-    while(!_detail_queue.empty()) {
-        _detail_current = _detail_queue.front();
-        _detail_queue.pop_front(); // remove Airspace from fifo
-
-        {
-            ScopeUnlock Unlock(_csairspaces);
-            dlgAirspaceDetails();
-        }
-    }
-    _detail_current.reset();
-}
 
 void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
     if (info.NAVWarning) {

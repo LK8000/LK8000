@@ -649,14 +649,15 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                  * we can't show dialog from Draw thread
                  * instead, new event is queued, dialog will be popup by main thread
                  */
-                InputEvents::processPopupDetails(InputEvents::PopupWaypoint, i);
+                InputEvents::processPopupDetails(im_waypoint{static_cast<size_t>(i)});
                 // SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
             }
             if (MSMAIRSPACES) {
                 if (ValidAirspace(i)) {
-                    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-                    CAirspacePtr pAsp = LKAirspaces[i].Pointer.lock();
-                    CAirspaceManager::Instance().PopupAirspaceDetail(pAsp);
+                    auto pAsp = LKAirspaces[i].Pointer.lock();
+                    if (pAsp) {
+                        InputEvents::processPopupDetails(im_airspace{pAsp});
+                    }
                 }
             }
 
@@ -664,13 +665,13 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                 if ((i < 0) || (i >= MAXTHISTORY)) {
                     break;
                 }
-                InputEvents::processPopupDetails(InputEvents::PopupThermal, i);
+                InputEvents::processPopupDetails(im_thermal{static_cast<size_t>(i)});
             }
             if (MSMTRAFFIC) {
                 if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].RadioId <= 0)) {
                     break;
                 }
-                InputEvents::processPopupDetails(InputEvents::PopupTraffic, i);
+                InputEvents::processPopupDetails(im_flarm{i});
             }
             LKevent = LKEVENT_NONE;
             return;

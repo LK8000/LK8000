@@ -43,8 +43,9 @@ start_search:
     DlgMultiSelect::AddItem(im_oracle{nearest_waypoint}, Dist);
 #endif
 #ifdef TEAM_CODE_MS
-    if (ValidWayPoint(TeamCodeRefWaypoint))
-    DlgMultiSelect::AddItem(im_team(), Dist);
+    if (ValidWayPoint(TeamCodeRefWaypoint)) {
+      DlgMultiSelect::AddItem(im_team(), Dist);
+    }
 #endif
   }
 

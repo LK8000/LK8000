@@ -114,7 +114,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
             if (Sideview_iNoHandeldSpaces) {
                 bool bShow = false;
                 for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
-                    if (Sideview_pHandeled[k].psAS != NULL) {
+                    if (Sideview_pHandeled[k].psAS) {
                         if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
                             DlgMultiSelect::AddItem(im_airspace{Sideview_pHandeled[k].psAS}, 0);
                             bShow = true;

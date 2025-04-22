@@ -32,7 +32,7 @@ namespace DlgMultiSelect {
 namespace {
 
 struct ListElement {
-  im_element elmt;
+  im_object_variant elmt;
   double Dist;
 
   bool operator<(const ListElement& rhs) const {
@@ -144,40 +144,15 @@ void dlgTaskShowModal(WndForm* pForm, int idx) {
 }
 
 struct OnDetailsDialogVisitor {
-  OnDetailsDialogVisitor() = delete;
-  OnDetailsDialogVisitor(WndForm* pForm) : _pForm(pForm) {}
+  explicit OnDetailsDialogVisitor(WndForm* pForm) : _pForm(pForm) {}
 
-  void operator()(const im_airspace& elmt) const {
-    CAirspaceManager::Instance().PopupAirspaceDetail(elmt.pAirspace);
-  }
-
-  void operator()(const im_waypoint& elmt) const {
-    SelectedWaypoint = elmt.idx;
-    PopupWaypointDetails();
-  }
-  
-  void operator()(const im_flarm& elmt) const {
-    InputEvents::processPopupDetails(InputEvents::PopupTraffic, elmt.idx);
-  }
-  
-  void operator()(const im_task_pt& elmt) const {
-    dlgTaskShowModal(_pForm, elmt.idx);
-  }
-  
-  void operator()(const im_oracle& elmt) const {
-    InputEvents::processPopupDetails(InputEvents::PopupOracle, elmt.idx);
-  }
-
-  void operator()(const im_weatherst& elmt) const {
-    InputEvents::processPopupDetails(InputEvents::PopupWeatherSt, elmt.idx);
-  }
-  
-  void operator()(const im_own_pos& elmt) const {
-    InputEvents::processPopupDetails(InputEvents::PopupBasic, 0);
-  }
-  
-  void operator()(const im_team& elmt) const {
-    InputEvents::processPopupDetails(InputEvents::PopupTeam, 0);
+  template <typename T>
+  void operator()(const T& elmt) const {
+    if constexpr (std::is_same_v<T, im_task_pt>) {
+      dlgTaskShowModal(_pForm, elmt.idx);
+    } else {
+      InputEvents::processPopupDetails(elmt);
+    }
   }
   
 private:
@@ -575,6 +550,10 @@ struct PaintListItemVisitor {
     UTF8Pictorial(_Surface, rc, szPicto, RGB_VDARKRED);
   }
 
+  void operator()(const im_thermal& elmt) const {
+    assert(false);  // not used
+  }
+
 private:
   WndOwnerDrawFrame* _Sender;
   LKSurface& _Surface;  
@@ -695,6 +674,10 @@ struct CheckCountVisitor {
   bool operator()(const im_team& elmt) const {
     return false;
   }
+
+  bool operator()(const im_thermal& elmt) const {
+    return true;
+  }
 };
 
 } // namespace
@@ -703,8 +686,7 @@ int GetItemCount() {
   return Elements.size();
 }
 
-void AddItem(im_element&& elmt, double distance) {
-
+void AddItem(im_object_variant&& elmt, double distance) {
   try {
     if (std::holds_alternative<im_task_pt>(elmt)) {
       if (Task[std::get<im_task_pt>(elmt).idx].Index == RESWP_PANPOS) {
@@ -751,7 +733,7 @@ void AddItem(im_element&& elmt, double distance) {
     auto it = std::upper_bound(Elements.begin(), Elements.end(), distance, [](double distance, const ListElement& a) {
       return a.Dist > distance;
     });
-    Elements.insert(it, { elmt, distance });
+    Elements.insert(it, { std::move(elmt), distance });
 
     assert(std::is_sorted(Elements.begin(), Elements.end(), [](const auto& a, const auto& b) {
       return a.Dist < b.Dist;

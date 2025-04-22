@@ -11,6 +11,7 @@
 
 #include "types.h"
 #include "stdint.h"
+#include "Event/object_identifier.h"
 
 /**
  * forward declaration
@@ -65,17 +66,6 @@ private:
 
 public:
 
-  typedef enum {
-    PopupWaypoint,
-    PopupThermal,
-    PopupTraffic,
-    PopupOracle,
-    PopupTeam,
-    PopupBasic,
-    PopupWeatherSt,
-  } PopupType;
-
-
   static void InitDefaultMode();
 
   static void readFile();
@@ -95,7 +85,7 @@ public:
   static bool processNmea(nmea_event ne_id);
   static bool processButton(unsigned MenuId);
   static bool processGlideComputer(gc_event gce_id);
-  static void processPopupDetails(PopupType type, int index);
+  static void processPopupDetails(const im_object_variant& object);
   static void DoQueuedEvents(void);
   static void processGo(unsigned event_id);
 

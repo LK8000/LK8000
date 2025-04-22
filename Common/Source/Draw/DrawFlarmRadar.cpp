@@ -619,9 +619,9 @@ switch(LKevent)
 			  LKASSERT(aiSortArray[i]>=0 && aiSortArray[i]<FLARM_MAX_TRAFFIC);
 			  if(LKTraffic[aiSortArray[i]].RadioId == LKTraffic[j].RadioId) {
 #ifdef FLARM_MS
-			    DlgMultiSelect::AddItem(im_flarm{i}, LKTraffic[j].Distance);
+			    DlgMultiSelect::AddItem(im_flarm{j}, LKTraffic[j].Distance);
 #else
-			    InputEvents::processPopupDetails(InputEvents::PopupTraffic, j); // With no Multiselect
+			    InputEvents::processPopupDetails(im_flarm{j}); // With no Multiselect
 #endif
 			    bFound = true;
 			  }

@@ -23,6 +23,9 @@ static CAirspaceBase airspace_copy;
 static void OnDetailsClicked(WndButton* pWnd);
 static void SetValues(WndForm* wf);
 
+// Airspaces detail system data
+CAirspaceWeakPtr  _detail_current;
+
 static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
 	  const RECT rc = Sender->GetClientRect();
@@ -34,7 +37,7 @@ static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface)
        * original data are shared ressources ! 
        * for that we need to grant all called methods are thread safe
        ****************************************************************/
-    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = _detail_current.lock();
     if(airspace) {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       airspace->DrawPicto(Surface, rc);
@@ -42,7 +45,7 @@ static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface)
 }
 
 static void OnFlyClicked(WndButton* pWnd) {
-    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = _detail_current.lock();
     if(airspace) {
       CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
     }
@@ -51,7 +54,7 @@ static void OnFlyClicked(WndButton* pWnd) {
 }
 
 static void OnSelectClicked(WndButton* pWnd) {
-    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = _detail_current.lock();
     if(airspace) {
       CAirspaceManager::Instance().AirspaceSetSelect(airspace);
     }
@@ -61,7 +64,7 @@ static void OnSelectClicked(WndButton* pWnd) {
 
 
 static void OnAcknowledgeClicked(WndButton* pWnd){
-  CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+  CAirspacePtr airspace = _detail_current.lock();
   if(airspace) {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
@@ -159,7 +162,7 @@ static void SetValues(WndForm* wf) {
   int vdist;
 
   
-  CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+  CAirspacePtr airspace = _detail_current.lock();
   if(!airspace) {
     return;
   }
@@ -222,7 +225,7 @@ static void SetValues(WndForm* wf) {
   WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
   if (wDetails) {
     bool HideDetail = WithLock(CAirspaceManager::Instance().MutexRef(), [](){
-      CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+      CAirspacePtr airspace = _detail_current.lock();
       return airspace && airspace->Comment() && (_tcslen(airspace->Comment()) < 10);
     });
 
@@ -375,10 +378,11 @@ static void SetValues(WndForm* wf) {
 }
 
 /*
- * only called by #CAirspaceManager::ProcessAirspaceDetailQueue()
- * for display AirspaceDetails, use #PopupAirspaceDetail
+ * only called by #InputEvent::ProcessQueue()
+ * to display AirspaceDetails, use #InputEvents::processPopupDetails(im_airspace{pAsp});
  */
-void dlgAirspaceDetails() {
+void dlgAirspaceDetails(CAirspacePtr pAirspace) {
+  _detail_current = pAirspace;
 
   WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS);
 
@@ -404,7 +408,7 @@ static void OnDetailsClicked(WndButton* pWnd){
 	  TCHAR Name[NAME_SIZE +1]= _T("");
 
   
-    CAirspacePtr airspace = CAirspaceManager::Instance().GetAirspacesForDetails();
+    CAirspacePtr airspace = _detail_current.lock();
     if(airspace) {
       ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       if(airspace->Comment()) {

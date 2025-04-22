@@ -12,6 +12,9 @@
 #include <cmath>
 #include <vector>
 #include <memory>
+#include <cassert>
+#include "options.h"
+#include "Defines.h"
 
 #ifdef _WGS84
 

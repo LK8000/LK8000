@@ -86,6 +86,8 @@ struct ModeLabelSTRUCT {
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 std::list<TCHAR*> LabelGarbage;
 
+void dlgAirspaceDetails(CAirspacePtr pAirspace);
+
 namespace {
 
 template <typename EventTypeT>
@@ -108,6 +110,7 @@ class InputEventQueue {
     if (_queue.empty()) {
       return {};
     }
+    // We need to copy the event because we are going to pop it from the queue
     EventTypeT event = _queue.front();
     _queue.pop_front();
     return event;
@@ -124,68 +127,78 @@ class InputEventQueue {
 };
 
 // popup object details event queue data.
-struct PopupEvent_t {
-  InputEvents::PopupType type;
-  int index;
+struct object_detail {
+  object_detail() = delete;
+
+  // copy ctor must be explicitly defined to avoid "maybe uninitialized" warning when defaulted
+  object_detail(const object_detail& obj) : object(obj.object) {}
+
+  explicit object_detail(const im_object_variant& obj) : object(obj) {}
+
+  im_object_variant object;
 };
 
-InputEventQueue<std::variant<gc_event, nmea_event, PopupEvent_t>> _queue;
+InputEventQueue<std::variant<gc_event, nmea_event, object_detail>> _queue;
 
-// show details for each object queued (proccesed by MainThread inside InputsEvent::DoQueuedEvents())
-void processPopupDetails_real(const PopupEvent_t& event) {
-  switch (event.type) {
-    case InputEvents::PopupWaypoint:
-      // Do not update CommonList and Nearest Waypoint in details mode, max 60s
-      LockFlightData();
-      LastDoCommon = GPS_INFO.Time + NEARESTONHOLD;  //@ 101003
-      UnlockFlightData();
-
-      SelectedWaypoint = event.index;
-      PopupWaypointDetails();
-
-      LastDoNearest = LastDoCommon = 0;  //@ 101003
-      break;
-    case InputEvents::PopupThermal:
-      // Do not update while in details mode, max 10m
-      LockFlightData();
-      LastDoThermalH = GPS_INFO.Time + 600;
-      UnlockFlightData();
-
-      dlgThermalDetails(event.index);
-
-      LastDoThermalH = 0;
-      break;
-    case InputEvents::PopupTraffic:
-      // Do not update Traffic while in details mode, max 10m
-      LockFlightData();
-      LastDoTraffic = GPS_INFO.Time + 600;
-      UnlockFlightData();
-
-      dlgLKTrafficDetails(event.index);
-
-      LastDoTraffic = 0;
-      break;
-    case InputEvents::PopupOracle:
-      // Do not update Traffic while in details mode, max 10m
-      dlgOracleShowModal();
-      break;
-    case InputEvents::PopupTeam:
-      // Do not update Traffic while in details mode, max 10m
-      dlgTeamCodeShowModal();
-      break;
-    case InputEvents::PopupBasic:
-      // Do not update Traffic while in details mode, max 10m
-      dlgBasicSettingsShowModal();
-      break;
-    case InputEvents::PopupWeatherSt:
-      // Do not update Traffic while in details mode, max 10m
-      dlgWeatherStDetails(event.index);
-      break;
-    default:
-      LKASSERT(false);
-      break;
+struct processPopupDetails_visitor {
+  void operator()(const im_airspace& obj) const {
+    dlgAirspaceDetails(obj.pAirspace);
   }
-}
+
+  void operator()(const im_waypoint& obj) const {
+    // Do not update CommonList and Nearest Waypoint in details mode, max 60s
+    WithLock(CritSec_FlightData, []() {
+      LastDoCommon = GPS_INFO.Time + NEARESTONHOLD;  //@ 101003
+    });
+
+    SelectedWaypoint = obj.idx;
+    PopupWaypointDetails();
+
+    LastDoNearest = LastDoCommon = 0;  //@ 101003
+  }
+
+  void operator()(const im_flarm& obj) const {
+    // Do not update Traffic while in details mode, max 10m
+    WithLock(CritSec_FlightData, []() {
+      LastDoTraffic = GPS_INFO.Time + 600;
+    });
+
+    dlgLKTrafficDetails(obj.idx);
+
+    LastDoTraffic = 0;
+  }
+
+  void operator()(const im_task_pt& obj) const {
+    assert(false);  // Task turnpoint should not be in the popup list.
+  }
+
+  void operator()(const im_oracle& obj) const {
+    dlgOracleShowModal();
+  }
+
+  void operator()(const im_weatherst& obj) const {
+    dlgWeatherStDetails(obj.idx);
+  }
+
+  void operator()(const im_own_pos& obj) const {
+    dlgBasicSettingsShowModal();
+  }
+
+  void operator()(const im_team& obj) const {
+    dlgTeamCodeShowModal();
+  }
+
+  void operator()(const im_thermal& obj) const {
+    // Do not update while in details mode, max 10m
+    WithLock(CritSec_FlightData, []() {
+      LastDoThermalH = GPS_INFO.Time + 600;
+    });
+
+    dlgThermalDetails(obj.idx);
+
+    LastDoThermalH = 0;
+  }
+};
 
 }  // namespace
 
@@ -758,8 +771,8 @@ struct EventVisitor {
     processEvent(N2Event, ne_id);
   }
 
-  void operator()(const PopupEvent_t& event) const {
-    processPopupDetails_real(event);
+  void operator()(const object_detail& obj) const {
+    std::visit(processPopupDetails_visitor(), obj.object);
   }
 };
 
@@ -767,7 +780,13 @@ void ProcessQueue() {
   // process all events in the queue
   auto evt = _queue.pop();
   while (evt) {
-    std::visit(EventVisitor(), evt.value());
+    try {
+      // process the event
+      std::visit(EventVisitor(), evt.value());
+    }
+    catch (const std::exception&) {
+      // This should not happen, but if it does, just ignore the
+    }
     // pop next event
     evt = _queue.pop();
   }
@@ -784,8 +803,6 @@ void InputEvents::DoQueuedEvents() {
 
   blockqueue = true;
 
-  CAirspaceManager::Instance().ProcessAirspaceDetailQueue();
-
   if (RepeatWindCalc>0) { // 100203
     RepeatWindCalc=0;
     eventCalcWind(_T("AUTO"));
@@ -797,8 +814,8 @@ void InputEvents::DoQueuedEvents() {
 }
 
 
-void InputEvents::processPopupDetails(PopupType type, int index) {
-  _queue.push(PopupEvent_t{type, index});
+void InputEvents::processPopupDetails(const im_object_variant& object) {
+  _queue.push(object_detail{object});
 }
 
 extern int MenuTimeOut;

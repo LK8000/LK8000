@@ -15,9 +15,13 @@
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
 #include "Airspace.h"
+#include "Sizes.h"
+#include "../Topology/shapelib/mapprimitive.h"
 
 class ScreenProjection;
 class MD5;
+struct NMEA_INFO;
+struct DERIVED_INFO;
 
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
@@ -501,7 +505,6 @@ public:
   bool PopWarningMessage(AirspaceWarningMessage *msg);
   void AirspaceWarningLabelPrinted(CAirspace &airspace, bool success);
 
-  //Get/Set airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   CAirspaceList GetNearAirspacesAtPoint(const double &lon, const double &lat, long range) const;
 
@@ -528,15 +531,6 @@ public:
   //Locking
   Mutex& MutexRef() const { return _csairspaces; }
 
-  // Airspaces detail system accessor
-  void PopupAirspaceDetail(const CAirspacePtr& pAsp);
-  void ProcessAirspaceDetailQueue();
-
-   // call this only inside Mutex Guard section !
-  CAirspacePtr GetAirspacesForDetails() {
-    return _detail_current.lock();
-  }
-
   /// to Enable/disable aispace depending of day num (SAT/SUN)
   void AutoDisable(const NMEA_INFO& info);
 
@@ -561,10 +555,6 @@ private:
   // User warning message queue
   AirspaceWarningMessageList _user_warning_queue;                // warnings to show
   CAirspaceList _airspaces_of_interest;
-
-  // Airspaces detail system data
-  CAirspaceWeakPtr  _detail_current;
-  std::deque<CAirspaceWeakPtr> _detail_queue;
 
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
