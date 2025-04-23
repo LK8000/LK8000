@@ -12,14 +12,13 @@
 #include "OS/Memory.h"
 
 extern int ConnectionProcessTimer(int itimeout);
-extern void CommonProcessTimer(void);
-extern void LKSimulator(void);
+extern void CommonProcessTimer();
+extern void LKSimulator();
 //
 // This is called at 2Hz from WndProc TIMER, which is set to 500ms by WndProc CREATE
 // This is only for FLY mode.  THIS IS NOT CALLED FOR SIM MODE, remember.
 //
-void ProcessTimer(void)
-{
+void ProcessTimer() {
   static int itimeout = -1;
   itimeout++;
 
@@ -30,7 +29,7 @@ void ProcessTimer(void)
   // Check connection status every 5 seconds
   // This is quite delicate because it is running a Lock condition on comm port
   if (itimeout % 10 == 0) {
-	itimeout = ConnectionProcessTimer(itimeout);
+    itimeout = ConnectionProcessTimer(itimeout);
   }
 }
 
@@ -45,9 +44,8 @@ void ProcessTimer(void)
 // we use a local time, this means that 1 minute passed in real (local) time does not normally
 // mean we really had 60 calls of LKSimulator, more likely we had 59, or 58..
 //
-void SIMProcessTimer(void)
-{
-  static int i=0;
+void SIMProcessTimer() {
+  static int i = 0;
   i++;
 
   CommonProcessTimer();
@@ -55,41 +53,43 @@ void SIMProcessTimer(void)
   extGPSCONNECT = TRUE;
 
   if (!ReplayLogger::Update()) {
-	if (i%2==0) return;
-	// Process timer is run at 2hz, so this is bringing it back to 1hz
-	LKSimulator();
+    if (i % 2 == 0) {
+      return;
+    }
+    // Process timer is run at 2hz, so this is bringing it back to 1hz
+    LKSimulator();
   }
 
-  if (i%2==0) return;
+  if (i % 2 == 0) {
+    return;
+  }
 
   TriggerGPSUpdate();
-
 }
-
-
 
 //
 // This is common to both real and SIM modes, and thus it is running at 2Hz
 // Dialogs will be processed in the background, without halting CPT
 //
-void CommonProcessTimer()
-{
-  static unsigned short cp_twohzcounter = 0; // good up to 256 on all platforms
+void CommonProcessTimer() {
+  static unsigned short cp_twohzcounter = 0;  // good up to 256 on all platforms
   cp_twohzcounter++;
 
   // Service the GCE and NMEA queue
-  if (ProgramStarted==psNormalOp) {
-	InputEvents::DoQueuedEvents();
-	// only shows the dialog if needed. Previously up to 2.3s at 2Hz.
-	if (cp_twohzcounter %2 == 0) ShowAirspaceWarningsToUser();
+  if (ProgramStarted == psNormalOp) {
+    InputEvents::DoQueuedEvents();
+    // only shows the dialog if needed. Previously up to 2.3s at 2Hz.
+    if (cp_twohzcounter % 2 == 0) {
+      ShowAirspaceWarningsToUser();
+    }
   }
 
   // Automatically exit menu buttons mode
   // Note that MenuTimeout_Config is necessarily 2x the users choice, because we are at 2hz here
-  if(MenuTimeOut==MenuTimeout_Config) {
-	if (!MapWindow::mode.AnyPan()) {
-		InputEvents::setMode(TEXT("default"));
-	}
+  if (MenuTimeOut == MenuTimeout_Config) {
+    if (!MapWindow::mode.AnyPan()) {
+      InputEvents::setMode(TEXT("default"));
+    }
   }
   // setMode in InputEvents is checking that current mode is different from wanted mode.
   // So when we reach timeoutmax, we do call setMode, really, but we exit since we normally
@@ -97,15 +97,15 @@ void CommonProcessTimer()
   MenuTimeOut++;
 
   // 0.5 Hz routines
-  if (cp_twohzcounter %4 == 0) {
-	UpdateBatteryInfos();
+  if (cp_twohzcounter % 4 == 0) {
+    UpdateBatteryInfos();
   }
 
   Message::Render();
 
   // Compact heap every minute, then reset the counter for everybody
   if (cp_twohzcounter == 120) {
-	MyCompactHeaps();
-	cp_twohzcounter = 0;
+    MyCompactHeaps();
+    cp_twohzcounter = 0;
   }
 }
