@@ -8,7 +8,7 @@
 
 #include <tchar.h>
 #include <vector>
-#include <deque>
+#include <queue>
 #include <list>
 #include <algorithm>
 #include <zzip/zzip.h>
@@ -444,9 +444,13 @@ struct AirspaceWarningMessage {
   CAirspaceWeakPtr originator;           // airspace instance
   AirspaceWarningEvent event;            // message cause
   AirspaceWarningLevel_t warnlevel;      // warning level
+
+  bool operator<(const AirspaceWarningMessage& other) const {
+    return (warnlevel < other.warnlevel);
+  }
 };
 // Warning message queue
-using AirspaceWarningMessageList = std::deque<AirspaceWarningMessage>;
+using AirspaceWarningMessageList = std::priority_queue<AirspaceWarningMessage>;
 
 namespace rapidxml { 
   // Forward declarations

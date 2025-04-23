@@ -2448,7 +2448,7 @@ void CAirspaceManager::CloseAirspaces() {
 
     _selected_airspace.reset();
     _sideview_nearest.reset();
-    _user_warning_queue.clear();
+    _user_warning_queue = {};
     _airspaces_near.clear();
     _airspaces_of_interest.clear();
     _airspaces_page24.clear();
@@ -2742,7 +2742,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             if (AIRSPACEWARNINGS) { // Pass warning messages only if warnings enabled
                 for (const auto& pAsp : _airspaces_of_interest) {
                     if (pAsp->FinishWarning()) {
-                        _user_warning_queue.push_back({ pAsp, pAsp->WarningEvent(), pAsp->WarningLevel() });
+                        _user_warning_queue.push({ pAsp, pAsp->WarningEvent(), pAsp->WarningLevel() });
                     }
                 }
             }
@@ -2905,13 +2905,6 @@ bool CAirspaceManager::AirspaceCalculateDistance(const CAirspacePtr& airspace, i
     return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
 
-struct warning_queue_sorter {
-  bool operator()(const AirspaceWarningMessage& a, const AirspaceWarningMessage& b) {
-    return (a.warnlevel > b.warnlevel);
-  }
-};
-
-
 // Gets an airspace warning message to show
 
 bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
@@ -2921,9 +2914,9 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
     if(_user_warning_queue.empty()) {
       return false;
     }
-    std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter());
-    *msg = _user_warning_queue.front();
-    _user_warning_queue.pop_front(); // remove message from fifo
+
+    *msg = _user_warning_queue.top();
+    _user_warning_queue.pop(); // remove message from queue
     return true;
 }
 
