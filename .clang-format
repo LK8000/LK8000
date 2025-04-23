@@ -19,7 +19,14 @@ SortIncludes: Never
 
 SpaceBeforeParens: ControlStatements
 AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
 
-# InsertBraces: true
+InsertBraces: true
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeElse: true
+  BeforeCatch: true
 
 ...
