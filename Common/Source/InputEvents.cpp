@@ -90,30 +90,37 @@ void dlgAirspaceDetails(CAirspacePtr pAirspace);
 
 namespace {
 
-template <typename EventTypeT>
+// popup object details event queue data.
+struct object_detail {
+  object_detail() = delete;
+
+  im_object_variant object;
+};
+
 class InputEventQueue {
  public:
-  using queue_t = std::deque<EventTypeT>;
+  using event_t = std::variant<gc_event, nmea_event, object_detail>;
+  using queue_t = std::deque<event_t>;
 
   InputEventQueue() = default;
 
   InputEventQueue(const InputEventQueue&) = delete;
   InputEventQueue& operator=(const InputEventQueue&) = delete;
 
-  void push(const EventTypeT& event) {
+  void push(event_t&& event) {
     ScopeLock Lock(_mtx);
-    _queue.push_back(event);
+    _queue.emplace_back(std::move(event));
   }
 
-  std::optional<EventTypeT> pop() {
+  bool pop(event_t& event) {
     ScopeLock Lock(_mtx);
     if (_queue.empty()) {
-      return {};
+      return false;
     }
     // We need to copy the event because we are going to pop it from the queue
-    EventTypeT event = _queue.front();
+    event = _queue.front();
     _queue.pop_front();
-    return event;
+    return true;
   }
 
   void clear() {
@@ -126,19 +133,7 @@ class InputEventQueue {
   queue_t _queue;
 };
 
-// popup object details event queue data.
-struct object_detail {
-  object_detail() = delete;
-
-  // copy ctor must be explicitly defined to avoid "maybe uninitialized" warning when defaulted
-  object_detail(const object_detail& obj) : object(obj.object) {}
-
-  explicit object_detail(const im_object_variant& obj) : object(obj) {}
-
-  im_object_variant object;
-};
-
-InputEventQueue<std::variant<gc_event, nmea_event, object_detail>> _queue;
+InputEventQueue _queue;
 
 struct processPopupDetails_visitor {
   void operator()(const im_airspace& obj) const {
@@ -776,19 +771,19 @@ struct EventVisitor {
   }
 };
 
+// process all events in the queue
 void ProcessQueue() {
-  // process all events in the queue
-  auto evt = _queue.pop();
-  while (evt) {
+  InputEventQueue::event_t event;
+
+  while (_queue.pop(event)) {
     try {
       // process the event
-      std::visit(EventVisitor(), evt.value());
+      std::visit(EventVisitor(), event);
     }
-    catch (const std::exception&) {
-      // This should not happen, but if it does, just ignore the
+    catch (const std::exception& e) {
+      StartupStore(_T("Error processing event: %s"), to_tstring(e.what()).c_str());
+      // This should not happen, but if it does, just log the error and ignore the event
     }
-    // pop next event
-    evt = _queue.pop();
   }
 }
 

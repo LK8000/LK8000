@@ -86,7 +86,7 @@ public:
   static bool processButton(unsigned MenuId);
   static bool processGlideComputer(gc_event gce_id);
   static void processPopupDetails(const im_object_variant& object);
-  static void DoQueuedEvents(void);
+  static void DoQueuedEvents();
   static void processGo(unsigned event_id);
 
   static unsigned  makeEvent(pt2Event event, const TCHAR *misc, unsigned next = 0);

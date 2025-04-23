@@ -20,28 +20,7 @@
 struct im_airspace {
   im_airspace() = delete;
 
-  // copy ctor must be explicitly defined to avoid "maybe uninitialized" warning when defaulted
-  im_airspace(const im_airspace& other) noexcept {  
-    pAirspace = other.pAirspace;
-  }
-
-  im_airspace(im_airspace&& other) noexcept {
-    pAirspace = std::exchange(other.pAirspace, nullptr);
-  }
-
-  explicit im_airspace(const CAirspacePtr& pAsp) : pAirspace(pAsp) {}
-
-  im_airspace& operator=(const im_airspace& other) noexcept {
-    pAirspace = other.pAirspace;
-    return *this;
-  }
-
-  im_airspace& operator=(im_airspace&& other) noexcept {
-    pAirspace = std::exchange(other.pAirspace, nullptr);
-    return *this;
-  }
-
-  CAirspacePtr pAirspace = {};
+  CAirspacePtr pAirspace;
 
   bool operator==(const im_airspace& rhs) const {
     return pAirspace == rhs.pAirspace;
