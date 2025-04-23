@@ -39,7 +39,6 @@ static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface)
        ****************************************************************/
     CAirspacePtr airspace = _detail_current.lock();
     if(airspace) {
-      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
       airspace->DrawPicto(Surface, rc);
     }
 }
@@ -66,7 +65,6 @@ static void OnSelectClicked(WndButton* pWnd) {
 static void OnAcknowledgeClicked(WndButton* pWnd){
   CAirspacePtr airspace = _detail_current.lock();
   if(airspace) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
     if (airspace_copy.Enabled()) {
       CAirspaceManager::Instance().AirspaceDisable(*airspace);
@@ -191,14 +189,14 @@ static void SetValues(WndForm* wf) {
   
   wp = wf->FindByName<WndProperty>(TEXT("prpTop"));
   if (wp) {
-	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Top());
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), airspace_copy.Top());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpBase"));
   if (wp) {
-	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Base());
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), airspace_copy.Base());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }

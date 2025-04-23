@@ -3378,6 +3378,8 @@ void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
 //  therefore we can be considered is thread safe.
 
 void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
+    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+
     RasterPointList screenpoints_picto;
     CalculatePictPosition(rc, 0.9, screenpoints_picto);
 

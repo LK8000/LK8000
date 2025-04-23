@@ -68,15 +68,9 @@ static bool OnTimer(WndForm* pWnd){
   }
 
   //Get a new copy with current values from airspacemanager
-  bool valid = WithLock(CAirspaceManager::Instance().MutexRef(), [](){
-    auto pAsp = msg.originator.lock();
-    if (pAsp) {
-      airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pAsp);
-      return true;
-    }
-    return false;
-  });
-  if (valid) { 
+  auto pAsp = msg.originator.lock();
+  if (pAsp) {
+    airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pAsp);
     dlgLKAirspaceFill(pWnd);
   }
   return true;
@@ -331,7 +325,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     wp = dlg->FindByName<WndProperty>(TEXT("prpTopAlt"));
     if (wp) {
       TCHAR stmp2[40];
-      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Top());
+      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, std::size(stmp2), airspace_copy.Top());
       wp->SetText(stmp2);
       wp->RefreshDisplay();
     }
@@ -339,7 +333,7 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     wp = dlg->FindByName<WndProperty>(TEXT("prpBaseAlt"));
     if (wp) {
       TCHAR stmp2[40];
-      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Base());
+      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, std::size(stmp2), airspace_copy.Base());
       wp->SetText(stmp2);
       wp->RefreshDisplay();
     }
