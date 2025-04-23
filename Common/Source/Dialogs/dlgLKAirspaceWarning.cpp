@@ -17,6 +17,7 @@
 #include "Event/Event.h"
 #include "Sound/Sound.h"
 #include "resource.h"
+#include "utils/printf.h"
 
 CAirspaceBase airspace_copy;
 AirspaceWarningMessage msg;
@@ -264,15 +265,14 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     TCHAR buffer[80];
     wp = dlg->FindByName<WndProperty>(TEXT("prpType"));
     if (wp) {
-	if (airspace_copy.Flyzone()) {
-	  _stprintf(buffer,TEXT("%s %s"), TEXT("FLY"), airspace_copy.TypeName());
-	} else {
-	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), airspace_copy.TypeName());
-	}
+      if (airspace_copy.Flyzone()) {
+        lk::snprintf(buffer, _T("%s %s"), _T("FLY"), airspace_copy.TypeName());
+      }
+      else {
+        lk::snprintf(buffer, _T("%s %s"), _T("NOFLY"), airspace_copy.TypeName());
+      }
 
-	  wp->SetText( buffer );
-   //   wp->SetBackColor( airspace_copy.TypeColor());
-   //  wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
+      wp->SetText(buffer);
       wp->RefreshDisplay();
     }
 
@@ -287,14 +287,16 @@ static void dlgLKAirspaceFill(WndForm* dlg)
       TCHAR stmp2[40];
       if (distances_ready) {
         Units::FormatDistance((double)abs(hdist),stmp, 10);
-        if (hdist<0) {
+        if (hdist < 0) {
           // LKTOKEN _@M1257_ "to leave"
-          _stprintf(stmp2, TEXT("%s %s"), stmp, MsgToken<1257>());
-        } else {
-          // LKTOKEN _@M1258_ "to enter"
-          _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken<1258>());
+          lk::snprintf(stmp2, _T("%s %s"), stmp, MsgToken<1257>());
         }
-      } else {
+        else {
+          // LKTOKEN _@M1258_ "to enter"
+          lk::snprintf(stmp2, _T("%s %s"), stmp, MsgToken<1258>());
+        }
+      }
+      else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
         lk::strcpy(stmp2,MsgToken<1259>());
@@ -305,17 +307,19 @@ static void dlgLKAirspaceFill(WndForm* dlg)
 
     wp = dlg->FindByName<WndProperty>(TEXT("prpVDist"));
     if (wp) {
-        TCHAR stmp2[40];
+      TCHAR stmp2[40];
       if (distances_ready) {
         Units::FormatAltitude((double)abs(vdist),stmp, 10);
-        if (vdist<0) {
+        if (vdist < 0) {
           // LKTOKEN _@M1260_ "below"
-          _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken<1260>());
-        } else {
-          // LKTOKEN _@M1261_ "above"
-          _stprintf(stmp2,TEXT("%s %s"), stmp, MsgToken<1261>());
+          lk::snprintf(stmp2, _T("%s %s"), stmp, MsgToken<1260>());
         }
-      } else {
+        else {
+          // LKTOKEN _@M1261_ "above"
+          lk::snprintf(stmp2, _T("%s %s"), stmp, MsgToken<1261>());
+        }
+      }
+      else {
         // no distance info calculated
         // LKTOKEN _@M1259_ "Too far, not calculated"
         lk::strcpy(stmp2,MsgToken<1259>());
@@ -343,28 +347,45 @@ static void dlgLKAirspaceFill(WndForm* dlg)
     wb = dlg->FindByName<WndButton>(TEXT("cmdClose"));
     if (wb) {
       TCHAR stmp2[40];
-      _stprintf(stmp2,TEXT("%s (%d)"), MsgToken<186>(), timer_counter);
+      lk::snprintf(stmp2, _T("%s (%d)"), MsgToken<186>(), timer_counter);
       wb->SetCaption(stmp2);
     }
 
 }
 
+template<size_t size>
+static void FormatAirspaceMessage(TCHAR (&msgbuf)[size], const TCHAR* prefix, const CAirspaceBase& airspace) {
+  TCHAR * pOut = msgbuf;
+  size_t pOutSize = size;
+  if (prefix) {
+    size_t PrefixSize = lk::snprintf(msgbuf, _T("%s "), prefix);
+    pOut += PrefixSize;
+    pOutSize -= PrefixSize;
+  }
+
+  if (_tcsnicmp(airspace.Name(), airspace.TypeName(), _tcslen(airspace.TypeName())) == 0) {
+    lk::strcpy(pOut, airspace.Name(), pOutSize);
+  }
+  else {
+    lk::snprintf(pOut, pOutSize, _T("%s %s"), airspace.TypeName(), airspace.Name());
+  }
+}
+
 // Called periodically to show new airspace warning messages to user
-// return 1 only for requesting run analysis
 // This is called by WINMAIN thread, every second (1hz)
-short ShowAirspaceWarningsToUser() {
+void ShowAirspaceWarningsToUser() {
   auto pAsp = msg.originator.lock();
   if (pAsp) {
-    return 0;  // Warning in progress
+    return;  // Warning in progress
   }
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
   if (!there_is_message) {
-    return 0;  // no message to display
+    return;  // no message to display
   }
 
   pAsp = msg.originator.lock();
   if (!pAsp) {
-    return 0;  // no message to display airspace not valid
+    return;  // no message to display airspace not valid
   }
 
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pAsp);
@@ -376,7 +397,7 @@ short ShowAirspaceWarningsToUser() {
   switch (msg.event) {
     default:
       // normally not show
-      DoStatusMessage(TEXT("Unknown airspace warning message"));
+      DoStatusMessage(_T("Unknown airspace warning message"));
       break;  // Unknown msg type
 
     case aweNone:
@@ -398,25 +419,15 @@ short ShowAirspaceWarningsToUser() {
 
     case aweEnteringFly:
       // LKTOKEN _@M1240_ "Entering"
-      if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-        _stprintf(msgbuf, TEXT("%s %s"), MsgToken<1240>(), airspace_copy.Name());
-      }
-      else {
-        _stprintf(msgbuf, TEXT("%s %s %s"), MsgToken<1240>(), airspace_copy.TypeName(), airspace_copy.Name());
-      }
+      FormatAirspaceMessage(msgbuf, MsgToken<1240>(), airspace_copy);
       DoStatusMessage(msgbuf);
       break;
 
     case aweLeavingNonFly:
-      // LKTOKEN _@M1241_ "Leaving"
-      if (!airspace_copy.Acknowledged())  // don't warn on leaving acknolaged airspaces
-      {
-        if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-          _stprintf(msgbuf, TEXT("%s %s"), MsgToken<1241>(), airspace_copy.Name());
-        }
-        else {
-          _stprintf(msgbuf, TEXT("%s %s %s"), MsgToken<1241>(), airspace_copy.TypeName(), airspace_copy.Name());
-        }
+      // don't warn on leaving acknowledged airspaces
+      if (!airspace_copy.Acknowledged()) {
+        // LKTOKEN _@M1241_ "Leaving"
+        FormatAirspaceMessage(msgbuf, MsgToken<1241>(), airspace_copy);
         DoStatusMessage(msgbuf);
       }
       break;
@@ -424,11 +435,12 @@ short ShowAirspaceWarningsToUser() {
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
-    WndForm* dlg =
-        dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P);
-    if (dlg == NULL) {
-      StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"), NEWLINE);  //@ 101027
-      return 0;
+    std::unique_ptr<WndForm> dlg(
+        dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P));
+
+    if (!dlg) {
+      StartupStore(_T("------ LKAirspaceWarning setup FAILED!"));  //@ 101027
+      return;
     }
 
     dlg->SetKeyDownNotify(OnKeyDown);
@@ -438,31 +450,18 @@ short ShowAirspaceWarningsToUser() {
     WndButton* wb = dlg->FindByName<WndButton>(TEXT("cmdAckForTime"));
     if (wb) {
       TCHAR stmp2[40];
-      _stprintf(stmp2, TEXT("%s (%dmin)"), MsgToken<46>(), AcknowledgementTime / 60);
+      lk::snprintf(stmp2, TEXT("%s (%dmin)"), MsgToken<46>(), AcknowledgementTime / 60);
       wb->SetCaption(stmp2);
     }
 
-    dlgLKAirspaceFill(dlg);
+    dlgLKAirspaceFill(dlg.get());
 
     LKSound(_T("LK_AIRSPACE.WAV"));  // 100819
 
-    if (_tcsnicmp(airspace_copy.Name(), airspace_copy.TypeName(), _tcslen(airspace_copy.TypeName())) == 0) {
-      _stprintf(msgbuf, TEXT("%s"), airspace_copy.Name());
-    }
-    else {
-      _stprintf(msgbuf, TEXT("%s %s"), airspace_copy.TypeName(), airspace_copy.Name());
-    }
+    FormatAirspaceMessage(msgbuf, nullptr, airspace_copy);
     dlg->SetCaption(msgbuf);
     dlg->ShowModal();
-
-    delete dlg;
-    dlg = NULL;
   }
 
   msg.originator.reset();
-
-  // If we clicked on Analysis button, we shall return 1 and the calling function will
-  // detect and take care of it.
-  // 120128 unused, we call directly eventSetup
-  return 1;
 }

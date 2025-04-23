@@ -593,7 +593,7 @@ private:
 int dlgAirspaceWarningInit();
 int dlgAirspaceWarningDeInit();
 
-short ShowAirspaceWarningsToUser();
+void ShowAirspaceWarningsToUser();
 
 
 //Data struct for nearest airspace pages
