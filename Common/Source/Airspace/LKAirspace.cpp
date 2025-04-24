@@ -762,8 +762,12 @@ void CAirspaceBase::Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, 
     lk::strcpy(_name, name);
 
     // always allocate string to avoid unchecked nullptr exception
-    _shared_comment = std::shared_ptr<TCHAR>(_tcsdup(comment?comment:_T("")), free);
-	
+    if (comment) {
+        _comment = comment;
+    } else {
+      _comment.clear();
+    }
+
     _type = type;
     _flyzone = flyzone;
     _base = base;

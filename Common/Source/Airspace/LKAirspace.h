@@ -142,7 +142,9 @@ class CAirspaceBase {
   const LKBrush& TypeBrush() const;
 
   const TCHAR* Name() const { return _name; }
-  const TCHAR* Comment() const { return _shared_comment.get(); }
+  const TCHAR* Comment() const {
+    return _comment.c_str();
+  }
 
   const AIRSPACE_ALT& Top() const { return _top; }
   const AIRSPACE_ALT& Base() const { return _base; }
@@ -208,7 +210,7 @@ class CAirspaceBase {
 protected:
   TCHAR _name[NAME_SIZE + 1] = {};                    // Name
 
-  std::shared_ptr<TCHAR> _shared_comment ;       // extended airspace informations e.g. for Notams
+  tstring _comment;       // extended airspace informations e.g. for Notams
 
   int _type = OTHER;                                    // type (class) of airspace
   AIRSPACE_ALT _base = {};                            // base altitude
