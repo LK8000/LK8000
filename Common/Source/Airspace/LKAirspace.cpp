@@ -135,24 +135,25 @@ void CAirspace::Dump() const {
 
 }
 
-const TCHAR* CAirspaceBase::TypeName(void) const {
-    return (CAirspaceManager::GetAirspaceTypeText(_type));
-
-};
-
-const LKColor& CAirspaceBase::TypeColor(void) const {
-    return MapWindow::GetAirspaceColourByClass(_type);
+const TCHAR* CAirspaceBase::TypeName() const {
+  return CAirspaceManager::GetAirspaceTypeText(_type);
 }
 
+const TCHAR* CAirspaceBase::TypeNameShort() const {
+  return CAirspaceManager::GetAirspaceTypeShortText(_type);
+}
 
-const LKBrush& CAirspaceBase::TypeBrush(void) const {
+const LKColor& CAirspaceBase::TypeColor() const {
+  return MapWindow::GetAirspaceColourByClass(_type);
+}
+
+const LKBrush& CAirspaceBase::TypeBrush() const {
 #ifdef HAVE_HATCHED_BRUSH
-    return MapWindow::GetAirspaceBrushByClass(_type);
+  return MapWindow::GetAirspaceBrushByClass(_type);
 #else
-    return MapWindow::GetAirSpaceSldBrushByClass(_type);
+  return MapWindow::GetAirSpaceSldBrushByClass(_type);
 #endif
 }
-
 
 void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const {
     double base_out = _base.Altitude;
@@ -3470,7 +3471,7 @@ LKAirspace_Nearest_Item& LKAirspace_Nearest_Item::operator=(const CAirspacePtr& 
         WarningAckLevel = pAsp->WarningAckLevel();
         // Copy name and type
         lk::strcpy(Name, pAsp->Name());
-        lk::strcpy(Type, CAirspaceManager::GetAirspaceTypeShortText(pAsp->Type()));
+        lk::strcpy(Type, pAsp->TypeNameShort());
     } else {
         Valid = false;
     }

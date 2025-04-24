@@ -137,6 +137,7 @@ class CAirspaceBase {
   void Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment = NULL);
 
   const TCHAR* TypeName() const;
+  const TCHAR* TypeNameShort() const;
   const LKColor& TypeColor() const;
   const LKBrush& TypeBrush() const;
 

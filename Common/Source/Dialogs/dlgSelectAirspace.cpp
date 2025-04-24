@@ -45,7 +45,7 @@ struct AirspaceInfo_t : public ObjectAdaptor_t {
   }
 
   const TCHAR* Type() const override {
-    return CAirspaceManager::GetAirspaceTypeShortText(airspace->Type());
+    return airspace->TypeNameShort();
   }
 
   bool FilterType(unsigned type) const override {

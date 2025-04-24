@@ -149,7 +149,14 @@ static void SetValues(WndForm* wf) {
   if(!wf) {
     return;
   }
-  
+
+  CAirspacePtr airspace = _detail_current.lock();
+  if (!airspace) {
+    // no airspace selected, close the dialog
+    wf->SetModalResult(mrOK);
+    return;
+  }
+
   WndProperty* wp;
   WndButton *wb;
   TCHAR buffer[80];
@@ -160,10 +167,6 @@ static void SetValues(WndForm* wf) {
   int vdist;
 
   
-  CAirspacePtr airspace = _detail_current.lock();
-  if(!airspace) {
-    return;
-  }
   // Get an object instance copy with actual values
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
   bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspace, &hdist, &bearing, &vdist);
@@ -175,18 +178,16 @@ static void SetValues(WndForm* wf) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpType"));
   if (wp) {
-	if (airspace_copy.Flyzone()) {
-	  _stprintf(buffer,TEXT("%s %s"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()), TEXT("FLY"));
-	} else {
-	  _stprintf(buffer,TEXT("%s %s"), TEXT("NOFLY"), CAirspaceManager::GetAirspaceTypeText(airspace_copy.Type()));
-	}
-
-	wp->SetText( buffer );
-//    wp->SetBackColor( airspace_copy.TypeColor());
-//	wp->SetForeColor( ContrastTextColor(airspace_copy.TypeColor()));
+    if (airspace_copy.Flyzone()) {
+      lk::snprintf(buffer, TEXT("%s %s"), airspace_copy.TypeName(), TEXT("FLY"));
+    }
+    else {
+      lk::snprintf(buffer, TEXT("%s %s"), TEXT("NOFLY"), airspace_copy.TypeName());
+    }
+    wp->SetText(buffer);
     wp->RefreshDisplay();
   }
-  
+
   wp = wf->FindByName<WndProperty>(TEXT("prpTop"));
   if (wp) {
 	CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), airspace_copy.Top());
@@ -222,9 +223,8 @@ static void SetValues(WndForm* wf) {
 
   WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
   if (wDetails) {
-    bool HideDetail = WithLock(CAirspaceManager::Instance().MutexRef(), [](){
-      CAirspacePtr airspace = _detail_current.lock();
-      return airspace && airspace->Comment() && (_tcslen(airspace->Comment()) < 10);
+    bool HideDetail = WithLock(CAirspaceManager::Instance().MutexRef(), [&](){
+      return airspace->Comment() && (_tcslen(airspace->Comment()) < 10);
     });
 
     if (HideDetail) {
