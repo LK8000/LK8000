@@ -41,6 +41,7 @@
 #include "Waypoints/SetHome.h"
 #include "LocalPath.h"
 #include "Dialogs/dlgMultiSelectList.h"
+#include "Dialogs/dlgAirspaceDetails.h"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
@@ -85,8 +86,6 @@ struct ModeLabelSTRUCT {
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 std::list<TCHAR*> LabelGarbage;
-
-void dlgAirspaceDetails(CAirspacePtr pAirspace);
 
 namespace {
 
@@ -137,7 +136,7 @@ InputEventQueue _queue;
 
 struct processPopupDetails_visitor {
   void operator()(const im_airspace& obj) const {
-    dlgAirspaceDetails(obj.pAirspace);
+    dlgAirspaceDetails(obj.pAirspace).DoModal();
   }
 
   void operator()(const im_waypoint& obj) const {

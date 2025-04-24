@@ -18,218 +18,208 @@
 #include "resource.h"
 #include "Radio.h"
 #include "utils/printf.h"
+#include "dlgAirspaceDetails.h"
 
-static CAirspaceBase airspace_copy;
-static void OnDetailsClicked(WndButton* pWnd);
-static void SetValues(WndForm* wf);
-
-// Airspaces detail system data
-CAirspaceWeakPtr  _detail_current;
-
-static void OnPaintAirspacePicto(WndOwnerDrawFrame * Sender, LKSurface& Surface){
-
-	  const RECT rc = Sender->GetClientRect();
-
-	  Surface.SetBkColor(RGB_LIGHTGREY);
-      /****************************************************************
-       * for drawing the airspace pictorial, we need the original data.
-       * copy contain only base class property, not geo data, 
-       * original data are shared ressources ! 
-       * for that we need to grant all called methods are thread safe
-       ****************************************************************/
-    CAirspacePtr airspace = _detail_current.lock();
-    if(airspace) {
-      airspace->DrawPicto(Surface, rc);
-    }
+dlgAirspaceDetails::dlgAirspaceDetails(const CAirspacePtr& pAirspace) {
+  _pAirspace = pAirspace;
+  if (_pAirspace) {
+    _AirspaceCopy = CAirspaceManager::Instance().GetAirspaceCopy(_pAirspace);
+  }
 }
 
-static void OnFlyClicked(WndButton* pWnd) {
-    CAirspacePtr airspace = _detail_current.lock();
-    if(airspace) {
-      CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
-    }
-    SetValues(pWnd->GetParentWndForm());
-    PlayResource(TEXT("IDR_WAV_CLICK"));
-}
+dlgAirspaceDetails::~dlgAirspaceDetails() {}
 
-static void OnSelectClicked(WndButton* pWnd) {
-    CAirspacePtr airspace = _detail_current.lock();
-    if(airspace) {
-      CAirspaceManager::Instance().AirspaceSetSelect(airspace);
-    }
-    SetValues(pWnd->GetParentWndForm());
-    PlayResource(TEXT("IDR_WAV_CLICK"));
-}
+/*
+ * only called by #InputEvents::ProcessQueue()
+ * to display AirspaceDetails, use #InputEvents::processPopupDetails(im_airspace{pAsp});
+ */
+void dlgAirspaceDetails::DoModal() {
+  using std::placeholders::_1;
+  using std::placeholders::_2;
 
+  CallBackTableEntry_t CallBackTable[] = {
+      callback_entry("OnAcknowledgeClicked", std::bind(&dlgAirspaceDetails::OnAcknowledgeClicked, this, _1)),
+      callback_entry("OnDetailsClicked", std::bind(&dlgAirspaceDetails::OnDetailsClicked, this, _1)),
+      callback_entry("OnFlyClicked", std::bind(&dlgAirspaceDetails::OnFlyClicked, this, _1)),
+      callback_entry("OnCloseClicked", std::bind(&dlgAirspaceDetails::OnCloseClicked, this, _1)),
+      callback_entry("OnSelectClicked", std::bind(&dlgAirspaceDetails::OnSelectClicked, this, _1)),
+      callback_entry("OnSetFrequency", std::bind(&dlgAirspaceDetails::OnSetFrequency, this, _1)),
+      callback_entry("OnSetSecFrequency", std::bind(&dlgAirspaceDetails::OnSetSecFrequency, this, _1)),
+      callback_entry("OnPaintAirspacePicto", std::bind(&dlgAirspaceDetails::OnPaintAirspacePicto, this, _1, _2)),
+      EndCallBackEntry()
+  };
 
-static void OnAcknowledgeClicked(WndButton* pWnd){
-  CAirspacePtr airspace = _detail_current.lock();
-  if(airspace) {
-    CAirspaceManager::Instance().AirspaceSetAckLevel(*airspace, awNone);
-    if (airspace_copy.Enabled()) {
-      CAirspaceManager::Instance().AirspaceDisable(*airspace);
-    } else {
-      CAirspaceManager::Instance().AirspaceEnable(*airspace);
-    }
+  _pForm = std::unique_ptr<WndForm>(dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS));
+  if (!_pForm) {
+    return;
   }
 
-  WndForm* wf = pWnd->GetParentWndForm();
-  if(wf) {
-    WndFrame  *wPicto = (wf->FindByName<WndFrame>(TEXT("frmAirspacePicto")));
-    if(wPicto) {
-      wPicto->Redraw();
-    }
-    SetValues(wf);
+  _pForm->SetTimerNotify(1000, std::bind(&dlgAirspaceDetails::OnTimer, this, _1));
+
+  SetValues();
+
+  _pForm->ShowModal();
+}
+
+void dlgAirspaceDetails::OnPaintAirspacePicto(WndOwnerDrawFrame* Sender, LKSurface& Surface) const {
+  const RECT rc = Sender->GetClientRect();
+
+  Surface.SetBkColor(RGB_LIGHTGREY);
+  /****************************************************************
+   * for drawing the airspace pictorial, we need the original data.
+   * copy contain only base class property, not geo data,
+   * original data are shared ressources !
+   * for that we need to grant all called methods are thread safe
+   ****************************************************************/
+  assert(_pAirspace);
+  _pAirspace->DrawPicto(Surface, rc);
+}
+
+void dlgAirspaceDetails::OnFlyClicked(WndButton* pWnd) {
+  assert(_pAirspace);
+  CAirspaceManager::Instance().AirspaceFlyzoneToggle(*_pAirspace);
+  SetValues();
+  PlayResource(TEXT("IDR_WAV_CLICK"));
+}
+
+void dlgAirspaceDetails::OnSelectClicked(WndButton* pWnd) {
+  assert(_pAirspace);
+  CAirspaceManager::Instance().AirspaceSetSelect(_pAirspace);
+  SetValues();
+  PlayResource(TEXT("IDR_WAV_CLICK"));
+}
+
+void dlgAirspaceDetails::OnAcknowledgeClicked(WndButton* pWnd) {
+  assert(_pAirspace);
+  CAirspaceManager::Instance().AirspaceSetAckLevel(*_pAirspace, awNone);
+  if (_AirspaceCopy.Enabled()) {
+    CAirspaceManager::Instance().AirspaceDisable(*_pAirspace);
+  }
+  else {
+    CAirspaceManager::Instance().AirspaceEnable(*_pAirspace);
+  }
+
+  SetValues();
+
+  WndFrame* wPicto = (_pForm->FindByName<WndFrame>(TEXT("frmAirspacePicto")));
+  if (wPicto) {
+    wPicto->Redraw();
   }
   PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 
-static void OnCloseClicked(WndButton* pWnd){
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
+void dlgAirspaceDetails::OnCloseClicked(WndButton* pWnd) const {
+  assert(_pForm);
+  _pForm->SetModalResult(mrOK);
 }
 
-static bool OnTimer(WndForm* pWnd){
-  SetValues(pWnd);
+bool dlgAirspaceDetails::OnTimer(WndForm* pWnd) {
+  SetValues();
   return true;
 }
 
-
-static void OnSetFrequency(WndButton* pWnd){
-  if(RadioPara.Enabled) {
-    unsigned khz = ExtractFrequency(airspace_copy.Name());
+void dlgAirspaceDetails::OnSetFrequency(WndButton* pWnd) const{
+  if (RadioPara.Enabled) {
+    unsigned khz = ExtractFrequency(_AirspaceCopy.Name());
     if (!ValidFrequency(khz)) {
-      khz = ExtractFrequency(airspace_copy.Comment());
+      khz = ExtractFrequency(_AirspaceCopy.Comment());
     }
-    devPutFreqActive(khz, airspace_copy.Name());
+    devPutFreqActive(khz, _AirspaceCopy.Name());
   }
 
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      pForm->SetModalResult(mrOK);
+  assert(_pForm);
+  _pForm->SetModalResult(mrOK);
+}
+
+void dlgAirspaceDetails::OnSetSecFrequency(WndButton* pWnd) const {
+  if (RadioPara.Enabled) {
+    unsigned khz = ExtractFrequency(_AirspaceCopy.Name());
+    if (!ValidFrequency(khz)) {
+      khz = ExtractFrequency(_AirspaceCopy.Comment());
     }
-  }
-} 
-
-static void OnSetSecFrequency(WndButton* pWnd){
-  if(RadioPara.Enabled) {
-    unsigned khz = ExtractFrequency(airspace_copy.Name());
-    if(!ValidFrequency(khz)) {
-      khz = ExtractFrequency(airspace_copy.Comment());
-    }
-    devPutFreqStandby(khz, airspace_copy.Name());
+    devPutFreqStandby(khz, _AirspaceCopy.Name());
   }
 
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
-} 
+  assert(_pForm);
+  _pForm->SetModalResult(mrOK);
+}
 
-static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnAcknowledgeClicked),
-  ClickNotifyCallbackEntry(OnDetailsClicked),
-  ClickNotifyCallbackEntry(OnFlyClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnSelectClicked),
-  ClickNotifyCallbackEntry(OnSetFrequency),
-  ClickNotifyCallbackEntry(OnSetSecFrequency),
-  OnPaintCallbackEntry(OnPaintAirspacePicto),
-  EndCallBackEntry()
-};
+void dlgAirspaceDetails::SetValues() {
+  assert(_pForm);
 
-static void SetValues(WndForm* wf) {
-  if(!wf) {
-    return;
-  }
-
-  CAirspacePtr airspace = _detail_current.lock();
-  if (!airspace) {
-    // no airspace selected, close the dialog
-    wf->SetModalResult(mrOK);
-    return;
+  if (_pAirspace) {
+    _AirspaceCopy = CAirspaceManager::Instance().GetAirspaceCopy(_pAirspace);
   }
 
   WndProperty* wp;
-  WndButton *wb;
+  WndButton* wb;
   TCHAR buffer[80];
-  TCHAR buffer2[160]; // must contain buffer
+  TCHAR buffer2[160];  // must contain buffer
 
   int bearing;
   int hdist;
   int vdist;
 
-  
   // Get an object instance copy with actual values
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
-  bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspace, &hdist, &bearing, &vdist);
-  
-  const TCHAR* status = airspace_copy.Enabled() ? MsgToken<1643>() : MsgToken<1600>(); // ENABLED / DISABLED
-	TCHAR capbuffer[250];
-	lk::snprintf(capbuffer,_T("%s (%s)"), airspace_copy.Name(), status);
-	wf->SetCaption(capbuffer);
+  bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance(_pAirspace, &hdist, &bearing, &vdist);
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpType"));
+  const TCHAR* status = _AirspaceCopy.Enabled() ? MsgToken<1643>() : MsgToken<1600>();  // ENABLED / DISABLED
+  TCHAR capbuffer[250];
+  lk::snprintf(capbuffer, _T("%s (%s)"), _AirspaceCopy.Name(), status);
+  _pForm->SetCaption(capbuffer);
+
+  wp = _pForm->FindByName<WndProperty>(TEXT("prpType"));
   if (wp) {
-    if (airspace_copy.Flyzone()) {
-      lk::snprintf(buffer, TEXT("%s %s"), airspace_copy.TypeName(), TEXT("FLY"));
+    if (_AirspaceCopy.Flyzone()) {
+      lk::snprintf(buffer, TEXT("%s %s"), _AirspaceCopy.TypeName(), TEXT("FLY"));
     }
     else {
-      lk::snprintf(buffer, TEXT("%s %s"), TEXT("NOFLY"), airspace_copy.TypeName());
+      lk::snprintf(buffer, TEXT("%s %s"), TEXT("NOFLY"), _AirspaceCopy.TypeName());
     }
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpTop"));
+  wp = _pForm->FindByName<WndProperty>(TEXT("prpTop"));
   if (wp) {
-	CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), airspace_copy.Top());
+    CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), _AirspaceCopy.Top());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpBase"));
+  wp = _pForm->FindByName<WndProperty>(TEXT("prpBase"));
   if (wp) {
-	CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), airspace_copy.Base());
+    CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), _AirspaceCopy.Base());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
+  wp = _pForm->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     Units::FormatDistance(abs(hdist), buffer, 20);
     if (inside) {
-     // LKTOKEN  _@M359_ = "Inside" 
+      // LKTOKEN  _@M359_ = "Inside"
       wp->SetCaption(MsgToken<359>());
     }
-    if (hdist < 0) {
-     // LKTOKEN _@M1257_ "to leave"
-     _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken<2179>(), MsgToken<1257>());
-    } else {
-     // LKTOKEN _@M1258_ "to enter"
-     _stprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken<2179>(), MsgToken<1258>());
-    }
+
+    auto Suffix = [&]() {
+      // LKTOKEN _@M1257_ "to leave"
+      // LKTOKEN _@M1258_ "to enter"
+      return (hdist < 0) ? MsgToken<1257>() : MsgToken<1258>();
+    };
+    lk::snprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken<2179>(), Suffix());
+
     wp->SetText(buffer2);
     wp->RefreshDisplay();
   }
 
-
-  WindowControl* wDetails = wf->FindByName(TEXT("cmdDetails"));
+  WindowControl* wDetails = _pForm->FindByName(TEXT("cmdDetails"));
   if (wDetails) {
-    bool HideDetail = WithLock(CAirspaceManager::Instance().MutexRef(), [&](){
-      return airspace->Comment() && (_tcslen(airspace->Comment()) < 10);
-    });
+    bool HideDetail = _AirspaceCopy.Comment() && (_tcslen(_AirspaceCopy.Comment()) < 10);
 
     if (HideDetail) {
-      WindowControl* wSelect = wf->FindByName(TEXT("cmdSelect"));
-      if(wSelect) {
+      WindowControl* wSelect = _pForm->FindByName(TEXT("cmdSelect"));
+      if (wSelect) {
         unsigned left = wDetails->GetLeft();
         unsigned width = wSelect->GetRight() - wDetails->GetLeft();
 
@@ -240,31 +230,29 @@ static void SetValues(WndForm* wf) {
     }
   }
 
-  WindowControl* wFreq = wf->FindByName(TEXT("cmdSFrequency"));
-  WindowControl* wSeqFreq = wf->FindByName(TEXT("cmdSecFrequency"));
+  WindowControl* wFreq = _pForm->FindByName(TEXT("cmdSFrequency"));
+  WindowControl* wSeqFreq = _pForm->FindByName(TEXT("cmdSecFrequency"));
   if (wFreq && wSeqFreq) {
     bool bRadio = false;
 
-    if(RadioPara.Enabled) {
-
-      unsigned khz = ExtractFrequency(airspace_copy.Name());
-      if(!ValidFrequency(khz)) {
-        khz = ExtractFrequency(airspace_copy.Comment());
+    if (RadioPara.Enabled) {
+      unsigned khz = ExtractFrequency(_AirspaceCopy.Name());
+      if (!ValidFrequency(khz)) {
+        khz = ExtractFrequency(_AirspaceCopy.Comment());
       }
 
-      if(ValidFrequency(khz)) {
-
-        WindowControl* wClose = wf->FindByName(TEXT("cmdClose"));
-        if(wClose) {
+      if (ValidFrequency(khz)) {
+        WindowControl* wClose = _pForm->FindByName(TEXT("cmdClose"));
+        if (wClose) {
           wClose->SetLeft(IBLSCALE(155));
           wClose->SetWidth(IBLSCALE(80));
         }
 
-        _stprintf(buffer2,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
+        _stprintf(buffer2, _T("%s %7.3f"), GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
         wFreq->SetCaption(buffer2);
         wFreq->Redraw();
 
-        _stprintf(buffer2,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
+        _stprintf(buffer2, _T("%s %7.3f"), GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
         wSeqFreq->SetCaption(buffer2);
         wSeqFreq->Redraw();
         bRadio = true;
@@ -274,149 +262,55 @@ static void SetValues(WndForm* wf) {
     wSeqFreq->SetVisible(bRadio);
   }
 
-
-
-
-
-  // ONLY for DIAGNOSTICS- ENABLE ALSO XML
-  #if 0
-  wp = wf->FindByName<WndProperty>(TEXT("prpWarnLevel"));
-  if (wp) {
-    switch (airspace_copy.WarningLevel()) {
-    default:
-      // LKTOKEN _@M765_ "Unknown"
-      wp->SetText(MsgToken<765>());
-      break;
-
-        case awNone:
-          // LKTOKEN _@M479_ "None"
-          wp->SetText(MsgToken<479>());
-          break;
-
-        case awYellow:
-          // LKTOKEN _@M1255_ "YELLOW WARNING"
-          wp->SetText(MsgToken<1255>());
-          break;
-
-        case awRed:
-          // LKTOKEN _@M1256_ "RED WARNING"
-          wp->SetText(MsgToken<1256>());
-          break;
-      }//sw
-      wp->RefreshDisplay();
-  }
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpAckLevel"));
-  if (wp) {
-      if (airspace_copy.Enabled()) {
-        switch (airspace_copy.WarningAckLevel()) {
-          default:
-            // LKTOKEN _@M765_ "Unknown"
-            wp->SetText(MsgToken<765>());
-            break;
-            
-          case awNone:
-            // LKTOKEN _@M479_ "None"
-            wp->SetText(MsgToken<479>());
-            break;
-
-          case awYellow:
-              // LKTOKEN _@M1267_ "Yellow acknowledged"
-              wp->SetText(MsgToken<1267>());
-            break;
-          
-          case awRed:
-              // LKTOKEN _@M1268_ "Red acknowledged"
-              wp->SetText(MsgToken<1268>());
-            break;
-
-        }//sw
-      } else {
-          // LKTOKEN _@M1269_ "Disabled"
-          wp->SetText(MsgToken<1269>());
-      }
-	  wp->RefreshDisplay();
-  }
-  #endif
-
-  wb = wf->FindByName<WndButton>(TEXT("cmdFly"));
+  wb = _pForm->FindByName<WndButton>(TEXT("cmdFly"));
   if (wb) {
-	if (airspace_copy.Flyzone()) {
-	  // LKTOKEN _@M1271_ "NOFLY"
-	  wb->SetCaption(MsgToken<1271>());
-	} else {
-	  // LKTOKEN _@M1270_ "FLY"
-	  wb->SetCaption(MsgToken<1270>());
-	}
-	wb->Redraw();
+    if (_AirspaceCopy.Flyzone()) {
+      // LKTOKEN _@M1271_ "NOFLY"
+      wb->SetCaption(MsgToken<1271>());
+    }
+    else {
+      // LKTOKEN _@M1270_ "FLY"
+      wb->SetCaption(MsgToken<1270>());
+    }
+    wb->Redraw();
   }
 
-  wb = wf->FindByName<WndButton>(TEXT("cmdSelect"));
+  wb = _pForm->FindByName<WndButton>(TEXT("cmdSelect"));
   if (wb) {
-	if (airspace_copy.Selected()) {
-	  wb->SetCaption(MsgToken<1656>()); // SELECTED!
-	} else {
-	  wb->SetCaption(MsgToken<1654>()); // SELECT
-	}
-	wb->Redraw();
+    if (_AirspaceCopy.Selected()) {
+      wb->SetCaption(MsgToken<1656>());  // SELECTED!
+    }
+    else {
+      wb->SetCaption(MsgToken<1654>());  // SELECT
+    }
+    wb->Redraw();
   }
 
-  wb = wf->FindByName<WndButton>(TEXT("cmdAcknowledge"));
+  wb = _pForm->FindByName<WndButton>(TEXT("cmdAcknowledge"));
   if (wb) {
-    if (airspace_copy.Enabled()) {
+    if (_AirspaceCopy.Enabled()) {
       // LKTOKEN _@M1283_ "Disable"
       wb->SetCaption(MsgToken<1283>());
-    } else {
+    }
+    else {
       // LKTOKEN _@M1282_ "Enable"
       wb->SetCaption(MsgToken<1282>());
     }
     wb->Redraw();
   }
-
 }
 
-/*
- * only called by #InputEvent::ProcessQueue()
- * to display AirspaceDetails, use #InputEvents::processPopupDetails(im_airspace{pAsp});
- */
-void dlgAirspaceDetails(CAirspacePtr pAirspace) {
-  _detail_current = pAirspace;
+void dlgAirspaceDetails::OnDetailsClicked(WndButton* pWnd) const {
+  TCHAR Details[READLINE_LENGTH + 1] = _T("");
+  TCHAR Name[NAME_SIZE + 1] = _T("");
 
-  WndForm* wf = dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS);
+  if (_AirspaceCopy.Comment()) {
+    lk::strcpy(Details, _AirspaceCopy.Comment());
+  }
+  else {
+    lk::strcpy(Details, _AirspaceCopy.TypeName());
+  }
+  lk::snprintf(Name, _T("%s %s:"), _AirspaceCopy.TypeName(), MsgToken<231>()); // LKTOKEN  _@M231_ = "Details"
 
-  if (!wf) return;
-  wf->SetTimerNotify(1000, OnTimer);
-  
-  SetValues(wf);
-
-  wf->ShowModal();
-
-  delete wf;
-  wf = NULL;
-
-  return;
-}
-
-
-//extern void AddAirspaceInfos(TCHAR* name, TCHAR* details) ;
-
-static void OnDetailsClicked(WndButton* pWnd){
-
-	  TCHAR Details[READLINE_LENGTH +1] = _T("");
-	  TCHAR Name[NAME_SIZE +1]= _T("");
-
-  
-    CAirspacePtr airspace = _detail_current.lock();
-    if(airspace) {
-      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-      if(airspace->Comment()) {
-        lk::strcpy(Details, airspace->Comment());
-      } else {
-        lk::strcpy(Details, airspace->TypeName());
-      }
-      lk::snprintf(Name, _T("%s %s:"), airspace->TypeName(), MsgToken<231>());
-    }
-    DebugLog(_T(". Airspace Detail <%s>"),Details);
-
-    dlgHelpShowModal(Name, Details, false);
+  dlgHelpShowModal(Name, Details, false);
 }
