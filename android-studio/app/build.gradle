@@ -18,7 +18,7 @@ if (rootProject.file(keystorePropertiesFile).exists()) {
 
 android {
     compileSdk 35
-    ndkVersion "28.0.13004108"
+    ndkVersion "28.1.13356709"
 
 
     namespace "org.LK8000"
@@ -107,7 +107,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.4.2"
     implementation "androidx.camera:camera-view:1.4.2"
 
-    implementation "androidx.core:core:1.15.0"
+    implementation "androidx.core:core:1.16.0"
 
     implementation "com.google.zxing:core:3.5.3"
 
