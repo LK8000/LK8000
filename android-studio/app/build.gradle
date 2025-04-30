@@ -27,8 +27,8 @@ android {
         applicationId "org.lk8000"
         minSdkVersion 21 // Lollipop
         targetSdkVersion 35
-        versionCode 128
-        versionName "7.4.25"
+        versionCode 130
+        versionName "7.4.26"
         setProperty("archivesBaseName", "LK8000-$versionName")
         // Required when setting minSdkVersion to 20 or lower
         multiDexEnabled true

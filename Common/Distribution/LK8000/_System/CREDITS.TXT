@@ -10,6 +10,12 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.26]
+* Fix Info page 2.4 and 3.3 
+* Fix Invalid QFE value when altiude unit is feet
+* Fix Task pictogram drawing in task definition screen
+* Android : Fix Segfault using usb serial adaptor
+
 [version 7.4.25]
 * Fix segfault on igc download from Flarm or EOS device   
 
