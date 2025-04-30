@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_language_code">ru</string>
-    <string name="upgrade_storage">"LK8000 копирует данные (%1$d MB) из папки LK8000/ в Android/data/%2$s/files/.\n\nЭто является требованием компании Google в рамках улучшения защиты персональных данных."</string>
+    <string name="upgrade_storage">Приложение LK8000 выполняет перенос пользовательских данных (объёмом %1d МБ)из каталога LK8000 в директорию Android/data/s/files/. Данное действие является обязательным требованием Google в рамках инициативы по защите приватности. Процесс переноса может занять несколько минут.</string>
     <string name="warning">Предупреждение !</string>
     <string name="close">Закрыть</string>
     <string name="quit">Выключение LK8000…</string>
     <string name="loading">Загрузка LK8000…</string>
+    <string name="error_external_storage">Внешний накопитель недоступен, пожалуйста, отключите USB-накопитель.</string>
+    <string name="error_native_library">Не удалось загрузить встроенную библиотеку LK8000.\nСообщите нам об этой проблеме и укажите следующую информацию:\n</string>
+    <string name="download_title">Загрузка LK8000</string>
+    <string name="overwrite_download">Файл уже существует. Вы хотите загрузить его еще раз?</string>
 </resources>
