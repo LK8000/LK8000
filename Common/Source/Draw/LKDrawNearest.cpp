@@ -16,13 +16,24 @@
 #include "Asset.hpp"
 #include "Util/TruncateString.hpp"
 #include "Calc/ThermalHistory.h"
+#include "utils/printf.h"
 
 extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
+namespace {
+    
 bool ValidAirspace(int i) {
     if (i < 0 || i > MAXNEARAIRSPACES) return false;
     return LKAirspaces[i].Valid;
 }
+
+LKColor LineColor() {
+  return IsDithered()
+            ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
+            : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
+}
+
+} // namespace
 
 // shortcuts
 #define MSMCOMMONS   (curmapspace==MSM_LANDABLE||curmapspace==MSM_AIRPORTS||curmapspace==MSM_NEARTPS|| \
@@ -48,7 +59,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     static FontReference bigFont, bigItalicFont;
     static bool usetwolines = 0;
     static bool compact_headers = 0;
-    static unsigned short numraws = 0;
+    static uint16_t numraws = 0;
 
     // Vertical and horizontal spaces
 #define INTERRAW	1
@@ -57,7 +68,6 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     RECT invsel;
     TCHAR Buffer[LKSIZEBUFFERLARGE];
     TCHAR text[30];
-    short n, i, j, k, iRaw, curpage, drawn_items_onpage;
     double value;
     LKColor rcolor;
     short curmapspace = MapSpaceMode;
@@ -72,7 +82,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         unsigned short ratio1_threshold[MSM_TOP + 1], ratio2_threshold[MSM_TOP + 1];
 
         // Init statics
-        for (n = 0; n <= MSM_TOP; n++) {
+        for (int n = 0; n <= MSM_TOP; n++) {
             max_name[n] = 0, min_name[n] = 0;
             ratio1_threshold[n] = 0, ratio2_threshold[n] = 0;
             s_maxnlname[n] = 0;
@@ -114,17 +124,15 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         //
 
 #define LKASP_TYPE_LEN  4
-        _stprintf(Buffer, TEXT("CTRA")); // ASP TYPE
-        Surface.GetTextSize(Buffer, &K1TextSize[MSM_AIRSPACES]);
+        // ASP TYPE
+        Surface.GetTextSize(_T("CTRA"), &K1TextSize[MSM_AIRSPACES]);
 
         // Flags can be SFE, three chars
-        _stprintf(Buffer, TEXT("SFE"));
-        Surface.GetTextSize(Buffer, &K4TextSize[MSM_AIRSPACES]);
+        Surface.GetTextSize(_T("SFE"), &K4TextSize[MSM_AIRSPACES]);
 
         // Thermal average
-        _stprintf(Buffer, TEXT("+55.5"));
-        Surface.GetTextSize(Buffer, &K3TextSize[MSM_THERMALS]);
-        Surface.GetTextSize(Buffer, &K3TextSize[MSM_TRAFFIC]);
+        Surface.GetTextSize(_T("+55.5"), &K3TextSize[MSM_THERMALS]);
+        K3TextSize[MSM_TRAFFIC] = K3TextSize[MSM_THERMALS];
 
         //
         // COMMON TYPES (Distance, Bearing, Altitude Diff,  Efficiency)
@@ -132,7 +140,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         // DISTANCE
         //
-        _stprintf(Buffer, TEXT("555.5"));
+        lk::strcpy(Buffer, _T("555.5"));
         if (usetwolines) {
             _tcscat(Buffer, _T(" "));
             _tcscat(Buffer, Units::GetDistanceName());
@@ -151,7 +159,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         // BEARING
         //
-        _stprintf(Buffer, TEXT("<325"));
+        lk::strcpy(Buffer, _T("<325"));
         Surface.GetTextSize(Buffer, &K2TextSize[MSM_LANDABLE]);
         Surface.GetTextSize(Buffer, &K2TextSize[MSM_AIRPORTS]);
         Surface.GetTextSize(Buffer, &K2TextSize[MSM_NEARTPS]);
@@ -164,7 +172,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         // REQUIRED EFFICIENCY (max 200)
         //
-        _stprintf(Buffer, TEXT("255"));
+        lk::strcpy(Buffer, _T("255"));
         Surface.GetTextSize(Buffer, &K3TextSize[MSM_LANDABLE]);
         Surface.GetTextSize(Buffer, &K3TextSize[MSM_AIRPORTS]);
         Surface.GetTextSize(Buffer, &K3TextSize[MSM_NEARTPS]);
@@ -174,13 +182,15 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         // REQUIRED ALTITUDE DIFFERENCE
         //
-        if (Units::GetAltitudeUnit() == unFeet)
-            _stprintf(Buffer, TEXT("-99999"));
-        else
-            _stprintf(Buffer, TEXT("-9999"));
+        if (Units::GetAltitudeUnit() == unFeet) {
+          lk::strcpy(Buffer, _T("-99999"));
+        }
+        else {
+          lk::strcpy(Buffer, _T("-9999"));
+        }
         if (usetwolines) {
-            _tcscat(Buffer, _T(" "));
-            _tcscat(Buffer, Units::GetAltitudeName());
+          _tcscat(Buffer, _T(" "));
+          _tcscat(Buffer, Units::GetAltitudeName());
         }
         Surface.GetTextSize(Buffer, &K4TextSize[MSM_LANDABLE]);
         Surface.GetTextSize(Buffer, &K4TextSize[MSM_AIRPORTS]);
@@ -192,8 +202,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
 
         Surface.SelectObject(LK8PanelMediumFont);
-        _stprintf(Buffer, TEXT("4.4"));
-        Surface.GetTextSize(Buffer, &phdrTextSize);
+        Surface.GetTextSize(_T("4.4"), &phdrTextSize);
 
         // Col0 is where APTS 1/3 can be written, after ModeIndex:Curtype
         Column0[MSM_LANDABLE] = rc.left + phdrTextSize.cx + LEFTLIMITER + NIBLSCALE(5);
@@ -248,8 +257,8 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         min_name[MSM_AIRSPACES] = (ScreenLandscape ? 15 : 6);
         min_name[MSM_TRAFFIC] = (ScreenLandscape ? 6 : 2);
 
-        ratio1_threshold[MSM_LANDABLE] = 10; //  if (size_name==9)ratio=3;
-        ratio2_threshold[MSM_LANDABLE] = 11; //  if (size_name==11)ratio=4;
+        ratio1_threshold[MSM_LANDABLE] = 10;
+        ratio2_threshold[MSM_LANDABLE] = 11;
         ratio1_threshold[MSM_AIRPORTS] = ratio1_threshold[MSM_LANDABLE];
         ratio2_threshold[MSM_AIRPORTS] = ratio2_threshold[MSM_LANDABLE];
         ratio1_threshold[MSM_NEARTPS] = ratio1_threshold[MSM_LANDABLE];
@@ -271,7 +280,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         //
         if (usetwolines) {
             // TODO: CALCULATE AVAILABLE SPACE AND SIZE CORRECTLY
-            for (n = 0; n < MSM_TOP; n++) {
+            for (int n = 0; n < MSM_TOP; n++) {
                 if (!max_name[n]) continue;
                 Column4[n] = right;
                 Column3[n] = Column4[n] - K4TextSize[n].cx - InfoNumberSize.cx;
@@ -286,7 +295,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             }
             lincr = 2;
         } else {
-            for (n = 0; n < MSM_TOP; n++) {
+            for (int n = 0; n < MSM_TOP; n++) {
                 if (!max_name[n]) continue;
                 Column5[n] = right;
                 Column4[n] = Column5[n] - K4TextSize[n].cx - InfoNumberSize.cx;
@@ -618,7 +627,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         Numpages = 1;
     }
 
-    curpage = SelectedPage[curmapspace];
+    short curpage = SelectedPage[curmapspace];
     if (curpage < 0 || curpage >= MAXNUMPAGES) { // TODO also >Numpages
         // DoStatusMessage(_T("ERR-091 curpage invalid!"));  // selection while waiting for data ready
         SelectedPage[curmapspace] = 0;
@@ -631,19 +640,15 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
         case LKEVENT_ENTER:
             LKevent = LKEVENT_NONE;
+            {
+              short i = SelectedRaw[curmapspace] + (curpage * numraws / lincr);
+              if (pSortedIndex) {
+                i = pSortedIndex[i];
+              }
 
-            i = SelectedRaw[curmapspace] + (curpage * numraws / lincr);
-            if(pSortedIndex) {
-                i = pSortedIndex[i];    
-            }
-
-            if (MSMCOMMONS) {
+              if (MSMCOMMONS) {
                 if (!ValidWayPoint(i)) {
-#if 0 // selection while waiting for data ready
-                    if (*pSortedNumber > 0)
-                        DoStatusMessage(_T("ERR-019 Invalid selection"));
-#endif
-                    break;
+                  break;
                 }
                 /*
                  * we can't show dialog from Draw thread
@@ -651,27 +656,28 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                  */
                 InputEvents::processPopupDetails(im_waypoint{static_cast<size_t>(i)});
                 // SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
-            }
-            if (MSMAIRSPACES) {
+              }
+              if (MSMAIRSPACES) {
                 if (ValidAirspace(i)) {
-                    auto pAsp = LKAirspaces[i].Pointer.lock();
-                    if (pAsp) {
-                        InputEvents::processPopupDetails(im_airspace{pAsp});
-                    }
+                  auto pAsp = LKAirspaces[i].Pointer.lock();
+                  if (pAsp) {
+                    InputEvents::processPopupDetails(im_airspace{pAsp});
+                  }
                 }
-            }
+              }
 
-            if (MSMTHERMALS) {
+              if (MSMTHERMALS) {
                 if ((i < 0) || (i >= MAXTHISTORY)) {
-                    break;
+                  break;
                 }
                 InputEvents::processPopupDetails(im_thermal{static_cast<size_t>(i)});
-            }
-            if (MSMTRAFFIC) {
+              }
+              if (MSMTRAFFIC) {
                 if ((i < 0) || (i >= MAXTRAFFIC) || (LKTraffic[i].RadioId <= 0)) {
-                    break;
+                  break;
                 }
                 InputEvents::processPopupDetails(im_flarm{i});
+              }
             }
             LKevent = LKEVENT_NONE;
             return;
@@ -714,13 +720,13 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             LKevent = LKEVENT_NONE;
             break;
         case LKEVENT_NEWRUN:
-            for (i = 0; i < MAXNEAREST; i++) {
-                for (k = 0; k < MAXNUMPAGES; k++) {
-                    _stprintf(Buffer1[i][k], _T("------------")); // 12 chars
-                    _stprintf(Buffer2[i][k], _T("----"));
-                    _stprintf(Buffer3[i][k], _T("----"));
-                    _stprintf(Buffer4[i][k], _T("----"));
-                    _stprintf(Buffer5[i][k], _T("----"));
+            for (int i = 0; i < MAXNEAREST; i++) {
+                for (int k = 0; k < MAXNUMPAGES; k++) {
+                    lk::strcpy(Buffer1[i][k], _T("------------")); // 12 chars
+                    lk::strcpy(Buffer2[i][k], _T("----"));
+                    lk::strcpy(Buffer3[i][k], _T("----"));
+                    lk::strcpy(Buffer4[i][k], _T("----"));
+                    lk::strcpy(Buffer5[i][k], _T("----"));
                 }
             }
             break;
@@ -731,10 +737,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             break;
     }
 
-    LKColor color = IsDithered()
-            ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
-            : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
-    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, color, rc);
+    Surface.DrawLine(PEN_SOLID, ScreenThinSize, p1, p2, LineColor(), rc);
     Surface.SelectObject(LK8InfoNearestFont); // Heading line
 
     //
@@ -755,7 +758,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     // PAGE INDEX, example: 2.1
     //
     Surface.SelectObject(LK8PanelMediumFont);
-    _stprintf(Buffer, TEXT("%d.%d"), ModeIndex, CURTYPE + 1);
+    lk::snprintf(Buffer, TEXT("%d.%d"), ModeIndex, CURTYPE + 1);
     LKWriteText(Surface,
               Buffer,
               rc.left + LEFTLIMITER,
@@ -773,7 +776,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
     Surface.SelectObject(LK8InfoNearestFont);
 
-    _stprintf(Buffer, TEXT("%s %d/%d"), headertoken[0], curpage + 1, Numpages);
+    lk::snprintf(Buffer, TEXT("%s %d/%d"), headertoken[0], curpage + 1, Numpages);
 
     LKWriteText(Surface, Buffer, Column0[curmapspace], rc.top + HEADRAW - NIBLSCALE(1), WTMODE_NORMAL, WTALIGN_LEFT, tmpcolor, false);
     if (cursortbox == 99) cursortbox = 0;
@@ -803,10 +806,11 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
         ndr = DoAirspaces(&DrawInfo, &DerivedDrawInfo);
     }
 
+    uint16_t drawn_items_onpage = 0;
 
-    for (i = 0, j = 0, drawn_items_onpage = 0; i < numraws; j++, i += lincr) {
-        iRaw = TopSize + (s_rawspace * i);
-        short curraw = (curpage * numraws);
+    for (uint16_t i = 0, j = 0; i < numraws; j++, i += lincr) {
+        uint16_t iRaw = TopSize + (s_rawspace * i);
+        uint16_t curraw = (curpage * numraws);
         if (usetwolines) {
             curraw /= 2;
             curraw += j;
@@ -833,57 +837,70 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         if (MSMCOMMONS) {
             if (ValidWayPoint(rli)) {
-                LK_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname[curmapspace]);
+                lk::strcpy(Buffer, WayPointList[rli].Name, s_maxnlname[curmapspace]);
                 CharUpper(Buffer);
                 lk::strcpy(Buffer1[i][curpage], Buffer);
 
                 value = Units::ToDistance(WayPointCalc[rli].Distance);
-                if (usetwolines)
-                    _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
-                else
-                    _stprintf(Buffer2[i][curpage], TEXT("%0.1lf"), value);
+                if (usetwolines) {
+                  lk::snprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
+                }
+                else {
+                  lk::snprintf(Buffer2[i][curpage], TEXT("%0.1lf"), value);
+                }
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-                    value = WayPointCalc[rli].Bearing - DrawInfo.TrackBearing;
-                    if (value < -180.0)
-                        value += 360.0;
-                    else
-                        if (value > 180.0)
-                        value -= 360.0;
+                  value = AngleLimit180(WayPointCalc[rli].Bearing - DrawInfo.TrackBearing);
 
-                    if (value > 1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-                    else
-                        if (value < -1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-                    else
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
-                } else
-                    _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing, MsgToken<2179>()); // 101219
+                  if (value > 1) {
+                    lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                  }
+                  else if (value < -1) {
+                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                  }
+                  else {
+                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                  }
+                }
+                else {
+                  lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing,
+                               MsgToken<2179>());  // 101219
+                }
 
                 value = WayPointCalc[rli].GR;
                 if (value < 1 || value >= MAXEFFICIENCYSHOW) {
-                    _stprintf(Buffer4[i][curpage], _T("----"));
-                } else {
-                    if (value > 99) _stprintf(text, _T("%.0f"), value);
-                    else _stprintf(text, _T("%.1f"), value);
-                    _stprintf(Buffer4[i][curpage], _T("%s"), text);
+                  lk::strcpy(Buffer4[i][curpage], _T("----"));
+                }
+                else {
+                  if (value > 99) {
+                    lk::snprintf(text, _T("%.0f"), value);
+                  }
+                  else {
+                    lk::snprintf(text, _T("%.1f"), value);
+                  }
+                  lk::strcpy(Buffer4[i][curpage], text);
                 }
 
                 value = Units::ToAltitude(WayPointCalc[rli].AltArriv[AltArrivMode]);
-                if (value <-9999 || value > 9999)
-                    lk::strcpy(text, _T("----"));
-                else
-                    _stprintf(text, _T("%+.0f"), value);
-                if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%s %s"), text, Units::GetAltitudeName());
-                else _stprintf(Buffer5[i][curpage], TEXT("%s"), text);
-
-            } else { // !Valid
-                _stprintf(Buffer1[i][curpage], _T("------------"));
-                _stprintf(Buffer2[i][curpage], _T("----"));
-                _stprintf(Buffer3[i][curpage], _T("----"));
-                _stprintf(Buffer4[i][curpage], _T("----"));
-                _stprintf(Buffer5[i][curpage], _T("----"));
+                if (value < -9999 || value > 9999) {
+                  lk::strcpy(text, _T("----"));
+                }
+                else {
+                  lk::snprintf(text, _T("%+.0f"), value);
+                }
+                if (usetwolines) {
+                  lk::snprintf(Buffer5[i][curpage], TEXT("%s %s"), text, Units::GetAltitudeName());
+                }
+                else {
+                  lk::snprintf(Buffer5[i][curpage], TEXT("%s"), text);
+                }
+            }
+            else {  // !Valid
+              lk::strcpy(Buffer1[i][curpage], _T("------------"));
+              lk::strcpy(Buffer2[i][curpage], _T("----"));
+              lk::strcpy(Buffer3[i][curpage], _T("----"));
+              lk::strcpy(Buffer4[i][curpage], _T("----"));
+              lk::strcpy(Buffer5[i][curpage], _T("----"));
             }
 
 _KeepOldCommonsValues:
@@ -933,7 +950,7 @@ _KeepOldCommonsValues:
                 //
                 // AIRSPACE NAME
                 //
-                LK_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname[curmapspace]);
+                lk::strcpy(Buffer, LKAirspaces[rli].Name, s_maxnlname[curmapspace]);
                 CharUpper(Buffer);
                 lk::strcpy(Buffer1[i][curpage], Buffer);
 
@@ -941,7 +958,7 @@ _KeepOldCommonsValues:
                 //
                 // AIRSPACE TYPE
                 //
-                LK_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN);
+                lk::strcpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN);
                 CharUpper(Buffer);
                 lk::strcpy(Buffer2[i][curpage], Buffer);
 
@@ -953,19 +970,19 @@ _KeepOldCommonsValues:
                     case awYellow:
                         value = Units::ToDistance(LKAirspaces[rli].Distance);
                         if (usetwolines)
-                            _stprintf(Buffer3[i][curpage], TEXT("%0.1lf%s!"), value, Units::GetDistanceName());
+                            lk::snprintf(Buffer3[i][curpage], TEXT("%0.1lf%s!"), value, Units::GetDistanceName());
                         else
-                            _stprintf(Buffer3[i][curpage], TEXT("%0.1lf!"), value);
+                            lk::snprintf(Buffer3[i][curpage], TEXT("%0.1lf!"), value);
                         break;
                     case awRed:
-                        _stprintf(Buffer3[i][curpage], TEXT("IN"));
+                        lk::strcpy(Buffer3[i][curpage], TEXT("IN"));
                         break;
                     default:
                         value = Units::ToDistance(LKAirspaces[rli].Distance);
                         if (usetwolines)
-                            _stprintf(Buffer3[i][curpage], TEXT("%0.1lf%s"), value, Units::GetDistanceName());
+                            lk::snprintf(Buffer3[i][curpage], TEXT("%0.1lf%s"), value, Units::GetDistanceName());
                         else
-                            _stprintf(Buffer3[i][curpage], TEXT("%0.1lf"), value);
+                            lk::snprintf(Buffer3[i][curpage], TEXT("%0.1lf"), value);
                         break;
                 }
 
@@ -973,44 +990,43 @@ _KeepOldCommonsValues:
                 // AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
                 //
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-                    value = LKAirspaces[rli].Bearing - DrawInfo.TrackBearing;
+                    value = AngleLimit180(LKAirspaces[rli].Bearing - DrawInfo.TrackBearing);
 
-                    if (value < -180.0)
-                        value += 360.0;
-                    else
-                        if (value > 180.0)
-                        value -= 360.0;
-
-                    if (value > 1)
-                        _stprintf(Buffer4[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-                    else if (value < -1)
-                        _stprintf(Buffer4[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-                    else
-                        _stprintf(Buffer4[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
-                } else
-                    _stprintf(Buffer4[i][curpage], TEXT("%2.0f%s"), LKAirspaces[rli].Bearing, MsgToken<2179>());
-
+                    if (value > 1) {
+                      lk::snprintf(Buffer4[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                    }
+                    else if (value < -1) {
+                      lk::snprintf(Buffer4[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                    }
+                    else {
+                      lk::snprintf(Buffer4[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                    }
+                }
+                else {
+                  lk::snprintf(Buffer4[i][curpage], TEXT("%2.0f%s"), LKAirspaces[rli].Bearing, MsgToken<2179>());
+                }
 
                 //
                 // AIRSPACE FLAGS
                 //
                 TCHAR aspflags[5];
-                _stprintf(aspflags, _T("%s%s%s"),
-                        LKAirspaces[rli].Selected ? _T("S") : _T(""),
-                        LKAirspaces[rli].Flyzone ? _T("F") : _T("  "),
-                        LKAirspaces[rli].Enabled ? _T("E") : _T("D"));
+                lk::snprintf(aspflags, _T("%s%s%s"), LKAirspaces[rli].Selected ? _T("S") : _T(""),
+                          LKAirspaces[rli].Flyzone ? _T("F") : _T("  "), LKAirspaces[rli].Enabled ? _T("E") : _T("D"));
 
-                if (!ScreenLandscape && usetwolines) _stprintf(Buffer5[i][curpage], TEXT("*%s"), aspflags);
-                else _stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
-
-            } else {
-                _stprintf(Buffer1[i][curpage], _T("------------")); // max 12
-                _stprintf(Buffer2[i][curpage], _T("----"));
-                _stprintf(Buffer3[i][curpage], _T("----"));
-                _stprintf(Buffer4[i][curpage], _T("----"));
-                _stprintf(Buffer5[i][curpage], _T("  "));
+                if (!ScreenLandscape && usetwolines) {
+                  lk::snprintf(Buffer5[i][curpage], TEXT("*%s"), aspflags);
+                }
+                else {
+                  lk::snprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
+                }
             }
-
+            else {
+              lk::strcpy(Buffer1[i][curpage], _T("------------"));  // max 12
+              lk::strcpy(Buffer2[i][curpage], _T("----"));
+              lk::strcpy(Buffer3[i][curpage], _T("----"));
+              lk::strcpy(Buffer4[i][curpage], _T("----"));
+              lk::strcpy(Buffer5[i][curpage], _T("  "));
+            }
 
 _KeepOldAirspacesValues:
 
@@ -1051,52 +1067,61 @@ _KeepOldAirspacesValues:
 
                 // Distance
                 value = Units::ToDistance(thermal.Distance);
-                if (usetwolines)
-                    _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
-                else
-                    _stprintf(Buffer2[i][curpage], TEXT("%0.1lf"), value);
+                if (usetwolines) {
+                  lk::snprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
+                }
+                else {
+                  lk::snprintf(Buffer2[i][curpage], TEXT("%0.1lf"), value);
+                }
 
                 // relative bearing
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-                    value = AngleLimit180(thermal.Bearing - DrawInfo.TrackBearing);
-                    if (value > 1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-                    else
-                        if (value < -1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-                    else
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
-                } else {
-                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), thermal.Bearing, MsgToken<2179>());
+                  value = AngleLimit180(thermal.Bearing - DrawInfo.TrackBearing);
+                  if (value > 1) {
+                    lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                  }
+                  else if (value < -1) {
+                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                  }
+                  else {
+                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                  }
                 }
-
+                else {
+                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f%s"), thermal.Bearing, MsgToken<2179>());
+                }
 
                 // Average lift
                 value = Units::ToVerticalSpeed(thermal.Lift);
-                if (value<-99 || value > 99)
-                    _stprintf(Buffer4[i][curpage], _T("----"));
+                if (value < -99 || value > 99) {
+                  lk::strcpy(Buffer4[i][curpage], _T("----"));
+                }
                 else {
-                    _stprintf(Buffer4[i][curpage], _T("%+.1f"), value);
+                  lk::snprintf(Buffer4[i][curpage], _T("%+.1f"), value);
                 }
 
                 // Altitude
                 value = Units::ToAltitude(thermal.Arrival);
-                if (value<-1000 || value > 45000)
-                    _stprintf(Buffer5[i][curpage], _T("----"));
-                else {
-                    if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
-                    else _stprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
+                if (value < -1000 || value > 45000) {
+                  lk::strcpy(Buffer5[i][curpage], _T("----"));
                 }
-
-
-            } else {
+                else {
+                  if (usetwolines) {
+                    lk::snprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
+                  }
+                  else {
+                    lk::snprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
+                  }
+                }
+            }
+            else {
                 // Empty thermals, fill in all empty data and maybe break loop
-                _stprintf(Buffer1[i][curpage], _T("------------"));
-                _stprintf(Buffer2[i][curpage], _T("----"));
-                _stprintf(Buffer3[i][curpage], _T("----"));
-                _stprintf(Buffer4[i][curpage], _T("----"));
-                _stprintf(Buffer5[i][curpage], _T("----"));
+                lk::strcpy(Buffer1[i][curpage], _T("------------"));
+                lk::strcpy(Buffer2[i][curpage], _T("----"));
+                lk::strcpy(Buffer3[i][curpage], _T("----"));
+                lk::strcpy(Buffer4[i][curpage], _T("----"));
+                lk::strcpy(Buffer5[i][curpage], _T("----"));
             }
 
         	if (rli < CopyThermalHistory.size()) {
@@ -1122,25 +1147,27 @@ _KeepOldAirspacesValues:
 
                 // if name is unknown then it is a '?'
                 if (wlen == 1) {
-                    _stprintf(Buffer, _T("%06x"), (unsigned) LKTraffic[rli].RadioId);
+                    lk::snprintf(Buffer, _T("%06x"), (unsigned) LKTraffic[rli].RadioId);
                     Buffer[s_maxnlname[curmapspace]] = '\0';
                 } else {
                     // if XY I-ABCD  doesnt fit..
                     if ((wlen + 3) > s_maxnlname[curmapspace]) {
-                        LK_tcsncpy(Buffer, LKTraffic[rli].Name, s_maxnlname[curmapspace]);
-                    } else {
-                        unsigned short cnlen = _tcslen(LKTraffic[rli].Cn);
-                        // if cn is XY create XY I-ABCD
-                        if (cnlen == 1 || cnlen == 2) {
-                            lk::strcpy(Buffer, LKTraffic[rli].Cn);
-                            _tcscat(Buffer, _T(" "));
-                            _tcscat(Buffer, LKTraffic[rli].Name);
-                            // for safety
-                            Buffer[s_maxnlname[curmapspace]] = '\0';
-                        } else {
-                            // else use only long name
-                            LK_tcsncpy(Buffer, LKTraffic[rli].Name, wlen);
-                        }
+                      lk::strcpy(Buffer, LKTraffic[rli].Name, s_maxnlname[curmapspace]);
+                    }
+                    else {
+                      unsigned short cnlen = _tcslen(LKTraffic[rli].Cn);
+                      // if cn is XY create XY I-ABCD
+                      if (cnlen == 1 || cnlen == 2) {
+                        lk::strcpy(Buffer, LKTraffic[rli].Cn);
+                        _tcscat(Buffer, _T(" "));
+                        _tcscat(Buffer, LKTraffic[rli].Name);
+                        // for safety
+                        Buffer[s_maxnlname[curmapspace]] = '\0';
+                      }
+                      else {
+                        // else use only long name
+                        lk::strcpy(Buffer, LKTraffic[rli].Name, wlen);
+                      }
                     }
                     CharUpper(Buffer);
                 }
@@ -1159,52 +1186,53 @@ _KeepOldAirspacesValues:
 
                 // Distance
                 value = Units::ToDistance(LKTraffic[rli].Distance);
-                if (usetwolines)
-                    _stprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
-                else
-                    _stprintf(Buffer2[i][curpage], TEXT("%0.1lf"), value);
+                if (usetwolines) {
+                  lk::snprintf(Buffer2[i][curpage], TEXT("%0.1lf %s"), value, Units::GetDistanceName());
+                }
+                else {
+                  lk::snprintf(Buffer2[i][curpage], TEXT("%0.1lf"), value);
+                }
 
                 // relative bearing
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-                    value = LKTraffic[rli].Bearing - DrawInfo.TrackBearing;
+                    value = AngleLimit180(LKTraffic[rli].Bearing - DrawInfo.TrackBearing);
 
-                    if (value < -180.0)
-                        value += 360.0;
-                    else
-                        if (value > 180.0)
-                        value -= 360.0;
-
-                    if (value > 1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-                    else
-                        if (value < -1)
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-                    else
-                        _stprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
-                } else {
-                    _stprintf(Buffer3[i][curpage], _T("%2.0f%s"), LKTraffic[rli].Bearing, MsgToken<2179>());
+                    if (value > 1) {
+                      lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                    }
+                    else if (value < -1) {
+                      lk::snprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                    }
+                    else {
+                      lk::snprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                    }
                 }
-
+                else {
+                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f%s"), LKTraffic[rli].Bearing, MsgToken<2179>());
+                }
 
                 // Vario
                 value = Units::ToVerticalSpeed(LKTraffic[rli].Average30s);
                 if (value<-6 || value > 6)
                     lk::strcpy(Buffer4[i][curpage], _T("----"));
                 else {
-                    _stprintf(Buffer4[i][curpage], _T("%+.1f"), value);
+                    lk::snprintf(Buffer4[i][curpage], _T("%+.1f"), value);
                 }
 
                 // Altitude
                 value = Units::ToAltitude(LKTraffic[rli].Altitude);
-                if (value<-1000 || value > 45000)
-                    lk::strcpy(Buffer5[i][curpage], _T("----"));
-                else {
-                    if (usetwolines) _stprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
-                    else _stprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
+                if (value < -1000 || value > 45000) {
+                  lk::strcpy(Buffer5[i][curpage], _T("----"));
                 }
-
-
+                else {
+                  if (usetwolines) {
+                    lk::snprintf(Buffer5[i][curpage], TEXT("%.0f %s"), value, Units::GetAltitudeName());
+                  }
+                  else {
+                    lk::snprintf(Buffer5[i][curpage], TEXT("%.0f"), value);
+                  }
+                }
             } else {
                 // Empty traffic, fill in all empty data and maybe break loop
                 lk::strcpy(Buffer1[i][curpage], _T("------------"));
@@ -1301,11 +1329,7 @@ _KeepOldAirspacesValues:
         // TO BE CHECKED CAREFULLY
 #ifdef ENABLE_OPENGL
 
-        LKColor color = IsDithered()
-                        ? (INVERTCOLORS ? RGB_WHITE : RGB_BLACK)
-                        : (INVERTCOLORS ? RGB_GREEN : RGB_DARKGREEN);
-
-        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), color);
+        LKPen SelectBorder(PEN_SOLID, NIBLSCALE(1), LineColor());
 
         Surface.SelectObject(SelectBorder);
         Surface.SelectObject(LK_HOLLOW_BRUSH);
