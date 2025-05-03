@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.LK8000.databinding.ActivityQrcodeScannerBinding;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -36,8 +40,15 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         binding = ActivityQrcodeScannerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         //To have the back button!!
         ActionBar actionBar = getSupportActionBar();
