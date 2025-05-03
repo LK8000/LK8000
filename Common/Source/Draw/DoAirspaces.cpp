@@ -131,9 +131,12 @@ bool DoAirspaces(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
       auto sorted_end = std::end(nearest_airspaces);
       if (nearest_airspaces.size() > MAXNEARAIRSPACES) {
         sorted_end = std::next(std::begin(nearest_airspaces), MAXNEARAIRSPACES);
+        std::partial_sort(std::begin(nearest_airspaces), sorted_end,
+        				  std::end(nearest_airspaces), airspace_distance_sorter());
       }
-      std::partial_sort(std::begin(nearest_airspaces), std::end(nearest_airspaces),
-                        sorted_end, airspace_distance_sorter());
+      else {
+        std::sort(std::begin(nearest_airspaces), sorted_end, airspace_distance_sorter());
+      }
 
       // now we have the nearest airspaces at the beginning of the list (between begin() and sorted_end)
 
