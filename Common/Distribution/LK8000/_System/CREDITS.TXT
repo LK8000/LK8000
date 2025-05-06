@@ -10,6 +10,9 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.28]
+* Android : add 'sentry' automatic crash reporting to "beta"
+
 [version 7.4.27]
 * Fix Info page 2.4 with huge aispace database loaded
 * Android : 
