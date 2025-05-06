@@ -332,11 +332,9 @@ GEXTERN NearestTopoItem NearestWaterArea;
 
 GEXTERN int PGOpenTimeH;
 GEXTERN int PGOpenTimeM;
-GEXTERN int PGOpenTime;
 
 GEXTERN int PGCloseTimeH;
 GEXTERN int PGCloseTimeM;
-GEXTERN int PGCloseTime;
 
 // Interval, in minutes
 GEXTERN int PGGateIntervalTime;

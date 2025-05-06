@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "CalcTask.h"
 #include "AATDistance.h"
-
+#include "Calc/Task/TimeGates.h"
 
 void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
 	       const bool do_advance,

@@ -37,6 +37,7 @@
 #include "Tracking/Tracking.h"
 #include "Devices/DeviceRegister.h"
 #include "Library/TimeFunctions.h"
+#include "Calc/Task/TimeGates.h"
 
 #ifdef ANDROID
 #include <jni.h>

@@ -28,6 +28,7 @@
 #ifndef ENABLE_OPENGL
 #include "Screen/LKBitmapSurface.h"
 #endif
+#include "Calc/Task/TimeGates.h"
 
 #ifdef TESTBENCH
 // USE ONLY FOR DEBUGGING PURPOSES! Normally disabled.

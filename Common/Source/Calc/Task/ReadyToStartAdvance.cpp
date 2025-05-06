@@ -8,8 +8,7 @@
 
 #include "externs.h"
 #include "InputEvents.h"
-
-
+#include "Calc/Task/TimeGates.h"
 
 #define AUTOADVANCE_MANUAL   0
 #define AUTOADVANCE_AUTO     1

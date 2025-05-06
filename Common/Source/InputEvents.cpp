@@ -42,6 +42,7 @@
 #include "LocalPath.h"
 #include "Dialogs/dlgMultiSelectList.h"
 #include "Dialogs/dlgAirspaceDetails.h"
+#include "Calc/Task/TimeGates.h"
 
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT

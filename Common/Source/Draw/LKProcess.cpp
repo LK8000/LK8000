@@ -20,6 +20,7 @@
 #include "Baro.h"
 #include "OS/CpuLoad.h"
 #include "utils/printf.h"
+#include "Calc/Task/TimeGates.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"

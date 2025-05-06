@@ -14,6 +14,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "resource.h"
+#include "Calc/Task/TimeGates.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;

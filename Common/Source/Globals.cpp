@@ -360,11 +360,9 @@ void Globals_Init(void) {
   // Paraglider's time gates
   PGOpenTimeH=0;
   PGOpenTimeM=0;
-  PGOpenTime=0;
 
   PGCloseTimeH=23;
   PGCloseTimeM=59;
-  PGCloseTime=86399;
   // Interval, in minutes
   PGGateIntervalTime=0;
   // How many gates, 1-x
