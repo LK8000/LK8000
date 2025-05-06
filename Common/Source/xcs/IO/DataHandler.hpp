@@ -25,7 +25,7 @@ Copyright_License {
 #define XCSOAR_IO_DATA_HANDLER_HPP
 
 #include "Compiler.h"
-
+#include <vector>
 #include <stddef.h>
 #include "utils/uuid.h"
 
