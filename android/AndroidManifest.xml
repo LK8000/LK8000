@@ -76,7 +76,7 @@
                android:fullBackupContent="@xml/backup_rules"
                android:dataExtractionRules="@xml/data_extraction_rules">
 
-    <meta-data android:name="io.sentry.dsn" android:value="{$sentryDndsUrl}" />
+    <meta-data android:name="io.sentry.dsn" android:value="${sentryDsnUrl}" />
     <meta-data android:name="io.sentry.anr.enable" android:value="true" />
 
     <activity android:name=".LK8000"
