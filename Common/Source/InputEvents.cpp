@@ -3367,6 +3367,17 @@ void InputEvents::eventShowMultiselect(const TCHAR*) {
   DlgMultiSelect::ShowModal();
 }
 
+void InputEvents::eventPilotEvent(const TCHAR*) {
+  // TODO : Check if start rule is set to PEV
+
+  // TODO : Configure TimeGate :
+  // 1. set Number of gate to 1
+  // 2. set GateOpenTime to 'Now' + 'WaitTime'
+  // 3. set GateCloseTime to 'GateOpenTime' + 'StartWindow'
+
+  LogPilotEvent(GPS_INFO);
+}
+
 namespace {
 
   #define DELARE_EVENT(Name) { _T(#Name), &InputEvents::event ## Name }
@@ -3457,6 +3468,7 @@ namespace {
     { _T("SendDataPort4"), &InputEvents::eventSendDataPort<3> },
     { _T("SendDataPort5"), &InputEvents::eventSendDataPort<4> },
     { _T("SendDataPort6"), &InputEvents::eventSendDataPort<5> },
+    DELARE_EVENT(PilotEvent),
   });
 
   #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }
