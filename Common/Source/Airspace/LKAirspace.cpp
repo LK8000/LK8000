@@ -35,6 +35,7 @@
 #include "utils/lookup_table.h"
 #include "LocalPath.h"
 #include "InputEvents.h"
+#include "utils/charset_helper.h"
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;
@@ -1623,7 +1624,6 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     }    
 
   
-    TCHAR Text[READLINE_LENGTH + 1];
     TCHAR sTmp[READLINE_LENGTH + 1];
     int linecount = 0;
     int parsing_state = 0;
@@ -1651,9 +1651,14 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     short maxwarning=3; // max number of warnings to confirm, then automatic confirmation
     bool InsideMap = !(WaypointsOutOfRange > 1); // exclude
     StartupStore(TEXT(". Reading OpenAir airspace file%s"), NEWLINE);
-    while (stream.read_line(Text)) {
+
+    std::istream istream(&stream);
+    std::string src_line;
+
+    while (std::getline(istream, src_line)) {
         ++linecount;
-        TCHAR* p = Text;
+        tstring Text = from_unknown_charset(src_line.c_str());
+        TCHAR* p = Text.data();
         while (*p != 0 && isspace(*p)) {
             p++; // Skip whitespaces
         }
