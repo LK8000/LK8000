@@ -439,6 +439,10 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
         PlayResource(TEXT("IDR_WAV_CLICK"));
         dlgMacCready::DoModal();
         return true;
+	case CustomKeyMode_t::ckPEVStart:
+        PlayResource(TEXT("IDR_WAV_CLICK"));
+        InputEvents::eventPilotEvent(_T(""));
+        return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		StartupStore(_T("... ERR-726 INVALID CUSTOMKEY=%d\n"), static_cast<int>(key));
@@ -563,7 +567,8 @@ const KeyLabel_t _CustomKeyLabel[] = {
 	KeyLabel<2395, 2395>(),	// Device E Config
 	KeyLabel<2396, 2396>(),	// Device F Config
 	KeyLabel<2307, 2307>(),	// Radio Settings
-	KeyLabel< 844,  844>()    // MacCready setting
+	KeyLabel< 844,  844>(), // MacCready setting
+	KeyLabel<2514, 2513>() // { Task Start Pilot Event , "PEV"\nStart }
 };
 
 size_t to_label_index(CustomKeyMode_t key) {

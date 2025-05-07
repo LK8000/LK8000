@@ -2636,5 +2636,8 @@
     "_@M002509_": "NEXT GATE OPEN IN 1 HOUR",
     "_@M002510_": "NEXT GATE OPEN IN 30 MINUTES",
     "_@M002511_": "NEXT GATE OPEN IN 10 MINUTES",
-    "_@M002512_": "NEXT GATE OPEN IN 5 MINUTES"
+    "_@M002512_": "NEXT GATE OPEN IN 5 MINUTES",
+
+    "_@M002513_": "\"PEV\"\nStart",
+    "_@M002514_": "Task Start Pilot Event"
 }
