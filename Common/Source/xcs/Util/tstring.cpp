@@ -17,6 +17,16 @@ trim_inplace(std::basic_string<CharT>& s) {
   return s;
 }
 
+template <typename CharT>
+void replace_all(std::basic_string<CharT>& string, const std::basic_string_view<CharT>& old_string,
+                 const std::basic_string_view<CharT>& new_string) {
+  size_t start_pos = 0;
+  while ((start_pos = string.find(old_string, start_pos)) != std::string::npos) {
+    string.replace(start_pos, old_string.length(), new_string);
+    start_pos += new_string.length();  // Handles case where 'to' is a substring of 'from'
+  }
+}
+
 } // namespace
 
 std::string& trim_inplace(std::string &s) {
@@ -25,6 +35,14 @@ std::string& trim_inplace(std::string &s) {
 
 std::wstring& trim_inplace(std::wstring &s) {
   return trim_inplace<std::wstring::value_type>(s);
+}
+
+void replace_all(std::string& string, const std::string_view& old_string, const std::string_view& new_string) {
+  replace_all<std::string::value_type>(string, old_string, new_string);
+}
+
+void replace_all(std::wstring& string, const std::wstring_view& old_string, const std::wstring_view& new_string) {
+  replace_all<std::wstring::value_type>(string, old_string, new_string);
 }
 
 #ifdef _UNICODE

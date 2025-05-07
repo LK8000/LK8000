@@ -104,16 +104,17 @@ std::string to_utf8(const char* sz) {
 std::string& trim_inplace(std::string &s);
 std::wstring& trim_inplace(std::wstring &s);
 
+void replace_all(std::string& string, const std::string_view& old_string, const std::string_view& new_string);
+void replace_all(std::wstring& string, const std::wstring_view& old_string, const std::wstring_view& new_string);
 
 /**
  * Convert ASCII character (0x00..0x7f) to lower case.
  * it ignores the system locale.
  */
-inline
-tstring to_lower_ascii(const tstring& source) {
-    tstring lower_text;
-    std::transform(source.begin(), source.end(), std::back_inserter(lower_text), ToLowerASCII);
-    return lower_text;
+inline tstring to_lower_ascii(const tstring& source) {
+  tstring lower_text;
+  std::transform(source.begin(), source.end(), std::back_inserter(lower_text), ToLowerASCII);
+  return lower_text;
 }
 
 
