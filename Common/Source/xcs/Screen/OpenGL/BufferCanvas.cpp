@@ -176,8 +176,7 @@ BufferCanvas::Begin(Canvas &other)
     ::glDisable(GL_SCISSOR_TEST);
 
 #ifdef USE_GLSL
-    glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,
-                     OpenGL::translate.x, OpenGL::translate.y, 0, 0);
+    OpenGL::UpdateShaderTranslate();
 #endif
 
 #if defined(HAVE_GLES) && !defined(HAVE_GLES2)
@@ -234,8 +233,7 @@ BufferCanvas::Commit(Canvas &other)
     push_scissor = nullptr;
 
 #ifdef USE_GLSL
-    glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,
-                     OpenGL::translate.x, OpenGL::translate.y, 0, 0);
+    OpenGL::UpdateShaderTranslate();
 #endif
 
 #ifdef SOFTWARE_ROTATE_DISPLAY

@@ -30,7 +30,6 @@ class GLProgram;
 
 namespace OpenGL {
   namespace Attribute {
-    static constexpr GLuint TRANSLATE = 0;
     static constexpr GLuint POSITION = 1;
     static constexpr GLuint TEXCOORD = 2;
     static constexpr GLuint COLOR = 3;
@@ -62,9 +61,11 @@ namespace OpenGL {
   extern GLint alpha_projection, alpha_texture;
 
   void InitShaders();
-  void DeinitShaders();
+  void DeinitShaders() noexcept;
 
-  void UpdateShaderProjectionMatrix();
+  void UpdateShaderProjectionMatrix() noexcept;
+
+  void UpdateShaderTranslate() noexcept;
 };
 
 #endif

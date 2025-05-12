@@ -50,8 +50,7 @@ SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
     OpenGL::translate += _offset;
 
 #ifdef USE_GLSL
-    glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,
-                     OpenGL::translate.x, OpenGL::translate.y, 0, 0);
+    OpenGL::UpdateShaderTranslate();
 #else
     glPushMatrix();
 #ifdef HAVE_GLES
@@ -79,8 +78,7 @@ SubCanvas::~SubCanvas()
     OpenGL::translate -= relative;
 
 #ifdef USE_GLSL
-    glVertexAttrib4f(OpenGL::Attribute::TRANSLATE,
-                     OpenGL::translate.x, OpenGL::translate.y, 0, 0);
+    OpenGL::UpdateShaderTranslate();
 #else
     glPopMatrix();
 #endif

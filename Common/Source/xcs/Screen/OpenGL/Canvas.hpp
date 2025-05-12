@@ -35,6 +35,7 @@ Copyright_License {
 
 #ifdef USE_GLSL
 #include <glm/fwd.hpp>
+#include "Program.hpp"
 #endif
 
 #include <tchar.h>
@@ -226,6 +227,10 @@ public:
   void OutlineRectangleGL(int left, int top, int right, int bottom);
 
   void DrawOutlineRectangle(int left, int top, int right, int bottom) {
+#ifdef USE_GLSL
+    OpenGL::solid_shader->Use();
+#endif
+
     pen.Bind();
     OutlineRectangleGL(left, top, right, bottom);
     pen.Unbind();
@@ -233,6 +238,10 @@ public:
 
   void DrawOutlineRectangle(int left, int top, int right, int bottom,
                             Color color) {
+#ifdef USE_GLSL
+    OpenGL::solid_shader->Use();
+#endif
+
     color.Bind();
 #if defined(HAVE_GLES) && !defined(HAVE_GLES2)
     glLineWidthx(1 << 16);
