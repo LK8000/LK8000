@@ -25,6 +25,7 @@ Copyright_License {
 #define XCSOAR_SCREEN_OPENGL_SHADERS_HPP
 
 #include "System.hpp"
+#include <memory>
 
 class GLProgram;
 
@@ -35,29 +36,31 @@ namespace OpenGL {
     static constexpr GLuint COLOR = 3;
   };
 
+  using program_unique_ptr = std::unique_ptr<GLProgram>;
+  
   /**
    * A shader that draws a solid color (#Attribute::COLOR).
    */
-  extern GLProgram *solid_shader;
+  extern program_unique_ptr solid_shader;
   extern GLint solid_projection, solid_modelview;
 
   /**
    * A shader that copies the texture.
    */
-  extern GLProgram *texture_shader;
+  extern program_unique_ptr texture_shader;
   extern GLint texture_projection, texture_texture;
 
   /**
    * A shader that copies the inverted texture.
    */
-  extern GLProgram *invert_shader;
+  extern program_unique_ptr invert_shader;
   extern GLint invert_projection, invert_texture;
 
   /**
    * A shader that copies the texture's alpha channel, but replaces
    * the color (#Attribute::COLOR).
    */
-  extern GLProgram *alpha_shader;
+  extern program_unique_ptr alpha_shader;
   extern GLint alpha_projection, alpha_texture;
 
   void InitShaders();

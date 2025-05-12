@@ -31,16 +31,16 @@ Copyright_License {
 #include <glm/gtc/type_ptr.hpp>
 
 namespace OpenGL {
-  GLProgram *solid_shader;
+  program_unique_ptr solid_shader;
   GLint solid_projection, solid_modelview, solid_translate;
 
-  GLProgram *texture_shader;
+  program_unique_ptr texture_shader;
   GLint texture_projection, texture_texture, texture_translate;
 
-  GLProgram *invert_shader;
+  program_unique_ptr invert_shader;
   GLint invert_projection, invert_texture, invert_translate;
 
-  GLProgram *alpha_shader;
+  program_unique_ptr alpha_shader;
   GLint alpha_projection, alpha_texture, alpha_translate;
 }
 
@@ -52,7 +52,9 @@ namespace OpenGL {
 #define GLSL_PRECISION
 #endif
 
-static constexpr char solid_vertex_shader[] =
+namespace {
+
+constexpr char solid_vertex_shader[] =
   GLSL_VERSION
   R"glsl(
     uniform mat4 projection;
@@ -69,7 +71,7 @@ static constexpr char solid_vertex_shader[] =
     }
   )glsl";
 
-static constexpr char solid_fragment_shader[] =
+constexpr char solid_fragment_shader[] =
   GLSL_VERSION
   GLSL_PRECISION
   R"glsl(
@@ -79,7 +81,7 @@ static constexpr char solid_fragment_shader[] =
     }
   )glsl";
 
-static constexpr char texture_vertex_shader[] =
+constexpr char texture_vertex_shader[] =
   GLSL_VERSION
   R"glsl(
     uniform mat4 projection;
@@ -98,7 +100,7 @@ static constexpr char texture_vertex_shader[] =
     }
   )glsl";
 
-static constexpr char texture_fragment_shader[] =
+constexpr char texture_fragment_shader[] =
   GLSL_VERSION
   GLSL_PRECISION
   R"glsl(
@@ -109,8 +111,8 @@ static constexpr char texture_fragment_shader[] =
     }
   )glsl";
 
-static const char *const invert_vertex_shader = texture_vertex_shader;
-static constexpr char invert_fragment_shader[] =
+const char *const invert_vertex_shader = texture_vertex_shader;
+constexpr char invert_fragment_shader[] =
   GLSL_VERSION
   GLSL_PRECISION
   R"glsl(
@@ -122,8 +124,8 @@ static constexpr char invert_fragment_shader[] =
     }
   )glsl";
 
-static const char *const alpha_vertex_shader = texture_vertex_shader;
-static constexpr char alpha_fragment_shader[] =
+const char *const alpha_vertex_shader = texture_vertex_shader;
+constexpr char alpha_fragment_shader[] =
   GLSL_VERSION
   GLSL_PRECISION
   R"glsl(
@@ -135,8 +137,7 @@ static constexpr char alpha_fragment_shader[] =
     }
   )glsl";
 
-static void
-CompileAttachShader(GLProgram &program, GLenum type, const char *code)
+void CompileAttachShader(GLProgram& program, GLenum type, const char* code)
 {
   GLShader shader(type);
   shader.Source(code);
@@ -151,18 +152,19 @@ CompileAttachShader(GLProgram &program, GLenum type, const char *code)
   program.AttachShader(shader);
 }
 
-static GLProgram *
-CompileProgram(const char *vertex_shader, const char *fragment_shader)
-{
-  GLProgram *program = new GLProgram();
+inline
+OpenGL::program_unique_ptr make_program_unique_ptr() {
+  return std::make_unique<GLProgram>();
+}
+
+OpenGL::program_unique_ptr CompileProgram(const char* vertex_shader, const char* fragment_shader) {
+  auto program = make_program_unique_ptr();
   CompileAttachShader(*program, GL_VERTEX_SHADER, vertex_shader);
   CompileAttachShader(*program, GL_FRAGMENT_SHADER, fragment_shader);
   return program;
 }
 
-static void
-LinkProgram(GLProgram &program)
-{
+void LinkProgram(GLProgram& program) {
   program.Link();
 
   if (program.GetLinkStatus() != GL_TRUE) {
@@ -171,6 +173,8 @@ LinkProgram(GLProgram &program)
     fprintf(stderr, "Shader linker failed: %s\n", log);
   }
 }
+
+}  // namespace
 
 void
 OpenGL::InitShaders()
@@ -231,16 +235,9 @@ OpenGL::InitShaders()
 void
 OpenGL::DeinitShaders() noexcept
 {
-  delete solid_shader;
   solid_shader = nullptr;
-
-  delete texture_shader;
   texture_shader =nullptr;
-
-  delete invert_shader;
   invert_shader = nullptr;
-
-  delete alpha_shader;
   alpha_shader = nullptr;  
 }
 
