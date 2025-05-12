@@ -13,6 +13,9 @@
 #include "MathFunctions.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
+#ifdef USE_GLSL
+#include <glm/gtc/matrix_transform.hpp>
+#endif
 
 ScreenProjection::ScreenProjection() :
     geo_origin(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude()),
@@ -55,3 +58,24 @@ bool ScreenProjection::operator!=(const ScreenProjection& _Proj) const {
     double offset = geo_origin.Distance(_Proj.geo_origin);
     return (offset >= GetPixelSize());
 }
+
+#ifdef USE_GLSL
+
+glm::mat4 ScreenProjection::ToGLM() const {
+  // Precompute cosine for geo_origin latitude
+  auto cos_lat = glm::cos(glm::radians<GLfloat>(geo_origin.latitude));
+  auto angle = glm::radians<GLfloat>(_Angle);
+
+  // 1. Translate to screen_origin
+  glm::mat4 matrix = glm::translate(glm::mat4(1.0), glm::vec3(screen_origin.x, screen_origin.y, 0.0f));
+  // 2. Rotate by -_Angle around Z
+  matrix = glm::rotate(matrix, angle, glm::vec3(0.0f, 0.0f, -1.0f));
+  // 3. Scale longitude by cos(latitude) and apply zoom
+  matrix = glm::scale(matrix, glm::vec3(_Zoom * cos_lat, -_Zoom, 1.0f));
+  // 4. Move geo_origin to (0,0)
+  matrix = glm::translate(matrix, glm::vec3(-geo_origin.longitude, -geo_origin.latitude, 0.0f));
+
+  return matrix;
+}
+
+#endif

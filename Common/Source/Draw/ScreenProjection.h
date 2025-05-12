@@ -15,6 +15,9 @@
 #include "Screen/Point.hpp"
 #include "Math/Point2D.hpp"
 #include "Geographic/GeoPoint.h"
+#ifdef USE_GLSL
+#include <glm/fwd.hpp>
+#endif
 
 class ScreenProjection final {
 public:
@@ -52,6 +55,10 @@ public:
     void Screen2LonLat(const POINT& pt, double &Lon, double &Lat) const;
 
     bool operator!=(const ScreenProjection& _Proj) const;
+
+#ifdef USE_GLSL
+    glm::mat4 ToGLM() const;
+#endif
 
 protected:
     double GetPixelSize() const;
