@@ -34,9 +34,9 @@ public:
         const GeoPoint diff = (geo_origin - pt) * _Zoom;
 
         const auto Y = to_scalar<scalar_type>(diff.latitude);
-        const auto X = to_scalar<scalar_type>(diff.longitude * fastcosine(pt.latitude));
+        const auto X = to_scalar<scalar_type>(diff.longitude * _CosLat);
 
-        return ScreenPoint{
+        return {
             static_cast<scalar_type>(screen_origin.x - (X * _CosAngle - Y * _SinAngle + 512) / 1024),
             static_cast<scalar_type>(screen_origin.y + (Y * _CosAngle + X * _SinAngle + 512) / 1024)
         };
@@ -68,6 +68,7 @@ protected:
 
     double _Zoom;
     double _Angle;
+    double _CosLat;
 
     short _CosAngle;
     short _SinAngle;

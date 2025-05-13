@@ -19,6 +19,7 @@ ScreenProjection::ScreenProjection() :
     screen_origin(MapWindow::GetOrigScreen()),
     _Zoom(MapWindow::GetDrawScale()),
     _Angle(MapWindow::GetDisplayAngle()),
+    _CosLat(std::cos(MapWindow::GetPanLatitude() * DEG_TO_RAD)),
     _CosAngle(ifastcosine(MapWindow::GetDisplayAngle())),
     _SinAngle(ifastsine(MapWindow::GetDisplayAngle()))
 {
@@ -40,7 +41,7 @@ void ScreenProjection::Screen2LonLat(const POINT& pt, double &Lon, double &Lat) 
     const scalar_type sy = pt.y - screen_origin.y;
 
     Lat = geo_origin.latitude - ((sy * _CosAngle + sx * _SinAngle + 512) / 1024.) / _Zoom;
-    Lon = geo_origin.longitude + ((sx * _CosAngle - sy * _SinAngle + 512) / 1024.) * invfastcosine(Lat) / _Zoom;
+    Lon = geo_origin.longitude + ((sx * _CosAngle - sy * _SinAngle + 512) / 1024.) / _CosLat / _Zoom;
 }
 
 bool ScreenProjection::operator!=(const ScreenProjection& _Proj) const {

@@ -379,6 +379,8 @@ public:
         const int cost = ifastcosine(DisplayAngle);
         const int sint = ifastsine(DisplayAngle);
 
+        const double cospanlat = 1.0/(std::cos(PanLatitude * DEG_TO_RAD));
+
         const double ac2 = sint*InvDrawScale;
         const double ac3 = cost*InvDrawScale;
 
@@ -391,22 +393,33 @@ public:
         const size_t col_count = height_buffer->GetWidth();
         const size_t row_count = height_buffer->GetHeight();
 
+        const double ydtquant = -1.0 * dtquant;
+        const double xdtquant = cospanlat * dtquant;
 
 #if defined(_OPENMP)
         #pragma omp parallel for reduction(max : _height_max) reduction(min : _height_min)
 #endif
         for (size_t iy = 0; iy < row_count; ++iy) {
-            const int y = Y0 + (iy*dtquant);
-            const double ac1 = PanLatitude - y*ac3;
-            const double cc1 = y * ac2;
-
             int16_t *height_row = height_buffer->GetRow(iy);
 
-            for (size_t ix = 0; ix < col_count; ++ix) {
-                const int x = X0 + (ix*dtquant);
-                const double Y = ac1 - x*ac2;
-                const double X = PanLongitude + (invfastcosine(Y) * ((x * ac3) - cc1));
+            const int y = Y0 + (iy * dtquant);
 
+            // Precompute some row-specific values
+            const double y_ac3 = y * ac3;
+            const double y_ac2_cospanlat = y * ac2 * cospanlat;
+
+            const double ac1 = PanLatitude - y_ac3;
+            const double cc1 = y_ac2_cospanlat;
+
+            // Precompute starting values for Y and X
+            double Y = ac1 - X0 * ac2;
+            double X = PanLongitude + cospanlat * X0 * ac3 - cc1;
+
+            // Precompute increments
+            const double dY = ydtquant * ac2;
+            const double dX = xdtquant * ac3;
+
+            for (size_t ix = 0; ix < col_count; ++ix) {
                 int16_t& hDst = height_row[ix];
 
                 /*
@@ -418,10 +431,14 @@ public:
                  */
                 hDst = GetHeight(Y, X);
 
-                if(hDst != TERRAIN_INVALID) {
-                  _height_min = std::min(_height_min, hDst);
-                  _height_max = std::max(_height_max, hDst);
+                if (hDst != TERRAIN_INVALID) {
+                    _height_min = std::min(_height_min, hDst);
+                    _height_max = std::max(_height_max, hDst);
                 }
+
+                // Increment for next column
+                Y += dY;
+                X += dX;
             }
         }
         height_min = _height_min;
