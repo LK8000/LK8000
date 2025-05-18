@@ -226,6 +226,7 @@ add_library( LK8000 SHARED
 
     Common/Source/Airspace/LKAirspace.cpp
     Common/Source/Airspace/Sonar.cpp
+    Common/Source/Airspace/Renderer/AirspaceRenderer.cpp
 
     Common/Source/UIGlobals.cpp
     Common/Source/AirfieldDetails.cpp

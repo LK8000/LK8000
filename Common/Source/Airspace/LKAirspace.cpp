@@ -854,24 +854,6 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
 }
 
 
-template<typename ScreenPointList>
-static void CalculateScreenPolygon(const ScreenProjection &_Proj, const CPoint2DArray& geopoints, ScreenPointList& screenpoints) {
-    using ScreenPoint = typename ScreenPointList::value_type;
-
-    const GeoToScreen<ScreenPoint> ToScreen(_Proj);
-
-    screenpoints.reserve(geopoints.size());
-    std::transform(
-            std::begin(geopoints), std::end(geopoints),
-            std::back_inserter(screenpoints),
-            std::ref(ToScreen));
-
-    // close polygon if needed
-    if(screenpoints.front() != screenpoints.back()) {
-        screenpoints.push_back(screenpoints.front());
-    }
-}
-
 
 // Calculate screen coordinates for drawing
 void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
@@ -913,57 +895,41 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     }
     
     if(is_visible) { 
-        // we need to calculate new screen position
-        _screenpoints.clear();
-        _screenpoints_clipped.clear();
         bool need_clipping = !msRectContained(&_bounds, &screenbounds_latlon);
 
-        if(!need_clipping) {
-            // clipping is not needed : calculate screen position directly into _screenpoints_clipped
-            CalculateScreenPolygon(_Proj, _geopoints, _screenpoints_clipped);
-        } else {
-            // clipping is needed : calculate screen position into temp array
-            CalculateScreenPolygon(_Proj, _geopoints, _screenpoints);
-
-            PixelRect MaxRect(rcDraw);
-            MaxRect.Grow(300); // add space for inner airspace border, avoid artefact on screen border.
-
-            _screenpoints_clipped.reserve(_screenpoints.size());
-
-            LKGeom::ClipPolygon(MaxRect, _screenpoints, _screenpoints_clipped);
+        if (!rendrer) {
+            rendrer = std::make_unique<AirspaceRenderer>();
         }
-
-        // airspace is visible only if clipped polygon have more than 2 point.
-        if (_screenpoints_clipped.size() > 2)  {
-
-            if ( (((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && (_warninglevel == awNone) && (_warningacklevel ==  awNone))|| (_warninglevel > _warningacklevel)/*(_warningacklevel == awNone)*/)) {
-                _drawstyle = adsFilled;
-            } else {
-                _drawstyle = adsOutline;
-                //    _drawstyle = adsFilled;
-            }
-            if (!_enabled)
-                _drawstyle = adsDisabled;
-        }
+        rendrer->Update(_geopoints, need_clipping, rcDraw, _Proj);
     }
-}
+    else {
+        rendrer = nullptr;
+    }
 
-// Draw airspace
-
-void CAirspace::Draw(LKSurface& Surface, bool fill) const {
-    size_t outLength = _screenpoints_clipped.size();
-    const RasterPoint * clip_ptout = _screenpoints_clipped.data();
-
-    if (fill) {
-        if (outLength > 2) {
-            Surface.Polygon(clip_ptout, outLength);
-        }
+    if ( (((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && (_warninglevel == awNone) && (_warningacklevel ==  awNone))|| (_warninglevel > _warningacklevel)/*(_warningacklevel == awNone)*/)) {
+        _drawstyle = adsFilled;
     } else {
-        if (outLength > 1) {
-            Surface.Polyline(clip_ptout, outLength);
-        }
+        _drawstyle = adsOutline;
+        //    _drawstyle = adsFilled;
+    }
+    if (!_enabled) {
+      _drawstyle = adsDisabled;
+    }
+
+}
+
+void CAirspace::DrawOutline(LKSurface& Surface, PenReference pen) const {
+    if (rendrer) {
+        rendrer->DrawOutline(Surface, pen);
     }
 }
+
+void CAirspace::FillPolygon(LKSurface& Surface, const LKBrush& brush) const {
+    if (rendrer) {
+        rendrer->FillPolygon(Surface, brush);
+    }
+}
+
 
 void CAirspace::Hash(MD5& md5) const {
     md5.Update(_type);

@@ -122,9 +122,8 @@ DrawAirSpaceBorders(Surface, rc);
                 ClearTptAirSpace(Surface, rc);
               }
               // set filling brush
-              hdcbuffer.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
-              (*itr)->Draw(hdcbuffer, true);
-              (*itr)->Draw(hdcMask, false);
+              (*itr)->FillPolygon(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
+              (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
             }
       }//for
     } else {
@@ -137,8 +136,7 @@ DrawAirSpaceBorders(Surface, rc);
                 ClearTptAirSpace(Surface, rc);
               }
               // set filling brush
-              TempSurface.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
-              (*it)->Draw(TempSurface, true);
+              (*it)->FillPolygon(TempSurface, GetAirSpaceSldBrushByClass(airspace_type));
             }
       }//for
     }//else borders_only
@@ -199,65 +197,59 @@ if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_sel
   TempSurface.RestoreState(nDC3);
 } // DrawTptAirSpace()
 #else
+
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
+  ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-    const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+  const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
 
-    const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
+  static bool asp_selected_flash = false;
+  asp_selected_flash = !asp_selected_flash;
 
-    static bool asp_selected_flash = false;
-    asp_selected_flash = !asp_selected_flash;
+  for (auto& pAsp : airspaces_to_draw) {
+    if ((pAsp->DrawStyle() == adsHidden) || ((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) {
+      continue;  // don't draw on map if hidden or upper limit is on sea level or below
+    }
 
-    for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+    const int airspace_type = pAsp->Type();
 
-        if (((*it)->DrawStyle() == adsHidden) ||
-          ((  (*it)->Top().Base == abMSL) && ((*it)->Top().Altitude <= 0))){
-          continue;  // don't draw on map if hidden or upper limit is on sea level or below
-        }
+    std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;
+    if (borders_only) {
+      stencil = std::make_unique<const GLEnable<GL_STENCIL_TEST>>();
 
-        const int airspace_type = (*it)->Type();
+      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+      glDepthMask(GL_FALSE);
+      glStencilFunc(GL_NEVER, 1, 0xFF);
+      glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
+      glStencilMask(0xFF);
+      glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
 
-        std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;
-        if(borders_only) {
-            stencil = std::make_unique<const GLEnable<GL_STENCIL_TEST>>();
+      // Fill Stencil
+      pAsp->DrawOutline(Surface, hAirspaceBorderPen);
 
-            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-            glDepthMask(GL_FALSE);
-            glStencilFunc(GL_NEVER, 1, 0xFF);
-            glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
-                        glStencilMask(0xFF);
-            glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+      glDepthMask(GL_TRUE);
+      glStencilMask(0x00);
+      // draw where stencil's value is not 0
+      glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+    }
 
-            // Fill Stencil
-            Surface.SelectObject(hAirspaceBorderPen);
-            Surface.SelectObject(LKBrush_Hollow);
-            (*it)->Draw(Surface, true);
+    // Draw Airspaces
+    if (pAsp->DrawStyle() == adsFilled) {
+      pAsp->FillPolygon(Surface, GetAirSpaceSldBrushByClass(airspace_type));
+    }
 
-            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-            glDepthMask(GL_TRUE);
-            glStencilMask(0x00);
-            // draw where stencil's value is not 0
-            glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-        }
-
-        // Draw Airspaces
-
-        if ( (((*it)->DrawStyle()==adsFilled)&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
-            Surface.SelectObject(LK_BLACK_PEN);
-        } else if(  (*it)->DrawStyle()==adsDisabled)   {
-            Surface.SelectObject(LKPen_Grey_N2);
-        } else {
-            Surface.SelectObject(hAirspacePens[airspace_type]);
-        }
-
-
-        if ((*it)->DrawStyle() == adsFilled) {
-            Surface.SelectObject(GetAirSpaceSldBrushByClass(airspace_type));
-        } else {
-            Surface.SelectObject(LKBrush_Hollow);
-        }
-        (*it)->Draw(Surface, true);
-    }//for
+    if (((pAsp->DrawStyle() == adsFilled) && !borders_only) ^ (asp_selected_flash && pAsp->Selected())) {
+      pAsp->DrawOutline(Surface, LK_BLACK_PEN);
+    }
+    else if (pAsp->DrawStyle() == adsDisabled) {
+      pAsp->DrawOutline(Surface, LKPen_Grey_N2);
+    }
+    else {
+      pAsp->DrawOutline(Surface, hAirspacePens[airspace_type]);
+    }
+  }  // for
 }
+
 #endif

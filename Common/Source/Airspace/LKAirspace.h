@@ -18,6 +18,8 @@
 #include "Sizes.h"
 #include "../Topology/shapelib/mapprimitive.h"
 
+#include "Renderer/AirspaceRenderer.h"
+
 class ScreenProjection;
 class MD5;
 struct NMEA_INFO;
@@ -56,11 +58,6 @@ struct AIRSPACE_ALT {
   AirspaceAltBase_t Base = abUndef;
 };
 
-#ifdef HAVE_GLES
-using ScreenPointList = std::vector<FloatPoint>;
-#else
-using ScreenPointList = std::vector<RasterPoint>;
-#endif
 using RasterPointList = std::vector<RasterPoint>;
 
 
@@ -293,7 +290,9 @@ public:
     // Calculate drawing coordinates on screen
     virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
     // Draw airspace on map
-    virtual void Draw(LKSurface& Surface, bool fill) const;
+    void DrawOutline(LKSurface& Surface, PenReference pen) const;
+    void FillPolygon(LKSurface& Surface, const LKBrush& brush) const;
+
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
     virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
 
@@ -325,9 +324,8 @@ protected:
     // previous version draw circular airspace using circle, but it's wrong, circle in geographic coordinate are ellipsoid in screen coordinate.
     CPoint2DArray _geopoints;
 
-    // this 2 array are modified by DrawThread, never use it in another thread !!
-    ScreenPointList _screenpoints; // this is member for reduce memory alloc, but is used only by CalculateScreenPosition();
-    RasterPointList _screenpoints_clipped;
+    // rendrer is modified by DrawThread, never use it in another thread !!
+    std::unique_ptr<AirspaceRenderer> rendrer;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Draw Picto methods

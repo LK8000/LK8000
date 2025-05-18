@@ -1394,6 +1394,7 @@ SRC_FILES :=\
 	$(SRC)/lk8000.cpp\
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\
+	$(SRC)/Airspace/Renderer/AirspaceRenderer.cpp \
 	$(SRC)/LKInstall.cpp 		\
 	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/LKObjects.cpp \

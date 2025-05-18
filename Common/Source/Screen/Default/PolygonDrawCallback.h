@@ -27,7 +27,7 @@ public:
 
     }
 
-    void operator()(GLenum type, const std::vector<FloatPoint>& vertex);
+    void operator()(unsigned type, const std::vector<FloatPoint>& vertex);
 
 private:
     LKSurface& Surface;

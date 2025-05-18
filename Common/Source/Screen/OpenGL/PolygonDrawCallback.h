@@ -24,7 +24,7 @@ struct PolygonDrawCallback {
        
     }
 
-    void operator()(GLenum type, const std::vector<FloatPoint>& vertex) {
+    void operator()(unsigned type, const std::vector<FloatPoint>& vertex) {
         ScopeVertexPointer vp(vertex.data());
         glDrawArrays(type, 0, vertex.size());
     }
