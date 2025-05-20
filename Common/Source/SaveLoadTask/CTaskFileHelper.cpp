@@ -345,15 +345,15 @@ void CTaskFileHelper::LoadOptionRace(const xml_node* node) {
 
 void CTaskFileHelper::LoadTimeGate(const xml_node* node) {
     if (node) {
-        GetAttribute(node, "number", PGNumberOfGates);
+        GetAttribute(node, "number", TimeGates::PGNumberOfGates);
         TCHAR szTime[50];
         GetAttribute(node, "open-time", szTime);
-        StrToTime(szTime, &PGOpenTimeH, &PGOpenTimeM);
+        StrToTime(szTime, &TimeGates::PGOpenTimeH, &TimeGates::PGOpenTimeM);
         GetAttribute(node, "close-time", szTime);
-        StrToTime(szTime, &PGCloseTimeH, &PGCloseTimeM);
-        GetAttribute(node, "interval-time", PGGateIntervalTime);
+        StrToTime(szTime, &TimeGates::PGCloseTimeH, &TimeGates::PGCloseTimeM);
+        GetAttribute(node, "interval-time", TimeGates::PGGateIntervalTime);
     } else {
-        PGNumberOfGates = 0;
+        TimeGates::PGNumberOfGates = 0;
     }
     InitActiveGate();    
 }
@@ -771,7 +771,7 @@ bool CTaskFileHelper::SaveOptionRace(xml_node* node) {
     if (!node) {
         return false;
     }
-    if (PGNumberOfGates > 0) {
+    if (TimeGates::PGNumberOfGates > 0) {
         if (!SaveTimeGate(AddNode(node, "time-gate"))) {
             return false;
         }
@@ -861,17 +861,17 @@ bool CTaskFileHelper::SaveTimeGate(xml_node* node) {
         return false;
     }
 
-    SetAttribute(node, "number", PGNumberOfGates);
+    SetAttribute(node, "number", TimeGates::PGNumberOfGates);
 
     xml_document* doc = node->document();
 
-    char* open = AllocFormat(doc, "%02d:%02d", PGOpenTimeH, PGOpenTimeM);
+    char* open = AllocFormat(doc, "%02d:%02d", TimeGates::PGOpenTimeH, TimeGates::PGOpenTimeM);
     SetAttribute(node, "open-time", open);
 
-    char* close = AllocFormat(doc, "%02d:%02d", PGCloseTimeH, PGCloseTimeM);
+    char* close = AllocFormat(doc, "%02d:%02d", TimeGates::PGCloseTimeH, TimeGates::PGCloseTimeM);
     SetAttribute(node, "close-time", close);
     
-    SetAttribute(node, "interval-time", PGGateIntervalTime);
+    SetAttribute(node, "interval-time", TimeGates::PGGateIntervalTime);
 
     return true;
 }

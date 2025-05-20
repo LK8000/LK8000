@@ -283,7 +283,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
             lk::strcpy(Buffer, MsgToken<157>());
         } else {
             const TCHAR* StartGateName = ScreenLandscape ? _T("Start ") : _T("ST ");
-            _stprintf(Buffer, _T("%s%d/%d"), StartGateName, gateinuse + 1, PGNumberOfGates);
+            _stprintf(Buffer, _T("%s%d/%d"), StartGateName, gateinuse + 1, TimeGates::PGNumberOfGates);
         }
 
         LKWriteText(Surface, Buffer, rcx , topmargin, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
@@ -449,7 +449,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     // gate is open
                     int CloseTime = GateCloseTime();
                     if (flipflopcount > 0) {
-                        if ((ActiveGate() < (PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
+                        if ((ActiveGate() < (TimeGates::PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
                             if (CloseTime < 86340) {
                                 Units::TimeToText(BufferTitle, CloseTime);
                                 lk::snprintf(BufferValue, _T("CLOSE %s"), BufferTitle);

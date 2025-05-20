@@ -14,6 +14,7 @@
 #include "LKInterface.h"
 #include "Multimap.h"
 #include "Tracking/Tracking.h"
+#include "Calc/Task/TimeGates.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -357,16 +358,7 @@ void Globals_Init(void) {
   LastDoThermalH=0;
 
 
-  // Paraglider's time gates
-  PGOpenTimeH=0;
-  PGOpenTimeM=0;
-
-  PGCloseTimeH=23;
-  PGCloseTimeM=59;
-  // Interval, in minutes
-  PGGateIntervalTime=0;
-  // How many gates, 1-x
-  PGNumberOfGates=0;
+  TimeGates::ResetSettings();
   
   // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
   LKTopo=0;

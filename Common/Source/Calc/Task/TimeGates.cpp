@@ -14,8 +14,39 @@
 #include "Sound/Sound.h"
 #include "Library/TimeFunctions.h"
 
+namespace TimeGates {
+
+int PGOpenTimeH = 0;
+int PGOpenTimeM = 0;
+
+int PGCloseTimeH = 23;
+int PGCloseTimeM = 59;
+
+int PGGateIntervalTime = 30;
+
+int PGNumberOfGates = 59;
+
+void ResetSettings() {
+  PGOpenTimeH = 12;  // in Hours
+  PGOpenTimeM = 0;   // in Minute
+
+  PGCloseTimeH = 23;  // in Hours
+  PGCloseTimeM = 59;  // in Minute
+
+  // Interval, in minutes
+  PGGateIntervalTime = 30;
+  // How many gates, 1-x
+  PGNumberOfGates = 0;
+}
+
+}  // namespace TimeGates
+
+using namespace TimeGates;
 
 namespace {
+
+  // ------------------------------
+// Rutime Global
 
 // PGOpenTime and PGCloseTime are in seconds from 00:00:00
 //  Using Local Time to avoid to manage UTC midnight wrapping
@@ -25,6 +56,8 @@ int PGCloseTime = 86399;  // 23:59:59
 
 // 0 before first gate open, 1..x for next gates 
 int NextGate = -1;
+
+// ------------------------------
 
 // Returns the specified gate time (hours), negative -1 if invalid
 int GateTime(int gate) {

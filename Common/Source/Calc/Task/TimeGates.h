@@ -9,6 +9,30 @@
 #ifndef CALC_TASK_TIMEGATES_H
 #define CALC_TASK_TIMEGATES_H
 
+namespace TimeGates {
+// Paraglider's time gates
+// ------------------------------
+// parameter seved in task and system config
+
+// Open and close time, gate 0  ex. 12:00
+// M and H for registry
+
+extern int PGOpenTimeH;
+extern int PGOpenTimeM;
+
+extern int PGCloseTimeH;
+extern int PGCloseTimeM;
+
+// Interval, in minutes
+extern int PGGateIntervalTime;
+// How many gates, 1-x
+extern int PGNumberOfGates;
+// ------------------------------
+
+void ResetSettings();
+
+} // TimeGates
+
 // gates are configured, and used by gliders also? todo
 bool UseGates();
 int ActiveGate();
