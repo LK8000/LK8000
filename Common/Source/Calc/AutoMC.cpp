@@ -45,7 +45,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     // otherwise, if AutoMc for finalglide or "both", return if no goto
     if (ValidTaskPoint(ActiveTaskPoint)) {
-        if (Calculated->FinalGlide && ActiveIsFinalWaypoint()) {
+        if (Calculated->FinalGlide) {
             is_final_glide = true;
         } else {
             first_mc = true;
