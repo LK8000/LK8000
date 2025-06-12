@@ -603,7 +603,7 @@ void AddCustomKeyList(WndForm* pForm, const TCHAR* WndName, CustomKeyMode_t valu
 				for (auto& item : _CustomKeyLabel) {
 					tstring label = item.Name();
 					replace_all(label, _T("\n"), _T(" "));
-					dfe->addEnumText(item.Name());
+					dfe->addEnumText(label.c_str());
 				}
 				dfe->Sort();
 			}
