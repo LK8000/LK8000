@@ -50,7 +50,7 @@ constexpr int  getCustomOverlay(int Overlay) {return (Overlay-1000);}
 
 
 int GetTargetIndex() {
-    if (UseGates() && ActiveTaskPoint == 0) {
+    if (ActiveTaskPoint == 0 && UseGates()) {
         // if running a task, use the task index normally
         if (ValidTaskPoint(ActiveTaskPoint) != false) {
             if (DoOptimizeRoute())
@@ -268,15 +268,15 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         }
     }
     int gateinuse = -2;
-    if (UseGates() && ActiveTaskPoint == 0) {
-        gateinuse = ActiveGate;
+    if (ActiveTaskPoint == 0 && UseGates()) {
+        gateinuse = ActiveGate();
     }
     if (flipflop && (gateinuse != -2)) {
-        if (!HaveGates()) {
+        if (!HaveGates(DrawInfo.Time)) {
             gateinuse = -1;
         } else {
             // this is set here for the first time, when havegates
-            gatechrono = GateTime(ActiveGate) - LocalTime(DrawInfo.Time);
+            gatechrono = NextGateTimeDiff(DrawInfo.Time);
         }
         if (gateinuse < 0) {
             // LKTOKEN  _@M157_ = "CLOSED"
@@ -314,7 +314,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         LKFormatDist(OverTargetIndex, BufferValue, BufferUnit);
     }
 
-    if ( !OverlayClock && ScreenLandscape && (!((gTaskType == task_type_t::GP) && UseGates()))) {
+    if (ScreenLandscape && !OverlayClock && !UseGates()) {
         int dx = compass.cx ;
         int yDistUnit= topmargin + unitmediumoffset;
         if((!HideUnits) || Overlay_Title) {
@@ -376,9 +376,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     if (UseGates() && ActiveTaskPoint == 0) {
         Surface.SelectObject(LK8OverlayBigFont);
 
-        if (HaveGates()) {
+        if (HaveGates(DrawInfo.Time)) {
             // Time To Gate
-            gatechrono = GateTime(ActiveGate) - LocalTime(DrawInfo.Time); // not always already set, update it ...
+            gatechrono = NextGateTimeDiff(DrawInfo.Time); // not always already set, update it ...
 
             Units::TimeToTextDown(BufferValue, gatechrono);
             rcx= rc.right-RIGHTMARGIN;
@@ -413,8 +413,8 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         //
         Surface.SelectObject(LK8OverlayGatesFont);
 
-        if (HaveGates()) {
-            Units::TimeToText(BufferTitle, GateTime(ActiveGate));
+        if (HaveGates(DrawInfo.Time)) {
+            Units::TimeToText(BufferTitle, OpenGateTime());
             lk::snprintf(BufferValue, _T("START %s"), BufferTitle);
         } else {
             // LKTOKEN  _@M316_ = "GATES CLOSED"
@@ -426,13 +426,13 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
 
         // USE THIS SPACE FOR MESSAGES TO THE PILOT
         rcy += SizeGatesFont.cy;
-        if (HaveGates()) {
+        if (HaveGates(DrawInfo.Time)) {
             if (!DerivedDrawInfo.Flying) {
                 // LKTOKEN  _@M922_ = "NOT FLYING"
                 lk::strcpy(BufferValue, MsgToken<922>());
             } else {
                 bool from_inside = ExitStart(DerivedDrawInfo);
-                if (gatechrono > 0) {
+                if (!ValidGate(DrawInfo.Time)) {
                     // IsInSector works reversed!
                     if (!from_inside && DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M923_ = "WRONG inSIDE"
@@ -449,12 +449,12 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     // gate is open
                     int CloseTime = GateCloseTime();
                     if (flipflopcount > 0) {
-                        if ((ActiveGate < (PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
+                        if ((ActiveGate() < (PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
                             if (CloseTime < 86340) {
                                 Units::TimeToText(BufferTitle, CloseTime);
                                 lk::snprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
                             } else {
-                                Units::TimeToText(BufferTitle, GateTime(ActiveGate + 1));
+                                Units::TimeToText(BufferTitle, NextGateTime());
                                 lk::snprintf(BufferValue, _T("NEXT %s"), BufferTitle);
                             }
                         } else {
@@ -647,7 +647,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     } // end no UseGates()
 
     int right_m = rightmargin;
-    if (!UseGates() || ActiveTaskPoint != 0) {
+    if (ActiveTaskPoint != 0 || !UseGates()) {
         if ( (ISGLIDER || ISPARAGLIDER) && !isOverlayHidden(Overlay_RightTop)) {
             //
             // MAC CREADY VALUE
@@ -850,7 +850,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     //
     // CLOCK
     //
-    if ((OverlayClock && Overlay_TopRight) || ((gTaskType == task_type_t::GP) && UseGates())) {
+    if ((OverlayClock && Overlay_TopRight) || UseGates()) {
         LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
         Surface.SelectObject(LK8OverlayMediumFont);
         int cx,cy;

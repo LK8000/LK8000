@@ -340,8 +340,6 @@ GEXTERN int PGCloseTimeM;
 GEXTERN int PGGateIntervalTime;
 // How many gates, 1-x
 GEXTERN int PGNumberOfGates;
-// Current assigned gate
-GEXTERN int ActiveGate;
 
 // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
 GEXTERN int LKTopo;

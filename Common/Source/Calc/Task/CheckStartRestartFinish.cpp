@@ -19,68 +19,7 @@ DERIVED_INFO Finish_Derived_Info;
 void CheckStart(NMEA_INFO* Basic, DERIVED_INFO* Calculated, int* LastStartSector) {
   BOOL StartCrossed = false;
 
-  if (UseGates()) {
-    if (ActiveGate < 0) {
-      // init activegate: assign first valid gate, current or future
-      ActiveGate = InitActiveGate();
-      if (ActiveGate < 0 || ActiveGate > (PGNumberOfGates - 1)) {
-        StartupStore(_T("... INVALID ActiveGate=%d\n"), ActiveGate);
-        DoStatusMessage(_T("ERR-430 INVALID ACTIVEGATE: DISABLED"));
-        PGNumberOfGates = 0;
-        return;
-      }
-      DebugLog(_T("... CheckStart: INIT ActiveGate=%d\n"), ActiveGate);
-    }
-    else {
-      if (HaveGates()) {
-        int gatetimediff = GateTimeDiff(ActiveGate);
-        DebugLog(_T("... CheckStart: ActiveGate=%d RunningGate=%d\n"), ActiveGate, RunningGate());
-        DebugLog(_T("... CheckStart: gatetimediff=%d\n"), gatetimediff);
-        // a gate can be in the future , or already open!
-        // case: first start, activegate is the first gate
-        if (gatetimediff == 0) {
-          DebugLog(_T("... CheckStart: ActiveGate=%d now OPEN\n"), ActiveGate);
-          AlertGateOpen(ActiveGate);
-          // nothing else to do: the current activegate has just open
-        }
-        else {
-          // check that also non-armed start is detected
-          if (ActiveGate < (PGNumberOfGates - 1)) {
-            if (GateTimeDiff(ActiveGate + 1) == 0) {
-              DebugLog(_T("... CheckStart: ActiveGate+1=%d now OPEN\n"), ActiveGate);
-              ActiveGate++;
-              AlertGateOpen(ActiveGate);
-            }
-          }
-        }
-        // now check for special alerts on countdown, only on current armed start
-        if (gatetimediff == 3600 && ((PGGateIntervalTime >= 70) || ActiveGate == 0)) {
-          //  850  FIRST GATE OPEN IN 1 HOUR
-          DoStatusMessage(MsgToken<850>());
-          LKSound(_T("LK_DINGDONG.WAV"));
-        }
-        if (gatetimediff == 1800 && ((PGGateIntervalTime >= 45) || ActiveGate == 0)) {
-          //  851  FIRST GATE OPEN IN 30 MINUTES
-          DoStatusMessage(MsgToken<851>());
-          LKSound(_T("LK_DINGDONG.WAV"));
-        }
-        if (gatetimediff == 600 && ((PGGateIntervalTime >= 15) || ActiveGate == 0)) {  // 10 minutes to go
-          //  852  10 MINUTES TO GO
-          DoStatusMessage(MsgToken<852>());
-          LKSound(_T("LK_HITONE.WAV"));
-        }
-        if (gatetimediff == 300 && ((PGGateIntervalTime >= 10) || ActiveGate == 0)) {  // 5 minutes to go
-          //  853  5 MINUTES TO GO
-          DoStatusMessage(MsgToken<853>());
-          LKSound(_T("LK_HITONE.WAV"));
-        }
-        if (gatetimediff == 60) {  // 1 minute to go
-          LKSound(_T("LK_3HITONES.WAV"));
-        }
-
-      }  // HaveGates
-    }  // not init
-  }
+  NotifyGateState(Basic->Time);
 
   bool start_from_inside = ExitStart(*Calculated);
   Calculated->IsInSector = InStartSector(Basic, Calculated, !start_from_inside, *LastStartSector, &StartCrossed);
@@ -89,7 +28,7 @@ void CheckStart(NMEA_INFO* Basic, DERIVED_INFO* Calculated, int* LastStartSector
   // or
   // from outside and we are outside
   if (start_from_inside == Calculated->IsInSector) {
-    if (ReadyToStart(Calculated)) {
+    if (ReadyToStart(Basic, Calculated)) {
       aatdistance.AddPoint(GetCurrentPosition(*Basic), 0);
     }
     if (ValidStartSpeed(Basic, Calculated, StartMaxSpeedMargin)) {
@@ -97,7 +36,7 @@ void CheckStart(NMEA_INFO* Basic, DERIVED_INFO* Calculated, int* LastStartSector
     }
   }
 
-  if (StartCrossed && ValidGate()) {  // 100509
+  if (StartCrossed && ValidGate(Basic->Time)) {  // 100509
 
     DebugLog(_T("... CheckStart: start crossed and valid gate!\n"));
 

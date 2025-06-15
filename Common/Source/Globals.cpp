@@ -367,9 +367,7 @@ void Globals_Init(void) {
   PGGateIntervalTime=0;
   // How many gates, 1-x
   PGNumberOfGates=0;
-  // Current assigned gate
-  ActiveGate=-1;
-
+  
   // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
   LKTopo=0;
   

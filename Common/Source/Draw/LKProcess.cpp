@@ -3255,9 +3255,9 @@ lkfin_ete:
             valid = false;
             value = 0;
             // Req. Speed For reach Gate
-            if (UseGates() && HaveGates()) {
+            if (UseGates() && HaveGates(DrawInfo.Time)) {
                 // Time To Gate
-                const int gatechrono = GateTime(ActiveGate) - LocalTime(DrawInfo.Time); // not always already set, update it ... 
+                const int gatechrono = NextGateTimeDiff(DrawInfo.Time); // not always already set, update it ... 
                 if (gatechrono > 0) {
                     const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
                     const double SpeedToGate = DistToGate / gatechrono;

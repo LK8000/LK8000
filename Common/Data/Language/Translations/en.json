@@ -2631,5 +2631,10 @@
 
     "_@M002507_": "Next Arrival Time for AVG GS",
     "_@M002508_": "NxAvETA",
-    "_@H000960_": "[Next Arrival Time for AVG GS]\nNext Arrival Time calculated with Average Ground Speed."
+    "_@H000960_": "[Next Arrival Time for AVG GS]\nNext Arrival Time calculated with Average Ground Speed.",
+
+    "_@M002509_": "NEXT GATE OPEN IN 1 HOUR",
+    "_@M002510_": "NEXT GATE OPEN IN 30 MINUTES",
+    "_@M002511_": "NEXT GATE OPEN IN 10 MINUTES",
+    "_@M002512_": "NEXT GATE OPEN IN 5 MINUTES"
 }
