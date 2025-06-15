@@ -1690,16 +1690,26 @@ endif
 
 
 #
-# Useful debugging targets - make preprocessed versions of the source
+# Useful debugging targets
+# - make preprocessed versions of the source
 #
-%.i: %.cpp FORCE
+PREPROC=Preproc/$(TARGET)
+
+$(PREPROC)/%.i: $(SRC)/%.c $(DEPDIR)/%.d FORCE
+	$(Q)$(MKDIR) $(dir $@)
 	$(CXX) $(cxx-flags) -E $(OUTPUT_OPTION) $<
 
-%.i: %.c FORCE
+$(PREPROC)/%.i: $(SRC)/%.cpp $(DEPDIR)/%.d FORCE
+	$(Q)$(MKDIR) $(dir $@)
 	$(CC) $(cc-flags) -E $(OUTPUT_OPTION) $<
 
-%.s: %.cpp FORCE
-	$(CXX) $(cxx-flags) -S $(OUTPUT_OPTION) $<
+# - make asm versions of the source
+#
+ASM=Asm/$(TARGET)
+
+$(ASM)/%.s: $(SRC)/%.cpp $(DEPDIR)/%.d FORCE
+	$(Q)$(MKDIR) $(dir $@)
+	$(CXX) $(cxx-flags) -S -masm=intel -fverbose-asm $(OUTPUT_OPTION) $<
 
 
 
