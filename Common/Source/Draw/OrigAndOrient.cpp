@@ -20,36 +20,36 @@ void MapWindow::CalculateOrientationNormal() {
   double trackbearing = DrawInfo.TrackBearing;
   double waypointbearing = DerivedDrawInfo.WaypointBearing;
 
-  int Orientation = MapWindow::mode.autoNorthUP() ? NORTHUP : DisplayOrientation;
+  auto Orientation = []() -> int {
+    if (mode.autoNorthUP()) {
+      return NORTHUP;
+    }
+    switch (DisplayOrientation) {
+      case TARGETCIRCLE:
+        return mode.Is(Mode::MODE_CIRCLING) ? TARGETUP : TRACKUP;  // Target up in circling, Track up in cruise
+      case NORTHCIRCLE:
+        return mode.Is(Mode::MODE_CIRCLING) ? NORTHUP : TRACKUP;  // North up in circling, Track up in cruise
+      case NORTHTRACK:
+        return mode.Is(Mode::MODE_CIRCLING) ? TRACKUP : NORTHUP;  // Trackup in circling, North up in cruise
+      default:
+        break;
+    }
+    return DisplayOrientation;
+  };
 
-  switch (Orientation) {
+  bool Center = mode.Is(Mode::MODE_CIRCLING);  // always center when circling
+
+  switch (Orientation()) {
     case NORTHUP:
     case NORTHSMART:
-      SetOrientation(0.0, trackbearing, false);
-      break;
-    case NORTHTRACK:
-      SetOrientation(mode.Is(Mode::MODE_CIRCLING) ? 0.0 : trackbearing, trackbearing, false);
-      break;
-    case TARGETCIRCLE:
-      if (mode.Is(Mode::MODE_CIRCLING)) {
-        SetOrientation(waypointbearing, trackbearing, true);
-      } else {
-        SetOrientation(trackbearing, trackbearing, false);
-      }
-      break;
-    case NORTHCIRCLE:
-      if (mode.Is(Mode::MODE_CIRCLING)) {
-        SetOrientation(0.0, trackbearing, true);
-      } else {
-        SetOrientation(trackbearing, trackbearing, false);
-      }
+      SetOrientation(0.0, trackbearing, Center);
       break;
     case TARGETUP:
-      SetOrientation(waypointbearing, trackbearing, false);
+      SetOrientation(waypointbearing, trackbearing, Center);
       break;
     default:
-      // Normal, glider forward
-      SetOrientation(trackbearing, trackbearing, false);
+      // TRACKUP : Normal, glider forward
+      SetOrientation(trackbearing, trackbearing, Center);
       break;
   }
 
@@ -61,28 +61,19 @@ void MapWindow::CalculateOrientationTargetPan() {
   // Target pan mode, show target up when looking at current task point,
   // otherwise north up.
 
-  switch (DisplayOrientation) {
-    case NORTHUP:
-    case NORTHSMART:
-    case NORTHTRACK:
-      if (MapWindow::mode.autoNorthUP()) {
-        // North up
-        SetOrientation(0.0, DrawInfo.TrackBearing, true);
-        break;
-      }
-      // Fall through to default if autoNorthUP is not active
-    default:
-      if (ActiveTaskPoint == TargetPanIndex) {
-        // Target-up
-        SetOrientation(DerivedDrawInfo.WaypointBearing, DrawInfo.TrackBearing, true);
-      } else {
-        // North up
-        SetOrientation(0.0, DrawInfo.TrackBearing, true);
-      }
-      break;
+  if (MapWindow::mode.autoNorthUP()) {
+    // North up
+    SetOrientation(0.0, DrawInfo.TrackBearing, true);
+  }
+  else if (ActiveTaskPoint == TargetPanIndex) {
+    // Target-up
+    SetOrientation(DerivedDrawInfo.WaypointBearing, DrawInfo.TrackBearing, true);
+  }
+  else {
+    // North up
+    SetOrientation(0.0, DrawInfo.TrackBearing, true);
   }
 }
-
 
 RasterPoint MapWindow::GetOrigCenter(const RECT& rc) {
   return { 
@@ -137,12 +128,16 @@ RasterPoint MapWindow::CalculateOrigin(const RECT& rc) {
     return GetOrigCenter(rc);
   }
 
-  if (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_CIRCLING)) {
+  if (mode.Is(Mode::MODE_PAN)) {
     SetOrientation(0.0, DrawInfo.TrackBearing, true); // North up
     return GetOrigCenter(rc);
   }
 
   CalculateOrientationNormal();
+
+  if (mode.Is(Mode::MODE_CIRCLING)) {
+    return GetOrigCenter(rc);
+  }
 
   if (DisplayOrientation == NORTHSMART) {
     return GetOrigNorthSmart(rc, DrawInfo.TrackBearing, ScreenLandscape);
