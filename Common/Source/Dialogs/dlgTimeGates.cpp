@@ -19,21 +19,6 @@
 static bool changed = false;
 static WndForm *wf=NULL;
 
-
-static void OnTGActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  switch(Mode){
-  case DataField::daGet:
-    break;
-  case DataField::daPut:
-  case DataField::daChange:
-    break;
-  case DataField::daInc:
-  case DataField::daDec:
-  case DataField::daSpecial:
-    break;
-  }
-}
-
 static void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
@@ -43,10 +28,72 @@ static void OnCloseClicked(WndButton* pWnd) {
   }
 }
 
+static void OnGateType(DataField* Sender, DataField::DataAccessKind_t Mode) {
+
+  if(Sender->getCount() == 0) {
+    Sender->addEnumList({
+        TEXT("Anytime"),
+        TEXT("Fixed Gates"),
+        TEXT("PEV Start")
+      });
+  }
+
+  switch (Mode) {
+    default:
+      break;
+    case DataField::daGet:
+      Sender->Set(TimeGates::GateType);
+      break;
+    case DataField::daChange:
+      auto& wp = Sender->GetOwner();
+      auto pForm = wp.GetParentWndForm();
+      if (pForm) {
+        auto frmFixed = pForm->FindByName(_T("frmFixed"));
+        if (frmFixed) {
+          frmFixed->SetVisible(Sender->GetAsInteger() == TimeGates::fixed_gates);
+        }
+        auto frmPev = pForm->FindByName(_T("frmPev"));
+        if (frmPev) {
+          frmPev->SetVisible(Sender->GetAsInteger() == TimeGates::pev_start);
+        }
+        TimeGates::GateType = static_cast<TimeGates::open_type>(Sender->GetAsInteger());
+      }
+      break;
+  }
+}
+
+static void OnWaitingTime(DataField* Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      Sender->Set(TimeGates::WaitingTime);
+      break;
+    case DataField::daChange:
+      TimeGates::WaitingTime = Sender->GetAsInteger();
+      break;
+    default:
+      break;
+  }
+}
+
+static void OnStartWindow(DataField* Sender, DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      Sender->Set(TimeGates::StartWindow);
+      break;
+    case DataField::daChange:
+      TimeGates::StartWindow = Sender->GetAsInteger();
+      break;
+    default:
+      break;
+  }
+}
+
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnTGActiveData),
   ClickNotifyCallbackEntry(OnCloseClicked),
+  DataAccessCallbackEntry(OnGateType),
+  DataAccessCallbackEntry(OnWaitingTime),
+  DataAccessCallbackEntry(OnStartWindow),
   EndCallBackEntry()
 };
 
@@ -58,9 +105,13 @@ static void setVariables(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-    dfe->Set(TskOptimizeRoute);
+    if (dfe) {
+      dfe->SetAsBoolean(TskOptimizeRoute);
+    }
+    wp->SetVisible(gTaskType == task_type_t::GP);
     wp->RefreshDisplay();
   }
+
   wp = wf->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGNumberOfGates);
@@ -120,6 +171,17 @@ void dlgTimeGatesShowModal(void){
       }
     }
   }
+
+  auto frmFixed = wf->FindByName(_T("frmFixed"));
+  if (frmFixed) {
+    frmFixed->SetVisible(TimeGates::GateType == TimeGates::fixed_gates);
+  }
+
+  auto frmPev = wf->FindByName(_T("frmPev"));
+  if (frmPev) {
+    frmPev->SetVisible(TimeGates::GateType == TimeGates::pev_start);
+  }
+
   wp = wf->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
   if (wp) {
     if ( TimeGates::PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {

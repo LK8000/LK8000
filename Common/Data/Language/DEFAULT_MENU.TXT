@@ -491,7 +491,7 @@ type=key
 data=11
 event=PilotEvent
 event=Mode default
-label=_@M2513_
+label=_@M2513_$(PilotEvent)
 location=10
 
 mode=Nav1

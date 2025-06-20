@@ -16,6 +16,9 @@
 
 namespace TimeGates {
 
+open_type GateType = open_type::anytime;
+
+
 int PGOpenTimeH = 0;
 int PGOpenTimeM = 0;
 
@@ -26,6 +29,9 @@ int PGGateIntervalTime = 30;
 
 int PGNumberOfGates = 59;
 
+int WaitingTime = 5;
+int StartWindow = 10;
+
 void ResetSettings() {
   PGOpenTimeH = 12;  // in Hours
   PGOpenTimeM = 0;   // in Minute
@@ -33,10 +39,11 @@ void ResetSettings() {
   PGCloseTimeH = 23;  // in Hours
   PGCloseTimeM = 59;  // in Minute
 
-  // Interval, in minutes
-  PGGateIntervalTime = 30;
-  // How many gates, 1-x
-  PGNumberOfGates = 0;
+  PGGateIntervalTime = 30; // Interval, in minutes
+  PGNumberOfGates = 0; // How many gates, 1-x
+
+  WaitingTime = 5;
+  StartWindow = 10;
 }
 
 }  // namespace TimeGates
@@ -62,10 +69,10 @@ int NextGate = -1;
 // Returns the specified gate time (hours), negative -1 if invalid
 int GateTime(int gate) {
   if (gate < 0) {
-    return -1;
+    throw std::out_of_range("Invalid gate");
   }
   if (gate >= PGNumberOfGates) {
-    return -1;
+    throw std::out_of_range("Invalid gate");
   }
   return PGOpenTime + (gate * PGGateIntervalTime * 60);
 }
@@ -163,8 +170,15 @@ GateOpeningNotification notifications[] = {
 int InitActiveGate(int utc_time) {
   NextGate = -1;
 
-  PGOpenTime = ((PGOpenTimeH * 60) + PGOpenTimeM) * 60;
-  PGCloseTime = ((PGCloseTimeH * 60) + PGCloseTimeM) * 60;
+  if (TimeGates::GateType == TimeGates::fixed_gates) {
+    PGOpenTime = ((PGOpenTimeH * 60) + PGOpenTimeM) * 60;
+    PGCloseTime = ((PGCloseTimeH * 60) + PGCloseTimeM) * 60;
+  }
+  else {
+    PGNumberOfGates = 0;
+    PGOpenTime = 0;
+    PGCloseTime = 86399;
+  }
 
   if (PGCloseTime > 86399) {
     PGCloseTime = 86399;  // 23:59:59
@@ -217,20 +231,25 @@ void AlertGateClose(int utc_time) {
   ::Notify(MsgToken<316>());  // LKTOKEN  _@M316_ = "GATES CLOSED"
 }
 
+bool ValidTask() {
+  // check for valid taskpoint 0 can be useless, should be valid if we have a valid taskpoint 1
+  ScopeLock lock(CritSec_TaskData);
+  return ValidTaskPointFast(1) && ValidTaskPointFast(0);
+}
+
 }  // namespace
 
 bool UseGates() {
+  if (!ValidTask()) {
+    return false;  // no gates for simple "goto" task
+  }
+  if (GateType == TimeGates::pev_start) {
+    return true;
+  }
   if (gTaskType != task_type_t::GP) {
     return false;
   }
-  if (PGNumberOfGates <= 0) {
-    return false;
-  }
-  if (!ValidTaskPoint(1)) {
-    return false; // no gates for simple "goto" task
-  }
-  //check for valid taskpoint 0 can be useless, should be valid if we have a valid taskpoint 1
-  return ValidTaskPoint(0); 
+  return (PGNumberOfGates > 0);
 }
 
 int ActiveGate() {
@@ -241,6 +260,9 @@ int ActiveGate() {
 }
 
 int OpenGateTime() {
+  if (NextGate < 0 || NextGate >= PGNumberOfGates) {
+    throw std::out_of_range("Invalid gate");
+  }
   if (NextGate > 0) {
     return GateTime(NextGate - 1);
   }
@@ -263,7 +285,7 @@ int NextGateTimeDiff(int utc_time) {
 // Basically mytime <CloseTime...
 bool HaveGates(int utc_time) {
   int timenow = LocalTime(utc_time);
-  return (timenow <= PGCloseTime);
+  return (timenow < PGCloseTime);
 }
 
 // returns the current gate we are in, either in the past or in the future.
@@ -280,8 +302,13 @@ bool ValidGate(int utc_time) {
   if (!UseGates()) {
     return true;
   }
+
+  if (TimeGates::GateType == TimeGates::pev_start && PGOpenTime == 0) {
+    return false;
+  }
+
   int timenow = LocalTime(utc_time);
-  if (timenow > PGCloseTime) {
+  if (timenow >= PGCloseTime) {
     return false;  // HaveGates
   }
   if (timenow < PGOpenTime) {
@@ -296,53 +323,84 @@ void ResetGates() {
 }
 
 void NotifyGateState(int utc_time) {
-  if (!UseGates()) {
-    return; // No TimeGates are configured
-  }
+  try {
+    if (!UseGates()) {
+      return;  // No TimeGates are configured
+    }
 
-  if (NextGate < 0) {
-    NextGate = InitActiveGate(utc_time);
-    return; // Nothing to notify
-  }
+    if (NextGate < 0) {
+      NextGate = InitActiveGate(utc_time);
+      return;  // Nothing to notify
+    }
 
-  if (!HaveGates(utc_time)) {
-    AlertGateClose(utc_time);
-    return; // Last Gate is closed
-  }
+    if (!HaveGates(utc_time)) {
+      AlertGateClose(utc_time);
+      return;  // Last Gate is closed
+    }
 
-  if (NextGate >= PGNumberOfGates) {
-    return; // No more gates
-  }
+    if (NextGate >= PGNumberOfGates) {
+      return;  // No more gates
+    }
 
-  int gatetimediff = GateTimeDiff(utc_time, NextGate);
-  if (gatetimediff <= 0) {
-    NextGate++;
-    AlertGateOpen(utc_time);
-    // nothing else to do: the current activegate has just opened
-    return;
-  }
+    int gatetimediff = GateTimeDiff(utc_time, NextGate);
+    if (gatetimediff <= 0) {
+      NextGate++;
+      AlertGateOpen(utc_time);
+      // nothing else to do: the current activegate has just opened
+      return;
+    }
 
-  for (auto& notification : notifications) {
-    if (notification.Notify(gatetimediff)) {
-      return;  // Notification sent
+    for (auto& notification : notifications) {
+      if (notification.Notify(gatetimediff)) {
+        return;  // Notification sent
+      }
     }
   }
+  catch (std::exception&) {
+    DebugLog(_T("Invalid Gates"));
+    // ignore invalid gate
+  }
+}
+
+void TriggerPevStart(int utc_time) {
+  PGOpenTime =  LocalTime(utc_time) + WaitingTime * 60;
+  PGCloseTime = PGOpenTime + StartWindow * 60;
+
+  NextGate = 0;
+  PGNumberOfGates = 1;
+}
+
+bool PilotEventEnabled() {
+  return GateType == TimeGates::pev_start;
+}
+
+bool WaitForPilotEvent() {
+  if (GateType == TimeGates::pev_start) {
+    if (NextGate < 0) {
+      return true;
+    }
+    if (PGNumberOfGates < 1) {
+      return true;
+    }
+  }
+  return false;
 }
 
 #ifndef DOCTEST_CONFIG_DISABLE
 #include <doctest/doctest.h>
 
 TEST_CASE("TimeGates") {
-  SUBCASE("NotifyGateState") {
+  LKLoadLanguageFile();
 
-    LKLoadLanguageFile();
+  WayPointList.resize(10);
+  Task[0].Index = 0;
+  Task[1].Index = 1;
 
-    WayPointList.resize(10);
-    Task[0].Index = 0;
-    Task[1].Index = 1;
+  gTaskType = task_type_t::GP;
 
+  SUBCASE("Fixed gates") {
     // Mock dependencies
-    gTaskType = task_type_t::GP;
+    TimeGates::GateType = TimeGates::fixed_gates;
     PGNumberOfGates = 3;
     PGGateIntervalTime = 30;  // 30 minutes
 
@@ -351,12 +409,19 @@ TEST_CASE("TimeGates") {
     PGOpenTimeH = 2;  // Open time is 02:00
     PGOpenTimeM = 0;
 
-    NextGate = -1;
+    ResetGates();
 
     for (int time = 1; time < 86399; time += 2) {
       NotifyCalled = false;
 
       NotifyGateState(time);
+
+      if (time >= PGOpenTime && time < PGCloseTime) {
+        CHECK(ValidGate(time));
+      }
+      else {
+        CHECK_FALSE(ValidGate(time));
+      }
 
       switch (time) {
         case 1:
@@ -395,9 +460,45 @@ TEST_CASE("TimeGates") {
           break;
       }
     }
-
-    LKUnloadLanguageFile();
   }
+
+  SUBCASE("PEV start") {
+    TimeGates::GateType = TimeGates::pev_start;
+    WaitingTime = 5;
+    StartWindow = 10;
+
+    ResetGates();
+    bool trigger = true;
+
+    for (int time = 1; time < 86399; time++) {
+      NotifyCalled = false;
+      NotifyGateState(time);
+
+      if (trigger && time > 100) {
+        trigger = false;
+        TriggerPevStart(time);
+      }
+
+      if (trigger) {
+        CHECK(WaitForPilotEvent());
+        CHECK_FALSE(ValidGate(time));  // gate invalid until trigger
+      }
+      else if (time <= 100 + (WaitingTime * 60)) {
+        CHECK_FALSE(WaitForPilotEvent());
+        CHECK_FALSE(ValidGate(time));  // gate still invalid after trigger until WaitingTine not elapsed
+      }
+      else if (time > 100 + (WaitingTime * 60) + StartWindow * 60) {
+        CHECK(WaitForPilotEvent());
+        CHECK_FALSE(ValidGate(time));  // gate become invalid after trigger + waitingtime + startwindow
+      }
+      else {
+        CHECK_FALSE(WaitForPilotEvent());
+        CHECK(ValidGate(time));  // gate open
+      }
+    }
+  }
+
+  LKUnloadLanguageFile();
 }
 
 #endif

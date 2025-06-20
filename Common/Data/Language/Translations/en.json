@@ -418,6 +418,7 @@
     "_@H001302_": "[Draw XC Triangle]\nShow on the map the best cross country triangle according to the contest rule set in system menu 22. To be able to see it make sure that at least one Contest rule is active in Contest setting on page 22",
     "_@H001303_": "[deprecated]",
     "_@H001304_": "[Contour Line]\nDraw terrain elevation contour line for zoom level between 2km to 100m",
+
     "_@M000001_": "Diff",
     "_@M000002_": "Dist",
     "_@M000003_": "GS",
@@ -1262,6 +1263,9 @@
     "_@M000842_": "Big font",
     "_@M000843_": "Small font",
     "_@M000844_": "MacCready setting",
+    "_@M000845_": "Start Type",
+    "_@M000846_": "Waiting Time",
+    "_@M000847_": "Start Window",
 
     "_@M000850_": "FIRST GATE OPEN IN 1 HOUR",
     "_@M000851_": "FIRST GATE OPEN IN 30 MINUTES",
@@ -2639,5 +2643,12 @@
     "_@M002512_": "NEXT GATE OPEN IN 5 MINUTES",
 
     "_@M002513_": "\"PEV\"\nStart",
-    "_@M002514_": "Task Start Pilot Event"
+    "_@M002514_": "Task Start Pilot Event",
+
+    "_@H001365_": "[Gate type]\nAnytime: The gate is open for the entire task.\nFixed Time: The gate is open for a fixed time.\nPilot Event: The gate is open when the pilot presses the button.",
+
+    "_@H001366_": "[Waiting Time]\nThe time you need to wait for your personal start gate to open after you press the PEV button",
+    "_@H001367_": "[Start Window]\nHow long your personal start gate window is open"
+
+
 }

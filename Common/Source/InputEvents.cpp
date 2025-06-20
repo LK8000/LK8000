@@ -43,7 +43,6 @@
 #include "Dialogs/dlgMultiSelectList.h"
 #include "Dialogs/dlgAirspaceDetails.h"
 #include "Calc/Task/TimeGates.h"
-
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -3370,12 +3369,8 @@ void InputEvents::eventShowMultiselect(const TCHAR*) {
 void InputEvents::eventPilotEvent(const TCHAR*) {
   // TODO : Check if start rule is set to PEV
 
-  // TODO : Configure TimeGate :
-  // 1. set Number of gate to 1
-  // 2. set GateOpenTime to 'Now' + 'WaitTime'
-  // 3. set GateCloseTime to 'GateOpenTime' + 'StartWindow'
-
-  LogPilotEvent(GPS_INFO);
+  int event_utc_time = LogPilotEvent(GPS_INFO);
+  TriggerPevStart(event_utc_time);
 }
 
 namespace {

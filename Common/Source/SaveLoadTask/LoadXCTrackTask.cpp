@@ -141,6 +141,7 @@ void ParseTimeGates(const json::value &timegates) {
         StrToLocalTime(second_str_time.c_str(), H, M);
         TimeGates::PGGateIntervalTime = (H * 60 + M) - (TimeGates::PGOpenTimeH * 60 + TimeGates::PGOpenTimeM);
       }
+      TimeGates::GateType = TimeGates::fixed_gates;
     }
   }
 }

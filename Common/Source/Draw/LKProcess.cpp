@@ -3256,26 +3256,30 @@ lkfin_ete:
             value = 0;
             // Req. Speed For reach Gate
             if (UseGates() && HaveGates(DrawInfo.Time)) {
-                // Time To Gate
-                const int gatechrono = NextGateTimeDiff(DrawInfo.Time); // not always already set, update it ... 
-                if (gatechrono > 0) {
-                    const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
-                    const double SpeedToGate = DistToGate / gatechrono;
-                    const int RoundedSpeed = iround(Units::ToHorizontalSpeed(SpeedToGate));
-                    if (SpeedToGate > 300) {
-                        // ignore too fast speed
-                        lk::strcpy(BufferValue, infinity);
-                        lk::strcpy(BufferUnit, TEXT(""));
-                    } else if (RoundedSpeed <= 0) {
-                        lk::strcpy(BufferValue, TEXT(NULLMEDIUM));
-                        lk::strcpy(BufferUnit, TEXT(""));
-                    } else {
-                        _stprintf(BufferValue, TEXT("%d"), RoundedSpeed);
-                        _stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
-                    }
-                    valid = true;
-                }
-                lk::strcpy(BufferTitle, TEXT(""));
+				try {
+					// Time To Gate
+					const int gatechrono = NextGateTimeDiff(DrawInfo.Time); // not always already set, update it ... 
+					if (gatechrono > 0) {
+						const double DistToGate = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].Distance;
+						const double SpeedToGate = DistToGate / gatechrono;
+						const int RoundedSpeed = iround(Units::ToHorizontalSpeed(SpeedToGate));
+						if (SpeedToGate > 300) {
+							// ignore too fast speed
+							lk::strcpy(BufferValue, infinity);
+							lk::strcpy(BufferUnit, TEXT(""));
+						} else if (RoundedSpeed <= 0) {
+							lk::strcpy(BufferValue, TEXT(NULLMEDIUM));
+							lk::strcpy(BufferUnit, TEXT(""));
+						} else {
+							_stprintf(BufferValue, TEXT("%d"), RoundedSpeed);
+							_stprintf(BufferUnit, TEXT("%s"), (Units::GetHorizontalSpeedName()));
+						}
+						valid = true;
+					}
+					lk::strcpy(BufferTitle, TEXT(""));
+				} catch (std::exception&) {
+					// invalid gate, no speed
+				}
             }
 			break;
 

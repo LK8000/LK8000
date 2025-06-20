@@ -16,7 +16,6 @@
     <WndButton  Name="cmdReverse" Caption="_@M93_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnAnalysisClicked"/>
     <WndButton  Name="cmdAnalysis" Caption="_@M1851_"    X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnReverseClicked"/>    
     <WndButton  Name="cmdTimegates" Caption="_@M1747_" X="2" Y="-1" Width="98"  Height="22" Font="2" OnClickNotify="OnTimegatesClicked"/>
-    <WndButton  Name="cmdDelete" Caption="_@M230_" X="2" Y="-999" Width="98"  Height="22" Font="2" OnClickNotify="OnDeleteClicked"/>
 
     <!--using ReadOnly, Keyboard allow to use OnHelp to select HomeWapoint by click on property -->
     <WndProperty Name="prpHome" Caption="_@M930_" CaptionWidth="60" X="102" Y="0" Width="-2" Height="22" ReadOnly="1" OnHelp="OnSelectHomeWaypoint" Keyboard="1">

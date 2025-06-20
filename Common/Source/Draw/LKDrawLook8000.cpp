@@ -269,14 +269,20 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     }
     int gateinuse = -2;
     if (ActiveTaskPoint == 0 && UseGates()) {
-        gateinuse = ActiveGate();
+        try {
+            gateinuse = ActiveGate();
+            if (HaveGates(DrawInfo.Time)) {
+                // this is set here for the first time, when havegates
+                gatechrono = NextGateTimeDiff(DrawInfo.Time);
+            }
+        }
+        catch (std::exception&) {
+          gateinuse = -2;
+        }
     }
     if (flipflop && (gateinuse != -2)) {
         if (!HaveGates(DrawInfo.Time)) {
             gateinuse = -1;
-        } else {
-            // this is set here for the first time, when havegates
-            gatechrono = NextGateTimeDiff(DrawInfo.Time);
         }
         if (gateinuse < 0) {
             // LKTOKEN  _@M157_ = "CLOSED"
@@ -376,36 +382,40 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     if (UseGates() && ActiveTaskPoint == 0) {
         Surface.SelectObject(LK8OverlayBigFont);
 
-        if (HaveGates(DrawInfo.Time)) {
-            // Time To Gate
-            gatechrono = NextGateTimeDiff(DrawInfo.Time); // not always already set, update it ...
+        try {
+            if (HaveGates(DrawInfo.Time)) {
+                // Time To Gate
+                gatechrono = NextGateTimeDiff(DrawInfo.Time); // not always already set, update it ...
 
-            Units::TimeToTextDown(BufferValue, gatechrono);
-            rcx= rc.right-RIGHTMARGIN;
-            rcy = yrightoffset - SizeBigFont.cy-NIBLSCALE(6); // 101112
-            LKWriteText(Surface, BufferValue, rcx,rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
+                Units::TimeToTextDown(BufferValue, gatechrono);
+                rcx= rc.right-RIGHTMARGIN;
+                rcy = yrightoffset - SizeBigFont.cy-NIBLSCALE(6); // 101112
+                LKWriteText(Surface, BufferValue, rcx,rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
 
-            // Gate ETE Diff
-            Value = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].NextETE - gatechrono;
-            Units::TimeToTextDown(BufferValue, (int) Value);
-            rcy += SizeBigFont.cy-NIBLSCALE(2);
-            color=(Value<=0)?AMBERCOLOR:OverColorRef;
-            LKWriteText(Surface, BufferValue, rcx,rcy, WTMODE_OUTLINED,WTALIGN_RIGHT,color, true);
+                // Gate ETE Diff
+                Value = WayPointCalc[DoOptimizeRoute() ? RESWP_OPTIMIZED : Task[0].Index].NextETE - gatechrono;
+                Units::TimeToTextDown(BufferValue, (int) Value);
+                rcy += SizeBigFont.cy-NIBLSCALE(2);
+                color=(Value<=0)?AMBERCOLOR:OverColorRef;
+                LKWriteText(Surface, BufferValue, rcx,rcy, WTMODE_OUTLINED,WTALIGN_RIGHT,color, true);
 
-            // Req. Speed For reach Gate
-            if (LKFormatValue(LK_START_SPEED, false, BufferValue, BufferUnit, BufferTitle)) {
-                Surface.SelectObject(LK8TargetFont);
-                Surface.GetTextSize(BufferUnit, &TextSize);
-                rcx -= TextSize.cx;
-                Surface.GetTextSize(BufferValue, &TextSize);
-                rcx -= (TextSize.cx + NIBLSCALE(2));
-                rcy += TextSize.cy-NIBLSCALE(2);
+                // Req. Speed For reach Gate
+                if (LKFormatValue(LK_START_SPEED, false, BufferValue, BufferUnit, BufferTitle)) {
+                    Surface.SelectObject(LK8TargetFont);
+                    Surface.GetTextSize(BufferUnit, &TextSize);
+                    rcx -= TextSize.cx;
+                    Surface.GetTextSize(BufferValue, &TextSize);
+                    rcx -= (TextSize.cx + NIBLSCALE(2));
+                    rcy += TextSize.cy-NIBLSCALE(2);
 
-                LKWriteText(Surface, BufferValue, rcx, rcy + (TextSize.cy / 3), WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                    LKWriteText(Surface, BufferValue, rcx, rcy + (TextSize.cy / 3), WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
 
-                LKWriteText(Surface, BufferUnit, rcx + TextSize.cx + NIBLSCALE(2), rcy + (TextSize.cy / 3), WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
-                Surface.SelectObject(LK8OverlayBigFont);
+                    LKWriteText(Surface, BufferUnit, rcx + TextSize.cx + NIBLSCALE(2), rcy + (TextSize.cy / 3), WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true);
+                    Surface.SelectObject(LK8OverlayBigFont);
+                }
             }
+        } catch (std::exception&) {
+            // ignore invalid gates 
         }
 
         //
@@ -413,13 +423,19 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         //
         Surface.SelectObject(LK8OverlayGatesFont);
 
-        if (HaveGates(DrawInfo.Time)) {
-            Units::TimeToText(BufferTitle, OpenGateTime());
-            lk::snprintf(BufferValue, _T("START %s"), BufferTitle);
-        } else {
-            // LKTOKEN  _@M316_ = "GATES CLOSED"
-            lk::strcpy(BufferValue, MsgToken<316>());
+        try {
+            if (HaveGates(DrawInfo.Time)) {
+                Units::TimeToText(BufferTitle, OpenGateTime());
+                lk::snprintf(BufferValue, _T("START %s"), BufferTitle);
+            } else {
+                // LKTOKEN  _@M316_ = "GATES CLOSED"
+                lk::strcpy(BufferValue, MsgToken<316>());
+            }
         }
+        catch(std::exception&) {
+            // ignore invalid gates
+        }
+
         rcy = yrightoffset - SizeBigFont.cy - (SizeGatesFont.cy * 2);
         rcx = rc.right - RIGHTMARGIN;
         LKWriteText(Surface, BufferValue, rcx, rcy, WTMODE_OUTLINED, WTALIGN_RIGHT, OverColorRef, true);
@@ -440,6 +456,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                     } else if (from_inside && !DerivedDrawInfo.IsInSector) {
                         // LKTOKEN  _@M924_ = "WRONG outSIDE"
                         lk::strcpy(BufferValue, MsgToken<924>());
+                    } else if (WaitForPilotEvent()) {
+                        // TODO : language token
+                        lk::strcpy(BufferValue, _T("Wait for PEV"));
                     } else {
                         // LKTOKEN  _@M921_ = "countdown"
                         lk::strcpy(BufferValue, MsgToken<921>());

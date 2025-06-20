@@ -10,9 +10,18 @@
 #define CALC_TASK_TIMEGATES_H
 
 namespace TimeGates {
+
+// parameters saved in task
+enum open_type {
+    anytime,
+    fixed_gates,
+    pev_start
+};
+
+extern open_type GateType;
+
 // Paraglider's time gates
 // ------------------------------
-// parameter seved in task and system config
 
 // Open and close time, gate 0  ex. 12:00
 // M and H for registry
@@ -28,6 +37,16 @@ extern int PGGateIntervalTime;
 // How many gates, 1-x
 extern int PGNumberOfGates;
 // ------------------------------
+
+// -----------------------------
+// Glider's PEV Start parameters
+
+// The time you need to wait for your personal start gate to open after you press the PEV button
+extern int WaitingTime;
+
+// How long your personal start gate window is open
+extern int StartWindow;
+// -----------------------------
 
 void ResetSettings();
 
@@ -57,6 +76,7 @@ bool HaveGates(int utc_time);
 // There is ALWAYS an activegate, it cannot be negative!
 //   but returns -1 if no gates are configured
 int InitActiveGate();
+void TriggerPevStart(int utc_time);
 
 // Called when the task is reset
 void ResetGates();
@@ -70,5 +90,9 @@ bool ValidGate(int utc_time);
 //   - Open
 //   - Closed
 void NotifyGateState(int utc_time);
+
+
+bool PilotEventEnabled();
+bool WaitForPilotEvent();
 
 #endif  // CALC_TASK_TIMEGATES_H
