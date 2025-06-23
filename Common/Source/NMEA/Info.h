@@ -37,6 +37,10 @@ struct BaroIndex {
         }
         return is_flarm;
     }
+
+    bool operator != (BaroIndex& idx) const {
+        return (is_flarm != idx.is_flarm) && (device_index != idx.device_index);
+    }
 };
 
 struct NMEA_INFO final {

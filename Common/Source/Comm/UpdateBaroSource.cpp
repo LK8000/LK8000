@@ -13,19 +13,19 @@
 namespace {
 
 BaroIndex GetBaroIndex(const DeviceDescriptor_t* d) {
+  if (d) {
+    return { d->nmeaParser.isFlarm, d->PortNumber };
+  }
   /**
-   * id `d` is nullptr, source is internal sensor, use `NUMDEV` for it's index
+   * id `d` is nullptr, source is internal sensor, use `NUMDEV` for it's index (lowest priority)
    */
-  return {
-    d ? d->nmeaParser.isFlarm : false,
-    d ? d->PortNumber : NUMDEV
-  };
+  return { false, NUMDEV };
 }
 
 void NotifyInvalidAltitude(unsigned index, double fAlt) {
   static bool notifyErr = true;
   if (notifyErr) {
-    StartupStore(_T("...<device : %u> RECEIVING INVALID BARO ALTITUDE : %f"), index, fAlt);
+    StartupStore(_T("...<device : %c> RECEIVING INVALID BARO ALTITUDE : %f"), devLetter(index), fAlt);
     DoStatusMessage(MsgToken<1530>());
     notifyErr = false;
   }
@@ -40,6 +40,9 @@ bool BaroAltitudeAvailable(const NMEA_INFO& Info) {
 }
 
 void ResetBaroAvailable(NMEA_INFO& Info) {
+  if (BaroAltitudeAvailable(Info)) {
+    TestLog(_T("Baro source reset @%s"), WhatTimeIsIt());
+  }
   Info.BaroSourceIdx.is_flarm = false;
   Info.BaroSourceIdx.device_index = NUMDEV;
   lastBaroUpdate.Reset();
@@ -86,6 +89,9 @@ void UpdateBaroSource(NMEA_INFO* pGPS, DeviceDescriptor_t* d, double fAlt) {
       NotifyInvalidAltitude(Index.device_index, fAlt);
     }
     else {
+      if (pGPS->BaroSourceIdx != Index) {
+        TestLog(_T("Baro source change From %c to %c @%s"), devLetter(pGPS->BaroSourceIdx.device_index), devLetter(Index.device_index), WhatTimeIsIt());
+      }
       pGPS->BaroAltitude = fAlt;
       pGPS->BaroSourceIdx = Index;
 
