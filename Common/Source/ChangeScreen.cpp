@@ -97,8 +97,9 @@ void ReinitScreen(void) {
 
   TestLog(_T("... ChangeScreen suspending Draw Thread\n"));
 
-#ifndef ENABLE_OPENGL
   MapWindow::SuspendDrawingThread();
+
+#ifndef ENABLE_OPENGL
   ScopeLock Lock(MapWindow::Surface_Mutex);
 #endif
 
