@@ -104,6 +104,12 @@ android {
         beta {
             initWith(buildTypes.release)
 
+            externalNativeBuild {
+                cmake {
+                    cppFlags += "-DTESTBENCH=1"
+                }
+            }
+
             applicationIdSuffix ".test"
         }
     }
