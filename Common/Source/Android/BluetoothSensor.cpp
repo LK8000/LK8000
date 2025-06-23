@@ -292,10 +292,7 @@ void BluetoothSensor::OutsideTemperature(const std::vector<uint8_t>& data) {
 }
 
 void BluetoothSensor::DataReceived(const void *data, size_t length) {
-  const auto *src_data = static_cast<const char *>(data);
-  std::for_each_n(src_data, length, [this](auto c) {
-    ProcessChar(static_cast<char>(c));
-  });
+  ComPort::ProcessData(static_cast<const char*>(data), length);
 }
 
 bool BluetoothSensor::Hm10DataEnable() const {
