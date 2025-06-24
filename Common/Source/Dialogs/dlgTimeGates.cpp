@@ -16,10 +16,9 @@
 #include "resource.h"
 #include "Calc/Task/TimeGates.h"
 
-static bool changed = false;
-static WndForm *wf=NULL;
+namespace {
 
-static void OnCloseClicked(WndButton* pWnd) {
+void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -28,7 +27,7 @@ static void OnCloseClicked(WndButton* pWnd) {
   }
 }
 
-static void OnGateType(DataField* Sender, DataField::DataAccessKind_t Mode) {
+void OnGateType(DataField* Sender, DataField::DataAccessKind_t Mode) {
 
   if(Sender->getCount() == 0) {
     Sender->addEnumList({
@@ -62,7 +61,7 @@ static void OnGateType(DataField* Sender, DataField::DataAccessKind_t Mode) {
   }
 }
 
-static void OnWaitingTime(DataField* Sender, DataField::DataAccessKind_t Mode) {
+void OnWaitingTime(DataField* Sender, DataField::DataAccessKind_t Mode) {
   switch (Mode) {
     case DataField::daGet:
       Sender->Set(TimeGates::WaitingTime);
@@ -75,7 +74,7 @@ static void OnWaitingTime(DataField* Sender, DataField::DataAccessKind_t Mode) {
   }
 }
 
-static void OnStartWindow(DataField* Sender, DataField::DataAccessKind_t Mode) {
+void OnStartWindow(DataField* Sender, DataField::DataAccessKind_t Mode) {
   switch (Mode) {
     case DataField::daGet:
       Sender->Set(TimeGates::StartWindow);
@@ -89,7 +88,7 @@ static void OnStartWindow(DataField* Sender, DataField::DataAccessKind_t Mode) {
 }
 
 
-static CallBackTableEntry_t CallBackTable[]={
+CallBackTableEntry_t CallBackTable[]={
   ClickNotifyCallbackEntry(OnCloseClicked),
   DataAccessCallbackEntry(OnGateType),
   DataAccessCallbackEntry(OnWaitingTime),
@@ -97,12 +96,8 @@ static CallBackTableEntry_t CallBackTable[]={
   EndCallBackEntry()
 };
 
-
-
-static void setVariables(void) {
-  WndProperty *wp;
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
+void setVariables(WndForm* pForm) {
+  auto wp = pForm->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
     if (dfe) {
@@ -112,55 +107,54 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGNumberOfGates);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOpenTimeH"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGOpenTimeH"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGOpenTimeH);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOpenTimeM"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGOpenTimeM"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGOpenTimeM);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGCloseTimeH"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGCloseTimeH"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGCloseTimeH);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGCloseTimeM"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGCloseTimeM"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGCloseTimeM);
     wp->RefreshDisplay();
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGGateIntervalTime"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGGateIntervalTime"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(TimeGates::PGGateIntervalTime);
     wp->RefreshDisplay();
   }
 }
 
+} // namespace
 
-void dlgTimeGatesShowModal(void){
+void dlgTimeGatesShowModal() {
+  std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, IDR_XML_TIMEGATES));
+  if (!pForm) {
+    return;
+  }
 
-  WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TIMEGATES);
+  setVariables(pForm.get());
 
-  if (!wf) return;
+  bool changed = false;
 
-  setVariables();
-
-  changed = false;
-
-  wf->ShowModal();
+  pForm->ShowModal();
   // TODO enhancement: implement a cancel button that skips all this below after exit.
 
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
+  auto wp = pForm->FindByName<WndProperty>(TEXT("prpPGOptimizeRoute"));
   if (wp) {
     if (TskOptimizeRoute != (wp->GetDataField()->GetAsBoolean())) {
       TskOptimizeRoute = (wp->GetDataField()->GetAsBoolean());
@@ -172,52 +166,50 @@ void dlgTimeGatesShowModal(void){
     }
   }
 
-  auto frmFixed = wf->FindByName(_T("frmFixed"));
+  auto frmFixed = pForm->FindByName(_T("frmFixed"));
   if (frmFixed) {
     frmFixed->SetVisible(TimeGates::GateType == TimeGates::fixed_gates);
   }
-
-  auto frmPev = wf->FindByName(_T("frmPev"));
+  auto frmPev = pForm->FindByName(_T("frmPev"));
   if (frmPev) {
     frmPev->SetVisible(TimeGates::GateType == TimeGates::pev_start);
   }
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGNumberOfGates"));
   if (wp) {
-    if ( TimeGates::PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {
+    if (TimeGates::PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {
       TimeGates::PGNumberOfGates = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOpenTimeH"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGOpenTimeH"));
   if (wp) {
-    if ( TimeGates::PGOpenTimeH != wp->GetDataField()->GetAsInteger()) {
+    if (TimeGates::PGOpenTimeH != wp->GetDataField()->GetAsInteger()) {
       TimeGates::PGOpenTimeH = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGOpenTimeM"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGOpenTimeM"));
   if (wp) {
     if (TimeGates::PGOpenTimeM != wp->GetDataField()->GetAsInteger()) {
       TimeGates::PGOpenTimeM = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGCloseTimeH"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGCloseTimeH"));
   if (wp) {
     if (TimeGates::PGCloseTimeH != wp->GetDataField()->GetAsInteger()) {
       TimeGates::PGCloseTimeH = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGCloseTimeM"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGCloseTimeM"));
   if (wp) {
     if (TimeGates::PGCloseTimeM != wp->GetDataField()->GetAsInteger()) {
       TimeGates::PGCloseTimeM = wp->GetDataField()->GetAsInteger();
       changed = true;
     }
   }
-  wp = wf->FindByName<WndProperty>(TEXT("prpPGGateIntervalTime"));
+  wp = pForm->FindByName<WndProperty>(TEXT("prpPGGateIntervalTime"));
   if (wp) {
     if (TimeGates::PGGateIntervalTime != wp->GetDataField()->GetAsInteger()) {
       TimeGates::PGGateIntervalTime = wp->GetDataField()->GetAsInteger();
@@ -226,11 +218,6 @@ void dlgTimeGatesShowModal(void){
   }
 
   if (changed) {
-      InitActiveGate();
+    InitActiveGate();
   }
-
-
-  delete wf;
-  wf = NULL;
-
 }
