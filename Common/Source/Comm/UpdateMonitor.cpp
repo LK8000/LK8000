@@ -131,14 +131,24 @@ DeviceDescriptor_t& get_active_gps() {
   return DeviceList[active.value_or(0)];
 }
 
-void reset_nmea_info_availability() {
+void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   ScopeLock lock(CritSec_FlightData);
 
-  ResetBaroAvailable(GPS_INFO);
-  ResetVarioAvailable(GPS_INFO);
-  ResetExternalWindAvailable(GPS_INFO);
-  ResetHeartRateAvailable(GPS_INFO);
-  ResetAccelerationAvailable(GPS_INFO);
+  if (!idx || (GPS_INFO.BaroSourceIdx.device_index == idx.value())) {
+    ResetBaroAvailable(GPS_INFO);
+  }
+  if (!idx || (GPS_INFO.VarioSourceIdx == idx.value())) {
+    ResetVarioAvailable(GPS_INFO);
+  }
+  if (!idx || (GPS_INFO.ExternalWindIdx == idx.value())) {
+    ResetExternalWindAvailable(GPS_INFO);
+  }
+  if (!idx || (GPS_INFO.HeartRateIdx == idx.value())) {
+    ResetHeartRateAvailable(GPS_INFO);
+  }
+  if (!idx || (GPS_INFO.AccelerationIdx == idx.value())) {
+    ResetAccelerationAvailable(GPS_INFO);
+  }
 
   GPS_INFO.AirspeedAvailable = false;
   GPS_INFO.NettoVarioAvailable = false;
@@ -228,8 +238,12 @@ bool UpdateMonitor() {
     active = find_device(port_enabled());
   }
 
-  // if no enabled port, let first port active.
-  set_active_gps(active.value_or(0));
+  if (!active) {
+    // if no enabled port, let first port active.
+    active = 0U;
+  }
+
+  set_active_gps(active.value());
 
   DeviceDescriptor_t& active_dev = get_active_gps();
 
@@ -266,11 +280,6 @@ bool UpdateMonitor() {
     GPS_INFO.FLARM_SW_Version =0.0;
   }
 
-#ifdef DEBUGNPM
-  short invalidGps = 0;
-  short invalidBaro = 0;
-#endif
-
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
   for (auto& dev : DeviceList) {
@@ -285,27 +294,16 @@ bool UpdateMonitor() {
       StartupStore(_T("... GPS Port %c : no activity LKHB=%u CBHB=%u"), devLetter(dev.PortNumber), LKHearthBeats, dev.HB);
 #endif
       // if this is active and supposed to have a valid fix.., but no HB..
-      if ((active == dev.PortNumber) && dev.nmeaParser.gpsValid) {
+      if ((active.value() == dev.PortNumber) && dev.nmeaParser.gpsValid) {
         StartupStore(_T("... GPS Port %c no hearthbeats, but still gpsValid: forced invalid  %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
+        dev.nmeaParser.Reset();
       }
-
-#ifdef DEBUGNPM
-      invalidGps++;
-      // We want to be sure that if this device is silent, and it was providing Baro altitude,
-      // now it is set to off.
-      if (BaroAltitudeAvailable(GPS_INFO)) {
-        if (devIsBaroSource(dev)) {
-          invalidBaro++;
-        }
-      }
-#endif      
-
-      dev.nmeaParser.Reset();
 
       // We reset some flags globally only once in case of device gone silent
-      if (!dev.Disabled && !wasSilent[dev.PortNumber]) {
-        reset_nmea_info_availability();
-        wasSilent[dev.PortNumber]=true;
+      if (!wasSilent[dev.PortNumber]) {
+        dev.IsBaroSource = false;
+        reset_nmea_info_availability(dev.PortNumber);
+        wasSilent[dev.PortNumber] = true;
       }
     } else {
       wasSilent[dev.PortNumber]=false;
@@ -316,22 +314,13 @@ bool UpdateMonitor() {
     }
   }
 
-#ifdef DEBUGNPM
-  if (invalidGps==std::size(DeviceList)) {
-    StartupStore(_T("... GPS no gpsValid available on any port, active=%d @%s"), active.value(), WhatTimeIsIt());
-  }
-  if (invalidBaro>0) {
-    StartupStore(_T("... Baro altitude just lost, current status=%d @%s"), BaroAltitudeAvailable(GPS_INFO), WhatTimeIsIt());
-  }
-#endif
-
   // do we really still have a baro altitude available?
   // If some baro source disappeared, let's reset it for safety. Parser will re-enable them immediately if available.
   // Assuming here that if no Baro is available, no airdata is available also
   //
   if (validBaro==0) {
     if (BaroAltitudeAvailable(GPS_INFO)) {
-      StartupStore(_T("... GPS no active baro source, and still BaroAltitudeAvailable, forced off %s"), WhatTimeIsIt());
+      StartupStore(_T("... no active baro source, and still BaroAltitudeAvailable, forced off %s"), WhatTimeIsIt());
       if (EnableNavBaroAltitude) {
         // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE"
         DoStatusMessage(MsgToken<122>());
@@ -342,7 +331,7 @@ bool UpdateMonitor() {
       }
 
       // We also reset data availability, just in case we are through a mux
-      reset_nmea_info_availability();
+      ResetBaroAvailable(GPS_INFO);
 
       // 120824 Check this situation better> Reset is setting activeGPS true for both devices!
       lastvalidBaro=false;
@@ -355,12 +344,12 @@ bool UpdateMonitor() {
       } else {
         DoStatusMessage(MsgToken<1795>()); // BARO ALTITUDE IS AVAILABLE
       }
-      StartupStore(_T("... GPS baro source back available %s"),WhatTimeIsIt());
+      StartupStore(_T("... baro source back available %s"),WhatTimeIsIt());
       lastvalidBaro=true;
     } else {
       static bool said = false;
       if (!said) {
-        StartupStore(_T("... GPS BARO SOURCE PROBLEM, umnanaged port activity. Wrong device? %s"), WhatTimeIsIt());
+        StartupStore(_T("... BARO SOURCE PROBLEM, unmanaged port activity. Wrong device? %s"), WhatTimeIsIt());
         said = true;
       }
     }
