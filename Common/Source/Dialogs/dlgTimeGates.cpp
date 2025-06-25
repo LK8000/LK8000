@@ -27,6 +27,19 @@ void OnCloseClicked(WndButton* pWnd) {
   }
 }
 
+void UpdateGateTypeUI(WndForm* pForm) {
+  if (pForm) {
+    auto frmFixed = pForm->FindByName(_T("frmFixed"));
+    if (frmFixed) {
+      frmFixed->SetVisible(TimeGates::GateType == TimeGates::fixed_gates);
+    }
+    auto frmPev = pForm->FindByName(_T("frmPev"));
+    if (frmPev) {
+      frmPev->SetVisible(TimeGates::GateType == TimeGates::pev_start);
+    }
+  }
+}
+
 void OnGateType(DataField* Sender, DataField::DataAccessKind_t Mode) {
 
   if(Sender->getCount() == 0) {
@@ -37,26 +50,18 @@ void OnGateType(DataField* Sender, DataField::DataAccessKind_t Mode) {
       });
   }
 
+  auto& wp = Sender->GetOwner();
+  auto pForm = wp.GetParentWndForm();
+
   switch (Mode) {
-    default:
-      break;
     case DataField::daGet:
       Sender->Set(TimeGates::GateType);
       break;
     case DataField::daChange:
-      auto& wp = Sender->GetOwner();
-      auto pForm = wp.GetParentWndForm();
-      if (pForm) {
-        auto frmFixed = pForm->FindByName(_T("frmFixed"));
-        if (frmFixed) {
-          frmFixed->SetVisible(Sender->GetAsInteger() == TimeGates::fixed_gates);
-        }
-        auto frmPev = pForm->FindByName(_T("frmPev"));
-        if (frmPev) {
-          frmPev->SetVisible(Sender->GetAsInteger() == TimeGates::pev_start);
-        }
-        TimeGates::GateType = static_cast<TimeGates::open_type>(Sender->GetAsInteger());
-      }
+      TimeGates::GateType = static_cast<TimeGates::open_type>(Sender->GetAsInteger());
+      UpdateGateTypeUI(pForm);
+      break;
+    default:
       break;
   }
 }
@@ -146,8 +151,9 @@ void dlgTimeGatesShowModal() {
   if (!pForm) {
     return;
   }
-
+ 
   setVariables(pForm.get());
+  UpdateGateTypeUI(pForm.get());
 
   bool changed = false;
 
