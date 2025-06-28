@@ -28,20 +28,6 @@
 #include "Geographic/TransverseMercator.h"
 #include "Draw/Task/TaskRendererMgr.h"
 
-namespace {
-
-    /**
-     * T must inherit from PGTaskPt
-     */
-    template<typename T, typename ...Args>
-    std::enable_if_t<std::is_base_of_v<PGTaskPt, T>, std::unique_ptr<T>>
-    getPGTaskPt(const TransverseMercator* pProjection, size_t idx, Args&&... args) {
-        assert(pProjection);
-        return std::make_unique<T>(pProjection->Forward(GetTurnpointPosition(idx)), std::forward<Args>(args)...);
-    }
-
-} // namespace
-
 void PGTaskMgr::Initialize() {
     m_Task.clear();
     size_t tp_count = ValidTaskPointFast(0) ? 1 : 0;
@@ -76,85 +62,72 @@ void PGTaskMgr::Initialize() {
 
     // build task point list
     for (int curwp = 0; ValidTaskPointFast(curwp); ++curwp) {
-        sector_param param = GetTaskSectorParameter(curwp);
-        switch (param.type) {
-            case sector_type_t::CIRCLE:
-                AddCircle(curwp, param.radius);
-                break;
-            case sector_type_t::SECTOR:
-            case sector_type_t::DAe:
-                AddSector(curwp);
-                break;
-            case sector_type_t::SGP_START:
-            case sector_type_t::LINE:
-                AddLine(curwp, param.radius);
-                break;
-            case sector_type_t::ESS_CIRCLE:
-                AddEssCircle(curwp, param.radius);
-                break;
-        }
+      task::invoke_for_task_point<AddTaskPt_Helper>(curwp, *this);
     }
 }
 
-void PGTaskMgr::AddCircle(int TskIdx, double Radius) {
-    auto pTskPt = getPGTaskPt<PGCircleTaskPt>(m_Projection.get(), TskIdx, Radius);
-    m_Task.emplace_back(std::move(pTskPt));
+void PGTaskMgr::AddTaskPt(int tp_index, const task::sector_data& data) {
+  m_Task.emplace_back(Make<PGSectorTaskPt>(data.center));
 }
 
-void PGTaskMgr::AddEssCircle(int TskIdx, double Radius) {
-    auto pTskPt = getPGTaskPt<PGEssCircleTaskPt>(m_Projection.get(), TskIdx, Radius);
-    m_Task.emplace_back(std::move(pTskPt));
+void PGTaskMgr::AddTaskPt(int tp_index, const task::circle_data& data) {
+  m_Task.emplace_back(Make<PGCircleTaskPt>(data.center, data.radius));
 }
 
-void PGTaskMgr::AddLine(int TskIdx, double Radius) {
-    auto pTskPt = getPGTaskPt<PGLineTaskPt>(m_Projection.get(), TskIdx);
-
-    // Find prev Tp not same as current.
-    int PrevIdx = TskIdx - 1;
-    while (PrevIdx > 0 && Task[PrevIdx].Index == Task[TskIdx].Index) {
-        --PrevIdx;
-    }
-
-    // Find next Tp not same as current.
-    int NextIdx = TskIdx + 1;
-    while (ValidTaskPointFast(NextIdx) && Task[NextIdx].Index == Task[TskIdx].Index) {
-        ++NextIdx;
-    }
-
-    // Calc Cross Dir Vector
-    ProjPt InB = { 0, 0 };
-    ProjPt OutB = { 0, 0 };
-    if (ValidTaskPointFast(NextIdx)) {
-        OutB = m_Projection->Forward(GetTurnpointPosition(NextIdx));
-        OutB = Normalize(OutB - pTskPt->m_Center);
-    } else if (PrevIdx >= 0) {
-        InB = m_Task[PrevIdx]->getCenter();
-        InB = Normalize(pTskPt->m_Center - InB);
-    }
-
-    if (!IsNull(InB) && !IsNull(OutB)) {
-        pTskPt->m_DirVector = Normalize(InB + OutB);
-    } else if (!IsNull(InB)) {
-        pTskPt->m_DirVector = InB;
-    } else if (!IsNull(OutB)) {
-        pTskPt->m_DirVector = OutB;
-    }
-
-    // Calc begin and end off line.
-    ProjPt::scalar_type d = Length(pTskPt->m_DirVector);
-    if (d > 0) {
-        ProjPt u = Rotate90(pTskPt->m_DirVector) * Radius;
-        pTskPt->m_LineBegin = pTskPt->m_Center + u; // begin of line
-        pTskPt->m_LineEnd = pTskPt->m_Center - u; // end of line
-    }
-
-    m_Task.emplace_back(std::move(pTskPt));
+void PGTaskMgr::AddTaskPt(int tp_index, const task::dae_data& data) {
+  m_Task.emplace_back(Make<PGSectorTaskPt>(data.center));
 }
 
-void PGTaskMgr::AddSector(int TskIdx) {
-    m_Task.emplace_back(getPGTaskPt<PGSectorTaskPt>(m_Projection.get(), TskIdx));
+void PGTaskMgr::AddTaskPt(int tp_index, const task::line_data& data) {
+  auto pTskPt = Make<PGLineTaskPt>(data.center);
 
-	//TODO : Handle Sector Turn Point
+  // Find prev Tp not same as current.
+  int PrevIdx = tp_index - 1;
+  while (PrevIdx > 0 && Task[PrevIdx].Index == Task[tp_index].Index) {
+    --PrevIdx;
+  }
+
+  // Find next Tp not same as current.
+  int NextIdx = tp_index + 1;
+  while (ValidTaskPointFast(NextIdx) && Task[NextIdx].Index == Task[tp_index].Index) {
+    ++NextIdx;
+  }
+
+  // Calc Cross Dir Vector
+  ProjPt InB = {0, 0};
+  ProjPt OutB = {0, 0};
+  if (ValidTaskPointFast(NextIdx)) {
+    OutB = m_Projection->Forward(GetTurnpointPosition(NextIdx));
+    OutB = Normalize(OutB - pTskPt->m_Center);
+  }
+  else if (PrevIdx >= 0) {
+    InB = m_Task[PrevIdx]->getCenter();
+    InB = Normalize(pTskPt->m_Center - InB);
+  }
+
+  if (!IsNull(InB) && !IsNull(OutB)) {
+    pTskPt->m_DirVector = Normalize(InB + OutB);
+  }
+  else if (!IsNull(InB)) {
+    pTskPt->m_DirVector = InB;
+  }
+  else if (!IsNull(OutB)) {
+    pTskPt->m_DirVector = OutB;
+  }
+
+  // Calc begin and end off line.
+  ProjPt::scalar_type d = Length(pTskPt->m_DirVector);
+  if (d > 0) {
+    ProjPt u = Rotate90(pTskPt->m_DirVector) * data.radius;
+    pTskPt->m_LineBegin = pTskPt->m_Center + u;  // begin of line
+    pTskPt->m_LineEnd = pTskPt->m_Center - u;    // end of line
+  }
+
+  m_Task.emplace_back(std::move(pTskPt));
+}
+
+void PGTaskMgr::AddTaskPt(int tp_index, const task::ess_circle& data) {
+  m_Task.emplace_back(Make<PGEssCircleTaskPt>(data.center, data.radius));
 }
 
 void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
