@@ -3,14 +3,14 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  * 
- * File:   PGTaskMgr.cpp
+ * File:   PGTaskOptimizer.cpp
  * Author: Bruno de Lacheisserie
  *
  * Created on 11 sept. 2012
  */
 
 #include <type_traits>
-#include "PGTaskMgr.h"
+#include "PGTaskOptimizer.h"
 #include "externs.h"
 #include "AATDistance.h"
 #include "Waypointparser.h"
@@ -28,7 +28,7 @@
 #include "Geographic/TransverseMercator.h"
 #include "Draw/Task/TaskRendererMgr.h"
 
-void PGTaskMgr::Initialize() {
+void PGTaskOptimizer::Initialize() {
     m_Task.clear();
     size_t tp_count = ValidTaskPointFast(0) ? 1 : 0;
 
@@ -66,19 +66,19 @@ void PGTaskMgr::Initialize() {
     }
 }
 
-void PGTaskMgr::AddTaskPt(int tp_index, const task::sector_data& data) {
+void PGTaskOptimizer::AddTaskPt(int tp_index, const task::sector_data& data) {
   m_Task.emplace_back(Make<PGSectorTaskPt>(data.center));
 }
 
-void PGTaskMgr::AddTaskPt(int tp_index, const task::circle_data& data) {
+void PGTaskOptimizer::AddTaskPt(int tp_index, const task::circle_data& data) {
   m_Task.emplace_back(Make<PGCircleTaskPt>(data.center, data.radius));
 }
 
-void PGTaskMgr::AddTaskPt(int tp_index, const task::dae_data& data) {
+void PGTaskOptimizer::AddTaskPt(int tp_index, const task::dae_data& data) {
   m_Task.emplace_back(Make<PGSectorTaskPt>(data.center));
 }
 
-void PGTaskMgr::AddTaskPt(int tp_index, const task::line_data& data) {
+void PGTaskOptimizer::AddTaskPt(int tp_index, const task::line_data& data) {
   auto pTskPt = Make<PGLineTaskPt>(data.center);
 
   // Find prev Tp not same as current.
@@ -126,11 +126,11 @@ void PGTaskMgr::AddTaskPt(int tp_index, const task::line_data& data) {
   m_Task.emplace_back(std::move(pTskPt));
 }
 
-void PGTaskMgr::AddTaskPt(int tp_index, const task::ess_circle& data) {
+void PGTaskOptimizer::AddTaskPt(int tp_index, const task::ess_circle& data) {
   m_Task.emplace_back(Make<PGEssCircleTaskPt>(data.center, data.radius));
 }
 
-void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+void PGTaskOptimizer::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (((size_t) ActiveTaskPoint) >= m_Task.size()) {
         return;
     }
@@ -170,12 +170,12 @@ void PGTaskMgr::Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 }
 
-GeoPoint PGTaskMgr::getOptimized(size_t i) const {
+GeoPoint PGTaskOptimizer::getOptimized(size_t i) const {
     assert(m_Projection);
     return m_Projection->Reverse(m_Task[i]->getOptimized());
 }
 
-void PGTaskMgr::UpdateTaskPoint(size_t i, TASK_POINT& TskPt ) const {
+void PGTaskOptimizer::UpdateTaskPoint(size_t i, TASK_POINT& TskPt ) const {
     const GeoPoint position = getOptimized(i);
 
     TskPt.AATTargetLat = position.latitude;

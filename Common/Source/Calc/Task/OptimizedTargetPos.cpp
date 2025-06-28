@@ -10,10 +10,10 @@
 #include "AATDistance.h"
 #include "Waypointparser.h"
 #include "NavFunctions.h"
-#include "PGTask/PGTaskMgr.h"
+#include "PGTask/PGTaskOptimizer.h"
 #include "utils/printf.h"
 
-PGTaskMgr gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
+PGTaskOptimizer gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 

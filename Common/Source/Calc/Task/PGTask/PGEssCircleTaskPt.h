@@ -15,7 +15,7 @@
 #include "PGCircleTaskPt.h"
 
 class PGEssCircleTaskPt : public PGCircleTaskPt {
-    friend class PGTaskMgr; 
+    friend class PGTaskOptimizer; 
 public:
     PGEssCircleTaskPt() = delete;
     PGEssCircleTaskPt(ProjPt&& point, double Radius);

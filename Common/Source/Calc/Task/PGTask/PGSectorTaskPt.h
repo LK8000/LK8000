@@ -15,7 +15,7 @@
 #include "PGTaskPt.h"
 
 class PGSectorTaskPt : public PGTaskPt {
-    friend class PGTaskMgr;
+    friend class PGTaskOptimizer;
 public:
     PGSectorTaskPt() = delete;
     PGSectorTaskPt(ProjPt&& point);

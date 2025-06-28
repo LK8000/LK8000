@@ -3,7 +3,7 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  * 
- * File:   PGTaskMgr.h
+ * File:   PGTaskOptimizer.h
  * Author: Bruno de Lacheisserie
  *
  * Created on 11 sept. 2012
@@ -18,13 +18,13 @@
 #include "Geographic/TransverseMercator.h"
 #include "../task_zone.h"
 
-class PGTaskMgr final {
+class PGTaskOptimizer final {
   friend struct AddTaskPt;
 
 public:
-    PGTaskMgr() = default;
-    PGTaskMgr(const PGTaskMgr&) = delete;
-    PGTaskMgr(PGTaskMgr&&) = delete;
+    PGTaskOptimizer() = default;
+    PGTaskOptimizer(const PGTaskOptimizer&) = delete;
+    PGTaskOptimizer(PGTaskOptimizer&&) = delete;
 
     void Initialize();
     void Optimize(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -41,7 +41,7 @@ protected:
       using result_type = void;
 
       template <sector_type_t type, task_type_t task_type>
-      static void invoke(int tp_index, PGTaskMgr& task) {
+      static void invoke(int tp_index, PGTaskOptimizer& task) {
         task.AddTaskPt(tp_index, task::zone_data<type, task_type>::get(tp_index));
       }
     };
