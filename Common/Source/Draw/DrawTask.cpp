@@ -97,17 +97,12 @@ void DrawTaskPicto(int tp_index, const task::line_data& data, LKSurface& Surface
   }
 }
 
-template <sector_type_t type, task_type_t task_type>
-void DrawTaskPicto(int tp_index, LKSurface& Surface, const RECT& rc) {
-  DrawTaskPicto(tp_index, task::zone_data<type, task_type>::get(tp_index), Surface, rc);
-}
-
 struct DrawTaskPicto_t {
   using result_type = void;
 
   template <sector_type_t type, task_type_t task_type>
   static void invoke(int tp_index, LKSurface& Surface, const RECT& rc) {
-    DrawTaskPicto<type, task_type>(tp_index, Surface, rc);
+    DrawTaskPicto(tp_index, task::zone_data<type, task_type>::get(tp_index), Surface, rc);
   }
 };
 
