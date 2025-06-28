@@ -8,8 +8,7 @@
 
 #include "externs.h"
 #include "InputEvents.h"
-
-
+#include "Calc/Task/TimeGates.h"
 
 #define AUTOADVANCE_MANUAL   0
 #define AUTOADVANCE_AUTO     1
@@ -17,7 +16,7 @@
 #define AUTOADVANCE_ARMSTART 3
 #define AUTOADVANCE_ARMTPS   4
 
-bool ReadyToStart(DERIVED_INFO *Calculated) {
+bool ReadyToStart(const NMEA_INFO* Basic, const DERIVED_INFO *Calculated) {
   if (!Calculated->Flying) {
     return false;
   }
@@ -25,7 +24,7 @@ bool ReadyToStart(DERIVED_INFO *Calculated) {
     return false;
   }
   
-  if (!ValidGate()) return false; // 100509
+  if (!ValidGate(Basic->Time)) return false; // 100509
   if (AutoAdvance== AUTOADVANCE_AUTO || AutoAdvance== AUTOADVANCE_ARMTPS) {  
     return true;
   }

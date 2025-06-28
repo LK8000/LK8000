@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "AATDistance.h"
 #include "CalcTask.h"
+#include "Calc/Task/TimeGates.h"
 
 // This is called from main DoCalculations each time, only when running a real task
 void InSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {

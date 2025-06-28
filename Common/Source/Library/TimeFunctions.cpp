@@ -16,7 +16,10 @@ int LocalTime(int utc_time) {
 }
 
 int LocalTime() {
-  return LocalTime(GPS_INFO.Time);
+  int utc_time = WithLock(CritSec_FlightData, []() {
+    return GPS_INFO.Time;
+  });
+  return LocalTime(utc_time);
 }
 
 namespace {

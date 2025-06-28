@@ -8,6 +8,8 @@
 #ifndef _LIBRARY_TIMEFUNCTIONS_H_
 #define _LIBRARY_TIMEFUNCTIONS_H_
 
+#include <ctime>
+
 struct NMEA_INFO;
 
 int LocalTime();

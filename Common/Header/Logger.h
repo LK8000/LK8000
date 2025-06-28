@@ -3,9 +3,13 @@
 
 #include "Defines.h"
 
-void StartLogger(void);
-void LogPoint(const NMEA_INFO& info);
+void StartLogger();
+void LogPoint(const NMEA_INFO& info, const char* event = nullptr);
+int LogPilotEvent(const NMEA_INFO& info);
+void StopLogger();
 
+bool LoggerClearFreeSpace();
+bool LoggerGActive();
 void LoggerDeviceDeclare();
 
 void UpdateLogBook(bool welandedforsure);
@@ -39,10 +43,6 @@ class ReplayLogger {
 			double *Altitude);
   static TCHAR FileName[MAX_PATH+1];
 };
-
-bool LoggerClearFreeSpace();
-void StopLogger(void);
-bool LoggerGActive();
 
 
 #define MAX_IGC_BUFF 255

@@ -26,6 +26,12 @@ GeoPoint GetWayPointPosition(size_t idx) {
 
 } // namespace
 
+// Are we on the correct side of start cylinder?
+bool CorrectSide(const DERIVED_INFO& Calculated) {
+	// Remember that IsInSector works reversed...
+	return (ExitStart(Calculated) == Calculated.IsInSector);
+}
+
 bool ExitStart(const DERIVED_INFO& Calculated) {
 	ScopeLock lock(CritSec_TaskData);
 	if (gTaskType != task_type_t::GP) {

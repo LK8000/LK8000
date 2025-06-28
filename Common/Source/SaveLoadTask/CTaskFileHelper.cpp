@@ -19,11 +19,13 @@
 #include "Waypoints/SetHome.h"
 #include "utils/zzip_stream.h"
 #include "LocalPath.h"
+#include "Calc/Task/TimeGates.h"
 
 #include <fstream>
 #include "Library/rapidxml/rapidxml.hpp"
 #include "Library/rapidxml/rapidxml_print.hpp"
 
+using std::string_view_literals::operator""sv;
 
 extern void RenameIfVirtual(const unsigned int i);
 extern bool FullResetAsked;
@@ -137,7 +139,12 @@ void FromString(const char* szVal, unsigned& ulong) {
 }
 
 template<size_t size>
-void FromString(const char* szVal, TCHAR(&szString)[size]) {
+void FromString(const char* szVal, wchar_t (&szString)[size]) {
+    from_utf8(szVal, szString);
+}
+
+template<size_t size>
+void FromString(const char* szVal, char (&szString)[size]) {
     from_utf8(szVal, szString);
 }
 
@@ -344,15 +351,26 @@ void CTaskFileHelper::LoadOptionRace(const xml_node* node) {
 
 void CTaskFileHelper::LoadTimeGate(const xml_node* node) {
     if (node) {
-        GetAttribute(node, "number", PGNumberOfGates);
-        TCHAR szTime[50];
-        GetAttribute(node, "open-time", szTime);
-        StrToTime(szTime, &PGOpenTimeH, &PGOpenTimeM);
-        GetAttribute(node, "close-time", szTime);
-        StrToTime(szTime, &PGCloseTimeH, &PGCloseTimeM);
-        GetAttribute(node, "interval-time", PGGateIntervalTime);
+        char type[32];
+        GetAttribute(node, "type", type);
+        if (type == "pev"sv) {
+            TimeGates::GateType = TimeGates::pev_start;
+            GetAttribute(node, "waiting", TimeGates::WaitingTime);
+            GetAttribute(node, "window", TimeGates::StartWindow);
+        }
+        else {
+            TimeGates::GateType = TimeGates::fixed_gates;
+            GetAttribute(node, "number", TimeGates::PGNumberOfGates);
+            TCHAR szTime[50];
+            GetAttribute(node, "open-time", szTime);
+            StrToTime(szTime, &TimeGates::PGOpenTimeH, &TimeGates::PGOpenTimeM);
+            GetAttribute(node, "close-time", szTime);
+            StrToTime(szTime, &TimeGates::PGCloseTimeH, &TimeGates::PGCloseTimeM);
+            GetAttribute(node, "interval-time", TimeGates::PGGateIntervalTime);
+        }
     } else {
-        PGNumberOfGates = 0;
+        TimeGates::GateType = TimeGates::anytime;
+        TimeGates::PGNumberOfGates = 0;
     }
     InitActiveGate();    
 }
@@ -770,7 +788,7 @@ bool CTaskFileHelper::SaveOptionRace(xml_node* node) {
     if (!node) {
         return false;
     }
-    if (PGNumberOfGates > 0) {
+    if (TimeGates::GateType != TimeGates::anytime) {
         if (!SaveTimeGate(AddNode(node, "time-gate"))) {
             return false;
         }
@@ -860,18 +878,24 @@ bool CTaskFileHelper::SaveTimeGate(xml_node* node) {
         return false;
     }
 
-    SetAttribute(node, "number", PGNumberOfGates);
+    if (TimeGates::GateType == TimeGates::pev_start) {
+        SetAttribute(node, "type", "pev");
+        SetAttribute(node, "waiting", TimeGates::WaitingTime);
+        SetAttribute(node, "window", TimeGates::StartWindow);
+    }
+    else {
+        SetAttribute(node, "number", TimeGates::PGNumberOfGates);
 
-    xml_document* doc = node->document();
+        xml_document* doc = node->document();
 
-    char* open = AllocFormat(doc, "%02d:%02d", PGOpenTimeH, PGOpenTimeM);
-    SetAttribute(node, "open-time", open);
+        char* open = AllocFormat(doc, "%02d:%02d", TimeGates::PGOpenTimeH, TimeGates::PGOpenTimeM);
+        SetAttribute(node, "open-time", open);
 
-    char* close = AllocFormat(doc, "%02d:%02d", PGCloseTimeH, PGCloseTimeM);
-    SetAttribute(node, "close-time", close);
-    
-    SetAttribute(node, "interval-time", PGGateIntervalTime);
-
+        char* close = AllocFormat(doc, "%02d:%02d", TimeGates::PGCloseTimeH, TimeGates::PGCloseTimeM);
+        SetAttribute(node, "close-time", close);
+        
+        SetAttribute(node, "interval-time", TimeGates::PGGateIntervalTime);
+    }
     return true;
 }
 

@@ -42,7 +42,7 @@
 #include "LocalPath.h"
 #include "Dialogs/dlgMultiSelectList.h"
 #include "Dialogs/dlgAirspaceDetails.h"
-
+#include "Calc/Task/TimeGates.h"
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -3366,6 +3366,13 @@ void InputEvents::eventShowMultiselect(const TCHAR*) {
   DlgMultiSelect::ShowModal();
 }
 
+void InputEvents::eventPilotEvent(const TCHAR*) {
+  // TODO : Check if start rule is set to PEV
+
+  int event_utc_time = LogPilotEvent(GPS_INFO);
+  TriggerPevStart(event_utc_time);
+}
+
 namespace {
 
   #define DELARE_EVENT(Name) { _T(#Name), &InputEvents::event ## Name }
@@ -3456,6 +3463,7 @@ namespace {
     { _T("SendDataPort4"), &InputEvents::eventSendDataPort<3> },
     { _T("SendDataPort5"), &InputEvents::eventSendDataPort<4> },
     { _T("SendDataPort6"), &InputEvents::eventSendDataPort<5> },
+    DELARE_EVENT(PilotEvent),
   });
 
   #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }

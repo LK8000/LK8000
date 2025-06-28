@@ -263,16 +263,6 @@ static void OverviewRefreshTask(WndForm* pWnd) {
 
   EnableMultipleStartPoints = (gTaskType != task_type_t::GP);
 
-  WindowControl *wTimeGates = pWnd->FindByName(TEXT("cmdTimegates"));
-  if (wTimeGates) {
-    wTimeGates->SetVisible(gTaskType == task_type_t::GP);
-  }
-
-  WindowControl *wDelete = pWnd->FindByName(TEXT("cmdDelete"));
-  if (wDelete) {
-    wDelete->SetVisible(gTaskType != task_type_t::GP);
-  }
-
   UpdateCaption(pWnd);
   UnlockTaskData();
 }

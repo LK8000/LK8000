@@ -9,15 +9,13 @@
 #include "externs.h"
 #include "CalcTask.h"
 #include "AATDistance.h"
+#include "Calc/Task/TimeGates.h"
 
-
-void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
-	       const bool do_advance,
-               const bool do_announce) {
+void StartTask(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const bool do_advance, const bool do_announce) {
 
   double TaskStartTime = Basic->Time;
-  if (UseGates() && HaveGates()) {
-    const int gateTime = GateTime(ActiveGate);
+  if (UseGates() && HaveGates(TaskStartTime)) {
+    const int gateTime = OpenGateTime();
     if ( gateTime > 0 ) {
       TaskStartTime = gateTime - GetUTCOffset();
     }
@@ -62,4 +60,3 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     }
   }
 }
-

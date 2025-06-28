@@ -18,6 +18,7 @@
 #include <cassert>
 #include "Waypointparser.h"
 #include "Waypoints/SetHome.h"
+#include "Calc/Task/TimeGates.h"
 
 namespace {
 
@@ -130,16 +131,17 @@ void ParseTimeGates(const json::value &timegates) {
     if (!gates_array.empty()) {
       const std::string& first_str_time = gates_array[0].get<std::string>();
       // Time of first gate in local timezone
-      StrToLocalTime(first_str_time.c_str(), PGOpenTimeH, PGOpenTimeM);
+      StrToLocalTime(first_str_time.c_str(), TimeGates::PGOpenTimeH, TimeGates::PGOpenTimeM);
       // How many gates, 1-x
-      PGNumberOfGates = gates_array.size();
-      if (PGNumberOfGates > 1) {
+      TimeGates::PGNumberOfGates = gates_array.size();
+      if (TimeGates::PGNumberOfGates > 1) {
         // Interval, in minutes
         const std::string& second_str_time = gates_array[1].get<std::string>();
         int H, M;
         StrToLocalTime(second_str_time.c_str(), H, M);
-        PGGateIntervalTime = (H * 60 + M) - (PGOpenTimeH * 60 + PGOpenTimeM);
+        TimeGates::PGGateIntervalTime = (H * 60 + M) - (TimeGates::PGOpenTimeH * 60 + TimeGates::PGOpenTimeM);
       }
+      TimeGates::GateType = TimeGates::fixed_gates;
     }
   }
 }

@@ -181,6 +181,8 @@ public:
     devWriteNMEA<idx>(misc);
   }
 
+  static void eventPilotEvent(const TCHAR* misc);
+
   // -------
 
   static void showErrors();

@@ -134,6 +134,7 @@ enum class CustomKeyMode_t : uint16_t {
     ckDeviceF,
     ckRadioDlg,
 	ckMCSetting,
+	ckPEVStart,
 	ckTOP
 };
 

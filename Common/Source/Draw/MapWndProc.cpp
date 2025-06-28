@@ -28,6 +28,7 @@
 #ifndef ENABLE_OPENGL
 #include "Screen/LKBitmapSurface.h"
 #endif
+#include "Calc/Task/TimeGates.h"
 
 #ifdef TESTBENCH
 // USE ONLY FOR DEBUGGING PURPOSES! Normally disabled.
@@ -628,7 +629,9 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                         // if we are running a real task, with gates, and we could still start
                         // if only 1 time gate, and we passed valid start, no reason to resettask
                         int acceptreset = 2;
-                        if (PGNumberOfGates == 1) acceptreset = 1;
+                        if (TimeGates::PGNumberOfGates == 1) {
+                          acceptreset = 1;
+                        }
 
                         if (UseGates() && ValidTaskPoint(1) && ActiveTaskPoint < acceptreset) { // 100507 101110
                             //

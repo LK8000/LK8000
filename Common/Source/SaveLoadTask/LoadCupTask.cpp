@@ -24,6 +24,7 @@
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
 #include "Util/Clamp.hpp"
+#include "Calc/Task/TimeGates.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -408,9 +409,11 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
 		    pToken = Entries[ParIdx++].c_str() ;
 
 		    if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
+			TimeGates::GateType = TimeGates::fixed_gates;
+
 			// Opening of start line
-			PGNumberOfGates = 1;
-			StrToTime(pToken + 8, &PGOpenTimeH, &PGOpenTimeM);
+			TimeGates::PGNumberOfGates = 1;
+			StrToTime(pToken + 8, &TimeGates::PGOpenTimeH, &TimeGates::PGOpenTimeM);
 		    } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
 			// Designated Time for the task
 			StrToTime(pToken + 9, &hh, &mm, &ss);

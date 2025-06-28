@@ -152,6 +152,11 @@ static void LogPointToFile(const LoggerBuffer_t& point) {
   IGCWriteRecord(szBRecord);
 }
 
+static void LogEventToFile(const NMEA_INFO& info, const char* event) {
+  char szERecord[30];
+  lk::snprintf(szERecord, "E%02d%02d%02d%s\r\n", info.Hour, info.Minute, info.Second, event);
+  IGCWriteRecord(szERecord);
+}
 
 static bool IsAlphaNum (TCHAR c) {
   return ( ((c >= _T('A')) && (c <= _T('Z')))
@@ -516,7 +521,7 @@ static void internal_StopLogger() {
   LoggerBuffer.clear();
 }
 
-void LogPoint(const NMEA_INFO& info) {
+void LogPoint(const NMEA_INFO& info, const char* event) {
 
   if (info.NAVWarning) {
     // don't log invalid fix
@@ -540,6 +545,10 @@ void LogPoint(const NMEA_INFO& info) {
   if(!LoggerActive && igc_writer_ptr) {
     // stop Logger requested
     internal_StopLogger();
+  }
+
+  if (event && igc_writer_ptr) {
+    LogEventToFile(info, event);
   }
 
   // BaroAltitude in this case is a QNE altitude (aka pressure altitude)
@@ -566,6 +575,19 @@ void LogPoint(const NMEA_INFO& info) {
   } else {
     LogPointToBuffer(point);
   }
+}
+
+int LogPilotEvent(const NMEA_INFO& info) {
+
+  // copying the whole NMEA_INFO struct is not the fastest way to do it
+  // but it's the simpler way do avoid mutex interlock.
+  // until it's only called only a few times, that's not a real problem
+  NMEA_INFO local_info = WithLock(CritSec_FlightData, [&] {
+    return info;
+  });
+
+  LogPoint(local_info, "PEV");
+  return local_info.Time;
 }
 
 bool DeclaredToDevice = false;

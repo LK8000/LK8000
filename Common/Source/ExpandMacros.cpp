@@ -17,6 +17,7 @@
 #include "Kobo/System.hpp"
 #endif
 #include <algorithm>
+#include "Calc/Task/TimeGates.h"
 
 extern bool HaveGauges(void);
 
@@ -794,6 +795,15 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
         invalid = true;
       }
       if (--items<=0) goto label_ret;
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(PilotEvent)"))) {
+	if (PilotEventEnabled()) {
+		ReplaceInString(OutBuffer, TEXT("$(PilotEvent)"), TEXT(""), Size);
+	} else {
+		lk::strcpy(OutBuffer, _T(""), Size);
+		invalid = true;
+	}
   }
 
   // We dont replace macro, we do replace the entire label

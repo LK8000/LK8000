@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "McReady.h"
 #include "NavFunctions.h"
+#include "Calc/Task/TimeGates.h"
 
 void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
    if (Basic->Speed <1 || !Calculated->Flying || Calculated->Circling) {
@@ -52,7 +53,7 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO* Basic, DERIVED_INFO* Calculat
   // if gates are in use with a real task, and we are at start
   // then calculate ETE for reaching the cylinder. Also working when we are
   // in the wrong side of cylinder
-  if (UseGates() && !DoOptimizeRoute()) {
+  if (UseGates()) {
     if (ActiveTaskPoint == 0 && i == Task[0].Index) {
       if (Calculated->IsInSector) {
         // start in, correct side is inside cylinder
@@ -69,9 +70,6 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO* Basic, DERIVED_INFO* Calculat
       // we don't use GetMacCready(i,GMC_DEFAULT)
       GlidePolar::MacCreadyAltitude(MACCREADY, wStartDistance, wStartBearing, Calculated->WindSpeed,
                                     Calculated->WindBearing, 0, 0, true, &WayPointCalc[i].NextETE);
-#ifdef DEBUGTGATES
-      StartupStore(_T("wStartDistance=%f wStartBearing=%f\n"), wStartDistance, wStartBearing);
-#endif
     }
   }
 

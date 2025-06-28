@@ -16,6 +16,7 @@
 #include "Tracking/Tracking.h"
 #include "Devices/devFanet.h"
 #include "Util/StringAPI.hxx"
+#include "Calc/Task/TimeGates.h"
 #ifdef ANDROID
   #include "Android/Main.hpp"
   #include "Android/NativeView.hpp"
@@ -160,15 +161,9 @@ void LKProfileResetDefault() {
 
   AutoOrientScale=100;
 
-  PGOpenTimeH=12;
-  PGOpenTimeM=0;
-  PGCloseTimeH=23;
-  PGCloseTimeM=59;
+  TimeGates::ResetSettings();
 
-  PGNumberOfGates=0;
-  PGGateIntervalTime=30;
-
-  // These values are used on startup, but on reset change also OpenCloseTopology
+// These values are used on startup, but on reset change also OpenCloseTopology
   LKTopoZoomCat05=DEFAULT_WATER_LABELS_THRESHOLD;	// coast area share the same label management of cat10
   LKTopoZoomCat10=DEFAULT_WATER_LABELS_THRESHOLD;	// water labels threshold, over this realscale, no water labels are printed)
   LKTopoZoomCat20=9999;		// water lines

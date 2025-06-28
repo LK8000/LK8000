@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "McReady.h"
-
+#include "Calc/Task/TimeGates.h"
 
 double CRUISE_EFFICIENCY = 1.0;
 
@@ -39,21 +39,14 @@ void ResetTask(bool showConfirmMsg) {
   CALCULATED_INFO.TaskStartAltitude = 0;
   CALCULATED_INFO.LegStartTime = 0;
 
+  ActiveTaskPoint = 0;
 
-  ActiveTaskPoint=0;
-  if (UseGates()) {
-	int i;
-	i=NextGate();
-	if (i<0 || i>PGNumberOfGates) { // just for safety we check also numbgates
-		i=RunningGate();
-		if (i<0) i=PGNumberOfGates-1;
-	}
-	ActiveGate=i;
+  ResetGates();
+
+  if (showConfirmMsg) {
+    // LKTOKEN  _@M676_ = "TASK RESTART RESET"
+    DoStatusMessage(MsgToken<676>());
   }
-
-	// LKTOKEN  _@M676_ = "TASK RESTART RESET" 
-  if(showConfirmMsg) DoStatusMessage(MsgToken<676>());
-
 }
 
 

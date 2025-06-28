@@ -2,26 +2,42 @@
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTimeGates" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M513_" Font="2" >
     <WndButton   Caption="_@M186_"    X="2" Y="2" Width="60"  Height="33" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
+
     <WndProperty Name="prpPGOptimizeRoute" Caption="_@M1686_"  X="2" Y="40" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H9999_">
-      <DataField Name="" DataType="boolean"/>
+      <DataField DataType="boolean"/>
     </WndProperty>
-    <WndProperty Name="prpPGNumberOfGates" Caption="_@M748_" X="2" Y="62"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H530_">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min="0" Max="20" Step="1"/>
+    <WndProperty Name="prpGateType" Caption="_@M845_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H1365_">
+      <DataField DataType="enum" OnDataAccess="OnGateType"/>
     </WndProperty>
-    <WndProperty Name="prpPGOpenTimeH" Caption="_@M747_" X="2" Y="84"   Width="200" Height="22" CaptionWidth="150" Font="2" Help="_@H531_">
-      <DataField Name="" DataType="double" DisplayFormat="h %.0f" EditFormat="%.0f" Min="0" Max="23" Step="1"/>
-    </WndProperty>
-    <WndProperty Name="prpPGOpenTimeM" Caption=":"  X="200" Y="84"  Width="38" Height="22" CaptionWidth="5" Font="2" Help="_@H531_">
-      <DataField Name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min="0" Max="59" Step="1"/>
-    </WndProperty>
-    <WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X="2" Y="106" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H532_" Keyboard="1">
-      <DataField Name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min="1" Max="480" Step="1"/>
-    </WndProperty>
-    <WndProperty Name="prpPGCloseTimeH" Caption="_@M2153_" X="2" Y="128"   Width="200" Height="22" CaptionWidth="150" Font="2" Help="_@H1266_">
-      <DataField name="" DataType="double" DisplayFormat="h %.0f" EditFormat="%.0f" Min="0" Max="23" Step="1"/>
-    </WndProperty>
-    <WndProperty Name="prpPGCloseTimeM" Caption=":"  X="200" Y="128"  Width="38" Height="22" CaptionWidth="5" Font="2" Help="_@H1266_">
-      <DataField name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min="0" Max="59" Step="1"/>
-    </WndProperty>
+
+    <WndFrame Name="frmFixed" X="1" Y="-1" Width="-1" Height="178">
+      <WndProperty Name="prpPGNumberOfGates" Caption="_@M748_" X="1" Y="2"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H530_">
+        <DataField Name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min="0" Max="20" Step="1"/>
+      </WndProperty>
+      <WndProperty Name="prpPGOpenTimeH" Caption="_@M747_" X="1" Y="-1"   Width="200" Height="22" CaptionWidth="150" Font="2" Help="_@H531_">
+        <DataField Name="" DataType="double" DisplayFormat="h %.0f" EditFormat="%.0f" Min="0" Max="23" Step="1"/>
+      </WndProperty>
+      <WndProperty Name="prpPGOpenTimeM" Caption=":"  X="200" Y="-999"  Width="38" Height="22" CaptionWidth="5" Font="2" Help="_@H531_">
+        <DataField Name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min="0" Max="59" Step="1"/>
+      </WndProperty>
+      <WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X="1" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H532_" Keyboard="1">
+        <DataField Name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min="1" Max="480" Step="1"/>
+      </WndProperty>
+      <WndProperty Name="prpPGCloseTimeH" Caption="_@M2153_" X="1" Y="-1"   Width="200" Height="22" CaptionWidth="150" Font="2" Help="_@H1266_">
+        <DataField name="" DataType="double" DisplayFormat="h %.0f" EditFormat="%.0f" Min="0" Max="23" Step="1"/>
+      </WndProperty>
+      <WndProperty Name="prpPGCloseTimeM" Caption=":"  X="200" Y="-999"  Width="38" Height="22" CaptionWidth="5" Font="2" Help="_@H1266_">
+        <DataField name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min="0" Max="59" Step="1"/>
+      </WndProperty>
+    </WndFrame>
+
+    <WndFrame Name="frmPev" X="1" Y="-999" Width="-1" Height="178">
+      <WndProperty Name="prpWaitingTime" Caption="_@M846_" X="1" Y="2" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H1366_" Keyboard="1">
+        <DataField Name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min="0" Max="120" Step="1" OnDataAccess="OnWaitingTime"/>
+      </WndProperty>
+      <WndProperty Name="prpStartWindow" Caption="_@M847_" X="1" Y="-1" Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H1367_" Keyboard="1">
+        <DataField Name="" DataType="double" DisplayFormat="%.0f m" EditFormat="%.0f" Min="1" Max="120" Step="1" OnDataAccess="OnStartWindow"/>
+      </WndProperty>
+    </WndFrame>
   </WndForm>
 </PMML>

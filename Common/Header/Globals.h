@@ -325,26 +325,6 @@ GEXTERN NearestTopoItem NearestCity;
 GEXTERN NearestTopoItem NearestSmallCity;
 GEXTERN NearestTopoItem NearestWaterArea;
 
-// Paraglider's time gates
-// ------------------------------
-// Open and close time, gate 0  ex. 12:00
-// M and H for registry
-
-GEXTERN int PGOpenTimeH;
-GEXTERN int PGOpenTimeM;
-GEXTERN int PGOpenTime;
-
-GEXTERN int PGCloseTimeH;
-GEXTERN int PGCloseTimeM;
-GEXTERN int PGCloseTime;
-
-// Interval, in minutes
-GEXTERN int PGGateIntervalTime;
-// How many gates, 1-x
-GEXTERN int PGNumberOfGates;
-// Current assigned gate
-GEXTERN int ActiveGate;
-
 // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
 GEXTERN int LKTopo;
 
