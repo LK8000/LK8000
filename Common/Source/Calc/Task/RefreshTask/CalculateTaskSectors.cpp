@@ -45,17 +45,12 @@ void SetSectorRenderer(int tp_index, const task::sgp_start_data& data) {
   }
 }
 
-template <sector_type_t type, task_type_t task_type>
-void SetSectorRenderer(int tp_index) {
-  SetSectorRenderer(tp_index, task::zone_data<type, task_type>::get(tp_index));
-}
-
 struct SetSectorRenderer_t {
   using result_type = void;
 
   template <sector_type_t type, task_type_t task_type>
   static void invoke(int tp_index) {
-    SetSectorRenderer<type, task_type>(tp_index);
+    SetSectorRenderer(tp_index, task::zone_data<type, task_type>::get(tp_index));
   }
 };
 

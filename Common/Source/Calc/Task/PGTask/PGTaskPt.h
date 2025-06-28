@@ -22,7 +22,7 @@ bool IsNull(const ProjPt& p) {
 }
 
 class PGTaskPt {
-    friend class PGTaskMgr;
+    friend class PGTaskOptimizer;
 public:
     PGTaskPt() = delete;
     PGTaskPt(ProjPt&& point) : m_Center(std::forward<ProjPt>(point)) { };

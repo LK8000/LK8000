@@ -54,6 +54,10 @@ struct sgp_start_data : public line_data {
   sgp_start_data(line_data&& data) : line_data(std::move(data))  {}
 };
 
+struct ess_circle : public circle_data {
+  ess_circle(circle_data&& data) : circle_data(std::move(data))  {}
+};
+
 /**
  *  helper to get sector radius from Task definition.
  */
@@ -151,8 +155,11 @@ struct zone_data<sector_type_t::CIRCLE, task_type> {
 };
 
 template <task_type_t task_type>
-struct zone_data<sector_type_t::ESS_CIRCLE, task_type> 
-    : public zone_data<sector_type_t::CIRCLE, task_type>  { };
+struct zone_data<sector_type_t::ESS_CIRCLE, task_type> {
+  static ess_circle get(int tp_index) {
+    return  zone_data<sector_type_t::CIRCLE, task_type>::get(tp_index);
+  }
+};
 
 template <>
 struct zone_data<sector_type_t::SECTOR, task_type_t::DEFAULT> {

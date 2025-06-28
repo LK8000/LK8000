@@ -1109,7 +1109,7 @@ TASK	:=\
 	$(TSK)/RefreshTask/RefreshTask.cpp\
 	$(TSK)/PGTask/PGCircleTaskPt.cpp\
 	$(TSK)/PGTask/PGLineTaskPt.cpp\
-	$(TSK)/PGTask/PGTaskMgr.cpp\
+	$(TSK)/PGTask/PGTaskOptimizer.cpp\
 	$(TSK)/PGTask/PGSectorTaskPt.cpp\
 	$(TSK)/PGTask/PGEssCircleTaskPt.cpp\
 	$(TSK)/task_zone.cpp \
