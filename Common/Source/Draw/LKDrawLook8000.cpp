@@ -466,30 +466,42 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
                 } else {
                     BufferValue[0] = _T('\0');
                     // gate is open
-                    int CloseTime = GateCloseTime();
-                    if (flipflopcount > 0) {
-                        if ((ActiveGate() < (TimeGates::PGNumberOfGates - 1) || CloseTime < 86340) && flipflopcount == 1) {
-                            if (CloseTime < 86340) {
-                                Units::TimeToText(BufferTitle, CloseTime);
-                                lk::snprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
-                            } else {
-                                Units::TimeToText(BufferTitle, NextGateTime());
-                                lk::snprintf(BufferValue, _T("NEXT %s"), BufferTitle);
-                            }
-                        } else {
-                            // IsInSector works reversed!
-                            if (!from_inside && DerivedDrawInfo.IsInSector) {
-                                // LKTOKEN  _@M923_ = "WRONG inSIDE"
-                                lk::strcpy(BufferValue, MsgToken<923>());
-                            } else if (from_inside && !DerivedDrawInfo.IsInSector) {
-                                // LKTOKEN  _@M924_ = "WRONG outSIDE"
-                                lk::strcpy(BufferValue, MsgToken<924>());
-                            }
+                    try {
+                      if (flipflopcount > 0) {
+
+                        if (flipflopcount == 1) {
+                          int CloseTime = GateCloseTime();
+                          if (CloseTime < 86340) {
+                            Units::TimeToText(BufferTitle, CloseTime);
+                            lk::snprintf(BufferValue, _T("CLOSE %s"), BufferTitle);
+                          }
                         }
+
+                        if (BufferValue[0] == _T('\0') && ActiveGate() > 0) {
+                          Units::TimeToText(BufferTitle, NextGateTime());
+                          lk::snprintf(BufferValue, _T("NEXT %s"), BufferTitle);
+                        }
+
+                        if (BufferValue[0] == _T('\0')) {
+                          // IsInSector works reversed!
+                          if (!from_inside && DerivedDrawInfo.IsInSector) {
+                            // LKTOKEN  _@M923_ = "WRONG inSIDE"
+                            lk::strcpy(BufferValue, MsgToken<923>());
+                          }
+                          else if (from_inside && !DerivedDrawInfo.IsInSector) {
+                            // LKTOKEN  _@M924_ = "WRONG outSIDE"
+                            lk::strcpy(BufferValue, MsgToken<924>());
+                          }
+                        }
+                      }
                     }
+                    catch (std::exception& e) {
+                      TestLog(_T("exception : %s"), to_string(e.what()).c_str());
+                    }
+
                     if (BufferValue[0] == _T('\0')) {
-                        // LKTOKEN  _@M314_ = "GATE OPEN"
-                        lk::strcpy(BufferValue, MsgToken<314>());
+                      // LKTOKEN  _@M314_ = "GATE OPEN"
+                      lk::strcpy(BufferValue, MsgToken<314>());
                     }
                 }
             }
