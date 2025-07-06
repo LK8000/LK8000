@@ -11,7 +11,6 @@
 #include "dlgTools.h"
 #include "InputEvents.h"
 #include "Airspace/Airspace.h"
-#include "AirspaceWarning.h"
 #include "Dialogs.h"
 #include "LKObjects.h"
 #include "Sound/Sound.h"
