@@ -260,9 +260,6 @@ int ActiveGate() {
 }
 
 int OpenGateTime() {
-  if (NextGate < 0 || NextGate >= PGNumberOfGates) {
-    throw std::out_of_range("Invalid gate");
-  }
   if (NextGate > 0) {
     return GateTime(NextGate - 1);
   }

@@ -14,11 +14,16 @@
 void StartTask(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const bool do_advance, const bool do_announce) {
 
   double TaskStartTime = Basic->Time;
-  if (UseGates() && HaveGates(TaskStartTime)) {
-    const int gateTime = OpenGateTime();
-    if ( gateTime > 0 ) {
-      TaskStartTime = gateTime - GetUTCOffset();
+  try {
+    if (UseGates() && HaveGates(TaskStartTime)) {
+      const int gateTime = OpenGateTime();
+      if ( gateTime > 0 ) {
+        TaskStartTime = gateTime - GetUTCOffset();
+      }
     }
+  }
+  catch(std::exception& e) {
+    TestLog(_T("exception : %s"), to_string(e.what()).c_str());
   }
 
 
