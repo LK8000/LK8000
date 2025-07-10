@@ -17,14 +17,13 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
 bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-// void DoNearestTurnpoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
-void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
+bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 double GetAzimuth(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
@@ -43,14 +42,14 @@ double GetCurrentEfficiency(DERIVED_INFO *Calculated, short effmode);
 
 
 bool ClearAirspaceWarnings(const bool ack, const bool allday=false);
-void RefreshTaskStatistics(void);
+void RefreshTaskStatistics();
 void  SetWindEstimate(const double speed, const double bearing, const int quality=6);
 
 void LoadCalculationsPersist(DERIVED_INFO *Calculated);
 void SaveCalculationsPersist(DERIVED_INFO *Calculated);
-void DeleteCalculationsPersist(void);
+void DeleteCalculationsPersist();
 
-void CloseCalculations(void);
+void CloseCalculations();
 
 
 	// Are we on the correct side of start cylinder?
@@ -69,7 +68,7 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 void IterateEffectiveMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp);
-int getFinalWaypoint(void);
+int getFinalWaypoint();
 bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin);
@@ -103,7 +102,7 @@ void BallastDump();
 
 int FindFlarmSlot(const int flarmId);
 int FindFlarmSlot(const TCHAR *flarmCN);
-bool IsFlarmTargetCNInRange(void);
+bool IsFlarmTargetCNInRange();
 void AlertBestAlternate(short soundmode); 
 
 double CalculateGlideRatio(const double d, const double h);
