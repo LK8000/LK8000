@@ -118,7 +118,7 @@ LoadPNG(png_structp png_ptr, png_infop info_ptr,
     return UncompressedImage(format, pitch, width, height, uncompressed.release());
   }
   catch(std::bad_alloc& e) {
-    fprintf(stderr, e.what());
+    fprintf(stderr, "LoadPNG : %s", e.what());
   }
   return UncompressedImage::Invalid();
 }
