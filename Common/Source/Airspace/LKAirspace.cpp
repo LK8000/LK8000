@@ -141,11 +141,7 @@ const LKBrush& CAirspaceBase::TypeBrush() const {
 void CAirspaceBase::AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const {
     double th = 0.; 
     if (_floor.agl() || _ceiling.agl()) {
-        th = WithLock(RasterTerrain::mutex, [&]() {
-            // want most accurate rounding here
-            RasterTerrain::SetTerrainRounding(0, 0);
-            return RasterTerrain::GetTerrainHeight(position);
-        });
+        th = RasterTerrain::GetHeightAccurate(position);
     }
     if (th == TERRAIN_INVALID) {
       // 101027 We still use 0 altitude for no terrain, what else can we do..

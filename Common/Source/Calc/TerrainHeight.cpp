@@ -9,30 +9,19 @@
 #include "externs.h"
 #include "RasterTerrain.h"
 
-
-void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
-{
-  short Alt = WithLock(RasterTerrain::mutex, [&]() {
-    // want most accurate rounding here
-    RasterTerrain::SetTerrainRounding(0, 0);
-    return RasterTerrain::GetTerrainHeight(Basic->Latitude, Basic->Longitude);
-  });
-
-  if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
-	Calculated->TerrainValid = true;
-	if (Alt>=0) {
-		Calculated->TerrainAlt = Alt;
-	} else {
-		// this can be still a problem for dutch users.. Todo Fix
-		Calculated->TerrainAlt = 0;
-	}
-  } else {
-	Calculated->TerrainValid = false; 
-	Calculated->TerrainAlt = 0;
+void TerrainHeight(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
+  short Alt = RasterTerrain::GetHeightAccurate({Basic->Latitude, Basic->Longitude});
+  if (Alt != TERRAIN_INVALID) {  // terrain invalid is now positive  ex. 32767
+    Calculated->TerrainValid = true;
+    Calculated->TerrainAlt = std::max<short>(0, Alt);
   }
+  else {
+    Calculated->TerrainValid = false;
+    Calculated->TerrainAlt = 0;
+  }
+
   Calculated->AltitudeAGL = Calculated->NavAltitude - Calculated->TerrainAlt;
   if (!FinalGlideTerrain) {
-	Calculated->TerrainBase = Calculated->TerrainAlt;
+    Calculated->TerrainBase = Calculated->TerrainAlt;
   }
 }
-

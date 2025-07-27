@@ -11,18 +11,16 @@
 #include "RasterTerrain.h"
 
 double AltitudeFromTerrain(double Lat, double Lon) {
-  double myalt = WithLock(RasterTerrain::mutex, [&]() {
-    RasterTerrain::SetTerrainRounding(0., 0.);
-    return RasterTerrain::GetTerrainHeight(Lat, Lon);
-  });
+  double myalt = RasterTerrain::GetHeightAccurate({Lat, Lon});
   return (myalt == TERRAIN_INVALID) ? 0 : myalt;
 }
 
 void WaypointAltitudeFromTerrain(WAYPOINT* Temp) {
   double myalt = AltitudeFromTerrain(Temp->Latitude, Temp->Longitude);
-  if (myalt>0) {
+  if (myalt > 0) {
     Temp->Altitude = myalt;
-  } else {
+  }
+  else {
     // error, can't find altitude for waypoint!
   }
 }

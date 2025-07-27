@@ -102,9 +102,13 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
   Interpolate = ((Xrounding==1)&&(Yrounding==1));
 }
 
-
-
 ////////// Map general /////////////////////////////////////////////
+short RasterTerrain::GetHeightAccurate(const GeoPoint& position) {
+  ScopeLock lock(mutex);
+  // want most accurate rounding here
+  RasterTerrain::SetTerrainRounding(0, 0);
+  return RasterTerrain::GetTerrainHeight(position);
+}
 
 short RasterTerrain::GetTerrainHeight(double Latitude, double Longitude) {
   if (TerrainMap && TerrainMap->isMapLoaded()) {

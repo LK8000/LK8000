@@ -853,11 +853,7 @@ void CContestMgr::FindFAITriangleClosingPoint() {
     }
     _fFAITriangleTogo = fFAITriangleBestTogo;
     if ( pgpsFAIClose.Longitude() != _pgpsFAITriangleClosePoint.Longitude() || pgpsFAIClose.Latitude() != _pgpsFAITriangleClosePoint.Latitude() ) {
-      const short Alt = WithLock(RasterTerrain::mutex, [&]() {
-        RasterTerrain::SetTerrainRounding(0,0);
-        return RasterTerrain::GetTerrainHeight(pgpsFAIClose.Latitude(),
-                                               pgpsFAIClose.Longitude());  
-      });
+      const short Alt = RasterTerrain::GetHeightAccurate({pgpsFAIClose.Latitude(), pgpsFAIClose.Longitude()});
       _pgpsFAITriangleClosePoint = CPointGPS( pgpsFAIClose.Time(),pgpsFAIClose.Latitude(),pgpsFAIClose.Longitude(),Alt);
     }
 
@@ -897,12 +893,9 @@ void CContestMgr::FindFREETriangleClosingPoint() {
     }
     _fFreeTriangleTogo = fFreeTriangleBestTogo;
     if (pgpsFreeClose.Longitude() != _pgpsFreeTriangleClosePoint.Longitude() || pgpsFreeClose.Latitude() != _pgpsFreeTriangleClosePoint.Latitude()) {
-      const short Alt = WithLock(RasterTerrain::mutex, [&]() {
-        RasterTerrain::SetTerrainRounding(0, 0);
-        return RasterTerrain::GetTerrainHeight(pgpsFreeClose.Latitude(),
-                                               pgpsFreeClose.Longitude());  
-      });
-      _pgpsFreeTriangleClosePoint = CPointGPS(pgpsFreeClose.Time(), pgpsFreeClose.Latitude(), pgpsFreeClose.Longitude(), Alt);
+      const short Alt = RasterTerrain::GetHeightAccurate({pgpsFreeClose.Latitude(), pgpsFreeClose.Longitude()});
+      _pgpsFreeTriangleClosePoint =
+          CPointGPS(pgpsFreeClose.Time(), pgpsFreeClose.Latitude(), pgpsFreeClose.Longitude(), Alt);
     }
     if (dLastFreeDistance == _resultFREETriangle.PredictedDistance()) {
       _fFreeTriangleBestTogo = min(_fFreeTriangleBestTogo, fFreeTriangleBestTogo);
