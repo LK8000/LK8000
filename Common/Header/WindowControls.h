@@ -1092,6 +1092,7 @@ class WndProperty:public WindowControl{
     DataField *GetDataField(void){return(mDataField);};
     DataField *SetDataField(DataField *Value);
     void SetText(const TCHAR *Value);
+    void SetText(tstring&& Value);
     int SetButtonSize(int Value);
 
 };

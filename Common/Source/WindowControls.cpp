@@ -2283,6 +2283,13 @@ void WndProperty::SetText(const TCHAR *Value) {
     }
 }
 
+void WndProperty::SetText(tstring&& Value) {
+  if (mValue != Value) {
+    mValue = std::move(Value);
+    Redraw();
+  }
+}
+
 void WndProperty::SetFont(FontReference Value) {
     WindowControl::SetFont(Value);
     mhValueFont = Value;
