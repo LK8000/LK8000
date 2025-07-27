@@ -235,7 +235,7 @@ protected:
 
 
   // Private functions
-  void AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const;
+  void AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const;
 
   // Class attributes
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED

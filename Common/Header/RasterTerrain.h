@@ -190,6 +190,10 @@ public:
   // RasterTerrain::mutex Lock Required
   static short GetTerrainHeight(double Latitude, double Longitude);
 
+  static short GetTerrainHeight(const GeoPoint& position) {
+    return GetTerrainHeight(position.latitude, position.longitude);
+  }
+
   // RasterTerrain::mutex Lock Required
   static void SetTerrainRounding(double x, double y);
 

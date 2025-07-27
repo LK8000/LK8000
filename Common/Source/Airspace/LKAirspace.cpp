@@ -138,18 +138,18 @@ const LKBrush& CAirspaceBase::TypeBrush() const {
 #endif
 }
 
-void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const {
+void CAirspaceBase::AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const {
     double th = 0.; 
     if (_floor.agl() || _ceiling.agl()) {
         th = WithLock(RasterTerrain::mutex, [&]() {
             // want most accurate rounding here
             RasterTerrain::SetTerrainRounding(0, 0);
-            return RasterTerrain::GetTerrainHeight(av_lat, av_lon);
+            return RasterTerrain::GetTerrainHeight(position);
         });
     }
     if (th == TERRAIN_INVALID) {
       // 101027 We still use 0 altitude for no terrain, what else can we do..
-      th = 0;
+      th = 0.;
     }
 
     if (basealt_out) {
@@ -607,15 +607,15 @@ bool CAirspaceBase::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, 
 }
 
 // Get warning point coordinates, returns true if distances valid
-
 bool CAirspaceBase::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const {
     if (_distances_ready && _enabled) {
         if (_flyzone && !_pos_inside_now) return false; // no warning labels if outside a flyzone
 
         double dist = abs(_hdistance);
+        auto warning_position = GeoPoint(_lastknownpos.Latitude(), _lastknownpos.Longitude()).Direct(_bearing, dist);
+
         double basealt, topalt;
-        FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
-        AirspaceAGLLookup(latitude, longitude, &basealt, &topalt);
+        AGLLookup(warning_position, &basealt, &topalt);
 
         vdrawstyle = awsBlack;
         if ((_lastknownalt >= basealt) && (_lastknownalt < topalt)) {
@@ -626,7 +626,6 @@ bool CAirspaceBase::GetWarningPoint(double &longitude, double &latitude, Airspac
         hdrawstyle = vdrawstyle;
 
         vDistance = _vdistance;
-        //if (abs(_vdistance) > (AirspaceWarningVerticalMargin/10)) vdrawstyle = awsHidden;
 
         // Nofly zones
         if (!_flyzone && (_hdistance < 0)) hdrawstyle = awsHidden; // No horizontal warning label if directly below or above
@@ -658,25 +657,24 @@ bool CAirspaceBase::IsSame(CAirspaceBase &as2) const {
 // Returns true if inside, false if outside
 
 bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude, double Latitude, int Altitude) {
-    bool inside = true;
-    double vDistanceBase;
-    double vDistanceTop;
     double fbearing;
-    double distance;
 
-    distance = Range(Longitude, Latitude, fbearing);
+    bool inside = true;
+    // if inside we need the terrain height at the current position
+    GeoPoint position(Latitude, Longitude);
+    double distance = Range(Longitude, Latitude, fbearing);
     if (distance > 0) {
         inside = false;
         // if outside we need the terrain height at the intersection point
-        double intersect_lat, intersect_lon;
-        FindLatitudeLongitude(Latitude, Longitude, fbearing, distance, &intersect_lat, &intersect_lon);
-        AirspaceAGLLookup(intersect_lat, intersect_lon, &vDistanceBase, &vDistanceTop);
-    } else {
-        // if inside we need the terrain height at the current position
-        AirspaceAGLLookup(Latitude, Longitude, &vDistanceBase, &vDistanceTop);
+        position = position.Direct(fbearing, distance);
     }
+
+    double vDistanceBase;
+    double vDistanceTop;
+    AGLLookup(position, &vDistanceBase, &vDistanceTop);
     vDistanceBase = Altitude - vDistanceBase;
     vDistanceTop = Altitude - vDistanceTop;
+
 
     if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
 
