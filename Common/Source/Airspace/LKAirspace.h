@@ -39,12 +39,6 @@ struct DERIVED_INFO;
 #endif
 #define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
 #define MAX_NO_SIDE_AS 60
-// Define this, if airspace nearest distance infoboxes will use selected airpsace only
-// In this case infoboxes show distance to selected airspace only.
-// I use this define, because lot of variables and calculations not needed, if we use
-// selected airspace for infoboxes. - Kalman
-// Will be permanent in the future.
-#define LKAIRSP_INFOBOX_USE_SELECTED
 
 using RasterPointList = std::vector<RasterPoint>;
 
@@ -185,14 +179,6 @@ class CAirspaceBase {
 
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
 
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-  // Get class attributes for infobox values
-  static TCHAR* GetNearestHName() { return _nearesthname; }
-  static TCHAR* GetNearestVName() { return _nearestvname; }
-  static int GetNearestHDistance() { return _nearesthdistance; }
-  static int GetNearestVDistance() { return _nearestvdistance; }
-#endif
-
 protected:
   TCHAR _name[NAME_SIZE + 1] = {};                    // Name
 
@@ -238,12 +224,6 @@ protected:
   void AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const;
 
   // Class attributes
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-  static int _nearesthdistance;                // collecting horizontal distance to infobox
-  static int _nearestvdistance;                // collecting vertical distance to infobox
-  static TCHAR *_nearesthname;                // collecting nearest horizontal name to infobox
-  static TCHAR *_nearestvname;                // collecting nearest vertical name to infobox
-#endif
   static bool _pos_in_flyzone;                // for flyzone warning refining
   static bool _pred_in_flyzone;                // for flyzone warning refining
   static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining

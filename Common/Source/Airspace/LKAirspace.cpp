@@ -94,12 +94,6 @@ int update_type( int c, int y) {
 } //namespace
 
 // CAirspace class attributes
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-int CAirspace::_nearesthdistance = 0; // for infobox
-int CAirspace::_nearestvdistance = 0; // for infobox
-TCHAR* CAirspace::_nearesthname = NULL; // for infobox
-TCHAR* CAirspace::_nearestvname = NULL; // for infobox
-#endif
 bool CAirspaceBase::_pos_in_flyzone = false; // for refine warnings in flyzones
 bool CAirspaceBase::_pred_in_flyzone = false; // for refine warnings in flyzones
 bool CAirspaceBase::_pos_in_acked_nonfly_zone = false; // for refine warnings in flyzones
@@ -188,13 +182,6 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _pos_in_acked_nonfly_zone = false;
     _pred_in_acked_nonfly_zone = false;
 
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-    _nearesthname = NULL;
-    _nearestvname = NULL;
-    _nearesthdistance = 100000;
-    _nearestvdistance = 100000;
-#endif
-
     _sideview_nearest_instance.reset(); // Init nearest instance for sideview
 
     // 110518 PENDING_QUESTION
@@ -246,41 +233,6 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     // Check for altitude
     bool pos_altitude = IsAltitudeInside(alt, agl);
     if (!pos_altitude) _pos_inside_now = false;
-
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-    if (_flyzone && _pos_inside_now) {
-        // If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
-        if (abs(_hdistance) < abs(_nearesthdistance)) {
-            _nearesthname = _name;
-            _nearesthdistance = abs(_hdistance);
-        }
-        if (abs(_vdistance) < abs(_nearestvdistance)) {
-            _nearestvname = _name;
-            _nearestvdistance = _vdistance;
-        }
-    }
-    if (!_flyzone) {
-        if (_pos_inside_now) {
-            // Inside a non fly zone, distance is zero
-            _nearesthname = _name;
-            _nearesthdistance = 0;
-            _nearestvname = _name;
-            _nearestvdistance = 0;
-        } else {
-            // If outside nofly zone, then nearest distance selected
-            // Do not count it, if directly above or below (_hdistance<=0), or give zero horiz distance?
-            if ((abs(_hdistance) < abs(_nearesthdistance)) && (_hdistance > 0) && IsAltitudeInside(alt, agl, AirspaceWarningVerticalMargin / 10)) {
-                _nearesthname = _name;
-                _nearesthdistance = abs(_hdistance);
-            }
-            // Just directly above or below distances counts
-            if ((abs(_vdistance) < abs(_nearestvdistance)) && (_hdistance < 0)) {
-                _nearestvname = _name;
-                _nearestvdistance = _vdistance;
-            }
-        }
-    }
-#endif
 
     auto nearest = _sideview_nearest_instance.lock();
     if (!nearest) {
@@ -2480,25 +2432,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _sideview_nearest = CAirspace::GetSideviewNearestInstance();
 
             // Fill infoboxes - Nearest horizontal
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-            if (CAirspace::GetNearestHName() != NULL) {
-                LK_tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
-                NearestAirspaceHDist = CAirspace::GetNearestHDistance();
-            } else {
-                NearestAirspaceName[0] = 0;
-                NearestAirspaceHDist = 0;
-            }
-            // Fill infoboxes - Nearest vertical
-            if (CAirspace::GetNearestVName() != NULL) {
-                LK_tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
-                NearestAirspaceVDist = CAirspace::GetNearestVDistance();
-            } else {
-                NearestAirspaceVName[0] = 0;
-                NearestAirspaceVDist = 0;
-            }
-#endif
-
-#ifdef LKAIRSP_INFOBOX_USE_SELECTED
             auto pAsp = _selected_airspace.lock();
             if (!pAsp) {
                 pAsp = _sideview_nearest.lock();
@@ -2516,7 +2449,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
                 NearestAirspaceVName[0] = 0;
                 NearestAirspaceVDist = 0;
             }
-#endif
             step = 0;
             break;
 
