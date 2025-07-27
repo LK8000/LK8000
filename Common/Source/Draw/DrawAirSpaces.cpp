@@ -107,8 +107,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
     TempSurface.SelectObject(LK_WHITE_PEN);
   }
 
-  if (1) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+  WithLock(CAirspaceManager::Instance().MutexRef(), [&] {
     for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
       if ((*it)->DrawStyle()) {
         airspace_type = (*it)->Type();
@@ -124,11 +123,11 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
           (*it)->DrawOutline(TempSurface, LKPen_Grey_N1);
         }
         else {
-        (*it)->DrawOutline(TempSurface, hAirspacePens[airspace_type]);
+          (*it)->DrawOutline(TempSurface, hAirspacePens[airspace_type]);
         }
       }
     }  // for
-  }
+  });
 
   if (found) {
     // need to do this to prevent drawing of colored outline

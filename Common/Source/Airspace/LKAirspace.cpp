@@ -1735,11 +1735,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                      flyzone, enabled, except_saturday, except_sunday);
     }
 
-    unsigned airspaces_count = 0;
-    { // Begin Lock
-        ScopeLock guard(_csairspaces);
-        airspaces_count = _airspaces.size();
-    }  // End Lock
+    unsigned airspaces_count = WithLock(_csairspaces, [&] {
+        return _airspaces.size();
+    });
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     TCHAR msgbuf[128];
     lk::snprintf(msgbuf, _T("OpenAir: %u airspaces of %u excluded by Terrain Filter"), skiped_cnt, skiped_cnt + accept_cnt);
@@ -2019,19 +2017,16 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         newairspace->Init(Name, Type, {Base, {}}, {Top, {}}, flyzone);
 
         // Add the new airspace
-        { // Begin Lock
-        ScopeLock guard(_csairspaces);
-        _airspaces.push_back(std::move(newairspace));
+        WithLock(_csairspaces, [&] {
+            _airspaces.push_back(std::move(newairspace));
+        });
         accept_cnt++;
-        } // End Lock
     } // for each ASP
 
-    unsigned airspaces_count = 0;
-    { // Begin Lock
-        ScopeLock guard(_csairspaces);
-        airspaces_count = _airspaces.size();
-    } // End Lock
-        
+    unsigned airspaces_count = WithLock(_csairspaces, [&] {
+        return _airspaces.size();
+    });
+
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     TCHAR msgbuf[128];
     lk::snprintf(msgbuf, _T("OpenAIP: %u of %u airspaces excluded by Terrain Filer"), skiped_cnt, skiped_cnt + accept_cnt);
@@ -2078,12 +2073,10 @@ void CAirspaceManager::ReadAirspaces() {
         }
     }
 
-    unsigned airspaces_count = 0;
-    { // Begin Lock
-        ScopeLock guard(_csairspaces);
+    unsigned airspaces_count = WithLock(_csairspaces, [&] {
         last_day_of_week = ~0;
-        airspaces_count = _airspaces.size();
-    } //
+        return _airspaces.size();
+    });
 
     if((OutsideAirspaceCnt > 0) && ( WaypointsOutOfRange > 1) )
     {
