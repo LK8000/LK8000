@@ -274,7 +274,7 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryWindCalcTime, WindCalcTime);
 
   for (int i = 0; i < AIRSPACECLASSCOUNT; i++) {
-    write_settings(szRegistryAirspaceMode[i], MapWindow::iAirspaceMode[i]);
+    write_settings(szRegistryAirspaceMode[i], MapWindow::aAirspaceMode[i].to_unsigned());
     write_settings(szRegistryColour[i], MapWindow::iAirspaceColour[i]);
 #ifdef HAVE_HATCHED_BRUSH
     write_settings(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);

@@ -27,6 +27,7 @@
 #include "Enums.h"
 #include "ContestMgr.h"
 #include "utils/atomic_shared_flag.h"
+#include "Airspace/airspace_mode.h"
 
 #ifndef ENABLE_OPENGL
 #include "Poco/Event.h"
@@ -426,7 +427,9 @@ class MapWindow {
 
 
   static bool IsDisplayRunning();
-  static int iAirspaceMode[AIRSPACECLASSCOUNT];
+
+  static airspace_mode_array aAirspaceMode;
+
 #ifdef HAVE_HATCHED_BRUSH
   static int iAirspaceBrush[AIRSPACECLASSCOUNT];
 #endif

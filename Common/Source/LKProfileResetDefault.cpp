@@ -53,8 +53,6 @@ void InitDefaultComPort() {
 //
 void LKProfileResetDefault() {
 
-  int i;
-
   TestLog(TEXT("... ProfileResetDefault"));
 
   Units::ResetSettings();
@@ -103,10 +101,10 @@ void LKProfileResetDefault() {
   SectorType = sector_type_t::SECTOR;
   SectorRadius = 3000;
 
-
-  for(i=0;i<AIRSPACECLASSCOUNT;i++) {
-	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
+  for(auto& mode : MapWindow::aAirspaceMode) {
+  	mode.reset(); // Display + Warning
   }
+
 #ifdef HAVE_HATCHED_BRUSH
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
 #else

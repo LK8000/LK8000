@@ -856,7 +856,7 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
 
 
 // Calculate screen coordinates for drawing
-void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
+void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
 
     /** TODO 
      *   check map projection change
@@ -882,7 +882,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     _drawstyle = adsHidden;        
 
     // Check Visibility : faster first
-    bool is_visible =(iAirspaceMode[_type] % 2 == 1); // airspace class disabled ?
+    bool is_visible = aAirspaceMode[_type].display(); // airspace class disabled ?
     if(is_visible) {
         is_visible = !((_top.Base == abMSL) && (_top.Altitude <= 0));
     }
@@ -2455,8 +2455,14 @@ int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZ
         LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
         LKASSERT(pAsp->Type() >= 0);
 
-        if ((CheckAirspaceAltitude(pAsp->Base(), pAsp->Top()) == TRUE)&& (iNoFoundAS < iMaxNoAs - 1) &&
-                ((MapWindow::iAirspaceMode[pAsp->Type()] % 2) > 0)) {
+        if (!MapWindow::aAirspaceMode[pAsp->Type()].display()) {
+            continue;
+        }
+        if (iNoFoundAS >= (iMaxNoAs - 1)) {
+            continue;
+        }
+
+        if (CheckAirspaceAltitude(pAsp->Base(), pAsp->Top())) {
             for (unsigned i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
                 if (pAsp->IsHorizontalInside(lons[i], lats[i])) {
                     BOOL bPrevIn = false;
@@ -2691,7 +2697,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _airspaces_of_interest.clear();
             for (const auto& pAsp : _airspaces_near) {
                 // Check for warnings enabled for this class
-                if (MapWindow::iAirspaceMode[pAsp->Type()] < 2) {
+                if (MapWindow::aAirspaceMode[pAsp->Type()].warning()) {
                     pAsp->ResetWarnings();
                     continue;
                 }
@@ -2809,10 +2815,10 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
     }
 }
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
     ScopeLock guard(_csairspaces);
     for (auto asp : _airspaces_near) {
-        asp->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
+        asp->CalculateScreenPosition(screenbounds_latlon, aAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
     }
 }
 
