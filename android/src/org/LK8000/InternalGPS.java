@@ -128,20 +128,26 @@ public class InternalGPS
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        // Request "force full GNSS measurements" explicitly (on <= Android R this is a manual developer setting)
-        measurementsCallback = new GnssMeasurementsEvent.Callback() {
-          @Override
-          public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
-            super.onGnssMeasurementsReceived(eventArgs);
-          }
+        try {
+          // Request "force full GNSS measurements" explicitly (on <= Android R this is a manual developer setting)
+          measurementsCallback = new GnssMeasurementsEvent.Callback() {
+            @Override
+            public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
+              super.onGnssMeasurementsReceived(eventArgs);
+            }
 
-          @Override
-          public void onStatusChanged(int status) {
-            super.onStatusChanged(status);
-          }
-        };
-        GnssMeasurementRequest request = new GnssMeasurementRequest.Builder().setFullTracking(true).build();
-        locationManager.registerGnssMeasurementsCallback(request, command -> { }, measurementsCallback);
+            @Override
+            public void onStatusChanged(int status) {
+              super.onStatusChanged(status);
+            }
+          };
+          GnssMeasurementRequest request = new GnssMeasurementRequest.Builder().setFullTracking(true).build();
+          locationManager.registerGnssMeasurementsCallback(request, command -> { }, measurementsCallback);
+        } catch (SecurityException ignore) {
+          /* Recorded by Android vital :
+           *    Samsung Galaxy Z Flip4 /  Android 15 (SDK 35)
+           */
+        }
       }
 
       if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
