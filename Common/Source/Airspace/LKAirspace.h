@@ -37,8 +37,6 @@ struct DERIVED_INFO;
 #else
 #define AIRSPACE_SCANSIZE_X 160
 #endif
-#define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
-#define MAX_NO_SIDE_AS 60
 
 using RasterPointList = std::vector<RasterPoint>;
 
@@ -311,11 +309,10 @@ protected:
     static CAirspaceWeakPtr _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
 
-struct AirSpaceSideViewSTRUCT {
-  RECT rc;
-  POINT apPolygon[GC_MAX_POLYGON_PTS];
-  int iNoPolyPts;
-  int iIdx;
+struct AirSpaceSideView_t {
+  PixelRect rc;
+  std::vector<RasterPoint> apPolygon;
+
   int iAreaSize;
   int aiLable;
   int iType;
@@ -326,6 +323,8 @@ struct AirSpaceSideViewSTRUCT {
   TCHAR szAS_Name[NAME_SIZE + 1];
   CAirspacePtr psAS;
 };
+
+using AspSideViewList_t = std::vector<AirSpaceSideView_t>;
 
 #define VERTICAL    false
 #define HORIZONZTAL true
@@ -451,9 +450,9 @@ public:
   #endif
   void QnhChangeNotify();
 
-  int ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
-                        const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
-                        AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const;
+  AspSideViewList_t ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X],
+                                         const double (&lons)[AIRSPACE_SCANSIZE_X],
+                                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X]) const;
 
   void SortAirspaces();
   bool ValidAirspaces() const;

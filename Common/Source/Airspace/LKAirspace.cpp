@@ -2137,145 +2137,80 @@ void CAirspaceManager::QnhChangeNotify() {
     }
 }
 
-int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
-        const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
-        AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const {
+AspSideViewList_t CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X],
+                                                         const double (&lons)[AIRSPACE_SCANSIZE_X],
+                                                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X]) const {
+  AspSideViewList_t list;
 
-    const int iMaxNoAs = std::size(airspacetype);
+  ScopeLock guard(_csairspaces);
 
-    int iNoFoundAS = 0; // number of found airspaces in scan line
-    ScopeLock guard(_csairspaces);
+  for (const auto& pAsp : _airspaces_near) {
+    LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
+    LKASSERT(pAsp->Type() >= 0);
 
-    airspacetype[0].psAS = nullptr;
-    for (const auto& pAsp : _airspaces_near) {
-        LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
-        LKASSERT(pAsp->Type() >= 0);
+    if (!MapWindow::aAirspaceMode[pAsp->Type()].display()) {
+      continue;
+    }
+    if (!pAsp->CheckVisible()) {
+      continue;
+    }
 
-        if (!MapWindow::aAirspaceMode[pAsp->Type()].display()) {
-            continue;
+    bool bPrevIn = false;
+    bool bCurrIn = pAsp->IsHorizontalInside(lons[0], lats[0]);
+
+    for (unsigned i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
+      bool bNextIn = (i < AIRSPACE_SCANSIZE_X - 1) ? pAsp->IsHorizontalInside(lons[i + 1], lats[i + 1]) : false;
+      bool bLast = (i == AIRSPACE_SCANSIZE_X - 1) || !bNextIn;
+
+      if (bCurrIn) {
+        if (!bPrevIn) {
+          auto& SelAS = list.emplace_back();
+          SelAS.psAS = pAsp;
+          SelAS.iType = pAsp->Type();
+
+          lk::strcpy(SelAS.szAS_Name, pAsp->Name());
+
+          SelAS.bEnabled = pAsp->Enabled();
+
+          // allow rectangular shape if no AGL reference
+          SelAS.bRectAllowed = !(pAsp->Top().agl() || pAsp->Base().agl());
+          SelAS.rc = {static_cast<PixelScalar>(i), static_cast<PixelScalar>(pAsp->Top().altitude(0)),
+                      static_cast<PixelScalar>(i + 1), static_cast<PixelScalar>(pAsp->Base().altitude(0))};
+          SelAS.apPolygon.clear();
         }
-        if (iNoFoundAS >= (iMaxNoAs - 1)) {
-            continue;
-        }
-        if (!pAsp->CheckVisible()) {
-            continue;
-        }
 
-        bool bPrevIn = false;
-        bool bCurrIn = pAsp->IsHorizontalInside(lons[0], lats[0]);
-        bool bNextIn = false;
+        auto& SelAS = list.back();
+        assert(pAsp == SelAS.psAS);
 
-        for (unsigned i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
-          bool bLast = false;
-          if (i == AIRSPACE_SCANSIZE_X - 1) {
-            bLast = true;
+        SelAS.rc.right = (i == AIRSPACE_SCANSIZE_X - 1) ? i + 3 : i + 1;
+
+        if (!SelAS.bRectAllowed) {
+          auto& polygon = SelAS.apPolygon;
+
+          polygon.emplace_back(i, pAsp->Base().altitude(terrain_heights[i]));
+
+          if (bLast) {
+            // Add top points in reverse order
+            polygon.reserve(polygon.size() * 2);  // mandatory to avoid iterator invalidation and undefined behavior
+                                                  // when modifying the vector during iteration.
+            for (auto it = polygon.rbegin(); it != polygon.rend(); ++it) {
+              auto& back = polygon.emplace_back(it->x, pAsp->Top().altitude(terrain_heights[it->x]));
+              SelAS.rc.bottom = min(SelAS.rc.bottom, back.y);
+              SelAS.rc.top = max(SelAS.rc.top, back.y);
+            }
+            // Close polygon
+            polygon.push_back(polygon.front());
           }
-          else {
-            bNextIn = pAsp->IsHorizontalInside(lons[i + 1], lats[i + 1]);
-            bLast = !bNextIn;
-          }
+        }
 
-          if (bCurrIn) {
-            if (!bPrevIn) {
-              /* new AS section in this view*/ 
-              /*********************************************************************
-               * switch to next airspace section
-               *********************************************************************/
-              unsigned iSelAS = iNoFoundAS;
-              BUGSTOP_LKASSERT(iNoFoundAS < MAX_NO_SIDE_AS);
-              if (iNoFoundAS < MAX_NO_SIDE_AS - 1) {
-                iNoFoundAS++;
-              }
-              airspacetype[iNoFoundAS].psAS = nullptr;  // increment and reset head
-              /*********************************************************************/
-              auto& SelAS = airspacetype[iSelAS];
-
-              SelAS.iIdx = iSelAS;
-              SelAS.psAS = pAsp;
-              SelAS.iType = pAsp->Type();
-
-              lk::strcpy(SelAS.szAS_Name, pAsp->Name());
-
-              SelAS.bRectAllowed = true;
-              SelAS.bEnabled = pAsp->Enabled();
-              /**********************************************************************
-               * allow rectangular shape if no AGL reference
-               **********************************************************************/
-              if (pAsp->Top().agl() || pAsp->Base().agl()) {
-                SelAS.bRectAllowed = false;
-              }
-              /**********************************************************************
-               * init with minium rectangle right side may be extended
-               **********************************************************************/
-              SelAS.rc.left = i;
-              SelAS.rc.right = i + 1;
-              SelAS.rc.bottom = pAsp->Base().altitude(0);
-              SelAS.rc.top = pAsp->Top().altitude(0);
-              SelAS.iNoPolyPts = 0;
-            }
-
-            auto& SelAS = airspacetype[iNoFoundAS - 1];
-
-            SelAS.rc.right = i + 1;
-            if (i == AIRSPACE_SCANSIZE_X - 1) {
-              SelAS.rc.right = i + 3;
-            }
-
-            if ((SelAS.psAS) && (!SelAS.bRectAllowed)) {
-              int iHeight = SelAS.psAS->Base().altitude(terrain_heights[i]);
-
-              SelAS.apPolygon[SelAS.iNoPolyPts++] = {
-                static_cast<LONG>(i),
-                static_cast<LONG>(iHeight)
-              };
-
-              if (bLast) {
-                LKASSERT((SelAS.iNoPolyPts) < GC_MAX_POLYGON_PTS);
-                if (i == AIRSPACE_SCANSIZE_X - 1) {
-                  SelAS.apPolygon[SelAS.iNoPolyPts].x = i + 3;
-                }
-                else {
-                  SelAS.apPolygon[SelAS.iNoPolyPts].x = i + 1;
-                }
-                SelAS.apPolygon[SelAS.iNoPolyPts].y = SelAS.apPolygon[SelAS.iNoPolyPts - 1].y;
-                SelAS.iNoPolyPts++;
-
-                int iN = SelAS.iNoPolyPts;
-                int iCnt = SelAS.iNoPolyPts;
-
-                for (int iPt = iN - 1; iPt >= 0; --iPt) {
-
-                  PixelScalar x = SelAS.apPolygon[iPt].x;
-
-                  SelAS.apPolygon[iCnt] = { x, static_cast<LONG>(SelAS.psAS->Top().altitude(terrain_heights[x])) };
-
-                  if (iCnt == 0) {
-                    SelAS.rc.bottom = SelAS.apPolygon[0].y;
-                    SelAS.rc.top = SelAS.apPolygon[0].y;
-                  }
-                  else {
-                    SelAS.rc.bottom = min(SelAS.rc.bottom, SelAS.apPolygon[iCnt].y);
-                    SelAS.rc.top = max(SelAS.rc.top, SelAS.apPolygon[iCnt].y);
-                  }
-                  if (iCnt < GC_MAX_POLYGON_PTS - 1) {
-                    iCnt++;
-                  }
-                }
-                LKASSERT(iCnt < GC_MAX_POLYGON_PTS);
-                SelAS.apPolygon[iCnt++] = SelAS.apPolygon[0];
-                SelAS.iNoPolyPts = iCnt;
-              }
-            }
-            RECT rcs = SelAS.rc;
-            SelAS.iAreaSize = abs(rcs.right - rcs.left) * abs(rcs.top - rcs.bottom);
-          }  // inside
-
-          bPrevIn = bCurrIn;
-          bCurrIn = bNextIn;
-        }  // finished scanning range
-    } // for iterator
-
-    return iNoFoundAS;
+        const PixelRect& rcs = SelAS.rc;
+        SelAS.iAreaSize = abs(rcs.right - rcs.left) * abs(rcs.top - rcs.bottom);
+      }
+      bPrevIn = bCurrIn;
+      bCurrIn = bNextIn;
+    }
+  }
+  return list;
 }
 
 struct airspace_sorter {

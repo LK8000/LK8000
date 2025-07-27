@@ -22,9 +22,8 @@ using std::max;
 constexpr LKColor RGB_ROYAL_BLUE(18,32,139);
 constexpr LKColor RGB_STEEL_BLUE(70,130,180);
 
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
+extern AspSideViewList_t Sideview_pHandeled;
 extern LKColor Sideview_TextColor;
-extern int Sideview_iNoHandeldSpaces;
 
 //#define OUTLINE_2ND    // double outline for airspaces
 
@@ -63,65 +62,48 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     /********************************************************************************
      * scan line
      ********************************************************************************/
-    if (IsMultimapAirspace())
-        Sideview_iNoHandeldSpaces = CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h, Sideview_pHandeled); //  Sideview_pHandeled[GC_MAX_NO];
-    else
-        Sideview_iNoHandeldSpaces = 0;
-    BUGSTOP_LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
-    if (Sideview_iNoHandeldSpaces >= MAX_NO_SIDE_AS) Sideview_iNoHandeldSpaces = MAX_NO_SIDE_AS - 1;
+    if (IsMultimapAirspace()) {
+        Sideview_pHandeled = CAirspaceManager::Instance().ScanAirspaceLineList(d_lat, d_lon, d_h);
+    }
+    else {
+        Sideview_pHandeled.clear();
+    }
 
     /********************************************************************************
-     * bubble sort to start with biggest airspaces
+     * sort to start with biggest airspaces
      ********************************************************************************/
-    int iSizeLookupTable[MAX_NO_SIDE_AS];
-    for (int i = 0; i < Sideview_iNoHandeldSpaces; i++)
-        iSizeLookupTable[i] = i;
+    auto comp_area = [](const auto& a, const auto& b) {
+      return a.iAreaSize > b.iAreaSize;
+    };
+    std::sort(Sideview_pHandeled.begin(), Sideview_pHandeled.end(), comp_area);
 
-    for (int i = 0; i < Sideview_iNoHandeldSpaces; i++) {
-        BUGSTOP_LKASSERT(iSizeLookupTable[i] < MAX_NO_SIDE_AS);
-        for (int j = i; j < Sideview_iNoHandeldSpaces; j++) {
-            BUGSTOP_LKASSERT(iSizeLookupTable[j] < MAX_NO_SIDE_AS);
-            if (iSizeLookupTable[i] >= MAX_NO_SIDE_AS) continue;
-            if (iSizeLookupTable[j] >= MAX_NO_SIDE_AS) continue;
-
-            if (Sideview_pHandeled[iSizeLookupTable[i]].iAreaSize < Sideview_pHandeled[iSizeLookupTable[j]].iAreaSize) {
-                int iTmp = iSizeLookupTable[i];
-                iSizeLookupTable[i] = iSizeLookupTable[j];
-                iSizeLookupTable[j] = iTmp;
-            }
-        }
-    }
     /**********************************************************************************
      * transform into diagram coordinates
      **********************************************************************************/
     double dx1 = (double) (rc.right) / (double) (AIRSPACE_SCANSIZE_X - 1);
     int x0 = rc.left;
-    LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
-    for (auto& p : make_array(Sideview_pHandeled, Sideview_iNoHandeldSpaces)) {
-        p.rc.left = (long) ((p.rc.left) * dx1) + x0 - FRAMEWIDTH / 2;
-        p.rc.right = (long) ((p.rc.right) * dx1) + x0 + FRAMEWIDTH / 2;
+    for (auto& p : Sideview_pHandeled) {
+        p.rc.left = ((p.rc.left) * dx1) + x0 - FRAMEWIDTH / 2;
+        p.rc.right = ((p.rc.right) * dx1) + x0 + FRAMEWIDTH / 2;
 
-        p.rc.bottom = CalcHeightCoordinat((double) p.rc.bottom, psDiag) + FRAMEWIDTH / 2;
-        p.rc.top = CalcHeightCoordinat((double) p.rc.top, psDiag) - FRAMEWIDTH / 2;
+        p.rc.bottom = CalcHeightCoordinat(p.rc.bottom, psDiag) + FRAMEWIDTH / 2;
+        p.rc.top = CalcHeightCoordinat(p.rc.top, psDiag) - FRAMEWIDTH / 2;
 
-        p.iMaxBase = p.rc.bottom;
-        p.iMinTop = p.rc.top;
+        if (p.bRectAllowed) {
+            p.iMaxBase = p.rc.bottom;
+            p.iMinTop = p.rc.top;
+        }
+        else {
+            auto& polygon = p.apPolygon;
 
-        int iN = p.iNoPolyPts;
-        BUGSTOP_LKASSERT(iN < GC_MAX_POLYGON_PTS);
-        if (iN >= GC_MAX_POLYGON_PTS) iN = GC_MAX_POLYGON_PTS - 1;
-
-        if (!p.bRectAllowed) {
-            for (int j = 0; j < iN; j++) {
-                p.apPolygon[j].x = (long) (((p.apPolygon[j].x) * dx1) + x0);
-                p.apPolygon[j].y = CalcHeightCoordinat((double) p.apPolygon[j].y, psDiag);
-                if (j != iN - 1) {
-                    if ((j < iN / 2)) {
-                        p.iMaxBase = std::min(p.iMaxBase, p.apPolygon[j].y);
-                    } else {
-                        p.iMinTop = std::max(p.iMinTop, p.apPolygon[j].y);
-                    }
-                }
+            p.iMaxBase = 0;
+            p.iMinTop = std::numeric_limits<PixelScalar>::max();
+            
+            for(auto& pt : polygon) {
+                pt.x = static_cast<PixelScalar>((pt.x * dx1) + x0);
+                pt.y = CalcHeightCoordinat(pt.y, psDiag);
+                p.iMaxBase = std::max(p.iMaxBase, pt.y);
+                p.iMinTop = std::min(p.iMinTop, pt.y);
             }
         }
     }
@@ -129,28 +111,22 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
      * draw airspaces
      **********************************************************************************/
     const auto oldpen = Surface.SelectObject(LK_NULL_PEN);
-    _TCHAR text [80];
-    LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
-    for (int m = 0; m < Sideview_iNoHandeldSpaces; m++) {
-        int iSizeIdx = iSizeLookupTable[m];
-        BUGSTOP_LKASSERT(iSizeIdx < MAX_NO_SIDE_AS && iSizeIdx >= 0);
-        if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx = MAX_NO_SIDE_AS - 1;
 
-        int type = Sideview_pHandeled[iSizeIdx].iType;
-        RECT rcd = Sideview_pHandeled[iSizeIdx].rc;
+    for (const auto& item : Sideview_pHandeled) {
+
+        int type = item.iType;
+        RECT rcd = item.rc;
         LKColor FrameColor;
         double fFrameColFact;
         int Framewidth = FRAMEWIDTH;
-        if (Sideview_pHandeled[iSizeIdx].bEnabled) {
-            if ((MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_border_only) || (Sideview_pHandeled[iSizeIdx].psAS->DrawStyle()== adsOutline))
-            {
-		  Surface.SelectObject(LKBrush_Hollow);
-		  Framewidth *=3;
+        if (item.bEnabled) {
+            if ((MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_border_only) || (item.psAS->DrawStyle()== adsOutline)) {
+                Surface.SelectObject(LKBrush_Hollow);
+                Framewidth *=3;
             }
-		else
-		{
-		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
-		}
+            else {
+                Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+            }
             Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
             fFrameColFact = 0.8;
             FrameColor = MapWindow::GetAirspaceColourByClass(type);
@@ -168,14 +144,14 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         LKPen mpen2(PEN_SOLID, Framewidth, Color);
         const auto oldpen2 = Surface.SelectObject(mpen2);
 
-        if (Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
+        if (item.bRectAllowed == true)
             Surface.Rectangle(rcd.left + 1, rcd.top, rcd.right, rcd.bottom);
         else
-            Surface.Polygon(Sideview_pHandeled[iSizeIdx].apPolygon, Sideview_pHandeled[iSizeIdx].iNoPolyPts);
+            Surface.Polygon(item.apPolygon);
 
         Surface.SelectObject(oldpen2);
 
-        if (Sideview_pHandeled[iSizeIdx].bEnabled)
+        if (item.bEnabled)
             Surface.SetTextColor(Sideview_TextColor); // RGB_MENUTITLEFG
         else
             Surface.SetTextColor(RGB_GGREY);
@@ -183,36 +159,34 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
         /***********************************************
          * build view overlap for centering text
          ***********************************************/
-        rcd.bottom = min(rcd.bottom, Sideview_pHandeled[iSizeIdx].iMaxBase);
-        rcd.top = max(rcd.top, Sideview_pHandeled[iSizeIdx].iMinTop);
-
+        rcd.bottom = std::min({rcd.bottom, item.iMaxBase, rc.bottom});
+        rcd.top = std::max({rcd.top, item.iMinTop, rc.top});
         rcd.left = max(rcd.left, rc.left);
         rcd.right = min(rcd.right, rc.right);
-        rcd.bottom = min(rcd.bottom, rc.bottom);
-        rcd.top = max(rcd.top, rc.top);
-        SIZE textsize;
-        SIZE aispacesize = {rcd.right - rcd.left, rcd.bottom - rcd.top};
 
-        LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name, NAME_SIZE - 1/* sizeof(text)/sizeof(text[0])*/);
+        SIZE textsize;
+        SIZE aispacesize = {
+            rcd.right - rcd.left,
+            rcd.bottom - rcd.top
+        };
+
+        const TCHAR* text = item.szAS_Name;
         Surface.GetTextSize(text, &textsize);
 
         int x = rcd.left + aispacesize.cx / 2;
-        ;
         int y = rcd.top + aispacesize.cy / 2;
-        //  int iTextheight =  tsize.cy;
         int iOffset = 0;
         BOOL blongtext = false;
         if (aispacesize.cy > (2 * textsize.cy) && (textsize.cx < aispacesize.cx)) {
             iOffset = textsize.cy / 2;
         }
 
-
         if ((textsize.cx < aispacesize.cx) && (textsize.cy < aispacesize.cy)) {
             Surface.DrawText(x - textsize.cx / 2, y - iOffset - textsize.cy / 2, text);
             blongtext = true;
         }
 
-        LK_tcsncpy(text, CAirspaceManager::GetAirspaceTypeShortText(Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
+        text = CAirspaceManager::GetAirspaceTypeShortText(item.iType);
         Surface.GetTextSize(text, &textsize);
         if (textsize.cx < aispacesize.cx) {
             if (2 * textsize.cy < aispacesize.cy) {
@@ -229,18 +203,14 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
      * draw airspace frames in reversed order
      **********************************************************************************/
 #ifdef OUTLINE_2ND
-    for (int m = 0; m < Sideview_iNoHandeldSpaces; m++) {
-        int iSizeIdx = iSizeLookupTable[Sideview_iNoHandeldSpaces - m - 1];
-        if (Sideview_pHandeled[iSizeIdx].bEnabled) {
-            BUGSTOP_LKASSERT(iSizeIdx < MAX_NO_SIDE_AS);
-            if (iSizeIdx >= MAX_NO_SIDE_AS) iSizeIdx = MAX_NO_SIDE_AS - 1;
-
-            int type = Sideview_pHandeled[iSizeIdx].iType;
-            RECT rcd = Sideview_pHandeled[iSizeIdx].rc;
+    for (const auto& item : Sideview_pHandeled) {
+        if (item.bEnabled) {
+            int type = item.iType;
+            RECT rcd = item.rc;
             LKColor FrameColor = MapWindow::GetAirspaceColourByClass(type);
             double fFrameColFact;
             Surface.SelectObject(LKBrush_Hollow);
-            if (Sideview_pHandeled[iSizeIdx].bEnabled) {
+            if (item.bEnabled) {
                 //		Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
                 Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
                 fFrameColFact = 0.8;
@@ -258,10 +228,10 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
             LKPen mpen2(PEN_SOLID, FRAMEWIDTH, lColor);
             const auto oldpen2 = Surface.SelectObject(mpen2);
 
-            if (Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
+            if (item.bRectAllowed == true)
                 Surface.Rectangle(rcd.left + 1, rcd.top, rcd.right, rcd.bottom);
             else
-                Surface.Polygon(Sideview_pHandeled[iSizeIdx].apPolygon, Sideview_pHandeled[iSizeIdx].iNoPolyPts);
+                Surface.Polygon(item.apPolygon);
 
 
             Surface.SelectObject(oldpen2);

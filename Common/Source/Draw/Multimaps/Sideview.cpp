@@ -18,8 +18,6 @@ using std::min;
 using std::max;
 
 int Sideview_asp_heading_task = 0;
-int Sideview_iNoHandeldSpaces = 0;
-AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 void SetMMNorthUp(int iPage, int iVal) {
     BUGSTOP_LKASSERT(iPage < NUMBER_OF_SHARED_MULTIMAPS);
