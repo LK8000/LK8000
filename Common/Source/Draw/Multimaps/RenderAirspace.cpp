@@ -23,8 +23,7 @@
 #include "Asset.hpp"
 #include "Dialogs/dlgMultiSelectList.h"
 
-extern int Sideview_iNoHandeldSpaces;
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
+AspSideViewList_t Sideview_pHandeled;
 
 double fSplitFact = 0.30;
 double fOffset = 0.0;
@@ -196,10 +195,10 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
                 }
             } else {
                 bool bShow = false;
-                for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
-                    if (Sideview_pHandeled[k].psAS != NULL) {
-                        if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
-                            DlgMultiSelect::AddItem(im_airspace{Sideview_pHandeled[k].psAS}, 0);
+                for (const auto& item : Sideview_pHandeled) {
+                    if (item.psAS) {
+                        if (PtInRect(&(item.rc), startScreen)) {
+                            DlgMultiSelect::AddItem(im_airspace{item.psAS}, 0);
                             bShow = true;
                         }
                     }

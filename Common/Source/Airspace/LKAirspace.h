@@ -15,10 +15,12 @@
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
 #include "Airspace.h"
+#include "vertical_bound.h"
 #include "Sizes.h"
 #include "../Topology/shapelib/mapprimitive.h"
 
 #include "Renderer/AirspaceRenderer.h"
+#include "airspace_mode.h"
 
 class ScreenProjection;
 class MD5;
@@ -35,28 +37,6 @@ struct DERIVED_INFO;
 #else
 #define AIRSPACE_SCANSIZE_X 160
 #endif
-#define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
-#define MAX_NO_SIDE_AS 60
-// Define this, if airspace nearest distance infoboxes will use selected airpsace only
-// In this case infoboxes show distance to selected airspace only.
-// I use this define, because lot of variables and calculations not needed, if we use
-// selected airspace for infoboxes. - Kalman
-// Will be permanent in the future.
-#define LKAIRSP_INFOBOX_USE_SELECTED
-
-enum AirspaceAltBase_t {
-  abUndef = 0,
-  abMSL,
-  abAGL,
-  abFL
-};
-
-struct AIRSPACE_ALT {
-  double Altitude = 0.;
-  double FL = 0.;
-  double AGL = 0.;
-  AirspaceAltBase_t Base = abUndef;
-};
 
 using RasterPointList = std::vector<RasterPoint>;
 
@@ -131,7 +111,7 @@ class CAirspaceBase {
 
   // Attributes interface
   // Initialize instance attributes
-  void Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment = NULL);
+  void Init(const TCHAR *name, int type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment = NULL);
 
   const TCHAR* TypeName() const;
   const TCHAR* TypeNameShort() const;
@@ -143,8 +123,9 @@ class CAirspaceBase {
     return _comment.c_str();
   }
 
-  const AIRSPACE_ALT& Top() const { return _top; }
-  const AIRSPACE_ALT& Base() const { return _base; }
+  const vertical_bound& Top() const { return _ceiling; }
+  const vertical_bound& Base() const { return _floor; }
+
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
@@ -196,22 +177,16 @@ class CAirspaceBase {
 
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
 
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-  // Get class attributes for infobox values
-  static TCHAR* GetNearestHName() { return _nearesthname; }
-  static TCHAR* GetNearestVName() { return _nearestvname; }
-  static int GetNearestHDistance() { return _nearesthdistance; }
-  static int GetNearestVDistance() { return _nearestvdistance; }
-#endif
-
 protected:
   TCHAR _name[NAME_SIZE + 1] = {};                    // Name
 
   tstring _comment;       // extended airspace informations e.g. for Notams
 
   int _type = OTHER;                                    // type (class) of airspace
-  AIRSPACE_ALT _base = {};                            // base altitude
-  AIRSPACE_ALT _top = {};                            // top altitude
+
+  vertical_bound _ceiling = {};                            // top altitude
+  vertical_bound _floor = {};                            // base altitude
+
   rectObj _bounds = {};                                // airspace bounds
   bool _flyzone = false;                                // true if this is a normally fly zone (leaving generates warning)
   AirspaceDrawStyle_t _drawstyle = adsHidden;                // draw mode
@@ -244,15 +219,9 @@ protected:
 
 
   // Private functions
-  void AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const;
+  void AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const;
 
   // Class attributes
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-  static int _nearesthdistance;                // collecting horizontal distance to infobox
-  static int _nearestvdistance;                // collecting vertical distance to infobox
-  static TCHAR *_nearesthname;                // collecting nearest horizontal name to infobox
-  static TCHAR *_nearestvname;                // collecting nearest vertical name to infobox
-#endif
   static bool _pos_in_flyzone;                // for flyzone warning refining
   static bool _pred_in_flyzone;                // for flyzone warning refining
   static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining
@@ -285,10 +254,8 @@ public:
 
     // Check if a point horizontally inside in this airspace
     virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
-    // Dump this airspace to runtime.log
-    virtual void Dump() const = 0;
     // Calculate drawing coordinates on screen
-    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
+    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
     // Draw airspace on map
     void DrawOutline(LKSurface& Surface, PenReference pen) const;
     void FillPolygon(LKSurface& Surface, const LKBrush& brush) const;
@@ -316,6 +283,8 @@ public:
     // Calculate airspace distance from last known position (used by warning system and dialog boxes)
     bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
 
+    bool CheckVisible() const;
+
     static void ResetSideviewNearestInstance() { _sideview_nearest_instance.reset(); }
     static CAirspacePtr GetSideviewNearestInstance() { return _sideview_nearest_instance.lock(); }
 
@@ -340,11 +309,10 @@ protected:
     static CAirspaceWeakPtr _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
 
-struct AirSpaceSideViewSTRUCT {
-  RECT rc;
-  POINT apPolygon[GC_MAX_POLYGON_PTS];
-  int iNoPolyPts;
-  int iIdx;
+struct AirSpaceSideView_t {
+  PixelRect rc;
+  std::vector<RasterPoint> apPolygon;
+
   int iAreaSize;
   int aiLable;
   int iType;
@@ -355,6 +323,8 @@ struct AirSpaceSideViewSTRUCT {
   TCHAR szAS_Name[NAME_SIZE + 1];
   CAirspacePtr psAS;
 };
+
+using AspSideViewList_t = std::vector<AirSpaceSideView_t>;
 
 #define VERTICAL    false
 #define HORIZONZTAL true
@@ -378,8 +348,6 @@ public:
 
   // Check if a point horizontally inside in this airspace
   bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
-  // Dump this airspace to runtime.log
-  void Dump() const override;
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   double Range(const double &longitude, const double &latitude, double &bearing) const override;
@@ -413,9 +381,6 @@ public:
 
   // Check if a point horizontally inside in this airspace
   bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
-  // Dump this airspace to runtime.log
-  void Dump() const override;
-
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
@@ -473,11 +438,8 @@ public:
   }
 
   //HELPER FUNCTIONS
-  static bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top);
   static const TCHAR* GetAirspaceTypeText(int type);
   static const TCHAR* GetAirspaceTypeShortText(int type);
-  static void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt);
-  static void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt);
 
 
   // Upper level interfaces
@@ -488,9 +450,9 @@ public:
   #endif
   void QnhChangeNotify();
 
-  int ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
-                        const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
-                        AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const;
+  AspSideViewList_t ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X],
+                                         const double (&lons)[AIRSPACE_SCANSIZE_X],
+                                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X]) const;
 
   void SortAirspaces();
   bool ValidAirspaces() const;
@@ -522,7 +484,7 @@ public:
 
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
-  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
+  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
   const CAirspaceList& GetNearAirspacesRef() const;
 
   //Nearest page 2.4
@@ -564,11 +526,11 @@ private:
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
   void CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center,
-                      int Type, const AIRSPACE_ALT& Base, const AIRSPACE_ALT& Top, const tstring& Comment,
+                      int Type, vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment,
                       bool flyzone, bool enabled, bool except_saturday, bool except_sunday);
 
   static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
-  static void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt);
+
   static bool ReadCoords(TCHAR *Text, double *X, double *Y);
   static bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
   static bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
@@ -581,7 +543,6 @@ private:
 #endif
 
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
-  bool ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;

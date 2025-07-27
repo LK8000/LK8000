@@ -12,6 +12,7 @@
 #include "Dialogs.h"
 #include <ctype.h>
 #include <utility>
+#include <regex>
 
 #include <Point2D.h>
 #include "md5.h"
@@ -93,12 +94,6 @@ int update_type( int c, int y) {
 } //namespace
 
 // CAirspace class attributes
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-int CAirspace::_nearesthdistance = 0; // for infobox
-int CAirspace::_nearestvdistance = 0; // for infobox
-TCHAR* CAirspace::_nearesthname = NULL; // for infobox
-TCHAR* CAirspace::_nearestvname = NULL; // for infobox
-#endif
 bool CAirspaceBase::_pos_in_flyzone = false; // for refine warnings in flyzones
 bool CAirspaceBase::_pred_in_flyzone = false; // for refine warnings in flyzones
 bool CAirspaceBase::_pos_in_acked_nonfly_zone = false; // for refine warnings in flyzones
@@ -116,25 +111,6 @@ CAirspaceWeakPtr CAirspace::_sideview_nearest_instance; // collect nearest airsp
 //
 // CAIRSPACE CLASS
 //
-
-// Dumps object instance to Runtime.log
-
-void CAirspace::Dump() const {
-    //StartupStore(TEXT("CAirspace Dump%s"),NEWLINE);
-    StartupStore(TEXT(" Name:%s%s"), _name, NEWLINE);
-    StartupStore(TEXT(" Type:%d (%s)"), _type, NEWLINE);
-    StartupStore(TEXT(" Base.Altitude:%f%s"), _base.Altitude, NEWLINE);
-    StartupStore(TEXT(" Base.FL:%f%s"), _base.FL, NEWLINE);
-    StartupStore(TEXT(" Base.AGL:%f%s"), _base.AGL, NEWLINE);
-    StartupStore(TEXT(" Base.Base:%d%s"), _base.Base, NEWLINE);
-    StartupStore(TEXT(" Top.Altitude:%f%s"), _top.Altitude, NEWLINE);
-    StartupStore(TEXT(" Top.FL:%f%s"), _top.FL, NEWLINE);
-    StartupStore(TEXT(" Top.AGL:%f%s"), _top.AGL, NEWLINE);
-    StartupStore(TEXT(" Top.Base:%d%s"), _top.Base, NEWLINE);
-    StartupStore(TEXT(" bounds.minx,miny:%f,%f%s"), _bounds.minx, _bounds.miny, NEWLINE);
-    StartupStore(TEXT(" bounds.maxx,maxy:%f,%f%s"), _bounds.maxx, _bounds.maxy, NEWLINE);
-
-}
 
 const TCHAR* CAirspaceBase::TypeName() const {
   return CAirspaceManager::GetAirspaceTypeText(_type);
@@ -156,44 +132,29 @@ const LKBrush& CAirspaceBase::TypeBrush() const {
 #endif
 }
 
-void CAirspaceBase::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const {
-    double base_out = _base.Altitude;
-    double top_out = _top.Altitude;
-
-    if (((_base.Base == abAGL) || (_top.Base == abAGL))) {
-        double th = WithLock(RasterTerrain::mutex, [&]() {
-            // want most accurate rounding here
-            RasterTerrain::SetTerrainRounding(0, 0);
-            return RasterTerrain::GetTerrainHeight(av_lat, av_lon);
-        });
-
-        if (th == TERRAIN_INVALID) {
-            // 101027 We still use 0 altitude for no terrain, what else can we do..
-            th = 0;
-        }
-
-        if (_base.Base == abAGL) {
-            base_out = th;
-            if (_base.AGL >= 0) base_out += _base.AGL;
-        }
-        if (_top.Base == abAGL) {
-            top_out = th;
-            if (_top.AGL >= 0) top_out += _top.AGL;
-        }
+void CAirspaceBase::AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const {
+    double th = 0.; 
+    if (_floor.agl() || _ceiling.agl()) {
+        th = RasterTerrain::GetHeightAccurate(position);
     }
-    if (basealt_out) *basealt_out = base_out;
-    if (topalt_out) *topalt_out = top_out;
+    if (th == TERRAIN_INVALID) {
+      // 101027 We still use 0 altitude for no terrain, what else can we do..
+      th = 0.;
+    }
+
+    if (basealt_out) {
+        *basealt_out = _floor.altitude(th);
+    }
+    if (topalt_out) {
+        *topalt_out = _ceiling.altitude(th);
+    }
 }
 
 // Called when QNH changed
 
 void CAirspaceBase::QnhChangeNotify() {
-    if (_top.Base == abFL) {
-        _top.Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, _top.FL));
-    }
-    if (_base.Base == abFL) {
-        _base.Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, _base.FL));
-    }
+  _ceiling.qnh_update();
+  _floor.qnh_update();
 }
 
 inline bool CheckInsideLongitude(const double &longitude, const double &lon_min, const double &lon_max) {
@@ -207,14 +168,9 @@ inline bool CheckInsideLongitude(const double &longitude, const double &lon_min,
 }
 
 // returns true if the given altitude inside this airspace + alt extension
-
+//  (below the ceiling and above the floor)
 bool CAirspaceBase::IsAltitudeInside(int alt, int agl, int extension) const {
-    return (
-            ((((_base.Base != abAGL) && (alt >= (_base.Altitude - extension)))
-            || ((_base.Base == abAGL) && (agl >= (_base.AGL - extension)))))
-            && ((((_top.Base != abAGL) && (alt < (_top.Altitude + extension))))
-            || ((_top.Base == abAGL) && (agl < (_top.AGL + extension))))
-            );
+  return _ceiling.below(alt + extension, agl + extension) && _floor.above(alt - extension, agl - extension);
 }
 
 // Step1:
@@ -225,13 +181,6 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _pred_in_flyzone = false;
     _pos_in_acked_nonfly_zone = false;
     _pred_in_acked_nonfly_zone = false;
-
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-    _nearesthname = NULL;
-    _nearestvname = NULL;
-    _nearesthdistance = 100000;
-    _nearestvdistance = 100000;
-#endif
 
     _sideview_nearest_instance.reset(); // Init nearest instance for sideview
 
@@ -284,41 +233,6 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     // Check for altitude
     bool pos_altitude = IsAltitudeInside(alt, agl);
     if (!pos_altitude) _pos_inside_now = false;
-
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-    if (_flyzone && _pos_inside_now) {
-        // If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
-        if (abs(_hdistance) < abs(_nearesthdistance)) {
-            _nearesthname = _name;
-            _nearesthdistance = abs(_hdistance);
-        }
-        if (abs(_vdistance) < abs(_nearestvdistance)) {
-            _nearestvname = _name;
-            _nearestvdistance = _vdistance;
-        }
-    }
-    if (!_flyzone) {
-        if (_pos_inside_now) {
-            // Inside a non fly zone, distance is zero
-            _nearesthname = _name;
-            _nearesthdistance = 0;
-            _nearestvname = _name;
-            _nearestvdistance = 0;
-        } else {
-            // If outside nofly zone, then nearest distance selected
-            // Do not count it, if directly above or below (_hdistance<=0), or give zero horiz distance?
-            if ((abs(_hdistance) < abs(_nearesthdistance)) && (_hdistance > 0) && IsAltitudeInside(alt, agl, AirspaceWarningVerticalMargin / 10)) {
-                _nearesthname = _name;
-                _nearesthdistance = abs(_hdistance);
-            }
-            // Just directly above or below distances counts
-            if ((abs(_vdistance) < abs(_nearestvdistance)) && (_hdistance < 0)) {
-                _nearestvname = _name;
-                _nearestvdistance = _vdistance;
-            }
-        }
-    }
-#endif
 
     auto nearest = _sideview_nearest_instance.lock();
     if (!nearest) {
@@ -641,15 +555,15 @@ bool CAirspaceBase::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, 
 }
 
 // Get warning point coordinates, returns true if distances valid
-
 bool CAirspaceBase::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const {
     if (_distances_ready && _enabled) {
         if (_flyzone && !_pos_inside_now) return false; // no warning labels if outside a flyzone
 
         double dist = abs(_hdistance);
+        auto warning_position = GeoPoint(_lastknownpos.Latitude(), _lastknownpos.Longitude()).Direct(_bearing, dist);
+
         double basealt, topalt;
-        FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
-        AirspaceAGLLookup(latitude, longitude, &basealt, &topalt);
+        AGLLookup(warning_position, &basealt, &topalt);
 
         vdrawstyle = awsBlack;
         if ((_lastknownalt >= basealt) && (_lastknownalt < topalt)) {
@@ -660,7 +574,6 @@ bool CAirspaceBase::GetWarningPoint(double &longitude, double &latitude, Airspac
         hdrawstyle = vdrawstyle;
 
         vDistance = _vdistance;
-        //if (abs(_vdistance) > (AirspaceWarningVerticalMargin/10)) vdrawstyle = awsHidden;
 
         // Nofly zones
         if (!_flyzone && (_hdistance < 0)) hdrawstyle = awsHidden; // No horizontal warning label if directly below or above
@@ -692,31 +605,30 @@ bool CAirspaceBase::IsSame(CAirspaceBase &as2) const {
 // Returns true if inside, false if outside
 
 bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude, double Latitude, int Altitude) {
-    bool inside = true;
-    int vDistanceBase;
-    int vDistanceTop;
     double fbearing;
-    double distance;
 
-    distance = Range(Longitude, Latitude, fbearing);
+    bool inside = true;
+    // if inside we need the terrain height at the current position
+    GeoPoint position(Latitude, Longitude);
+    double distance = Range(Longitude, Latitude, fbearing);
     if (distance > 0) {
         inside = false;
         // if outside we need the terrain height at the intersection point
-        double intersect_lat, intersect_lon;
-        FindLatitudeLongitude(Latitude, Longitude, fbearing, distance, &intersect_lat, &intersect_lon);
-        AirspaceAGLLookup(intersect_lat, intersect_lon, &_base.Altitude, &_top.Altitude);
-    } else {
-        // if inside we need the terrain height at the current position
-        AirspaceAGLLookup(Latitude, Longitude, &_base.Altitude, &_top.Altitude);
+        position = position.Direct(fbearing, distance);
     }
-    vDistanceBase = Altitude - (int) (_base.Altitude);
-    vDistanceTop = Altitude - (int) (_top.Altitude);
+
+    double vDistanceBase;
+    double vDistanceTop;
+    AGLLookup(position, &vDistanceBase, &vDistanceTop);
+    vDistanceBase = Altitude - vDistanceBase;
+    vDistanceTop = Altitude - vDistanceTop;
+
 
     if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
 
     _bearing = (int) fbearing;
     _hdistance = (int) distance;
-    if ((-vDistanceBase > vDistanceTop) && ((_base.Base != abAGL) || (_base.AGL > 0)))
+    if ((-vDistanceBase > vDistanceTop) && _floor.agl())
         _vdistance = vDistanceBase;
     else
         _vdistance = vDistanceTop;
@@ -750,6 +662,52 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance, 
     return inside;
 }
 
+
+bool CAirspace::CheckVisible() const {
+    if (AltitudeMode == ALLON) {
+        return true;
+    } else if (AltitudeMode == ALLOFF) {
+        return false;
+    }
+
+    LockFlightData();
+    double alt = CALCULATED_INFO.NavAltitude;
+    double alt_agl = CALCULATED_INFO.TerrainAlt;
+    UnlockFlightData();
+
+    double basealt = _floor.altitude(alt_agl);
+    double topalt = _ceiling.altitude(alt_agl);
+    double base_is_sfc = _floor.sfc();
+
+    switch (AltitudeMode) {
+        case ALLON: return true;
+
+        case CLIP:
+            if ((basealt < (ClipAltitude / 10)) || base_is_sfc) return true;
+            else return false;
+
+        case AUTO:
+            if (((alt > (basealt - (AltWarningMargin / 10))) || base_is_sfc)
+                    && (alt < (topalt + (AltWarningMargin / 10))))
+                return true;
+            else
+                return false;
+
+        case ALLBELOW:
+            if (((basealt - (AltWarningMargin / 10)) < alt) || base_is_sfc)
+                return true;
+            else
+                return false;
+        case INSIDE:
+            if (((alt >= basealt) || base_is_sfc) && (alt < topalt))
+                return true;
+            else
+                return false;
+        case ALLOFF: return false;
+    }
+    return true;
+}
+
 // Reset warnings, if airspace outside calculation scope
 
 void CAirspaceBase::ResetWarnings() {
@@ -759,20 +717,27 @@ void CAirspaceBase::ResetWarnings() {
 }
 
 // Initialize instance attributes
-void CAirspaceBase::Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment) {
+void CAirspaceBase::Init(const TCHAR *name, int type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment) {
     lk::strcpy(_name, name);
+    if (_tcslen(_name) <  _tcslen(name)) {
+        _comment = name;
+    }
+    else {
+      _comment.clear();
+    }
 
     // always allocate string to avoid unchecked nullptr exception
     if (comment) {
-        _comment = comment;
-    } else {
-      _comment.clear();
+        if (!_comment.empty()) {
+            _comment += _T("\n");
+        }
+        _comment += comment;
     }
 
     _type = type;
     _flyzone = flyzone;
-    _base = base;
-    _top = top;
+    _floor = base;
+    _ceiling = top;
 }
 
 //
@@ -799,15 +764,6 @@ CAirspace_Circle::CAirspace_Circle(const GeoPoint &Center, const double Radius)
 
         _geopoints.emplace_back(pt.latitude, pt.longitude);
     }
-
-    AirspaceAGLLookup(Center.latitude, Center.longitude, &_base.Altitude, &_top.Altitude);
-}
-
-// Dumps object instance to Runtime.log
-
-void CAirspace_Circle::Dump() const {
-    StartupStore(TEXT("CAirspace_Circle Dump, CenterLat:%f, CenterLon:%f, Radius:%f%s"), _center.latitude, _center.longitude, _radius, NEWLINE);
-    CAirspace::Dump();
 }
 
 // Calculate unique hash code for this airspace
@@ -856,11 +812,11 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
 
 
 // Calculate screen coordinates for drawing
-void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
+void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
 
     /** TODO 
      *   check map projection change
-     *   move CAirspaceManager::Instance().CheckAirspaceAltitude() outside draw function
+     *   move CAirspace::CheckVisible() outside draw function
      */
     
     
@@ -882,16 +838,16 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     _drawstyle = adsHidden;        
 
     // Check Visibility : faster first
-    bool is_visible =(iAirspaceMode[_type] % 2 == 1); // airspace class disabled ?
+    bool is_visible = aAirspaceMode[_type].display(); // airspace class disabled ?
     if(is_visible) {
-        is_visible = !((_top.Base == abMSL) && (_top.Altitude <= 0));
+      is_visible = !_ceiling.below_msl();
     }
     if(is_visible) { // no need to msRectOverlap if airspace is not visible
         is_visible = msRectOverlap(&_bounds, &screenbounds_latlon);
     }
     if(is_visible) { // no need to check Altitude if airspace is not visible
-        // TODO : "CheckAirspaceAltitude() lock Flight data for altitude : to slow, need to change"
-        is_visible = CAirspaceManager::CheckAirspaceAltitude(_base, _top);
+        // TODO : "CheckVisible() lock Flight data for altitude : to slow, need to change"
+        is_visible = CheckVisible();
     }
     
     if(is_visible) { 
@@ -934,24 +890,8 @@ void CAirspace::FillPolygon(LKSurface& Surface, const LKBrush& brush) const {
 void CAirspace::Hash(MD5& md5) const {
     md5.Update(_type);
     md5.Update(to_utf8(_name));
-    if (_base.Base == abFL) {
-        md5.Update(_base.FL);
-    }
-    if (_base.Base == abAGL) {
-        md5.Update(_base.AGL);
-    }
-    if (_base.Base == abMSL) {
-        md5.Update(_base.Altitude);
-    }
-    if (_top.Base == abFL) {
-        md5.Update(_top.FL);
-    }
-    if (_top.Base == abAGL) {
-        md5.Update(_top.AGL);
-    }
-    if (_top.Base == abMSL) {
-        md5.Update(_top.Altitude);
-    }
+    _floor.hash(md5);
+    _ceiling.hash(md5);
 }
 
 //
@@ -961,17 +901,6 @@ CAirspace_Area::CAirspace_Area(CPoint2DArray &&Area_Points)
     : CAirspace(std::forward<CPoint2DArray>(Area_Points))
 {
     CalcBounds();
-    AirspaceAGLLookup((_bounds.miny + _bounds.maxy) / 2.0, (_bounds.minx + _bounds.maxx) / 2.0, &_base.Altitude, &_top.Altitude);
-}
-
-
-// Dumps object instance to Runtime.log
-void CAirspace_Area::Dump() const {
-    StartupStore(TEXT("CAirspace_Area Dump%s"), NEWLINE);
-    CAirspace::Dump();
-    for (CPoint2DArray::const_iterator i = _geopoints.begin(); i != _geopoints.end(); ++i) {
-        StartupStore(TEXT("  Point lat:%f, lon:%f%s"), i->Latitude(), i->Longitude(), NEWLINE);
-    }
 }
 
 // Calculate unique hash code for this airspace
@@ -1155,191 +1084,6 @@ bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) {
         ++LookFor;
     } while (--count_look);
     return true;
-}
-
-bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) {
-    if (AltitudeMode == ALLON) {
-        return true;
-    } else if (AltitudeMode == ALLOFF) {
-        return false;
-    }
-
-    double basealt;
-    double topalt;
-    bool base_is_sfc = false;
-
-    LockFlightData();
-    double alt = CALCULATED_INFO.NavAltitude;
-    double alt_agl = CALCULATED_INFO.TerrainAlt;
-    UnlockFlightData();
-
-    if (Base.Base != abAGL) {
-        basealt = Base.Altitude;
-    } else {
-        basealt = Base.AGL + alt_agl;
-        if (Base.AGL <= 0) {
-            base_is_sfc = true;
-        }
-    }
-    if (Top.Base != abAGL) {
-        topalt = Top.Altitude;
-    } else {
-        topalt = Top.AGL + alt_agl;
-    }
-
-    switch (AltitudeMode) {
-        case ALLON: return true;
-
-        case CLIP:
-            if ((basealt < (ClipAltitude / 10)) || base_is_sfc) return true;
-            else return false;
-
-        case AUTO:
-            if (((alt > (basealt - (AltWarningMargin / 10))) || base_is_sfc)
-                    && (alt < (topalt + (AltWarningMargin / 10))))
-                return true;
-            else
-                return false;
-
-        case ALLBELOW:
-            if (((basealt - (AltWarningMargin / 10)) < alt) || base_is_sfc)
-                return true;
-            else
-                return false;
-        case INSIDE:
-            if (((alt >= basealt) || base_is_sfc) && (alt < topalt))
-                return true;
-            else
-                return false;
-        case ALLOFF: return false;
-    }
-    return true;
-}
-
-void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) {
-    TCHAR sTmp[128];
-    bool fHasUnit = false;
-
-    _tcsncpy(sTmp, Text, std::size(sTmp)-1);
-
-    CharUpper(sTmp);
-
-    lk::tokenizer<TCHAR> tok(sTmp);
-    const TCHAR* pToken = tok.Next({_T(' ')}, true);
-
-    Alt->Altitude = 0;
-    Alt->FL = 0;
-    Alt->AGL = 0;
-    Alt->Base = abUndef;
-
-    while ((pToken) && (*pToken != '\0')) {
-
-        //BugFix 110922
-        //Malformed alt causes the parser to read wrong altitude, for example on line  AL FL65 (MNM ALT 5500ft)
-        //Stop parsing if we have enough info!
-        if ((Alt->Base != abUndef) && (fHasUnit) && ((Alt->Altitude != 0) || (Alt->FL != 0) || (Alt->AGL != 0))) break;
-
-        if (isdigit(*pToken)) {
-            const TCHAR *Stop = nullptr;
-            double d = StrToDouble(pToken, &Stop);
-            if (Alt->Base == abFL) {
-                Alt->FL = d;
-                Alt->Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, Alt->FL));
-            } else if (Alt->Base == abAGL) {
-                Alt->AGL = d;
-            } else {
-                Alt->Altitude = d;
-            }
-            if (Stop && *Stop != '\0') {
-                pToken = Stop;
-                continue;
-            }
-
-        }
-        else if (_tcscmp(pToken, TEXT("GND")) == 0) {
-            // JMW support XXXGND as valid, equivalent to XXXAGL
-            Alt->Base = abAGL;
-            if (Alt->Altitude > 0) {
-                Alt->AGL = Alt->Altitude;
-                Alt->Altitude = 0;
-            } else {
-                Alt->FL = 0;
-                Alt->Altitude = 0;
-                Alt->AGL = -1;
-                fHasUnit = true;
-            }
-        }
-        else if ((_tcscmp(pToken, TEXT("SFC")) == 0)
-                || (_tcscmp(pToken, TEXT("ASFC")) == 0)) {
-            Alt->Base = abAGL;
-            if (Alt->Altitude > 0) {
-                Alt->AGL = Alt->Altitude;
-                Alt->Altitude = 0;
-            } else {
-                Alt->FL = 0;
-                Alt->Altitude = 0;
-                Alt->AGL = -1;
-                fHasUnit = true;
-            }
-        }
-        else if (_tcsstr(pToken, TEXT("FL")) == pToken) {
-            // this parses "FL=150" and "FL150"
-            Alt->Base = abFL;
-            fHasUnit = true;
-            if (pToken[2] != '\0') {// no separator between FL and number
-                pToken = &pToken[2];
-                continue;
-            }
-        }
-        else if ((_tcscmp(pToken, TEXT("FT")) == 0)
-                || (_tcscmp(pToken, TEXT("F")) == 0)) {
-            Alt->Altitude = Units::From(unFeet, Alt->Altitude);
-            fHasUnit = true;
-        }
-        else if ((_tcscmp(pToken, TEXT("MSL")) == 0)
-                || (_tcscmp(pToken, TEXT("AMSL")) == 0)) {
-            Alt->Base = abMSL;
-        }
-        else if (_tcscmp(pToken, TEXT("M")) == 0) {
-            // JMW must scan for MSL before scanning for M
-            fHasUnit = true;
-        }
-        else if (_tcscmp(pToken, TEXT("AGL")) == 0) {
-            Alt->Base = abAGL;
-            Alt->AGL = Alt->Altitude;
-            Alt->Altitude = 0;
-        }
-        else if (_tcscmp(pToken, TEXT("STD")) == 0) {
-            if (Alt->Base != abUndef) {
-                // warning! multiple base tags
-            }
-            Alt->Base = abFL;
-            Alt->FL = Units::To(unFligthLevel, Alt->Altitude);
-            Alt->Altitude = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, Alt->FL));
-
-        }
-        else if ((_tcsncmp(pToken, TEXT("UNL"), 3) == 0))  {
-            // JMW added Unlimited (used by WGC2008)
-            Alt->Base = abMSL;
-            Alt->AGL = -1;
-            Alt->Altitude = 50000;
-        }
-
-        pToken = tok.Next({_T(' '), _T('\t')}, true);
-    }
-
-    if (!fHasUnit && (Alt->Base != abFL)) {
-        // ToDo warning! no unit defined use feet or user alt unit
-        // Alt->Altitude = Units::FromAltitude(Alt->Altitude);
-        Alt->Altitude = Units::From(unFeet, Alt->Altitude);
-        Alt->AGL = Units::From(unFeet, Alt->AGL);
-    }
-
-    if (Alt->Base == abUndef) {
-        // ToDo warning! no base defined use MSL
-        Alt->Base = abMSL;
-    }
-
 }
 
 bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) {
@@ -1595,15 +1339,20 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     int parsing_state = 0;
     // Variables to store airspace parameters
     tstring ASComment;
-    TCHAR Name[NAME_SIZE +1] = {0};
+    tstring Name;
     CPoint2DArray points;
     double Radius = 0;
     GeoPoint Center;
     int Type = 0;
     unsigned int skiped_cnt =0;
     unsigned int accept_cnt =0;
-    AIRSPACE_ALT Base;
-    AIRSPACE_ALT Top;
+
+    vertical_position Base;
+    std::optional<vertical_position> Base2;
+
+    vertical_position Top;
+    std::optional<vertical_position> Top2;
+
     int Rotation = 1;
     double CenterX = 0;
     double CenterY = 0;
@@ -1695,6 +1444,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                 bool b = (_tcscmp(p+_tcslen(_T("AExHOL ")), _T("Yes")) == 0);
                 // TODO : Ask to User if this day is Holiday
 #endif
+            } else if(_tcsstr(p, _T("AH2 ")) == p) {
+                // Second Airspace Ceiling
+                Top2 = vertical_position::parse_open_air(p + _tcslen(_T("AH2 ")));
+            } else if(_tcsstr(p, _T("AL2 ")) == p) {
+                // Second Airspace Floor
+                Base2 = vertical_position::parse_open_air(p + _tcslen(_T("AL2 ")));
             }
             continue;
         }
@@ -1718,18 +1473,21 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++; // skip C
                         if (parsing_state == 10) { // New airspace begin, store the old one, reset parser
                             if (InsideMap) {
-                                CreateAirspace(Name, points, Radius, Center, Type,
-                                            Base, Top, ASComment, flyzone, enabled,
-                                            except_saturday, except_sunday);
+                              CreateAirspace(Name.c_str(), points, Radius, Center, Type,
+                                            {Base, Base2}, {Top, Top2}, ASComment,
+                                            flyzone, enabled, except_saturday, except_sunday);
                             }
 
-                            Name[0] = '\0';
+                            Name.clear();
+                            ASComment.clear();
                             Radius = 0;
                             Center = {0, 0};
                             points.clear();
                             Type = OTHER;
-                            Base.Base = abUndef;
-                            Top.Base = abUndef;
+                            Base = {};
+                            Base2 = {};
+                            Top = {};
+                            Top2 = {};
                             flyzone = false;
                             enabled = true;
                             except_saturday = false;
@@ -1755,36 +1513,35 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++;
 
                         if (parsing_state == 10) {
-                        	Name[0] = {0};
-                            CopyTruncateString(Name, NAME_SIZE-1, p);
-
-                            ASComment = _T("");
-                            if( _tcslen(p) > 15) {
-                              ASComment += p;
-                            }
+                        	Name = p;
                         }
                         break;
 
                     case _T('L'): //AL - base altitude
                         p++;
                         p++;
-                        if (parsing_state == 10) ReadAltitude(p, &Base);
+                        if (parsing_state == 10) {
+                            Base = vertical_position::parse_open_air(p);
+                        }
                         break;
 
                     case _T('H'): //AH - top altitude
                         p++;
                         p++;
-                        if (parsing_state == 10) ReadAltitude(p, &Top);
+                        if (parsing_state == 10) {
+                            Top = vertical_position::parse_open_air(p);
+                        }
                         break;
 
                         //OpenAir non standard field - AF - define a fly zone
                     case _T('F'): // AF - Fly zone, no parameter
 						if (parsing_state == 10) {
                             unsigned khz = ExtractFrequency(p);
-                            unsigned name_khz = ExtractFrequency(Name);
+                            unsigned name_khz = ExtractFrequency(Name.c_str());
                             if (khz != name_khz) {
-                              lk::snprintf(sTmp, _T("%s %s"), Name, p);
-                              lk::strcpy(Name, sTmp);                                                        }
+                              lk::snprintf(sTmp, _T("%s %s"), Name.c_str(), p);
+                              Name = sTmp;
+                            }
 						}
 						else {
                           flyzone = true;
@@ -1798,8 +1555,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
                     case _T('G'): //AG - Ground station name
                         if (parsing_state == 10) {
-                            lk::snprintf(sTmp, TEXT("%s %s"),  Name, p );
-                            lk::strcpy(Name, sTmp);
+                            lk::snprintf(sTmp, TEXT("%s %s"),  Name.c_str(), p );
+                            Name = sTmp;
                         }
                         continue;
 
@@ -1815,7 +1572,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             ++p; //Skip Space ?
                         }
                         // TODO: use ID has hash replacement ?
-                        DebugLog(_T("Airpsace : ignore field AI <%s : %s>"), Name, ++p);
+                        DebugLog(_T("Airpsace : ignore field AI <%s : %s>"), Name.c_str(), ++p);
                         continue;
 
                     default:
@@ -1973,16 +1730,14 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
     // Push last one to the list
     if (parsing_state == 10 && InsideMap) {
-        CreateAirspace(Name, points, Radius, Center, Type,
-                    Base, Top, ASComment, flyzone, enabled,
-                    except_saturday, except_sunday);
+      CreateAirspace(Name.c_str(), points, Radius, Center, Type,
+                     {Base, Base2}, {Top, Top2}, ASComment,
+                     flyzone, enabled, except_saturday, except_sunday);
     }
 
-    unsigned airspaces_count = 0;
-    { // Begin Lock
-        ScopeLock guard(_csairspaces);
-        airspaces_count = _airspaces.size();
-    }  // End Lock
+    unsigned airspaces_count = WithLock(_csairspaces, [&] {
+        return _airspaces.size();
+    });
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     TCHAR msgbuf[128];
     lk::snprintf(msgbuf, _T("OpenAir: %u airspaces of %u excluded by Terrain Filter"), skiped_cnt, skiped_cnt + accept_cnt);
@@ -1993,8 +1748,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 }
 
 void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center, int Type,
-                           const AIRSPACE_ALT& Base, const AIRSPACE_ALT& Top, const tstring& Comment, bool flyzone,
-                           bool enabled, bool except_saturday, bool except_sunday) {
+                           vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment, 
+                           bool flyzone, bool enabled, bool except_saturday, bool except_sunday) {
     try {
         std::unique_ptr<CAirspace> airspace;
         if (Radius > 0) {
@@ -2009,7 +1764,20 @@ void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon,
 
         if (airspace) {
 
-            airspace->Init(Name, Type, Base, Top, flyzone , Comment.c_str());
+            const std::basic_regex<TCHAR> re(_T(R"(.*((?:Lower)|(?:Upper))\((.*?)-(.*?)\).*)"));
+            std::match_results<const TCHAR*> match;
+            if (std::regex_match(Name, match, re)) {
+                vertical_position Alt1 = vertical_position::parse_open_air(match[2].str().c_str());
+                vertical_position Alt2 = vertical_position::parse_open_air(match[3].str().c_str());
+                if (match[1].str() == _T("Lower")) {
+                    Base.update(Alt1, Alt2);
+                }
+                else if (match[1].str() == _T("Upper")) {
+                    Top.update(Alt1, Alt2);
+                }
+            }
+
+            airspace->Init(Name, Type, std::move(Base), std::move(Top), flyzone , Comment.c_str());
             airspace->Enabled(enabled);
             airspace->ExceptSaturday(except_saturday);
             airspace->ExceptSunday(except_sunday);
@@ -2024,79 +1792,6 @@ void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon,
     }
 }
 
-bool CAirspaceManager::ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *Alt) const {
-    Alt->Altitude = 0;
-    Alt->FL = 0;
-    Alt->AGL = 0;
-    Alt->Base = abUndef;
-    if(!node) {
-        return false;
-    }
-    const xml_node* alt_node = node->first_node("ALT");
-    if(!alt_node){
-        return false;
-    }
-    const xml_attribute* unit_attribute = alt_node->first_attribute("UNIT");
-    if(!unit_attribute) {
-        return false;
-    }
-    const char* dataStr=unit_attribute->value();
-    if(!dataStr) {
-        return false;
-    }
-    Units_t alt_unit = unUndef;
-    switch(strlen(dataStr)) {
-    case 1: // F
-        if(dataStr[0]=='F') alt_unit = unFeet;
-        //else if(dataStr[0]=='M') alt_unit=1; //TODO: meters not yet supported by OpenAIP
-        break;
-    case 2: //FL
-        if(dataStr[0]=='F' && dataStr[1]=='L') alt_unit = unFligthLevel;
-        break;
-    default:
-        break;
-    }
-
-    if(alt_unit==unUndef) {
-        return false;
-    }
-    dataStr = alt_node->value();
-    if(!dataStr) {
-        return false;
-    }
-    double value=strtod(dataStr,nullptr);
-    const xml_attribute* reference_attribute = node->first_attribute("REFERENCE");
-    if(!reference_attribute) {
-        return false;
-    }
-    dataStr=reference_attribute->value();
-    if(dataStr && strlen(dataStr)==3) {
-        switch(dataStr[0]) {
-        case 'M': // MSL Main sea level
-            if(dataStr[1]=='S' && dataStr[2]=='L') {
-                Alt->Base=abMSL;
-                Alt->Altitude= Units::From(alt_unit, value);
-            }
-            break;
-        case 'S': //STD Standard atmosphere
-            if(dataStr[1]=='T' && dataStr[2]=='D') {
-                Alt->Base=abFL;
-                Alt->FL = value;
-                Alt->Altitude = QNEAltitudeToQNHAltitude(Units::From(alt_unit, value));
-            }
-            break;
-        case 'G': // GND Ground
-            if(dataStr[1]=='N' && dataStr[2]=='D') {
-                Alt->Base=abAGL;
-                Alt->AGL = value > 0 ? Units::From(alt_unit, value) : -1;
-            }
-            break;
-        default:
-            break;
-        }
-    }
-    return (Alt->Base != abUndef);
-}
 
 // Reads airspaces from an OpenAIP file
 bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
@@ -2236,19 +1931,19 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
         const TCHAR* Name = szName;
 #endif
 
-        // Airspace top altitude
-        AIRSPACE_ALT Top;
-        const xml_node* top_node = asp_node->first_node("ALTLIMIT_TOP");
-        if(!ReadAltitudeOpenAIP(top_node, &Top)) {
-            StartupStore(TEXT(".. Skipping ASP with unparsable or missing ALTLIMIT_TOP.%s"), NEWLINE);
-            continue;
-        }
+        vertical_position Top;
+        vertical_position Base;
+        try {
+            // Airspace top altitude
+            const xml_node* top_node = asp_node->first_node("ALTLIMIT_TOP");
+            Top = vertical_position::parse_open_aip(top_node);
 
-        // Airspace bottom altitude
-        AIRSPACE_ALT Base;
-        const xml_node* bottom_node = asp_node->first_node("ALTLIMIT_BOTTOM");
-        if(!ReadAltitudeOpenAIP(bottom_node, &Base)) {
-            StartupStore(TEXT(".. Skipping ASP with unparsable or missing ALTLIMIT_BOTTOM.%s"), NEWLINE);
+            // Airspace bottom altitude
+            const xml_node* bottom_node = asp_node->first_node("ALTLIMIT_BOTTOM");
+            Base = vertical_position::parse_open_aip(bottom_node);
+        }
+        catch(std::exception&) {
+            StartupStore(TEXT(".. Skipping ASP with unparsable or missing Vertical limit."));
             continue;
         }
 
@@ -2319,22 +2014,19 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             return false;
         }
         bool flyzone=false; //by default all airspaces are no-fly zones!!!
-        newairspace->Init(Name, Type, Base, Top, flyzone);
+        newairspace->Init(Name, Type, {Base, {}}, {Top, {}}, flyzone);
 
         // Add the new airspace
-        { // Begin Lock
-        ScopeLock guard(_csairspaces);
-        _airspaces.push_back(std::move(newairspace));
+        WithLock(_csairspaces, [&] {
+            _airspaces.push_back(std::move(newairspace));
+        });
         accept_cnt++;
-        } // End Lock
     } // for each ASP
 
-    unsigned airspaces_count = 0;
-    { // Begin Lock
-        ScopeLock guard(_csairspaces);
-        airspaces_count = _airspaces.size();
-    } // End Lock
-        
+    unsigned airspaces_count = WithLock(_csairspaces, [&] {
+        return _airspaces.size();
+    });
+
     StartupStore(TEXT(". Now we have %u airspaces"), airspaces_count);
     TCHAR msgbuf[128];
     lk::snprintf(msgbuf, _T("OpenAIP: %u of %u airspaces excluded by Terrain Filer"), skiped_cnt, skiped_cnt + accept_cnt);
@@ -2381,12 +2073,10 @@ void CAirspaceManager::ReadAirspaces() {
         }
     }
 
-    unsigned airspaces_count = 0;
-    { // Begin Lock
-        ScopeLock guard(_csairspaces);
+    unsigned airspaces_count = WithLock(_csairspaces, [&] {
         last_day_of_week = ~0;
-        airspaces_count = _airspaces.size();
-    } //
+        return _airspaces.size();
+    });
 
     if((OutsideAirspaceCnt > 0) && ( WaypointsOutOfRange > 1) )
     {
@@ -2440,143 +2130,86 @@ void CAirspaceManager::QnhChangeNotify() {
     }
 }
 
-int CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X], const double (&lons)[AIRSPACE_SCANSIZE_X],
-        const double (&terrain_heights)[AIRSPACE_SCANSIZE_X],
-        AirSpaceSideViewSTRUCT (&airspacetype)[MAX_NO_SIDE_AS]) const {
+AspSideViewList_t CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AIRSPACE_SCANSIZE_X],
+                                                         const double (&lons)[AIRSPACE_SCANSIZE_X],
+                                                         const double (&terrain_heights)[AIRSPACE_SCANSIZE_X]) const {
+  AspSideViewList_t list;
 
-    const int iMaxNoAs = std::size(airspacetype);
+  ScopeLock guard(_csairspaces);
 
-    int iNoFoundAS = 0; // number of found airspaces in scan line
-    unsigned int iSelAS = 0; // current selected airspace for processing
-    ScopeLock guard(_csairspaces);
+  for (const auto& pAsp : _airspaces_near) {
+    LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
+    LKASSERT(pAsp->Type() >= 0);
 
-    airspacetype[0].psAS = NULL;
-    for (const auto& pAsp : _airspaces_near) {
-        LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
-        LKASSERT(pAsp->Type() >= 0);
+    if (!MapWindow::aAirspaceMode[pAsp->Type()].display()) {
+      continue;
+    }
+    if (!pAsp->CheckVisible()) {
+      continue;
+    }
 
-        if ((CheckAirspaceAltitude(pAsp->Base(), pAsp->Top()) == TRUE)&& (iNoFoundAS < iMaxNoAs - 1) &&
-                ((MapWindow::iAirspaceMode[pAsp->Type()] % 2) > 0)) {
-            for (unsigned i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
-                if (pAsp->IsHorizontalInside(lons[i], lats[i])) {
-                    BOOL bPrevIn = false;
-                    if (i > 0)
-                        if (pAsp->IsHorizontalInside(lons[i - 1], lats[i - 1]))
-                            bPrevIn = true;
+    bool bPrevIn = false;
+    bool bCurrIn = pAsp->IsHorizontalInside(lons[0], lats[0]);
 
-                    if (!bPrevIn)/* new AS section in this view*/ {
-                        /*********************************************************************
-                         * switch to next airspace section
-                         *********************************************************************/
-                        iSelAS = iNoFoundAS;
-                        BUGSTOP_LKASSERT(iNoFoundAS < MAX_NO_SIDE_AS);
-                        if (iNoFoundAS < MAX_NO_SIDE_AS - 1) iNoFoundAS++;
-                        airspacetype[iNoFoundAS].psAS = NULL; // increment and reset head
-                        /*********************************************************************/
-                        airspacetype[iSelAS].psAS = pAsp;
-                        airspacetype[iSelAS].iType = pAsp->Type();
+    for (unsigned i = 0; i < AIRSPACE_SCANSIZE_X; i++) {
+      bool bNextIn = (i < AIRSPACE_SCANSIZE_X - 1) ? pAsp->IsHorizontalInside(lons[i + 1], lats[i + 1]) : false;
+      bool bLast = (i == AIRSPACE_SCANSIZE_X - 1) || !bNextIn;
 
-                        LK_tcsncpy(airspacetype[iSelAS].szAS_Name, pAsp->Name(), NAME_SIZE - 1);
+      if (bCurrIn) {
+        if (!bPrevIn) {
+          auto& SelAS = list.emplace_back();
+          SelAS.psAS = pAsp;
+          SelAS.iType = pAsp->Type();
 
-                        airspacetype[iSelAS].iIdx = iSelAS;
-                        airspacetype[iSelAS].bRectAllowed = true;
-                        airspacetype[iSelAS].bEnabled = pAsp->Enabled();
-                        /**********************************************************************
-                         * allow rectangular shape if no AGL reference
-                         **********************************************************************/
-                        if ((pAsp->Top().Base == abAGL) || ((pAsp->Base().Base == abAGL)))
-                            airspacetype[iSelAS].bRectAllowed = false;
-                        /**********************************************************************
-                         * init with minium rectangle right side may be extended
-                         **********************************************************************/
-                        airspacetype[iSelAS].rc.left = i;
-                        airspacetype[iSelAS].rc.right = i + 1;
-                        airspacetype[iSelAS].rc.bottom = (unsigned int) pAsp->Base().Altitude;
-                        airspacetype[iSelAS].rc.top = (unsigned int) pAsp->Top().Altitude;
-                        airspacetype[iSelAS].iNoPolyPts = 0;
+          lk::strcpy(SelAS.szAS_Name, pAsp->Name());
 
-                    }
-                    int iHeight;
-                    airspacetype[iSelAS].rc.right = i + 1;
-                    if (i == AIRSPACE_SCANSIZE_X - 1)
-                        airspacetype[iSelAS].rc.right = i + 3;
+          SelAS.bEnabled = pAsp->Enabled();
 
-                    if ((airspacetype[iSelAS].psAS) && (!airspacetype[iSelAS].bRectAllowed)) {
+          // allow rectangular shape if no AGL reference
+          SelAS.bRectAllowed = !(pAsp->Top().agl() || pAsp->Base().agl());
+          SelAS.rc = {static_cast<PixelScalar>(i), static_cast<PixelScalar>(pAsp->Top().altitude(0)),
+                      static_cast<PixelScalar>(i + 1), static_cast<PixelScalar>(pAsp->Base().altitude(0))};
+          SelAS.apPolygon.clear();
+        }
 
-                        if (airspacetype[iSelAS].psAS->Base().Base == abAGL)
-                            iHeight = (unsigned int) (airspacetype[iSelAS].psAS->Base().AGL + terrain_heights[i]);
-                        else
-                            iHeight = (unsigned int) airspacetype[iSelAS].psAS->Base().Altitude;
-                        LKASSERT((airspacetype[iSelAS].iNoPolyPts) < GC_MAX_POLYGON_PTS);
-                        airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts++] = (POINT){(LONG) i, (LONG) iHeight};
+        auto& SelAS = list.back();
+        assert(pAsp == SelAS.psAS);
 
-                        /************************************************************
-                         *  resort and copy polygon array
-                         **************************************************************/
-                        bool bLast = false;
-                        if (i == AIRSPACE_SCANSIZE_X - 1)
-                            bLast = true;
-                        else {
-                            if (airspacetype[iSelAS].psAS->IsHorizontalInside(lons[i + 1], lats[i + 1]))
-                                bLast = false;
-                            else
-                                bLast = true;
-                        }
+        SelAS.rc.right = (i == AIRSPACE_SCANSIZE_X - 1) ? i + 3 : i + 1;
 
-                        if (bLast) {
-                            airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].x = i + 1;
-                            if (i == AIRSPACE_SCANSIZE_X - 1)
-                                airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].x = i + 3;
+        if (!SelAS.bRectAllowed) {
+          auto& polygon = SelAS.apPolygon;
 
-                            LKASSERT((airspacetype[iSelAS].iNoPolyPts) < GC_MAX_POLYGON_PTS);
-                            airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts].y = airspacetype[iSelAS].apPolygon[airspacetype[iSelAS].iNoPolyPts - 1].y;
-                            airspacetype[iSelAS].iNoPolyPts++;
-                            LKASSERT((airspacetype[iSelAS].iNoPolyPts) < GC_MAX_POLYGON_PTS);
-                            int iN = airspacetype[iSelAS].iNoPolyPts;
-                            int iCnt = airspacetype[iSelAS].iNoPolyPts;
+          polygon.emplace_back(i, pAsp->Base().altitude(terrain_heights[i]));
 
+          if (bLast) {
+            // Add top points in reverse order
+            polygon.reserve(polygon.size() * 2);  // mandatory to avoid iterator invalidation and undefined behavior
+                                                  // when modifying the vector during iteration.
+            for (auto it = polygon.rbegin(); it != polygon.rend(); ++it) {
+              auto& back = polygon.emplace_back(it->x, pAsp->Top().altitude(terrain_heights[it->x]));
+              SelAS.rc.bottom = min(SelAS.rc.bottom, back.y);
+              SelAS.rc.top = max(SelAS.rc.top, back.y);
+            }
+            // Close polygon
+            polygon.push_back(polygon.front());
+          }
+        }
 
-                            for (int iPt = 0; iPt < iN; iPt++) {
-                                LKASSERT(iCnt >= 0);
-                                LKASSERT(iCnt < GC_MAX_POLYGON_PTS);
-
-                                airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN - iPt - 1];
-                                if (airspacetype[iSelAS].psAS->Top().Base == abAGL)
-                                    airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) (airspacetype[iSelAS].psAS->Top().AGL + terrain_heights[airspacetype[iSelAS].apPolygon[iCnt].x]);
-                                else
-                                    airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) airspacetype[iSelAS].psAS->Top().Altitude;
-                                LKASSERT(iCnt >= iPt);
-
-                                LKASSERT(iPt >= 0);
-                                LKASSERT(iPt < GC_MAX_POLYGON_PTS);
-                                if (iCnt == 0) {
-                                    airspacetype[iSelAS].rc.bottom = airspacetype[iSelAS].apPolygon[0].y;
-                                    airspacetype[iSelAS].rc.top = airspacetype[iSelAS].apPolygon[0].y;
-                                } else {
-                                    airspacetype[iSelAS].rc.bottom = min(airspacetype[iSelAS].rc.bottom, airspacetype[iSelAS].apPolygon[iCnt].y);
-                                    airspacetype[iSelAS].rc.top = max(airspacetype[iSelAS].rc.top, airspacetype[iSelAS].apPolygon[iCnt].y);
-                                }
-                                if (iCnt < GC_MAX_POLYGON_PTS - 1)
-                                    iCnt++;
-                            }
-                            LKASSERT(iCnt < GC_MAX_POLYGON_PTS);
-                            airspacetype[iSelAS].apPolygon[iCnt++] = airspacetype[iSelAS].apPolygon[0];
-                            airspacetype[iSelAS].iNoPolyPts = iCnt;
-                        }
-                    }
-                    RECT rcs = airspacetype[iSelAS].rc;
-                    airspacetype[iSelAS].iAreaSize = abs(rcs.right - rcs.left) * abs(rcs.top - rcs.bottom);
-                } // inside
-            } // finished scanning range
-        } // if overlaps bounds
-    } // for iterator
-
-    return iNoFoundAS;
+        const PixelRect& rcs = SelAS.rc;
+        SelAS.iAreaSize = abs(rcs.right - rcs.left) * abs(rcs.top - rcs.bottom);
+      }
+      bPrevIn = bCurrIn;
+      bCurrIn = bNextIn;
+    }
+  }
+  return list;
 }
 
 struct airspace_sorter {
   bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) {
-    return (a->Top().Altitude < b->Top().Altitude);
+    // TODO : Check for ordering
+    return (a->Top().altitude(0) < b->Top().altitude(0));
   }
 };
 
@@ -2691,7 +2324,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _airspaces_of_interest.clear();
             for (const auto& pAsp : _airspaces_near) {
                 // Check for warnings enabled for this class
-                if (MapWindow::iAirspaceMode[pAsp->Type()] < 2) {
+                if (MapWindow::aAirspaceMode[pAsp->Type()].warning()) {
                     pAsp->ResetWarnings();
                     continue;
                 }
@@ -2727,25 +2360,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _sideview_nearest = CAirspace::GetSideviewNearestInstance();
 
             // Fill infoboxes - Nearest horizontal
-#ifndef LKAIRSP_INFOBOX_USE_SELECTED
-            if (CAirspace::GetNearestHName() != NULL) {
-                LK_tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
-                NearestAirspaceHDist = CAirspace::GetNearestHDistance();
-            } else {
-                NearestAirspaceName[0] = 0;
-                NearestAirspaceHDist = 0;
-            }
-            // Fill infoboxes - Nearest vertical
-            if (CAirspace::GetNearestVName() != NULL) {
-                LK_tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
-                NearestAirspaceVDist = CAirspace::GetNearestVDistance();
-            } else {
-                NearestAirspaceVName[0] = 0;
-                NearestAirspaceVDist = 0;
-            }
-#endif
-
-#ifdef LKAIRSP_INFOBOX_USE_SELECTED
             auto pAsp = _selected_airspace.lock();
             if (!pAsp) {
                 pAsp = _sideview_nearest.lock();
@@ -2763,7 +2377,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
                 NearestAirspaceVName[0] = 0;
                 NearestAirspaceVDist = 0;
             }
-#endif
             step = 0;
             break;
 
@@ -2787,7 +2400,7 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
     CAirspaceList res;
     ScopeLock guard(_csairspaces);
     for (const auto& pAsp : _airspaces) {
-        if (pAsp->DrawStyle() || ((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) {
+        if (pAsp->DrawStyle() || !pAsp->Top().below_msl()) {
             int HorDist;
             pAsp->CalculateDistance(&HorDist, nullptr, nullptr, lon, lat);
             if (HorDist < searchrange) {
@@ -2809,10 +2422,10 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
     }
 }
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
     ScopeLock guard(_csairspaces);
     for (auto asp : _airspaces_near) {
-        asp->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
+        asp->CalculateScreenPosition(screenbounds_latlon, aAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
     }
 }
 
@@ -3045,87 +2658,6 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
             return TEXT("?");
     }
 }
-
-void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt) {
-#define	BUF_LEN 128
-    TCHAR sUnitBuffer[24];
-    TCHAR sAltUnitBuffer[24];
-    TCHAR intbuf[BUF_LEN];
-    BUGSTOP_LKASSERT(buffer!=NULL);
-    if (buffer==NULL) return;
-
-    Units::FormatAltitude(alt.Altitude, sUnitBuffer, std::size(sUnitBuffer));
-    Units::FormatAlternateAltitude(alt.Altitude, sAltUnitBuffer, std::size(sAltUnitBuffer));
-
-    switch (alt.Base) {
-        case abUndef:
-            if (Units::GetAltitudeUnit() == unMeter) {
-                lk::snprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
-            } else {
-                lk::snprintf(intbuf, TEXT("%s"), sUnitBuffer);
-            }
-            break;
-        case abMSL:
-            if (Units::GetAltitudeUnit() == unMeter) {
-                lk::snprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
-            } else {
-                lk::snprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
-            }
-            break;
-        case abAGL:
-            if (alt.AGL <= 0)
-            	lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
-            else {
-                Units::FormatAltitude(alt.AGL, sUnitBuffer, std::size(sUnitBuffer));
-                Units::FormatAlternateAltitude(alt.AGL, sAltUnitBuffer, std::size(sAltUnitBuffer));
-                if (Units::GetAltitudeUnit() == unMeter) {
-                    lk::snprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
-                } else {
-                    lk::snprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
-                }
-            }
-            break;
-        case abFL:
-            if (Units::GetAltitudeUnit() == unMeter) {
-                lk::snprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt.FL, Units::To(unMeter, alt.Altitude), Units::To(unFeet, alt.Altitude));
-            } else {
-                lk::snprintf(intbuf, TEXT("FL%.0f %.0fft"), alt.FL, Units::To(unFeet, alt.Altitude));
-            }
-            break;
-    }
-    lk::strcpy(buffer, intbuf, bufferlen);
-}
-
-void CAirspaceManager::GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt) {
-    TCHAR sUnitBuffer[24];
-    TCHAR intbuf[128];
-
-    Units::FormatAltitude(alt.Altitude, sUnitBuffer, std::size(sUnitBuffer));
-
-    switch (alt.Base) {
-        case abUndef:
-        case abMSL:
-            lk::strcpy(intbuf, sUnitBuffer);
-            break;
-        case abAGL:
-            if (alt.AGL <= 0) {
-                lk::strcpy(intbuf, MsgToken<2387>()); // _@M2387_ "GND"
-            } else {
-                Units::FormatAltitude(alt.AGL, sUnitBuffer, std::size(sUnitBuffer));
-                lk::snprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
-            }
-            break;
-        case abFL:
-            if (Units::GetAltitudeUnit() == unMeter) {
-                lk::snprintf(intbuf, TEXT("%.0fm"), Units::To(unMeter, alt.Altitude));
-            } else {
-                lk::snprintf(intbuf, TEXT("%.0fft"), Units::To(unFeet, alt.Altitude));
-            }
-            break;
-    }
-    lk::strcpy(buffer, intbuf, bufferlen);
-}
-
 
 // Operations for nearest page 2.4
 // Because of the multicalc approach, we need to store multicalc state inside airspacemanager

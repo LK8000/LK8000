@@ -61,17 +61,11 @@ static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surfa
       Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
 
     } else {
-
-      bool iswarn;
-      bool isdisplay;
-
-      iswarn = (MapWindow::iAirspaceMode[i]>=2);
-      isdisplay = ((MapWindow::iAirspaceMode[i]%2)>0);
-      if (iswarn) {
+      if (MapWindow::aAirspaceMode[i].warning()) {
         // LKTOKEN  _@M789_ = "Warn"
         Surface.DrawText(x0, DLGSCALE(2), MsgToken<789>());
       }
-      if (isdisplay) {
+      if (MapWindow::aAirspaceMode[i].display()) {
         // LKTOKEN  _@M241_ = "Display"
         Surface.DrawText(w0-w2, DLGSCALE(2), MsgToken<241>());
       }
@@ -107,9 +101,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
       }
 #endif
     } else {
-      int v = (MapWindow::iAirspaceMode[ItemIndex]+1)%4;
-      MapWindow::iAirspaceMode[ItemIndex] = v;
-      //  wAirspaceList->Redraw();
+      MapWindow::aAirspaceMode[ItemIndex].rotate_set();
       changed = true;
     }
   }

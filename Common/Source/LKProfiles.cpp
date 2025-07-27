@@ -102,7 +102,7 @@ const char *const szRegistryAirspaceMode[] = {
         "AirspaceMode17",
         "AirspaceMode18"
 };
-static_assert(std::size(MapWindow::iAirspaceMode) == std::size(szRegistryAirspaceMode),
+static_assert(std::size(MapWindow::aAirspaceMode) == std::size(szRegistryAirspaceMode),
               "invalid array size");
 
 const char szRegistryAcknowledgementTime[] = "AcknowledgementTime1";

@@ -39,8 +39,8 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc) {
    ***********************************************************************/
 
   for (const auto& pAsp : airspaces_to_draw) {
-    if (!((pAsp->Top().Base == abMSL) &&
-          (pAsp->Top().Altitude <= 0))) {  // don't draw on map if upper limit is on sea level or below
+    if (!pAsp->Top().below_msl()) {
+      // don't draw on map if upper limit is on sea level or below
       if (pAsp->DrawStyle() && pAsp->DrawStyle() != adsDisabled) {
         if (asp_selected_flash && pAsp->Selected()) {
           pAsp->DrawOutline(Surface, LK_BLACK_PEN);

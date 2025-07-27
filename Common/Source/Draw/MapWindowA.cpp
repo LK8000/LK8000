@@ -104,52 +104,52 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   int nDC2 = hdcMask.SaveState();
   int nDC3 = TempSurface.SaveState();
 #ifdef AIRSPACE_BORDER
-DrawAirSpaceBorders(Surface, rc);
+  DrawAirSpaceBorders(Surface, rc);
 #endif
   // Draw airspace area
-    if (1) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+  WithLock(CAirspaceManager::Instance().MutexRef(), [&] {
     if (borders_only) {
-       // Draw in reverse order!
-       // The idea behind this, is lower top level airspaces are smaller. (statistically)
-       // They have to be draw later, because inside border area have to be in correct color,
-       // not the color of the bigger airspace above this small one.
-      for (auto itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
-            if ((*itr)->DrawStyle() == adsFilled) {
-              airspace_type = (*itr)->Type();
-              if (!found) {
-                found = true;
-                ClearTptAirSpace(Surface, rc);
-              }
-              // set filling brush
-              (*itr)->FillPolygon(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
-              (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
-            }
-      }//for
-    } else {
-       // Draw in direct order!
-      for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-            if ((*it)->DrawStyle() == adsFilled) {
-              airspace_type = (*it)->Type();
-              if (!found) {
-                found = true;
-                ClearTptAirSpace(Surface, rc);
-              }
-              // set filling brush
-              (*it)->FillPolygon(TempSurface, GetAirSpaceSldBrushByClass(airspace_type));
-            }
-      }//for
-    }//else borders_only
-    }//mutex release
+      // Draw in reverse order!
+      // The idea behind this, is lower top level airspaces are smaller. (statistically)
+      // They have to be draw later, because inside border area have to be in correct color,
+      // not the color of the bigger airspace above this small one.
+      for (auto itr = airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
+        if ((*itr)->DrawStyle() == adsFilled) {
+          airspace_type = (*itr)->Type();
+          if (!found) {
+            found = true;
+            ClearTptAirSpace(Surface, rc);
+          }
+          // set filling brush
+          (*itr)->FillPolygon(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
+          (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
+        }
+      }  // for
+    }
+    else {
+      // Draw in direct order!
+      for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->DrawStyle() == adsFilled) {
+          airspace_type = (*it)->Type();
+          if (!found) {
+            found = true;
+            ClearTptAirSpace(Surface, rc);
+          }
+          // set filling brush
+          (*it)->FillPolygon(TempSurface, GetAirSpaceSldBrushByClass(airspace_type));
+        }
+      }  // for
+    }  // else borders_only
+  });  // mutex release
 
   // alpha blending
   if (found) {
     if (borders_only) {
-        TempSurface.CopyWithMask(
-                rc.left,rc.top,
-                rc.right-rc.left,rc.bottom-rc.top,
-                hdcbuffer,rc.left,rc.top,
-                hdcMask,rc.left,rc.top);
+      TempSurface.CopyWithMask(rc.left, rc.top,
+                               rc.right - rc.left,
+                               rc.bottom - rc.top,
+                               hdcbuffer, rc.left, rc.top,
+                               hdcMask, rc.left, rc.top);
     }
 #ifdef USE_MEMORY_CANVAS
     Surface.AlphaBlendNotWhite(rc, TempSurface, rc, (255 * GetAirSpaceOpacity()) / 100);
@@ -163,31 +163,31 @@ DrawAirSpaceBorders(Surface, rc);
   // we will be drawing directly into given hdc, so store original PEN object
   const auto hOrigPen = Surface.SelectObject(LK_WHITE_PEN);
 #ifdef AIRSPACE_BORDER
-  if(0)
+  if (0)
 #endif
-    if (1) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
-	for (auto it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+    WithLock(CAirspaceManager::Instance().MutexRef(), [&] {
+      for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
-		  airspace_type = (*it)->Type();
+          airspace_type = (*it)->Type();
 #if ASPOUTLINE
-if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
+          if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected())) {
 #else
-if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
+          if ( (((*it)->DrawStyle()==adsFilled)&&!outlined_only&&!borders_only) ^ (asp_selected_flash && (*it)->Selected()) ) {
 #endif
-			Surface.SelectObject(LK_BLACK_PEN);
-		  } else
-		   if(  (*it)->DrawStyle()==adsDisabled)   {
-			Surface.SelectObject(LKPen_Grey_N2);
-		   } else {
-			Surface.SelectObject(hAirspacePens[airspace_type]);
-		  }
+            Surface.SelectObject(LK_BLACK_PEN);
+          }
+          else if ((*it)->DrawStyle() == adsDisabled) {
+            Surface.SelectObject(LKPen_Grey_N2);
+          }
+          else {
+            Surface.SelectObject(hAirspacePens[airspace_type]);
+          }
 #ifndef AIRSPACE_BORDER
-   (*it)->Draw(hdc, rc, false);
+          (*it)->Draw(hdc, rc, false);
 #endif
         }
-	}//for
-    }
+      }  // for
+    });
 
   // restore original PEN
   Surface.SelectObject(hOrigPen);
@@ -208,7 +208,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   asp_selected_flash = !asp_selected_flash;
 
   for (auto& pAsp : airspaces_to_draw) {
-    if ((pAsp->DrawStyle() == adsHidden) || ((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) {
+    if ((pAsp->DrawStyle() == adsHidden) || pAsp->Top().below_msl()) {
       continue;  // don't draw on map if hidden or upper limit is on sea level or below
     }
 

@@ -126,7 +126,7 @@ void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw, const Scree
   // this is workarround for compatibility with #CalculateScreenPositionsAirspace
   constexpr int iAirspaceBrush[AIRSPACECLASSCOUNT] = {}; 
 #endif
-  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, aAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
 }
 
 

@@ -21,8 +21,7 @@
 extern double fSplitFact;
 extern double fOffset;
 extern LKColor Sideview_TextColor;
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-extern int Sideview_iNoHandeldSpaces;
+extern AspSideViewList_t Sideview_pHandeled;
 extern POINT startScreen;
 
 
@@ -111,12 +110,12 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
             break;
 
         case LKEVENT_LONGCLICK:
-            if (Sideview_iNoHandeldSpaces) {
+            if (!Sideview_pHandeled.empty()) {
                 bool bShow = false;
-                for (int k = 0; k <= Sideview_iNoHandeldSpaces; k++) {
-                    if (Sideview_pHandeled[k].psAS) {
-                        if (PtInRect(&(Sideview_pHandeled[k].rc), startScreen)) {
-                            DlgMultiSelect::AddItem(im_airspace{Sideview_pHandeled[k].psAS}, 0);
+                for (const auto& item : Sideview_pHandeled) {
+                    if (item.psAS) {
+                        if (PtInRect(&(item.rc), startScreen)) {
+                            DlgMultiSelect::AddItem(im_airspace{item.psAS}, 0);
                             bShow = true;
                         }
                     }
@@ -298,7 +297,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     sDia.fYMax = max(MAXALTTODAY, GPSalt + 1000);
 
     if (bValid) {
-        double fBottom = near_airspace.Base().Altitude;
+        double fBottom = near_airspace.Base().altitude(0);
         sDia.fYMin = min(fBottom * 0.8, sDia.fYMin);
         sDia.fYMin = max(0.0, sDia.fYMin);
         if (sDia.fYMin < 300) sDia.fYMin = 0;

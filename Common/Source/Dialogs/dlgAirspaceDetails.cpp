@@ -181,15 +181,13 @@ void dlgAirspaceDetails::SetValues() {
 
   wp = _pForm->FindByName<WndProperty>(TEXT("prpTop"));
   if (wp) {
-    CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), _AirspaceCopy.Top());
-    wp->SetText(buffer);
+    wp->SetText(_AirspaceCopy.Top().text_alternate());
     wp->RefreshDisplay();
   }
 
   wp = _pForm->FindByName<WndProperty>(TEXT("prpBase"));
   if (wp) {
-    CAirspaceManager::Instance().GetAirspaceAltText(buffer, std::size(buffer), _AirspaceCopy.Base());
-    wp->SetText(buffer);
+    wp->SetText(_AirspaceCopy.Base().text_alternate());
     wp->RefreshDisplay();
   }
 
