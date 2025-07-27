@@ -208,7 +208,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   asp_selected_flash = !asp_selected_flash;
 
   for (auto& pAsp : airspaces_to_draw) {
-    if ((pAsp->DrawStyle() == adsHidden) || ((pAsp->Top().Base == abMSL) && (pAsp->Top().Altitude <= 0))) {
+    if ((pAsp->DrawStyle() == adsHidden) || pAsp->Top().below_msl()) {
       continue;  // don't draw on map if hidden or upper limit is on sea level or below
     }
 

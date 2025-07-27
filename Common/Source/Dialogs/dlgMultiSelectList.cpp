@@ -381,8 +381,6 @@ struct PaintListItemVisitor {
 
       TCHAR text1[MAX_LEN] = {TEXT("empty")};
       TCHAR text2[MAX_LEN] = {TEXT("empty")};
-      TCHAR Comment[MAX_COMMENT] = {TEXT("")};
-      TCHAR Comment1[MAX_COMMENT] = {TEXT("")};
 
       /***********************************************************************
        * here we use a local copy of the airspace, only common property exists
@@ -397,16 +395,14 @@ struct PaintListItemVisitor {
         lk::snprintf(text1, _T("%s %s"), pAS->TypeName(), pAS->Name());
       }
 
-      pAspMgr.GetSimpleAirspaceAltText(Comment, std::size(Comment), pAS->Top());
-      pAspMgr.GetSimpleAirspaceAltText(Comment1, std::size(Comment1), pAS->Base());
-
       int HorDist, Bearing, VertDist;
       pAspMgr.AirspaceCalculateDistance(pAS, &HorDist, &Bearing, &VertDist);
 
       lk::snprintf(text2, _T("%3.1f%s (%s - %s)"),
                   Units::ToDistance(HorDist),
                   Units::GetDistanceName(),
-                  Comment1, Comment);  // 8 + 8+3   21
+                  pAS->Base().text().c_str(), 
+                  pAS->Top().text().c_str());  // 8 + 8+3   21
 
       /****************************************************************
        * for drawing the airspace pictorial, we need the original data.

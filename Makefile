@@ -1392,6 +1392,8 @@ SRC_FILES :=\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/InputEvents_Default.cpp \
 	$(SRC)/lk8000.cpp\
+	$(SRC)/Airspace/vertical_position.cpp	\
+	$(SRC)/Airspace/vertical_bound.cpp	\
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/Airspace/Renderer/AirspaceRenderer.cpp \

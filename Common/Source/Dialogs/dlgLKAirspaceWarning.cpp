@@ -326,17 +326,13 @@ class dlgAirspaceWarning final {
 
     wp = _pForm->FindByName<WndProperty>(TEXT("prpTopAlt"));
     if (wp) {
-      TCHAR stmp2[40];
-      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, std::size(stmp2), _AirspaceCopy.Top());
-      wp->SetText(stmp2);
+      wp->SetText(_AirspaceCopy.Top().text_alternate());
       wp->RefreshDisplay();
     }
 
     wp = _pForm->FindByName<WndProperty>(TEXT("prpBaseAlt"));
     if (wp) {
-      TCHAR stmp2[40];
-      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, std::size(stmp2), _AirspaceCopy.Base());
-      wp->SetText(stmp2);
+      wp->SetText(_AirspaceCopy.Base().text_alternate());
       wp->RefreshDisplay();
     }
 

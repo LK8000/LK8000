@@ -224,6 +224,8 @@ add_library( LK8000 SHARED
     Common/Source/Screen/LKIcon.cpp
     Common/Source/Screen/PolygonRenderer.cpp
 
+    Common/Source/Airspace/vertical_position.cpp
+    Common/Source/Airspace/vertical_bound.cpp
     Common/Source/Airspace/LKAirspace.cpp
     Common/Source/Airspace/Sonar.cpp
     Common/Source/Airspace/Renderer/AirspaceRenderer.cpp

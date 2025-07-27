@@ -298,7 +298,7 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
     sDia.fYMax = max(MAXALTTODAY, GPSalt + 1000);
 
     if (bValid) {
-        double fBottom = near_airspace.Base().Altitude;
+        double fBottom = near_airspace.Base().altitude(0);
         sDia.fYMin = min(fBottom * 0.8, sDia.fYMin);
         sDia.fYMin = max(0.0, sDia.fYMin);
         if (sDia.fYMin < 300) sDia.fYMin = 0;

@@ -15,6 +15,7 @@
 #include "Screen/LKSurface.h"
 #include "Geographic/GeoPoint.h"
 #include "Airspace.h"
+#include "vertical_bound.h"
 #include "Sizes.h"
 #include "../Topology/shapelib/mapprimitive.h"
 
@@ -44,20 +45,6 @@ struct DERIVED_INFO;
 // selected airspace for infoboxes. - Kalman
 // Will be permanent in the future.
 #define LKAIRSP_INFOBOX_USE_SELECTED
-
-enum AirspaceAltBase_t {
-  abUndef = 0,
-  abMSL,
-  abAGL,
-  abFL
-};
-
-struct AIRSPACE_ALT {
-  double Altitude = 0.;
-  double FL = 0.;
-  double AGL = 0.;
-  AirspaceAltBase_t Base = abUndef;
-};
 
 using RasterPointList = std::vector<RasterPoint>;
 
@@ -132,7 +119,7 @@ class CAirspaceBase {
 
   // Attributes interface
   // Initialize instance attributes
-  void Init(const TCHAR *name, int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone, const TCHAR *comment = NULL);
+  void Init(const TCHAR *name, int type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment = NULL);
 
   const TCHAR* TypeName() const;
   const TCHAR* TypeNameShort() const;
@@ -144,8 +131,9 @@ class CAirspaceBase {
     return _comment.c_str();
   }
 
-  const AIRSPACE_ALT& Top() const { return _top; }
-  const AIRSPACE_ALT& Base() const { return _base; }
+  const vertical_bound& Top() const { return _ceiling; }
+  const vertical_bound& Base() const { return _floor; }
+
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
@@ -211,8 +199,10 @@ protected:
   tstring _comment;       // extended airspace informations e.g. for Notams
 
   int _type = OTHER;                                    // type (class) of airspace
-  AIRSPACE_ALT _base = {};                            // base altitude
-  AIRSPACE_ALT _top = {};                            // top altitude
+
+  vertical_bound _ceiling = {};                            // top altitude
+  vertical_bound _floor = {};                            // base altitude
+
   rectObj _bounds = {};                                // airspace bounds
   bool _flyzone = false;                                // true if this is a normally fly zone (leaving generates warning)
   AirspaceDrawStyle_t _drawstyle = adsHidden;                // draw mode
@@ -286,8 +276,6 @@ public:
 
     // Check if a point horizontally inside in this airspace
     virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
-    // Dump this airspace to runtime.log
-    virtual void Dump() const = 0;
     // Calculate drawing coordinates on screen
     virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
     // Draw airspace on map
@@ -316,6 +304,8 @@ public:
     bool FinishWarning();
     // Calculate airspace distance from last known position (used by warning system and dialog boxes)
     bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance, double Longitude = _lastknownpos.Longitude(), double Latitude  = _lastknownpos.Latitude(), int Altitude = _lastknownalt );
+
+    bool CheckVisible() const;
 
     static void ResetSideviewNearestInstance() { _sideview_nearest_instance.reset(); }
     static CAirspacePtr GetSideviewNearestInstance() { return _sideview_nearest_instance.lock(); }
@@ -379,8 +369,6 @@ public:
 
   // Check if a point horizontally inside in this airspace
   bool IsHorizontalInside(const double &longitude, const double &latitude) const override ;
-  // Dump this airspace to runtime.log
-  void Dump() const override;
 
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   double Range(const double &longitude, const double &latitude, double &bearing) const override;
@@ -414,9 +402,6 @@ public:
 
   // Check if a point horizontally inside in this airspace
   bool IsHorizontalInside(const double &longitude, const double &latitude) const override;
-  // Dump this airspace to runtime.log
-  void Dump() const override;
-
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   double Range(const double &longitude, const double &latitude, double &bearing) const override;
   // Calculate unique hash code for this airspace
@@ -474,11 +459,8 @@ public:
   }
 
   //HELPER FUNCTIONS
-  static bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top);
   static const TCHAR* GetAirspaceTypeText(int type);
   static const TCHAR* GetAirspaceTypeShortText(int type);
-  static void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt);
-  static void GetSimpleAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT& alt);
 
 
   // Upper level interfaces
@@ -565,11 +547,11 @@ private:
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
   void CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center,
-                      int Type, const AIRSPACE_ALT& Base, const AIRSPACE_ALT& Top, const tstring& Comment,
+                      int Type, vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment,
                       bool flyzone, bool enabled, bool except_saturday, bool except_sunday);
 
   static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
-  static void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt);
+
   static bool ReadCoords(TCHAR *Text, double *X, double *Y);
   static bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
   static bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double Center_lon, double Center_lat, int Rotation);
@@ -582,7 +564,6 @@ private:
 #endif
 
   bool FillAirspacesFromOpenAIP(const TCHAR* szFile);
-  bool ReadAltitudeOpenAIP(const xml_node* node, AIRSPACE_ALT *Alt) const;
 
   //Airspace setting save/restore functions
   void SaveSettings() const;
