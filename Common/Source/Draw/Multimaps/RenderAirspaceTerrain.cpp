@@ -14,6 +14,7 @@
 #include "Multimap.h"
 #include "LKObjects.h"
 #include "Asset.hpp"
+#include "utils/array_adaptor.h"
 
 using std::min;
 using std::max;
@@ -96,29 +97,29 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     double dx1 = (double) (rc.right) / (double) (AIRSPACE_SCANSIZE_X - 1);
     int x0 = rc.left;
     LKASSERT(Sideview_iNoHandeldSpaces < MAX_NO_SIDE_AS);
-    for (int i = 0; i < Sideview_iNoHandeldSpaces; i++) {
-        Sideview_pHandeled[i].rc.left = (long) ((Sideview_pHandeled[i].rc.left) * dx1) + x0 - FRAMEWIDTH / 2;
-        Sideview_pHandeled[i].rc.right = (long) ((Sideview_pHandeled[i].rc.right) * dx1) + x0 + FRAMEWIDTH / 2;
+    for (auto& p : make_array(Sideview_pHandeled, Sideview_iNoHandeldSpaces)) {
+        p.rc.left = (long) ((p.rc.left) * dx1) + x0 - FRAMEWIDTH / 2;
+        p.rc.right = (long) ((p.rc.right) * dx1) + x0 + FRAMEWIDTH / 2;
 
-        Sideview_pHandeled[i].rc.bottom = CalcHeightCoordinat((double) Sideview_pHandeled[i].rc.bottom, psDiag) + FRAMEWIDTH / 2;
-        Sideview_pHandeled[i].rc.top = CalcHeightCoordinat((double) Sideview_pHandeled[i].rc.top, psDiag) - FRAMEWIDTH / 2;
+        p.rc.bottom = CalcHeightCoordinat((double) p.rc.bottom, psDiag) + FRAMEWIDTH / 2;
+        p.rc.top = CalcHeightCoordinat((double) p.rc.top, psDiag) - FRAMEWIDTH / 2;
 
-        Sideview_pHandeled[i].iMaxBase = Sideview_pHandeled[i].rc.bottom;
-        Sideview_pHandeled[i].iMinTop = Sideview_pHandeled[i].rc.top;
+        p.iMaxBase = p.rc.bottom;
+        p.iMinTop = p.rc.top;
 
-        int iN = Sideview_pHandeled[i].iNoPolyPts;
+        int iN = p.iNoPolyPts;
         BUGSTOP_LKASSERT(iN < GC_MAX_POLYGON_PTS);
         if (iN >= GC_MAX_POLYGON_PTS) iN = GC_MAX_POLYGON_PTS - 1;
 
-        if (Sideview_pHandeled[i].bRectAllowed == false) {
+        if (!p.bRectAllowed) {
             for (int j = 0; j < iN; j++) {
-                Sideview_pHandeled[i].apPolygon[j].x = (long) (((Sideview_pHandeled[i].apPolygon[j].x) * dx1) + x0);
-                Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double) Sideview_pHandeled[i].apPolygon[j].y, psDiag);
+                p.apPolygon[j].x = (long) (((p.apPolygon[j].x) * dx1) + x0);
+                p.apPolygon[j].y = CalcHeightCoordinat((double) p.apPolygon[j].y, psDiag);
                 if (j != iN - 1) {
                     if ((j < iN / 2)) {
-                        Sideview_pHandeled[i].iMaxBase = min((long) Sideview_pHandeled[i].iMaxBase, (long) Sideview_pHandeled[i].apPolygon[j].y);
+                        p.iMaxBase = std::min(p.iMaxBase, p.apPolygon[j].y);
                     } else {
-                        Sideview_pHandeled[i].iMinTop = max((long) Sideview_pHandeled[i].iMinTop, (long) Sideview_pHandeled[i].apPolygon[j].y);
+                        p.iMinTop = std::max(p.iMinTop, p.apPolygon[j].y);
                     }
                 }
             }
@@ -288,11 +289,11 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     }
 
     apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X * dx1) + x0;
-    ; // x0;
     apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag); //iBottom;
 
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].x = iround(0 * dx1) + x0; //iround(j*dx1)+x0;
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 1].y = CalcHeightCoordinat(0, psDiag); //iBottom;
+
     apTerrainPolygon[AIRSPACE_SCANSIZE_X + 2] = apTerrainPolygon[0];
 
     static_assert(std::size(apTerrainPolygon) >= AIRSPACE_SCANSIZE_X + 3, "wrong array size");
