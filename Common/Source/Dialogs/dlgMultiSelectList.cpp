@@ -570,13 +570,12 @@ void OnMultiSelectListPaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surfac
   }
 }
 
-void OnListEnter(WindowControl* Sender, WndListFrame::ListInfo_t* ListInfo) {
-  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+void OnEnter(WindowControl* Sender) {
   if (ItemIndex >= Elements.size()) {
     ItemIndex = Elements.size() - 1;
   }
 
-  if (Sender && ItemIndex >= 0) {
+  if (Sender) {
     WndForm* pForm = Sender->GetParentWndForm();
     if (pForm) {
       pForm->SetModalResult(mrOK);
@@ -585,17 +584,13 @@ void OnListEnter(WindowControl* Sender, WndListFrame::ListInfo_t* ListInfo) {
   }
 }
 
+void OnListEnter(WindowControl* Sender, WndListFrame::ListInfo_t* ListInfo) {
+  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  OnEnter(Sender);
+}
+
 void OnEnterClicked(WndButton* pWnd) {
-  if (ItemIndex >= Elements.size()) {
-    ItemIndex = Elements.size() - 1;
-  }
-  if (pWnd && ItemIndex >= 0) {
-    WndForm* pForm = pWnd->GetParentWndForm();
-    if (pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-    OnDetailsDialog(pForm, ItemIndex);
-  }
+  OnEnter(pWnd);
 }
 
 void OnMultiSelectListListInfo(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
