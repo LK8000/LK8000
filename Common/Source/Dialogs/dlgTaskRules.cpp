@@ -46,9 +46,9 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnRulesActiveData),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnRulesActiveData),
+  CallbackEntry(OnCloseClicked),
+  EndCallbackEntry()
 };
 
 

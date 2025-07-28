@@ -345,7 +345,7 @@ BOOL CDevCProbe::SetCalGyro(DeviceDescriptor_t* d) {
 }
 
 CallBackTableEntry_t CDevCProbe::CallBackTable[]={
-  EndCallBackEntry()
+  EndCallbackEntry()
 };
 
 BOOL CDevCProbe::Config(DeviceDescriptor_t* d){
@@ -382,7 +382,6 @@ BOOL CDevCProbe::Config(DeviceDescriptor_t* d){
 		wf->ShowModal();
 
 		delete wf;
-		wf=NULL;
 	}
 	return TRUE;
 }
@@ -402,7 +401,6 @@ void CDevCProbe::OnCloseClicked(WndButton* pWnd){
 }
 
 void CDevCProbe::OnCompassCalClicked(WndButton* pWnd){
-	(void)pWnd;
 	if(m_pDevice) {
 		if(m_bCompassCalOn) {
 			SetCompassCalOff(m_pDevice);
@@ -417,14 +415,12 @@ void CDevCProbe::OnCompassCalClicked(WndButton* pWnd){
 }
 
 void CDevCProbe::OnCalGyroClicked(WndButton* pWnd) {
-	(void)pWnd;
 	if(m_pDevice) {
 		SetCalGyro(m_pDevice);
 	}
 }
 
 void CDevCProbe::OnZeroDeltaPressClicked(WndButton* pWnd) {
-	(void)pWnd;
 	if(m_pDevice) {
 		SetZeroDeltaPressure(m_pDevice);
 	}

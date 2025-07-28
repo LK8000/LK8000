@@ -639,20 +639,20 @@ static bool OnUser(WndForm * pWndForm, unsigned id) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  OnPaintCallbackEntry(OnTaskPaintListItem),
-  OnListCallbackEntry(OnTaskListInfo),
-  ClickNotifyCallbackEntry(OnDeclareClicked),
-  ClickNotifyCallbackEntry(OnCalcClicked),
-  ClickNotifyCallbackEntry(OnClearClicked),
-  ClickNotifyCallbackEntry(OnReverseClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnSaveClicked),
-  ClickNotifyCallbackEntry(OnLoadClicked),
-  ClickNotifyCallbackEntry(OnDeleteClicked),
-  ClickNotifyCallbackEntry(OnAnalysisClicked),
-  ClickNotifyCallbackEntry(OnTimegatesClicked),
-  OnHelpCallbackEntry(OnSelectHomeWaypoint),
-  EndCallBackEntry()
+  CallbackEntry(OnTaskPaintListItem),
+  CallbackEntry(OnTaskListInfo),
+  CallbackEntry(OnDeclareClicked),
+  CallbackEntry(OnCalcClicked),
+  CallbackEntry(OnClearClicked),
+  CallbackEntry(OnReverseClicked),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnSaveClicked),
+  CallbackEntry(OnLoadClicked),
+  CallbackEntry(OnDeleteClicked),
+  CallbackEntry(OnAnalysisClicked),
+  CallbackEntry(OnTimegatesClicked),
+  CallbackEntry(OnSelectHomeWaypoint),
+  EndCallbackEntry()
 };
 
 

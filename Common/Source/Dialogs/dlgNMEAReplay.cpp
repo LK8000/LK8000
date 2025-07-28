@@ -136,12 +136,12 @@ static void OnSyncNMEAModified(DataField *Sender, DataField::DataAccessKind_t Mo
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnStopClicked),
-  ClickNotifyCallbackEntry(OnStartClicked),
-  DataAccessCallbackEntry(OnRateData),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  DataAccessCallbackEntry(OnSyncNMEAModified),
-  EndCallBackEntry()
+  CallbackEntry(OnStopClicked),
+  CallbackEntry(OnStartClicked),
+  CallbackEntry(OnRateData),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnSyncNMEAModified),
+  EndCallbackEntry()
 };
 
 

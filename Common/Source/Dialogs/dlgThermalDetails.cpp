@@ -115,9 +115,9 @@ void dlgThermalDetails(int indexid) {
   using std::placeholders::_1;
 
   const CallBackTableEntry_t CallBackTable[] = {
-    ClickNotifyCallbackEntry(OnCloseClicked),
+    CallbackEntry(OnCloseClicked),
     { "OnSelectClicked", std::bind(&OnSelectClicked, _1, indexid) },
-    EndCallBackEntry()
+    EndCallbackEntry()
   };
 
   std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, IDR_XML_THERMALDETAILS));

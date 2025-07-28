@@ -128,9 +128,9 @@ static void OnResetClicked(WndButton* pWnd){
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnResetClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnResetClicked),
+  EndCallbackEntry()
 };
 
 

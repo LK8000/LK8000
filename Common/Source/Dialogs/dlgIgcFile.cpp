@@ -170,11 +170,11 @@ namespace DlgIgcFile {
     }
 
     CallBackTableEntry_t CallBackTable[] = {
-        ClickNotifyCallbackEntry(OnClose),
-        ClickNotifyCallbackEntry(OnSend),
-        OnListCallbackEntry(OnIgcFileListInfo),
-        OnPaintCallbackEntry(OnPaintIgcFileListItem),
-        EndCallBackEntry()
+        CallbackEntry(OnClose),
+        CallbackEntry(OnSend),
+        CallbackEntry(OnIgcFileListInfo),
+        CallbackEntry(OnPaintIgcFileListItem),
+        EndCallbackEntry()
     };
 }
 

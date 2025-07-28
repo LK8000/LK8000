@@ -564,7 +564,7 @@ bool DevLX_EOS_ERA::OnTimer(WndForm* pWnd)
 BOOL DevLX_EOS_ERA::Config(DeviceDescriptor_t* d){
 
   CallBackTableEntry_t CallBackTable[] = {
-    EndCallBackEntry()
+    EndCallbackEntry()
   };
 
   WndForm*  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_DEV_LXNAV_L : IDR_XML_DEV_LXNAV_P);

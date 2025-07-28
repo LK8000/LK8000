@@ -396,17 +396,17 @@ static void OnNickelClick(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[] = {
-    OnPaintCallbackEntry(OnSplashPaint),
-    ClickNotifyCallbackEntry(OnPILOTClicked),
-    ClickNotifyCallbackEntry(OnDEVICEClicked),
-    ClickNotifyCallbackEntry(OnAIRCRAFTClicked),
-    ClickNotifyCallbackEntry(OnPROFILEClicked),
-    ClickNotifyCallbackEntry(OnEXITClicked),
-    ClickNotifyCallbackEntry(OnDUALPROFILEClicked),
-    ClickNotifyCallbackEntry(OnFLYClicked),
-    ClickNotifyCallbackEntry(OnSIMClicked),
-    ClickNotifyCallbackEntry(OnCloseClicked),
-    EndCallBackEntry()
+    CallbackEntry(OnSplashPaint),
+    CallbackEntry(OnPILOTClicked),
+    CallbackEntry(OnDEVICEClicked),
+    CallbackEntry(OnAIRCRAFTClicked),
+    CallbackEntry(OnPROFILEClicked),
+    CallbackEntry(OnEXITClicked),
+    CallbackEntry(OnDUALPROFILEClicked),
+    CallbackEntry(OnFLYClicked),
+    CallbackEntry(OnSIMClicked),
+    CallbackEntry(OnCloseClicked),
+    EndCallbackEntry()
 };
 
 

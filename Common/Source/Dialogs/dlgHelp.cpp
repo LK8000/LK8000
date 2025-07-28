@@ -51,10 +51,10 @@ static void OnDetailsListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t *L
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  OnPaintCallbackEntry(OnPaintDetailsListItem),
-  OnListCallbackEntry(OnDetailsListInfo),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnPaintDetailsListItem),
+  CallbackEntry(OnDetailsListInfo),
+  EndCallbackEntry()
 };
 
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCapt ) {

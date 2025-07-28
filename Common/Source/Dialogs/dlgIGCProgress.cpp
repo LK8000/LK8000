@@ -97,10 +97,10 @@ static void OnIGCProgressPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 }
 
 CallBackTableEntry_t IGCProgressCallBackTable[] = {
-    OnPaintCallbackEntry(OnIGCSplashPaint),
-    OnPaintCallbackEntry(OnIGCProgressPaint),
-    ClickNotifyCallbackEntry(OnIGCAbortClicked),
-    EndCallBackEntry()
+    CallbackEntry(OnIGCSplashPaint),
+    CallbackEntry(OnIGCProgressPaint),
+    CallbackEntry(OnIGCAbortClicked),
+    EndCallbackEntry()
 };
 
 void dlgIGCProgressShowModal(void){

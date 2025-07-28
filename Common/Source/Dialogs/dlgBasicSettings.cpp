@@ -259,15 +259,15 @@ static void OnTempData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnBugsData),
-  DataAccessCallbackEntry(OnWingLoadingData),
-  DataAccessCallbackEntry(OnTempData),
-  DataAccessCallbackEntry(OnBallastData),
-  DataAccessCallbackEntry(OnAltitudeData),
-  DataAccessCallbackEntry(OnQnhData),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnBallastDump),
-  EndCallBackEntry()
+  CallbackEntry(OnBugsData),
+  CallbackEntry(OnWingLoadingData),
+  CallbackEntry(OnTempData),
+  CallbackEntry(OnBallastData),
+  CallbackEntry(OnAltitudeData),
+  CallbackEntry(OnQnhData),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnBallastDump),
+  EndCallbackEntry()
 };
 
 

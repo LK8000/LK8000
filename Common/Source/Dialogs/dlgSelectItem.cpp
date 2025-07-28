@@ -52,8 +52,8 @@ int dlgSelectItem::DoModal() {
   CallBackTableEntry_t CallBackTable[] = {
       callback_entry("OnPaintListItem", std::bind(&dlgSelectItem::OnPaintListItem, this, _1, _2)),
       callback_entry("OnListInfo", std::bind(&dlgSelectItem::OnListInfo, this, _1, _2)),
-      ClickNotifyCallbackEntry(OnCloseClicked),
-      EndCallBackEntry()
+      CallbackEntry(OnCloseClicked),
+      EndCallbackEntry()
   };
 
   std::unique_ptr<WndForm> pForm(

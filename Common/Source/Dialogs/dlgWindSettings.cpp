@@ -99,11 +99,11 @@ static void OnWindDirectionData(DataField *Sender, DataField::DataAccessKind_t M
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnWindSpeedData),
-  DataAccessCallbackEntry(OnWindDirectionData),
-  ClickNotifyCallbackEntry(OnCancelClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnWindSpeedData),
+  CallbackEntry(OnWindDirectionData),
+  CallbackEntry(OnCancelClicked),
+  CallbackEntry(OnCloseClicked),
+  EndCallbackEntry()
 };
 
 void dlgWindSettingsShowModal(void){

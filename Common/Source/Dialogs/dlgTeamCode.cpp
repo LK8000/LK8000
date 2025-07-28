@@ -128,9 +128,9 @@ static bool OnTimerNotify(WndForm* pWnd) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-//  ClickNotifyCallbackEntry(OnFlarmLockClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+//  CallbackEntry(OnFlarmLockClicked),
+  EndCallbackEntry()
 };
 
 

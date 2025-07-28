@@ -438,19 +438,19 @@ static bool OnTimerNotify(WndForm* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnDualButton),
-  ClickNotifyCallbackEntry(OnActiveButton),
-  ClickNotifyCallbackEntry(OnActiveFreq),
-  ClickNotifyCallbackEntry(OnPassiveFreq),
-  ClickNotifyCallbackEntry(OnPassiveButton),
-  ClickNotifyCallbackEntry(OnMuteButton),
-  ClickNotifyCallbackEntry(OnCancelClicked),
-  ClickNotifyCallbackEntry(OnRadioActiveAutoClicked),
-  ClickNotifyCallbackEntry(OnRadioStandbyAutoClicked),
-  ClickNotifyCallbackEntry(OnExchange),
-  ClickNotifyCallbackEntry(OnVolUpButton),
-  ClickNotifyCallbackEntry(OnVolDownButton),
-  EndCallBackEntry()
+  CallbackEntry(OnDualButton),
+  CallbackEntry(OnActiveButton),
+  CallbackEntry(OnActiveFreq),
+  CallbackEntry(OnPassiveFreq),
+  CallbackEntry(OnPassiveButton),
+  CallbackEntry(OnMuteButton),
+  CallbackEntry(OnCancelClicked),
+  CallbackEntry(OnRadioActiveAutoClicked),
+  CallbackEntry(OnRadioStandbyAutoClicked),
+  CallbackEntry(OnExchange),
+  CallbackEntry(OnVolUpButton),
+  CallbackEntry(OnVolDownButton),
+  EndCallbackEntry()
 };
 
 

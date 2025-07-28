@@ -46,7 +46,7 @@ dlgProgress::dlgProgress() {
     CallBackTableEntry_t CallBackTable[] = {
         callback_entry("OnSplashPaint", std::bind(&dlgProgress::OnSplashPaint, this, _1, _2)),
         callback_entry("OnProgressPaint", dlgProgress::OnProgressPaint),
-        EndCallBackEntry()
+        EndCallbackEntry()
     };
 
     _WndForm.reset(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_PROGRESS_L : IDR_XML_PROGRESS_P));

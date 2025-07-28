@@ -666,23 +666,23 @@ static void OnNextClicked(WndButton* pWnd){
 
 static CallBackTableEntry_t CallBackTable[]={
 
-  ClickNotifyCallbackEntry(OnMoveClicked),
-  ClickNotifyCallbackEntry(OnSelectClicked),
-  ClickNotifyCallbackEntry(OnDetailsClicked),
-  ClickNotifyCallbackEntry(OnRemoveClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnStartPointClicked),
-  ClickNotifyCallbackEntry(OnMoveAfterClicked),
-  ClickNotifyCallbackEntry(OnMoveBeforeClicked),
+  CallbackEntry(OnMoveClicked),
+  CallbackEntry(OnSelectClicked),
+  CallbackEntry(OnDetailsClicked),
+  CallbackEntry(OnRemoveClicked),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnStartPointClicked),
+  CallbackEntry(OnMoveAfterClicked),
+  CallbackEntry(OnMoveBeforeClicked),
 
 
-  ClickNotifyCallbackEntry(OnPrevClicked),
-  ClickNotifyCallbackEntry(OnNextClicked),
+  CallbackEntry(OnPrevClicked),
+  CallbackEntry(OnNextClicked),
 
-  DataAccessCallbackEntry(OnTaskType),
-  ClickNotifyCallbackEntry(OnTaskRulesClicked),
-  OnPaintCallbackEntry(OnTaskPointPicto),
-  EndCallBackEntry()
+  CallbackEntry(OnTaskType),
+  CallbackEntry(OnTaskRulesClicked),
+  CallbackEntry(OnTaskPointPicto),
+  EndCallbackEntry()
 };
 
 

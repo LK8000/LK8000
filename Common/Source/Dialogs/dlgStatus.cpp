@@ -131,9 +131,9 @@ static void OnPrevClicked(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnNextClicked),
-  ClickNotifyCallbackEntry(OnPrevClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnNextClicked),
+  CallbackEntry(OnPrevClicked),
+  EndCallbackEntry()
 };
 
 static bool first = true;

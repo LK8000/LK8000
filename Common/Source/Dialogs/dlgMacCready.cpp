@@ -95,10 +95,10 @@ bool OnKeyDown(WndForm* pForm, unsigned KeyCode) {
 void dlgMacCready::DoModal() {
 
   CallBackTableEntry_t CallBackTable[] = {
-    ClickNotifyCallbackEntry(OnUpClick),
-    ClickNotifyCallbackEntry(OnDownClick),
-    ClickNotifyCallbackEntry(OnClose),
-    EndCallBackEntry()
+    CallbackEntry(OnUpClick),
+    CallbackEntry(OnDownClick),
+    CallbackEntry(OnClose),
+    EndCallbackEntry()
   };
 
   std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, IDR_XML_MACCREADY));

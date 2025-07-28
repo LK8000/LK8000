@@ -45,7 +45,7 @@ void dlgAirspaceDetails::DoModal() {
       callback_entry("OnSetFrequency", std::bind(&dlgAirspaceDetails::OnSetFrequency, this, _1)),
       callback_entry("OnSetSecFrequency", std::bind(&dlgAirspaceDetails::OnSetSecFrequency, this, _1)),
       callback_entry("OnPaintAirspacePicto", std::bind(&dlgAirspaceDetails::OnPaintAirspacePicto, this, _1, _2)),
-      EndCallBackEntry()
+      EndCallbackEntry()
   };
 
   _pForm = std::unique_ptr<WndForm>(dlgLoadFromXML(CallBackTable, IDR_XML_AIRSPACEDETAILS));

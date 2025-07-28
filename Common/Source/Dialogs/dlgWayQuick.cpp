@@ -152,16 +152,16 @@ static void OnRadioFrequencySBClicked(WndButton* pWnd) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnGotoClicked),
-  ClickNotifyCallbackEntry(OnSetAlt1Clicked),
-  ClickNotifyCallbackEntry(OnSetAlt2Clicked),
-  ClickNotifyCallbackEntry(OnTaskClicked),
-  ClickNotifyCallbackEntry(OnCancelClicked),
-  ClickNotifyCallbackEntry(OnDetailsClicked),
-  ClickNotifyCallbackEntry(OnRadioFrequencyClicked),
-  ClickNotifyCallbackEntry(OnRadioFrequencySBClicked),
-  OnPaintCallbackEntry(OnPaintWaypointPicto),
-  EndCallBackEntry()
+  CallbackEntry(OnGotoClicked),
+  CallbackEntry(OnSetAlt1Clicked),
+  CallbackEntry(OnSetAlt2Clicked),
+  CallbackEntry(OnTaskClicked),
+  CallbackEntry(OnCancelClicked),
+  CallbackEntry(OnDetailsClicked),
+  CallbackEntry(OnRadioFrequencyClicked),
+  CallbackEntry(OnRadioFrequencySBClicked),
+  CallbackEntry(OnPaintWaypointPicto),
+  EndCallbackEntry()
 };
 
 // Will return 0 if cancel or error, 1 if details needed, 2 if goto, 3 if alt1, 4 if alt2

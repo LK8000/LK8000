@@ -316,14 +316,14 @@ static void OnRemoveFromTaskClicked(WndButton* pWnd){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnNextClicked),
-  ClickNotifyCallbackEntry(OnPrevClicked),
-  OnPaintCallbackEntry(OnPaintDetailsListItem),
-  OnListCallbackEntry(OnDetailsListInfo),
-  OnPaintCallbackEntry(OnPaintWaypointPicto),
-  OnPaintCallbackEntry(OnPaintWpCommentListItem),
-  OnListCallbackEntry(OnWpCommentListInfo),
-  EndCallBackEntry()
+  CallbackEntry(OnNextClicked),
+  CallbackEntry(OnPrevClicked),
+  CallbackEntry(OnPaintDetailsListItem),
+  CallbackEntry(OnDetailsListInfo),
+  CallbackEntry(OnPaintWaypointPicto),
+  CallbackEntry(OnPaintWpCommentListItem),
+  CallbackEntry(OnWpCommentListInfo),
+  EndCallbackEntry()
 };
 
 

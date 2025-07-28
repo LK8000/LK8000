@@ -59,12 +59,12 @@ static void OnSelPassiveButton(WndButton* pWnd){
 
 static CallBackTableEntry_t CallBackTable[]={
 
-  ClickNotifyCallbackEntry(OnSelActiveButton),
-  ClickNotifyCallbackEntry(OnSelPassiveButton),
-  ClickNotifyCallbackEntry(OnCancelClicked),
+  CallbackEntry(OnSelActiveButton),
+  CallbackEntry(OnSelPassiveButton),
+  CallbackEntry(OnCancelClicked),
 
 
-  EndCallBackEntry()
+  EndCallbackEntry()
 };
 
 

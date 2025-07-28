@@ -625,7 +625,7 @@ int dlgSelectObject::DoModal() {
     callback_entry("OnSelectClicked", std::bind(&dlgSelectObject::OnSelectClicked, this, _1)),
     callback_entry("OnCloseClicked", OnCloseClicked),
 
-    EndCallBackEntry()
+    EndCallbackEntry()
   };
 
   std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_SELECTOBJECT_L : IDR_XML_SELECTOBJECT_P));

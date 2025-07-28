@@ -61,7 +61,7 @@ static void OnComboPopupListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t
   }
 }
 
-static void OnHelpClicked(WindowControl * Sender) {
+static void OnHelpClicked(WndButton * Sender) {
   int idx = ComboListPopup->ComboPopupItemIndex;  
   if (idx >=0) {
     const ComboListEntry_t* pItem = ComboListPopup->ComboPopupItemList[idx];
@@ -101,12 +101,12 @@ static void OnCancelClicked(WndButton* pWnd){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  OnListCallbackEntry(OnComboPopupListInfo),
-  OnPaintCallbackEntry(OnPaintComboPopupListItem),
-  ClickNotifyCallbackEntry(OnHelpClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnCancelClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnComboPopupListInfo),
+  CallbackEntry(OnPaintComboPopupListItem),
+  CallbackEntry(OnHelpClicked),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnCancelClicked),
+  EndCallbackEntry()
 };
 
 

@@ -306,11 +306,11 @@ bool LoadChecklist(short checklistmode) {
 void dlgChecklistShowModal(short checklistmode) {
 
   const CallBackTableEntry_t CallBackTable[] = {
-      ClickNotifyCallbackEntry(OnNextClicked),
-      ClickNotifyCallbackEntry(OnPrevClicked),
-      OnPaintCallbackEntry(OnPaintDetailsListItem),
-      OnListCallbackEntry(OnDetailsListInfo),
-      EndCallBackEntry()
+      CallbackEntry(OnNextClicked),
+      CallbackEntry(OnPrevClicked),
+      CallbackEntry(OnPaintDetailsListItem),
+      CallbackEntry(OnDetailsListInfo),
+      EndCallbackEntry()
   };
 
   std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_CHECKLIST_L : IDR_XML_CHECKLIST_P));

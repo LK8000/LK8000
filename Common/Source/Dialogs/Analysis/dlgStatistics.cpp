@@ -276,12 +276,12 @@ static void OnAspBearClicked(WndButton* pWnd){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  OnPaintCallbackEntry(OnAnalysisPaint),
-  ClickNotifyCallbackEntry(OnNextClicked),
-  ClickNotifyCallbackEntry(OnPrevClicked),
-  ClickNotifyCallbackEntry(OnCalcClicked),
-  ClickNotifyCallbackEntry(OnAspBearClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnAnalysisPaint),
+  CallbackEntry(OnNextClicked),
+  CallbackEntry(OnPrevClicked),
+  CallbackEntry(OnCalcClicked),
+  CallbackEntry(OnAspBearClicked),
+  EndCallbackEntry()
 };
 
 

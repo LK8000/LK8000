@@ -94,11 +94,11 @@ void OnStartWindow(DataField* Sender, DataField::DataAccessKind_t Mode) {
 
 
 CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  DataAccessCallbackEntry(OnGateType),
-  DataAccessCallbackEntry(OnWaitingTime),
-  DataAccessCallbackEntry(OnStartWindow),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnGateType),
+  CallbackEntry(OnWaitingTime),
+  CallbackEntry(OnStartWindow),
+  EndCallbackEntry()
 };
 
 void setVariables(WndForm* pForm) {

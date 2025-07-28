@@ -60,11 +60,11 @@ static void OnRateData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnStopClicked),
-  ClickNotifyCallbackEntry(OnStartClicked),
-  DataAccessCallbackEntry(OnRateData),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnStopClicked),
+  CallbackEntry(OnStartClicked),
+  CallbackEntry(OnRateData),
+  CallbackEntry(OnCloseClicked),
+  EndCallbackEntry()
 };
 
 

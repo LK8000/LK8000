@@ -165,8 +165,8 @@ static void OnTTYCloseClicked(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  OnPaintCallbackEntry(OnPaintListItem),
-  EndCallBackEntry()
+  CallbackEntry(OnPaintListItem),
+  EndCallbackEntry()
 };
 
 

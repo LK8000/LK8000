@@ -300,14 +300,14 @@ static void OnOptimiseClicked(WndButton* pWnd) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  DataAccessCallbackEntry(OnMacCreadyData),
-  DataAccessCallbackEntry(OnRangeData),
-  ClickNotifyCallbackEntry(OnOKClicked),
-  ClickNotifyCallbackEntry(OnCancelClicked),
-  ClickNotifyCallbackEntry(OnOptimiseClicked),
-  ClickNotifyCallbackEntry(OnTargetClicked),
-  DataAccessCallbackEntry(OnCruiseEfficiencyData),
-  EndCallBackEntry()
+  CallbackEntry(OnMacCreadyData),
+  CallbackEntry(OnRangeData),
+  CallbackEntry(OnOKClicked),
+  CallbackEntry(OnCancelClicked),
+  CallbackEntry(OnOptimiseClicked),
+  CallbackEntry(OnTargetClicked),
+  CallbackEntry(OnCruiseEfficiencyData),
+  EndCallbackEntry()
 };
 
 

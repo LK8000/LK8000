@@ -188,10 +188,10 @@ static void OnCloseClicked(WndButton* pWnd) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnSaveNewClicked),
-  ClickNotifyCallbackEntry(OnSaveExistingClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnSaveNewClicked),
+  CallbackEntry(OnSaveExistingClicked),
+  EndCallbackEntry()
 };
 
 

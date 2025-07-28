@@ -134,11 +134,11 @@ static void OnLookupClicked(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  OnPaintCallbackEntry(OnAirspacePaintListItem),
-  OnListCallbackEntry(OnAirspaceListInfo),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnLookupClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnAirspacePaintListItem),
+  CallbackEntry(OnAirspaceListInfo),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnLookupClicked),
+  EndCallbackEntry()
 };
 
 

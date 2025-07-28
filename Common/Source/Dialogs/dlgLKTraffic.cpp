@@ -198,12 +198,12 @@ static void OnCloseClicked(WndButton * pWnd) {
 }
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnRenameClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  ClickNotifyCallbackEntry(OnTargetClicked),
-  ClickNotifyCallbackEntry(OnFlarmFreqSelectEnter),
-  ClickNotifyCallbackEntry(OnFlarmSecFreqSelectEnter),
-  EndCallBackEntry()
+  CallbackEntry(OnRenameClicked),
+  CallbackEntry(OnCloseClicked),
+  CallbackEntry(OnTargetClicked),
+  CallbackEntry(OnFlarmFreqSelectEnter),
+  CallbackEntry(OnFlarmSecFreqSelectEnter),
+  EndCallbackEntry()
 };
 
 

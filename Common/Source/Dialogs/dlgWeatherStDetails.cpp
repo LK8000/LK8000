@@ -30,8 +30,8 @@ static void OnCloseClicked(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+  EndCallbackEntry()
 };
 
 void dlgWeatherStDetails(int indexid) {

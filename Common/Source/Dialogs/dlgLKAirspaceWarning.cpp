@@ -106,7 +106,7 @@ class dlgAirspaceWarning final {
         callback_entry("OnAckForTimeClicked", std::bind(&dlgAirspaceWarning::OnAckForTimeClicked, this, _1)),
         callback_entry("OnCloseClicked", std::bind(&dlgAirspaceWarning::OnCloseClicked, this, _1)),
         callback_entry("OnPaintAirspacePicto", std::bind(&dlgAirspaceWarning::OnPaintAirspacePicto, this, _1, _2)),
-        EndCallBackEntry()
+        EndCallbackEntry()
     };
 
     const unsigned resID = ScreenLandscape ? IDR_XML_LKAIRSPACEWARNING_L : IDR_XML_LKAIRSPACEWARNING_P;

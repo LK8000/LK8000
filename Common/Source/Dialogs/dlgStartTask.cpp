@@ -40,9 +40,9 @@ static void OnStartTaskAnywayClicked(WndButton* pWnd) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnStartTaskAnywayClicked),
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnStartTaskAnywayClicked),
+  CallbackEntry(OnCloseClicked),
+  EndCallbackEntry()
 };
 
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude){

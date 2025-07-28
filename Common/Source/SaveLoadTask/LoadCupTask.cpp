@@ -777,13 +777,13 @@ static void OnTaskSelectListListEnter(WindowControl * Sender, WndListFrame::List
 
 
 static CallBackTableEntry_t TaskCallBackTable[] = {
-    OnPaintCallbackEntry(OnMultiSelectListPaintListItem),
-    OnListCallbackEntry(OnMultiSelectListListInfo),
-    ClickNotifyCallbackEntry(OnCloseClicked),
-    ClickNotifyCallbackEntry(OnUpClicked),
-    ClickNotifyCallbackEntry(OnEnterClicked),
-    ClickNotifyCallbackEntry(OnDownClicked),
-    EndCallBackEntry()
+    CallbackEntry(OnMultiSelectListPaintListItem),
+    CallbackEntry(OnMultiSelectListListInfo),
+    CallbackEntry(OnCloseClicked),
+    CallbackEntry(OnUpClicked),
+    CallbackEntry(OnEnterClicked),
+    CallbackEntry(OnDownClicked),
+    EndCallbackEntry()
 };
 
 

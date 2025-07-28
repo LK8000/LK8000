@@ -366,7 +366,7 @@ BOOL DevLXNanoIII::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_I
 
 CallBackTableEntry_t DevLXNanoIII::CallBackTable[]={
 
-  EndCallBackEntry()
+  EndCallbackEntry()
 };
 
 

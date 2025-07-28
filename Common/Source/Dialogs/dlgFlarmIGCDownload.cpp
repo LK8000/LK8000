@@ -576,13 +576,13 @@ static bool OnTimer(WndForm *pWnd) {
 }
 
 static CallBackTableEntry_t IGCCallBackTable[] = {
-    OnPaintCallbackEntry(OnMultiSelectListPaintListItem),
-    OnListCallbackEntry(OnMultiSelectListListInfo),
-    ClickNotifyCallbackEntry(OnCloseClicked),
-    ClickNotifyCallbackEntry(OnUpClicked),
-    ClickNotifyCallbackEntry(OnEnterClicked),
-    ClickNotifyCallbackEntry(OnDownClicked),
-    EndCallBackEntry()};
+    CallbackEntry(OnMultiSelectListPaintListItem),
+    CallbackEntry(OnMultiSelectListListInfo),
+    CallbackEntry(OnCloseClicked),
+    CallbackEntry(OnUpClicked),
+    CallbackEntry(OnEnterClicked),
+    CallbackEntry(OnDownClicked),
+    EndCallbackEntry()};
 
 void LeaveBinMode(DeviceDescriptor_t* d) {
   if (d != NULL) {

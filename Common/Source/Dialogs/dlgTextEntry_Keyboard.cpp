@@ -235,13 +235,13 @@ static void OnClear(WndButton* pWnd) {
   ClearText(pWnd->GetParentWndForm());
 }
 
-static void OnHelpClicked(WindowControl* Sender) {
+static void OnHelpClicked(WndButton* Sender) {
   if(wKeyboardPopupWndProperty) {
     wKeyboardPopupWndProperty->OnHelp();
   }
 }
 
-static void OnPaste(WindowControl* Sender) {
+static void OnPaste(WndButton* Sender) {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if(!Sender) return;
 
@@ -267,17 +267,17 @@ static void OnPaste(WindowControl* Sender) {
 }
 
 static CallBackTableEntry_t CallBackTable[] = {
-  ClickNotifyCallbackEntry(OnKey),
-  ClickNotifyCallbackEntry(OnClear),
-  ClickNotifyCallbackEntry(OnOk),
-  ClickNotifyCallbackEntry(OnDel),
-  ClickNotifyCallbackEntry(OnSpace),
-  ClickNotifyCallbackEntry(OnShift),
-  ClickNotifyCallbackEntry(OnDate),
-  ClickNotifyCallbackEntry(OnTime),
-  ClickNotifyCallbackEntry(OnHelpClicked),
-  ClickNotifyCallbackEntry(OnPaste),
-  EndCallBackEntry()
+  CallbackEntry(OnKey),
+  CallbackEntry(OnClear),
+  CallbackEntry(OnOk),
+  CallbackEntry(OnDel),
+  CallbackEntry(OnSpace),
+  CallbackEntry(OnShift),
+  CallbackEntry(OnDate),
+  CallbackEntry(OnTime),
+  CallbackEntry(OnHelpClicked),
+  CallbackEntry(OnPaste),
+  EndCallbackEntry()
 };
 
 static void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, unsigned ResID) {

@@ -105,8 +105,8 @@ static void setVariables(WndForm* wf) {
 
 
 static CallBackTableEntry_t CallBackTable[]={
-  ClickNotifyCallbackEntry(OnCloseClicked),
-  EndCallBackEntry()
+  CallbackEntry(OnCloseClicked),
+  EndCallbackEntry()
 };
 
 

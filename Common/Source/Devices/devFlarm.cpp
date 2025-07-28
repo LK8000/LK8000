@@ -132,7 +132,7 @@ BOOL CDevFlarm::Close (DeviceDescriptor_t* d) {
 
 
 CallBackTableEntry_t CDevFlarm::CallBackTable[]={
-  EndCallBackEntry()
+  EndCallbackEntry()
 };
 
 BOOL CDevFlarm::Config(DeviceDescriptor_t* d){

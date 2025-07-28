@@ -741,13 +741,13 @@ void ShowModal() {
   }
 
   CallBackTableEntry_t CallBackTable[] = {
-    OnPaintCallbackEntry(OnMultiSelectListPaintListItem),
-    OnListCallbackEntry(OnMultiSelectListListInfo),
-    ClickNotifyCallbackEntry(OnCloseClicked),
-    ClickNotifyCallbackEntry(OnUpClicked),
-    ClickNotifyCallbackEntry(OnEnterClicked),
-    ClickNotifyCallbackEntry(OnDownClicked),
-    EndCallBackEntry()
+    CallbackEntry(OnMultiSelectListPaintListItem),
+    CallbackEntry(OnMultiSelectListListInfo),
+    CallbackEntry(OnCloseClicked),
+    CallbackEntry(OnUpClicked),
+    CallbackEntry(OnEnterClicked),
+    CallbackEntry(OnDownClicked),
+    EndCallbackEntry()
   };
 
   ItemIndex = -1;

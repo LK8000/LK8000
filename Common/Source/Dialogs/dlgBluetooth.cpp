@@ -120,13 +120,13 @@ namespace DlgBluetooth {
 
 
     CallBackTableEntry_t CallBackTable[] = {
-        ClickNotifyCallbackEntry(OnClose),
-        ClickNotifyCallbackEntry(OnPair),
-        ClickNotifyCallbackEntry(OnUnpair),
-        ClickNotifyCallbackEntry(OnLookup),
-        OnPaintCallbackEntry(OnPaintListItem),
-        OnListCallbackEntry(OnListInfo),
-        EndCallBackEntry()
+        CallbackEntry(OnClose),
+        CallbackEntry(OnPair),
+        CallbackEntry(OnUnpair),
+        CallbackEntry(OnLookup),
+        CallbackEntry(OnPaintListItem),
+        CallbackEntry(OnListInfo),
+        EndCallbackEntry()
     };
 
     void Show() {

@@ -330,12 +330,12 @@ namespace dlgBlueFlyConfig {
     }
 
     CallBackTableEntry_t CallBackTable[] = {
-        ClickNotifyCallbackEntry(OnClose),
-        ClickNotifyCallbackEntry(OnNextClicked),
-        ClickNotifyCallbackEntry(OnPrevClicked),
-        ClickNotifyCallbackEntry(OnReset),
-        DataAccessCallbackEntry(OnParamData),
-        EndCallBackEntry()
+        CallbackEntry(OnClose),
+        CallbackEntry(OnNextClicked),
+        CallbackEntry(OnPrevClicked),
+        CallbackEntry(OnReset),
+        CallbackEntry(OnParamData),
+        EndCallbackEntry()
     };
 
     void FillProperty(WndForm *wfDlg, int HWVersion, CHardwareParameters::value_type& Val) {

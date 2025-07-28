@@ -32,17 +32,9 @@ CallBackTableEntry_t callback_entry(const char* Name, Callback_t&& callback) {
   return { Name, std::forward<Callback_t>(callback) };
 }
 
-#define OnHelpCallbackEntry(x) callback_entry<WndProperty::OnHelpCallback_t>(#x, x)
+#define CallbackEntry(x) callback_entry(#x, x)
 
-#define OnListCallbackEntry(x) callback_entry<WndListFrame::OnListCallback_t>(#x, x)
-
-#define OnPaintCallbackEntry(x) callback_entry<WndOwnerDrawFrame::OnPaintCallback_t>(#x, x)
-
-#define ClickNotifyCallbackEntry(x) callback_entry<WndButton::ClickNotifyCallback_t>(#x, x)
-
-#define DataAccessCallbackEntry(x) callback_entry<DataField::DataAccessCallback_t>(#x, x)
-
-#define EndCallBackEntry() { nullptr, nullptr }
+#define EndCallbackEntry() { nullptr, nullptr }
 
 WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID);
 

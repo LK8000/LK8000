@@ -306,13 +306,13 @@ void OnAbort_IGC_FileRead(void) {
 }
 
 static CallBackTableEntry_t IGCCallBackTable[] = {
-        OnPaintCallbackEntry(OnMultiSelectListPaintListItem),
-        OnListCallbackEntry(OnMultiSelectListListInfo),
-        ClickNotifyCallbackEntry(OnCloseClicked),
-        ClickNotifyCallbackEntry(OnUpClicked),
-        ClickNotifyCallbackEntry(OnEnterClicked),
-        ClickNotifyCallbackEntry(OnDownClicked),
-        EndCallBackEntry()
+        CallbackEntry(OnMultiSelectListPaintListItem),
+        CallbackEntry(OnMultiSelectListListInfo),
+        CallbackEntry(OnCloseClicked),
+        CallbackEntry(OnUpClicked),
+        CallbackEntry(OnEnterClicked),
+        CallbackEntry(OnDownClicked),
+        EndCallbackEntry()
 };
 
 
