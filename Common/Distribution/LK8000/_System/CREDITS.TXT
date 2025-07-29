@@ -10,6 +10,10 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.32]
+ - Handle airspaces with two lower or upper bound
+ - Android: fix unhandled SecurityException
+
 [version 7.4.31]
  - fix freeze at task start
 
@@ -95,11 +99,11 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
  - send ground tracking message when not flying
 * Fix :
  - don't display disabled bottom bar at startup
- - BT_SPP connection faield after restart 
+ - BT_SPP connection failed after restart 
 
 [version 7.4.19]
 * Android :
- - Support standart BLE Sensor (Heart rate, Pressure, Temperature, Battery)
+ - Support standard BLE Sensor (Heart rate, Pressure, Temperature, Battery)
  - Notify BLE device connection / deconnection to user
 * New device :
  - FlyBeeper (Pressure, TAS, Fanet)
@@ -132,7 +136,7 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [version 7.4.15]
  - Implement device priority for external wind
- - Fix segfault is task turnpoint edit
+ - Fix segfault in task turnpoint edit
 
 [version 7.4.14]
 * fix
