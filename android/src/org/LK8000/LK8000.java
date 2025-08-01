@@ -55,6 +55,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
 import org.LK8000.QRCode.QRCodeScannerActivity;
@@ -266,25 +267,14 @@ public class LK8000 extends Activity {
   @Override protected void onResume() {
     super.onResume();
 
-    Intent intent = new Intent(this, MyService.class);
-
-    try {
-      // startForegroundService was introduced in Android Oreo (API 26).
-      // Use reflection to maintain compatibility with API < 14.
-      Method method = Context.class.getMethod("startForegroundService", Intent.class);
-      method.invoke(this, intent);
-
-    } catch (Throwable x) {
-      // fallback to start #startService on Android API < 26
-      startService(intent);
-	}
-
-
     if (nativeView != null)
       nativeView.onResume();
     else
       initSDL();
     getHapticFeedbackSettings();
+
+    Intent intent = new Intent(this, MyService.class);
+    ContextCompat.startForegroundService(this, intent);
   }
 
   @Override protected void onDestroy()

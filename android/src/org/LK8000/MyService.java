@@ -57,12 +57,20 @@ import androidx.core.app.ServiceCompat;
 public class MyService extends Service {
   private static final String TAG = "LK8000";
 
-  @Override public int onStartCommand(Intent intent, int flags, int startId) {
+  static final int intent_flags = getIntentFlags();
+  static final String CHANNEL_ID = BuildConfig.APPLICATION_ID + "_NotificationChannel";
 
-    /* add an icon to the notification area while LK8000 runs, to
-   remind the user that we're sucking his battery empty */
+  static int getIntentFlags() {
+    int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      flags |= PendingIntent.FLAG_IMMUTABLE;
+    }
+    return flags;
+  }
 
-    final String CHANNEL_ID = getApplicationContext().getPackageName() + "_NotificationChannel";
+  @Override
+  public void onCreate() {
+    super.onCreate();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationManager manager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -77,17 +85,17 @@ public class MyService extends Service {
         manager.createNotificationChannel(channel);
       }
     }
+  }
 
-    Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), getApplicationInfo().icon);
+  @Override public int onStartCommand(Intent intent, int flags, int startId) {
 
+    /* notification is required to start foreground service */
     Intent notificationIntent = new Intent(this, LK8000.class);
 
-    int intent_flags = PendingIntent.FLAG_UPDATE_CURRENT;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      intent_flags |= PendingIntent.FLAG_IMMUTABLE;
-    }
     PendingIntent contentIntent =
             PendingIntent.getActivity(this, 0, notificationIntent, intent_flags);
+
+    final Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), getApplicationInfo().icon);
 
     Notification notification =
             new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -107,7 +115,7 @@ public class MyService extends Service {
       ServiceCompat.startForeground(this, 1, notification,
               FOREGROUND_SERVICE_TYPE_LOCATION | FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
     }
-    catch(SecurityException e) {
+    catch(Exception e) {
       e.printStackTrace();
     }
     /* We want this service to continue running until it is explicitly
