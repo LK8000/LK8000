@@ -10,6 +10,10 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.33]
+ - Improve Cirling Wind calculation
+ - Android: fix possible segfault on first start
+
 [version 7.4.32]
  - Handle airspaces with two lower or upper bound
  - Android: fix unhandled SecurityException
