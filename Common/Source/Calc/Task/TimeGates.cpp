@@ -33,6 +33,8 @@ int WaitingTime = 5;
 int StartWindow = 10;
 
 void ResetSettings() {
+  GateType = open_type::anytime;
+
   PGOpenTimeH = 12;  // in Hours
   PGOpenTimeM = 0;   // in Minute
 
@@ -240,16 +242,22 @@ bool ValidTask() {
 }  // namespace
 
 bool UseGates() {
+  if (GateType == TimeGates::anytime) {
+    return false;
+  }
   if (!ValidTask()) {
     return false;  // no gates for simple "goto" task
   }
   if (GateType == TimeGates::pev_start) {
     return true;
   }
-  if (gTaskType != task_type_t::GP) {
-    return false;
+  if (GateType == TimeGates::fixed_gates) {
+    if (gTaskType != task_type_t::GP) {
+      return false;
+    }
+    return (PGNumberOfGates > 0);
   }
-  return (PGNumberOfGates > 0);
+  return false;
 }
 
 int ActiveGate() {
@@ -495,6 +503,7 @@ TEST_CASE("TimeGates") {
     }
   }
 
+  TimeGates::ResetSettings();
   LKUnloadLanguageFile();
 }
 
