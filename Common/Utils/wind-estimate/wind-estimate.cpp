@@ -39,8 +39,8 @@ int main(int argc, char* argv[]) {
 
   WindAnalyser windanalyser;
 
-  windanalyser.slot_newFlightMode(&Basic, &Calculated, true, 0);
-  
+  windanalyser.slot_newFlightMode();
+
   bool start = false;
   for (auto& fix : data) {
     Basic.Time = fix.time;

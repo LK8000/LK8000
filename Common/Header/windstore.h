@@ -30,11 +30,10 @@ struct DERIVED_INFO;
   */
 
 
-class WindStore  {
+class WindStore final {
 
 public:
   WindStore() = default;
-  ~WindStore() {}
 
 public: // Public slots
   /**

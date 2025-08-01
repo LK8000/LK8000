@@ -16,11 +16,7 @@ extern WindAnalyser *windanalyser;
 void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
 {
   int numsteps=10;
-  int i;
-  double h;
-  Vector wind;
   bool found=true;
-  double mag;
 
   LeastSquares windstats_mag;
 
@@ -30,13 +26,13 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
     return;
   }
 
-  for (i=0; i<numsteps ; i++) {
+  for (int i=0; i<numsteps ; i++) {
 
-    h = (flightstats.Altitude_Ceiling.y_max-flightstats.Altitude_Base.y_min)*
+    double h = (flightstats.Altitude_Ceiling.y_max-flightstats.Altitude_Base.y_min)*
       i/(double)(numsteps-1)+flightstats.Altitude_Base.y_min;
 
-    wind = windanalyser->windstore.getWind(GPS_INFO.Time, h, &found);
-    mag = sqrt(wind.x*wind.x+wind.y*wind.y);
+    Vector wind = windanalyser->getWind(GPS_INFO.Time, h, &found);
+    double mag = Length(wind);
 
     windstats_mag.least_squares_update(mag, h);
 
@@ -67,18 +63,18 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
   POINT wv[4];
   double dX, dY;
   double angle;
-  double hfact;
-  for (i=0; i<numsteps ; i++) {
-    hfact = (i+1)/(double)(numsteps+1);
-    h = (flightstats.Altitude_Ceiling.y_max-flightstats.Altitude_Base.y_min)*
+
+  for (int i=0; i<numsteps ; i++) {
+    double hfact = (i+1)/(double)(numsteps+1);
+    double h = (flightstats.Altitude_Ceiling.y_max-flightstats.Altitude_Base.y_min)*
       hfact+flightstats.Altitude_Base.y_min;
 
-    wind = windanalyser->windstore.getWind(GPS_INFO.Time, h, &found);
+    Vector wind = windanalyser->getWind(GPS_INFO.Time, h, &found);
     if (windstats_mag.x_max == 0)
       windstats_mag.x_max=1;  // prevent /0 problems
     wind.x /= windstats_mag.x_max;
     wind.y /= windstats_mag.x_max;
-    mag = sqrt(wind.x*wind.x+wind.y*wind.y);
+    double mag = Length(wind);
     if (mag<= 0.0) continue;
 
     angle = atan2(wind.x,-wind.y)*RAD_TO_DEG;

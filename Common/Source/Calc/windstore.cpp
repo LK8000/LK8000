@@ -69,24 +69,22 @@ void WindStore::recalculateWind(NMEA_INFO *nmeaInfo,
                                     nmeaInfo->Altitude, &found);
 
   if (found) {
-    if ((fabs(CurWind.x-_lastWind.x)>1.0) ||
-	(fabs(CurWind.y-_lastWind.y)>1.0) || updated) {
-      _lastWind=CurWind;
+    if (updated || ManhattanDistance(CurWind, _lastWind) > 1.0) {
+      _lastWind = CurWind;
 
       updated = false;
-      _lastAltitude=nmeaInfo->Altitude;
+      _lastAltitude = nmeaInfo->Altitude;
 
       newWind(nmeaInfo, derivedInfo, CurWind);
     }
-  } // otherwise, don't change anything
-
+  }  // otherwise, don't change anything
 }
 
 
 void WindStore::newWind(NMEA_INFO *nmeaInfo, DERIVED_INFO *derivedInfo,
                         Vector &wind) {
   //
-  double mag = sqrt(wind.x*wind.x+wind.y*wind.y);
+  double mag = Length(wind);
   double bearing;
 
   if (wind.y == 0 && wind.x == 0)
@@ -108,7 +106,7 @@ void WindStore::newWind(NMEA_INFO *nmeaInfo, DERIVED_INFO *derivedInfo,
   TCHAR Time[48];
   Units::TimeToTextS(Time, nmeaInfo->Time);
 
-  DebugLog(_T("wind <%s> : update %.0f° / %.0f km/h"),
+  DebugLog(_T("wind <%s> : update %3.0f° / %3.0f km/h"),
                 Time,
                 derivedInfo->WindBearing, 
                 derivedInfo->WindSpeed * 3.6);

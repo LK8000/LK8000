@@ -28,77 +28,58 @@
 
 class WindSample {
  public:
-  Vector v;
-  double t;
-  double mag;
+  double t; // s
+  double mag; // m/s
+  double angle; // rad
 };
 
 
-class WindAnalyser  {
+class WindAnalyser final {
 
 public:
-    WindAnalyser();
-    ~WindAnalyser();
+    WindAnalyser() = default;
 
-    WindStore windstore;
-
-// Signals
-    /**
-      * Send if a new windmeasurement has been made. The result is included in wind,
-      * the quality of the measurement (1-5; 1 is bad, 5 is excellent) in quality.
-      */
-    void newMeasurement(Vector wind, int quality);
-
-// Public slots
     /**
      * Called if the flightmode changes
      */
-    void slot_newFlightMode(NMEA_INFO *nmeaInfo,
-                            DERIVED_INFO *derivedInfo,
-                            bool left, int);
+    void slot_newFlightMode();
+
     /**
      * Called if a new sample is available in the samplelist.
      */
     void slot_newSample(NMEA_INFO *nmeaInfo,
                         DERIVED_INFO *derivedInfo);
 
-    // used to update output if altitude changes
-    void slot_Altitude(NMEA_INFO *nmeaInfo,
-                       DERIVED_INFO *derivedInfo);
+    /**
+     * used to update output if altitude changes
+     */ 
+    void slot_Altitude(NMEA_INFO *nmeaInfo, DERIVED_INFO *derivedInfo) {
+        windstore.slot_Altitude(nmeaInfo, derivedInfo);
+    }
 
     void slot_newEstimate(NMEA_INFO *nmeaInfo,
                           DERIVED_INFO *derivedInfo,
                           Vector v, int quality);
 
-    //    void calcThermalDrift();
+    Vector getWind(double Time, double h, bool *found) {
+        return windstore.getWind(Time, h, found);
+    }
+
+
 private: // Private attributes
-    int circleCount; //we are counting the number of circles, the first onces are probably not very round
-    bool circleLeft; //true=left, false=right
-    bool active;     //active is set to true or false by the slot_newFlightMode slot
-    int startmarker;
-    int startheading;
-    int circleDeg;
-    int lastHeading;
-    bool pastHalfway;
-    Vector minVector;
-    Vector maxVector;
-    int satCnt;
-    int minSatCnt;
-    bool curModeOK;
-    bool first;
-    int startcircle;
+    int circleCount = 0; // we are counting the number of circles, the first onces are probably not very round
 
-    Vector climbstartpos;
-    Vector climbendpos;
-    double climbstarttime;
-    double climbendtime;
-
+    WindStore windstore;
     std::vector<WindSample> windsamples;
 
 private: // Private memberfunctions
+
+    bool DetectCircling();
+
+    double AverageGroundSpeed() const;
+
     void _calcWind(NMEA_INFO *nmeaInfo,
                    DERIVED_INFO *derivedInfo);
-
 };
 
 #endif

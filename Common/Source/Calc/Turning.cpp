@@ -61,7 +61,7 @@ struct StartStateT {
 void SwitchZoomClimb(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool isclimb, bool left) {
   if ( (AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG) ) {
     ScopeLock lock(CritSec_FlightData);
-    windanalyser->slot_newFlightMode(Basic, Calculated, left, 0);
+    windanalyser->slot_newFlightMode();
   }
 }
 
@@ -224,6 +224,11 @@ void Turning(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
 
   TurningLog(_T("...Turning : Rate = %+6.1f° / %+6.1f° / %6.2fs" ), Calculated->TurnRate, Rate, dT);
 
+  if ((AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode == D_AUTOWIND_BOTHCIRCZAG)) {
+    ScopeLock lock(CritSec_FlightData);
+    windanalyser->slot_newSample(Basic, Calculated);
+  }
+
   LastRate = Rate;
   LastTime = Basic->Time;
   LastTrack = Basic->TrackBearing;
@@ -317,10 +322,6 @@ void Turning(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
       }
       break;
     case FlightState::CLIMB:
-      if ((AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode == D_AUTOWIND_BOTHCIRCZAG)) {
-        ScopeLock lock(CritSec_FlightData);
-        windanalyser->slot_newSample(Basic, Calculated);
-      }
 
       if ((Rate < climb_turnthreshold) || (forcecruise)) {
         Start = {Basic, Calculated};
