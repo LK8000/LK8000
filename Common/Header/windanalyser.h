@@ -19,6 +19,7 @@
 #define WINDANALYSER_H
 
 #include "windstore.h"
+#include <vector>
 
 /**The windanalyser analyses the list of flightsamples looking for windspeed and direction.
   *@author André Somers

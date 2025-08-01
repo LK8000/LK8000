@@ -338,7 +338,6 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
 
   quality= min(quality,5);  //5 is maximum quality, make sure we honor that.
 
-  BUGSTOP_LKASSERT(windsamples[jmax].mag!=0);
   if (windsamples[jmax].mag==0) {
     return;
   }
@@ -361,17 +360,5 @@ void WindAnalyser::slot_newEstimate(NMEA_INFO *nmeaInfo,
                                     DERIVED_INFO *derivedInfo,
                                     Vector a, int quality)
 {
-
-#ifdef DEBUG_WIND
-  const char *type;
-
-  if (quality>=6) {
-    type = "external wind";
-  } else {
-    type = "wind circling";
-  }
-  DebugStore("%f %f %d # %s\n", a.x, a.y, quality, type);
-#endif
-
   windstore.slot_measurement(nmeaInfo, derivedInfo, a, quality);
 }

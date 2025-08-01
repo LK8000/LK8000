@@ -19,6 +19,8 @@
 #include "NMEA/Info.h"
 #include "NMEA/Derived.h"
 #include "Defines.h"
+#include "MessageLog.h"
+#include "Units.h"
 /**
   * Called with new measurements. The quality is a measure for how
   * good the measurement is. Higher quality measurements are more
@@ -102,8 +104,14 @@ void WindStore::newWind(NMEA_INFO *nmeaInfo, DERIVED_INFO *derivedInfo,
     // TODO code: give warning, wind estimate bogus or very strong!
   }
 
-#ifdef DEBUG_WIND
-  DebugStore("%f %f 0 # wind estimate\n",wind.x,wind.y);
+#ifndef NDEBUG
+  TCHAR Time[48];
+  Units::TimeToTextS(Time, nmeaInfo->Time);
+
+  DebugLog(_T("wind <%s> : update %.0f° / %.0f km/h"),
+                Time,
+                derivedInfo->WindBearing, 
+                derivedInfo->WindSpeed * 3.6);
 #endif
 
 }
