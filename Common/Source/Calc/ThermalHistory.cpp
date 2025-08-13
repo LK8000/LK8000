@@ -47,7 +47,8 @@ sort_mode_to_value_getter(const NMEA_INFO* Basic) {
         };
       }
       else {
-        return [&](const THERMAL_HISTORY& Therm) {
+        // `Basic` must be captured by value to avoid dangling reference
+        return [Basic](const THERMAL_HISTORY& Therm) {
           return std::abs(AngleLimit180(Therm.Bearing - Basic->TrackBearing));
         };
       }
