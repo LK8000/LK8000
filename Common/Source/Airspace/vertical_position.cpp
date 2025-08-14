@@ -293,7 +293,7 @@ vertical_position vertical_position::parse_open_aip(const xml_node* node) {
         break;
     }
   }
-  if (Alt._ref != vertical_ref::Undef) {
+  if (Alt._ref == vertical_ref::Undef) {
     throw std::runtime_error("undef");
   }
 
