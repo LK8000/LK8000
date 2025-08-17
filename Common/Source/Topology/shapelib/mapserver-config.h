@@ -6,7 +6,8 @@
 #define HAVE_STRCASESTR 1
 #define HAVE_STRDUP 1
 
-#if defined(__APPLE__) || defined(ANDROID)
+#if (!defined(__GLIBC__) || (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 38))) \
+  && !defined(_WIN32) && !defined(KOBO)
 #define HAVE_STRLCAT 1
 #define HAVE_STRLCPY 1
 #endif
