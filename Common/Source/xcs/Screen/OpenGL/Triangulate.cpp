@@ -25,6 +25,7 @@ Copyright_License {
 #include "Screen/Point.hpp"
 #include "Util/AllocatedArray.hpp"
 
+#include <memory>
 #include <algorithm>
 #include <math.h>
 #include <assert.h>
@@ -345,18 +346,19 @@ TriangleToStrip(GLushort *triangles, unsigned index_count,
     return 0;
 
   // count the number of occurrences for each vertex
-  auto vcount = new unsigned[vertex_count]();
+  auto vcount = std::make_unique<unsigned[]>(vertex_count);
   auto t = triangles;
   const auto t_end = triangles + index_count;
 
-  AddValueCounts(vcount, vertex_count, t, t_end);
+  AddValueCounts(vcount.get(), vertex_count, t, t_end);
 
   const unsigned triangle_buffer_size = index_count + 2 * (polygon_count - 1);
-  const auto triangle_strip = new GLushort[triangle_buffer_size];
+  const auto triangle_strip_ptr = std::make_unique<GLushort[]>(triangle_buffer_size);
+  const auto triangle_strip = triangle_strip_ptr.get();
   auto strip = triangle_strip;
 
   // search a start point with only one reference
-  GLushort *v = FindOne(vcount, vertex_count, t, t_end);
+  GLushort *v = FindOne(vcount.get(), vertex_count, t, t_end);
   assert(v >= t && v < t_end);
 
   strip[0] = *v;
@@ -433,7 +435,7 @@ TriangleToStrip(GLushort *triangles, unsigned index_count,
 
     if (!found_something) {
       // search for a vertex that has only one reference left
-      v = FindOne(vcount, vertex_count, t, t_end);
+      v = FindOne(vcount.get(), vertex_count, t, t_end);
       assert(v >= t && v < t_end);
 
       // add two redundant points
@@ -460,9 +462,6 @@ TriangleToStrip(GLushort *triangles, unsigned index_count,
   //LogDebug(_T("triangle_to_strip: indices=%u strip indices=%u (%u%%)"),
   //         index_count, strip - triangle_strip,
   //         (strip - triangle_strip)*100/index_count);
-
-  delete[] triangle_strip;
-  delete[] vcount;
 
   return strip - triangle_strip;
 }
