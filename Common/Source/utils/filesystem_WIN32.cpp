@@ -11,6 +11,7 @@
 
 #include <windows.h>
 #include <shlobj.h>
+#include <cstdint>
 #include "Util/tstring.hpp"
 
 bool lk::filesystem::exist(const TCHAR* szPath) {
