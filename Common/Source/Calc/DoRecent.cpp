@@ -172,9 +172,16 @@ void InsertRecentList(int wp_idx) {
       }
    }
 
-    // make room in front of list to store index
-   std::copy_backward(std::begin(RecentIndex), std::next(RecentIndex, idx), std::next(RecentIndex, RecentNumber));
-   std::copy_backward(std::begin(RecentChecksum), std::next(RecentChecksum, idx), std::next(RecentChecksum, RecentNumber));
+   if (idx > 0 && RecentNumber > 0) {
+     // make room in front of list to store index
+     std::copy_backward(std::begin(RecentIndex),
+                        std::next(RecentIndex, idx), 
+                        std::next(RecentIndex, idx + 1));
+
+     std::copy_backward(std::begin(RecentChecksum), 
+                        std::next(RecentChecksum, idx),
+                        std::next(RecentChecksum, idx + 1));
+   }
 
    RecentIndex[0] = wp_idx;
    RecentChecksum[0] = GetWpChecksum(wp_idx);
@@ -233,3 +240,25 @@ void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    LastRunTime=Basic->Time;
    RecentDataReady=true;
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("InsertRecentList") {
+  ResetRecentList();
+
+  for (int i = 0; i < 10; ++i) {
+    InsertRecentList(i);
+    CHECK_EQ(GetRecentIndex(i), 0);
+    CHECK_EQ(RecentNumber, i + 1);
+  }
+
+  InsertRecentList(3);
+  CHECK_EQ(RecentNumber, 10);
+  CHECK_EQ(GetRecentIndex(3), 0);
+  CHECK_EQ(GetRecentIndex(2), 7);
+  CHECK_EQ(GetRecentIndex(4), 6);
+
+  ResetRecentList();
+}
+#endif
