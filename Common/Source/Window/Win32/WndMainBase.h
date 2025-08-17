@@ -27,6 +27,8 @@ public:
     WndMainBase();
     virtual ~WndMainBase();
 
+    using WndPaint::Create;
+
     bool Create(const RECT& rect);
 
     void Fullscreen();
@@ -37,20 +39,20 @@ public:
                    SWP_NOMOVE | SWP_NOZORDER |
                    SWP_NOACTIVATE | SWP_NOOWNERZORDER);
     }
-		
-		inline void PostQuit() { 
-			
-		}
 
-  /**
-   * Check if the specified event should be allowed.  An event may be
-   * rejected when a modal dialog is active, and the event should go
-   * to a window outside of the dialog.
-   */
-  gcc_pure
-  bool FilterEvent(const Event &event, Window *allowed) const;
+    inline void PostQuit() { 
+        
+    }
 
-  inline void UnGhost() {}
+    /**
+     * Check if the specified event should be allowed.  An event may be
+     * rejected when a modal dialog is active, and the event should go
+     * to a window outside of the dialog.
+     */
+    gcc_pure
+    bool FilterEvent(const Event &event, Window *allowed) const;
+
+    inline void UnGhost() {}
 
 protected:
     virtual LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
