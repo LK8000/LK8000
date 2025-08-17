@@ -202,17 +202,18 @@ struct region_t {
   bounding_box bbox;
 };
 
-constexpr region_t zones[] = {
-  { "US920", { frequency::us, bandwidth::khz_500, 15 }, { 90, -90, -30, -169 } },
-  { "AU920", { frequency::us, bandwidth::khz_500, 15 }, { -10, -48, 179, 110 } },
-  { "IN866", { frequency::in, bandwidth::khz_250, 14 }, { 40, 5, 89, 69 } },
-  { "KR923", { frequency::kr, bandwidth::khz_125, 15 }, { 39, 34, 130, 124 } },
-  { "AS920", { frequency::us, bandwidth::khz_125, 15 }, { 47, 21, 146, 89} },
-  { "EU868", { frequency::ue, bandwidth::khz_250, 14 }, { 90, -90, 180, -180 } },
-};
+const region_t get_region_settings(const GeoPoint& position) {
 
-const region_t& get_region_settings(const GeoPoint& position) {
-  for (auto& r : zones) {
+  constexpr region_t zones[] = {
+    { "US920", { frequency::us, bandwidth::khz_500, 15 }, { 90, -90, -30, -169 } },
+    { "AU920", { frequency::us, bandwidth::khz_500, 15 }, { -10, -48, 179, 110 } },
+    { "IN866", { frequency::in, bandwidth::khz_250, 14 }, { 40, 5, 89, 69 } },
+    { "KR923", { frequency::kr, bandwidth::khz_125, 15 }, { 39, 34, 130, 124 } },
+    { "AS920", { frequency::us, bandwidth::khz_125, 15 }, { 47, 21, 146, 89} },
+    { "EU868", { frequency::ue, bandwidth::khz_250, 14 }, { 90, -90, 180, -180 } },
+  };
+
+  for (const auto& r : zones) {
     if (r.bbox.inside(position)) {
       return r;
     }
@@ -242,7 +243,7 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
   try {
 
     // set region parameters on first run or if regions change
-    auto& params = get_region_settings({ Basic.Latitude, Basic.Longitude });
+    const auto params = get_region_settings({ Basic.Latitude, Basic.Longitude });
     if (current_region != params.name) {
       current_region = params.name;
       d->Com->WriteGattCharacteristic(radio_uuid, frequency_uuid, ToLE32(static_cast<uint32_t>(params.mac.khz)));
