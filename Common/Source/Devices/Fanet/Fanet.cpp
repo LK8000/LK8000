@@ -158,7 +158,7 @@ constexpr auto aircraft_type_table = lookup_table<aircraft_t, flarm_aircraft_t>(
 bool GetFanetName(uint32_t ID, const NMEA_INFO &info, TCHAR* szName, size_t size) {
   int index = FanetGetIndex(ID, info.FanetName, false);
   if (index >= 0) {
-    _tcsncpy(szName, info.FanetName[index].Name, size);
+    lk::strcpy(szName, info.FanetName[index].Name, size);
     return true;
   }
   szName[0] = _T('\0'); // empty out string if name not found.
