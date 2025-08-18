@@ -9,7 +9,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
@@ -30,7 +30,7 @@ jobs:
         if: ${{ matrix.language == 'cpp' }}
         run: |
           sudo apt-get update
-          sudo apt-get install --yes libzzip-dev libfreetype6-dev libboost-dev libpng-dev libgeographic-dev xsltproc imagemagick fonts-dejavu zip libgl1-mesa-dev libegl1-mesa-dev libx11-dev libasound2-dev libsndfile1-dev
+          sudo apt-get install --yes libzzip-dev libfreetype6-dev libboost-dev libpng-dev libgeographiclib-dev xsltproc imagemagick fonts-dejavu zip libgl1-mesa-dev libegl1-mesa-dev libx11-dev libasound2-dev libsndfile1-dev
 
       - name: Configure (cpp)
         if: ${{ matrix.language == 'cpp' }}
