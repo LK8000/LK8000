@@ -51,17 +51,16 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
 import org.LK8000.QRCode.QRCodeScannerActivity;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,6 +78,16 @@ public class LK8000 extends Activity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+              OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+              () -> {
+                Log.d(TAG, "OnBackInvokedCallback");
+                // Prevents closing the app on back gesture
+              });
+    }
 
     Log.d(TAG, "ABI=" + Build.CPU_ABI);
     Log.d(TAG, "PRODUCT=" + Build.PRODUCT);
@@ -275,6 +284,11 @@ public class LK8000 extends Activity {
 
     Intent intent = new Intent(this, MyService.class);
     ContextCompat.startForegroundService(this, intent);
+  }
+
+  @Override
+  public void onBackPressed() {
+    Log.d(TAG, "in onBackPressed()");
   }
 
   @Override protected void onDestroy()
