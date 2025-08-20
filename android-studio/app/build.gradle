@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'io.sentry.android.gradle' version '5.8.0'
+    id 'io.sentry.android.gradle' version '5.9.0'
 }
 
 def sentryProperties = new Properties()
@@ -131,7 +131,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.4.2"
     implementation "androidx.camera:camera-view:1.4.2"
 
-    implementation "androidx.core:core:1.16.0"
+    implementation "androidx.core:core:1.17.0"
     implementation "androidx.constraintlayout:constraintlayout:2.2.1"
     implementation "androidx.activity:activity:1.10.1"
     implementation "androidx.appcompat:appcompat:1.7.1"
