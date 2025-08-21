@@ -1,4 +1,4 @@
-#C5;
+#C6;
 [Welcome to LK8000]
 Hello! It seems that you have just installed or updated LK8000, and here we can provide more informations about changes and improvements.
 Join our free support forum at www.postfrontal.com/forum
@@ -10,246 +10,87 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
-[version 7.4.48]
- - Fix PowerFlarm task declare
- - Fix Fanet unique_id calculation
- - Fanet : ignore message subtype other than 0
-
-[version 7.4.47]
-- Fix multiple task start point handling
-- Save "PEV-start" settings with task
-- Fix buffer overflow in Fanet parser
-
-[version 7.4.46]
- * airspaces
-  - qnh altitude ajustement
-  - support OpenAir files
-  - add "TSA" and "TRA" as "Restricted" alias
-  - add "ASRA" as "Glider Sector" alias
- * android
-  - fix possible crash at startup 
-
-[version 7.4.45]
- - Add Kalman filter for STF and and SpMe
- - Handle device priority for Gyroscope data
- - Update VectorVario driver for Pitch & Roll 
- - Add missing "Unknown" type to aispace config dialog
-
-[version 7.4.44]
- - fix regression in airspaces drawing
-
-[version 7.4.43]
-* Android
- - update openaip airspaces download url
- - fix freeze at low zoom level with border only airspace setting
- - fix segfault in device config if bluetooth is disabled
-* Language
- - update chinese translation
-
-[version 7.4.42]
-* Fix
- - Arithmetic overflow at hight zomm level
-
-[version 7.4.41]
-* Fix
- - IGC download from PowerFLARM
- - Auto Final Glide before last task leg
-
-[version 7.4.40]
- - Improved device priority handling.
- - Fix auto MC "equivalent" when no airspeed available.
- - Disable auto MC "final glide" before last task leg.
-
-[version 7.4.39]
- - VectorVario : fix wind direction and Gload
- - Terrain fix missing isoline 
-
-[version 7.4.38]
- - Added new device driver: Vector Vario
- - Updated XCTracer driver to parse LK8EX1 sentence
- - Improved screen refresh speed on vario change
-
-[version 7.4.37]
- - add "BOOX" ereader to eInk android list
- - Bottom bar "SYS6" : change value order
-
-[version 7.4.36]
-* Fix
- - crash in XCVario driver
- - crash in FlyBeeper driver
- - wrong list in Info Page 2.3
- - update Ukrainian language
-* Android
- - don't close the app on back gesture
- - support device with 16k page size
-
-[version 7.4.35]
- - fix openaip airspace loading
- - fix "QNH" unit in Basic settings
- - fix segfault in thermal history
-
-[version 7.4.34]
- - fix missing airspace warning
-
-[version 7.4.33]
- - Improve Cirling Wind calculation
- - Android: fix possible segfault on first start
-
-[version 7.4.32]
- - Handle airspaces with two lower or upper bound
- - Android: fix unhandled SecurityException
-
-[version 7.4.31]
- - fix freeze at task start
-
-[version 7.4.30]
- - fix critical bug in "PEV" start implementation
-
-[version 7.4.29]
+[version 7.5.0]
 * New
  - Add "PEV" task start procedure
-* Fix
- - baro source fallback when KRT2 radio is connected
- - slow airspace drawing a low zoom level
- - wrong map orientation in thermal mode
- - final glide auto MC if active turnpoint is not the last 
-
-[version 7.4.28]
-* Android : add 'sentry' automatic crash reporting to "beta"
-
-[version 7.4.27]
-* Fix Info page 2.4 with huge aispace database loaded
-* Android : 
- - Fix Download Mananger screen layout
- - Fix Task QRCode scan screen layout
-
-[version 7.4.26]
-* Fix Info page 2.4 and 3.3 
-* Fix Invalid QFE value when altiude unit is feet
-* Fix Task pictogram drawing in task definition screen
-* Android : Fix Segfault using usb serial adaptor
-
-[version 7.4.25]
-* Fix segfault on igc download from Flarm or EOS device   
-
-[version 7.4.24]
-* Fix :
- - Wrong "Task Distance Covered" in racing task
- - Missing sound on Win32 platform
- - Update World Magnetic Model for 2025 to 2029
- - Reset airspaces and waypoints files list to default
- - ACD57 driver : get QNH setting at startup
- - Possible crash on Thermal Multitarget
-
-[version 7.4.23]
-* New : 
- - Add "Condor-3" device driver
  - Fanet : Receiv "Thermal" from nearby...
  - Add "Tamil" language
-* Android :
- - Add SkyDrop2 RX support 
- - Use Accelerometer to calculate G-Load
-* Fix : 
- - AAT Task : fix missing isoline
- - crash on empty logbook
-...
-
-[version 7.4.22]
-* New events : SendDataPort[X]
-* New InfoBoxes:
-  - Average Ground Speed.
-  - Next ETE based on avg groud speed
-  - Next ETA based on avg groud speed
-* FlyBeeper Fanet : set state to `Walking` for ground tracking
-* Android Download Manager, Add hightRes map:
-  - Chech Republic
-  - Lithuania
-  - Slovakia
-  - Poland
-* Android Usb devices : 
-  - add SoftRF Eco, Ink and Card 
-* Fix : 
-  - reset Start / Finish height rules on ClearTask
-  - display "GPS NOT CONNECTED" if the only connected 
-    device is not a GPS.
-
-[version 7.4.21]
-* fix invalid comport disconnected notification
-
-[version 7.4.20]
-* Improve BLE connection reliability
-* FlyBeeper Fanet : 
- - automatic radio setting depending of position
- - use Serial nhumber to calculate Fanet Id
- - send ground tracking message when not flying
-* Fix :
- - don't display disabled bottom bar at startup
- - BT_SPP connection failed after restart 
-
-[version 7.4.19]
-* Android :
- - Support standard BLE Sensor (Heart rate, Pressure, Temperature, Battery)
+ - Add SkyDrop2 RX support (Android)
+ - Use Accelerometer to calculate G-Load (Android)
+ - New events : SendDataPort[X]
+ - InfoBoxes: 
+      Average Ground Speed.
+      Next ETE based on avg groud speed
+      Next ETA based on avg groud speed
+ - Support standard BLE Sensor:
+      Heart rate
+      Barometric Pressure
+      Temperature
+      Relative Humidity
+      Wind Speed & Course
+      Battery Level
  - Notify BLE device connection / deconnection to user
+ - Add new start turnpoint type for SGP task
+ - add config for cloud backup and device transfert (Android)
+ - Download Manager (Android),
+   Add hightRes map:
+     Chech Republic
+     Lithuania
+     Poland
+     Slovakia
+     Ukrainian
+   Update OpenAIP airspaces source
+ - Android Usb devices : 
+     add SoftRF Ham, Midi, Eco, Ink and Card 
+ - Implement device priority for external device
+ - add support for FFVL (VLSafe) tracking system
+ - Silent 2 electro polar
+ - Handle airspaces with two lower or upper bound
+ - Add Kalman filter for STF and and SpMe
+
 * New device :
- - FlyBeeper (Pressure, TAS, Fanet)
  - Stodeus UltraBip & BlueBip
+ - FlyBeeper (Pressure, TAS, Fanet)
+ - Vector Vario
+ - XCVario
+ - Air Control Display ACD-57
+ - Generic Autopilot output
+ - Air3 7.3 : make Fanet commport (ttyMT2) available (Android)
+ - Condor-3
+
 * OpenAir airspace :
  - use 'AY' field for type
- - ignore 'AI' field
-* Others :
- - fix invalid unit symbols
+ - add support for 'AA' field 
+ - ignore 'AI' and 'AX' field
+ - add "TSA" and "TRA" as "Restricted" alias
+ - add "ASRA" as "Glider Sector" alias
 
-[version 7.4.18]
-- XCVario: Fix Cruise/Climb switch
-- XCTracer: Fix Wind bearing
-- Info box: Fix satellite count title
-- External Wind: Fix missing availability reset
-- Add device fallback info to RUNTIME.log
-- fix possible crash after device config change
-
-[version 7.4.17]
-* Android : 
+* Fix
+ - Drawing artefact at hight zoom level
+ - Download IGC track from PowerFlarm
+ - Improve Cirling Wind calculation
+ - baro source fallback when KRT2 radio is connected
+ - final glide auto MC if active turnpoint is not the last 
+ - Info page 2.4 with huge aispace database loaded
+ - Invalid QFE value when altiude unit is feet
+ - Task pictogram drawing in task definition screen
+ - segfault on igc download from Flarm or EOS device
+ - Fix Download Mananger screen layout (Android)
+ - Fix Task QRCode scan screen layout (Android)
+ - Fix Segfault using usb serial adaptor (Android)
+ - Wrong "Task Distance Covered" in racing task
+ - Update World Magnetic Model for 2025 to 2029
+ - Reset airspaces and waypoints files list to default
+ - Possible crash on Thermal Multitarget
+ - AAT Task : fix missing isoline
+ - crash on empty logbook
+ - reset Start / Finish height rules on ClearTask
+ - display "GPS NOT CONNECTED" if the only connected device is not a GPS.
  - display device name instead of adress for bluetooth device
- - Air3 7.3 : make Fanet commport (ttyMT2) available in comport list
-* fix
- - XCVario : Fix TAS calculation
  - discard '0m' geoid separation in GPGGA nmea sentence
-
-[version 7.4.16]
- - Add new start turnpoint type for SGP task
- - Android : add config for cloud backup and device transfert
-
-[version 7.4.15]
- - Implement device priority for external wind
- - Fix segfault in task turnpoint edit
-
-[version 7.4.14]
-* fix
- - android keyboard paste
  - enable full GNSS measurement (android >= 12)
- - possible buffer overflow in nmea parser
-
-[version 7.4.12]
-* fix :
- - android usb/serial port
- - possible app freeze on comport restart 
- - "Air Control Display" : woraround to set active schannel
-* new :
- - add FFVL tracking system
-
-[version 7.4.11]
- - updated keyboard layout
  - improved flarm radar drawing
- - updated "Air Control Display" device driver
- - minor bug fix and improvement
-
-[version 7.4.9]
- - fix turnpoint autoadvance : broken in 7.4.8
- - updated polish translation
-
-[version 7.4.8]
-* fix :
- - Fix topology polygon drawing (#1628)
+ - Topology polygon drawing (#1628)
  - Don't reset TimeGates setting on task clear
  - Allow to disable audio vario without restarting
  - Fix task covered calculation
@@ -257,21 +98,11 @@ Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
  - Remove obsolete Conical turnpoint type
  - Android 14 compatibility
  - Wifi On/Off support on newer kobo models
-* new :
- - Android USB : add SoftRF Ham and Midi
- - Generic Autopilot output driver
- - Air Control Display ACD-57 driver
-
-[version 7.4.6]
-* fix :
  - segfault at shutdown on kobo.
  - log book: remove 300 flight limit.
  - improve MC/bugs/ballast sync with external devices.
- - allow to enable audio vario without restart.
+ - allow to enable audio vario without restart (Android).
  - LX Nano III task declare.
-* new :
- - added XCVario driver
- - added Silent 2 electro polar
 
 [version 7.4.5]
 * fix :
