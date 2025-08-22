@@ -58,6 +58,10 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
   <CR><LF>
   */
 
+  if (nparams < 15) {
+    return TRUE; // can happen if "NMEA Checksum" check is disabled !!
+  }
+
   double value;
   if (ReadChecked(params[1], value)) {
     // Vario, -30 to +30 m/s, negative sign for sink
@@ -133,6 +137,10 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
 }
 
 BOOL XCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA_INFO* pGPS) {
+  if (nparams < 3) {
+    return TRUE; // can happen if "NMEA Checksum" check is disabled !!
+  }
+
   if (params[1] == "bal-water"sv) {
     double liters;
     if (ReadChecked(params[2], liters)) {
