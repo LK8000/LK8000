@@ -81,6 +81,7 @@ namespace tracking {
 #ifndef UNDER_CE
         if (!ffvl_user_key.empty()) {
             ffvl_tracking = std::make_unique<FFVLTracking>(ffvl_user_key);
+            ffvl_tracking->Start();
         }
 #endif
 

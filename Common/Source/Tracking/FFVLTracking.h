@@ -23,12 +23,12 @@
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
-class FFVLTracking : public Thread {
+class FFVLTracking final : public Thread {
 public:
   FFVLTracking() = delete;
-  explicit FFVLTracking(const std::string& user_key);
+  explicit FFVLTracking(std::string user_key);
 
-  ~FFVLTracking();
+  ~FFVLTracking() override;
 
   void Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated);
 
@@ -36,7 +36,9 @@ private:
 
   void Run() override;
 
-  void Send(const AGeoPoint& position) const;
+  void Send(http_session& http, const AGeoPoint& position) const;
+
+  bool Wait();
 
   const std::string _user_key;
 
@@ -48,8 +50,6 @@ private:
   using gps_time = std::chrono::duration<double>;
 
   gps_time next_time = {};
-
-  http_session http;
 };
 
 #endif // _TRACKING_FFVLTRACKING_H_
