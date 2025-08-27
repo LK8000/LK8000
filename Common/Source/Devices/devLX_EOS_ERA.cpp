@@ -1763,7 +1763,7 @@ BOOL DevLX_EOS_ERA::GetTarget(DeviceDescriptor_t* d, const char* sentence, NMEA_
 BOOL DevLX_EOS_ERA::EOSRequestRadioInfo(DeviceDescriptor_t* d)
 {
   if (d && d->IsRadio) {
-    Poco::Thread::sleep(50);
+    Sleep(50);
     SendNmea(d, _T("LXDT,GET,RADIO"));
     return TRUE;
   } 

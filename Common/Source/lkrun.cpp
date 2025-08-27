@@ -107,7 +107,7 @@ _abnormal:
 
   if ( (fp=fopen(LOCKFILE,"w")) == NULL) {
      fprintf(stderr,"*** cannot create lockfile (2), errno=%d. %s\n", errno,sys_errlist[errno]);
-     sleep(RETDELAY);
+     Sleep(RETDELAY);
      return(RERR);
   }
   sprintf(spid,"%d",getpid());
@@ -122,11 +122,11 @@ _abnormal:
 
   if ( (execv(proc,varg)) <0) {
      fprintf(stderr,"*** exec failed, errno=%d. %s\n",errno,sys_errlist[errno]);
-     sleep(RETDELAY);
+     Sleep(RETDELAY);
      return(RERR);
   }
   fprintf(stderr,"*** Warning, exec failed with no error! ***\n");
-  sleep(RETDELAY);
+  Sleep(RETDELAY);
   return(RERR);
 
 } // main
