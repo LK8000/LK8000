@@ -13,13 +13,19 @@
 #define	_THREAD_MUTEX_HPP_
 
 #include <functional>
+#include <mutex>
+
 #include "Poco/Mutex.h"
+#include "Poco/NamedMutex.h"
 #include "Poco/ScopedLock.h"
 #include "Poco/ScopedUnlock.h"
 
 // template adaptor to make Poco::Mutex and Poco::FastMutex conform to C++ named requirements 'Lockable'
 template<typename BaseMutex>
 struct LockableMutex : BaseMutex {
+
+    using BaseMutex::BaseMutex;
+
     bool try_lock() {
         return BaseMutex::tryLock();
     }
@@ -27,6 +33,7 @@ struct LockableMutex : BaseMutex {
 
 using Mutex = LockableMutex<Poco::Mutex>;
 using FastMutex = LockableMutex<Poco::FastMutex>;
+using NamedMutex = LockableMutex<Poco::NamedMutex>;
 
 using ScopeLock = Poco::ScopedLock<Mutex>;
 using ScopeUnlock = Poco::ScopedUnlock<Mutex>;

@@ -22,7 +22,6 @@
 #include "AirfieldDetails.h"
 #include "Dialogs/dlgProgress.h"
 #include "Dialogs.h"
-#include "Poco/NamedMutex.h"
 #include "Terrain.h"
 
 #include "InputEvents.h"
@@ -32,8 +31,6 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "ComCheck.h"
-
-#include "Poco/NamedEvent.h"
 
 #include "FlightDataRec.h"
 
@@ -60,6 +57,7 @@
 #include "Comm/ExternalWind.h"
 #include "LocalPath.h"
 #include "Calc/LDRotaryBuffer.h"
+#include "Thread/Mutex.hpp"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -579,17 +577,21 @@ int main(int argc, char *argv[]) {
 
 #endif
 
+#if !defined(ANDROID)
   // use mutex to avoid multiple instances of lk8000 be running
-#if (!((WINDOWSPC>0) && TESTBENCH)) && !defined(ANDROID)
+  std::unique_ptr<NamedMutex> single_instance;
+  std::unique_ptr<std::unique_lock<NamedMutex>> single_instance_lock;
+
   try {
-    Poco::NamedMutex LK8000_Mutex("LOCK8000");
-    if (!LK8000_Mutex.tryLock()) {
+    single_instance = std::make_unique<NamedMutex>("LOCK8000");
+    single_instance_lock = std::make_unique<std::unique_lock<NamedMutex>>(*single_instance, std::defer_lock);
+    if (!single_instance_lock->try_lock()) {
       return(-2);
     }
-  } catch (Poco::Exception& e) {
+  }
+  catch (std::exception& e) {
     const tstring error = to_tstring(e.what());
-    const tstring message = to_tstring(e.message());
-    StartupStore(_T("[%s] %s\n"), error.c_str(), message.c_str());
+    StartupStore(_T("%s"), error.c_str());
   }
 #endif
 
