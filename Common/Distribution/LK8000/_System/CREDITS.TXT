@@ -10,6 +10,16 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.36]
+* Fix
+ - crash in XCVario driver
+ - crash in FlyBeeper driver
+ - wrong list in Info Page 2.3
+ - update Ukrainian language
+* Android
+ - don't close the app on back gesture
+ - support device with 16k page size
+
 [version 7.4.35]
  - fix openaip airspace loading
  - fix "QNH" unit in Basic settings
