@@ -57,7 +57,8 @@
 #include "Comm/ExternalWind.h"
 #include "LocalPath.h"
 #include "Calc/LDRotaryBuffer.h"
-#include "Thread/Mutex.hpp"
+#include "Thread/NamedMutex.hpp"
+#include <mutex>
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -582,7 +583,7 @@ int main(int argc, char *argv[]) {
   std::unique_ptr<std::unique_lock<NamedMutex>> single_instance_lock;
 
   try {
-    single_instance = std::make_unique<NamedMutex>("LOCK8000");
+    single_instance = std::make_unique<NamedMutex>(_T("LOCK8000"));
     single_instance_lock = std::make_unique<std::unique_lock<NamedMutex>>(*single_instance, std::defer_lock);
     if (!single_instance_lock->try_lock()) {
       return(-2);

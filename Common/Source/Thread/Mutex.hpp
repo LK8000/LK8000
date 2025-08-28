@@ -33,7 +33,6 @@ struct LockableMutex : BaseMutex {
 
 using Mutex = LockableMutex<Poco::Mutex>;
 using FastMutex = LockableMutex<Poco::FastMutex>;
-using NamedMutex = LockableMutex<Poco::NamedMutex>;
 
 using ScopeLock = Poco::ScopedLock<Mutex>;
 using ScopeUnlock = Poco::ScopedUnlock<Mutex>;
