@@ -48,7 +48,7 @@ bool ComPort::Write(const void *data, size_t size) {
         // (e.g., RxThread calling devOpen() via device callbacks vs main thread calling device functions).
         // Each port implementation (SerialPort, TTYPort, SocketPort) uses OS resources
         // (HANDLE, fd, socket) that are not safe for concurrent access.
-        ScopeLock lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
 
         bool success = Write_Impl(data, size);
 
@@ -120,7 +120,7 @@ bool ComPort::StartRxThread() {
 }
 
 bool ComPort::WaitForStop(int time) {
-    ScopeLock lock(stop_mtx);
+    const std::lock_guard<Mutex> lock(stop_mtx);
     if (stop) {
         return true;
     }
@@ -208,7 +208,7 @@ tstring ComPort::GetDeviceName() {
 }
 
 void ComPort::NotifyConnected() {
-    ScopeLock lock(status_mutex);
+    const std::lock_guard<Mutex> lock(status_mutex);
     status_connected = true;
     if (status_disconnected_notify) {
         status_cv.Signal();
@@ -223,7 +223,7 @@ void ComPort::NotifyConnected() {
 
 void ComPort::status_thread_loop() {
     try {
-        ScopeLock lock(status_mutex);
+        const std::lock_guard<Mutex> lock(status_mutex);
         while (!status_thread_stop) { // until stop not request
             if (status_disconnected_notify) { // if disconnect notify requested
                 tstring name = GetDeviceName();
@@ -252,7 +252,7 @@ void ComPort::NotifyDisconnected() {
     tstring name = GetDeviceName();
     StartupStore(_T(". Device %c [%s] : disconnected"), devLetter(GetPortIndex()), name.c_str());
     // notify user in next 10 sec, notification canceled if reconnect happen...
-    ScopeLock lock(status_mutex);
+    const std::lock_guard<Mutex> lock(status_mutex);
     status_connected = false;
     if (!status_thread.IsDefined()) {
         status_thread.Start();

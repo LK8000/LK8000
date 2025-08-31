@@ -42,7 +42,7 @@ bool ValidResWayPointFast(int i) { // 091213
 }
 
 bool ValidResWayPoint(int i) { // 091213
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
   return ValidResWayPointFast(i);
 }
 

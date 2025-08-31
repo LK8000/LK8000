@@ -134,7 +134,7 @@ static unsigned
 GetCapitalHeight(FT_Face face)
 {
 #ifndef ENABLE_OPENGL
-  const ScopeLock protect(freetype_mutex);
+  const std::lock_guard<Mutex> lock(freetype_mutex);
 #endif
 
   FT_UInt i = FT_Get_Char_Index(face, 'M');
@@ -260,7 +260,7 @@ Font::TextSize(const TCHAR *text) const
   int x = 0;
 
 #ifndef ENABLE_OPENGL
-  const ScopeLock protect(freetype_mutex);
+  const std::lock_guard<Mutex> lock(freetype_mutex);
 #endif
 
   FT_GlyphSlot glyph = nullptr;
@@ -428,7 +428,7 @@ Font::Render(const TCHAR *text, const PixelSize size, void *_buffer) const
   int x = 0;
 
 #ifndef ENABLE_OPENGL
-  const ScopeLock protect(freetype_mutex);
+  const std::lock_guard<Mutex> lock(freetype_mutex);
 #endif
 
   bool use_kerning = FT_HAS_KERNING(face);

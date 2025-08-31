@@ -39,7 +39,7 @@ extern void InsertCommonList(int newwp);
  */
 bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-  ScopeLock Lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   if (WayPointList.empty()) {
 	return false;

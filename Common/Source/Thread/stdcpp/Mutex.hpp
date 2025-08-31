@@ -16,8 +16,6 @@
 
 using Mutex = std::recursive_mutex;
 
-using ScopeLock = std::lock_guard<Mutex>;
-
 class ScopeUnlock {
  public:
   ScopeUnlock(Mutex& m) : _mutex(m) {

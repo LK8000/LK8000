@@ -42,7 +42,7 @@ extern void SimFlarmTraffic(uint32_t RadioId, double offset);
 //
 void LKSimulator(void) {
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   //
   GPS_INFO.NAVWarning = false;

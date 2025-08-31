@@ -108,12 +108,12 @@ class InputEventQueue {
   InputEventQueue& operator=(const InputEventQueue&) = delete;
 
   void push(event_t&& event) {
-    ScopeLock Lock(_mtx);
+    const std::lock_guard<Mutex> lock(_mtx);
     _queue.emplace_back(std::move(event));
   }
 
   bool pop(event_t& event) {
-    ScopeLock Lock(_mtx);
+    const std::lock_guard<Mutex> lock(_mtx);
     if (_queue.empty()) {
       return false;
     }
@@ -124,7 +124,7 @@ class InputEventQueue {
   }
 
   void clear() {
-    ScopeLock Lock(_mtx);
+    const std::lock_guard<Mutex> lock(_mtx);
     _queue.clear();
   }
 

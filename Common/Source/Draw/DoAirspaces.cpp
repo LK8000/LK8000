@@ -123,7 +123,7 @@ bool DoAirspaces(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
     // MULTICALC STEP2 - Sort by different keys, and fill up result struct array
     case 2:
       // Lock airspace instances externally
-      ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+      const std::lock_guard<Mutex> lock(CAirspaceManager::Instance().MutexRef());
       // Get selected list from airspacemanager
       CAirspaceList& nearest_airspaces = CAirspaceManager::Instance().GetAirspacesForPage24();
 

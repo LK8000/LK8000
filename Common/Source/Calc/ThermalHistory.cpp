@@ -121,7 +121,7 @@ void InsertThermalHistory(double ThTime, const GeoPoint& position, double ThBase
 }
 
 bool IsThermalExist(const GeoPoint& position, double radius) {
-  ScopeLock lock(lst_mutex);
+  const std::lock_guard<Mutex> lock(lst_mutex);
   auto it = std::find_if(ThermalHistory.begin(), ThermalHistory.end(), [&](auto& th) {
     return position.Distance(th.position) < radius;
   });
@@ -199,7 +199,7 @@ bool DoThermalHistory(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
 }
 
 bool IsThermalMultitarget(size_t idx) {
-  ScopeLock lock(lst_mutex);
+  const std::lock_guard<Mutex> lock(lst_mutex);
   if (ThermalMultitarget && idx < ThermalHistory.size()) {
     return ThermalMultitarget.value() == idx;
   }
@@ -232,7 +232,7 @@ void SetThermalMultitarget(size_t idx, const TCHAR* Comment) {
 }
 
 std::optional<THERMAL_HISTORY> GetThermalHistory(size_t idx) {
-  ScopeLock lock(lst_mutex);
+  const std::lock_guard<Mutex> lock(lst_mutex);
   if (idx < ThermalHistory.size()) {
     return ThermalHistory[idx];
   }
@@ -240,7 +240,7 @@ std::optional<THERMAL_HISTORY> GetThermalHistory(size_t idx) {
 }
 
 std::optional<THERMAL_HISTORY> GetThermalMultitarget() {
-  ScopeLock lock(lst_mutex);
+  const std::lock_guard<Mutex> lock(lst_mutex);
   if (ThermalMultitarget) {
     auto idx = ThermalMultitarget.value();
     if (idx < ThermalHistory.size()) {

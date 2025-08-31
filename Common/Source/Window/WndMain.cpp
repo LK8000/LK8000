@@ -230,7 +230,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     }
 #else
     if(ProgramStarted >= psFirstDrawDone) {
-        ScopeLock Lock(BackBuffer_Mutex);
+        const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
         BackBufferSurface.CopyTo(Surface);
     } else {
 

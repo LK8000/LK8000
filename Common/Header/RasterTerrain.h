@@ -178,7 +178,7 @@ public:
   static void OpenTerrain();
   static void CloseTerrain();
   static bool isTerrainLoaded() {
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     return static_cast<bool>(TerrainMap);
   }
 

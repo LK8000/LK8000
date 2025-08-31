@@ -122,7 +122,7 @@ template<size_t idx>
 void devWriteData(const TCHAR *Text) {
   static_assert(idx < std::size(DeviceList), "invalid index");
   if (Text) {
-    ScopeLock Lock(CritSec_Comm);
+    const std::lock_guard<Mutex> lock(CritSec_Comm);
     DeviceDescriptor_t& d = DeviceList[idx];
     if (!d.Disabled && d.Com) {
       d.Com->WriteString(Text);

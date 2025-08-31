@@ -74,7 +74,7 @@ bool AndroidPort::StopRxThread() {
 }
 
 bool AndroidPort::StartRxThread() {
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     running = true;
 
     return ComPort::StartRxThread();
@@ -88,7 +88,7 @@ void AndroidPort::Purge() {
 }
 
 void AndroidPort::Flush() {
-    ScopeLock protect(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     buffer.clear();
 }
 
@@ -140,7 +140,7 @@ bool AndroidPort::Write_Impl(const void *data, size_t size) {
 
 size_t AndroidPort::Read(void *szString, size_t size) {
 
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     assert(!running);
 
     if(buffer.empty()) {
@@ -168,7 +168,7 @@ size_t AndroidPort::Read(void *szString, size_t size) {
 
 void AndroidPort::DataReceived(const void *data, size_t length) {
 
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     const auto *src_data = static_cast<const uint8_t *>(data);
 
     // limit vector size to 16 KByte
@@ -186,7 +186,7 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
 }
 
 bool AndroidPort::IsReady() {
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     if (bridge) {
         return bridge->getState(Java::GetEnv()) == STATE_READY;
     }
@@ -241,7 +241,7 @@ unsigned AndroidPort::RxThread() {
           NotifyDisconnected();
         }
 
-        ScopeLock lock(mutex);
+        const std::lock_guard<Mutex> lock(mutex);
         newdata.Wait(mutex); // wait for data or state change
     }
     while(true);

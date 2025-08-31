@@ -162,17 +162,17 @@ namespace {
 }
 
 bool EOSBlockReceived() {
-  ScopeLock lock(EOSmutex);
+  const std::lock_guard<Mutex> lock(EOSmutex);
   return (!EOSbuffered_data.empty());
 }
   
 bool IsEOSInBinaryMode() {
-  ScopeLock lock(EOSmutex);
+  const std::lock_guard<Mutex> lock(EOSmutex);
   return bEOSBinMode;
 }
 
 bool SetEOSBinaryModeFlag(bool bBinMode) {
-  ScopeLock lock(EOSmutex);
+  const std::lock_guard<Mutex> lock(EOSmutex);
   bool OldVal = bEOSBinMode;
   bEOSBinMode = bBinMode;
   if(!bEOSBinMode) {
@@ -209,7 +209,7 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len,
      slowdown = true;
   }
 
-  ScopeLock lock(EOSmutex);
+  const std::lock_guard<Mutex> lock(EOSmutex);
   for (int i = 0; i < len; i++) {
     EOSbuffered_data.push((uint8_t)String[i]);
   }
@@ -222,7 +222,7 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len,
 
 
 uint8_t EOSRecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
-  ScopeLock lock(EOSmutex);
+  const std::lock_guard<Mutex> lock(EOSmutex);
 
   while(EOSbuffered_data.empty()) {
     Sleep(1);

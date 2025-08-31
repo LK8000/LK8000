@@ -78,7 +78,7 @@ void LKSound(const TCHAR *lpName) {
         return;
     }
 
-    ScopeLock Lock(mutex_sound);
+    const std::lock_guard<Mutex> lock(mutex_sound);
     if(!SoundUtil::Play(Java::GetEnv(), context->Get(), lpName)) {
         StartupStore(_T("Sound : error playing '%s'" NEWLINE), lpName);
     }

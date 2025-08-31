@@ -190,7 +190,7 @@ unsigned SocketPort::RxThread() {
             devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
 
-        ScopeLock Lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
         UpdateStatus();
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {

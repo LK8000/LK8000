@@ -225,7 +225,7 @@ protected:
 	// return true if stop is signaled
 	bool WaitForStop() {
 		while (Timer.Elapsed() < 1000) {
-			ScopeLock lock(mutexRun);
+			const std::lock_guard<Mutex> lock(mutexRun);
 			while(stop || condClose.Wait(mutexRun, Clamp<unsigned>(1000U - Timer.Elapsed(), 0U, 1000U))) {
 				if(stop) { // check for spurious wakeup
 					return true;

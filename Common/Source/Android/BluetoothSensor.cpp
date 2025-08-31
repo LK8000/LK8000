@@ -143,7 +143,7 @@ bool BluetoothSensor::StopRxThread() {
 }
 
 bool BluetoothSensor::StartRxThread() {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   running = true;
 
   return ComPort::StartRxThread();
@@ -154,7 +154,7 @@ void BluetoothSensor::CancelWaitEvent() {
 }
 
 bool BluetoothSensor::IsReady() {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   if (bridge) {
     return bridge->getState(Java::GetEnv()) == STATE_READY;
   }
@@ -199,7 +199,7 @@ unsigned BluetoothSensor::RxThread() {
     }
     rxthread_queue.clear();
 
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     newdata.Wait(mutex);  // wait for data or state change
   } while (true);
 }
@@ -213,7 +213,7 @@ void BluetoothSensor::PortError(const char* msg) {
 }
 
 void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   data_queue.emplace_back(std::move(service), std::move(characteristic), std::move(data));
   newdata.Signal();
 }
@@ -224,7 +224,7 @@ bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& 
     return std::invoke(handler->DoEnableNotification, this);
   }
 
-  ScopeLock lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
   auto port = devGetDeviceOnPort(GetPortIndex());
   if (port && port->DoEnableGattCharacteristic) {
     return port->DoEnableGattCharacteristic(*port, service, characteristic);
@@ -262,12 +262,12 @@ void BluetoothSensor::DeviceName(const std::vector<uint8_t>& data) {
 }
 
 tstring BluetoothSensor::GetDeviceName() {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   return device_name;
 }
 
 void BluetoothSensor::SerialNumber(const std::vector<uint8_t>& data) {
-  ScopeLock lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
   auto port = devGetDeviceOnPort(GetPortIndex());
   if (port) {
     port->SerialNumber = { data.begin(), data.end() };

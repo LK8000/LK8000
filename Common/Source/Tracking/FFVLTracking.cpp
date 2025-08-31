@@ -80,7 +80,7 @@ void FFVLTracking::Run() {
 }
 
 bool FFVLTracking::Wait() {
-  ScopeLock lock(queue_mtx);
+  const std::lock_guard<Mutex> lock(queue_mtx);
   // if no new position wait for stop or new position
   while (!thread_stop && !queue.has_value()) {
     queue_cv.Wait(queue_mtx);

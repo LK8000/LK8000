@@ -101,7 +101,7 @@ BOOL for_all_device(DeviceDescriptor_t* Sender, Callable&& func, Args&&... args)
       if (&d == Sender) {
         continue; // ignore sender.
       }
-      ScopeLock Lock(CritSec_Comm);
+      const std::lock_guard<Mutex> lock(CritSec_Comm);
       if (d.IsReady()) {
         nbDeviceFailed += (d.*func)(std::forward<Args>(args)...) ? 0 : 1;
       }
@@ -159,7 +159,7 @@ bool devIsDisabled() {
 
 void RefreshComPortList() {
 #ifdef ANDROID
-    ScopeLock lock(COMMPort_mutex);
+    const std::lock_guard<Mutex> lock(COMMPort_mutex);
 #endif
 
     COMMPort.clear();
@@ -368,7 +368,7 @@ void RestartCommPorts() {
 BOOL devOpen(DeviceDescriptor_t* d) {
   StartupStore(_T(". Device %c Open @%s"), devLetter(d->PortNumber), WhatTimeIsIt());
   
-  ScopeLock lock(CritSec_Comm);
+  std::lock_guard<Mutex> lock(CritSec_Comm);
   if (d && d->Open) {
     return d->Open(d);
   }
@@ -521,7 +521,7 @@ BOOL devInit() {
         const auto& Config = PortConfig[i];
         auto& dev = DeviceList[i];
         
-        ScopeLock Lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
         dev.Reset();
 
         if (SIMMODE){
@@ -821,7 +821,7 @@ BOOL devDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBu
 }
 
 BOOL devIsLogger(DeviceDescriptor_t& d) {
-  ScopeLock Lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
   return d.Declare || d.nmeaParser.isFlarm;
 }
 
@@ -874,7 +874,7 @@ uint8_t nmea_crc(const char *text) {
 void devWriteNMEAString(DeviceDescriptor_t* d, const TCHAR *text)
 {
   if (text) {
-    ScopeLock Lock(CritSec_Comm);
+    const std::lock_guard<Mutex> lock(CritSec_Comm);
     if (d && !d->Disabled && d->Com) {
       char tmp[512];
       devFormatNMEAString(tmp, to_utf8(text).c_str());

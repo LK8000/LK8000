@@ -3512,7 +3512,7 @@ static int GetValidWayPointIndex(int wpindex) {
 // simple format distance value for a given index. BufferTitle always NULLed
 // wpindex is a WayPointList index
 void MapWindow::LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
@@ -3539,7 +3539,7 @@ void MapWindow::LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *Buffe
 
 // DO NOT use this for AAT values! 
 void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
@@ -3571,7 +3571,7 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *Bu
 
 
 void MapWindow::LKFormatGR(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
@@ -3595,7 +3595,7 @@ void MapWindow::LKFormatGR(const int wpindex, TCHAR *BufferValue, TCHAR *BufferU
 }
 
 void MapWindow::LKFormatAltDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 

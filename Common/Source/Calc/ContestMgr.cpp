@@ -86,10 +86,10 @@ const TCHAR *CContestMgr::XCRuleToString(CContestMgr::ContestRule rule) {
  * @param handicap Glider handicap
  */
 void CContestMgr::Reset(unsigned handicap) {
-  ScopeLock guard(_mainCS);
+  const std::lock_guard<Mutex> lock(_mainCS);
   _handicap = handicap;
   {
-    ScopeLock TraceGuard(_traceCS);
+    const std::lock_guard<Mutex> lock(_traceCS);
     _trace = std::make_unique<CTrace>(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
   }
   _traceSprint = std::make_unique<CTrace>(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM);
@@ -120,7 +120,7 @@ void CContestMgr::Reset(unsigned handicap) {
   _dFAITriangleClockwise = 0;
   _resultFREETriangle = CResult();
   {
-    ScopeLock Resultguard(_resultsCS);
+    const std::lock_guard<Mutex> lock(_resultsCS);
     for (unsigned i = 0; i < TYPE_NUM; i++)
       _resultArray[i] = CResult();
   }
@@ -369,7 +369,7 @@ void CContestMgr::PointsResultOLC(TType type, const CTrace &traceResult)
       score = 0;
     }
     bool predicted = pointArray.back().TimeDelta(_trace->Back()->GPS()) > 0;
-    ScopeLock guard(_resultsCS);
+    const std::lock_guard<Mutex> lock(_resultsCS);
     _resultArray[type] = CResult(type, predicted, distance, score, pointArray);
   }
 }
@@ -439,7 +439,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
   TType type = sprint ? TYPE_OLC_LEAGUE : (predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC);
   if(predicted) {
     // do it just in a case if predicted trace is worst than the current one
-    ScopeLock guard(_resultsCS);
+    const std::lock_guard<Mutex> lock(_resultsCS);
     _resultArray[TYPE_OLC_CLASSIC_PREDICTED] = CResult(TYPE_OLC_CLASSIC_PREDICTED, _resultArray[TYPE_OLC_CLASSIC]);
   }
   PointsResultOLC(type, traceResult);
@@ -454,7 +454,7 @@ else*/
     // store result
     if(predicted) {
       // do it just in a case if predicted trace is worst than the current one
-      ScopeLock guard(_resultsCS);
+      const std::lock_guard<Mutex> lock(_resultsCS);
       _resultArray[TYPE_FAI_3_TPS_PREDICTED] = CResult(TYPE_FAI_3_TPS_PREDICTED, _resultArray[TYPE_FAI_3_TPS]);
     }
 
@@ -593,7 +593,7 @@ void CContestMgr::SolveFAITriangle(const CTrace &trace, const CPointGPS *prevFro
   }
 
   if (bestResult.Type() != TYPE_INVALID) {
-    ScopeLock guard(_resultsCS);
+    const std::lock_guard<Mutex> lock(_resultsCS);
     _resultArray[type] = bestResult;
   }
 }
@@ -685,7 +685,7 @@ void CContestMgr::SolveFREETriangle(const CTrace &trace,const CPointGPS *prevFro
  */
 void CContestMgr::SolveOLCPlus(bool predicted)
 {
-  ScopeLock guard(_resultsCS);
+  const std::lock_guard<Mutex> lock(_resultsCS);
   CResult &classic = _resultArray[predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC];
   CResult &fai = _resultArray[predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI];
   _resultArray[predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS] =
@@ -717,10 +717,10 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
     return;
   lastGps = *gps;
 
-  ScopeLock guard(_mainCS);
+  const std::lock_guard<Mutex> lock(_mainCS);
   {
     // Update main trace
-    ScopeLock Traceguard(_traceCS);
+    const std::lock_guard<Mutex> lock(_traceCS);
     _trace->Push(gps);
     _trace->Compress();
   }
@@ -813,7 +813,7 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
  */
 void CContestMgr::Trace(CPointGPSArray &array) const
 {
-  ScopeLock guard(_traceCS);
+  const std::lock_guard<Mutex> lock(_traceCS);
   array.clear();
   array.reserve(_trace->Size());
   const CTrace::CPoint *point = _trace->Front();
@@ -917,7 +917,7 @@ void CContestMgr::SolveXC() {
   FindFAITriangleClosingPoint();
   FindFREETriangleClosingPoint();
 
-  ScopeLock guard(_resultsCS);
+  const std::lock_guard<Mutex> lock(_resultsCS);
 
   //
   // Calculate results for FAI Triangle.

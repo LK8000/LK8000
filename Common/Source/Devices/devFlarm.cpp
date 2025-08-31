@@ -134,7 +134,7 @@ BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_I
     return FALSE;
   }
 
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   if (!IsInBinaryMode()) {
     return FALSE;
@@ -152,17 +152,17 @@ BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_I
  * return true if received data is available.
  */
 bool BlockReceived() {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   return (!buffered_data.empty());
 }
 
 bool IsInBinaryMode() {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   return bFLARM_BinMode;
 }
 
 bool SetBinaryModeFlag(bool bBinMode) {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   bool OldVal = bFLARM_BinMode;
   bFLARM_BinMode = bBinMode;
   if(!bFLARM_BinMode) {
@@ -173,7 +173,7 @@ bool SetBinaryModeFlag(bool bBinMode) {
 }
 
 uint8_t RecChar(DeviceDescriptor_t* d, uint8_t& Byte, uint16_t Timeout) {
-  ScopeLock lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   while(buffered_data.empty()) {
     if(!cond.Wait(mutex, Timeout)) {

@@ -187,7 +187,7 @@ static int SearchNearestStation(GeoPoint cur_pos) {
 
 std::optional<RadioStation> SearchBestStation(const GeoPoint& cur_pos) {
 
-	ScopeLock lock(CritSec_TaskData);
+	const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
 	int Idx = BestAlternate;    // begin with Best alternate
 	unsigned khz = 0;

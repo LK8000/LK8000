@@ -1462,7 +1462,7 @@ static  TCHAR temptext[MAX_PATH];
 
 void UpdateComPortList(WndProperty* wp, LPCTSTR szPort) {
 #ifdef ANDROID
-    ScopeLock lock(COMMPort_mutex);
+    const std::lock_guard<Mutex> lock(COMMPort_mutex);
 #endif
 
     if (wp) {
@@ -3201,7 +3201,7 @@ static void OnLeScan(WndForm* pWndForm, const char *address, const char *name) {
   std::stringstream prefixed_name_stream;
   prefixed_name_stream << prefix << ((strlen(name)>0)? name : address);
 
-  ScopeLock lock(COMMPort_mutex);
+  const std::lock_guard<Mutex> lock(COMMPort_mutex);
 
   auto it = FindCOMMPort(prefixed_address.c_str());
   if (it == COMMPort.end()) {
@@ -3224,7 +3224,7 @@ static bool OnUser(WndForm * pWndForm, unsigned id) {
         DataField * dataField = pWnd->GetDataField();
         if(dataField) {
 
-          ScopeLock lock(COMMPort_mutex);
+          const std::lock_guard<Mutex> lock(COMMPort_mutex);
 
           for( const auto& item : COMMPort ) {
             int idx = dataField->Find(item.GetName());
@@ -4448,7 +4448,7 @@ int ival;
       // currently, only Android `Internal` wait for this.
       // must be refactored if another one is added.
       for (auto& d : DeviceList) {
-        ScopeLock lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
         if (d.Com) {
           d.Com->CancelWaitEvent();
         }

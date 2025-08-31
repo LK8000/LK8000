@@ -885,7 +885,7 @@ static bool InterruptibleSleepRadar(int msecs) {
 	int secs = msecs / 1000;
 	do {
 		if (1) {
-			ScopeLock guard(_t_mutex);
+			const std::lock_guard<Mutex> lock(_t_mutex);
 			if (!_t_radar_run)
 				return true;
 		}
@@ -1066,7 +1066,7 @@ static bool SendGPSPointPacket2(http_session& http, unsigned int *packet_id) {
 	std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
 	{
-		ScopeLock guard(_t_mutex);
+		const std::lock_guard<Mutex> lock(_t_mutex);
 
 		if(_t_points.empty()) {
 			return false;
@@ -1159,7 +1159,7 @@ static void LiveTrackerThread2() {
 				default:
 				case 0:   // Wait for flying
 					if (!sendpoint.flying) {
-						ScopeLock guard(_t_mutex);
+						const std::lock_guard<Mutex> lock(_t_mutex);
 						_t_points.pop_front();
 						sendpoint_processed = true;
 						break;

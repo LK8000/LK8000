@@ -57,7 +57,7 @@ bool first_run=true;
 
 void MapWindow::Initialize() {
 #ifndef ENABLE_OPENGL
-    ScopeLock Lock(Surface_Mutex);
+    const std::lock_guard<Mutex> lock(Surface_Mutex);
 #endif
     // Reset common topology and waypoint label declutter, first init. Done also in other places.
     ResetLabelDeclutter();
@@ -112,7 +112,7 @@ void MapWindow::Initialize() {
 
 void MapWindow::DrawThread() {
   TestLog(_T("... Thread_Draw : started"));
-  ScopeLock Lock(Surface_Mutex);
+  const std::lock_guard<Mutex> lock(Surface_Mutex);
 
   THREADEXIT = FALSE;
 
@@ -187,7 +187,7 @@ void MapWindow::DrawThread() {
             WhiteRectH.top = WhiteRectH.bottom - fromY;
           }
 
-          ScopeLock Lock(BackBuffer_Mutex);
+          const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
 
           BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx,
                                       WhiteRectV.GetSize().cy);
@@ -207,7 +207,7 @@ void MapWindow::DrawThread() {
           // The map was not dirty, and we are not in fastpanning mode.
           // FastRefresh!  We simply redraw old bitmap.
           //
-          ScopeLock Lock(BackBuffer_Mutex);
+          const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
           DrawSurface.CopyTo(BackBufferSurface);
 
           lastdrawwasbitblitted = true;
@@ -238,7 +238,7 @@ void MapWindow::DrawThread() {
             goto _dontbitblt;
           }
 
-          ScopeLock Lock(BackBuffer_Mutex);
+          const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
           DrawSurface.CopyTo(BackBufferSurface);
 
           const RasterPoint centerscreen = {ScreenSizeX / 2, ScreenSizeY / 2};

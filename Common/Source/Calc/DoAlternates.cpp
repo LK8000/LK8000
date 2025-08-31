@@ -16,7 +16,7 @@
  * Colors VGR are used by DrawNearest &c.
  */
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   if (AltWaypoint == RESWP_EXT_TARGET) {
     if (WayPointList[RESWP_EXT_TARGET].Altitude == RESWP_INVALIDNUMBER) {

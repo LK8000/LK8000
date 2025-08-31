@@ -308,7 +308,7 @@ unsigned UDPServerPort::RxThread() {
 		int nRecv;
 		socklen_t slen = sizeof(mSAddressClient);
 		if ((nRecv = recvfrom(mSocket, szString, sizeof(szString), 0, (struct sockaddr *) &mSAddressClient, &slen)) != -1)  {
-			ScopeLock Lock(CritSec_Comm);
+			const std::lock_guard<Mutex> lock(CritSec_Comm);
 			UpdateStatus();
 			if (nRecv > 0) {
                 ProcessData(szString, nRecv);

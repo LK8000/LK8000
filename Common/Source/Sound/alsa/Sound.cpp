@@ -336,7 +336,7 @@ private:
       });
 
       if (!sound) {
-        ScopeLock lock(queue_mtx);
+        const std::lock_guard<Mutex> lock(queue_mtx);
         // no sound check for stop request
         if (thread_stop) {
           return;  // stop requested...

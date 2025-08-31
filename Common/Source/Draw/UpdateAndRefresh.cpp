@@ -40,7 +40,7 @@ bool MapWindow::RenderTimeAvailable() {
 }
 
 void MapWindow::UpdateInfo(const NMEA_INFO& nmea_info, const DERIVED_INFO& derived_info) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   DrawInfo = nmea_info;
   DerivedDrawInfo = derived_info;
   zoom.UpdateMapScale(); // done here to avoid double latency due to locks

@@ -48,7 +48,7 @@ unsigned cpu_lock;
 void
 LockCPU()
 {
-  ScopeLock lock(mtx);
+  const std::lock_guard<Mutex> lock(mtx);
   if (cpu_lock++ == 0) {
     SetCPUFrequencyGovernor("performance");
   }
@@ -57,7 +57,7 @@ LockCPU()
 void
 UnlockCPU()
 {
-  ScopeLock lock(mtx);
+  const std::lock_guard<Mutex> lock(mtx);
   if (cpu_lock-- == 1)
     SetCPUFrequencyGovernor("powersave");
 }

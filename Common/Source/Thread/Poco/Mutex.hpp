@@ -28,7 +28,6 @@ struct LockableMutex : BaseMutex {
 
 using Mutex = LockableMutex<Poco::Mutex>;
 
-using ScopeLock = Poco::ScopedLock<Mutex>;
 using ScopeUnlock = Poco::ScopedUnlock<Mutex>;
 
 #endif /* THREAD_POCO_MUTEX_HPP */

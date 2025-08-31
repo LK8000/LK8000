@@ -294,7 +294,7 @@ void TAS(DeviceDescriptor_t& d, NMEA_INFO& info,
   auto value = Units::From(unKiloMeterPerHour,
                            characteristic_value<int16_t>(data).get() / 10.);
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.TrueAirSpeed.update(d, value);
   info.IndicatedAirSpeed.update(d, IndicatedAirSpeed(value, QNHAltitudeToQNEAltitude(info.Altitude)));
 }
@@ -313,7 +313,7 @@ void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& d
   // FANET
   Frame frame(data.data(), data.size());
   const fanet_parse_function& parse = function_table.get(frame.type, FanetParseUnknown);
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   parse(&d, &info, frame.src.get(), frame.payload);
 }
 
