@@ -10,6 +10,7 @@
 #ifndef ANDROID_STUDIO_LK8000ACTIVITY_H
 #define ANDROID_STUDIO_LK8000ACTIVITY_H
 
+#include <Thread/Mutex.hpp>
 #include <Thread/Cond.hpp>
 #include "Java/Object.hxx"
 #include "Java/Class.hxx"

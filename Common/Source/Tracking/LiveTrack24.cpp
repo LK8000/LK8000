@@ -211,7 +211,7 @@ void LiveTrackerShutdown() {
 		_t_run = false;
 		_t_radar_run = false;
 	});
-	_t_cond.Broadcast();
+	_t_cond.notify_all();
 
 	if (_ThreadTracker && _ThreadTracker->IsDefined()) {
 		_ThreadTracker->Join();
@@ -275,7 +275,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 		}
 		_t_points.emplace_back(newpoint);
 	});
-	_t_cond.Broadcast();
+	_t_cond.notify_all();
 }
 
 // Get the user id from Leonardo servername
@@ -460,6 +460,20 @@ struct stop : public std::exception {
 	using std::exception::exception;
 };
 
+static std::optional<livetracker_point_t> get_point_to_send() {
+	std::unique_lock<Mutex> lock(_t_mutex);
+	while (_t_run && _t_points.empty()) {
+		_t_cond.wait(lock);
+	}
+	if (!_t_run) {
+		throw stop();
+	}
+	if (!_t_points.empty()) {
+		return _t_points.front();
+	}
+	return {};
+}
+
 // Leonardo Live Tracker (www.livetrack24.com) data exchange thread
 static void LiveTrackerThread() {
 	int tracker_fsm = 0;
@@ -476,21 +490,10 @@ static void LiveTrackerThread() {
 	http_session http;
 	try {
 		while (true) {
-			bool sendpoint_valid = WithLock(_t_mutex, [&]() {
-				while (_t_run && _t_points.empty()) {
-					_t_cond.Wait(_t_mutex);
-				}
-				if (!_t_run) {
-					throw stop();
-				}
-				if (!_t_points.empty()) {
-					sendpoint = _t_points.front();
-					return true;
-				}
-				return false;
-			});
-
+			auto sendpoint_valid = get_point_to_send();
 			if (sendpoint_valid) {
+				sendpoint = sendpoint_valid.value();
+
 				for (bool sendpoint_processed = false; !sendpoint_processed;) {
 					switch (tracker_fsm) {
 					default:
@@ -553,7 +556,7 @@ static void LiveTrackerThread() {
 							_t_points.pop_front();
 						}
 						else {
-							_t_cond.Wait(_t_mutex, DELAY);
+							_t_cond.wait_for(_t_mutex, std::chrono::milliseconds(DELAY));
 							if (!_t_run) {
 								throw stop();
 							}
@@ -1138,20 +1141,10 @@ static void LiveTrackerThread2() {
 
 	try {
 		while (true) {
-			bool sendpoint_valid = WithLock(_t_mutex, [&]() {
-				while (_t_run && _t_points.empty()) {
-					_t_cond.Wait(_t_mutex);
-				}
-				if (!_t_run) {
-					throw stop();
-				}
-				if (!_t_points.empty()) {
-					sendpoint = _t_points.front();
-					return true;
-				}
-				return false;
-			});
+			auto sendpoint_valid = get_point_to_send();
 			if (sendpoint_valid) {
+				sendpoint = sendpoint_valid.value();
+
 				DebugLog(_T(". Livetracker TRACKER sendpoint.flying: %d - tracker_fsm: %d"),
 							sendpoint.flying,tracker_fsm);
 
@@ -1198,7 +1191,7 @@ static void LiveTrackerThread2() {
 
 				if (!packet_processed) {
 					WithLock(_t_mutex, [&]() {
-						_t_cond.Wait(_t_mutex, DELAY);
+						_t_cond.wait_for(_t_mutex, std::chrono::milliseconds(DELAY));
 						if (!_t_run) {
 							throw stop();
 						}

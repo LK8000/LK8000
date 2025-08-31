@@ -93,7 +93,7 @@ void AndroidPort::Flush() {
 }
 
 void AndroidPort::CancelWaitEvent() {
-    newdata.Broadcast();
+    newdata.notify_all();
 }
 
 int AndroidPort::SetRxTimeout(int TimeOut) {
@@ -140,11 +140,11 @@ bool AndroidPort::Write_Impl(const void *data, size_t size) {
 
 size_t AndroidPort::Read(void *szString, size_t size) {
 
-    const std::lock_guard<Mutex> lock(mutex);
+    std::unique_lock<Mutex> lock(mutex);
     assert(!running);
 
     if(buffer.empty()) {
-        newdata.Wait(mutex, timeout);
+        newdata.wait_for(lock, std::chrono::milliseconds(timeout));
     }
 
     if(running || buffer.empty()) {
@@ -182,7 +182,7 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
         AddStatErrRx(length - insert_size);
     }
 
-    newdata.Broadcast();
+    newdata.notify_all();
 }
 
 bool AndroidPort::IsReady() {
@@ -194,7 +194,7 @@ bool AndroidPort::IsReady() {
 }
 
 void AndroidPort::PortStateChanged() {
-    newdata.Signal();
+    newdata.notify_one();
 }
 
 void AndroidPort::PortError(const char *msg) {
@@ -241,8 +241,8 @@ unsigned AndroidPort::RxThread() {
           NotifyDisconnected();
         }
 
-        const std::lock_guard<Mutex> lock(mutex);
-        newdata.Wait(mutex); // wait for data or state change
+        std::unique_lock<Mutex> lock(mutex);
+        newdata.wait(lock); // wait for data or state change
     }
     while(true);
 }

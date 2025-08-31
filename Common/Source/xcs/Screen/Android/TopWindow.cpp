@@ -116,7 +116,7 @@ TopWindow::OnPause()
   const std::lock_guard<Mutex> lock(paused_mutex);
   paused = true;
   resumed = false;
-  paused_cond.Signal();
+  paused_cond.notify_one();
 }
 
 void
@@ -144,9 +144,9 @@ TopWindow::Pause()
   event_queue->Purge(match_pause_and_resume, nullptr);
   event_queue->Push(Event::PAUSE);
 
-  const std::lock_guard<Mutex> lock(paused_mutex);
+  std::unique_lock<Mutex> lock(paused_mutex);
   while (running && !paused)
-    paused_cond.Wait(paused_mutex);
+    paused_cond.wait(lock);
 }
 
 void
@@ -246,7 +246,7 @@ TopWindow::OnStopEventLoop()
   --running;
   /* wake up the Android Activity thread, just in case it's waiting
      inside Pause() */
-  paused_cond.Signal();
+  paused_cond.notify_one();
 }
 
 int

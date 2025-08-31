@@ -104,7 +104,7 @@ void MapWindow::Initialize() {
     // Signal that draw thread can run now
     Initialised = TRUE;
 #ifndef ENABLE_OPENGL
-    _draw_cv.Signal();
+    _draw_cv.notify_one();
 #endif
 }
 
@@ -112,13 +112,13 @@ void MapWindow::Initialize() {
 
 void MapWindow::DrawThread() {
   TestLog(_T("... Thread_Draw : started"));
-  const std::lock_guard<Mutex> lock(Surface_Mutex);
+  std::unique_lock<Mutex> lock(Surface_Mutex);
 
   THREADEXIT = FALSE;
 
   while ((!ProgramStarted) || (!Initialised)) {
     TestLog(_T("... Thread_Draw : wait for init"));
-    _draw_cv.Wait(Surface_Mutex);
+    _draw_cv.wait(lock);
   }
 
   //
@@ -293,7 +293,7 @@ _dontbitblt:
       main_window->Redraw(MapRect);
     }
 
-    _draw_cv.Wait(Surface_Mutex);
+    _draw_cv.wait(lock);
   }
 
   THREADEXIT = TRUE;
@@ -338,7 +338,7 @@ void MapWindow::CloseDrawingThread() {
   WithLock(Surface_Mutex, [&]() {
     TestLog(_T("... Thread_Draw : close request"));
     CLOSETHREAD = TRUE;
-    _draw_cv.Signal();
+    _draw_cv.notify_one();
   });
 
   TestLog(_T("... Thread_Draw : wait end of thread"));

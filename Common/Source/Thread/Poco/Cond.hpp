@@ -14,24 +14,29 @@
 
 #include "Mutex.hpp"
 #include "Poco/Condition.h"
+#include <chrono>
+
+namespace std {
+  enum class cv_status { no_timeout, timeout };
+}
 
 class Cond : public Poco::Condition {
  public:
-  Cond() = default;
+  using Poco::Condition::Condition;
 
-  void Wait(Mutex& mutex) {
-    Poco::Condition::wait<Mutex>(mutex);
+  template <typename _Lock, typename _Rep, typename _Period>
+  std::cv_status wait_for(_Lock& __lock, const std::chrono::duration<_Rep, _Period>& __rtime) {
+    if (!tryWait(__lock, std::chrono::duration_cast<std::chrono::milliseconds>(__rtime).count())) {
+      return std::cv_status::timeout;
+    }
+    return std::cv_status::no_timeout;
   }
 
-  bool Wait(Mutex& mutex, unsigned timeout_ms) {
-    return Poco::Condition::tryWait<Mutex>(mutex, timeout_ms);
-  }
-
-  void Broadcast() {
+  void notify_all() {
     Poco::Condition::broadcast();
   }
 
-  void Signal() {
+  void notify_one() {
     Poco::Condition::signal();
   }
 };

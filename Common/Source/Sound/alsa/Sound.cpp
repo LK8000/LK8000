@@ -312,14 +312,14 @@ public:
     WithLock(queue_mtx, [&]() {
       queue = { type, std::move(name) };
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
   }
 
   void Stop() {
     WithLock(queue_mtx, [&]() {
       thread_stop = true;
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
   }
 
 private:
@@ -336,13 +336,15 @@ private:
       });
 
       if (!sound) {
-        const std::lock_guard<Mutex> lock(queue_mtx);
+        std::unique_lock<Mutex> lock(queue_mtx);
         // no sound check for stop request
         if (thread_stop) {
           return;  // stop requested...
         }
         // wait for stop or sound
-        queue_cv.Wait(queue_mtx);
+        if (!sound) {
+          queue_cv.wait(lock);
+        }
       } else {
         play_sound(sound.value());
       }
