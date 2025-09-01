@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e -u
 
-ARCHIVE_URL=https://netcologne.dl.sourceforge.net/project/geographiclib/distrib-C%2B%2B/GeographicLib-2.3.tar.gz
-ARCHIVE=GeographicLib-2.3.tar.gz
-ARCHIVEDIR=GeographicLib-2.3
+GEOGRAPHICLIB_VER="2.5.1"
+
+ARCHIVE_URL=https://netcologne.dl.sourceforge.net/project/geographiclib/distrib-C%2B%2B/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
+ARCHIVE=GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
+ARCHIVEDIR=GeographicLib-${GEOGRAPHICLIB_VER}
 . $KOBO_SCRIPT_DIR/build-common.sh
 
 pushd $ARCHIVEDIR

@@ -18,7 +18,7 @@ TOOLCHAINS="i686-w64-mingw32 x86_64-w64-mingw32"
 # this is valid for debian
 PREFIX_DIR="/usr"
 
-GEOGRAPHICLIB_VER="1.52"
+GEOGRAPHICLIB_VER="2.5.1"
 
 
 # install additional library dependencies for PC target
@@ -27,7 +27,7 @@ if [ ! -f ${DOWNLOAD_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz ]; then
 
     [ ! -d ${DOWNLOAD_DIR} ] && mkdir -p ${DOWNLOAD_DIR}
     cd ${DOWNLOAD_DIR}
-    wget http://freefr.dl.sourceforge.net/project/geographiclib/distrib/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
+    wget http://freefr.dl.sourceforge.net/project/geographiclib/distrib-C%2B%2B/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
     [ -d ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER} ] && rm -rf ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}
 
 fi

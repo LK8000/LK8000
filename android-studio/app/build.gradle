@@ -144,7 +144,7 @@ dependencies {
 
     implementation "com.github.felHR85:UsbSerial:6.0.3"
 
-    implementation "com.github.brunotl:geographiclib-prefab:2.1.2"
+    implementation "com.github.brunotl:geographiclib:2.5.1"
 
     implementation "com.github.brunotl:boost_intrusive:1.81.0"
     implementation "com.github.brunotl:boost_container:1.81.0"
