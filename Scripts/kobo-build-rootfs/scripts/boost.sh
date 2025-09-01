@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -u
 
-ARCHIVE_URL=https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.gz
+ARCHIVE_URL=https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.gz
 ARCHIVE=boost_1_84_0.tar.gz
 ARCHIVEDIR=boost_1_84_0
 . $KOBO_SCRIPT_DIR/build-common.sh
