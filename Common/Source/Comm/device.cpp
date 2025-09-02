@@ -56,8 +56,6 @@
 
 
 bool devDriverActivated(const TCHAR *DeviceName) ;
-    
-using namespace std::placeholders;
 
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.
