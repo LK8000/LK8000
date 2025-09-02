@@ -9,7 +9,7 @@ if (file(sentryPropertiesFile).exists()) {
     sentryProperties.load(file(sentryPropertiesFile).newDataInputStream())
 
     sentry {
-        ignoredBuildTypes = ["release"]
+        ignoredBuildTypes = ["debug", "release"]
         uploadNativeSymbols = true
         includeSourceContext = true
         includeNativeSources = true
