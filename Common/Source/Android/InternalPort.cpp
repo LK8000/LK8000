@@ -45,9 +45,8 @@ bool InternalPort::Close() {
         thread_status.join();
     }
 
-    if (p) {
-        p->DeinitialiseVarioSound();
-    }
+    InternalSensors::DeinitialiseVarioSound();
+
     delete p;
 
     return NullComPort::Close();
@@ -61,7 +60,7 @@ void InternalPort::thread_run() {
     std::unique_lock<std::mutex> lock(mutex_status);
     while (internal_sensors) {
         cv_status.wait(lock);
-        if (!internal_sensors) {
+        if (!internal_sensors) { // could be reset by other thread
             continue;
         }
         if(!EnableAudioVario) {
@@ -69,7 +68,7 @@ void InternalPort::thread_run() {
         }
         DeviceDescriptor_t* d = devGetDeviceOnPort(GetPortIndex());
         if (d && devIsBaroSource(*d)) {
-            internal_sensors->InitialiseVarioSound();
+            InternalSensors::InitialiseVarioSound();
         }
     }
 }
