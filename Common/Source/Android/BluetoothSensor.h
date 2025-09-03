@@ -65,7 +65,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   struct sensor_data {
     sensor_data(uuid_t&& s, uuid_t&& c, std::vector<uint8_t>&& _data)
-        : service(s), characteristic(std::move(c)), data(std::move(_data)) {}
+        : service(s), characteristic(c), data(std::move(_data)) {}
 
     uuid_t service;
     uuid_t characteristic;
