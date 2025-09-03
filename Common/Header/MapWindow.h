@@ -28,6 +28,8 @@
 #include "ContestMgr.h"
 #include "utils/atomic_shared_flag.h"
 #include "Airspace/airspace_mode.h"
+#include "Topology/shapelib/mapserver.h"
+
 
 #ifndef ENABLE_OPENGL
 #include "Poco/Event.h"

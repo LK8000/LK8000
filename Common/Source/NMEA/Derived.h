@@ -10,7 +10,6 @@
 #define _NMEA_DERIVED_H_
 
 #include "types.h"
-#include "Topology/shapelib/mapserver.h"
 
 #define NUMTHERMALBUCKETS 10
 #define MAXFLAPSNAME 10
@@ -178,11 +177,11 @@ struct DERIVED_INFO {
   THERMAL_SOURCE_INFO ThermalSources[MAX_THERMAL_SOURCES] = {};
 
 #ifdef ENABLE_OPENGL
-  pointObj GlideFootPrint[NUMTERRAINSWEEPS+2] = {};
+  GeoPoint GlideFootPrint[NUMTERRAINSWEEPS+2] = {};
 #else
-  pointObj GlideFootPrint[NUMTERRAINSWEEPS+1] = {};
+  GeoPoint GlideFootPrint[NUMTERRAINSWEEPS+1] = {};
 #endif
-  pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1] = {};
+  GeoPoint GlideFootPrint2[NUMTERRAINSWEEPS+1] = {};
 
   bool GlideFootPrint_valid = {}; // true if #GlideFootPrint well calculated
   bool GlideFootPrint2_valid = {}; // true if #GlideFootPrint2 well calculated

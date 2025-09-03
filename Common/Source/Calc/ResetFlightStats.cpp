@@ -80,8 +80,8 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->GlideFootPrint_valid = false;
     Calculated->GlideFootPrint2_valid = false;
     
-    std::fill(std::begin(Calculated->GlideFootPrint), std::end(Calculated->GlideFootPrint), (pointObj){0.,0.});
-    std::fill(std::begin(Calculated->GlideFootPrint2), std::end(Calculated->GlideFootPrint2), (pointObj){0.,0.});
+    std::fill(std::begin(Calculated->GlideFootPrint), std::end(Calculated->GlideFootPrint), GeoPoint{0.,0.});
+    std::fill(std::begin(Calculated->GlideFootPrint2), std::end(Calculated->GlideFootPrint2), GeoPoint{0.,0.});
 
 
     Calculated->TerrainWarningLatitude = 0.0;

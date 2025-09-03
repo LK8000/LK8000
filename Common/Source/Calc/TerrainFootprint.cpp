@@ -9,9 +9,9 @@
 #include "externs.h"
 #include "NavFunctions.h"
 
-void FillGlideFootPrint(double latitude, double longitude, double altitude, DERIVED_INFO *Calculated, double max_range,  pointObj* out, size_t count) {
+void FillGlideFootPrint(double latitude, double longitude, double altitude, DERIVED_INFO *Calculated, double max_range,  GeoPoint* out, size_t count) {
 
-  const pointObj* first_out = out; // this is first polygon point (OpenGL or not), used for close polygon.
+  const GeoPoint* first_out = out; // this is first polygon point (OpenGL or not), used for close polygon.
   for (size_t i = 0; i < count; ++i) {
     const double bearing = (i*360.0)/count;
     double lat, lon;
@@ -21,7 +21,7 @@ void FillGlideFootPrint(double latitude, double longitude, double altitude, DERI
     if (out_of_range) {
       FindLatitudeLongitude(latitude, longitude, bearing, distance, &lat, &lon);
     }
-    *(out++) = (pointObj){lon, lat};
+    *(out++) = {lat, lon};
   }
   (*out) = (*first_out); // close polygon
 }
@@ -37,8 +37,7 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   Calculated->TerrainBase = Calculated->TerrainAlt;
 
-
-  pointObj* out = Calculated->GlideFootPrint;
+  GeoPoint* out = Calculated->GlideFootPrint;
 
   // this exist only for allow static_assert, compil time error instead of runtime error.
   const decltype(Calculated->GlideFootPrint) GlideFootPrint_Test = {};
@@ -46,11 +45,11 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 #ifdef ENABLE_OPENGL
   static_assert(std::size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +2, "#GlideFootPrint invalid array size");
   // first point is current poisition
-  *(out++) = (pointObj){Basic->Longitude,Basic->Latitude};
+  *(out++) = {Basic->Latitude, Basic->Longitude};
 #else
   static_assert(std::size(GlideFootPrint_Test) == NUMTERRAINSWEEPS +1, "#GlideFootPrint invalid array size");
 #endif
-  
+
   if(FinalGlideTerrain) {
     FillGlideFootPrint(Basic->Latitude, Basic->Longitude, Calculated->NavAltitude, Calculated, mymaxrange, out, NUMTERRAINSWEEPS);
     Calculated->GlideFootPrint_valid = true;
