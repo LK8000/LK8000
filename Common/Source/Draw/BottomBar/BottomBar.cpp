@@ -263,8 +263,9 @@ void bottom_bar::draw_alt_data(LKSurface& Surface) const {
 }
 
 void bottom_bar::draw_sys_data(LKSurface& Surface) const {
-  draw_lkvalues_data(Surface, {{LK_BATTERY, LK_EXTBATT1VOLT, LK_SAT, LK_HBAR_AVAILABLE, LK_CPU, LK_LOGGER,
-                               LK_EXTBATT2VOLT, LK_EXTBATTBANK, LK_IAS, LK_SPEED_MC}});
+  draw_lkvalues_data(Surface, {{LK_BATTERY, LK_EXTBATT1VOLT, LK_EXTBATT2VOLT,
+                                LK_SAT, LK_HBAR_AVAILABLE, LK_LOGGER, LK_CPU,
+                                LK_EXTBATTBANK, LK_IAS, LK_SPEED_MC}});
 }
 
 void bottom_bar::draw_cus_data(LKSurface& Surface) const {
