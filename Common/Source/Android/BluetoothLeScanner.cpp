@@ -8,6 +8,7 @@
  */
 
 #include "BluetoothLeScanner.h"
+#include <utility>
 #include "Java/Env.hxx"
 #include "Java/Ref.hxx"
 #include "Java/Class.hxx"
@@ -35,7 +36,7 @@ void BluetoothLeScanner::Deinitialise(JNIEnv* env) {
   cls.ClearOptional(env);
 }
 
-BluetoothLeScanner::BluetoothLeScanner(WndForm *pWndForm, callback_t callback) : _pWndForm(pWndForm), _callback(callback) {
+BluetoothLeScanner::BluetoothLeScanner(WndForm *pWndForm, callback_t callback) : _pWndForm(pWndForm), _callback(std::move(callback)) {
   if (!cls) {
     throw std::runtime_error("java class not found");
   }
