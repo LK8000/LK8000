@@ -66,7 +66,7 @@ namespace {
         return (f * b + of * a);
     }
 
-    VarioTone linear_interpolation(const VarioTone &a, const VarioTone &b, double f) {
+    VarioTone linear_interpolation(const VarioTone &a, const VarioTone &b, float f) {
         return {
                 linear_interpolation(a.Frequency, b.Frequency, f),
                 linear_interpolation(a.CycleTime, b.CycleTime, f),

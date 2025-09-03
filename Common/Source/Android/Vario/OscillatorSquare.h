@@ -60,7 +60,7 @@ public:
         }
     }
 
-    const float Next() {
+    float Next() {
         assert(mSampleRate > 0.0f && "Samplerate must be greater than 0");
         assert(mFrequency < mSampleRate && "Frequency must be less than mSampleRate ");
 
