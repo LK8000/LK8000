@@ -30,15 +30,7 @@
 
 #include <cmath>
 
-class Point3D {
- public:
-  constexpr Point3D() = default;
-
-  constexpr Point3D(const Point3D&) = default;
-  constexpr Point3D& operator=(const Point3D&) = default;
-
-  constexpr Point3D(Point3D&&) = default;
-  constexpr Point3D& operator=(Point3D&&) = default;
+struct Point3D {
 
   constexpr Point3D operator+(const Point3D& other) const {
     return { x + other.x, y + other.y, z + other.z };
@@ -52,7 +44,7 @@ class Point3D {
     return { x / v, y / v, z / v };
   }
 
-  constexpr double length() const {
+  [[nodiscard]] constexpr double length() const {
     Point3D tmp = (*this) * (*this);
     return std::sqrt(tmp.x + tmp.y + tmp.z);
   }
