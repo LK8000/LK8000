@@ -92,6 +92,7 @@ namespace {
 // popup object details event queue data.
 struct object_detail {
   object_detail() = delete;
+  explicit object_detail(im_object_variant obj) : object(std::move(obj)) {}
 
   im_object_variant object;
 };
