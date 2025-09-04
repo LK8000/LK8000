@@ -19,6 +19,7 @@
 
 struct im_airspace {
   im_airspace() = delete;
+  explicit im_airspace(CAirspacePtr pAsp) : pAirspace(std::move(pAsp)) {}
 
   CAirspacePtr pAirspace;
 
@@ -29,6 +30,7 @@ struct im_airspace {
 
 struct im_waypoint {
   im_waypoint() = delete;
+  explicit im_waypoint(size_t i) : idx(i) {}
 
   size_t idx;
 
@@ -39,6 +41,7 @@ struct im_waypoint {
 
 struct im_flarm {
   im_flarm() = delete;
+  explicit im_flarm(int i) : idx(i) {}
 
   int idx;
 
@@ -49,6 +52,7 @@ struct im_flarm {
 
 struct im_task_pt {
   im_task_pt() = delete;
+  explicit im_task_pt(int i) : idx(i) {}
 
   int idx;
 
@@ -59,6 +63,7 @@ struct im_task_pt {
 
 struct im_oracle {
   im_oracle() = delete;
+  explicit im_oracle(int i) : idx(i) {}
 
   int idx;
 
@@ -69,6 +74,7 @@ struct im_oracle {
 
 struct im_weatherst {
   im_weatherst() = delete;
+  explicit im_weatherst(size_t i) : idx(i) {}
 
   size_t idx;
 
@@ -91,6 +97,7 @@ struct im_team {
 
 struct im_thermal {
   im_thermal() = delete;
+  explicit im_thermal(size_t i) : idx(i) {}
 
   size_t idx;
 
