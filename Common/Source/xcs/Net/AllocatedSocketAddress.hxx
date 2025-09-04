@@ -83,13 +83,16 @@ public:
 		return *this;
 	}
 
+	template<typename T>
 	gcc_pure
-	bool operator==(SocketAddress other) const {
-		return (SocketAddress)*this == other;
+	bool operator==(T &&other) const noexcept {
+		return (SocketAddress)*this == std::forward<T>(other);
 	}
 
-	bool operator!=(SocketAddress &other) const {
-		return !(*this == other);
+	template<typename T>
+	gcc_pure
+	bool operator!=(T &&other) const noexcept {
+		return !(*this == std::forward<T>(other));
 	}
 
 	gcc_const
