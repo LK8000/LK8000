@@ -10,6 +10,10 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.37]
+ - add "BOOX" ereader to eInk android list
+ - Bottom bar "SYS6" : change value order
+
 [version 7.4.36]
 * Fix
  - crash in XCVario driver
