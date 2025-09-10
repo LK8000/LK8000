@@ -10,6 +10,7 @@
 #define	DEVGENERIC_H
 
 #include "Devices/DeviceRegister.h"
+#include "Comm/PortConfig.h"
 
 void genInstall(DeviceDescriptor_t* d);
 
