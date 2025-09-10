@@ -11,6 +11,7 @@
 
 #include "Compiler.h"
 #include "tchar.h"
+#include <array>
 
 namespace settings {
     class writer;
@@ -46,6 +47,7 @@ enum Units_t {
   unInHg, // Inch of mercury
   unG,
   unMeterSquareSecond,
+  unCentimeterPersecond,
   unLastUnit // must be the last
 };
 
@@ -153,7 +155,7 @@ namespace Units {
   };
 
   inline constexpr
-  UnitDescriptor_t UnitDescriptors[unLastUnit + 1] = {
+  UnitDescriptor_t UnitDescriptors[] = {
       {_T(""), 1.0, 0},                          // unUndef
       {_T("km"), 0.001, 0},                      // unKiloMeter
       {_T("nm"), 1.0 / 1852, 0},                 // unNauticalMiles
@@ -175,8 +177,11 @@ namespace Units {
       {_T("inHg"), 1.0 / 33.86389, 0},           // unInHg
       {_T("G"), 1.0, 0},                         // unG,
       {_T("m/s²"), 1.0 / 9.80665, 0},            // unMeterSquareSecond,
+      {_T("cm/s"), 100, 0},                      // unCentimeterPersecond
       {_T(""), 1.0, 0},                          // unLastUnit
   };
+
+  static_assert(std::size(UnitDescriptors) == unLastUnit + 1, "invalid array size");
 
   } // impl
 
