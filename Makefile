@@ -1238,6 +1238,7 @@ DEVS	:=\
 	$(DEV)/devGenericAutopilot.cpp \
 	$(DEV)/devAirControlDisplay.cpp \
 	$(DEV)/devFlyBeeper.cpp \
+	$(DEV)/devVectorVario.cpp \
 	$(DEV)/DeviceRegister.cpp \
 	$(DEV)/DeviceSettings.cpp \
 
