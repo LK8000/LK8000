@@ -106,6 +106,9 @@ struct DeviceDescriptor_t {
   BOOL (*OnHeartRate)(DeviceDescriptor_t& d, NMEA_INFO& info, unsigned bpm);
   BOOL (*OnBarometricPressure)(DeviceDescriptor_t& d, NMEA_INFO& info, double Pa);
   BOOL (*OnOutsideTemperature)(DeviceDescriptor_t& d, NMEA_INFO& info, double temp);
+  BOOL (*OnRelativeHumidity)(DeviceDescriptor_t& d, NMEA_INFO& info, double hr);
+  BOOL (*OnWindOriginDirection)(DeviceDescriptor_t& d, NMEA_INFO& info, double direction);
+  BOOL (*OnWindSpeed)(DeviceDescriptor_t& d, NMEA_INFO& info, double speed);
   BOOL (*OnBatteryLevel)(DeviceDescriptor_t& d, NMEA_INFO& info, double level);
   
   /**

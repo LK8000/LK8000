@@ -408,6 +408,9 @@ void DeviceDescriptor_t::InitStruct(unsigned i) {
     OnHeartRate = nullptr;
     OnBarometricPressure = nullptr;
     OnOutsideTemperature = nullptr;
+    OnRelativeHumidity = nullptr;
+    OnWindOriginDirection = nullptr;
+    OnWindSpeed = nullptr;
     OnBatteryLevel = nullptr;
 
     DoEnableGattCharacteristic = nullptr;

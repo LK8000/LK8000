@@ -51,6 +51,18 @@ const service_table_t& service_table() {
             &BluetoothSensor::OutsideTemperature,
             &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnOutsideTemperature>,
         }},
+        { gatt_uuid(0x2A6F), {
+            &BluetoothSensor::RelativeHumidity,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnRelativeHumidity>,
+        }},
+        { gatt_uuid(0x2A70), {
+            &BluetoothSensor::WindSpeed,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnWindSpeed>,
+        }},
+        { gatt_uuid(0x2A71), {
+            &BluetoothSensor::WindOriginDirection,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnWindOriginDirection>,
+        }},
     }}},
     { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
         { gatt_uuid(0xFFE1), {
@@ -291,6 +303,26 @@ void BluetoothSensor::OutsideTemperature(const std::vector<uint8_t>& data) {
     OnSensorData<&DeviceDescriptor_t::OnOutsideTemperature>(
         static_cast<int16_t>(value) / 100.);
   }
+}
+
+void BluetoothSensor::RelativeHumidity(const std::vector<uint8_t>& data) {
+  auto value = characteristic_value<int16_t>(data).get();
+  if (value < 10000) {
+    OnSensorData<&DeviceDescriptor_t::OnRelativeHumidity>(value / 100.);
+  }
+}
+
+void BluetoothSensor::WindOriginDirection(const std::vector<uint8_t>& data) {
+  auto value = characteristic_value<uint16_t>(data).get();
+  if (value < 35999) {
+    OnSensorData<&DeviceDescriptor_t::OnRelativeHumidity>(value / 100.);
+  }
+}
+
+void BluetoothSensor::WindSpeed(const std::vector<uint8_t>& data) {
+  auto value = characteristic_value<int16_t>(data).get();
+  OnSensorData<&DeviceDescriptor_t::OnWindSpeed>(
+      Units::From(Units_t::unCentimeterPersecond, value));
 }
 
 void BluetoothSensor::DataReceived(const void *data, size_t length) {

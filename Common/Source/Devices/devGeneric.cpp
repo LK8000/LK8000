@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Baro.h"
 #include "devGeneric.h"
+#include "Comm/ExternalWind.h"
 
 namespace  {
 
@@ -26,8 +27,27 @@ BOOL OnBarometricPressure(DeviceDescriptor_t& d, NMEA_INFO& info, double Pa) {
 
 BOOL OnOutsideTemperature(DeviceDescriptor_t& d, NMEA_INFO& info, double temp) {
   ScopeLock lock(CritSec_FlightData);
-  info.TemperatureAvailable = TRUE;
+  info.TemperatureAvailable = true;
   info.OutsideAirTemperature = temp;
+  return TRUE;
+}
+
+BOOL OnRelativeHumidity(DeviceDescriptor_t& d, NMEA_INFO& info, double hr) {
+  ScopeLock lock(CritSec_FlightData);
+  info.HumidityAvailable = true;
+  info.RelativeHumidity = hr;
+  return TRUE;
+}
+
+BOOL OnWindOriginDirection(DeviceDescriptor_t& d, NMEA_INFO& info, double direction) {
+  ScopeLock lock(CritSec_FlightData);
+  UpdateExternalWind(info, d, info.ExternalWindSpeed, direction);
+  return TRUE;
+}
+
+BOOL OnWindSpeed(DeviceDescriptor_t& d, NMEA_INFO& info, double speed) {
+  ScopeLock lock(CritSec_FlightData);
+  UpdateExternalWind(info, d, speed, info.ExternalWindDirection);
   return TRUE;
 }
 
@@ -58,6 +78,9 @@ void genInstall(DeviceDescriptor_t* d) {
   d->OnHeartRate = OnHeartRate;
   d->OnBarometricPressure = OnBarometricPressure;
   d->OnOutsideTemperature = OnOutsideTemperature;
+  d->OnRelativeHumidity = OnRelativeHumidity;
+  d->OnWindOriginDirection = OnWindOriginDirection;
+  d->OnWindSpeed = OnWindSpeed;
   d->OnBatteryLevel = OnBatteryLevel;
   d->OnAcceleration = OnAcceleration;
 }

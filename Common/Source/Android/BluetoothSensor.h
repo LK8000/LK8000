@@ -109,6 +109,9 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   void BarometricPressure(const std::vector<uint8_t>& data);
   void OutsideTemperature(const std::vector<uint8_t>& data);
+  void RelativeHumidity(const std::vector<uint8_t>& data);
+  void WindOriginDirection(const std::vector<uint8_t>& data);
+  void WindSpeed(const std::vector<uint8_t>& data);
 
   void Hm10Data(const std::vector<uint8_t>& data) {
     DataReceived(data.data(), data.size());
