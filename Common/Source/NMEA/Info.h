@@ -81,6 +81,9 @@ struct NMEA_INFO final {
     unsigned AccelerationIdx = NUMDEV;
     std::vector<Point3D> Acceleration = {}; // in G
 
+    unsigned GloadIdx = NUMDEV;
+    double Gload = {};
+
     int SatellitesUsed = {};
     bool TemperatureAvailable = {};
     double OutsideAirTemperature = {};
@@ -132,6 +135,10 @@ void UpdateHeartRate(NMEA_INFO& info, const DeviceDescriptor_t& d, unsigned bpm)
 
 void ResetAccelerationAvailable(NMEA_INFO& info);
 bool AccelerationAvailable(const NMEA_INFO& info);
+
+void ResetGLoadAvailable(NMEA_INFO& info);
+bool GLoadAvailable(const NMEA_INFO& info);
+void UpdateGLoad(NMEA_INFO& info, const DeviceDescriptor_t& d, double value);
 
 
 #endif //_NMEA_INFO_H_

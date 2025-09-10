@@ -899,7 +899,7 @@ goto_bearing:
 			_stprintf(BufferValue,TEXT("%+.1f"), value);
 			valid=true;
 			_stprintf(BufferTitle, TEXT("%s%s"),
-						AccelerationAvailable(DrawInfo) ? _T("") : _T("e"),
+                                                GLoadAvailable(DrawInfo) || AccelerationAvailable(DrawInfo) ? _T("") : _T("e"),
 						MsgToken<1076>());
 			break;
 

@@ -34,3 +34,19 @@ void ResetAccelerationAvailable(NMEA_INFO& info) {
 bool AccelerationAvailable(const NMEA_INFO& info) {
   return info.AccelerationIdx < NUMDEV;
 }
+
+void ResetGLoadAvailable(NMEA_INFO& info) {
+  info.GloadIdx = NUMDEV;
+}
+
+bool GLoadAvailable(const NMEA_INFO& info) {
+  return info.GloadIdx < NUMDEV;
+}
+
+void UpdateGLoad(NMEA_INFO& info, const DeviceDescriptor_t& d, double value) {
+  if (d.PortNumber <= info.AccelerationIdx) {
+    info.GloadIdx = d.PortNumber;
+    info.Gload = value;
+  }
+}
+

@@ -149,6 +149,9 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   if (!idx || (GPS_INFO.AccelerationIdx == idx.value())) {
     ResetAccelerationAvailable(GPS_INFO);
   }
+  if (!idx || (GPS_INFO.GloadIdx == idx.value())) {
+    ResetGLoadAvailable(GPS_INFO);
+  }
 
   GPS_INFO.AirspeedAvailable = false;
   GPS_INFO.NettoVarioAvailable = false;
@@ -198,6 +201,16 @@ bool UpdateMonitor() {
   if (last_active_wind != wind_idx) {
     last_active_wind = wind_idx;
     StartupStore(_T(". Wind source changed to device %c @%s"), devLetter(wind_idx), WhatTimeIsIt());
+  }
+
+  // check for external Gload source change
+  static unsigned last_active_gload = NUMDEV;
+  unsigned gload_idx = WithLock(CritSec_FlightData, []() {
+    return GPS_INFO.GloadIdx;
+  });
+  if (last_active_gload != gload_idx) {
+    last_active_gload = gload_idx;
+    StartupStore(_T(". GLoad source changed to device %c @%s"), devLetter(gload_idx), WhatTimeIsIt());
   }
 
   ScopeLock Lock(CritSec_Comm);

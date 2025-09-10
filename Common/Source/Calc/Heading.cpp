@@ -73,12 +73,14 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     if (ISCAR) {
       if (Basic->Time > LastTime) {
         static double lastSpeed = 0;
-        Calculated->Gload = ((Basic->Speed - lastSpeed) / (Basic->Time - LastTime)) / 9.80665;
+        Calculated->Gload =
+            ((Basic->Speed - lastSpeed) / (Basic->Time - LastTime)) / 9.80665;
         lastSpeed = Basic->Speed;
-      } else {
+      }
+      else {
         Calculated->Gload = 0;
       }
-    } else if (!AccelerationAvailable(*Basic)) {
+    } else if ((!GLoadAvailable(*Basic)) && (!AccelerationAvailable(*Basic))) {
       Calculated->Gload = 1.0 / std::max(0.001, std::abs(cos(angle)));
     }
     LastTime = Basic->Time;

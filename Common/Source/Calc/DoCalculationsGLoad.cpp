@@ -23,14 +23,20 @@ Point3D  Average(const std::vector<Point3D>& Acceleration) {
 
 void FromSensor(const NMEA_INFO& Basic, DERIVED_INFO& Calculated) {
     Calculated.Acceleration = Average(Basic.Acceleration);
-    Calculated.Gload = Calculated.Acceleration.length();
 }
 
 } // namespace
 
 void DoCalculationsGLoad(const NMEA_INFO& Basic, DERIVED_INFO& Calculated) {
     if (AccelerationAvailable(Basic)) {
-        FromSensor(Basic, Calculated);
+      FromSensor(Basic, Calculated);
     }
-    // if Acceleration not available, Gload Will be Calculated later by Heading() function
+    if (GLoadAvailable(Basic)) {
+      Calculated.Gload = Basic.Gload;
+    }
+    else if (AccelerationAvailable(Basic)) {
+      Calculated.Gload = Calculated.Acceleration.length();
+    }
+
+    // if Acceleration nor GLoad available, Gload Will be Calculated later by Heading() function
 }
