@@ -15,6 +15,10 @@ struct DeviceDescriptor_t;
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
+/**
+ * @Speed : in systemm Unit, use "Units::From(...)" to set it in right unit
+ * @Direction : from the wind is blowing in degrees 0-360°
+ */
 void UpdateExternalWind(NMEA_INFO& Info, const DeviceDescriptor_t& d, double Speed, double Direction);
 
 void ResetExternalWindAvailable(NMEA_INFO& Info);
