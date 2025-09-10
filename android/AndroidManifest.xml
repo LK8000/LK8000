@@ -77,7 +77,8 @@
                android:dataExtractionRules="@xml/data_extraction_rules">
 
     <meta-data android:name="io.sentry.dsn" android:value="${sentryDsnUrl}" />
-    <meta-data android:name="io.sentry.anr.enable" android:value="true" />
+    <meta-data android:name="io.sentry.auto-init" android:value="${sentryAutoInit}" />
+    <meta-data android:name="io.sentry.anr.enable" android:value="${sentryAnrEnable}" />
 
     <activity android:name=".LK8000"
               android:theme="@style/SplashTheme"

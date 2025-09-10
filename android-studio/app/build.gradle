@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'io.sentry.android.gradle' version '5.9.0'
+    id 'io.sentry.android.gradle' version '5.10.0'
 }
 
 def sentryProperties = new Properties()
@@ -20,7 +20,11 @@ if (file(sentryPropertiesFile).exists()) {
 }
 def sentryDsnUrl = sentryProperties["dsn"]
 
-
+configurations.all {
+    if (name.toLowerCase().contains("debug") || name.toLowerCase().contains("release")) {
+        exclude group: "io.sentry", module: "sentry-android"
+    }
+}
 
 // Signing config documentation :
 //    https://developer.android.com/studio/publish/app-signing#secure-shared-keystore
@@ -62,7 +66,11 @@ android {
             }
         }
 
-        manifestPlaceholders = [sentryDsnUrl: sentryDsnUrl]
+        manifestPlaceholders = [
+                sentryDsnUrl: "",
+                sentryAutoInit: "false",
+                sentryAnrEnable: "false"
+        ]        
     }
     buildFeatures {
         prefab true
@@ -107,6 +115,12 @@ android {
             initWith(buildTypes.release)
 
             applicationIdSuffix ".test"
+
+            manifestPlaceholders = [
+                    sentryDsnUrl: sentryDsnUrl,
+                    sentryAutoInit: "true",
+                    sentryAnrEnable: "true"
+            ]
         }
     }
     externalNativeBuild {
