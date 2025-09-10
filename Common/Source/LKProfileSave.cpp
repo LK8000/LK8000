@@ -466,7 +466,7 @@ void LKDeviceSave(const TCHAR *szFile) {
     return;
   }
 
-  for (int n = 0; n < NUMDEV; n++) {
+  for (unsigned n = 0; n < NUMDEV; n++) {
     auto& Port = PortConfig[n];
 
     write_settings(szRegistryDevice[n], Port.szDeviceName);

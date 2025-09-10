@@ -163,6 +163,34 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   EnableExternalTriggerCruise = false;
 }
 
+namespace {
+
+template<typename T>
+class SourceMonitor {
+ public:
+  template <size_t N>
+  SourceMonitor(const T& ref, const TCHAR (&name)[N])
+      : ref_(ref), name_(name) {}
+
+  void check() {
+    T current = WithLock(CritSec_FlightData, [&]() {
+      return ref_;
+    });
+    if (last_value_ != current) {
+      last_value_ = current;
+      StartupStore(_T(". %s source changed to device %c @%s"), name_,
+                   devLetter(current), WhatTimeIsIt());
+    }
+  }
+
+ private:
+  const T& ref_;
+  const TCHAR* name_;
+  T last_value_ = T(NUMDEV);
+};
+
+}  // namespace
+
 //
 // Run every 5 seconds, approx.
 // This is the hearth of LK. Questions? Ask Paolo..
@@ -174,44 +202,20 @@ bool UpdateMonitor() {
   static bool wasSilent[std::size(DeviceList)] = { false };
 
   // check for Baro source change
-  static unsigned last_active_baro = NUMDEV; 
-  unsigned baro_idx = WithLock(CritSec_FlightData, []() {
-    return GPS_INFO.BaroSourceIdx.device_index;
-  });
-  if (last_active_baro != baro_idx) {
-    last_active_baro = baro_idx;
-    StartupStore(_T(". Baro source changed to device %c @%s"), devLetter(baro_idx), WhatTimeIsIt());
-  }
+  static SourceMonitor baro_monitor(GPS_INFO.BaroSourceIdx, _T("Baro"));
+  baro_monitor.check();
 
   // check for vario source change
-  static unsigned last_active_vario = NUMDEV;
-  unsigned vario_idx = WithLock(CritSec_FlightData, []() {
-    return GPS_INFO.VarioSourceIdx;
-  });
-  if (last_active_vario != vario_idx) {
-    last_active_vario = vario_idx;
-    StartupStore(_T(". Vario source changed to device %c @%s"), devLetter(vario_idx), WhatTimeIsIt());
-  }
+  static SourceMonitor vario_monitor(GPS_INFO.VarioSourceIdx, _T("Vario"));
+  vario_monitor.check();
 
   // check for external wind source change
-  static unsigned last_active_wind = NUMDEV; 
-  unsigned wind_idx = WithLock(CritSec_FlightData, []() {
-    return GPS_INFO.ExternalWindIdx;
-  });
-  if (last_active_wind != wind_idx) {
-    last_active_wind = wind_idx;
-    StartupStore(_T(". Wind source changed to device %c @%s"), devLetter(wind_idx), WhatTimeIsIt());
-  }
+  static SourceMonitor wind_monitor(GPS_INFO.ExternalWindIdx, _T("Wind"));
+  wind_monitor.check();
 
   // check for external Gload source change
-  static unsigned last_active_gload = NUMDEV;
-  unsigned gload_idx = WithLock(CritSec_FlightData, []() {
-    return GPS_INFO.GloadIdx;
-  });
-  if (last_active_gload != gload_idx) {
-    last_active_gload = gload_idx;
-    StartupStore(_T(". GLoad source changed to device %c @%s"), devLetter(gload_idx), WhatTimeIsIt());
-  }
+  static SourceMonitor gload_monitor(GPS_INFO.GloadIdx, _T("GLoad"));
+  gload_monitor.check();
 
   ScopeLock Lock(CritSec_Comm);
 

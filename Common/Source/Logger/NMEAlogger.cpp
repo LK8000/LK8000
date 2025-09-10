@@ -32,7 +32,7 @@ static bool wasWriting=false;
               fclose(logfpall) ;
               logfpall = NULL;
           }
-          for(int dev = 0; dev < NUMDEV; dev++)
+          for(unsigned dev = 0; dev < NUMDEV; dev++)
           {
             if(logfsingle[dev] != NULL) {
               fclose(logfsingle[dev]);

@@ -17,7 +17,7 @@
 
 struct DeviceDescriptor_t;
 
-#define	NUMDEV		 6
+#define	NUMDEV		 6U
 
 /**
  * used to manage Baro Altitude Source priority
@@ -27,6 +27,9 @@ struct DeviceDescriptor_t;
  *     this have the lowest prriority any time (index greater than DeviceList size).
  */
 struct BaroIndex {
+    BaroIndex() = default;
+    BaroIndex(bool flarm, unsigned index) : is_flarm(flarm), device_index(index) {}
+    explicit BaroIndex(unsigned index) : device_index(index) {}
 
     bool is_flarm = false;
     unsigned device_index = NUMDEV;
@@ -40,6 +43,10 @@ struct BaroIndex {
 
     bool operator != (BaroIndex& idx) const {
         return (is_flarm != idx.is_flarm) && (device_index != idx.device_index);
+    }
+
+    operator unsigned () const {
+        return device_index;
     }
 };
 

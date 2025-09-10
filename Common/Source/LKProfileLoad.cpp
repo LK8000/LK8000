@@ -442,7 +442,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
   /***************************************************/
 
-  for (int n = 0; n < NUMDEV; n++) {
+  for (unsigned n = 0; n < NUMDEV; n++) {
     auto &Port = PortConfig[n];
 
     if (settings::read(sname, svalue, szRegistryDevice[n], Port.szDeviceName)) return;
