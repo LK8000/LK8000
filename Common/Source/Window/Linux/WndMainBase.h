@@ -54,8 +54,8 @@ public:
 
     static void PostRedrawEvent() {
 #ifndef ENABLE_SDL
-        Event event(Event::NOP);
-        event_queue->Push(event);
+        event_queue->Purge(Event::NOP);
+        event_queue->Push(Event(Event::NOP));
 #endif
     }
 };
