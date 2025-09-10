@@ -3,6 +3,10 @@
 
 #include "tchar.h"
 #include "types.h"
+#include "Defines.h"
+#include <array>
+#include <cstring>
+
 
 // Filter switches for different Data directions coming sending from/to external devices
 enum DataBiIoDir {
