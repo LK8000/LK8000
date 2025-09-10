@@ -24,7 +24,10 @@ extern void LockTaskData();
 
 extern void UnlockTerrainDataGraphics();
 extern void LockTerrainDataGraphics();
+
 extern void TriggerGPSUpdate();
+bool CheckLastCalculationRun(unsigned duration);
+
 extern void TriggerVarioUpdate();
 
 void FocusOnWindow(int i, bool selected);

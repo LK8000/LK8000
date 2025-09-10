@@ -57,6 +57,7 @@ public:
 #ifdef HAVE_CPU_FREQUENCY
             const ScopeLockCPU cpu;
 #endif
+
             // make local copy before editing...
             UpdateLocalFlightData();
 
@@ -114,6 +115,11 @@ public:
         cond.Signal();
     }
 
+    bool CheckLastRun(unsigned duration) {
+      ScopeLock lock(mtx);
+      return last_run.Check(duration);
+    }
+
     void RequestStop() {
         ScopeLock lock(mtx);
         run = false;
@@ -137,6 +143,15 @@ private:
 
     bool Wait() {
         ScopeLock lock(mtx);
+
+        /*
+         * updated here to avoid useless locking overhead :
+         *
+         * after each calculation run, this method is called to wait for new
+         * data so last_run is updated at the end of each run.
+         */
+        last_run.Update();
+
         while (run && !new_data) {
             cond.Wait(mtx);
         }
@@ -151,6 +166,8 @@ private:
     Cond cond;
     bool run = true;
     bool new_data = false;
+
+    PeriodClock last_run;
 };
 
 CalculationThread _CalculationThread;
@@ -167,4 +184,8 @@ void StopThreadCalculation() {
 
 void TriggerGPSUpdate() {
     _CalculationThread.SignalNewData();
+}
+
+bool CheckLastCalculationRun(unsigned duration) {
+  return _CalculationThread.CheckLastRun(duration);
 }

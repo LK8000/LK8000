@@ -30,8 +30,15 @@ void UpdateVarioSource( NMEA_INFO& Info, const DeviceDescriptor_t& d, double Var
 
     Info.VarioSourceIdx = d.PortNumber;
     Info.Vario = Vario;
-
     TriggerVarioUpdate();
+
+    if (CheckLastCalculationRun(1000./5.)) {
+      static double old = 0.;
+      if (std::abs(old - Vario) >= 0.05) {  // 5 cm/s
+        old = Vario;
+        TriggerGPSUpdate(); // to force overlay redraw
+      }
+    }
   }
 }
 
