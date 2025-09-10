@@ -23,6 +23,67 @@ enum PortState : int {
   STATE_LIMBO = 2,
 };
 
+using ProcessSensorDataT = std::function<void(BluetoothSensor*, const std::vector<uint8_t>&)>;
+using DoEnableNotificationT = std::function<bool(const BluetoothSensor*)>;
+
+struct DataHandlerT {
+  ProcessSensorDataT ProcessSensorData;
+  DoEnableNotificationT DoEnableNotification;
+};
+
+using service_table_t = bluetooth::service_table_t<DataHandlerT>;
+
+const service_table_t& service_table() {
+  using bluetooth::gatt_uuid;
+  static const service_table_t table = {{
+    { gatt_uuid(0x180D), {{ // Heart Rate
+        { gatt_uuid(0x2A37), {
+            &BluetoothSensor::HeartRateMeasurement,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnHeartRate>,
+        }}
+    }}},
+    { gatt_uuid(0x181A), {{ // Environmental Sensing Service
+        { gatt_uuid(0x2A6D), {
+            &BluetoothSensor::BarometricPressure,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBarometricPressure>,
+        }},
+        { gatt_uuid(0x2A6E), {
+            &BluetoothSensor::OutsideTemperature,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnOutsideTemperature>,
+        }},
+    }}},
+    { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
+        { gatt_uuid(0xFFE1), {
+            &BluetoothSensor::Hm10Data,
+            &BluetoothSensor::Hm10DataEnable
+        }},
+        { gatt_uuid(0xFFE4), { // SkyDrop2
+            &BluetoothSensor::Hm10Data,
+            &BluetoothSensor::Hm10DataEnable
+        }},
+    }}},
+    { gatt_uuid(0x1800), {{ // Generic Access
+        { gatt_uuid(0x2A00), {
+            &BluetoothSensor::DeviceName,
+            &BluetoothSensor::EnableCharacteristic<true>
+        }}
+    }}},
+    { gatt_uuid(0x180A), {{ // Device Information Service
+        { gatt_uuid(0x2A25), { // Serial Number String
+            &BluetoothSensor::SerialNumber, 
+            &BluetoothSensor::EnableCharacteristic<true>
+        }}
+    }}},
+    { gatt_uuid(0x180F), {{ // Battery Service
+        { gatt_uuid(0x2A19), { // Battery Level
+            &BluetoothSensor::BatteryLevel,
+            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBatteryLevel>
+        }}
+    }}},
+  }};
+  return table;
+}
+
 }  // namespace
 
 bool BluetoothSensor::Initialize() {
@@ -143,67 +204,6 @@ void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteris
   ScopeLock lock(mutex);
   data_queue.emplace_back(std::move(service), std::move(characteristic), std::move(data));
   newdata.Signal();
-}
-
-using ProcessSensorDataT = std::function<void(BluetoothSensor*, const std::vector<uint8_t>&)>;
-using DoEnableNotificationT = std::function<bool(const BluetoothSensor*)>;
-
-struct DataHandlerT {
-  ProcessSensorDataT ProcessSensorData;
-  DoEnableNotificationT DoEnableNotification;
-};
-
-using service_table_t = bluetooth::service_table_t<DataHandlerT>;
-
-const service_table_t& service_table() {
-  using bluetooth::gatt_uuid;
-  static const service_table_t table = {{
-    { gatt_uuid(0x180D), {{ // Heart Rate
-        { gatt_uuid(0x2A37), {
-            &BluetoothSensor::HeartRateMeasurement,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnHeartRate>,
-        }}
-    }}},
-    { gatt_uuid(0x181A), {{ // Environmental Sensing Service
-        { gatt_uuid(0x2A6D), {
-            &BluetoothSensor::BarometricPressure,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBarometricPressure>,
-        }},
-        { gatt_uuid(0x2A6E), {
-            &BluetoothSensor::OutsideTemperature,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnOutsideTemperature>,
-        }},
-    }}},
-    { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
-        { gatt_uuid(0xFFE1), {
-            &BluetoothSensor::Hm10Data,
-            &BluetoothSensor::Hm10DataEnable
-        }},
-        { gatt_uuid(0xFFE4), { // SkyDrop2
-            &BluetoothSensor::Hm10Data,
-            &BluetoothSensor::Hm10DataEnable
-        }},
-    }}},
-    { gatt_uuid(0x1800), {{ // Generic Access
-        { gatt_uuid(0x2A00), {
-            &BluetoothSensor::DeviceName,
-            &BluetoothSensor::EnableCharacteristic<true>
-        }}
-    }}},
-    { gatt_uuid(0x180A), {{ // Device Information Service
-        { gatt_uuid(0x2A25), { // Serial Number String
-            &BluetoothSensor::SerialNumber, 
-            &BluetoothSensor::EnableCharacteristic<true>
-        }}
-    }}},
-    { gatt_uuid(0x180F), {{ // Battery Service
-        { gatt_uuid(0x2A19), { // Battery Level
-            &BluetoothSensor::BatteryLevel,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBatteryLevel>
-        }}
-    }}},
-  }};
-  return table;
 }
 
 bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {
