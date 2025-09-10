@@ -32,11 +32,15 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     x0 += fastsine(Calculated->WindBearing)*Calculated->WindSpeed;
     y0 += fastcosine(Calculated->WindBearing)*Calculated->WindSpeed;
 
-    Calculated->Heading = AngleLimit360(atan2(x0,y0)*RAD_TO_DEG);
-
-    if (!Calculated->Flying) {
-      // don't take wind into account when on ground
-      Calculated->Heading = Basic->TrackBearing;
+    if (Basic->MagneticHeadingAvailable) {
+      Calculated->Heading = Basic->MagneticHeading;
+    }
+    else {
+      Calculated->Heading = AngleLimit360(atan2(x0, y0) * RAD_TO_DEG);
+      if (!Calculated->Flying) {
+        // don't take wind into account when on ground
+        Calculated->Heading = Basic->TrackBearing;
+      }
     }
 
     // calculate turn rate in wind coordinates
