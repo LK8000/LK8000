@@ -605,6 +605,7 @@ add_library( LK8000 SHARED
     Common/Source/Comm/Bluetooth/BtHandler.cpp
     Common/Source/Comm/Bluetooth/BtHandlerWince.cpp
     Common/Source/Comm/Bluetooth/BthPort.cpp
+    Common/Source/Comm/Bluetooth/characteristic_value.cpp
 
     Common/Source/Comm/Obex/CObexPush.cpp
 

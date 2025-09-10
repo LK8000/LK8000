@@ -1178,6 +1178,7 @@ COMMS	:=\
 	$(CMM)/Bluetooth/BtHandler.cpp \
 	$(CMM)/Bluetooth/BtHandlerWince.cpp \
 	$(CMM)/Bluetooth/BthPort.cpp \
+	$(CMM)/Bluetooth/characteristic_value.cpp \
 	$(CMM)/Obex/CObexPush.cpp \
 	$(CMM)/FilePort.cpp\
 	$(CMM)/wait_ack.cpp\

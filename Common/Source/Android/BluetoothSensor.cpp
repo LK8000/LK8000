@@ -13,6 +13,7 @@
 #include "Android/BluetoothHelper.hpp"
 #include "Android/PortBridge.hpp"
 #include "Comm/Bluetooth/gatt_utils.h"
+#include "Comm/Bluetooth/characteristic_value.h"
 
 namespace {
 
@@ -228,11 +229,16 @@ void BluetoothSensor::ProcessSensorData(const sensor_data& data) {
     }
   });
 
-  auto handler = service_table().get(data.service, data.characteristic);
-  if (handler) {
-    return std::invoke(handler->ProcessSensorData, this, data.data);
+  try {
+    auto handler = service_table().get(data.service, data.characteristic);
+    if (handler) {
+      return std::invoke(handler->ProcessSensorData, this, data.data);
+    }
+    OnSensorData<&DeviceDescriptor_t::OnGattCharacteristic>(data.service, data.characteristic, data.data);
   }
-  OnSensorData<&DeviceDescriptor_t::OnGattCharacteristic>(data.service, data.characteristic, data.data);
+  catch(std::exception&) {
+    // ignore invalid data ...
+  }
 }
 
 void BluetoothSensor::DeviceName(const std::vector<uint8_t>& data) {
@@ -257,38 +263,34 @@ void BluetoothSensor::SerialNumber(const std::vector<uint8_t>& data) {
 }
 
 void BluetoothSensor::BatteryLevel(const std::vector<uint8_t>& data) {
-  if (data.size() == 1) {
-    OnSensorData<&DeviceDescriptor_t::OnBatteryLevel, double>(data[0]);
-  }
+  auto value = characteristic_value<uint8_t>(data).get(0);
+  OnSensorData<&DeviceDescriptor_t::OnBatteryLevel, double>(value);
 }
 
 void BluetoothSensor::HeartRateMeasurement(const std::vector<uint8_t>& data) {
-  if (data.size() >= 2) {
-    uint32_t bpm = data[1];
-    if (data[0] & 0x01 && data.size() >= 2) {
-      bpm += (static_cast<uint32_t>(data[2]) << 8);
+  auto bpm = [&]() -> uint32_t {
+    if (data[0] & 0x01) {
+      return characteristic_value<uint16_t>(data).get(1);
     }
-    OnSensorData<&DeviceDescriptor_t::OnHeartRate>(bpm);
-  }
+    else {
+      return characteristic_value<uint8_t>(data).get(1);
+    }
+  };
+
+  OnSensorData<&DeviceDescriptor_t::OnHeartRate>(bpm());
 }
 
 void BluetoothSensor::BarometricPressure(const std::vector<uint8_t>& data) {
-  if (data.size() != 4) {
-    return;
-  }
-  uint32_t value = FromLE32(*reinterpret_cast<const uint32_t*>(data.data()));
+  auto value = characteristic_value<uint32_t>(data).get();
   OnSensorData<&DeviceDescriptor_t::OnBarometricPressure>(value / 10.);
 }
 
 void BluetoothSensor::OutsideTemperature(const std::vector<uint8_t>& data) {
-  if (data.size() != 2) {
-    return;
+  auto value = characteristic_value<uint16_t>(data).get();
+  if (value != 0x8000) {
+    OnSensorData<&DeviceDescriptor_t::OnOutsideTemperature>(
+        static_cast<int16_t>(value) / 100.);
   }
-  uint16_t value = FromLE16(*reinterpret_cast<const uint16_t *>(data.data()));
-  if (value == 0x8000) {
-    return;
-  }
-  OnSensorData<&DeviceDescriptor_t::OnOutsideTemperature>(static_cast<int16_t>(value) / 100.);
 }
 
 void BluetoothSensor::DataReceived(const void *data, size_t length) {

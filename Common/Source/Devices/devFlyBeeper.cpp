@@ -17,6 +17,7 @@
 #include <random>
 #include "DeviceSettings.h"
 #include "Comm/Bluetooth/gatt_utils.h"
+#include "Comm/Bluetooth/characteristic_value.h"
 
 #undef uuid_t
 
@@ -275,15 +276,16 @@ BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO&
   return TRUE;
 }
 
-void TAS(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {
-  // TAS
-  if (data.size() == 2) {
-    ScopeLock lock(CritSec_FlightData);
+void TAS(DeviceDescriptor_t& d, NMEA_INFO& info,
+         const std::vector<uint8_t>& data) {
+  auto value = Units::From(unKiloMeterPerHour,
+                           characteristic_value<int16_t>(data).get() / 10.);
 
-    info.AirspeedAvailable = true;
-    info.TrueAirspeed = Units::From(unKiloMeterPerHour, FromLE16(*reinterpret_cast<const int16_t*>(data.data())) / 10.);
-    info.IndicatedAirspeed = IndicatedAirSpeed(info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
-  }
+  ScopeLock lock(CritSec_FlightData);
+  info.TrueAirspeed = value;
+  info.IndicatedAirspeed = IndicatedAirSpeed(
+      info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
+  info.AirspeedAvailable = true;
 }
 
 void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {
@@ -317,9 +319,8 @@ bool EnableFanet(DeviceDescriptor_t& d) {
   return true;
 }
 
-template<bool b>
 bool Enable(DeviceDescriptor_t&) {
-  return b;
+  return true;
 }
 
 using OnGattCharacteristicT = std::function<void(DeviceDescriptor_t&, NMEA_INFO&, const std::vector<uint8_t>&)>;
@@ -342,7 +343,7 @@ const service_table_t& service_table() {
         }},
         { "234337BF-F931-4D2D-A13C-07E2F06A0249", {
             &TAS,
-            &Enable<true>
+            &Enable
         }}
     }}}
   }};
@@ -354,8 +355,9 @@ bool DoEnableGattCharacteristic(DeviceDescriptor_t& d, uuid_t service, uuid_t ch
   return handler && std::invoke(handler->DoEnableNotification, d);
 }
 
-void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info, uuid_t service,
-                             uuid_t characteristic, const std::vector<uint8_t>& data) {
+void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info,
+                          uuid_t service, uuid_t characteristic,
+                          const std::vector<uint8_t>& data) {
   auto handler = service_table().get(service, characteristic);
   if (handler) {
     std::invoke(handler->OnGattCharacteristic, d, info, data);
