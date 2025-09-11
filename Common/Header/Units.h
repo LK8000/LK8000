@@ -48,6 +48,7 @@ enum Units_t {
   unG,
   unMeterSquareSecond,
   unCentimeterPersecond,
+  unDecimeterPersecond,
   unLastUnit // must be the last
 };
 
@@ -178,6 +179,7 @@ namespace Units {
       {_T("G"), 1.0, 0},                         // unG,
       {_T("m/s²"), 1.0 / 9.80665, 0},            // unMeterSquareSecond,
       {_T("cm/s"), 100, 0},                      // unCentimeterPersecond
+      {_T("dm/s"), 10, 0},                       // unDecimeterPersecond
       {_T(""), 1.0, 0},                          // unLastUnit
   };
 

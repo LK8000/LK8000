@@ -542,6 +542,7 @@ TEST_CASE("Units") {
     CHECK_EQ(Units::From(unFeetPerMinutes, 1), Units::From(unMeterPerSecond, 0.00508));
     CHECK_EQ(Units::From(unFeetPerSecond, 1), Units::From(unMeterPerSecond, 0.3048));
     CHECK_EQ(Units::From(unCentimeterPersecond, 100), Units::From(unMeterPerSecond, 1));
+    CHECK_EQ(Units::From(unDecimeterPersecond, 10), Units::From(unMeterPerSecond, 1));
   }
 
   SUBCASE("Temp") {
