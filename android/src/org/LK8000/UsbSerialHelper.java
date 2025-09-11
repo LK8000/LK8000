@@ -23,6 +23,8 @@ import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.felhr.usbserial.UsbSerialDevice;
 
 import java.util.Arrays;
@@ -69,7 +71,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
         return _instance.listDevices();
     }
 
-    private static long[] supported_ids = createTable(
+    private static final long[] supported_ids = createTable(
             createDevice(0x16D0, 0x0BA9), // GPSBip
             createDevice(0x0403, 0x6015), // Digifly AIR (FT X-Series)
             createDevice(0x0483, 0x5740), // SoftRF Dongle
@@ -222,11 +224,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            _Context.registerReceiver(this, filter, Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            _Context.registerReceiver(this, filter);
-        }
+        ContextCompat.registerReceiver(_Context, this, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
     private void unregisterReceiver() {

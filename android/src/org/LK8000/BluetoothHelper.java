@@ -225,13 +225,11 @@ final class BluetoothHelper {
               .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
               .setReportDelay(0L);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        settings.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
-                .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT);
-      }
+      settings.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+              .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+              .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT);
 
-      // TODO: check for no more 5 call in 30sec time frame...
+        // TODO: check for no more 5 call in 30sec time frame...
       scanner.startScan(buildFilter(address), settings.build(), cb);
       return true;
     }

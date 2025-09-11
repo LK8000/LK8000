@@ -286,11 +286,6 @@ public class LK8000 extends Activity {
     ContextCompat.startForegroundService(this, intent);
   }
 
-  @Override
-  public void onBackPressed() {
-    Log.d(TAG, "in onBackPressed()");
-  }
-
   @Override protected void onDestroy()
   {
     Log.d(TAG, "in onDestroy()");
@@ -446,7 +441,7 @@ public class LK8000 extends Activity {
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                          @NonNull int[] grantResults) {
     switch (requestCode) {
       case REQUEST_CODE_ASK_PERMISSIONS:

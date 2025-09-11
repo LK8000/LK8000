@@ -61,11 +61,7 @@ public class MyService extends Service {
   static final String CHANNEL_ID = BuildConfig.APPLICATION_ID + "_NotificationChannel";
 
   static int getIntentFlags() {
-    int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      flags |= PendingIntent.FLAG_IMMUTABLE;
-    }
-    return flags;
+    return PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE;
   }
 
   @Override

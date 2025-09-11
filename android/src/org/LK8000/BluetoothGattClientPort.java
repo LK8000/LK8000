@@ -146,12 +146,9 @@ public class BluetoothGattClientPort
                 BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M_MASK,
                 queueCommand.queueHandler);
       }
-      else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      else {
         gatt = device.connectGatt(context, autoConnect, this,
                 BluetoothDevice.TRANSPORT_LE);
-      }
-      else {
-        gatt = device.connectGatt(context, autoConnect, this);
       }
 
       if (gatt != null) {
