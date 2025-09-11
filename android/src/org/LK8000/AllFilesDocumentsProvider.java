@@ -271,11 +271,16 @@ public class AllFilesDocumentsProvider extends DocumentsProvider {
         File file = new File(parent, displayName);
 
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            if (!file.mkdirs()) {
+            if (!file.exists() && !file.mkdirs()) {
                 throw new FileNotFoundException("Failed to create directory with name " +
                         displayName + " and documentId " + parentDocumentId);
             }
         } else {
+            // If file exists, fail so system can prompt user for overwrite
+            if (file.exists()) {
+                throw new FileNotFoundException("File already exists: " + displayName);
+            }
+
             try {
                 file.createNewFile();
                 file.setWritable(true);
