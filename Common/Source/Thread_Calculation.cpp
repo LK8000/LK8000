@@ -42,14 +42,7 @@ void TriggerRedraws() {
 
 class CalculationThread final : public Thread {
 public:
-    CalculationThread() : Thread("Calculation") {
-        Start();
-    }
-
-    ~CalculationThread() {
-        RequestStop();
-        Join();
-    }
+    CalculationThread() : Thread("Calculation") { }
 
     void Run() override {
         // wait for proper startup signal
@@ -121,13 +114,13 @@ public:
         cond.Signal();
     }
 
-private:
-
     void RequestStop() {
         ScopeLock lock(mtx);
         run = false;
         cond.Signal();
     }
+
+private:
 
     void UpdateLocalFlightData() {
         ScopeLock lock(CritSec_FlightData);
@@ -160,18 +153,18 @@ private:
     bool new_data = false;
 };
 
-std::unique_ptr<CalculationThread> _CalculationThread;
+CalculationThread _CalculationThread;
 
 void CreateCalculationThread() {
-    // Create and start thread for performing calculations
-    _CalculationThread = std::make_unique<CalculationThread>();
+    _CalculationThread.Start();
 }
 
 void StopThreadCalculation() {
     // Stop and Wait end of thread.
-    _CalculationThread = nullptr;
+    _CalculationThread.RequestStop();
+    _CalculationThread.Join();
 }
 
 void TriggerGPSUpdate() {
-    _CalculationThread->SignalNewData();
+    _CalculationThread.SignalNewData();
 }
