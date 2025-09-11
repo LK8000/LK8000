@@ -18,6 +18,7 @@
 #include "Calc/Vario.h"
 #include "nmeaistream.h"
 #include "Comm/ExternalWind.h"
+#include "devLK8EX1.h"
 
 /**
  * Helper functions to parse and check an input field
@@ -232,6 +233,9 @@ static BOOL XCTracerParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_IN
         }
         if(strcmp(params[0], "$LXWP0") == 0) {
             return LXWP0(d, params, n_params, _INFO);
+        }
+        if(LK8EX1ParseNMEA(d, String, _INFO)) {
+          return TRUE;
         }
     }
     return FALSE;
