@@ -11,6 +11,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "resource.h"
+#include "utils/printf.h"
 
 static WndForm *wf=NULL;
 
@@ -142,13 +143,13 @@ void dlgTeamCodeShowModal(void)
   wf = dlgLoadFromXML(CallBackTable, IDR_XML_TEAMCODE);
   if (!wf) return;
 
-  TCHAR sTmp[32] = { 0 };
+  TCHAR sTmp[64] = { 0 };
   if( ValidWayPoint(TeamCodeRefWaypoint)) {
     // LKTOKEN _@M1230_ "Team Ref.: "
-    _stprintf(sTmp, _T("%s%s"),  MsgToken<1230>(), WayPointList[TeamCodeRefWaypoint].Name);
+    lk::snprintf(sTmp, _T("%s%s"),  MsgToken<1230>(), WayPointList[TeamCodeRefWaypoint].Name);
   } else {
     // LKTOKEN _@M1231_ "Team code: SET REF!"
-    LK_tcsncpy(sTmp, MsgToken<1231>(), 30);
+    lk::strcpy(sTmp, MsgToken<1231>());
   }
   wf->SetCaption(sTmp);
 
