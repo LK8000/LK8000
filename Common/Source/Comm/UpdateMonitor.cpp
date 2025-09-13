@@ -163,8 +163,6 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   EnableExternalTriggerCruise = false;
 }
 
-namespace {
-
 template<typename T>
 class SourceMonitor {
  public:
@@ -188,8 +186,6 @@ class SourceMonitor {
   const TCHAR* name_;
   T last_value_ = T(NUMDEV);
 };
-
-}  // namespace
 
 //
 // Run every 5 seconds, approx.
