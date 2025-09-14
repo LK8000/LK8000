@@ -81,7 +81,7 @@ void GLoad(DeviceDescriptor_t& d, NMEA_INFO& info,
 void VarioMode(DeviceDescriptor_t& d, NMEA_INFO& info,
            const std::vector<uint8_t>& data) {
   auto value = characteristic_value<uint8_t>(data).get();
-  DebugLog("VarioMode : %d", value);
+  DebugLog(_T("VarioMode : %d"), value);
   // TODO : 0 = Classic, 1 = Total energy
 }
 #endif
