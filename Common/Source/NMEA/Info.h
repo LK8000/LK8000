@@ -14,10 +14,8 @@
 #include "Devices/Fanet/Fanet.h"
 #include "Geographic/GeoPoint.h"
 #include "Math/Point3D.h"
+#include "Comm/DeviceDescriptor.h"
 
-struct DeviceDescriptor_t;
-
-#define	NUMDEV		 6U
 
 /**
  * used to manage Baro Altitude Source priority

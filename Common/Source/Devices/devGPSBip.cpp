@@ -23,7 +23,7 @@ namespace {
     _T("C-Probe"),
   };
 
-  std::array<DeviceDescriptor_t, std::size(DeviceNameList)> DeviceDesciptorList;
+  auto DeviceDesciptorList = make_device_list<std::size(DeviceNameList)>();
 
   BOOL ParseNMEA(DeviceDescriptor_t *d, const char *String, NMEA_INFO *GPS_INFO) {
     for(auto& Dev : DeviceDesciptorList) {
@@ -48,7 +48,7 @@ void Install(DeviceDescriptor_t* d) {
   auto ItOut = std::begin(DeviceDesciptorList);
   for(auto DevName : DeviceNameList) {
     auto& descriptor = *(ItOut++);
-    descriptor.InitStruct(d->PortNumber);
+    descriptor.Reset();
 
     const DeviceRegister_t* pDev = GetRegisteredDevice(DevName);
     if (pDev) {

@@ -600,6 +600,7 @@ add_library( LK8000 SHARED
     Common/Source/Comm/UpdateQNH.cpp
     Common/Source/Comm/UtilsParser.cpp
     Common/Source/Comm/device.cpp
+    Common/Source/Comm/DeviceDescriptor.cpp
     Common/Source/Comm/FilePort.cpp
 
     Common/Source/Comm/Bluetooth/BtHandler.cpp

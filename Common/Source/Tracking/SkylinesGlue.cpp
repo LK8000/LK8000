@@ -12,6 +12,7 @@
 #include "Defines.h"
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"
+#include "NMEA/Info.h"
 
 extern NMEA_INFO GPS_INFO;
 extern Mutex CritSec_FlightData;

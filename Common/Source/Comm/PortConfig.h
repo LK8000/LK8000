@@ -6,6 +6,7 @@
 #include "Defines.h"
 #include <array>
 #include <cstring>
+#include "DeviceDescriptor.h"
 
 
 // Filter switches for different Data directions coming sending from/to external devices
@@ -69,7 +70,7 @@ static constexpr const TCHAR* baudrate_string[] = {
   _T("230400"), _T("460800"), _T("500000"), _T("1000000")
 };
 
-#define DEVNAMESIZE  32
+
 // max URL length
 #define MAX_URL_LEN  50
 

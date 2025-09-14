@@ -13,9 +13,8 @@
 #include "lkgpsapi.h"
 #endif
 
-#include "NMEA/Info.h"
-
 struct DeviceDescriptor_t;
+struct NMEA_INFO;
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay);
 double TimeModify(const char* FixTime, NMEA_INFO* info, int& StartDay);
