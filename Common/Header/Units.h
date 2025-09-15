@@ -177,7 +177,7 @@ namespace Units {
       {_T("hPa"), 0.01, 0},                      // unhPa
       {_T("inHg"), 1.0 / 33.86389, 0},           // unInHg
       {_T("G"), 1.0, 0},                         // unG,
-      {_T("m/s²"), 1.0 / 9.80665, 0},            // unMeterSquareSecond,
+      {_T("m/s²"), 9.80665, 0},                  // unMeterSquareSecond,
       {_T("cm/s"), 100, 0},                      // unCentimeterPersecond
       {_T("dm/s"), 10, 0},                       // unDecimeterPersecond
       {_T(""), 1.0, 0},                          // unLastUnit

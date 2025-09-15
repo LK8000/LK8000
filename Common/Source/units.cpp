@@ -551,6 +551,10 @@ TEST_CASE("Units") {
     CHECK_EQ(Units::From(unGradCelcius, 1), Units::From(unKelvin, 274.15));
   }
 
+  SUBCASE("Acceleration") {
+    CHECK_APPROX_EQ(Units::From(unG, 1), Units::From(unMeterSquareSecond, 9.80665));
+  }
+
   #undef CHECK_APPROX_EQ
 }
 #endif
