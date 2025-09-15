@@ -44,7 +44,7 @@ bool GLoadAvailable(const NMEA_INFO& info) {
 }
 
 void UpdateGLoad(NMEA_INFO& info, const DeviceDescriptor_t& d, double value) {
-  if (d.PortNumber <= info.AccelerationIdx) {
+  if (d.PortNumber <= info.GloadIdx) {
     info.GloadIdx = d.PortNumber;
     info.Gload = value;
   }
