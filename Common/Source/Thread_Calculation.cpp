@@ -133,6 +133,13 @@ private:
         FLARM_RefreshSlots(&GPS_INFO);
         Fanet_RefreshSlots(&GPS_INFO); //refresh slots of FANET
         Local_NMEA = GPS_INFO;
+
+        if (!GPS_INFO.Acceleration.empty()) {
+            // this is crap fix to reset accumulator ...
+            // TODO : must be refactored asap !!!
+            GPS_INFO.Acceleration = { GPS_INFO.Acceleration.back() };
+        }
+
         Local_DERIVED = CALCULATED_INFO;
     }
 
