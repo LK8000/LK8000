@@ -75,6 +75,8 @@ void DeviceDescriptor_t::Reset() {
   IgnoreMacCready.Reset();
   IgnoreBugs.Reset();
   IgnoreBallast.Reset();
+
+  driver_data = {};
 }
 
 bool DeviceDescriptor_t::IsReady() const {

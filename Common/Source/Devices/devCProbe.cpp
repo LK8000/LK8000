@@ -456,22 +456,21 @@ void CDevCProbe::Update(WndForm* pWnd) {
 		wp->SetText(Temp);
 	}
 
-	if (!_INFO.Acceleration.empty()) {
-		wp = pWnd->FindByName<WndProperty>(TEXT("prpGx"));
-		if(wp){
-			_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.back().x);
-			wp->SetText(Temp);
-		}
-		wp = pWnd->FindByName<WndProperty>(TEXT("prpGy"));
-		if(wp){
-			_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.back().y);
-			wp->SetText(Temp);
-		}
-		wp = pWnd->FindByName<WndProperty>(TEXT("prpGz"));
-		if(wp){
-			_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.back().z);
-			wp->SetText(Temp);
-		}
+
+	wp = pWnd->FindByName<WndProperty>(TEXT("prpGx"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.x);
+		wp->SetText(Temp);
+	}
+	wp = pWnd->FindByName<WndProperty>(TEXT("prpGy"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.y);
+		wp->SetText(Temp);
+	}
+	wp = pWnd->FindByName<WndProperty>(TEXT("prpGz"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.z);
+		wp->SetText(Temp);
 	}
 	
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpTemp"));

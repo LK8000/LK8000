@@ -10,6 +10,8 @@
 #include "Baro.h"
 #include "devGeneric.h"
 #include "Comm/ExternalWind.h"
+#include <numeric>
+#include <deque>
 
 namespace  {
 
@@ -64,10 +66,49 @@ BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
   return TRUE;
 }
 
+class AccelerationData final : public DriverData {
+ public:
+  void add(Point3D value) {
+    auto now = clock::now();
+    datas.emplace_back(now, value);
+
+    // keep only last 1 second of data
+    auto cutoff = now - std::chrono::seconds(1);
+    while (!datas.empty() && std::get<0>(datas.front()) < cutoff) {
+      datas.erase(datas.begin());
+    }
+  }
+
+  Point3D average() const {
+    if (datas.empty()) {
+      return {};
+    }
+
+    Point3D sum = {};
+    for (const auto& item : datas) {
+      sum = sum + std::get<1>(item);
+    }
+    return sum / static_cast<double>(datas.size());
+  }
+
+ private:
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
+  std::deque<std::tuple<time_point, Point3D>> datas;
+};
+
+constexpr unsigned TagAcceleration = 0;
+
 BOOL OnAcceleration(DeviceDescriptor_t& d, NMEA_INFO& info, double gx, double gy, double gz) {
   if (d.PortNumber <= info.AccelerationIdx) {
-    info.AccelerationIdx = d.PortNumber;
-    info.Acceleration.push_back({ gx, gy, gz });
+    auto data = d.get_data<AccelerationData>(TagAcceleration);
+    if (data) {
+      data->add({gx, gy, gz});
+
+      info.AccelerationIdx = d.PortNumber;
+      info.Acceleration = data->average();
+    }
   }
   return TRUE;
 }

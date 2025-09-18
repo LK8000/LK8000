@@ -84,7 +84,7 @@ struct NMEA_INFO final {
     double NettoVario = {};
 
     unsigned AccelerationIdx = NUMDEV;
-    std::vector<Point3D> Acceleration = {}; // in G
+    Point3D Acceleration = {}; // in G
 
     unsigned GloadIdx = NUMDEV;
     double Gload = {};

@@ -14,6 +14,7 @@
 #include "Sizes.h"
 #include <optional>
 #include <vector>
+#include <unordered_map>
 #include "utils/uuid.h"
 #include "Comm/wait_ack.h"
 #include "Util/tstring.hpp"
@@ -39,6 +40,10 @@ struct Declaration_t {
 };
 
 extern Mutex CritSec_Comm;
+
+struct DriverData {
+  virtual ~DriverData() {};
+};
 
 struct DeviceDescriptor_t {
   DeviceDescriptor_t() = delete;
@@ -175,8 +180,20 @@ struct DeviceDescriptor_t {
     return wait_ack_weak.lock();
   }
 
+  template <typename T>
+  T* get_data(unsigned tag) {
+    auto ib = driver_data.emplace(tag, nullptr);
+    if (ib.second) {
+      ib.first->second = std::make_unique<T>();
+    }
+    return dynamic_cast<T*>(ib.first->second.get());
+  }
+
  private:
   wait_ack_weak_ptr wait_ack_weak;
+
+  using DriverDataPtr = std::shared_ptr<DriverData>;
+  std::unordered_map<unsigned, DriverDataPtr> driver_data;
 };
 
 // generic maker: only needs the size N

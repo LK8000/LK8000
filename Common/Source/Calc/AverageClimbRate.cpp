@@ -20,12 +20,12 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       // out of range
       return;
     }
-    if (AccelerationAvailable(*Basic)) {
+    if (AccelerationAvailable(*Basic) || GLoadAvailable(*Basic)) {
       if (fabs(fabs(Calculated->Gload) - 1.0) > 0.25) {
         // G factor too high
         return;
       }
-    } 
+    }
     if (Basic->TrueAirspeed>0) {
 
       // TODO: Check this is correct for TAS/IAS

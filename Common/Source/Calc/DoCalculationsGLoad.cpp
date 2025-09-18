@@ -11,25 +11,9 @@
 #include "NMEA/Derived.h"
 #include <numeric>
 
-namespace {
-
-Point3D  Average(const std::vector<Point3D>& Acceleration) {
-    Point3D sum = std::accumulate(Acceleration.begin(),
-                                  Acceleration.end(),
-                                  Point3D{0., 0., 0.});
-
-    return sum / Acceleration.size();
-}
-
-void FromSensor(const NMEA_INFO& Basic, DERIVED_INFO& Calculated) {
-    Calculated.Acceleration = Average(Basic.Acceleration);
-}
-
-} // namespace
-
 void DoCalculationsGLoad(const NMEA_INFO& Basic, DERIVED_INFO& Calculated) {
     if (AccelerationAvailable(Basic)) {
-      FromSensor(Basic, Calculated);
+      Calculated.Acceleration = Basic.Acceleration;
     }
     if (GLoadAvailable(Basic)) {
       Calculated.Gload = Basic.Gload;
