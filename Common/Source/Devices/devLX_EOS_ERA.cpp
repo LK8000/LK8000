@@ -1550,7 +1550,7 @@ BOOL DevLX_EOS_ERA::LXBC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
         if(IsDirInput(PortIO.GFORCEDir))
         {
           if (d->OnAcceleration) {
-            d->OnAcceleration(*d, *info, fX, fY, fZ);
+            d->OnAcceleration(*d, *info, MonotonicClockNS(), fX, fY, fZ);
           }
           if(bAHRS)
           {

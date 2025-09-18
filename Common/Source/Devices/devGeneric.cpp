@@ -12,6 +12,9 @@
 #include "Comm/ExternalWind.h"
 #include <numeric>
 #include <deque>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 namespace  {
 
@@ -68,12 +71,14 @@ BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
 
 class AccelerationData final : public DriverData {
  public:
-  void add(Point3D value) {
-    auto now = clock::now();
-    datas.emplace_back(now, value);
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
+  void add(time_point time, Point3D value) {
+    datas.emplace_back(time, value);
 
     // keep only last 1 second of data
-    auto cutoff = now - std::chrono::seconds(1);
+    auto cutoff = time - 1s;
     while (!datas.empty() && std::get<0>(datas.front()) < cutoff) {
       datas.erase(datas.begin());
     }
@@ -92,19 +97,20 @@ class AccelerationData final : public DriverData {
   }
 
  private:
-  using clock = std::chrono::steady_clock;
-  using time_point = clock::time_point;
 
   std::deque<std::tuple<time_point, Point3D>> datas;
 };
 
 constexpr unsigned TagAcceleration = 0;
 
-BOOL OnAcceleration(DeviceDescriptor_t& d, NMEA_INFO& info, double gx, double gy, double gz) {
+BOOL OnAcceleration(DeviceDescriptor_t& d, NMEA_INFO& info, uint64_t timestamp, double gx, double gy, double gz) {
+  using nanoseconds = std::chrono::nanoseconds;
+
   if (d.PortNumber <= info.AccelerationIdx) {
     auto data = d.get_data<AccelerationData>(TagAcceleration);
     if (data) {
-      data->add({gx, gy, gz});
+      AccelerationData::time_point time{nanoseconds(timestamp)};
+      data->add(time, {gx, gy, gz});
 
       info.AccelerationIdx = d.PortNumber;
       info.Acceleration = data->average();

@@ -218,13 +218,13 @@ extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NonGPSSensors_setAcceleration(
-    JNIEnv* env, jobject obj, jfloat ddx, jfloat ddy, jfloat ddz) {
-
+    JNIEnv* env, jobject obj, jlong timestamp,
+    jfloat ddx, jfloat ddy, jfloat ddz) {
   unsigned index = getDeviceIndex(env, obj);
   WithLock(CritSec_Comm, [&]() {
     DeviceDescriptor_t* pdev = devGetDeviceOnPort(index);
     if(pdev && pdev->OnAcceleration) {
-      pdev->OnAcceleration(*pdev, GPS_INFO,
+      pdev->OnAcceleration(*pdev, GPS_INFO, timestamp,
                            Units::From(unMeterSquareSecond, ddx),
                            Units::From(unMeterSquareSecond, ddy),
                            Units::From(unMeterSquareSecond, ddz));
@@ -236,7 +236,7 @@ extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NonGPSSensors_setRotation(
-    JNIEnv* env, jobject obj,
+    JNIEnv* env, jobject obj, jlong timestamp,
     jfloat dtheta_x, jfloat dtheta_y, jfloat dtheta_z) {
   // TODO
   /*
@@ -250,7 +250,8 @@ extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NonGPSSensors_setMagneticField(
-    JNIEnv* env, jobject obj, jfloat h_x, jfloat h_y, jfloat h_z) {
+    JNIEnv* env, jobject obj, jlong timestamp,
+    jfloat h_x, jfloat h_y, jfloat h_z) {
   // TODO
   /*
   const unsigned int index = getDeviceIndex(env, obj);
@@ -287,7 +288,8 @@ extern "C"
 gcc_visibility_default
 JNIEXPORT void JNICALL
 Java_org_LK8000_NonGPSSensors_setBarometricPressure(
-    JNIEnv* env, jobject obj, jfloat pressure, jfloat sensor_noise_variance) {
+    JNIEnv* env, jobject obj, jlong timestamp,
+    jfloat pressure, jfloat sensor_noise_variance) {
   /* We use a Kalman filter to smooth Android device pressure sensor
      noise.  The filter requires two parameters: the first is the
      variance of the distribution of second derivatives of pressure
@@ -308,7 +310,7 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
   try {
     const unsigned int index = getDeviceIndex(env, obj);
 
-    double vario = WithLock(CritSec_Comm, [index, pressure, sensor_noise_variance]() {
+    double vario = WithLock(CritSec_Comm, [=]() {
 
         DeviceDescriptor_t* pdev = devGetDeviceOnPort(index);
         if (!pdev) {
@@ -320,7 +322,7 @@ Java_org_LK8000_NonGPSSensors_setBarometricPressure(
         /* Kalman filter updates are also protected by the CommPort
            mutex. These should not take long; we won't hog the mutex
            unduly. */
-        kalman_filter.Update(pressure, sensor_noise_variance);
+        kalman_filter.Update(timestamp / 1000, pressure, sensor_noise_variance);
 
         double vario = ComputeNoncompVario(kalman_filter.GetXAbs(), kalman_filter.GetXVel());
         double qnh_altitude = StaticPressureToQNHAltitude(kalman_filter.GetXAbs() * 100);

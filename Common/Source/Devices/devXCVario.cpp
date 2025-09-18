@@ -129,7 +129,7 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
         && ReadChecked(params[14], z))
     {
       // Acceleration in X-Y-Z Axis
-      d->OnAcceleration(*d, *pGPS, x, y, z);
+      d->OnAcceleration(*d, *pGPS, MonotonicClockNS(), x, y, z);
     }    
   }
 

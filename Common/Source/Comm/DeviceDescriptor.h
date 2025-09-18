@@ -104,10 +104,11 @@ struct DeviceDescriptor_t {
   BOOL (*OnBatteryLevel)(DeviceDescriptor_t& d, NMEA_INFO& info, double level);
 
   /**
+   *  @timestamp : monotonic clock, nanoseconds.
    *  @gx, @gy, @gz : acceleration in G
    */
-  BOOL (*OnAcceleration)(DeviceDescriptor_t& d, NMEA_INFO& info, double gx,
-                         double gy, double gz);
+  BOOL (*OnAcceleration)(DeviceDescriptor_t& d, NMEA_INFO& info, uint64_t timestamp,
+                         double gx, double gy, double gz);
 
   bool (*DoEnableGattCharacteristic)(DeviceDescriptor_t&, uuid_t, uuid_t);
   void (*OnGattCharacteristic)(DeviceDescriptor_t&, NMEA_INFO&, uuid_t, uuid_t,

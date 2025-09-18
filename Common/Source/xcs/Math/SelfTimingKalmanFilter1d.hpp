@@ -74,6 +74,12 @@ public:
    */
   void Update(double z_abs, double var_z_abs);
 
+  /**
+   * same as previous but allow to use external monotonic clock
+   * @t_us : monotonic clock in nanoseconds
+   */
+  void Update(unsigned int t_us, double z_abs, double var_z_abs);
+
   // Remaining methods are identical to their counterparts in KalmanFilter1d.
 
   void Reset() {

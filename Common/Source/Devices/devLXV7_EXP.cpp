@@ -579,7 +579,7 @@ bool DevLXV7_EXP::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* 
   if (d->OnAcceleration) {
     double ddx, ddy, ddz;
     if (ParToDouble(sentence, 1, &ddx) && ParToDouble(sentence, 2, &ddy) && ParToDouble(sentence, 3, &ddz)) {
-      d->OnAcceleration(*d, *info, ddx, ddy, ddz);
+      d->OnAcceleration(*d, *info, MonotonicClockNS(), ddx, ddy, ddz);
     }
   }
 

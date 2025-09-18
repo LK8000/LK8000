@@ -188,7 +188,7 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 	}
 
     if (d->OnAcceleration) {
-      d->OnAcceleration(*d, *pINFO, 
+      d->OnAcceleration(*d, *pINFO, MonotonicClockNS(),
 	  			int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001, 
 	  			int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001,
 				int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001);

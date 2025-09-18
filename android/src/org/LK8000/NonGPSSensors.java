@@ -264,16 +264,16 @@ public class NonGPSSensors implements SensorEventListener, Runnable {
     try {
       switch (event.sensor.getType()) {
       case Sensor.TYPE_ACCELEROMETER:
-        setAcceleration(event.values[0], event.values[1], event.values[2]);
+        setAcceleration(event.timestamp, event.values[0], event.values[1], event.values[2]);
         break;
       case Sensor.TYPE_GYROSCOPE:
-        setRotation(event.values[0], event.values[1], event.values[2]);
+        setRotation(event.timestamp, event.values[0], event.values[1], event.values[2]);
         break;
       case Sensor.TYPE_MAGNETIC_FIELD:
-        setMagneticField(event.values[0], event.values[1], event.values[2]);
+        setMagneticField(event.timestamp, event.values[0], event.values[1], event.values[2]);
         break;
       case Sensor.TYPE_PRESSURE:
-        setBarometricPressure(event.values[0], kf_sensor_noise_variance_);
+        setBarometricPressure(event.timestamp, event.values[0], kf_sensor_noise_variance_);
         break;
       }
     } finally {
@@ -282,8 +282,8 @@ public class NonGPSSensors implements SensorEventListener, Runnable {
   }
 
   // Native methods for reporting sensor values to XCSoar's native C++ code.
-  private native void setAcceleration(float ddx, float ddy, float ddz);
-  private native void setRotation(float dtheta_x, float dtheta_y, float dtheta_z);
-  private native void setMagneticField(float h_x, float h_y, float h_z);
-  private native void setBarometricPressure(float pressure, float sensor_noise_variance);
+  private native void setAcceleration(long timestamp, float ddx, float ddy, float ddz);
+  private native void setRotation(long timestamp, float dtheta_x, float dtheta_y, float dtheta_z);
+  private native void setMagneticField(long timestamp, float h_x, float h_y, float h_z);
+  private native void setBarometricPressure(long timestamp, float pressure, float sensor_noise_variance);
 }

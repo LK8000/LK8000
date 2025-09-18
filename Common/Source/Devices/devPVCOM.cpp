@@ -262,7 +262,7 @@ bool PVCOM_ProcessPEYI(DeviceDescriptor_t* d, const char *sentence, NMEA_INFO *i
     info->MagneticHeading = data.magneticHeading;
 
     if (d->OnAcceleration) {
-      d->OnAcceleration(*d, *info, data.accelX, data.accelY, data.accelZ);
+      d->OnAcceleration(*d, *info, MonotonicClockNS(), data.accelX, data.accelY, data.accelZ);
     }
   }
 
