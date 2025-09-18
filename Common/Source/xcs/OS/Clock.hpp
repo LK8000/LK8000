@@ -43,6 +43,13 @@ uint64_t
 MonotonicClockUS();
 
 /**
+ * Returns the value of a monotonic clock in nanosecond.
+ */
+gcc_pure
+uint64_t
+MonotonicClockNS();
+
+/**
  * Returns the value of a monotonic clock in seconds as a floating
  * point value.
  */

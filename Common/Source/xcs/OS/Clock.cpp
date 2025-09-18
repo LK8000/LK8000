@@ -22,124 +22,45 @@ Copyright_License {
 */
 
 #include "OS/Clock.hpp"
+#include <chrono>
 #ifdef ANDROID
 #include "Java/Global.hxx"
 #include "Java/Class.hxx"
 #endif
-
-#if defined(__APPLE__)
-#include <mach/mach_time.h>
-#elif defined(HAVE_POSIX) && !defined(__CYGWIN__)
-#include <time.h>
-#ifndef __GLIBC__
-#include <sys/time.h>
-#endif
-#else /* !HAVE_POSIX */
+#ifdef WIN32
 #include <windows.h>
-#endif /* !HAVE_POSIX */
-
-unsigned
-MonotonicClockMS()
-{
-#if defined(HAVE_POSIX) && !defined(__CYGWIN__)
-#ifdef CLOCK_MONOTONIC
-  struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-  return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-#elif defined(__APPLE__) /* OS X does not define CLOCK_MONOTONIC */
-  static mach_timebase_info_data_t base;
-  if (base.denom == 0)
-    (void)mach_timebase_info(&base);
-
-  return (unsigned)((mach_absolute_time() * base.numer)
-                    / (1000000 * base.denom));
-#else
-  /* we have no monotonic clock, fall back to gettimeofday() */
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 #endif
-#else /* !HAVE_POSIX */
-  return ::GetTickCount();
-#endif /* !HAVE_POSIX */
+
+namespace {
+  template<typename period, typename rep = typename period::rep>
+  rep MonotonicClock() {
+  using clock = std::chrono::steady_clock;
+
+  static_assert(std::is_same<clock::period, std::nano>::value,
+                "clock::duration must be nanoseconds");
+
+  auto now_steady = clock::now().time_since_epoch();
+  auto now = std::chrono::duration_cast<period>(now_steady);
+
+  return now.count();
 }
 
-uint64_t
-MonotonicClockUS()
-{
-#if defined(HAVE_POSIX) && !defined(__CYGWIN__)
-#ifdef CLOCK_MONOTONIC
-  struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-  return uint64_t(ts.tv_sec) * 1000000 + uint64_t(ts.tv_nsec) / 1000;
-#elif defined(__APPLE__) /* OS X does not define CLOCK_MONOTONIC */
-  static mach_timebase_info_data_t base;
-  if (base.denom == 0)
-    (void)mach_timebase_info(&base);
+}  // namespace
 
-  return (uint64_t(mach_absolute_time()) * uint64_t(base.numer))
-    / (1000 * uint64_t(base.denom));
-#else
-  /* we have no monotonic clock, fall back to gettimeofday() */
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  return uint64_t(tv.tv_sec) * 1000 + uint64_t(tv.tv_usec) / 1000;
-#endif
-#else /* !HAVE_POSIX */
-  LARGE_INTEGER l_value, l_frequency;
-
-  if (!::QueryPerformanceCounter(&l_value) ||
-      !::QueryPerformanceFrequency(&l_frequency))
-    return 0;
-
-  uint64_t value = l_value.QuadPart;
-  uint64_t frequency = l_frequency.QuadPart;
-
-  if (frequency > 1000000) {
-    value *= 10000;
-    value /= frequency / 100;
-  } else if (frequency < 1000000) {
-    value *= 10000;
-    value /= frequency;
-    value *= 100;
-  }
-
-  return value;
-#endif /* !HAVE_POSIX */
+unsigned MonotonicClockMS() {
+  return MonotonicClock<std::chrono::milliseconds>();
 }
 
-double
-MonotonicClockFloat()
-{
-#if defined(HAVE_POSIX) && !defined(__CYGWIN__)
-#ifdef CLOCK_MONOTONIC
-  struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-  return ts.tv_sec + double(ts.tv_nsec) / 1000000000.;
-#elif defined(__APPLE__) /* OS X does not define CLOCK_MONOTONIC */
-  static mach_timebase_info_data_t base;
-  if (base.denom == 0)
-    (void)mach_timebase_info(&base);
+uint64_t MonotonicClockUS() {
+  return MonotonicClock<std::chrono::microseconds>();
+}
 
-  return mach_absolute_time() * double(base.numer) / double(base.denom);
-#else
-  /* we have no monotonic clock, fall back to gettimeofday() */
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  return tv.tv_sec + double(tv.tv_usec) / 1000000.;
-#endif
-#else /* !HAVE_POSIX */
-  LARGE_INTEGER l_value, l_frequency;
+uint64_t MonotonicClockNS() {
+  return MonotonicClock<std::chrono::nanoseconds>();
+}
 
-  if (!::QueryPerformanceCounter(&l_value) ||
-      !::QueryPerformanceFrequency(&l_frequency))
-    return 0;
-
-  uint64_t value = l_value.QuadPart;
-  uint64_t frequency = l_frequency.QuadPart;
-
-  return double(value) / double(frequency);
-#endif /* !HAVE_POSIX */
+double MonotonicClockFloat() {
+  return MonotonicClock<std::chrono::duration<double>>();
 }
 
 int
