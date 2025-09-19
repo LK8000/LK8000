@@ -68,8 +68,12 @@ bool GotFirstBaroAltitude = false;
  * CAUTION do not use devicedescriptor's pointers to functions without LockComm!!
  */
 void UpdateBaroSource(NMEA_INFO* pGPS, DeviceDescriptor_t* d, double fAlt) {
-  assert(pGPS);
-  assert(d);
+  if (!d) {
+    return;
+  }
+  if (!pGPS) {
+    return;
+  }
 
   // if device call this function, it is a baro source until ComPort restart.
   if (!std::exchange(d->IsBaroSource, true)) {
