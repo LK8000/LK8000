@@ -46,6 +46,9 @@ bool LKIcon::LoadFromResource(const TCHAR* ResourceName) {
 }
     
 void LKIcon::Draw(LKSurface& Surface, const int x, const int y, const int cx, const int cy) const  {
+  if (!_bitmap.IsDefined()) {
+    return;
+  }
 #ifdef USE_GDI
     HGDIOBJ old = ::SelectObject(Surface.GetTempDC(), (HBITMAP) _bitmap);
 
@@ -59,21 +62,25 @@ void LKIcon::Draw(LKSurface& Surface, const int x, const int y, const int cx, co
 
     ::SelectObject(Surface.GetTempDC(), old);
 #elif defined(ENABLE_OPENGL)
-#ifdef USE_GLSL
-  OpenGL::texture_shader->Use();
-#else
-  const GLEnable<GL_TEXTURE_2D> scope;
-  OpenGL::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-#endif
-  const ScopeAlphaBlend blend;
+  GLTexture* texture = _bitmap.GetNative();
+  assert(texture);
+  if (texture) {
 
-  GLTexture &texture = *_bitmap.GetNative();
-  texture.Bind();
-  texture.Draw(x, y, cx, cy,  0, 0, _size.cx, _size.cy);
+#ifdef USE_GLSL
+    OpenGL::texture_shader->Use();
+#else
+    const GLEnable<GL_TEXTURE_2D> scope;
+    OpenGL::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+#endif
+    const ScopeAlphaBlend blend;
+
+    texture->Bind();
+    texture->Draw(x, y, cx, cy, 0, 0, _size.cx, _size.cy);
+  }
 
 #else
     Canvas& canvas = Surface;
-    if(canvas.IsDefined() && _bitmap.IsDefined()) {
+    if(canvas.IsDefined()) {
         if (_size.cx != cx || _size.cy != cy) {
             canvas.StretchOr(x, y, cx, cy, _bitmap, 0, 0, _size.cx, _size.cy);
             canvas.StretchAnd(x, y, cx, cy, _bitmap, _size.cx, 0, _size.cx, _size.cy);
