@@ -875,7 +875,7 @@ public:
         assert(height_buffer && height_buffer->GetBuffer());
         assert(screen_buffer && screen_buffer->GetBuffer());
 
-        const double current_scale = Units::ToDistance(MapWindow::zoom.Scale());
+        const double current_scale = Units::FromDistance(MapWindow::zoom.Scale());
         if (current_scale >= 15000 || current_scale <= 100) {
             // No Iso line if zoom are too small or too huge
             return;
