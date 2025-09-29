@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'io.sentry.android.gradle' version '5.10.0'
+    id 'io.sentry.android.gradle' version '5.12.0'
 }
 
 def sentryProperties = new Properties()
@@ -161,7 +161,7 @@ dependencies {
     implementation "com.github.brunotl:boost_intrusive:1.81.0"
     implementation "com.github.brunotl:boost_container:1.81.0"
 
-    implementation "com.google.oboe:oboe:1.9.3"
+    implementation "com.google.oboe:oboe:1.10.0"
     implementation "com.google.android.material:material:1.13.0"
 
     implementation "com.github.brunotl:openssl:3.2.1-beta-5"
