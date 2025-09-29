@@ -28,6 +28,7 @@
  */
 
 #include "Global.hxx"
+#include <android/log.h>
 
 namespace Java {
 
@@ -35,7 +36,15 @@ JavaVM *jvm;
 
 } // namespace Java
 
-JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-	Java::jvm = vm;
-	return JNI_VERSION_1_2;
+extern "C" JNIEXPORT jint JNICALL
+JNI_OnLoad(JavaVM* vm, void*) {
+  Java::jvm = vm;
+
+  JNIEnv* env;
+  if (Java::jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2) != JNI_OK) {
+    return JNI_ERR; // at least JNI_VERSION_1_2 is needed...
+  }
+  jint version = env->GetVersion();
+  __android_log_print (ANDROID_LOG_VERBOSE, "Global", "JNI_OnLoad : JNI_VERSION_%d_%d", (version&0xFFFF0000)>>16, (version&0x0000FFFF));
+  return version;
 }
