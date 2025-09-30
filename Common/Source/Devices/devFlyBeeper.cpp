@@ -203,7 +203,7 @@ struct region_t {
   bounding_box bbox;
 };
 
-const region_t get_region_settings(const GeoPoint& position) {
+region_t get_region_settings(const GeoPoint& position) {
 
   constexpr region_t zones[] = {
     { "US920", { frequency::us, bandwidth::khz_500, 15 }, { 90, -90, -30, -169 } },
@@ -238,20 +238,28 @@ BOOL SendData(DeviceDescriptor_t* d, uint8_t type, payload_t&& data) {
   return TRUE;
 }
 
-std::string current_region; // TODO : must be stored in DeviceDescriptor_t...
+struct FanetSettings : public DriverData {
+  std::string current_region;
+};
 
 BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
   try {
+    auto settings = d->get_data<FanetSettings>(0);
+    if (settings) {
+      // set region parameters on first run or if regions change
+      const auto params =
+          get_region_settings({Basic.Latitude, Basic.Longitude});
 
-    // set region parameters on first run or if regions change
-    const auto params = get_region_settings({ Basic.Latitude, Basic.Longitude });
-    if (current_region != params.name) {
-      current_region = params.name;
-      d->Com->WriteGattCharacteristic(radio_uuid, frequency_uuid, ToLE32(static_cast<uint32_t>(params.mac.khz)));
-      d->Com->WriteGattCharacteristic(radio_uuid, bandwidth_uuid, static_cast<int8_t>(params.mac.bw));
-      d->Com->WriteGattCharacteristic(radio_uuid, tx_power_uuid, static_cast<int8_t>(params.mac.dBm));
+      if (settings->current_region != params.name) {
+        settings->current_region = params.name;
+
+        DebugLog(_T("FlyBeeper : Set Fanet settings : <%s>"), to_tstring(params.name).c_str());
+
+        d->Com->WriteGattCharacteristic(radio_uuid, frequency_uuid, ToLE32(static_cast<uint32_t>(params.mac.khz)));
+        d->Com->WriteGattCharacteristic(radio_uuid, bandwidth_uuid, static_cast<int8_t>(params.mac.bw));
+        d->Com->WriteGattCharacteristic(radio_uuid, tx_power_uuid, static_cast<int8_t>(params.mac.dBm));
+      }
     }
-
     static PeriodClock timeState;
     if (timeState.CheckUpdate(5000)) {
       // Every 5 second : Send current state
@@ -308,9 +316,10 @@ void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& d
 
 bool EnableFanet(DeviceDescriptor_t& d) {
 
-  // set model settings for FANET
-  current_region = ""; // reset regional settings, will be set by SendData
-
+  auto settings = d.get_data<FanetSettings>(0);
+  if (settings) {
+    settings->current_region = "";  // reset regional settings, will be set by SendData
+  }
   // check if this must be changed ?
   d.Com->WriteGattCharacteristic(radio_uuid, spreading_factor_uuid, static_cast<int8_t >(spreading_factor::sf_7));
   d.Com->WriteGattCharacteristic(radio_uuid, coding_rate_uuid, static_cast<int8_t >(coding_rate::cr_4_5));
