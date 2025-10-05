@@ -315,7 +315,7 @@ void BluetoothSensor::RelativeHumidity(const std::vector<uint8_t>& data) {
 void BluetoothSensor::WindOriginDirection(const std::vector<uint8_t>& data) {
   auto value = characteristic_value<uint16_t>(data).get();
   if (value < 35999) {
-    OnSensorData<&DeviceDescriptor_t::OnRelativeHumidity>(value / 100.);
+    OnSensorData<&DeviceDescriptor_t::OnWindOriginDirection>(value / 100.);
   }
 }
 
