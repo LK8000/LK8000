@@ -60,7 +60,7 @@ void IAS(DeviceDescriptor_t& d, NMEA_INFO& info,
   info.IndicatedAirspeed = value;
 }
 
-void Azimut(DeviceDescriptor_t& d, NMEA_INFO& info,
+void Azimuth(DeviceDescriptor_t& d, NMEA_INFO& info,
          const std::vector<uint8_t>& data) {
   auto value = characteristic_value<uint16_t>(data).get();
 
@@ -105,7 +105,7 @@ const service_table_t& service_table() {
             {"2fce4892-0197-47e0-a825-d4777b9a5d67", {&TAS}},
             {"2fce4893-0197-47e0-a825-d4777b9a5d67", {&IAS}},
             {"2fce4895-0197-47e0-a825-d4777b9a5d67", {&GLoad}},
-            {"2fce4896-0197-47e0-a825-d4777b9a5d67", {&Azimut}},
+            {"2fce4896-0197-47e0-a825-d4777b9a5d67", {&Azimuth}},
             {"2fce4902-0197-47e0-a825-d4777b9a5d67", {&VarioNetto}},
 #ifndef NDEBUG
             {"2fce4903-0197-47e0-a825-d4777b9a5d67", {&VarioMode}},
