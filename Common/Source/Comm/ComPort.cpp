@@ -225,7 +225,7 @@ void ComPort::NotifyConnected() {
     // notify user
     tstring name = GetDeviceName();
     StatusMessage(_T("%s connected"), name.c_str());
-    TestLog(_T("ble_notify: %s connected"), name.c_str());
+    StartupStore(_T(". Device %c [%s] :  connected"), devLetter(GetPortIndex()), name.c_str());
 }
 
 void ComPort::status_thread_loop() {
@@ -257,7 +257,7 @@ void ComPort::status_thread_loop() {
 
 void ComPort::NotifyDisconnected() {
     tstring name = GetDeviceName();
-    DebugLog(_T("ble_notify: %s request disconnected"), name.c_str());
+    StartupStore(_T(". Device %c [%s] : disconnected"), devLetter(GetPortIndex()), name.c_str());
     // notify user in next 10 sec, notification canceled if reconnect happen...
     ScopeLock lock(status_mutex);
     status_connected = false;
