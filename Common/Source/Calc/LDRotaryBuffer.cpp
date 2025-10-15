@@ -46,7 +46,7 @@ void LDRotary::Insert(double distance, const NMEA_INFO& Basic, DERIVED_INFO& Cal
 		buffer.insert(Basic.Time, {
 			distance,
 			(*last_altitude) - Calculated.NavAltitude,
-			Basic.IndicatedAirspeed,
+			Basic.AirspeedAvailable ? Basic.IndicatedAirspeed : Calculated.IndicatedAirspeedEstimated,
 			Basic.Speed
 		});
 	}
