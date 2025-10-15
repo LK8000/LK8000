@@ -9,9 +9,17 @@
 #include "externs.h"
 #include "RGB.h"
 #include "NavFunctions.h"
+#include "ScreenProjection.h"
 
 
-
+ScreenProjection MapWindow::GetProjection() {
+  return {
+    {GetPanLatitude(), GetPanLongitude()},
+    RasterPoint(GetOrigScreen()),
+    GetDrawScale(),
+    GetDisplayAngle()
+  };
+}
 
 bool MapWindow::WaypointInTask(int ind) {
   bool retval = false;

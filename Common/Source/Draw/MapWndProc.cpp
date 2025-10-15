@@ -251,7 +251,7 @@ void MapWindow::_OnDestroy() {
 void MapWindow::_OnDragMove(const POINT& Pos) {
     // Consider only pure PAN mode, ignore the rest of cases here
     if (mode.Is(Mode::MODE_PAN) && !mode.Is(Mode::MODE_TARGET_PAN)) {
-        const ScreenProjection _Proj;
+        const ScreenProjection _Proj = GetProjection();
 
 #ifndef ENABLE_OPENGL
         if (PanRefreshed) {
@@ -356,7 +356,7 @@ StartupStore(_T("BUTTON DOWN ")); // no CR
 
             // TODO VNT move Screen2LatLon in LBUTTONUP after making sure we really need Xstart and Ystart
             // so we save precious milliseconds waiting for BUTTONUP GetTickCount
-            const ScreenProjection _Proj;
+            const ScreenProjection _Proj = GetProjection();
             _Proj.Screen2LonLat(startScreen, Xstart, Ystart);
 
             LKevent = LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
@@ -416,7 +416,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
 #endif
     if (!LockModeStatus && pressed) {
 
-        const ScreenProjection _Proj;
+        const ScreenProjection _Proj = GetProjection();
 
         pressed = false;
         // Mouse released DURING panning, full redraw requested.
@@ -2001,7 +2001,7 @@ void MapWindow::Render(LKSurface& Surface, const PixelRect& Rect ) {
     UpdateInfo(GPS_INFO, CALCULATED_INFO);
     RenderMapWindow(Surface, Rect);
 
-    const ScreenProjection _Proj;
+      const ScreenProjection _Proj = GetProjection();
 
     // Draw cross sight for pan mode, in the screen center,
     if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {

@@ -461,6 +461,7 @@ class MapWindow {
   // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
   static void InitAirSpaceSldBrushes(const LKColor (&colours)[NUMAIRSPACECOLORS]);
 
+  static ScreenProjection GetProjection();
 
  private:
 

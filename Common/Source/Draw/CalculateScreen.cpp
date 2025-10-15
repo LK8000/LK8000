@@ -148,7 +148,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
         // TODO enhancement: only pan if distance of center to
         // aircraft is smaller than one third screen width
 
-        const ScreenProjection _Proj;
+        const ScreenProjection _Proj = GetProjection();
         *Orig_Aircraft = _Proj.ToRasterPoint(DrawInfo.Latitude, DrawInfo.Longitude);
         const POINT screen = _Proj.ToRasterPoint(PanLatitude, PanLongitude);
         
@@ -171,7 +171,7 @@ ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RE
     }
   }
 
-  const ScreenProjection _Proj;
+  const ScreenProjection _Proj = GetProjection();
   *Orig_Aircraft = _Proj.ToRasterPoint(DrawInfo.Latitude, DrawInfo.Longitude);
 
   // very important

@@ -2321,7 +2321,7 @@ void InputEvents::eventNearestWaypointDetails(const TCHAR *misc) {
     }
     if (_tcscmp(misc, TEXT("screen")) == 0) {
         bOK = true;
-        const ScreenProjection _Proj;
+        const ScreenProjection _Proj = MapWindow::GetProjection();
         _Proj.Screen2LonLat(startScreen, lon, lat);
     }
     if(bOK) {

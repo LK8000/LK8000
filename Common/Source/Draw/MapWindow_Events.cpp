@@ -158,7 +158,7 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
 
 
 void MapWindow::Event_PanCursor(int dx, int dy) {
-  const ScreenProjection _Proj;
+  const ScreenProjection _Proj = GetProjection();
   RasterPoint pt = {
     (MapRect.right+MapRect.left)/2,
     (MapRect.bottom+MapRect.top)/2

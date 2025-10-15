@@ -211,7 +211,7 @@ void MapWindow::DrawThread ()
 
 
 			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            const ScreenProjection _Proj;
+            const ScreenProjection _Proj = GetProjection();
 			DrawMapScale(BackBufferSurface,MapRect,_Proj);
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
 			lastdrawwasbitblitted=true;
@@ -256,7 +256,7 @@ void MapWindow::DrawThread ()
             DrawSurface.CopyTo(BackBufferSurface);
 
 			const RasterPoint centerscreen = { ScreenSizeX/2, ScreenSizeY/2 };
-            const ScreenProjection _Proj;
+            const ScreenProjection _Proj = GetProjection();
 			DrawMapScale(BackBufferSurface,MapRect,_Proj);
 			DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
             main_window->Redraw(MapRect);
@@ -283,7 +283,7 @@ _dontbitblt:
         if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
             POINT centerscreen;
             centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
-            const ScreenProjection _Proj;
+            const ScreenProjection _Proj = GetProjection();
             DrawMapScale(BackBufferSurface,MapRect,_Proj);
             DrawCompass(BackBufferSurface, MapRect, DisplayAngle);
             DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
@@ -293,7 +293,7 @@ _dontbitblt:
 	// we do caching after screen update, to minimise perceived delay
 	// UpdateCaches is updating topology bounds when either forced (only here)
 	// or because MapWindow::ForceVisibilityScan  is set true.
-    const ScreenProjection _Proj;
+    const ScreenProjection _Proj = GetProjection();
 	UpdateCaches(_Proj, first_run);
 	first_run=false;
 
