@@ -308,7 +308,9 @@ public class BluetoothGattClientPort
   public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     if (BluetoothGatt.GATT_SUCCESS == status) {
       if (characteristic.equals(hm10DataCharacteristic)) {
-        writeBuffer.beginWriteNextChunk(gatt, hm10DataCharacteristic);
+        if(writeBuffer.beginWriteNextChunk(gatt, hm10DataCharacteristic)) {
+          return; // chunk written, completion will be notified by next call of this callback.
+        }
       }
     }
     // Notify Completion
