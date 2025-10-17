@@ -9,8 +9,6 @@
 package org.LK8000;
 
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -21,10 +19,8 @@ public final class AsyncCompletionQueue {
   private final Object commandQueueLock = new Object();
   private boolean commandQueueBusy = false;
 
-  AsyncCompletionQueue() {
-    HandlerThread handlerThread = new HandlerThread("BLE Handler queue");
-    handlerThread.start();
-    queueHandler = new Handler(handlerThread.getLooper());
+  AsyncCompletionQueue(Handler handler) {
+    queueHandler = handler;
   }
 
   public void add(Runnable run) {

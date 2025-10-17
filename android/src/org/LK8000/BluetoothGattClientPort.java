@@ -34,6 +34,9 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -100,7 +103,20 @@ public class BluetoothGattClientPort
 
   private ScanCallback callback = null;
 
-  private final AsyncCompletionQueue queueCommand = new AsyncCompletionQueue();
+  private static Looper getLooper() {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+      HandlerThread handlerThread = new HandlerThread("BLE Handler queue");
+      handlerThread.start();
+      return handlerThread.getLooper();
+    }
+    else {
+      return Looper.getMainLooper();
+    }
+  }
+
+  final private Handler handler = new Handler(getLooper());
+
+  final private AsyncCompletionQueue queueCommand = new AsyncCompletionQueue(handler);
 
   void startLeScan(Context context, String address) {
     if (callback == null) {
@@ -144,7 +160,7 @@ public class BluetoothGattClientPort
         // https://android.googlesource.com/platform/frameworks/base/+/eb6b3da4fc54ca4cfcbb8ee3b927391eed981725%5E%21/#F0
         gatt = device.connectGatt(context, autoConnect, this,
                 BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M_MASK,
-                queueCommand.queueHandler);
+                handler);
       }
       else {
         gatt = device.connectGatt(context, autoConnect, this,
@@ -155,7 +171,7 @@ public class BluetoothGattClientPort
         gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
       }
     } catch (SecurityException e) {
-      e.printStackTrace();
+      error(e.getMessage());
     }
   }
 
