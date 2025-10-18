@@ -125,8 +125,8 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 		pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLat = pGPS->Latitude;
 		pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->Longitude;
 
-		if(pGPS->NettoVarioAvailable) {
-			Vario = pGPS->NettoVario;
+		if (pGPS->NettoVario.available()) {
+			Vario = pGPS->NettoVario.available();
 		} else if(pGPS->VarioAvailable) {
 			Vario = pGPS->Vario;
 		} else {

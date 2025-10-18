@@ -33,9 +33,7 @@ void VarioNetto(DeviceDescriptor_t& d, NMEA_INFO& info,
                            characteristic_value<int32_t>(data).get());
 
   ScopeLock lock(CritSec_FlightData);
-  // TODO : implement device Priority
-  info.NettoVarioAvailable = true;
-  info.NettoVario = value;
+  info.NettoVario.update(d, value);
 }
 
 void TAS(DeviceDescriptor_t& d, NMEA_INFO& info,

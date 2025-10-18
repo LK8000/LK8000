@@ -102,9 +102,9 @@ SkyLinesTracking::ToFix(uint64_t key, const NMEA_INFO &basic)
   /*if (basic.total_energy_vario_available) {
     packet.flags |= ToBE32(FixPacket::FLAG_VARIO);
     packet.vario = ToBE16(int(basic.total_energy_vario * 256));
-  } else */if (basic.NettoVarioAvailable) {
+  } else */if (basic.NettoVario.available()) {
     packet.flags |= ToBE32(FixPacket::FLAG_VARIO);
-    packet.vario = ToBE16(int(basic.NettoVario * 256));
+    packet.vario = ToBE16(int(basic.NettoVario.value() * 256));
   } else if (VarioAvailable(basic)) {
     packet.flags |= ToBE32(FixPacket::FLAG_VARIO);
     packet.vario = ToBE16(int(basic.Vario * 256));

@@ -217,8 +217,7 @@ bool DevVaulter::PITV4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
   }
   if (ParToDouble(sentence, 1, &tmp))
   {
-    info->NettoVario = tmp;
-    info->NettoVarioAvailable = true;
+    info->NettoVario.update(*d, tmp);
   }
   if (ParToDouble(sentence, 3, &tmp))
   {

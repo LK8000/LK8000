@@ -216,11 +216,8 @@ static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   // netto vario
   NMEAParser::ExtractParameter(String,ctemp,3);
   if (ctemp[0] != '\0') {
-	pGPS->NettoVario = StrToDouble(ctemp,NULL)/10;
-	pGPS->NettoVarioAvailable = TRUE;
-  } else
-	pGPS->NettoVarioAvailable = FALSE;
-
+    pGPS->NettoVario.update(*d, StrToDouble(ctemp, NULL) / 10);
+  }
 
   // Baro altitudes. To be verified, because I have no docs from Westerboer of any kind.
   NMEAParser::ExtractParameter(String,ctemp,6);

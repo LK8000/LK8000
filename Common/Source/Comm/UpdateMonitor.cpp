@@ -155,9 +155,9 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
 
   GPS_INFO.OutsideAirTemperature.reset(idx);
   GPS_INFO.RelativeHumidity.reset(idx);
+  GPS_INFO.NettoVario.reset(idx);
 
   GPS_INFO.AirspeedAvailable = false;
-  GPS_INFO.NettoVarioAvailable = false;
   GPS_INFO.MagneticHeadingAvailable = false;
   GPS_INFO.GyroscopeAvailable = false;
 

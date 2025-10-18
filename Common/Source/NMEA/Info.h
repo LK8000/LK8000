@@ -72,7 +72,6 @@ struct NMEA_INFO final {
     double ExternalWindSpeed = {};
     double ExternalWindDirection = {};
 
-    bool NettoVarioAvailable = {};
     bool AirspeedAvailable = {};
 
     BaroIndex BaroSourceIdx = {};
@@ -80,8 +79,6 @@ struct NMEA_INFO final {
 
     unsigned VarioSourceIdx = NUMDEV;
     double Vario = {};
-
-    double NettoVario = {};
 
     unsigned AccelerationIdx = NUMDEV;
     Point3D Acceleration = {}; // in G
@@ -91,6 +88,7 @@ struct NMEA_INFO final {
 
     int SatellitesUsed = {};
 
+    from_device_data<double> NettoVario = {};
     from_device_data<double> OutsideAirTemperature = {};
     from_device_data<double> RelativeHumidity = {};
 

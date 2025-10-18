@@ -16,15 +16,21 @@ extern double CRUISE_EFFICIENCY;
 // Sollfarh / Dolphin Speed calculator
 //
 void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-
-    double netto; if (Basic->NettoVarioAvailable) netto=Basic->NettoVario; else netto=Calculated->NettoVario;
+  auto netto = [&]() {
+    if (Basic->NettoVario.available()) {
+      return Basic->NettoVario.value();
+    }
+    else {
+      return Calculated->NettoVario;
+    }
+  };
 
     // calculate maximum efficiency speed to fly
     double HeadWind = 0;
     if ( Calculated->HeadWind != -999 ) {
         HeadWind = Calculated->HeadWind;
     }
-    double Vme = GlidePolar::STF(0, netto, HeadWind);
+    double Vme = GlidePolar::STF(0, netto(), HeadWind);
     Calculated->Vme = LowPassFilter(Calculated->Vme, Vme, 0.6);
 
     HeadWind = 0;
@@ -38,12 +44,12 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 
     // this is IAS for best Ground Glide ratio acounting current air mass ( wind / Netto vario )
-    double VOptnew = GlidePolar::STF(MACCREADY, netto, HeadWind);
+    double VOptnew = GlidePolar::STF(MACCREADY, netto(), HeadWind);
 
     // apply cruises efficiency factor.
     VOptnew *= CRUISE_EFFICIENCY;
 
-    if (netto > MACCREADY) {
+    if (netto() > MACCREADY) {
         // this air mass is better than maccready, so don't fly at speed less than minimum sink speed adjusted for load factor
         const double GLoad = Calculated->Gload;
 

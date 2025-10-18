@@ -291,7 +291,7 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Units::To(unKiloMeterPerHour, Basic.Speed));// GPS_INFO.Speed;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic.TrackBearing         );// GPS_INFO.TrackBearing;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.Vario                );// GPS_INFO.Vario;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.NettoVario           );// GPS_INFO.NettoVario;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic.NettoVario.value()   );// GPS_INFO.NettoVario;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Calculated.Acceleration.x  );// GPS_INFO.AccelX
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Calculated.Acceleration.y  );// GPS_INFO.AccelY
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Calculated.Acceleration.z  );// GPS_INFO.AccelZ

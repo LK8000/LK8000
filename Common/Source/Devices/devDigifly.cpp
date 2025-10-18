@@ -94,13 +94,10 @@ BOOL PDGFTL1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   NMEAParser::ExtractParameter(String,ctemp,2);
   UpdateVarioSource(*pGPS, *d, StrToDouble(ctemp,NULL)/100);
 
-  NMEAParser::ExtractParameter(String,ctemp,3);
+  NMEAParser::ExtractParameter(String, ctemp, 3);
   if (ctemp[0] != '\0') {
-	pGPS->NettoVario = StrToDouble(ctemp,NULL)/10; // dm/s
-	pGPS->NettoVarioAvailable = TRUE;
-  } else
-	pGPS->NettoVarioAvailable = FALSE;
-
+    pGPS->NettoVario.update(*d, StrToDouble(ctemp, NULL) / 10);  // dm/s
+  }
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   if (ctemp[0] != '\0') {
@@ -161,10 +158,7 @@ BOOL D(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
     // Netto Vario
     NMEAParser::ExtractParameter(String,ctemp,2);
     if (ctemp[0] != '\0') {
-        pGPS->NettoVario = StrToDouble(ctemp,NULL)/10;
-        pGPS->NettoVarioAvailable = TRUE;
-    } else {
-        pGPS->NettoVarioAvailable = FALSE;
+      pGPS->NettoVario.update(*d, StrToDouble(ctemp, NULL) / 10);
     }
 
     // airspeed
