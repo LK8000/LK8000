@@ -38,8 +38,7 @@ BOOL OnOutsideTemperature(DeviceDescriptor_t& d, NMEA_INFO& info, double temp) {
 
 BOOL OnRelativeHumidity(DeviceDescriptor_t& d, NMEA_INFO& info, double hr) {
   ScopeLock lock(CritSec_FlightData);
-  info.HumidityAvailable = true;
-  info.RelativeHumidity = hr;
+  info.RelativeHumidity.update(d, hr);
   return TRUE;
 }
 

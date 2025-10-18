@@ -1112,7 +1112,7 @@ goto_bearing:
 		// B49
 		case LK_RELHUM:
                   lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
-                  if(DrawInfo.HumidityAvailable) {
+                  if(DrawInfo.RelativeHumidity.available()) {
                     value = DrawInfo.RelativeHumidity;
                     _stprintf(BufferValue, TEXT("%.0lf"), value);
                     _stprintf(BufferUnit, TEXT("%%"));

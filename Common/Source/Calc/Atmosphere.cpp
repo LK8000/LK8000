@@ -57,7 +57,7 @@ void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (!Basic->OutsideAirTemperature.available()) {
     return;
   }
-  if (!Basic->HumidityAvailable) {
+  if (!Basic->RelativeHumidity.available()) {
     return; // nothing to do..
   }
 

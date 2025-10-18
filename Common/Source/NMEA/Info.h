@@ -92,9 +92,7 @@ struct NMEA_INFO final {
     int SatellitesUsed = {};
 
     from_device_data<double> OutsideAirTemperature = {};
-
-    bool HumidityAvailable = {};
-    double RelativeHumidity = {};
+    from_device_data<double> RelativeHumidity = {};
 
     int	ExtBatt_Bank = {};
     double ExtBatt1_Voltage = {};
