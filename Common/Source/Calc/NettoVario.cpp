@@ -31,10 +31,10 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   const double glider_sink_rate = AirDensitySinkRate(std::max(GlidePolar::Vminsink(), ias), Basic->Altitude, GLoad);
 
   if (Basic->NettoVario.available() && replay_disabled) {
-    Calculated->NettoVario = Basic->NettoVario;
+    Calculated->NettoVario = Basic->NettoVario.value();
   }
   else if (VarioAvailable(*Basic) && replay_disabled) {
-    Calculated->NettoVario = Basic->Vario - glider_sink_rate;
+    Calculated->NettoVario = Basic->Vario.value() - glider_sink_rate;
   }
   else {
     Calculated->NettoVario = Calculated->Vario - glider_sink_rate;

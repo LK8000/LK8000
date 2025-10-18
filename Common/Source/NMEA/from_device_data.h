@@ -64,7 +64,7 @@ class from_device_data final {
     return _index;
   }
 
-  operator ValueT() const {
+  explicit operator ValueT() const {
     return _value;
   }
 

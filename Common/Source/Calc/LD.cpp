@@ -97,7 +97,7 @@ void LD(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   if (VarioAvailable(*Basic) && Basic->IndicatedAirSpeed.available() &&
       Calculated->Flying) {
     Calculated->LDvario = UpdateLD(
-        Calculated->LDvario, Basic->IndicatedAirSpeed, -Basic->Vario, 0.3);
+        Calculated->LDvario, Basic->IndicatedAirSpeed.value(), -Basic->Vario.value(), 0.3);
   }
   else {
     Calculated->LDvario = INVALID_GR;

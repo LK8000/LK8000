@@ -248,7 +248,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
         if (VarioAvailable(DrawInfo)) {
             // UHM. I think we are not painting values correctly for knots &c.
             //vario_value = LIFTMODIFY*DrawInfo.Vario;
-            vario_value = DrawInfo.Vario;
+            vario_value = DrawInfo.Vario.value();
         } else {
             vario_value = DerivedDrawInfo.Vario;
         }
@@ -264,7 +264,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
             case vValVarioSoll:
                 double ias;
                 if (DrawInfo.IndicatedAirSpeed.available() && VarioAvailable(DrawInfo))
-                    ias = DrawInfo.IndicatedAirSpeed;
+                    ias = DrawInfo.IndicatedAirSpeed.value();
                 else
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;
 

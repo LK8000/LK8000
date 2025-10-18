@@ -14,7 +14,7 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   if (Basic->IndicatedAirSpeed.available() && VarioAvailable(*Basic) &&
       (!Calculated->Circling))
   {
-    int vi = iround(Basic->IndicatedAirSpeed);
+    int vi = iround(Basic->IndicatedAirSpeed.value());
 
     if ((vi<=0) || (vi>= SAFTEYSPEED)) {
       // out of range
@@ -33,7 +33,7 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       double ias_to_tas =
           Basic->IndicatedAirSpeed.value() / Basic->TrueAirSpeed.value();
-      double w_tas = Basic->Vario * ias_to_tas;
+      double w_tas = Basic->Vario.value() * ias_to_tas;
 
       BUGSTOP_LKASSERT(vi<MAXAVERAGECLIMBRATESIZE);
 

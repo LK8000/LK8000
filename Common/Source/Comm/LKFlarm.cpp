@@ -126,9 +126,9 @@ void FLARM_RefreshSlots(NMEA_INFO *pGPS) {
 		pGPS->FLARM_RingBuf[pGPS->FLARMTRACE_iLastPtr].fLon = pGPS->Longitude;
 
 		if (pGPS->NettoVario.available()) {
-			Vario = pGPS->NettoVario.available();
+			Vario = pGPS->NettoVario.value();
 		} else if(pGPS->VarioAvailable) {
-			Vario = pGPS->Vario;
+			Vario = pGPS->Vario.value();
 		} else {
 			Vario =  CALCULATED_INFO.Vario;
 		}
@@ -622,8 +622,8 @@ BOOL NMEAParser::PFLAA(const char *String, char **params, size_t nparams, NMEA_I
 	traffic.Longitude = RelativeEast * FLARM_EastingToLongitude + pGPS->Longitude;
 
 	// we need to compare with BARO altitude FLARM relative Alt difference!
-	if (pGPS->BaroAltitude>0) // just to be sure
-		traffic.Altitude = RelativeAltitude + pGPS->BaroAltitude;
+	if (pGPS->BaroAltitude.available()) // just to be sure
+		traffic.Altitude = RelativeAltitude + pGPS->BaroAltitude.value();
 	else
 		traffic.Altitude = RelativeAltitude + pGPS->Altitude;
 

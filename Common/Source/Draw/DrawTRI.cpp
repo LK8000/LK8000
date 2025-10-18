@@ -629,7 +629,7 @@ double vscale = 0.25;
   rcCompass.bottom = rcCompass.top+  (rcCompass.right - rcCompass.left);
 
  // if(DrawInfo.MagneticHeadingAvailable)
-    DrawCompassRose(Surface, rcCompass,DrawInfo.MagneticHeading);
+    DrawCompassRose(Surface, rcCompass,DrawInfo.MagneticHeading.value());
 //  DrawCompass(HDC hdc, const RECT rc);
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);

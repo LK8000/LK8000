@@ -75,7 +75,7 @@ payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calcula
   out_it = speed2;
 
   /* Climb */
-  int climb10 = Clamp<int>(std::round(Basic.Vario * 10.0), -315, 315);
+  int climb10 = Clamp<int>(std::round(Basic.Vario.value() * 10.0), -315, 315);
   if (std::abs(climb10) > 63) {
     climb10 = ((climb10 + (climb10 >= 0 ? 2 : -2)) / 5) | (1 << 7);  // set scale factor
   }

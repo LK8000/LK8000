@@ -368,10 +368,10 @@ bool UpdateMonitor() {
     static unsigned short firstrecovery=0;
 
     if (EnableNavBaroAltitude && !GPS_INFO.NAVWarning && GPS_INFO.BaroAltitude.available()) {
-      if (GPS_INFO.BaroAltitude==lastBaroAltitude) {
+      if (GPS_INFO.BaroAltitude.value()==lastBaroAltitude) {
         counterSameBaro++;
       } else {
-        lastBaroAltitude=GPS_INFO.BaroAltitude;
+        lastBaroAltitude=GPS_INFO.BaroAltitude.value();
         counterSameBaro=0;
       }
       if (GPS_INFO.Altitude==lastGPSAltitude) {
@@ -389,7 +389,7 @@ bool UpdateMonitor() {
         timethreshold = 40; // then about every 3 minutes
       }
 
-      if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) && !CALCULATED_INFO.OnGround ) {
+      if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude.value())>100.0) && !CALCULATED_INFO.OnGround ) {
         DoStatusMessage(MsgToken<122>()); // Baro not available, Using GPS ALTITUDE
         EnableNavBaroAltitude=false;
         StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude.value(), GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);

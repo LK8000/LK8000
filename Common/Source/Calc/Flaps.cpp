@@ -14,7 +14,7 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	if (GlidePolar::FlapsMass<=0) return; // avoid division by zero crashes
 	double speed = 0.0;
 	if (Basic->IndicatedAirSpeed.available()) {
-		speed = Basic->IndicatedAirSpeed;
+		speed = Basic->IndicatedAirSpeed.value();
 	} else {
 		speed = Calculated->IndicatedAirspeedEstimated;
 	}

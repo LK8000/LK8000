@@ -21,7 +21,7 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   // Determine which altitude to use for nav functions
   if (EnableNavBaroAltitude && BaroAltitudeAvailable(*Basic)) {
-    Calculated->NavAltitude = Basic->BaroAltitude;
+    Calculated->NavAltitude = Basic->BaroAltitude.value();
   } else {
     Calculated->NavAltitude = Basic->Altitude;
   }
@@ -31,8 +31,8 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	double V_tas, wastefactor;
 
 	if (Basic->IndicatedAirSpeed.available() && Basic->TrueAirSpeed.available()) {
-		ias_to_tas = Basic->TrueAirSpeed/Basic->IndicatedAirSpeed;
-		V_tas = Basic->TrueAirSpeed;
+		ias_to_tas = Basic->TrueAirSpeed.value()/Basic->IndicatedAirSpeed.value();
+		V_tas = Basic->TrueAirSpeed.value();
 		wastefactor=0.80;
 	} else {
 		ias_to_tas = 1.0;

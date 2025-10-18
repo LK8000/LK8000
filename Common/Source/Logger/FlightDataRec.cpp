@@ -350,19 +350,19 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
   fValue[i++] = Basic.ExtBatt2_Voltage;
   fValue[i++] = Basic.SupplyBatteryVoltage;
   fValue[i++] = PDABatteryPercent;
-  fValue[i++] = Basic.OutsideAirTemperature;
+  fValue[i++] = Basic.OutsideAirTemperature.value();
   if (Basic.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = Basic.Latitude;
   if (Basic.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = Basic.Longitude;
   fValue[i++] = Basic.Altitude;
-  fValue[i++] = Basic.BaroAltitude;
+  fValue[i++] = Basic.BaroAltitude.value();
   fValue[i++] = Calculated.AltitudeAGL;
-  fValue[i++] = Basic.IndicatedAirSpeed   ;
-  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.TrueAirSpeed);
+  fValue[i++] = Basic.IndicatedAirSpeed.value();
+  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.TrueAirSpeed.value());
   fValue[i++] = Units::To(unKiloMeterPerHour, Basic.Speed);
 
   fValue[i++] = Basic.TrackBearing;
-  fValue[i++] = Basic.Vario;
-  fValue[i++] = Basic.NettoVario;
+  fValue[i++] = Basic.Vario.value();
+  fValue[i++] = Basic.NettoVario.value();
 
   fValue[i++] = Calculated.Acceleration.x;
   fValue[i++] = Calculated.Acceleration.y;

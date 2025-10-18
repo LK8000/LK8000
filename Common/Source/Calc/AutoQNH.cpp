@@ -81,7 +81,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		}
 	}
 	if (fixaltitude!=0) {
-		double new_qnh= FindQNH(Basic->BaroAltitude, fixaltitude);
+		double new_qnh= FindQNH(Basic->BaroAltitude.value(), fixaltitude);
 		if (UpdateQNH(new_qnh)) {
 			devPutQNH(new_qnh);
 		}

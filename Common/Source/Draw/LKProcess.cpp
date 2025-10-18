@@ -685,7 +685,7 @@ goto_bearing:
 		// B24
 		case LK_VARIO:
 			if (VarioAvailable(DrawInfo)) {
-				value = Units::ToVerticalSpeed(DrawInfo.Vario);
+				value = Units::ToVerticalSpeed(DrawInfo.Vario.value());
 			} else {
 				value = Units::ToVerticalSpeed(DerivedDrawInfo.Vario);
 			}
@@ -801,7 +801,7 @@ goto_bearing:
 			if (DrawInfo.IndicatedAirSpeed.available()) {
 				// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
 				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
-				value=Units::ToHorizontalSpeed(DrawInfo.IndicatedAirSpeed);
+				value=Units::ToHorizontalSpeed(DrawInfo.IndicatedAirSpeed.value());
 				if (value<0||value>999) value=0; else valid=true;
 			}
 			else {
@@ -818,7 +818,7 @@ goto_bearing:
 		// B33
 		case LK_HBARO:
 			if (BaroAltitudeAvailable(DrawInfo)) {
-				value=Units::ToAltitude(DrawInfo.BaroAltitude);
+				value=Units::ToAltitude(DrawInfo.BaroAltitude.value());
 				valid=true;
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 			} else
@@ -1096,7 +1096,7 @@ goto_bearing:
 		// B48 091216  OAT Outside Air Temperature
 		case LK_OAT:
                   lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
-                  value = DrawInfo.OutsideAirTemperature;
+                  value = DrawInfo.OutsideAirTemperature.value();
                   if (!DrawInfo.OutsideAirTemperature.available() || value < -50 || value > 100) {
                     _stprintf(BufferValue, TEXT("---"));
                   }
@@ -1111,7 +1111,7 @@ goto_bearing:
 		case LK_RELHUM:
                   lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
                   if(DrawInfo.RelativeHumidity.available()) {
-                    value = DrawInfo.RelativeHumidity;
+                    value = DrawInfo.RelativeHumidity.value();
                     _stprintf(BufferValue, TEXT("%.0lf"), value);
                     _stprintf(BufferUnit, TEXT("%%"));
                     valid = true;
@@ -1192,7 +1192,7 @@ goto_bearing:
 					lk::strcpy(BufferTitle, MsgToken<1110>());
 				else
 					lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
-				value=Units::ToHorizontalSpeed(DrawInfo.TrueAirSpeed);
+				value=Units::ToHorizontalSpeed(DrawInfo.TrueAirSpeed.value());
 				if (value<0||value>999) {
 					_stprintf(BufferValue, TEXT("%s"),NULLMEDIUM);
 				} else {
@@ -1673,7 +1673,7 @@ goto_bearing:
 			// Cant use NavAltitude, because FL should use Baro if available, despite
 			// user settings.
 			if (BaroAltitudeAvailable(DrawInfo))
-				value = Units::To(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude));
+				value = Units::To(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude.value()));
 			else
 				value = Units::To(unFligthLevel,QNHAltitudeToQNEAltitude(DrawInfo.Altitude));
 
@@ -2434,7 +2434,7 @@ olc_score:
 			//_stprintf(BufferUnit,TEXT(""));
 			if (DrawInfo.MagneticHeading.available()) {
 			    _stprintf(BufferTitle, _T("HDG"));
-			    value = DrawInfo.MagneticHeading;
+			    value = DrawInfo.MagneticHeading.value();
 			} else {
 			    _stprintf(BufferTitle, _T("eHDG"));
 			    value = DerivedDrawInfo.Heading;
@@ -2559,7 +2559,7 @@ olc_score:
 			lk::strcpy(BufferTitle, MsgToken<2324>());
 			value = -1;
 			if (BaroAltitudeAvailable(DrawInfo)) {
-				value= QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude);
+				value= QNHAltitudeToQNEAltitude(DrawInfo.BaroAltitude.value());
 				_stprintf(BufferValue, TEXT("%d"),(int)value);
 			}
 			else {

@@ -155,7 +155,7 @@ BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
           info->IndicatedAirSpeed.update(*d, ias);
           info->TrueAirSpeed.update(*d, TrueAirSpeed(ias, QNHAltitudeToQNEAltitude(info->Altitude)));
           if (OV_DebugLevel > 0) {
-            StartupStore(TEXT(" OpenVario Dynamic Pressure :%6.1fhPa IAS :%4.1fkm/h"), value/100.0, info->IndicatedAirSpeed*3.6);
+            StartupStore(TEXT(" OpenVario Dynamic Pressure :%6.1fhPa IAS :%4.1fkm/h"), value/100.0, info->IndicatedAirSpeed.value()*3.6);
           }
         }
         break;
@@ -169,7 +169,7 @@ BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
         {
           const double tas = Units::From(unKiloMeterPerHour, value);
           info->TrueAirSpeed.update(*d, tas);
-          const double AltQNH = (BaroAltitudeAvailable(*info) ? info->BaroAltitude : info->Altitude);
+          const double AltQNH = (BaroAltitudeAvailable(*info) ? info->BaroAltitude.value() : info->Altitude);
           info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(tas, QNHAltitudeToQNEAltitude(AltQNH)));
         }
         if (OV_DebugLevel > 0) {

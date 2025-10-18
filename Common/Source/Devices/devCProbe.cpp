@@ -215,7 +215,7 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 	}
 	else {
 		if (BaroAltitudeAvailable(*pINFO)) {
-			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude);
+			abs_press = QNHAltitudeToStaticPressure(pINFO->BaroAltitude.value());
 		}
 		else {
 			abs_press = QNHAltitudeToStaticPressure(pINFO->Altitude);

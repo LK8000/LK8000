@@ -69,7 +69,7 @@ bool ValidStartSpeed(NMEA_INFO* Basic, DERIVED_INFO* Calculated,
   bool valid = true;
   if (StartMaxSpeed != 0) {
     if (Basic->IndicatedAirSpeed.available()) {
-      if (Units::To(unKiloMeterPerHour, Basic->IndicatedAirSpeed) > (StartMaxSpeed + Margin)) {
+      if (Units::To(unKiloMeterPerHour, Basic->IndicatedAirSpeed.value()) > (StartMaxSpeed + Margin)) {
         valid = false;
       }
     }

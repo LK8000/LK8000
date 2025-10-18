@@ -33,7 +33,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     y0 += fastcosine(Calculated->WindBearing)*Calculated->WindSpeed;
 
     if (Basic->MagneticHeading.available()) {
-      Calculated->Heading = Basic->MagneticHeading;
+      Calculated->Heading = Basic->MagneticHeading.value();
     }
     else {
       Calculated->Heading = AngleLimit360(atan2(x0, y0) * RAD_TO_DEG);

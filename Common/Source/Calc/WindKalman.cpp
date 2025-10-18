@@ -172,7 +172,7 @@ static bool airspeedreset=true;
   #if BASIC_FILTER
   // below 10kmh we will not assume the gps bearing is still correct!
   // do not reset ring, simply discard data
-  if (basic->Speed < 3 || basic->TrueAirSpeed < 3) {
+  if (basic->Speed < 3 || basic->TrueAirSpeed.value() < 3) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... speed too low!%s"),NEWLINE);
 	#endif
@@ -197,7 +197,7 @@ static bool airspeedreset=true;
   // Notice that we must check the TAS is provided in m/s, because for example Zander is 
   // providing kmh, and accuracy is not granted. But in this case we would insert the same tas
   // for a different bearing, which is quite inaccurate too.
-  if (old_tas==basic->TrueAirSpeed) {
+  if (old_tas==basic->TrueAirSpeed.value()) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... TAS UNCHANGED, discard\n"));
 	#endif
@@ -213,7 +213,7 @@ static bool airspeedreset=true;
   WindKalmanReset(false);
   kalman_holdoff_time =0;
 
-  double V = basic->TrueAirSpeed;
+  double V = basic->TrueAirSpeed.value();
   double dynamic_pressure = (V*V);
   float gps_vel[2];
 
@@ -234,7 +234,7 @@ static bool airspeedreset=true;
 
   #ifdef KALMAN_DEBUG
   StartupStore(_T("... KALMAN insert gps speed=%f m/s (%f kmh) track=%f TAS=%f  (gps_vel[0]=%f gps_vel[1]=%f dyn=%f)\n"),
-      basic->Speed, basic->Speed*3.6, basic->TrackBearing, basic->TrueAirspeed,
+      basic->Speed, basic->Speed*3.6, basic->TrackBearing, basic->TrueAirSpeed.value(),
       gps_vel[0], gps_vel[1], dynamic_pressure);
   #if SCAN_RANGE
   PrintScanRange();

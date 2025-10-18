@@ -53,7 +53,7 @@ static void OnQnhData(DataField* Sender, DataField::DataAccessKind_t Mode) {
       }
       auto wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
       if (wp) {
-        wp->GetDataField()->SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude));
+        wp->GetDataField()->SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude.value()));
         wp->RefreshDisplay();
       }
     } break;
@@ -69,7 +69,7 @@ static void OnAltitudeData(DataField* Sender, DataField::DataAccessKind_t Mode) 
     case DataField::daPut:
     case DataField::daChange: {
       double newalt = Sender->GetAsFloat();
-      double newqnh = FindQNH(GPS_INFO.BaroAltitude, Units::FromAltitude(newalt));  // 100411
+      double newqnh = FindQNH(GPS_INFO.BaroAltitude.value(), Units::FromAltitude(newalt));  // 100411
       auto wp = wf->FindByName<WndProperty>(TEXT("prpQNH"));
       if (wp) {
         auto df = wp->GetDataField();
@@ -139,16 +139,16 @@ static bool OnTimerNotify(WndForm* pWnd) {
   SetBallast(false);
 
   WndProperty* wp;
-  static double altlast = GPS_INFO.BaroAltitude;
-  if (fabs(GPS_INFO.BaroAltitude-altlast)>1) {
+  static double altlast = GPS_INFO.BaroAltitude.value();
+  if (fabs(GPS_INFO.BaroAltitude.value()-altlast)>1) {
     wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->
-	SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude));
+	SetAsFloat(Units::ToAltitude(GPS_INFO.BaroAltitude.value()));
       wp->RefreshDisplay();
     }
   }
-  altlast = GPS_INFO.BaroAltitude;
+  altlast = GPS_INFO.BaroAltitude.value();
 
 static float  flastBugs=BUGS;
   if (fabs(flastBugs-BUGS) >= 0.001) /* update on change only */
@@ -292,7 +292,7 @@ void dlgBasicSettingsShowModal(void){
     wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->SetAsFloat(
-	       Units::ToAltitude(GPS_INFO.BaroAltitude));
+	       Units::ToAltitude(GPS_INFO.BaroAltitude.value()));
       wp->GetDataField()->SetUnits(Units::GetAltitudeName());
       if (!BaroAltitudeAvailable(GPS_INFO)) {
         wp->SetReadOnly(true);

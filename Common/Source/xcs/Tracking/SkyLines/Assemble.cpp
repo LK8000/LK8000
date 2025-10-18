@@ -86,28 +86,25 @@ SkyLinesTracking::ToFix(uint64_t key, const NMEA_INFO &basic)
 
   if (basic.IndicatedAirSpeed.available()) {
     packet.flags |= ToBE32(FixPacket::FLAG_AIRSPEED);
-    packet.airspeed = ToBE16(uint16_t(basic.IndicatedAirSpeed * 16));
+    packet.airspeed = ToBE16(uint16_t(basic.IndicatedAirSpeed.value() * 16));
   } else
     packet.airspeed = 0;
 
   if (BaroAltitudeAvailable(basic)) {
     packet.flags |= ToBE32(FixPacket::FLAG_ALTITUDE);
-    packet.altitude = ToBE16(int(basic.BaroAltitude));
+    packet.altitude = ToBE16(int(basic.BaroAltitude.value()));
   } else if (!basic.NAVWarning) {
     packet.flags |= ToBE32(FixPacket::FLAG_ALTITUDE);
     packet.altitude = ToBE16(int(basic.Altitude));
   } else
     packet.altitude = 0;
 
-  /*if (basic.total_energy_vario_available) {
-    packet.flags |= ToBE32(FixPacket::FLAG_VARIO);
-    packet.vario = ToBE16(int(basic.total_energy_vario * 256));
-  } else */if (basic.NettoVario.available()) {
+  if (basic.NettoVario.available()) {
     packet.flags |= ToBE32(FixPacket::FLAG_VARIO);
     packet.vario = ToBE16(int(basic.NettoVario.value() * 256));
   } else if (VarioAvailable(basic)) {
     packet.flags |= ToBE32(FixPacket::FLAG_VARIO);
-    packet.vario = ToBE16(int(basic.Vario * 256));
+    packet.vario = ToBE16(int(basic.Vario.value() * 256));
   } else
     packet.vario = 0;
   /*

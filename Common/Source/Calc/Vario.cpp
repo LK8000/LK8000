@@ -61,6 +61,6 @@ void Vario(const NMEA_INFO& Info, DERIVED_INFO& Calculated)
     Calculated.Vario = Calculated.GPSVario;
   } else {
     // get value from instrument
-    Calculated.Vario = Info.Vario;
+    Calculated.Vario = Info.Vario.value();
   }
 }

@@ -563,7 +563,7 @@ void LogPoint(const NMEA_INFO& info, const char* event) {
     info.Latitude, 
     info.Longitude,
     Clamp<int>(Units::To(unMeter, (GPSAltitudeOffset == 0) ? info.Altitude : 0), 0, 99999),
-    Clamp<int>(Units::To(unMeter, BaroAltitudeAvailable(info) ? QNHAltitudeToQNEAltitude(info.BaroAltitude) : 0) , -9999, 99999),
+    Clamp<int>(Units::To(unMeter, BaroAltitudeAvailable(info) ? QNHAltitudeToQNEAltitude(info.BaroAltitude.value()) : 0) , -9999, 99999),
     Clamp<int>(Units::To(unKiloMeterPerHour, info.Speed) * 100, 0, 99999),
     static_cast<int>(AngleLimit360(info.TrackBearing)),
     info.Year, info.Month, info.Day,

@@ -85,8 +85,8 @@ void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (level>last_level) {
     // going up
-    cslevels[level].updateTemps(Basic->RelativeHumidity,
-				Basic->OutsideAirTemperature);
+    cslevels[level].updateTemps(Basic->RelativeHumidity.value() ,
+				Basic->OutsideAirTemperature.value());
     cslevels[level].updateThermalIndex(level);
 
     if (level>0) {
@@ -95,8 +95,8 @@ void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
   } else {
     // going down
-    cslevels[level+1].updateTemps(Basic->RelativeHumidity,
-				Basic->OutsideAirTemperature);
+    cslevels[level+1].updateTemps(Basic->RelativeHumidity.value(),
+				Basic->OutsideAirTemperature.value());
     cslevels[level+1].updateThermalIndex((unsigned short)(level+1));
 
     if (level<CUSONDE_NUMLEVELS-1) {
