@@ -441,11 +441,7 @@ static void UpdateValuesFlight(void) {
     if(EnableNavBaroAltitude)
     {
       if (BaroAltitudeAvailable(GPS_INFO)) {
-        if (GPS_INFO.BaroSourceIdx.device_index < std::size(DeviceList)) {
-          _stprintf(sBaroDevice, TEXT("%s"), DeviceList[GPS_INFO.BaroSourceIdx.device_index].Name);
-        } else {
-          _stprintf(sBaroDevice, TEXT("BARO"));
-        }
+        _stprintf(sBaroDevice, TEXT("%s"), DeviceList[GPS_INFO.BaroAltitude.index()].Name);
       }
     }
     _stprintf(Temp, _T("%.0f%s (%s)"),

@@ -134,9 +134,6 @@ DeviceDescriptor_t& get_active_gps() {
 void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   ScopeLock lock(CritSec_FlightData);
 
-  if (!idx || (GPS_INFO.BaroSourceIdx.device_index == idx.value())) {
-    ResetBaroAvailable(GPS_INFO);
-  }
   if (!idx || (GPS_INFO.ExternalWindIdx == idx.value())) {
     ResetExternalWindAvailable(GPS_INFO);
   }
@@ -147,6 +144,7 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
     ResetAccelerationAvailable(GPS_INFO);
   }
 
+  GPS_INFO.BaroAltitude.reset();
   GPS_INFO.Vario.reset();
   GPS_INFO.OutsideAirTemperature.reset(idx);
   GPS_INFO.RelativeHumidity.reset(idx);
@@ -189,12 +187,12 @@ class SourceMonitor {
 //
 bool UpdateMonitor() {
   static SourceMonitor monitors[] = {
+    { [] { return GPS_INFO.BaroAltitude.index(); },          _T("Baro") },
     { [] { return GPS_INFO.Vario.index(); },                 _T("Vario") },
     { [] { return GPS_INFO.NettoVario.index(); },            _T("NettoVario") },
     { [] { return GPS_INFO.OutsideAirTemperature.index(); }, _T("OutsideAirTemperature") },
     { [] { return GPS_INFO.RelativeHumidity.index(); },      _T("RelativeHumidity") },
-    { [] { return GPS_INFO.Gload.index(); },                      _T("GLoad") },
-    { [] { return GPS_INFO.BaroSourceIdx; },                 _T("Baro") },
+    { [] { return GPS_INFO.Gload.index(); },                 _T("GLoad") },
     { [] { return GPS_INFO.AccelerationIdx; },               _T("Acceleration") },
     { [] { return GPS_INFO.ExternalWindIdx; },               _T("Wind") },
     { [] { return GPS_INFO.HeartRateIdx; },                  _T("HeartRate") }
@@ -326,7 +324,7 @@ bool UpdateMonitor() {
   // Assuming here that if no Baro is available, no airdata is available also
   //
   if (validBaro==0) {
-    if (BaroAltitudeAvailable(GPS_INFO)) {
+    if (GPS_INFO.BaroAltitude.available()) {
       StartupStore(_T("... no active baro source, and still BaroAltitudeAvailable, forced off %s"), WhatTimeIsIt());
       if (EnableNavBaroAltitude) {
         // LKTOKEN  _@M122_ = "BARO ALTITUDE NOT AVAILABLE, USING GPS ALTITUDE"
@@ -384,7 +382,7 @@ bool UpdateMonitor() {
     static unsigned int	counterSameBaro=0, counterSameHGPS=0;
     static unsigned short firstrecovery=0;
 
-    if (EnableNavBaroAltitude && !GPS_INFO.NAVWarning && BaroAltitudeAvailable(GPS_INFO)) {
+    if (EnableNavBaroAltitude && !GPS_INFO.NAVWarning && GPS_INFO.BaroAltitude.available()) {
       if (GPS_INFO.BaroAltitude==lastBaroAltitude) {
         counterSameBaro++;
       } else {
@@ -409,7 +407,7 @@ bool UpdateMonitor() {
       if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude)>100.0) && !CALCULATED_INFO.OnGround ) {
         DoStatusMessage(MsgToken<122>()); // Baro not available, Using GPS ALTITUDE
         EnableNavBaroAltitude=false;
-        StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude, GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
+        StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude.value(), GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
         lastBaroAltitude=-1;
         lastGPSAltitude=-1;
         counterSameBaro=0;

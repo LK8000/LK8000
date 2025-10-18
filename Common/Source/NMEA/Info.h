@@ -26,8 +26,21 @@
  */
 struct BaroIndex {
     BaroIndex() = default;
-    BaroIndex(bool flarm, unsigned index) : is_flarm(flarm), device_index(index) {}
+
     explicit BaroIndex(unsigned index) : device_index(index) {}
+
+    BaroIndex& operator=(const DeviceDescriptor_t& d) {
+        device_index = d.PortNumber;
+        is_flarm = d.nmeaParser.isFlarm;
+        return *this;
+    }
+
+    bool operator>=(const DeviceDescriptor_t& d) const {
+        if (is_flarm == d.nmeaParser.isFlarm) {
+            return device_index >= d.PortNumber;
+        }
+        return is_flarm;
+    }
 
     bool is_flarm = false;
     unsigned device_index = NUMDEV;
@@ -41,6 +54,15 @@ struct BaroIndex {
 
     bool operator != (BaroIndex& idx) const {
         return (is_flarm != idx.is_flarm) && (device_index != idx.device_index);
+    }
+
+    bool valid() const {
+        return device_index < NUMDEV;
+    }
+
+    void reset() {
+        device_index = NUMDEV;
+        is_flarm = false;
     }
 
     operator unsigned () const {
@@ -74,8 +96,6 @@ struct NMEA_INFO final {
 
     bool AirspeedAvailable = {};
 
-    BaroIndex BaroSourceIdx = {};
-    double BaroAltitude = {};
 
     unsigned AccelerationIdx = NUMDEV;
     Point3D Acceleration = {}; // in G
@@ -83,6 +103,7 @@ struct NMEA_INFO final {
 
     int SatellitesUsed = {};
 
+    from_device_data<double, BaroIndex> BaroAltitude = {};
     from_device_data<double> Vario = {};
     from_device_data<double> NettoVario = {};
     from_device_data<double> OutsideAirTemperature = {};

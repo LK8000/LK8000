@@ -12,16 +12,6 @@
 
 namespace {
 
-BaroIndex GetBaroIndex(const DeviceDescriptor_t* d) {
-  if (d) {
-    return { d->nmeaParser.isFlarm, d->PortNumber };
-  }
-  /**
-   * id `d` is nullptr, source is internal sensor, use `NUMDEV` for it's index (lowest priority)
-   */
-  return { false, NUMDEV };
-}
-
 void NotifyInvalidAltitude(unsigned index, double fAlt) {
   static bool notifyErr = true;
   if (notifyErr) {
@@ -36,15 +26,14 @@ PeriodClock lastBaroUpdate; // to check time elapsed since last baro altitude up
 }
 
 bool BaroAltitudeAvailable(const NMEA_INFO& Info) {
-  return Info.BaroSourceIdx.device_index < NUMDEV;
+  return Info.BaroAltitude.available();
 }
 
 void ResetBaroAvailable(NMEA_INFO& Info) {
   if (BaroAltitudeAvailable(Info)) {
     TestLog(_T("Baro source reset @%s"), WhatTimeIsIt());
   }
-  Info.BaroSourceIdx.is_flarm = false;
-  Info.BaroSourceIdx.device_index = NUMDEV;
+  Info.BaroAltitude.reset();
   lastBaroUpdate.Reset();
 }
 
@@ -85,20 +74,13 @@ void UpdateBaroSource(NMEA_INFO* pGPS, DeviceDescriptor_t* d, double fAlt) {
     }
   }
 
-  BaroIndex Index = GetBaroIndex(d);
-  if (Index <= pGPS->BaroSourceIdx) {
+  if (pGPS->BaroAltitude.index() >= (*d)) {
     // if 'd' device has a higher priority
     if (fAlt > 30000 || fAlt < -1000) {
       // ignore out of range altitude...
-      NotifyInvalidAltitude(Index.device_index, fAlt);
+      NotifyInvalidAltitude(d->PortNumber, fAlt);
     }
-    else {
-      if (pGPS->BaroSourceIdx != Index) {
-        TestLog(_T("Baro source change From %c to %c @%s"), devLetter(pGPS->BaroSourceIdx.device_index), devLetter(Index.device_index), WhatTimeIsIt());
-      }
-      pGPS->BaroAltitude = fAlt;
-      pGPS->BaroSourceIdx = Index;
-
+    else if (pGPS->BaroAltitude.update(*d, fAlt)) {
       GotFirstBaroAltitude = true;
       lastBaroUpdate.Update();
     }

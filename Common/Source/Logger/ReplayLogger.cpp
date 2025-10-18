@@ -391,7 +391,6 @@ bool ReplayLogger::UpdateInternal(void) {
       GPS_INFO.Speed = SpeedX;
       GPS_INFO.TrackBearing = BearingX;
       GPS_INFO.Altitude = AltX;
-      GPS_INFO.BaroAltitude = QNEAltitudeToQNHAltitude(AltX);
       GPS_INFO.Time = ReplayTime;
       UnlockFlightData();
     } else {
