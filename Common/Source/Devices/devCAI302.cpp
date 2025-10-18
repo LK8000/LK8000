@@ -540,11 +540,11 @@ BOOL cai_w(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS){
   }
 
   NMEAParser::ExtractParameter(String,ctemp,6);
-  pGPS->AirspeedAvailable = TRUE;
 
-  pGPS->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
+  const double tas = StrToDouble(ctemp,NULL) / 100.0;
+  pGPS->TrueAirSpeed.update(*d, tas);
   // if qnhalt is zero, IAS is the TAS, more or less, so no problems
-  pGPS->IndicatedAirspeed = IndicatedAirSpeed(pGPS->TrueAirspeed, QNHAltitudeToQNEAltitude(qnhalt));
+  pGPS->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(tas, QNHAltitudeToQNEAltitude(qnhalt)));
 
 
   NMEAParser::ExtractParameter(String,ctemp,7);

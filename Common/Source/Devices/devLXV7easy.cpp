@@ -145,14 +145,13 @@ bool PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
     double alt=0, airspeed=0;
 
     if (ParToDouble(sentence, 5, &airspeed)) {
-        info->IndicatedAirspeed = airspeed;
-        info->AirspeedAvailable = TRUE;
+        info->IndicatedAirSpeed.update(*d, airspeed);
     }
 
     if (ParToDouble(sentence, 6, &alt)) {
 	    UpdateBaroSource(info, d, QNEAltitudeToQNHAltitude(alt));
         if (airspeed>0) {
-            info->TrueAirspeed = TrueAirSpeed(airspeed, alt);
+          info->TrueAirSpeed.update(*d, TrueAirSpeed(airspeed, alt));
         }
     }
 

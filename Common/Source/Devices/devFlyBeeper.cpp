@@ -290,10 +290,8 @@ void TAS(DeviceDescriptor_t& d, NMEA_INFO& info,
                            characteristic_value<int16_t>(data).get() / 10.);
 
   ScopeLock lock(CritSec_FlightData);
-  info.TrueAirspeed = value;
-  info.IndicatedAirspeed = IndicatedAirSpeed(
-      info.TrueAirspeed, QNHAltitudeToQNEAltitude(info.Altitude));
-  info.AirspeedAvailable = true;
+  info.TrueAirSpeed.update(d, value);
+  info.IndicatedAirSpeed.update(d, IndicatedAirSpeed(value, QNHAltitudeToQNEAltitude(info.Altitude)));
 }
 
 void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {

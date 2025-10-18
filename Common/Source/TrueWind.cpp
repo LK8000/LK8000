@@ -85,8 +85,8 @@ FILE *fp;
 	buf->track[buf->start]=(int)track+180;
 	buf->altitude[buf->start]=(int)altitude;
 	// ias is in m/s
-	if (GPS_INFO.AirspeedAvailable && GPS_INFO.IndicatedAirspeed>0) {
-		buf->ias[buf->start] = (int)GPS_INFO.IndicatedAirspeed;
+	if (GPS_INFO.IndicatedAirSpeed.available() && GPS_INFO.IndicatedAirSpeed.value()>0) {
+		buf->ias[buf->start] = GPS_INFO.IndicatedAirSpeed.value();
 	}
 
 	#ifdef DEBUG_ROTARY
@@ -312,12 +312,18 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   }
   #endif
 
-  // If Airspeed is available, use it  (ias is in m/s) but not if using Condor
-  #if TESTIASWITHCONDOR
-  if (!GPS_INFO.AirspeedAvailable ) goto goto_NoAirspeed;
-  #else
-  if (!GPS_INFO.AirspeedAvailable || DevIsCondor ) goto goto_NoAirspeed;
-  #endif
+  // If Airspeed is available, use it  (ias is in m/s) 
+  if (!GPS_INFO.IndicatedAirSpeed.available()) {
+    goto goto_NoAirspeed;
+  }
+#if TESTIASWITHCONDOR
+#else
+  // but not if using Condor
+  if (DevIsCondor) {
+    goto goto_NoAirspeed;
+  }
+#endif
+
   low=2;
   high=60;
   for (iter=0; iter<MAXITERFILTER; iter++) {
@@ -516,8 +522,10 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
   #if TESTIASWITHCONDOR
   if (GPS_INFO.AirspeedAvailable && averias>0 ) iaspeed=averias;
   #else
-  if (GPS_INFO.AirspeedAvailable && averias>0 && !DevIsCondor ) iaspeed=averias;
-  #endif
+    if (GPS_INFO.IndicatedAirSpeed.available() && averias > 0 && !DevIsCondor) {
+      iaspeed = averias;
+    }
+#endif
 
   double tas = Units::To(unKiloMeterPerHour, iaspeed * AirDensityRatio(QNHAltitudeToQNEAltitude(averaltitude)));
 

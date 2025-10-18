@@ -85,7 +85,6 @@ public:
   bool RMZAvailable;
   unsigned LastRMZHB;
   bool RMCAvailable;
-  bool TASAvailable;
 
   double LastTime;
   short RMZDelayed;
@@ -113,7 +112,7 @@ public:
   // Garmin magnetic compass
   BOOL HCHDG(DeviceDescriptor_t& d, const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active
-  BOOL PLKAS(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL PLKAS(DeviceDescriptor_t& d, const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   
   // FLARM sentences
   BOOL PFLAV(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);

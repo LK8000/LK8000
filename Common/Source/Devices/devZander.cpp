@@ -79,9 +79,8 @@ static BOOL PZAN2(DeviceDescriptor_t* d, const char* String, NMEA_INFO *apGPS)
   double qnh_altitude = (BaroAltitudeAvailable(*apGPS)) ? apGPS->BaroAltitude : apGPS->Altitude;
   double vias = IndicatedAirSpeed(vtas, QNHAltitudeToQNEAltitude(qnh_altitude));
 
-  apGPS->AirspeedAvailable = TRUE;
-  apGPS->TrueAirspeed = vtas;
-  apGPS->IndicatedAirspeed = vias;
+  apGPS->TrueAirSpeed.update(*d, vtas);
+  apGPS->IndicatedAirSpeed.update(*d, vias);
 
   return TRUE;
 }

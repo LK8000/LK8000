@@ -175,7 +175,9 @@ bool UpdateMonitor() {
     { [] { return GPS_INFO.HeartRate.index(); },             _T("HeartRate") },
     { [] { return GPS_INFO.MagneticHeading.index(); },       _T("MagneticHeading") },
     { [] { return GPS_INFO.ExternalWind.index(); },          _T("Wind") },
-    { [] { return GPS_INFO.Acceleration.index(); },          _T("Acceleration") }
+    { [] { return GPS_INFO.Acceleration.index(); },          _T("Acceleration") },
+    { [] { return GPS_INFO.IndicatedAirSpeed.index(); },     _T("IndicatedAirSpeed") },
+    { [] { return GPS_INFO.TrueAirSpeed.index(); },          _T("TrueAirSpeed") }
   };
 
   for (auto& sm : monitors) {

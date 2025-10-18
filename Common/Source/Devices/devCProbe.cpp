@@ -223,9 +223,8 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 	}
 
 	if(delta_press>0.0){
-		pINFO->AirspeedAvailable = TRUE;
-		pINFO->IndicatedAirspeed = sqrt(2 * delta_press / 1.225);
-		pINFO->TrueAirspeed = TrueAirSpeed(delta_press,	RelativeHumidity, OutsideAirTemperature, abs_press > 0.0 ? abs_press : 101325.0);
+		pINFO->IndicatedAirSpeed.update(*d, sqrt(2 * delta_press / 1.225));
+		pINFO->TrueAirSpeed.update(*d, TrueAirSpeed(delta_press,	RelativeHumidity, OutsideAirTemperature, abs_press > 0.0 ? abs_press : 101325.0));
 	}
 
 	if(*(wiss.GetNextString()) == L'C'){

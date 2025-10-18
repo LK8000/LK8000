@@ -249,12 +249,9 @@ static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   vtas = StrToDouble(ctemp,NULL)/36;
 
   if (vias >1) {
-	pGPS->TrueAirspeed = vtas;
-	pGPS->IndicatedAirspeed = vias;
-	pGPS->AirspeedAvailable = TRUE;
-  } else
-	pGPS->AirspeedAvailable = FALSE;
-
+    pGPS->TrueAirSpeed.update(*d, vtas);
+    pGPS->IndicatedAirSpeed.update(*d, vias);
+  }
   // external battery voltage
   NMEAParser::ExtractParameter(String,ctemp,10);
   pGPS->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)/10;

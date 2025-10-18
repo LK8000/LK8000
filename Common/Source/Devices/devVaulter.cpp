@@ -171,10 +171,9 @@ bool DevVaulter::PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
   if (ParToDouble(sentence, 3, &tmp))
   {
     bVaulterValid = true;
-    info->IndicatedAirspeed = tmp;
+    info->IndicatedAirSpeed.update(*d, tmp);
     double qne_altitude = QNHAltitudeToQNEAltitude(info->Altitude);
-    info->TrueAirspeed = TrueAirSpeed(tmp, qne_altitude);
-    info->AirspeedAvailable = TRUE;
+    info->TrueAirSpeed.update(*d, TrueAirSpeed(tmp, qne_altitude));
   }
 
 

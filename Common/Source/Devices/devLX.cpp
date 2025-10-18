@@ -93,19 +93,18 @@ bool DevLX::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
   if (ParToDouble(sentence, 1, &airspeed))
   {
     airspeed = Units::From(unKiloMeterPerHour, airspeed);
-    info->TrueAirspeed = airspeed;
-    info->AirspeedAvailable = TRUE;
+    info->TrueAirSpeed.update(*d, airspeed);
   }
 
   if (ParToDouble(sentence, 2, &alt))
   {
     if (airspeed>0) {
-      info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
+      info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, alt));
     }
     UpdateBaroSource( info, d, QNEAltitudeToQNHAltitude(alt));
   } else {
     if (airspeed>0) {
-      info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, QNHAltitudeToQNEAltitude(info->Altitude));
+      info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, QNHAltitudeToQNEAltitude(info->Altitude)));
     }
   }
 

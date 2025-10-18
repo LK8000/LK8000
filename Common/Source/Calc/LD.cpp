@@ -94,9 +94,12 @@ void LD(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   }
 
   // LD instantaneous from vario, updated every reading..
-  if (VarioAvailable(*Basic) && Basic->AirspeedAvailable && Calculated->Flying) {
-    Calculated->LDvario = UpdateLD(Calculated->LDvario, Basic->IndicatedAirspeed, -Basic->Vario, 0.3);
-  } else {
+  if (VarioAvailable(*Basic) && Basic->IndicatedAirSpeed.available() &&
+      Calculated->Flying) {
+    Calculated->LDvario = UpdateLD(
+        Calculated->LDvario, Basic->IndicatedAirSpeed, -Basic->Vario, 0.3);
+  }
+  else {
     Calculated->LDvario = INVALID_GR;
   }
 }

@@ -23,8 +23,8 @@ void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     return;
   }
 
-  if (Basic->AirspeedAvailable) {
-    Calculated->HeadWind = Basic->TrueAirspeed - Basic->Speed;
+  if (Basic->TrueAirSpeed.available()) {
+    Calculated->HeadWind = Basic->TrueAirSpeed - Basic->Speed;
   } else {
     double CrossBearing = AngleLimit360(Calculated->Heading - Calculated->WindBearing);
     Calculated->HeadWind = Calculated->WindSpeed * fastcosine(CrossBearing);

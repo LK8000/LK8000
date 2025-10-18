@@ -30,9 +30,9 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	double ias_to_tas;
 	double V_tas, wastefactor;
 
-	if (Basic->AirspeedAvailable && (Basic->IndicatedAirspeed>0)) {
-		ias_to_tas = Basic->TrueAirspeed/Basic->IndicatedAirspeed;
-		V_tas = Basic->TrueAirspeed;
+	if (Basic->IndicatedAirSpeed.available() && Basic->TrueAirSpeed.available()) {
+		ias_to_tas = Basic->TrueAirSpeed/Basic->IndicatedAirSpeed;
+		V_tas = Basic->TrueAirSpeed;
 		wastefactor=0.80;
 	} else {
 		ias_to_tas = 1.0;

@@ -70,7 +70,7 @@ static bool airspeedreset=true;
 
   // Normally we shall not select ZIGZAG if we dont have airspeed!!
   // We reset only one time, and it should not be necessary also.
-  if (! basic->AirspeedAvailable) {
+  if (! basic->TrueAirSpeed.available()) {
 	if (!airspeedreset) return 0;
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... No Airspeed available%s"),NEWLINE);
@@ -172,7 +172,7 @@ static bool airspeedreset=true;
   #if BASIC_FILTER
   // below 10kmh we will not assume the gps bearing is still correct!
   // do not reset ring, simply discard data
-  if (basic->Speed < 3 || basic->TrueAirspeed < 3) {
+  if (basic->Speed < 3 || basic->TrueAirSpeed < 3) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... speed too low!%s"),NEWLINE);
 	#endif
@@ -197,7 +197,7 @@ static bool airspeedreset=true;
   // Notice that we must check the TAS is provided in m/s, because for example Zander is 
   // providing kmh, and accuracy is not granted. But in this case we would insert the same tas
   // for a different bearing, which is quite inaccurate too.
-  if (old_tas==basic->TrueAirspeed) {
+  if (old_tas==basic->TrueAirSpeed) {
 	#ifdef KALMAN_DEBUG
 	StartupStore(_T(".... TAS UNCHANGED, discard\n"));
 	#endif
@@ -213,7 +213,7 @@ static bool airspeedreset=true;
   WindKalmanReset(false);
   kalman_holdoff_time =0;
 
-  double V = basic->TrueAirspeed;
+  double V = basic->TrueAirSpeed;
   double dynamic_pressure = (V*V);
   float gps_vel[2];
 

@@ -798,15 +798,13 @@ goto_bearing:
 
 		// B32
 		case LK_IAS:
-			if (DrawInfo.AirspeedAvailable) {
-				if (lktitle)
-					// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
-					lk::strcpy(BufferTitle, MsgToken<1066>());
-				else
-					lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
-				value=Units::ToHorizontalSpeed(DrawInfo.IndicatedAirspeed);
+			if (DrawInfo.IndicatedAirSpeed.available()) {
+				// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
+				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
+				value=Units::ToHorizontalSpeed(DrawInfo.IndicatedAirSpeed);
 				if (value<0||value>999) value=0; else valid=true;
-			} else {
+			}
+			else {
 				// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
 				_stprintf(BufferTitle, TEXT("e%s"), MsgToken<1066>());
 				value=Units::ToHorizontalSpeed(DerivedDrawInfo.IndicatedAirspeedEstimated);
@@ -1173,7 +1171,7 @@ goto_bearing:
 			_stprintf(BufferValue,_T(NULLMEDIUM));
 			//_stprintf(BufferUnit,TEXT(""));
 			lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
-			if (DrawInfo.AirspeedAvailable && VarioAvailable(DrawInfo)) {
+			if (DrawInfo.IndicatedAirSpeed.available() && VarioAvailable(DrawInfo)) {
 				value = DerivedDrawInfo.LDvario;
 				if (value <1 || value >=ALTERNATE_MAXVALIDGR )
 					_stprintf(BufferValue, TEXT(NULLMEDIUM));
@@ -1188,13 +1186,13 @@ goto_bearing:
 
 		// B54 091221
 		case LK_TAS:
-			if (DrawInfo.AirspeedAvailable) {
+			if (DrawInfo.TrueAirSpeed.available()) {
 				if (lktitle)
 					// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
 					lk::strcpy(BufferTitle, MsgToken<1110>());
 				else
 					lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
-				value=Units::ToHorizontalSpeed(DrawInfo.TrueAirspeed);
+				value=Units::ToHorizontalSpeed(DrawInfo.TrueAirSpeed);
 				if (value<0||value>999) {
 					_stprintf(BufferValue, TEXT("%s"),NULLMEDIUM);
 				} else {

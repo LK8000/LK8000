@@ -278,8 +278,7 @@ bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* in
   if (ParToDouble(sentence, 1, &airspeed))
   {
     airspeed = Units::From(unKiloMeterPerHour, airspeed);
-    info->TrueAirspeed = airspeed;
-    info->AirspeedAvailable = TRUE;
+    info->TrueAirSpeed.update(*d, airspeed);
   }
   if(LX166AltitudeUpdateTimeout >0)
 	  LX166AltitudeUpdateTimeout--;
@@ -288,7 +287,7 @@ bool DevLX16xx::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* in
     {
       LX16xxAlt = (int) alt;
       if (airspeed>0) {
-        info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
+        info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, alt));
       }
       UpdateBaroSource( info, d, QNEAltitudeToQNHAltitude(alt));
     }

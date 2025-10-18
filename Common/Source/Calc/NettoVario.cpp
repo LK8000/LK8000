@@ -24,9 +24,9 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // calculate sink rate of glider for calculating netto vario
   const bool replay_disabled = !ReplayLogger::IsEnabled();
 
-  const double ias = (Basic->AirspeedAvailable && replay_disabled)
-          ? Basic->IndicatedAirspeed
-          : Calculated->IndicatedAirspeedEstimated;
+  const double ias = (Basic->IndicatedAirSpeed.available() && replay_disabled)
+                         ? Basic->IndicatedAirSpeed.value()
+                         : Calculated->IndicatedAirspeedEstimated;
 
   const double glider_sink_rate = AirDensitySinkRate(std::max(GlidePolar::Vminsink(), ias), Basic->Altitude, GLoad);
 

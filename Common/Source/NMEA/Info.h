@@ -92,10 +92,6 @@ struct NMEA_INFO final {
     int Day = {};
     int Year = {};
     bool NAVWarning = {};
-    double IndicatedAirspeed = {};
-    double TrueAirspeed = {};
-
-    bool AirspeedAvailable = {};
 
     int SatellitesUsed = {};
 
@@ -109,6 +105,8 @@ struct NMEA_INFO final {
     from_device_data<double> MagneticHeading = {};
     from_device_data<WindData> ExternalWind = {};
     from_device_data<Point3D> Acceleration = {}; // in G
+    from_device_data<double> IndicatedAirSpeed = {};
+    from_device_data<double> TrueAirSpeed = {};
 
     int	ExtBatt_Bank = {};
     double ExtBatt1_Voltage = {};

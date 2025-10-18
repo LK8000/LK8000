@@ -13,10 +13,10 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {	
 	if (GlidePolar::FlapsMass<=0) return; // avoid division by zero crashes
 	double speed = 0.0;
-	if (Basic->AirspeedAvailable) {
-		speed = (int)(Basic->IndicatedAirspeed);
+	if (Basic->IndicatedAirSpeed.available()) {
+		speed = Basic->IndicatedAirSpeed;
 	} else {
-		speed = (int)(Calculated->IndicatedAirspeedEstimated);
+		speed = Calculated->IndicatedAirspeedEstimated;
 	}
 
 	// correcting speed for calculated bank angle

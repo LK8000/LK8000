@@ -84,9 +84,9 @@ SkyLinesTracking::ToFix(uint64_t key, const NMEA_INFO &basic)
   } else
     packet.ground_speed = 0;
 
-  if (basic.AirspeedAvailable) {
+  if (basic.IndicatedAirSpeed.available()) {
     packet.flags |= ToBE32(FixPacket::FLAG_AIRSPEED);
-    packet.airspeed = ToBE16(uint16_t(basic.IndicatedAirspeed * 16));
+    packet.airspeed = ToBE16(uint16_t(basic.IndicatedAirSpeed * 16));
   } else
     packet.airspeed = 0;
 

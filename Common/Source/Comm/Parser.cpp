@@ -64,7 +64,6 @@ void NMEAParser::Reset() {
   RMZAvailable = false;
   LastRMZHB = false;
   RMCAvailable = false;
-  TASAvailable = false; // 100411
   RMZDelayed = 3; // wait for this to be zero before using RMZ.
  
   GGAtime=0;
@@ -247,7 +246,7 @@ BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* Str
       return RMZ(d, &String[7], params + 1, n_params - 1, pGPS);
     }
     if (token == "LKAS"sv) {
-      return PLKAS(&String[7], params + 1, n_params - 1, pGPS);
+      return PLKAS(d, &String[7], params + 1, n_params - 1, pGPS);
     }
     return FALSE;
   }
@@ -821,7 +820,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
 
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
-BOOL NMEAParser::PLKAS(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::PLKAS(DeviceDescriptor_t& d, const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 1) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid PLKAS sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -834,15 +833,9 @@ BOOL NMEAParser::PLKAS(const char* String, char** params, size_t nparams, NMEA_I
   ScopeLock lock(CritSec_FlightData);
   if (vias > 1) {
     double qne_altitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);
-    pGPS->TrueAirspeed = TrueAirSpeed(vias, qne_altitude);
-    pGPS->IndicatedAirspeed = vias;
-  } else {
-    pGPS->TrueAirspeed = 0;
-    pGPS->IndicatedAirspeed = 0;
+    pGPS->TrueAirSpeed.update(d, TrueAirSpeed(vias, qne_altitude));
+    pGPS->IndicatedAirSpeed.update(d, vias);
   }
-
-  pGPS->AirspeedAvailable = TRUE;
-
   return FALSE;
 }
 
@@ -895,12 +888,9 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params,
 
     if(*params[3] != _T('\0')) {
       const double vtas = Units::From(unKnots, StrToDouble(params[3],NULL));
-      pGPS->AirspeedAvailable = TRUE;
-      pGPS->TrueAirspeed = vtas;
-      pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
+      pGPS->TrueAirSpeed.update(d, vtas);
+      pGPS->IndicatedAirSpeed.update(d, IndicatedAirSpeed(vtas, qne_altitude));
     }
-
-    TASAvailable = true; // 100411
   }
 
   return FALSE;

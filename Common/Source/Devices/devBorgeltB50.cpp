@@ -104,9 +104,8 @@ BOOL PBB50(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
   NMEAParser::ExtractParameter(String,ctemp,7);
   pGPS->OutsideAirTemperature.update(*d, StrToDouble(ctemp, nullptr));
 
-  pGPS->AirspeedAvailable = TRUE;
-  pGPS->IndicatedAirspeed = vias;
-  pGPS->TrueAirspeed = vtas;
+  pGPS->IndicatedAirSpeed.update(*d, vias);
+  pGPS->TrueAirSpeed.update(*d, vtas);
 
   UpdateVarioSource(*pGPS, *d, wnet);
 

@@ -1251,8 +1251,7 @@ BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       if(IsDirInput(PortIO.SPEEDDir  ))
       {
         airspeed = Units::From(unKiloMeterPerHour, airspeed);
-        info->IndicatedAirspeed = airspeed;
-        info->AirspeedAvailable = TRUE;
+        info->IndicatedAirSpeed.update(*d, airspeed);
       }
     }
 
@@ -1267,7 +1266,7 @@ BOOL DevLXNanoIII::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       if(IsDirInput(PortIO.BARODir  ))
       {
         if (airspeed>0) {
-          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, altitude);
+          info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, altitude));
         }
         UpdateBaroSource(info, d, altitude);
       }
@@ -1580,10 +1579,8 @@ BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
       SetDataText( d, _SPEED,  szTmp);
     }
 //  airspeed = 135.0/TOKPH;
-    if(IsDirInput(PortIO.SPEEDDir ))
-    {
-      info->IndicatedAirspeed = airspeed;
-      info->AirspeedAvailable = TRUE;
+    if(IsDirInput(PortIO.SPEEDDir )) {
+      info->IndicatedAirSpeed.update(*d, airspeed);
     }
   }
 
@@ -1599,7 +1596,7 @@ BOOL DevLXNanoIII::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
     {
       UpdateBaroSource( info, d, QNEAltitudeToQNHAltitude(alt));
       if (airspeed>0) {
-        info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, alt);
+        info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, alt));
       }
     }
   }

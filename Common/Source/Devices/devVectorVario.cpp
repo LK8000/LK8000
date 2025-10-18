@@ -42,9 +42,7 @@ void TAS(DeviceDescriptor_t& d, NMEA_INFO& info,
                            characteristic_value<int32_t>(data).get());
 
   ScopeLock lock(CritSec_FlightData);
-  // TODO : implement device Priority
-  info.AirspeedAvailable = true;
-  info.TrueAirspeed = value;
+  info.TrueAirSpeed.update(d, value);
 }
 
 void IAS(DeviceDescriptor_t& d, NMEA_INFO& info,
@@ -53,9 +51,7 @@ void IAS(DeviceDescriptor_t& d, NMEA_INFO& info,
                            characteristic_value<int32_t>(data).get());
 
   ScopeLock lock(CritSec_FlightData);
-  // TODO : implement device Priority
-  info.AirspeedAvailable = true;
-  info.IndicatedAirspeed = value;
+  info.IndicatedAirSpeed.update(d, value);
 }
 
 void Azimuth(DeviceDescriptor_t& d, NMEA_INFO& info,

@@ -46,9 +46,8 @@ BOOL cLXWP0(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS) {
   NMEAParser::ExtractParameter(String, ctemp, 2);
   double QneAltitude = StrToDouble(ctemp, nullptr);
 
-  pGPS->IndicatedAirspeed = IndicatedAirSpeed(airspeed, QneAltitude);
-  pGPS->TrueAirspeed = airspeed;
-  pGPS->AirspeedAvailable = TRUE;
+  pGPS->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, QneAltitude));
+  pGPS->TrueAirSpeed.update(*d, airspeed);
 
   UpdateBaroSource(pGPS, d, QNEAltitudeToQNHAltitude(QneAltitude));
 

@@ -984,8 +984,9 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
       if(IsDirInput(PortIO.SPEEDDir  ))
       {
         airspeed = Units::From(unKiloMeterPerHour, airspeed);
-        info->TrueAirspeed = airspeed;
-        info->AirspeedAvailable = TRUE;
+        if (airspeed > 0) {
+          info->TrueAirSpeed.update(*d, airspeed);
+        }
       }
     }
 
@@ -1000,7 +1001,7 @@ BOOL DevLX_EOS_ERA::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
       if(IsDirInput(PortIO.BARODir  ))
       {
         if (airspeed > 0) {
-          info->IndicatedAirspeed = IndicatedAirSpeed(airspeed, altitude);
+          info->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(airspeed, altitude));
         }
         UpdateBaroSource( info, d, altitude);
       }

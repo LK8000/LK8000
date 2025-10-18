@@ -64,7 +64,6 @@ BOOL PDGFTL1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
 */
 
   char ctemp[80];
-  double vtas, vias;
   double altqne, altqnh;
   static bool initqnh=true;
 
@@ -99,21 +98,15 @@ BOOL PDGFTL1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
     pGPS->NettoVario.update(*d, StrToDouble(ctemp, NULL) / 10);  // dm/s
   }
 
-  NMEAParser::ExtractParameter(String,ctemp,4);
+  NMEAParser::ExtractParameter(String, ctemp, 4);
   if (ctemp[0] != '\0') {
-	// we store m/s  , so we convert it from kmh
-	vias = StrToDouble(ctemp,NULL)/3.6;
-
-	if (vias >1) {
-		vtas = TrueAirSpeed(vias, altqne);
-		pGPS->TrueAirspeed = vtas;
-		pGPS->IndicatedAirspeed = vias;
-		pGPS->AirspeedAvailable = TRUE;
-	}
-  } else {
-	pGPS->AirspeedAvailable = FALSE;
+    // we store m/s  , so we convert it from kmh
+    const double vias = StrToDouble(ctemp, NULL) / 3.6;
+    if (vias > 1) {
+      pGPS->TrueAirSpeed.update(*d, TrueAirSpeed(vias, altqne));
+      pGPS->IndicatedAirSpeed.update(*d, vias);
+    }
   }
-
 
   NMEAParser::ExtractParameter(String,ctemp,8);
   pGPS->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)/100;
@@ -164,13 +157,11 @@ BOOL D(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
     // airspeed
     NMEAParser::ExtractParameter(String,ctemp,3);
     if (ctemp[0] != '\0') {
-        pGPS->TrueAirspeed = Units::From(unKiloMeterPerHour, StrToDouble(ctemp, nullptr));
-        pGPS->IndicatedAirspeed = IndicatedAirSpeed(pGPS->TrueAirspeed, QNHAltitudeToQNEAltitude(pGPS->Altitude));
-        pGPS->AirspeedAvailable = true;
-    } else {
-        pGPS->TrueAirspeed = 0;
-        pGPS->IndicatedAirspeed = 0;
-        pGPS->AirspeedAvailable = false;
+      const double tas =
+          Units::From(unKiloMeterPerHour, StrToDouble(ctemp, nullptr));
+      pGPS->TrueAirSpeed.update(*d, tas);
+      pGPS->IndicatedAirSpeed.update(
+          *d, IndicatedAirSpeed(tas, QNHAltitudeToQNEAltitude(pGPS->Altitude)));
     }
 
     // temperature

@@ -190,9 +190,8 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
     double TrueAirSpeed = 0;
     if (ReadChecked(params[2], TrueAirSpeed)) {
         TrueAirSpeed = Units::From(unKiloMeterPerHour, TrueAirSpeed);
-        pGPS->TrueAirspeed = TrueAirSpeed;
-        pGPS->IndicatedAirspeed = IndicatedAirSpeed(TrueAirSpeed, QneAltitude);
-        pGPS->AirspeedAvailable = TRUE;
+        pGPS->TrueAirSpeed.update(*d, TrueAirSpeed);
+        pGPS->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(TrueAirSpeed, QneAltitude));
     }
 
     for(int i = 4; i <= 9; ++i) {

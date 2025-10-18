@@ -533,17 +533,15 @@ bool DevLXV7::PLXVF(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info
 
   if (ParToDouble(sentence, 5, &airspeed))
   {
-//	airspeed = 135.0/TOKPH;
-	info->IndicatedAirspeed = airspeed;
-	info->AirspeedAvailable = TRUE;
-
+    //	airspeed = 135.0/TOKPH;
+    info->IndicatedAirSpeed.update(*d, airspeed);
   }
 
   if (ParToDouble(sentence, 6, &alt))
   {
     UpdateBaroSource(info, d, QNEAltitudeToQNHAltitude(alt));
     if (airspeed>0) {
-      info->TrueAirspeed = TrueAirSpeed(airspeed, alt);
+      info->TrueAirSpeed.update(*d, TrueAirSpeed(airspeed, alt));
     }
   }
   double Vario = 0;

@@ -20,7 +20,6 @@ void NMEA_INFO::reset_availability(std::optional<unsigned> idx) {
   MagneticHeading.reset(idx);
   ExternalWind.reset(idx);
   Acceleration.reset(idx);
-
-  AirspeedAvailable = false;
-  GyroscopeAvailable = false;
+  IndicatedAirSpeed.reset(idx);
+  TrueAirSpeed.reset(idx);
 }

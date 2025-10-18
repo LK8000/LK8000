@@ -263,8 +263,8 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 break;
             case vValVarioSoll:
                 double ias;
-                if (DrawInfo.AirspeedAvailable && VarioAvailable(DrawInfo))
-                    ias = DrawInfo.IndicatedAirspeed;
+                if (DrawInfo.IndicatedAirSpeed.available() && VarioAvailable(DrawInfo))
+                    ias = DrawInfo.IndicatedAirSpeed;
                 else
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;
 

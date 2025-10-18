@@ -156,9 +156,10 @@ BOOL FLYSEN(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   // TAS
   NMEAParser::ExtractParameter(String,ctemp,13+offset);
   double vtas = StrToDouble(ctemp,NULL) / 10;
-  pGPS->IndicatedAirspeed = IndicatedAirSpeed(vtas, qne_altitude);
-  pGPS->TrueAirspeed = vtas;
-  pGPS->AirspeedAvailable = (pGPS->IndicatedAirspeed >0);
+  if (vtas > 0) {
+    pGPS->IndicatedAirSpeed.update(*d, IndicatedAirSpeed(vtas, qne_altitude));
+    pGPS->TrueAirSpeed.update(*d, vtas);
+  }
 
   // ignore n.14 airspeed source
 

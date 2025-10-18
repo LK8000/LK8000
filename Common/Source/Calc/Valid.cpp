@@ -64,24 +64,24 @@ bool ValidStartPoint(size_t i) {
     return retVal;
 }
 
-
-
-bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, unsigned Margin) {
+bool ValidStartSpeed(NMEA_INFO* Basic, DERIVED_INFO* Calculated,
+                     unsigned Margin) {
   bool valid = true;
-  if (StartMaxSpeed!=0) {
-    if (Basic->AirspeedAvailable) {
-      if ((Basic->IndicatedAirspeed*1000)>(StartMaxSpeed+Margin))
+  if (StartMaxSpeed != 0) {
+    if (Basic->IndicatedAirSpeed.available()) {
+      if (Units::To(unKiloMeterPerHour, Basic->IndicatedAirSpeed) > (StartMaxSpeed + Margin)) {
         valid = false;
-    } else {
-	// StartMaxSpeed is in millimeters per second, and so is Margin
-	if ((Basic->Speed*1000)>(StartMaxSpeed+Margin))  { //@ 101014 FIX
-		valid = false;
-	}
+      }
+    }
+    else {
+      // StartMaxSpeed is in millimeters per second, and so is Margin
+      if ((Basic->Speed * 1000) > (StartMaxSpeed + Margin)) {  //@ 101014 FIX
+        valid = false;
+      }
     }
   }
   return valid;
 }
-
 
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   return ValidStartSpeed(Basic, Calculated, 0);
