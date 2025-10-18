@@ -263,7 +263,7 @@ std::string build_state_string(const NMEA_INFO& Basic, const DERIVED_INFO& Calcu
   ss << Basic.Altitude << ",";
   ss << Units::To(unKiloMeterPerHour, Basic.Speed) << ",";
   ss << Calculated.Heading << ",";
-  ss << Basic.Vario << ",";
+  ss << Calculated.Vario << ",";
   ss << Basic.Year - 1900 << ",";
   ss << Basic.Month << ",";
   ss << Basic.Day << ",";

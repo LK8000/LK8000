@@ -137,9 +137,6 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   if (!idx || (GPS_INFO.BaroSourceIdx.device_index == idx.value())) {
     ResetBaroAvailable(GPS_INFO);
   }
-  if (!idx || (GPS_INFO.VarioSourceIdx == idx.value())) {
-    ResetVarioAvailable(GPS_INFO);
-  }
   if (!idx || (GPS_INFO.ExternalWindIdx == idx.value())) {
     ResetExternalWindAvailable(GPS_INFO);
   }
@@ -153,6 +150,7 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
     ResetGLoadAvailable(GPS_INFO);
   }
 
+  GPS_INFO.Vario.reset();
   GPS_INFO.OutsideAirTemperature.reset(idx);
   GPS_INFO.RelativeHumidity.reset(idx);
   GPS_INFO.NettoVario.reset(idx);
@@ -193,11 +191,11 @@ class SourceMonitor {
 //
 bool UpdateMonitor() {
   static SourceMonitor monitors[] = {
+    { [] { return GPS_INFO.Vario.index(); },                 _T("Vario") },
     { [] { return GPS_INFO.NettoVario.index(); },            _T("NettoVario") },
     { [] { return GPS_INFO.OutsideAirTemperature.index(); }, _T("OutsideAirTemperature") },
     { [] { return GPS_INFO.RelativeHumidity.index(); },      _T("RelativeHumidity") },
     { [] { return GPS_INFO.BaroSourceIdx; },                 _T("Baro") },
-    { [] { return GPS_INFO.VarioSourceIdx; },                _T("Vario") },
     { [] { return GPS_INFO.AccelerationIdx; },               _T("Acceleration") },
     { [] { return GPS_INFO.ExternalWindIdx; },               _T("Wind") },
     { [] { return GPS_INFO.GloadIdx; },                      _T("GLoad") },

@@ -77,9 +77,6 @@ struct NMEA_INFO final {
     BaroIndex BaroSourceIdx = {};
     double BaroAltitude = {};
 
-    unsigned VarioSourceIdx = NUMDEV;
-    double Vario = {};
-
     unsigned AccelerationIdx = NUMDEV;
     Point3D Acceleration = {}; // in G
 
@@ -88,6 +85,7 @@ struct NMEA_INFO final {
 
     int SatellitesUsed = {};
 
+    from_device_data<double> Vario = {};
     from_device_data<double> NettoVario = {};
     from_device_data<double> OutsideAirTemperature = {};
     from_device_data<double> RelativeHumidity = {};
