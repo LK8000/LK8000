@@ -106,8 +106,7 @@ BOOL LK8EX1(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
   NMEAParser::ExtractParameter(String,ctemp,3);
   double ta = StrToDouble(ctemp,NULL);
   if (ta != 99) {
-    pGPS->OutsideAirTemperature = ta;
-    pGPS->TemperatureAvailable=TRUE;
+    pGPS->OutsideAirTemperature.update(*d, ta);
   }
 
   // BATTERY PERCENTAGES

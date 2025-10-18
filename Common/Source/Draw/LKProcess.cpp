@@ -1099,7 +1099,7 @@ goto_bearing:
 		case LK_OAT:
                   lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
                   value = DrawInfo.OutsideAirTemperature;
-                  if (!DrawInfo.TemperatureAvailable || value<-50||value>100) {
+                  if (!DrawInfo.OutsideAirTemperature.available() || value < -50 || value > 100) {
                     _stprintf(BufferValue, TEXT("---"));
                   }
                   else {

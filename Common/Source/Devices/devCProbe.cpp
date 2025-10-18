@@ -194,8 +194,8 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 				int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.001);
     }
 
-	pINFO->TemperatureAvailable=TRUE;
-	pINFO->OutsideAirTemperature = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.1;
+    double OutsideAirTemperature = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.1;
+    pINFO->OutsideAirTemperature.update(*d, OutsideAirTemperature);
 
 	pINFO->HumidityAvailable=TRUE;
 	pINFO->RelativeHumidity = int16toDouble(HexStrToInt(wiss.GetNextString())) * 0.1;
@@ -227,7 +227,7 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 	if(delta_press>0.0){
 		pINFO->AirspeedAvailable = TRUE;
 		pINFO->IndicatedAirspeed = sqrt(2 * delta_press / 1.225);
-		pINFO->TrueAirspeed = TrueAirSpeed(delta_press,	pINFO->RelativeHumidity, pINFO->OutsideAirTemperature, abs_press>0.0?abs_press:101325.0);
+		pINFO->TrueAirspeed = TrueAirSpeed(delta_press,	pINFO->RelativeHumidity, OutsideAirTemperature, abs_press > 0.0 ? abs_press : 101325.0);
 	}
 
 	if(*(wiss.GetNextString()) == L'C'){
@@ -475,7 +475,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpTemp"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature, MsgToken<2179>());
+		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature.value(), MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpRh"));

@@ -172,8 +172,7 @@ bool PLXVS(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
     double OAT;
 
     if (ParToDouble(sentence, 0, &OAT)) {
-	 info->OutsideAirTemperature = OAT;
-	 info->TemperatureAvailable  = TRUE;
+	 info->OutsideAirTemperature.update(*d, OAT);
     }
 
 

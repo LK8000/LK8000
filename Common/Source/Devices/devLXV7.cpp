@@ -586,8 +586,7 @@ double Batt;
 double OAT;
   if (ParToDouble(sentence, 0, &OAT))
   {
-	 info->OutsideAirTemperature = OAT;
-	 info->TemperatureAvailable  = TRUE;
+	 info->OutsideAirTemperature.update(*d, OAT);
   }
 #ifdef SLOW_DET
 	  // Get STF switch

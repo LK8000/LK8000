@@ -14,7 +14,7 @@
 #include "Devices/Fanet/Fanet.h"
 #include "Geographic/GeoPoint.h"
 #include "Math/Point3D.h"
-#include "Comm/DeviceDescriptor.h"
+#include "from_device_data.h"
 
 
 /**
@@ -90,8 +90,9 @@ struct NMEA_INFO final {
     double Gload = {};
 
     int SatellitesUsed = {};
-    bool TemperatureAvailable = {};
-    double OutsideAirTemperature = {};
+
+    from_device_data<double> OutsideAirTemperature = {};
+
     bool HumidityAvailable = {};
     double RelativeHumidity = {};
 

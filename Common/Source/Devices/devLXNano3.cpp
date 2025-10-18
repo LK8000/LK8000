@@ -1679,8 +1679,7 @@ BOOL DevLXNanoIII::PLXVS(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
 
     if(IsDirInput(PortIO.OATDir))
     {
-      info->OutsideAirTemperature = OAT;
-      info->TemperatureAvailable  = TRUE;
+      info->OutsideAirTemperature.update(*d, OAT);
     }
   }
 

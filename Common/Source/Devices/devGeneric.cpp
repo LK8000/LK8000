@@ -32,8 +32,7 @@ BOOL OnBarometricPressure(DeviceDescriptor_t& d, NMEA_INFO& info, double Pa) {
 
 BOOL OnOutsideTemperature(DeviceDescriptor_t& d, NMEA_INFO& info, double temp) {
   ScopeLock lock(CritSec_FlightData);
-  info.TemperatureAvailable = true;
-  info.OutsideAirTemperature = temp;
+  info.OutsideAirTemperature.update(d, temp);
   return TRUE;
 }
 

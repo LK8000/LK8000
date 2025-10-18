@@ -93,8 +93,7 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
 
   if (ReadChecked(params[6], value)) {
     // Outside airtemp in degrees celcius ( may have leading negative sign )
-    pGPS->TemperatureAvailable = true;
-    pGPS->OutsideAirTemperature = value;
+    pGPS->OutsideAirTemperature.update(*d, value);
   }
 
   if (ReadChecked(params[7], value)) {

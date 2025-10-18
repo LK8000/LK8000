@@ -178,8 +178,7 @@ BOOL DevOpenVario::POV(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
         break;
 
       case 'T':
-        info->OutsideAirTemperature = value;
-        info->TemperatureAvailable = TRUE;
+        info->OutsideAirTemperature.update(*d, value);
         if (OV_DebugLevel > 0) {
           StartupStore(TEXT(" OpenVario OAT :%5.2f°C"), value);
         }

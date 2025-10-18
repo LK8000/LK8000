@@ -164,8 +164,7 @@ BOOL FLYSEN(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 
   // OAT
   NMEAParser::ExtractParameter(String,ctemp,15+offset);
-  pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
-  pGPS->TemperatureAvailable=TRUE;
+  pGPS->OutsideAirTemperature.update(*d, StrToDouble(ctemp, nullptr));
 
   // ignore n.16 baloon temperature
 

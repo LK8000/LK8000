@@ -1474,8 +1474,7 @@ BOOL DevLX_EOS_ERA::SENS(DeviceDescriptor_t* d,  const char* sentence, NMEA_INFO
       SetDataText( d,_OAT,  szTmp);
     }
     if(IsDirInput(PortIO.OATDir)) {
-      info->OutsideAirTemperature = fTmp;
-      info->TemperatureAvailable  = TRUE;
+      info->OutsideAirTemperature.update(*d, fTmp);
     }
   }
   if(ParToDouble(sentence, ParNo++, &fTmp)) { // main power supply voltage

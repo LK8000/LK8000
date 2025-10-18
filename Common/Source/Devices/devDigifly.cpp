@@ -182,10 +182,7 @@ BOOL D(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
     // temperature
     NMEAParser::ExtractParameter(String,ctemp,4);
     if (ctemp[0] != '\0') {
-        pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL);
-        pGPS->TemperatureAvailable = TRUE;
-    } else {
-        pGPS->TemperatureAvailable = FALSE;
+      pGPS->OutsideAirTemperature.update(*d, StrToDouble(ctemp, nullptr));
     }
 
     return TRUE;

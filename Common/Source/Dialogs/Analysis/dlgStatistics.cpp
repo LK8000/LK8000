@@ -158,11 +158,16 @@ switch (analysis_page) {
 static void NextPage(WndForm* pForm, int Step){
   analysis_page += Step;
 
-LockFlightData(); /* skip Temperature Page if no OAT available */
-  if(analysis_page == ANALYSIS_PAGE_TEMPTRACE)
-    if(GPS_INFO.TemperatureAvailable!=TRUE)
+  if (analysis_page == ANALYSIS_PAGE_TEMPTRACE) {
+    auto temp_available = []() {
+      ScopeLock lock(CritSec_FlightData);
+      return GPS_INFO.OutsideAirTemperature.available();
+    };
+
+    if (!temp_available()) {
       analysis_page += Step;
-UnlockFlightData();
+    }
+  }
 
   if (analysis_page > MAXPAGE)
     analysis_page = 0;

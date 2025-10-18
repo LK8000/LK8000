@@ -264,8 +264,7 @@ static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 
   // OAT
   NMEAParser::ExtractParameter(String,ctemp,11);
-  pGPS->OutsideAirTemperature = StrToDouble(ctemp,NULL)/10;
-  pGPS->TemperatureAvailable=TRUE;
+  pGPS->OutsideAirTemperature.update(*d, StrToDouble(ctemp, nullptr) / 10);
 
   return TRUE;
 }

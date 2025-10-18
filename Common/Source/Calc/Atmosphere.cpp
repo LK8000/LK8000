@@ -21,28 +21,6 @@ CuSondeLevel CuSonde::cslevels[CUSONDE_NUMLEVELS];
 
 // TODO accuracy: recalculate thermal index etc if maxGroundTemp changes
 
-#if 0
-void CuSonde::test() {
-  CALCULATED_INFO.Flying= true;
-  GPS_INFO.TemperatureAvailable = true;
-  GPS_INFO.HumidityAvailable = true;
-
-  int i;
-  for (i=0; i<3000; i+= 50) {
-    GPS_INFO.Altitude = i+50;
-    GPS_INFO.OutsideAirTemperature = 20.0+DALR*0.5*i;
-    GPS_INFO.RelativeHumidity = 50;
-    updateMeasurements(&GPS_INFO, &CALCULATED_INFO);
-  }
-  for (i=3000; i>0; i-= 50) {
-    GPS_INFO.Altitude = i+50;
-    GPS_INFO.OutsideAirTemperature = 20.0+DALR*0.5*i;
-    GPS_INFO.RelativeHumidity = 50;
-    updateMeasurements(&GPS_INFO, &CALCULATED_INFO);
-  }
-}
-#endif
-
 void CuSonde::setForecastTemperature(double val) {
   maxGroundTemperature= val;
 
@@ -73,10 +51,13 @@ void CuSonde::adjustForecastTemperature(double delta) {
 
 
 void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  if (!Calculated->Flying)
-    return; // nothing to do..
-  if (!Basic->TemperatureAvailable ||
-      !Basic->HumidityAvailable) {
+  if (!Calculated->Flying) {
+    return;  // nothing to do..
+  }
+  if (!Basic->OutsideAirTemperature.available()) {
+    return;
+  }
+  if (!Basic->HumidityAvailable) {
     return; // nothing to do..
   }
 
