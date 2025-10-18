@@ -20,7 +20,7 @@ namespace  {
 
 BOOL OnHeartRate(DeviceDescriptor_t& d, NMEA_INFO& info, unsigned bpm) {
   ScopeLock lock(CritSec_FlightData);
-  UpdateHeartRate(info, d, bpm);
+  info.HeartRate.update(d, bpm);
   return TRUE;
 }
 

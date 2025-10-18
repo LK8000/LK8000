@@ -3417,9 +3417,9 @@ lkfin_ete:
 			break;
 
 		case LK_HEART_RATE:
-			if (HeartRateAvailable(DrawInfo)) {
+			if (DrawInfo.HeartRate.available()) {
 				valid = true;
-				_stprintf(BufferValue, _T("%u"), DrawInfo.HeartRate);
+				_stprintf(BufferValue, _T("%u"), DrawInfo.HeartRate.value());
 			} else {
 				valid = false;
 				_stprintf(BufferValue, TEXT("---"));

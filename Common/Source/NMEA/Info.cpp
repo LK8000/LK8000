@@ -12,21 +12,6 @@
 #include "Logger.h"
 #include "../Comm/device.h"
 
-void ResetHeartRateAvailable(NMEA_INFO& info) {
-    info.HeartRateIdx = NUMDEV;
-}
-
-bool HeartRateAvailable(const NMEA_INFO& info) {
-  return (!ReplayLogger::IsEnabled()) && (info.HeartRateIdx < NUMDEV);
-}
-
-void UpdateHeartRate(NMEA_INFO& info, const DeviceDescriptor_t& d, unsigned bpm) {
-  if (d.PortNumber <= info.HeartRateIdx) {
-    info.HeartRateIdx = d.PortNumber;
-    info.HeartRate = bpm;
-  }
-}
-
 void ResetAccelerationAvailable(NMEA_INFO& info) {
   info.AccelerationIdx = NUMDEV;
 }

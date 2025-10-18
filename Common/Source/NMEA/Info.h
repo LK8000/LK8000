@@ -109,6 +109,7 @@ struct NMEA_INFO final {
     from_device_data<double> OutsideAirTemperature = {};
     from_device_data<double> RelativeHumidity = {};
     from_device_data<double> Gload = {};
+    from_device_data<unsigned> HeartRate = {};
 
     int	ExtBatt_Bank = {};
     double ExtBatt1_Voltage = {};
@@ -137,9 +138,6 @@ struct NMEA_INFO final {
     bool GyroscopeAvailable = {};
     double Pitch = {};
     double Roll = {};
-
-    unsigned HeartRateIdx = NUMDEV;
-    unsigned HeartRate = {};
 };
 
 static_assert(std::is_copy_constructible_v<NMEA_INFO>, "mandatory...");
@@ -148,10 +146,6 @@ inline
 AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   return {{ Info.Latitude, Info.Longitude }, Info.Altitude };
 }
-
-void ResetHeartRateAvailable(NMEA_INFO& info);
-bool HeartRateAvailable(const NMEA_INFO& info);
-void UpdateHeartRate(NMEA_INFO& info, const DeviceDescriptor_t& d, unsigned bpm);
 
 void ResetAccelerationAvailable(NMEA_INFO& info);
 bool AccelerationAvailable(const NMEA_INFO& info);

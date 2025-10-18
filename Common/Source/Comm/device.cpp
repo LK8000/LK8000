@@ -518,7 +518,7 @@ BOOL devInit() {
     ResetBaroAvailable(GPS_INFO);
     ResetVarioAvailable(GPS_INFO);
     ResetExternalWindAvailable(GPS_INFO);
-    ResetHeartRateAvailable(GPS_INFO);
+    GPS_INFO.HeartRate.reset();
 
     for (unsigned i = 0; i < NUMDEV; i++) {
         const auto& Config = PortConfig[i];
