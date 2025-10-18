@@ -63,9 +63,7 @@ void Azimuth(DeviceDescriptor_t& d, NMEA_INFO& info,
   auto value = characteristic_value<uint16_t>(data).get();
 
   ScopeLock lock(CritSec_FlightData);
-  // TODO : implement device Priority
-  info.MagneticHeadingAvailable = true;
-  info.MagneticHeading = value;
+  info.MagneticHeading.update(d, value);
 }
 
 void GLoad(DeviceDescriptor_t& d, NMEA_INFO& info,

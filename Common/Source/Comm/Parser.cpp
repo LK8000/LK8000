@@ -282,7 +282,7 @@ BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* Str
   }
 
   if (std::string_view(params[0] + 1) == "HCHDG"sv) {
-    return HCHDG(&String[7], params + 1, n_params - 1, pGPS);
+    return HCHDG(d, &String[7], params + 1, n_params - 1, pGPS);
   }
 
   return FALSE;
@@ -907,7 +907,7 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params,
 }
 
 
-BOOL NMEAParser::HCHDG(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
+BOOL NMEAParser::HCHDG(DeviceDescriptor_t& d, const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
 {
   if(nparams < 1) {
     TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid HCHDG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
@@ -918,8 +918,7 @@ BOOL NMEAParser::HCHDG(const char* String, char** params, size_t nparams, NMEA_I
   double mag = StrToDouble(params[0],NULL);
   if (mag>=0 && mag<=360) {
       ScopeLock lock(CritSec_FlightData);
-      pGPS->MagneticHeading=mag;
-      pGPS->MagneticHeadingAvailable=TRUE;
+      pGPS->MagneticHeading.update(d, mag);
   }
   return TRUE;
 }

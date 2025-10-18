@@ -110,6 +110,8 @@ struct NMEA_INFO final {
     from_device_data<double> RelativeHumidity = {};
     from_device_data<double> Gload = {};
     from_device_data<unsigned> HeartRate = {};
+    from_device_data<double> MagneticHeading = {};
+
 
     int	ExtBatt_Bank = {};
     double ExtBatt1_Voltage = {};
@@ -131,9 +133,6 @@ struct NMEA_INFO final {
     FANET_NAME FanetName[MAXFANETDEVICES] = {};
 
     double SupplyBatteryVoltage = {};
-
-    bool MagneticHeadingAvailable = {};
-    double MagneticHeading = {};
 
     bool GyroscopeAvailable = {};
     double Pitch = {};

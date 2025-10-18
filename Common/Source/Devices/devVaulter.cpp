@@ -165,8 +165,7 @@ bool DevVaulter::PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
 
   if (ParToDouble(sentence, 2, &tmp))
   {
-    info->MagneticHeading  = tmp;
-    info->MagneticHeadingAvailable = true;
+    info->MagneticHeading.update(*d, tmp);
   }
 
   if (ParToDouble(sentence, 3, &tmp))

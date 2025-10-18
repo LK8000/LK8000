@@ -114,8 +114,10 @@ bool DevLX::LXWP0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
     UpdateVarioSource(*info, *d, Vario);
   }
 
-  if (ParToDouble(sentence, 9, &info->MagneticHeading))
-      info->MagneticHeadingAvailable=TRUE;
+  double mag;
+  if (ParToDouble(sentence, 9, &mag)) {
+    info->MagneticHeading.update(*d, mag);
+  }
 
   double WindSpeed, WindDirection;
   if (ParToDouble(sentence, 10, &WindDirection) && ParToDouble(sentence, 11, &WindSpeed)) {

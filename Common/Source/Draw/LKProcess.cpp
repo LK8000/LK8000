@@ -2434,7 +2434,7 @@ olc_score:
 		case LK_HEADING:
 			_stprintf(BufferValue,_T(NULLLONG));
 			//_stprintf(BufferUnit,TEXT(""));
-			if (DrawInfo.MagneticHeadingAvailable) {
+			if (DrawInfo.MagneticHeading.available()) {
 			    _stprintf(BufferTitle, _T("HDG"));
 			    value = DrawInfo.MagneticHeading;
 			} else {

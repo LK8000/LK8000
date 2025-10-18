@@ -148,9 +148,9 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   GPS_INFO.NettoVario.reset(idx);
   GPS_INFO.Gload.reset(idx);
   GPS_INFO.HeartRate.reset(idx);
+  GPS_INFO.MagneticHeading.reset(idx);
 
   GPS_INFO.AirspeedAvailable = false;
-  GPS_INFO.MagneticHeadingAvailable = false;
   GPS_INFO.GyroscopeAvailable = false;
 
   EnableExternalTriggerCruise = false;
@@ -192,6 +192,7 @@ bool UpdateMonitor() {
     { [] { return GPS_INFO.RelativeHumidity.index(); },      _T("RelativeHumidity") },
     { [] { return GPS_INFO.Gload.index(); },                 _T("GLoad") },
     { [] { return GPS_INFO.HeartRate.index(); },             _T("HeartRate") },
+    { [] { return GPS_INFO.MagneticHeading.index(); },       _T("MagneticHeading") },
     { [] { return GPS_INFO.AccelerationIdx; },               _T("Acceleration") },
     { [] { return GPS_INFO.ExternalWindIdx; },               _T("Wind") }
   };

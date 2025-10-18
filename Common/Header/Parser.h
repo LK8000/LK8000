@@ -111,7 +111,7 @@ public:
   // Additional sentences
   BOOL PTAS1(DeviceDescriptor_t& d, const char* String, char**, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
   // Garmin magnetic compass
-  BOOL HCHDG(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
+  BOOL HCHDG(DeviceDescriptor_t& d, const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   // LK8000 custom special sentences, always active
   BOOL PLKAS(const char* String, char**, size_t, NMEA_INFO *GPS_INFO);
   

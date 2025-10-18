@@ -32,7 +32,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     x0 += fastsine(Calculated->WindBearing)*Calculated->WindSpeed;
     y0 += fastcosine(Calculated->WindBearing)*Calculated->WindSpeed;
 
-    if (Basic->MagneticHeadingAvailable) {
+    if (Basic->MagneticHeading.available()) {
       Calculated->Heading = Basic->MagneticHeading;
     }
     else {
