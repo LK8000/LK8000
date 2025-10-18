@@ -8,3 +8,19 @@
  */
 
 #include "Info.h"
+
+void NMEA_INFO::reset_availability(std::optional<unsigned> idx) {
+  BaroAltitude.reset(idx);
+  Vario.reset(idx);
+  OutsideAirTemperature.reset(idx);
+  RelativeHumidity.reset(idx);
+  NettoVario.reset(idx);
+  Gload.reset(idx);
+  HeartRate.reset(idx);
+  MagneticHeading.reset(idx);
+  ExternalWind.reset(idx);
+  Acceleration.reset(idx);
+
+  AirspeedAvailable = false;
+  GyroscopeAvailable = false;
+}

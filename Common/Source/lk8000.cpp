@@ -329,11 +329,6 @@ bool Startup(const TCHAR* szCmdLine) {
   memset( SnailTrail, 0, sizeof(SnailTrail));
   memset( LongSnailTrail, 0, sizeof(LongSnailTrail));
 
-  ResetBaroAvailable(GPS_INFO);
-  ResetVarioAvailable(GPS_INFO);
-  ResetExternalWindAvailable(GPS_INFO);
-  GPS_INFO.HeartRate.reset();
-
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
   OpenGeoid();

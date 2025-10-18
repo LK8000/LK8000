@@ -133,21 +133,7 @@ DeviceDescriptor_t& get_active_gps() {
 
 void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   ScopeLock lock(CritSec_FlightData);
-
-  GPS_INFO.BaroAltitude.reset();
-  GPS_INFO.Vario.reset();
-  GPS_INFO.OutsideAirTemperature.reset(idx);
-  GPS_INFO.RelativeHumidity.reset(idx);
-  GPS_INFO.NettoVario.reset(idx);
-  GPS_INFO.Gload.reset(idx);
-  GPS_INFO.HeartRate.reset(idx);
-  GPS_INFO.MagneticHeading.reset(idx);
-  GPS_INFO.ExternalWind.reset();
-  GPS_INFO.Acceleration.reset();
-
-  GPS_INFO.AirspeedAvailable = false;
-  GPS_INFO.GyroscopeAvailable = false;
-
+  GPS_INFO.reset_availability(idx);
   EnableExternalTriggerCruise = false;
 }
 

@@ -134,6 +134,8 @@ struct NMEA_INFO final {
     bool GyroscopeAvailable = {};
     double Pitch = {};
     double Roll = {};
+
+    void reset_availability(std::optional<unsigned> idx = {});
 };
 
 static_assert(std::is_copy_constructible_v<NMEA_INFO>, "mandatory...");
@@ -142,5 +144,6 @@ inline
 AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   return {{ Info.Latitude, Info.Longitude }, Info.Altitude };
 }
+
 
 #endif //_NMEA_INFO_H_

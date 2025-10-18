@@ -511,14 +511,13 @@ namespace {
 
 
 BOOL devInit() {
+
+    WithLock(CritSec_FlightData, []() {
+      RadioPara.Enabled = (SIMMODE);
+      GPS_INFO.reset_availability();
+    });
+
     ScopeLock Lock(CritSec_Comm);
-
-    RadioPara.Enabled = (SIMMODE);
-
-    ResetBaroAvailable(GPS_INFO);
-    ResetVarioAvailable(GPS_INFO);
-    ResetExternalWindAvailable(GPS_INFO);
-    GPS_INFO.HeartRate.reset();
 
     for (unsigned i = 0; i < NUMDEV; i++) {
         const auto& Config = PortConfig[i];

@@ -47,10 +47,7 @@ void LKSimulator(void) {
   //
   GPS_INFO.NAVWarning = false;
   GPS_INFO.SatellitesUsed = 6;
-  ResetBaroAvailable(GPS_INFO);
-  ResetVarioAvailable(GPS_INFO);
-  ResetExternalWindAvailable(GPS_INFO);
-  GPS_INFO.HeartRate.reset();
+  GPS_INFO.reset_availability();
 
   // Even on ground, we can turn the glider in the hangar
   BEARING += SimTurn;
