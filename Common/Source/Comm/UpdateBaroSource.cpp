@@ -21,8 +21,6 @@ void NotifyInvalidAltitude(unsigned index, double fAlt) {
   }
 }
 
-PeriodClock lastBaroUpdate; // to check time elapsed since last baro altitude update
-
 }
 
 bool BaroAltitudeAvailable(const NMEA_INFO& Info) {
@@ -34,11 +32,10 @@ void ResetBaroAvailable(NMEA_INFO& Info) {
     TestLog(_T("Baro source reset @%s"), WhatTimeIsIt());
   }
   Info.BaroAltitude.reset();
-  lastBaroUpdate.Reset();
 }
 
 void CheckBaroAltitudeValidity(NMEA_INFO& Info) {
-  if (lastBaroUpdate.Check(6000)) {
+  if (Info.BaroAltitude.check_expired(6000)) {
     ResetBaroAvailable(Info);
   }
 }
@@ -82,7 +79,6 @@ void UpdateBaroSource(NMEA_INFO* pGPS, DeviceDescriptor_t* d, double fAlt) {
     }
     else if (pGPS->BaroAltitude.update(*d, fAlt)) {
       GotFirstBaroAltitude = true;
-      lastBaroUpdate.Update();
     }
   }
 }

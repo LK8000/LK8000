@@ -28,15 +28,27 @@ class from_device_data final {
     if (_index >= d) {
       _index = d;
       _value = std::forward<ValueT>(value);
+      _last_update.Update();
       return true;
     }
     return false;
+  }
+
+  /**
+   * Checks whether the specified duration has passed since the last
+   * update.
+   *
+   * @param duration the duration in milliseconds
+   */
+  bool check_expired(unsigned duration) const {
+    return _last_update.Check(duration);
   }
 
   void reset(std::optional<unsigned> idx = {}) {
     if (!idx || (_index == idx.value())) {
       _index.reset();
       _value = {};
+      _last_update.Reset();
     }
   }
 
@@ -59,6 +71,7 @@ class from_device_data final {
  private:
   IndexT _index = {};
   ValueT _value = {};
+  PeriodClock _last_update; // to check time elapsed since last value updated
 };
 
 #endif  // _NMEA_from_device_data_h_
