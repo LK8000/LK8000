@@ -20,8 +20,11 @@
 //
 // Turn Rate Indicator
 //
-void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc)
-{
+void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc) {
+  if (!DrawInfo.Acceleration.available()) {
+    return;
+  }
+
   const double ScaleX = (rc.right - rc.left)/10;
   const double ScaleY = (rc.top - rc.bottom)/10;
   const double ScaleZ = (rc.top - rc.bottom)/20;
@@ -187,9 +190,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   const auto hbOld = Surface.SelectObject(hbWhite);
   Surface.DrawCircle(Start.x, Start.y, radius, true );
 
-  if(AccelerationAvailable(DrawInfo)) {
-    DrawAcceleration(Surface, rc);
-  }
+  DrawAcceleration(Surface, rc);
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);
@@ -506,11 +507,7 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
     Surface.SelectObject(oldbrush);
 
   /***************************************************************************************/
-
-
-  if(AccelerationAvailable(DrawInfo)) {
-    DrawAcceleration(Surface, rc);
-  }
+  DrawAcceleration(Surface, rc);
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);

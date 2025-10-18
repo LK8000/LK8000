@@ -101,18 +101,16 @@ class AccelerationData final : public DriverData {
 
 constexpr unsigned TagAcceleration = 0;
 
-BOOL OnAcceleration(DeviceDescriptor_t& d, NMEA_INFO& info, uint64_t timestamp, double gx, double gy, double gz) {
+BOOL OnAcceleration(DeviceDescriptor_t& d, NMEA_INFO& info, uint64_t timestamp,
+                    double gx, double gy, double gz) {
   using nanoseconds = std::chrono::nanoseconds;
 
-  if (d.PortNumber <= info.AccelerationIdx) {
-    auto data = d.get_data<AccelerationData>(TagAcceleration);
-    if (data) {
-      AccelerationData::time_point time{nanoseconds(timestamp)};
-      data->add(time, {gx, gy, gz});
+  auto data = d.get_data<AccelerationData>(TagAcceleration);
+  if (data) {
+    AccelerationData::time_point time{nanoseconds(timestamp)};
+    data->add(time, {gx, gy, gz});
 
-      info.AccelerationIdx = d.PortNumber;
-      info.Acceleration = data->average();
-    }
+    info.Acceleration.update(d, data->average());
   }
   return TRUE;
 }

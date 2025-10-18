@@ -134,10 +134,6 @@ DeviceDescriptor_t& get_active_gps() {
 void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   ScopeLock lock(CritSec_FlightData);
 
-  if (!idx || (GPS_INFO.AccelerationIdx == idx.value())) {
-    ResetAccelerationAvailable(GPS_INFO);
-  }
-
   GPS_INFO.BaroAltitude.reset();
   GPS_INFO.Vario.reset();
   GPS_INFO.OutsideAirTemperature.reset(idx);
@@ -147,6 +143,7 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   GPS_INFO.HeartRate.reset(idx);
   GPS_INFO.MagneticHeading.reset(idx);
   GPS_INFO.ExternalWind.reset();
+  GPS_INFO.Acceleration.reset();
 
   GPS_INFO.AirspeedAvailable = false;
   GPS_INFO.GyroscopeAvailable = false;
@@ -192,7 +189,7 @@ bool UpdateMonitor() {
     { [] { return GPS_INFO.HeartRate.index(); },             _T("HeartRate") },
     { [] { return GPS_INFO.MagneticHeading.index(); },       _T("MagneticHeading") },
     { [] { return GPS_INFO.ExternalWind.index(); },          _T("Wind") },
-    { [] { return GPS_INFO.AccelerationIdx; },               _T("Acceleration") }
+    { [] { return GPS_INFO.Acceleration.index(); },          _T("Acceleration") }
   };
 
   for (auto& sm : monitors) {

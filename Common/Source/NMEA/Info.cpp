@@ -8,14 +8,3 @@
  */
 
 #include "Info.h"
-#include <limits>
-#include "Logger.h"
-#include "../Comm/device.h"
-
-void ResetAccelerationAvailable(NMEA_INFO& info) {
-  info.AccelerationIdx = NUMDEV;
-}
-
-bool AccelerationAvailable(const NMEA_INFO& info) {
-  return info.AccelerationIdx < NUMDEV;
-}

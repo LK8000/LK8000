@@ -97,11 +97,6 @@ struct NMEA_INFO final {
 
     bool AirspeedAvailable = {};
 
-
-    unsigned AccelerationIdx = NUMDEV;
-    Point3D Acceleration = {}; // in G
-
-
     int SatellitesUsed = {};
 
     from_device_data<double, BaroIndex> BaroAltitude = {};
@@ -113,7 +108,7 @@ struct NMEA_INFO final {
     from_device_data<unsigned> HeartRate = {};
     from_device_data<double> MagneticHeading = {};
     from_device_data<WindData> ExternalWind = {};
-
+    from_device_data<Point3D> Acceleration = {}; // in G
 
     int	ExtBatt_Bank = {};
     double ExtBatt1_Voltage = {};
@@ -147,8 +142,5 @@ inline
 AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   return {{ Info.Latitude, Info.Longitude }, Info.Altitude };
 }
-
-void ResetAccelerationAvailable(NMEA_INFO& info);
-bool AccelerationAvailable(const NMEA_INFO& info);
 
 #endif //_NMEA_INFO_H_

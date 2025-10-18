@@ -457,17 +457,17 @@ void CDevCProbe::Update(WndForm* pWnd) {
 
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpGx"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.x);
+		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().x);
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpGy"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.y);
+		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().y);
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpGz"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.z);
+		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().z);
 		wp->SetText(Temp);
 	}
 	

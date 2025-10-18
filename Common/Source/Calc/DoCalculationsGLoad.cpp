@@ -12,13 +12,13 @@
 #include <numeric>
 
 void DoCalculationsGLoad(const NMEA_INFO& Basic, DERIVED_INFO& Calculated) {
-    if (AccelerationAvailable(Basic)) {
+    if (Basic.Acceleration.available()) {
       Calculated.Acceleration = Basic.Acceleration;
     }
     if (Basic.Gload.available()) {
       Calculated.Gload = Basic.Gload;
     }
-    else if (AccelerationAvailable(Basic)) {
+    else if (Basic.Acceleration.available()) {
       Calculated.Gload = Calculated.Acceleration.length();
     }
 

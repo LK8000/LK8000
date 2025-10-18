@@ -20,7 +20,7 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       // out of range
       return;
     }
-    if (AccelerationAvailable(*Basic) || GLoadAvailable(*Basic)) {
+    if (Basic->Acceleration.available() || Basic->Gload.available()) {
       if (fabs(fabs(Calculated->Gload) - 1.0) > 0.25) {
         // G factor too high
         return;
