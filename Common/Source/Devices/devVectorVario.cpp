@@ -72,7 +72,7 @@ void GLoad(DeviceDescriptor_t& d, NMEA_INFO& info,
             const std::vector<uint8_t>& data) {
   auto value = characteristic_value<int32_t>(data).get();
   ScopeLock lock(CritSec_FlightData);
-  UpdateGLoad(info, d, value / 10.0);
+  info.Gload.update(d, value / 10.0);
 }
 
 #ifndef NDEBUG

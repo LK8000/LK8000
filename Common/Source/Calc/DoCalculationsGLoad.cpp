@@ -15,7 +15,7 @@ void DoCalculationsGLoad(const NMEA_INFO& Basic, DERIVED_INFO& Calculated) {
     if (AccelerationAvailable(Basic)) {
       Calculated.Acceleration = Basic.Acceleration;
     }
-    if (GLoadAvailable(Basic)) {
+    if (Basic.Gload.available()) {
       Calculated.Gload = Basic.Gload;
     }
     else if (AccelerationAvailable(Basic)) {

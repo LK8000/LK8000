@@ -80,7 +80,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       else {
         Calculated->Gload = 0;
       }
-    } else if ((!GLoadAvailable(*Basic)) && (!AccelerationAvailable(*Basic))) {
+    } else if ((!Basic->Gload.available()) && (!AccelerationAvailable(*Basic))) {
       Calculated->Gload = 1.0 / std::max(0.001, std::abs(cos(angle)));
     }
     LastTime = Basic->Time;
