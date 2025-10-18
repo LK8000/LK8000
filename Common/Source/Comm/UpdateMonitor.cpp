@@ -182,8 +182,8 @@ bool UpdateMonitor() {
       sm.check();
   }
 
-  static bool  lastvalidBaro=false;
-  static bool wasSilent[std::size(DeviceList)] = { false };
+  static bool lastvalidBaro = false;
+  static bool wasSilent[std::size(DeviceList)] = {false};
 
   ScopeLock Lock(CritSec_Comm);
 
@@ -275,27 +275,30 @@ bool UpdateMonitor() {
 
     LKASSERT(dev.PortNumber < std::size(wasSilent));
     if ((LKHearthBeats - dev.HB) > 10) {
-#ifdef DEBUGNPM
-      StartupStore(_T("... GPS Port %c : no activity LKHB=%u CBHB=%u"), devLetter(dev.PortNumber), LKHearthBeats, dev.HB);
-#endif
       // if this is active and supposed to have a valid fix.., but no HB..
       if ((active.value() == dev.PortNumber) && dev.nmeaParser.gpsValid) {
-        StartupStore(_T("... GPS Port %c no hearthbeats, but still gpsValid: forced invalid  %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
+        StartupStore(_T("... Port %c no hearthbeats, but still gpsValid: forced invalid  %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
         dev.nmeaParser.Reset();
       }
 
       // We reset some flags globally only once in case of device gone silent
       if (!wasSilent[dev.PortNumber]) {
+        StartupStore(_T("... Port %c gone silent, reset data availability %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
         dev.IsBaroSource = false;
+        dev.IsRadio = false;
+        dev.nmeaParser.Reset();
+
         reset_nmea_info_availability(dev.PortNumber);
+
         wasSilent[dev.PortNumber] = true;
       }
     } else {
-      wasSilent[dev.PortNumber]=false;
+      wasSilent[dev.PortNumber] = false;
       // We have hearth beats, is baro available?
       if (devIsBaroSource(dev)) { // 100411
         validBaro++;
       }
+
     }
   }
 
