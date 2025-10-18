@@ -54,9 +54,10 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // second thing: if available, get external wind precalculated!
   if ((ExternalWindAvailable(*Basic)) && (AutoWindMode == D_AUTOWIND_EXTERNAL)) {
-    if (Basic->ExternalWindSpeed > 0 && Basic->ExternalWindSpeed < 35) {
-      Calculated->WindSpeed = Basic->ExternalWindSpeed;
-      Calculated->WindBearing = Basic->ExternalWindDirection;
+    const auto& Wind = Basic->ExternalWind.value();
+    if (Wind.Speed > 0. && Wind.Speed < 35.) {
+      Calculated->WindSpeed = Wind.Speed;
+      Calculated->WindBearing = Wind.Direction;
     }
   }
 

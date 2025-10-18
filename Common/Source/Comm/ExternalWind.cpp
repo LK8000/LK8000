@@ -16,17 +16,13 @@
 #include "Logger.h"
 
 void UpdateExternalWind(NMEA_INFO& Info, const DeviceDescriptor_t& d, double Speed, double Direction) {
-  if (d.PortNumber <= Info.ExternalWindIdx) {
-    Info.ExternalWindIdx = d.PortNumber;
-    Info.ExternalWindDirection = AngleLimit360(Direction);
-    Info.ExternalWindSpeed = Speed;
-  }
+  Info.ExternalWind.update(d, {Speed, AngleLimit360(Direction)});
 }
 
 void ResetExternalWindAvailable(NMEA_INFO& Info) {
-  Info.ExternalWindIdx = NUMDEV;
+  Info.ExternalWind.reset();
 }
 
 bool ExternalWindAvailable(const NMEA_INFO& Info) {
-  return (!ReplayLogger::IsEnabled()) && (Info.ExternalWindIdx < NUMDEV);
+  return (!ReplayLogger::IsEnabled()) && Info.ExternalWind.available();
 }

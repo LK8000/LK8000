@@ -305,8 +305,8 @@ void UpdateFlightDataRecorder(const NMEA_INFO& Basic, const DERIVED_INFO& Calcul
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",   Basic.Bugs *100.0         );// GPS_INFO.Bugs
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",   Basic.MacReady            );// GPS_INFO.MacReady
 #endif
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::To(unKiloMeterPerHour, Basic.ExternalWindSpeed));// GPS_INFO.ExternalWindSpeed
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic.ExternalWindDirection);// GPS_INFO.ExternalWindDirection
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::To(unKiloMeterPerHour, Basic.ExternalWind.value().Speed));// GPS_INFO.ExternalWindSpeed
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic.ExternalWind.value().Direction);// GPS_INFO.ExternalWindDirection
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Units::To(unKiloMeterPerHour, Calculated.WindSpeed));// GPS_INFO.WindSpeed
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Calculated.WindBearing );// GPS_INFO.WindBearing
 
@@ -378,8 +378,8 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
   fValue[i++] = Basic.MacReady;
 #endif
 
-  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.ExternalWindSpeed);
-  fValue[i++] = Basic.ExternalWindDirection ;
+  fValue[i++] = Units::To(unKiloMeterPerHour, Basic.ExternalWind.value().Speed);
+  fValue[i++] = Basic.ExternalWind.value().Direction;
   fValue[i++] = Units::To(unKiloMeterPerHour, Calculated.WindSpeed);
   fValue[i++] = Calculated.WindBearing ;
 

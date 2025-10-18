@@ -44,13 +44,13 @@ BOOL OnRelativeHumidity(DeviceDescriptor_t& d, NMEA_INFO& info, double hr) {
 
 BOOL OnWindOriginDirection(DeviceDescriptor_t& d, NMEA_INFO& info, double direction) {
   ScopeLock lock(CritSec_FlightData);
-  UpdateExternalWind(info, d, info.ExternalWindSpeed, direction);
+  UpdateExternalWind(info, d, info.ExternalWind.value().Speed, direction);
   return TRUE;
 }
 
 BOOL OnWindSpeed(DeviceDescriptor_t& d, NMEA_INFO& info, double speed) {
   ScopeLock lock(CritSec_FlightData);
-  UpdateExternalWind(info, d, speed, info.ExternalWindDirection);
+  UpdateExternalWind(info, d, speed, info.ExternalWind.value().Direction);
   return TRUE;
 }
 

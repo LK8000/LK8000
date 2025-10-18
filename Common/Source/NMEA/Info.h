@@ -70,6 +70,11 @@ struct BaroIndex {
     }
 };
 
+struct WindData {
+    double Speed = {};
+    double Direction = {};
+};
+
 struct NMEA_INFO final {
     NMEA_INFO() = default;
 
@@ -90,10 +95,6 @@ struct NMEA_INFO final {
     double IndicatedAirspeed = {};
     double TrueAirspeed = {};
 
-    unsigned ExternalWindIdx = {};
-    double ExternalWindSpeed = {};
-    double ExternalWindDirection = {};
-
     bool AirspeedAvailable = {};
 
 
@@ -111,6 +112,7 @@ struct NMEA_INFO final {
     from_device_data<double> Gload = {};
     from_device_data<unsigned> HeartRate = {};
     from_device_data<double> MagneticHeading = {};
+    from_device_data<WindData> ExternalWind = {};
 
 
     int	ExtBatt_Bank = {};
