@@ -164,17 +164,15 @@ void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
   EnableExternalTriggerCruise = false;
 }
 
-template<typename T>
 class SourceMonitor {
  public:
-  template <size_t N>
-  SourceMonitor(const T& ref, const TCHAR (&name)[N])
-      : ref_(ref), name_(name) {}
+  using GetterT = std::function<unsigned()>;
+
+  SourceMonitor(GetterT&& getter, const TCHAR* name)
+      : getter_(std::forward<GetterT>(getter)), name_(name) {}
 
   void check() {
-    T current = WithLock(CritSec_FlightData, [&]() {
-      return ref_;
-    });
+    unsigned current = WithLock(CritSec_FlightData, getter_);
     if (last_value_ != current) {
       last_value_ = current;
       StartupStore(_T(". %s source changed to device %c @%s"), name_,
@@ -183,9 +181,9 @@ class SourceMonitor {
   }
 
  private:
-  const T& ref_;
-  const TCHAR* name_;
-  T last_value_ = T(NUMDEV);
+  GetterT getter_;     // callable extracting the device index from GPS_INFO
+  const TCHAR* name_;  // for logging
+  unsigned last_value_ = NUMDEV;
 };
 
 //
@@ -194,25 +192,24 @@ class SourceMonitor {
 // THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
 //
 bool UpdateMonitor() {
+  static SourceMonitor monitors[] = {
+    { [] { return GPS_INFO.NettoVario.index(); },            _T("NettoVario") },
+    { [] { return GPS_INFO.OutsideAirTemperature.index(); }, _T("OutsideAirTemperature") },
+    { [] { return GPS_INFO.RelativeHumidity.index(); },      _T("RelativeHumidity") },
+    { [] { return GPS_INFO.BaroSourceIdx; },                 _T("Baro") },
+    { [] { return GPS_INFO.VarioSourceIdx; },                _T("Vario") },
+    { [] { return GPS_INFO.AccelerationIdx; },               _T("Acceleration") },
+    { [] { return GPS_INFO.ExternalWindIdx; },               _T("Wind") },
+    { [] { return GPS_INFO.GloadIdx; },                      _T("GLoad") },
+    { [] { return GPS_INFO.HeartRateIdx; },                  _T("HeartRate") }
+  };
+
+  for (auto& sm : monitors) {
+      sm.check();
+  }
 
   static bool  lastvalidBaro=false;
   static bool wasSilent[std::size(DeviceList)] = { false };
-
-  // check for Baro source change
-  static SourceMonitor baro_monitor(GPS_INFO.BaroSourceIdx, _T("Baro"));
-  baro_monitor.check();
-
-  // check for vario source change
-  static SourceMonitor vario_monitor(GPS_INFO.VarioSourceIdx, _T("Vario"));
-  vario_monitor.check();
-
-  // check for external wind source change
-  static SourceMonitor wind_monitor(GPS_INFO.ExternalWindIdx, _T("Wind"));
-  wind_monitor.check();
-
-  // check for external Gload source change
-  static SourceMonitor gload_monitor(GPS_INFO.GloadIdx, _T("GLoad"));
-  gload_monitor.check();
 
   ScopeLock Lock(CritSec_Comm);
 
