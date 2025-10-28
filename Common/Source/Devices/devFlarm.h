@@ -34,26 +34,30 @@ typedef union{
   uint8_t byte[2];
 } ConvUnion;
 
-#define STARTFRAME    0x73
-#define ESCAPE        0x78
-#define ESC_ESC       0x55
-#define ESC_START     0x31
+constexpr uint8_t STARTFRAME = 0x73;
+constexpr uint8_t ESCAPE = 0x78;
+constexpr uint8_t ESC_ESC = 0x55;
+constexpr uint8_t ESC_START = 0x31;
 
-#define EOF_          0x1A
-#define ACK           0xA0
-#define NACK          0xB7
-#define PING          0x01
-#define SETBAUDRATE   0x02
-#define FLASHUPLAOD   0x10
-#define FLASHDOWNLOAD 0x11
-#define EXIT          0x12
-#define SELECTRECORD  0x20
-#define GETRECORDINFO 0x21
-#define GETIGCDATA    0x22
+constexpr uint8_t EOF_ = 0x1A;
+constexpr uint8_t ACK = 0xA0;
+constexpr uint8_t NACK = 0xB7;
+constexpr uint8_t PING = 0x01;
+constexpr uint8_t SETBAUDRATE = 0x02;
+constexpr uint8_t FLASHUPLAOD = 0x10;
+constexpr uint8_t FLASHDOWNLOAD = 0x11;
+constexpr uint8_t EXIT = 0x12;
+constexpr uint8_t SELECTRECORD = 0x20;
+constexpr uint8_t GETRECORDINFO = 0x21;
+constexpr uint8_t GETIGCDATA = 0x22;
 
+inline uint8_t highbyte(uint16_t a) {
+  return (((a)>>8) & 0xFF);
+}
 
-#define highbyte(a)  (((a)>>8) & 0xFF)
-#define lowbyte(a)   ((a) & 0xFF)
+inline uint8_t lowbyte(uint16_t a) {
+  return ((a) & 0xFF);
+}
 
 uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout);
 bool BlockReceived();
@@ -89,8 +93,8 @@ private:
 // Receive data
 private:
 
-  static BOOL FlarmParseString(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
-  static BOOL FlarmParse(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
+  static BOOL ParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+  static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
   // Send Command
   static BOOL FlarmReboot(DeviceDescriptor_t* d);
 

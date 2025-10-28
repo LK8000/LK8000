@@ -17,21 +17,19 @@
 #include <queue>
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
+#include "utils/stringext.h"
 
-
-
-
+using std::string_view_literals::operator""sv;
 
 
 DeviceDescriptor_t* CDevFlarm::m_pDevice=NULL;
 
-
 void CDevFlarm::Install(DeviceDescriptor_t* d) {
-	d->ParseNMEA = FlarmParse ; // ParseNMEA;
-	d->Open = Open;
-	d->Close = Close;
-	d->Config = Config;
-	d->ParseStream  = FlarmParseString;
+  d->ParseNMEA = ParseNMEA;
+  d->ParseStream = ParseStream;
+  d->Open = Open;
+  d->Close = Close;
+  d->Config = Config;
 }
 
 namespace {
@@ -41,18 +39,34 @@ namespace {
   bool bFLARM_BinMode = false;
 }
 
-BOOL CDevFlarm::FlarmParse(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
+BOOL CDevFlarm::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
+  if ((!d) || (!sentence)) {
+    return FALSE;
+  }
+
+  if (start_with(sentence, "$PFLAX,A,ERROR,")) {
+    StartupStore(TEXT("Flarm, failed to set bin mode: %s"),
+                 to_tstring(sentence).c_str());
+    return TRUE;
+  }
+
+  if (sentence == "$PFLAX,A"sv) {
+    DebugLog(TEXT("Flarm, enable binary mode!"));
+    SetBinaryModeFlag(true);
+    return TRUE;
+  }
+
   if (IsInBinaryMode()) {
-    if (strncmp("$PFLAU", sentence, 6) == 0) {
-      StartupStore(TEXT("$PFLAU detected, disable binary mode!" ));
+    if (start_with(sentence, "$PFLAU")) {
+      StartupStore(TEXT("Flarm, disable binary mode!"));
       SetBinaryModeFlag(false);
     }
-    return true; // ignore all data ...
+    return TRUE;  // ignore all data ...
   }
-  return false;
+  return FALSE;
 }
 
-BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
+BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
   if ((!d) || (!String) || (!len)) {
     return FALSE;
   }
@@ -68,7 +82,7 @@ BOOL CDevFlarm::FlarmParseString(DeviceDescriptor_t* d, char *String, int len, N
   }
   cond.Broadcast();
 
-  return  true;
+  return  TRUE;
 }
 
 /**
