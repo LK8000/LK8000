@@ -29,6 +29,8 @@ size_t from_utf8(const char* utf, wchar_t* string, size_t size);
 #ifdef __cplusplus
 }
 
+#include <string_view>
+
 size_t to_utf8(const char* string, char* utf, size_t size);
 size_t from_utf8(const char* utf, char* string, size_t size);
 
@@ -70,6 +72,11 @@ inline char to_lower(char c) {
 
 const char* ci_search_substr(const char* string, const char* sub_string);
 const wchar_t* ci_search_substr(const wchar_t* string, const wchar_t* sub_string);
+
+inline
+bool start_with(const std::string_view& nmea, const std::string_view& prefix) {
+  return nmea.substr(0, prefix.size()) == prefix;
+}
 
 #endif /* __cplusplus */
 #endif /* __stringext_h__ */

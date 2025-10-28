@@ -19,6 +19,7 @@
 #include "Util/Clamp.hpp"
 #include "Comm/UpdateQNH.h"
 #include "Baro.h"
+#include "utils/stringext.h"
 
 using std::string_view_literals::operator""sv;
 
@@ -72,10 +73,6 @@ BOOL SendConfiguration(Args&&... args) {
 template <typename... Args>
 BOOL SendCommand(Args&&... args) {
   return Send<Command>(std::forward<Args>(args)...);
-}
-
-bool start_with(const std::string_view& nmea, const std::string_view& prefix) {
-  return nmea.substr(0, prefix.size()) == prefix;
 }
 
 template <typename Type>
