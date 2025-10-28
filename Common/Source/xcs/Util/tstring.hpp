@@ -13,11 +13,6 @@ std::string to_string(const char* sz) {
   return sz;
 }
 
-inline
-std::string to_string(std::string str) {
-  return str;
-}
-
 #ifdef _UNICODE
 #include <tchar.h>
 typedef std::wstring tstring;
@@ -80,8 +75,13 @@ typedef std::string_view tstring_view;
 
 template<typename T>
 inline tstring to_tstring(T v) {
-  using namespace std;
-  return to_string(v);
+  if constexpr (std::is_same_v<T, tstring>) {
+    return v;
+  }
+  else {
+    using namespace std;
+    return to_string(v);
+  }
 }
 
 inline
