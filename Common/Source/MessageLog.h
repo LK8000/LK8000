@@ -106,6 +106,8 @@ protected:
 };
 
 tstring toHexString(const void* data, size_t size);
+tstring thread_name();
+tstring data_string(const void* data, size_t size);
 
 void StartupLogFreeRamAndStorage();
 

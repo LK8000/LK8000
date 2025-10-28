@@ -39,27 +39,6 @@ bool ComPort::Close() {
     return true;
 }
 
-namespace {
-
-    tstring thread_name() {
-        Poco::Thread* pThread = Poco::Thread::current();
-        if (pThread) {
-            return to_tstring(pThread->getName());
-        }
-        std::ostringstream name;
-    	name << '#' << Poco::Thread::currentTid();
-	    return to_tstring(name.str());
-    }
-
-    tstring data_string(const void *data, size_t size) {
-        std::string s(static_cast<const char*>(data), size);
-        s = std::regex_replace(s, std::regex(R"(\n)"), R"(\n)");
-        s = std::regex_replace(s, std::regex(R"(\r)"), R"(\r)");
-        return to_tstring(s);
-    }
-
-}
-
 // this is used by all functions to send data out
 bool ComPort::Write(const void *data, size_t size) {
     if (size > 0) {

@@ -113,9 +113,69 @@ tstring toHexString(const void* data, size_t size) {
   for(;p < pend; ++p) {
     szHex += (hex_chars[((*p) & 0xF0) >> 4]);
     szHex += (hex_chars[((*p) & 0x0F) >> 0]);
-    szHex += ' ';
   }
   return szHex;
+}
+
+tstring thread_name() {
+  Poco::Thread* pThread = Poco::Thread::current();
+  if (pThread) {
+    return to_tstring(pThread->getName());
+  }
+  return _T("unknown");
+}
+
+namespace {
+
+bool has_non_printable(const char* bytes, size_t size) {
+  for (size_t i = 0; i < size; ++i) {
+    unsigned char c = static_cast<unsigned char>(bytes[i]);
+    if (!std::isprint(c) && !std::isspace(c)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::string escape_special_chars(const char* bytes, size_t size) {
+  std::string result;
+  result.reserve(size);  // Reserve at least the input size
+
+  for (size_t i = 0; i < size; ++i) {
+    switch (bytes[i]) {
+      case '\n':
+        result += R"(\n)";
+        break;
+      case '\r':
+        result += R"(\r)";
+        break;
+      case '\t':
+        result += R"(\t)";
+        break;
+      case '\v':
+        result += R"(\v)";
+        break;
+      case '\f':
+        result += R"(\f)";
+        break;
+      default:
+        result += bytes[i];
+        break;
+    }
+  }
+
+  return result;
+}
+
+}// namespace
+
+tstring data_string(const void* data, size_t size) {
+  const char* bytes = static_cast<const char*>(data);
+
+  if (has_non_printable(bytes, size)) {
+    return toHexString(bytes, size);
+  }
+  return to_tstring(escape_special_chars(bytes, size));
 }
 
 void StartupLogFreeRamAndStorage() {
