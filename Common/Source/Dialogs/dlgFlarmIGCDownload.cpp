@@ -33,7 +33,7 @@
 #define STATUS_TXT_LEN    200
 #define PRPGRESS_DLG
 
-//#define deb_
+#define deb_
 #ifdef deb_
   #define deb_Log(...) StartupStore(__VA_ARGS__)
 #else
@@ -310,6 +310,7 @@ static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t *Sequence, uint8_t *C
     error = REC_NO_ERROR;
     deb_Log(TEXT("Rec Block received!"));
   }
+  deb_Log(TEXT("payload : %s"), data_string(pBlock, *blocksize).c_str());
   return error;
 }
 
@@ -698,8 +699,6 @@ bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
   ListElementType NewElement;
   for (uint16_t i = 0; i < blocksize - 2; i++)
     TempString[i] = (TCHAR)pByteBlk[i + 2];
-
-  deb_Log(TEXT("> %s "), TempString);
 
   TCHAR empty[3] = _T("");
   lk::tokenizer<TCHAR> tok(TempString);
