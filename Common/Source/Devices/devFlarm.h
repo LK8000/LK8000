@@ -34,31 +34,6 @@ typedef union{
   uint8_t byte[2];
 } ConvUnion;
 
-constexpr uint8_t STARTFRAME = 0x73;
-constexpr uint8_t ESCAPE = 0x78;
-constexpr uint8_t ESC_ESC = 0x55;
-constexpr uint8_t ESC_START = 0x31;
-
-constexpr uint8_t EOF_ = 0x1A;
-constexpr uint8_t ACK = 0xA0;
-constexpr uint8_t NACK = 0xB7;
-constexpr uint8_t PING = 0x01;
-constexpr uint8_t SETBAUDRATE = 0x02;
-constexpr uint8_t FLASHUPLAOD = 0x10;
-constexpr uint8_t FLASHDOWNLOAD = 0x11;
-constexpr uint8_t EXIT = 0x12;
-constexpr uint8_t SELECTRECORD = 0x20;
-constexpr uint8_t GETRECORDINFO = 0x21;
-constexpr uint8_t GETIGCDATA = 0x22;
-
-inline uint8_t highbyte(uint16_t a) {
-  return (((a)>>8) & 0xFF);
-}
-
-inline uint8_t lowbyte(uint16_t a) {
-  return ((a) & 0xFF);
-}
-
 uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout);
 bool BlockReceived();
 bool IsInBinaryMode();

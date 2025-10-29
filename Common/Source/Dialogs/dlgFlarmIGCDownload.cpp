@@ -8,6 +8,8 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "Devices/devFlarm.h"
+#include "Devices/Flarm/BinaryProtocol.h"
+
 #include "dlgIGCProgress.h"
 #include "OS/Sleep.h"
 #include "Util/Clamp.hpp"
@@ -117,98 +119,19 @@ TCHAR szStatusText[STATUS_TXT_LEN];
 
 bool bShowMsg = false;
 
-uint16_t crc_update(uint16_t crc, uint8_t data) {
-
-  crc = crc ^ ((uint16_t)data << 8);
-  for (int i = 0; i < 8; i++) {
-    if (crc & 0x8000)
-      crc = (crc << 1) ^ 0x1021;
-    else
-      crc <<= 1;
-  }
-  return crc;
-}
-
-uint16_t crc_update16(uint16_t crc, uint16_t data) {
-  crc = crc_update(crc, lowbyte(data));
-  crc = crc_update(crc, highbyte(data));
-  return crc;
-}
-
-void SendEscChar(DeviceDescriptor_t* d, uint8_t byte) {
-  if (d && d->Com)
-    switch (byte) {
-    case ESCAPE:
-      d->Com->Write(ESCAPE);
-      d->Com->Write(ESC_ESC);
-      break;
-    case STARTFRAME:
-      d->Com->Write(ESCAPE);
-      d->Com->Write(ESC_START);
-      break;
-    default:
-      d->Com->Write(byte);
-      break;
-    }
-}
-
-void SendBinBlock(DeviceDescriptor_t* d, uint16_t Sequence, uint8_t Command,
-                  uint8_t *pBlock, uint16_t blocksize) {
-  uint16_t i;
-  uint16_t CRC = 0;
-  uint8_t blk[8];
-
-  if (d == nullptr || d->Com == nullptr) {
-    return;
-  }
-
-  blk[0] = lowbyte(8 + blocksize);  // length
-  blk[1] = highbyte(8 + blocksize); // length
-  blk[2] = 1;                       // version
-  blk[3] = lowbyte(Sequence);       // sequence
-  blk[4] = highbyte(Sequence);      // sequence
-  blk[5] = Command;
-
-  d->Com->Write(STARTFRAME);
-  for (i = 0; i < 6; i++) {
-    CRC = crc_update(CRC, blk[i]);
-  }
-
-  if (pBlock) {
-    for (i = 0; i < blocksize; i++) {
-      CRC = crc_update(CRC, pBlock[i]);
-    }
-  }
-  blk[6] = lowbyte(CRC);
-  blk[7] = highbyte(CRC);
-
-  for (i = 0; i < 8; i++) {
-    SendEscChar(d, blk[i]);
-  }
-
-  for (i = 0; i < blocksize; i++) {
-    SendEscChar(d, pBlock[i]);
-  }
-
-  deb_Log(TEXT("\r\n===="));
-
-  Sleep(GC_IDLETIME);
-  Poco::Thread::yield();
-}
-
 uint8_t RecChar8(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
   uint8_t Tmp;
   uint8_t err = RecChar(d, &Tmp, Timeout);
   if (err == REC_NO_ERROR) {
-    if (Tmp == ESCAPE) {
+    if (Tmp == Flarm::ESCAPE) {
       err = RecChar(d, &Tmp, Timeout);
       if (err == REC_NO_ERROR) {
-        if (Tmp == ESC_ESC) {
-          Tmp = ESCAPE;
+        if (Tmp == Flarm::ESC_ESC) {
+          Tmp = Flarm::ESCAPE;
           deb_Log(TEXT("ESC_ESC"));
         }
-        if (Tmp == ESC_START) {
-          Tmp = STARTFRAME;
+        if (Tmp == Flarm::ESC_START) {
+          Tmp = Flarm::STARTFRAME;
           deb_Log(TEXT("ESC_START"));
         }
       }
@@ -240,7 +163,7 @@ static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t *Sequence, uint8_t *C
   clock.Update();
   do {
       error = RecChar(d, &inchar, Timeout);
-  } while ((inchar != STARTFRAME) && (error == REC_NO_ERROR));
+  } while ((inchar != Flarm::STARTFRAME) && (error == REC_NO_ERROR));
 
   if(error != REC_NO_ERROR) {
     deb_Log(TEXT("STARTFRAME fail! Error code:%i"),error);
@@ -259,28 +182,28 @@ static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t *Sequence, uint8_t *C
     return REC_INVALID_SIZE;
   }
 
-  CRC_calc = crc_update16(CRC_calc, *blocksize);
+  CRC_calc = Flarm::crc_update(CRC_calc, *blocksize);
   deb_Log(TEXT("Block Size %u"), *blocksize);
 
   error = RecChar8(d, &Version, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  CRC_calc = crc_update(CRC_calc, Version);
+  CRC_calc = Flarm::crc_update(CRC_calc, Version);
   deb_Log(TEXT("Block Ver %u"), Version);
 
   error = RecChar16(d, Sequence, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  CRC_calc = crc_update16(CRC_calc, *Sequence);
+  CRC_calc = Flarm::crc_update(CRC_calc, *Sequence);
   deb_Log(TEXT("Block Seq %u"), *Sequence);
 
   error = RecChar8(d, Command, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  CRC_calc = crc_update(CRC_calc, *Command);
+  CRC_calc = Flarm::crc_update(CRC_calc, *Command);
   deb_Log(TEXT("Block Cmd %02X"), *Command);
 
   error = RecChar16(d, &CRC_in, Timeout);
@@ -290,19 +213,38 @@ static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t *Sequence, uint8_t *C
 
   deb_Log(TEXT("Block CRC %04X"), CRC_in);
   deb_Log(TEXT("Header  received!"));
-
-  if (*blocksize > 8) {
-    for (uint16_t i = 0; i < (*blocksize - 8); i++) {
-      error = RecChar8(d, &inchar, Timeout);
-      if (error != REC_NO_ERROR) {
-        StartupStore(TEXT("Rec Block Body error: %u!"), error);
-        return error;
-      }
-      pBlock[i] = inchar;
-      CRC_calc = crc_update(CRC_calc, pBlock[i]);
-    }
+  if (*blocksize <= 8) {
+    return REC_INVALID_SIZE;
   }
-  *blocksize -= 8;
+
+  (*blocksize) -= 8;
+
+  if (*blocksize >= 2) {
+    error = RecChar8(d, &inchar, Timeout);
+    if (error != REC_NO_ERROR) {
+      return error;
+    }
+    (*Sequence) = inchar;
+    CRC_calc = Flarm::crc_update(CRC_calc, inchar);
+    error = RecChar8(d, &inchar, Timeout);
+    if (error != REC_NO_ERROR) {
+      return error;
+    }
+    (*Sequence) = (*Sequence) << 8 | inchar;
+    CRC_calc = Flarm::crc_update(CRC_calc, inchar);
+
+    (*blocksize) -= 2;
+  }
+
+  for (uint16_t i = 0; i < *blocksize; i++) {
+    error = RecChar8(d, &inchar, Timeout);
+    if (error != REC_NO_ERROR) {
+      StartupStore(TEXT("Rec Block Body error: %u!"), error);
+      return error;
+    }
+    pBlock[i] = inchar;
+    CRC_calc = Flarm::crc_update(CRC_calc, inchar);
+  }
   if (CRC_calc != CRC_in) {
     error = REC_CRC_ERROR;
     StartupStore(TEXT("Rec Block CRC error!"));
@@ -594,7 +536,7 @@ void LeaveBinMode(DeviceDescriptor_t* d) {
     UnlockFlightData();
 
     deb_Log(TEXT("Flarm exit BIN mode!"));
-    SendBinBlock(d, Sequence, EXIT, NULL, 0);
+    Flarm::Exit(d, Sequence);
     SetBinaryModeFlag(false);
 
   }
@@ -690,15 +632,16 @@ void EnterBinMode(DeviceDescriptor_t* d)
 }
 
 
-bool FormatListEntry(uint8_t *pByteBlk, uint16_t blocksize)
+bool FormatListEntry(uint8_t* pByteBlk, uint16_t blocksize)
 {
   if(blocksize >=MAX_FLARM_ANSWER_LEN)
     return false;
 
   TCHAR TempString[255];
   ListElementType NewElement;
-  for (uint16_t i = 0; i < blocksize - 2; i++)
-    TempString[i] = (TCHAR)pByteBlk[i + 2];
+  for (uint16_t i = 0; i < blocksize; i++) {
+    TempString[i] = pByteBlk[i];
+  }
 
   TCHAR empty[3] = _T("");
   lk::tokenizer<TCHAR> tok(TempString);
@@ -748,14 +691,15 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
   static uint32_t TotalSize =0;
   static FILE *file_ptr = NULL;
 
-  static uint16_t Sequence;
+  static uint16_t SeqNo = 0;
+  uint16_t ResponseSeqNo = 0;
+
   static uint8_t retrys = 0;
   static uint8_t TimeOutFactor = 1;
   uint8_t pByteBlk[MAX_FLARM_ANSWER_LEN] = {};
   pByteBlk[0] = IGC_FileIndex;
   uint16_t blocksize = 1;
-  uint16_t RecSequence;
-  uint8_t RecCommand=NACK;
+  uint8_t RecCommand = Flarm::NACK;
   uint8_t err = REC_NO_ERROR;
 
 
@@ -793,7 +737,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
         lk::strcpy(NewElement.Line2, _T("        ... "));
         IGCFileList.clear();
         IGCFileList.push_back(NewElement);
-        SendBinBlock(d, Sequence++, PING, NULL, 0);
+        Flarm::Ping(d, ++SeqNo);
 
         FlarmReadIGC.state(PING_STATE_RX);
       break;
@@ -808,23 +752,28 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
             FlarmReadIGC.state(PING_STATE_TX);
           }
         }
-        else
-        {
-          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-          FlarmReadIGC.state( PING_STATE_TX);
-          if (err == REC_NO_ERROR) {
-            retrys = 0;
-            FlarmReadIGC.state( SELECTRECORD_STATE_TX);
-            IGCFileList.clear(); // empty list
+        else {
+          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          if (err == REC_NO_ERROR) { 
+            if (ResponseSeqNo == SeqNo) {
+              retrys = 0;
+              FlarmReadIGC.state(SELECTRECORD_STATE_TX);
+              IGCFileList.clear(); // empty list
+            }
+            else {
+              deb_Log("Invalid response SeqNo");
+            }
+          }
+          else {
+            FlarmReadIGC.state(PING_STATE_TX);
           }
         }
       break;
       /*******************  SELECTRECORD_STATE_TX ***************************/
       case SELECTRECORD_STATE_TX:
         deb_Log(TEXT("RECORD_STATE_TX "));
-        pByteBlk[0] = IGCFileList.size();
-        SendBinBlock(d, Sequence++, SELECTRECORD, &pByteBlk[0], 1);
-        FlarmReadIGC.state( SELECTRECORD_STATE_RX);
+        Flarm::SelectRecord(d, ++SeqNo, IGCFileList.size());
+        FlarmReadIGC.state(SELECTRECORD_STATE_RX);
         DownloadError = REC_NO_ERROR;
       break;
 
@@ -846,23 +795,29 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
         }
         else
         {
-          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-          if (RecCommand == ACK)
-            FlarmReadIGC.state( READRECORD_STATE_TX);
-          else
-            FlarmReadIGC.state( ALL_RECEIVED_STATE);
-
-          if (err)
-            FlarmReadIGC.state( ABORT_STATE);
-          else
+          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          if (err) {
+            FlarmReadIGC.state(ABORT_STATE);
+          }
+          else if (RecCommand == Flarm::ACK) {
+            if (ResponseSeqNo == SeqNo) {          
+              FlarmReadIGC.state( READRECORD_STATE_TX);
+            }
+            else {
+              deb_Log("Invalid response SeqNo");
+            }
             retrys = 0;
+          }
+          else {
+            FlarmReadIGC.state(ALL_RECEIVED_STATE);
+            retrys = 0;
+          }
         }
       break;
       /******************  READRECORD_STATE_TX ******************************/
       case READRECORD_STATE_TX:
         deb_Log(TEXT("READRECORD_STATE_RX "));
-        SendBinBlock(d, Sequence, GETRECORDINFO, NULL, 0);
-
+        Flarm::GetRecordInfo(d, ++SeqNo);
         FlarmReadIGC.state( READRECORD_STATE_RX);
       break;
       /******************  READRECORD_STATE_RX ******************************/
@@ -882,24 +837,26 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
         }
         else
         {
-          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
+          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
           if (err) {
-            FlarmReadIGC.state( ABORT_STATE);
-            StartupStore(TEXT("err: %u in READRECORD_STATE_RX"), err);
+            FlarmReadIGC.state(ABORT_STATE);
           }
-          else
-          {
+          else if (RecCommand == Flarm::ACK) {
             retrys = 0;
-            Sequence++;
-            pByteBlk[blocksize++] = 0;
-            if (RecCommand == ACK) {
-              FormatListEntry( pByteBlk, blocksize);
+            if (ResponseSeqNo == SeqNo) {
+              pByteBlk[blocksize++] = 0;
+              if (ResponseSeqNo == SeqNo) {
+                FormatListEntry( pByteBlk, blocksize);
+                FlarmReadIGC.state( SELECTRECORD_STATE_TX);
+              }
+              else {
+                deb_Log("Invalid response SeqNo");
+              }
             }
-
-            if (RecCommand != ACK)
-              FlarmReadIGC.state( ALL_RECEIVED_STATE);
-            else
-              FlarmReadIGC.state( SELECTRECORD_STATE_TX);
+          }
+          else {
+            retrys = 0;
+            FlarmReadIGC.state(ALL_RECEIVED_STATE);
           }
         }
       break;
@@ -946,7 +903,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
 
       /******************* START_DOWNLOAD_STATE *****************************/
       case START_DOWNLOAD_STATE:
-        Sequence = 0;
+        SeqNo = 0;
         TotalSize =0;
         if (IGCFileList.size() < IGC_FileIndex)
         {
@@ -979,7 +936,7 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
         
         deb_Log(_T("%s"), szStatusText);
   
-        SendBinBlock(d, Sequence, SELECTRECORD, &IGC_FileIndex, 1);
+        Flarm::SelectRecord(d, ++SeqNo, IGC_FileIndex);
         bShowMsg = true;
         retrys = 0;
         TimeOutFactor = 1;          
@@ -987,22 +944,27 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
       break;
         /*************************** DOWNLOAD_START_ANS **********************/      
       case DOWNLOAD_START_ANS:
-        if (BlockReceived()) 
-        {
-          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-          if (err != REC_NO_ERROR) {
-            err = IGC_RECEIVE_ERROR;
-            FlarmReadIGC.state( ABORT_STATE);
-          } else
-            FlarmReadIGC.state( READ_STATE_TX);
+        err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize,
+                          REC_TIMEOUT);
+        if (err != REC_NO_ERROR) {
+          err = IGC_RECEIVE_ERROR;
+          FlarmReadIGC.state(ABORT_STATE);
         }
-      break;
+        else if (RecCommand == Flarm::ACK) {
+          if (ResponseSeqNo == SeqNo) {
+            FlarmReadIGC.state(READ_STATE_TX);
+          }
+          else {
+            deb_Log("Invalid response SeqNo");
+          }
+        }
+        break;
 
         /*************************** READ STATE TX ***************************/
       case READ_STATE_TX:
         blocksize = 0;
         DownloadError = REC_NO_ERROR;
-        SendBinBlock(d, Sequence, GETIGCDATA, &pByteBlk[0], 0);  
+        Flarm::GetIGCData(d, ++SeqNo);
         FlarmReadIGC.state( READ_STATE_RX);
       break;
       /************************** READ STATE RX *****************************/
@@ -1016,71 +978,72 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
 
               StartupStore(TEXT("%u%% Abort after %u Blocks, while wait for answer "
                               "time:%ums  Size:%uByte"),
-                          pByteBlk[2], Sequence, FlarmReadIGC.get_elapsed_time(),
+                          pByteBlk[2], SeqNo, FlarmReadIGC.get_elapsed_time(),
                           TotalSize);
               FlarmReadIGC.state( ABORT_STATE);              
             } else {
 
               StartupStore(TEXT("%u%% %u. timeout %ums at Block %u (%u Bytes), request Block again!"),
-                            pByteBlk[2], retrys, FlarmReadIGC.get_elapsed_time(), Sequence ,TotalSize );
+                            pByteBlk[2], retrys, FlarmReadIGC.get_elapsed_time(), SeqNo ,TotalSize );
               FlarmReadIGC.state( READ_STATE_TX);
             }
           }
         }
         else
         {
-          RecCommand = NACK;
-          err = RecBinBlock(d, &RecSequence, &RecCommand, pByteBlk, &blocksize,TimeOutFactor * REC_TIMEOUT);
+          RecCommand = Flarm::NACK;
+          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize,TimeOutFactor * REC_TIMEOUT);
           if (err) {
             if (retrys++ > MAX_RETRY) {
               DownloadError = err;
               StartupStore(
                 TEXT("%u%% Block Error:%u Block %u  Abort after %u retrys read time:%ums  Size: %u Bytes"),
-                pByteBlk[2],err, Sequence,retrys,  FlarmReadIGC.get_elapsed_time() , TotalSize);
+                pByteBlk[2],err, SeqNo, retrys, FlarmReadIGC.get_elapsed_time() , TotalSize);
               FlarmReadIGC.state( ABORT_STATE);
             }
             else
             {
               StartupStore(
                 TEXT("%u%% Block Error:%u Block %u retry #%i after read time:%ums  Size:%u Bytes"),
-                pByteBlk[2],err, Sequence,retrys,  FlarmReadIGC.get_elapsed_time() , TotalSize);              
+                pByteBlk[2],err, SeqNo, retrys, FlarmReadIGC.get_elapsed_time(), TotalSize);              
                 FlarmReadIGC.state( READ_STATE_TX);
             }
-          } else
-          {                
-            retrys  =0;
-            Sequence++;
-            TotalSize += blocksize;
+          }
+          else if (RecCommand == Flarm::ACK) {
+            if (ResponseSeqNo == SeqNo) {
+              retrys  =0;
+              TotalSize += blocksize;
             
-            if (pByteBlk[2] > 50) { // if more that 50% read, increase TimeOutFactor
+              if (pByteBlk[0] > 50) { // if more that 50% read, increase TimeOutFactor
               TimeOutFactor =
                   WATCHDOG_TIMEOUT / GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up
                                           // to 8s, for whatever reason
             }
 
-            _sntprintf(
-                  szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken<2400>(),
-                  pByteBlk[2],
-                  IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
+              _sntprintf(
+                    szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken<2400>(),
+                    pByteBlk[0],
+                    IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
 
-            static int  prevPercent =0; 
-            if (abs((int)pByteBlk[2] - prevPercent) >= 5) 
-            {
-              prevPercent =  pByteBlk[2];
-              StartupStore(TEXT("%u%% %u. Block (%u Bytes)  Response time:%ums  Total:%u Bytes"),
-                            pByteBlk[2], Sequence, blocksize,  FlarmReadIGC.get_elapsed_time() , TotalSize);
+              static int  prevPercent =0;
+              if (abs((int)pByteBlk[0] - prevPercent) >= 5) {
+                prevPercent =  pByteBlk[0];
+                StartupStore(TEXT("%u%% %u. Block (%u Bytes)  Response time:%ums  Total:%u Bytes"),
+                              pByteBlk[0], SeqNo, blocksize, FlarmReadIGC.get_elapsed_time(), TotalSize);
+              }
+              for (int i = 1; i < blocksize; i++) {
+                if (file_ptr)
+                  fputc(pByteBlk[i], file_ptr);
+                if (pByteBlk[i] == Flarm::EOF_)
+                  RecCommand = Flarm::EOF_;
+              }
+              if (RecCommand == Flarm::EOF_) {
+                FlarmReadIGC.state(CLOSE_STATE);
+              }
+              else {
+                FlarmReadIGC.state(READ_STATE_TX);
+              }
             }
-            for (int i = 0; i < blocksize - 3; i++) {
-              if (file_ptr)
-                fputc(pByteBlk[3 + i], file_ptr);
-              if (pByteBlk[3 + i] == EOF_)
-                RecCommand = EOF_;
-            }
-            
-            FlarmReadIGC.state( READ_STATE_TX);
-            if (RecCommand == EOF_)
-              FlarmReadIGC.state( CLOSE_STATE);
-            
           }
         }
       break;
