@@ -80,7 +80,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
             mc_new = 0;
         }
     } else
-    // Модифицированный блок в AutoMC.cpp
+
     if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) && is_final_glide) {
         if (Calculated->TaskAltitudeDifference0 > 0) {
             // only change if above final glide with zero Mc
