@@ -1,16 +1,16 @@
-FROM debian:buster-slim
+FROM debian:trixie-slim
 
 # Install common prerequisites
 RUN apt-get update && \
         apt-get install -y --no-install-recommends \
                 sudo wget ca-certificates bash-completion \
                 git-core openssh-client pkg-config build-essential \
-                xsltproc imagemagick ttf-dejavu fakeroot zip python \
-                libzzip-dev libboost-dev libfreetype6-dev libpng-dev libgeographic-dev \
+                xsltproc imagemagick fonts-dejavu fakeroot zip python3 \
+                libzzip-dev libboost-dev libfreetype6-dev libpng-dev libgeographiclib-dev \
                 libgl1-mesa-dev libegl1-mesa-dev libx11-dev \
                 libsdl2-dev libsdl2-mixer-dev \
                 libasound2-dev libsndfile1-dev \
-                mingw-w64 libfl2 && \
+                mingw-w64 libfl2 zlib1g-dev libcurl4-openssl-dev && \
         apt-get clean && \
         rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* /var/log/*
 
@@ -22,8 +22,8 @@ RUN ./install-mingw-w64-depends.sh && \
 
 # Install KOBO toolchain
 WORKDIR /tmp/kobo
-RUN wget http://lk8000.it/toolchain/arm-kobo-linux-gnueabihf-8.3.buster.x86_64.tar.xz && \
-        tar -xJf arm-kobo-linux-gnueabihf-8.3.buster.x86_64.tar.xz && \
+RUN wget http://lk8000.it/toolchain/arm-kobo-linux-gnueabihf-13.2.0.bookworm.x86_64.tar.xz && \
+        tar -xJf arm-kobo-linux-gnueabihf-13.2.0.bookworm.x86_64.tar.xz && \
         mv arm-kobo-linux-gnueabihf /opt/arm-kobo-linux-gnueabihf && \
         rm -rf /tmp/kobo
 
