@@ -47,19 +47,19 @@ BOOL CDevFlarm::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
   if (start_with(sentence, "$PFLAX,A,ERROR,")) {
     StartupStore(TEXT("Flarm, failed to set bin mode: %s"),
                  to_tstring(sentence).c_str());
+    SetBinaryModeFlag(false);
     return TRUE;
   }
 
-  if (sentence == "$PFLAX,A"sv) {
+  if (start_with(sentence, "$PFLAX,A*2E"sv)) {
     DebugLog(TEXT("Flarm, enable binary mode!"));
     SetBinaryModeFlag(true);
     return TRUE;
   }
 
   if (IsInBinaryMode()) {
-    if (start_with(sentence, "$PFLAU")) {
-      StartupStore(TEXT("Flarm, disable binary mode!"));
-      SetBinaryModeFlag(false);
+    if (sentence && sentence[0] == '$') {
+      DebugLog(TEXT("Flarm NMEA : %s"), to_tstring(sentence).c_str());
     }
     return TRUE;  // ignore all data ...
   }
