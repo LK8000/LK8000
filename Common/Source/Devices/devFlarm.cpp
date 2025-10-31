@@ -109,7 +109,7 @@ bool SetBinaryModeFlag(bool bBinMode) {
   return OldVal;
 }
 
-uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
+uint8_t RecChar(DeviceDescriptor_t* d, uint8_t& Byte, uint16_t Timeout) {
   ScopeLock lock(mutex);
 
   while(buffered_data.empty()) {
@@ -117,9 +117,7 @@ uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
       return REC_TIMEOUT_ERROR;
     }
   }
-  if(inchar) {
-    *inchar = buffered_data.front();
-  }
+  Byte = buffered_data.front();
   buffered_data.pop();
   return REC_NO_ERROR;
 }
@@ -210,28 +208,23 @@ void CDevFlarm::OnCloseClicked(WndButton* pWnd){
 
 
 void CDevFlarm::OnIGCDownloadClicked(WndButton* pWnd) {
-	(void)pWnd;
-LockFlightData();
-bool bFlarmActive = GPS_INFO.FLARM_Available;
-bool bInFlight    = CALCULATED_INFO.Flying;
-UnlockFlightData();
+  LockFlightData();
+  bool bFlarmActive = GPS_INFO.FLARM_Available;
+  bool bInFlight = CALCULATED_INFO.Flying;
+  UnlockFlightData();
 
-	if(bInFlight)	{
-	  MessageBoxX(MsgToken<2418>(), MsgToken<2397>(), mbOk);
-	  return;
-	}
+  if (bInFlight) {
+    MessageBoxX(MsgToken<2418>(), MsgToken<2397>(), mbOk);
+    return;
+  }
 
-	if(!bFlarmActive)	{
-	  MessageBoxX(MsgToken<2401>(), MsgToken<2397>(), mbOk);
-#ifdef NO_FAKE_FLARM
-	  return;
-#endif
-     }
-	if(m_pDevice) {
-	  dlgIGCSelectListShowModal(m_pDevice);
-	}
+  if (!bFlarmActive) {
+    MessageBoxX(MsgToken<2401>(), MsgToken<2397>(), mbOk);
+  }
+  if (m_pDevice) {
+    dlgIGCSelectListShowModal(m_pDevice);
+  }
 }
-
 
 void CDevFlarm::OnRebootClicked(WndButton* pWnd) {
         (void)pWnd;

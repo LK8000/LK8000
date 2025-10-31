@@ -20,6 +20,7 @@
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
 #include "LocalPath.h"
+#include "utils/unique_file_ptr.h"
 
 #define MAX_FLARM_ANSWER_LEN 640 
       // FLARM Docu does not tell the max. answer len
@@ -29,15 +30,14 @@
 #define GC_BLK_RECTIMEOUT 1000
 #define GC_IDLETIME       10
 #define GC_TIMER_INTERVAL 500
-#define REC_TIMEOUT       1000 // receive timeout in ms
+#define REC_TIMEOUT       2000 // receive timeout in ms
 #define MAX_RETRY         3
 #define LST_STRG_LEN      100
 #define STATUS_TXT_LEN    200
-#define PRPGRESS_DLG
 
 #define deb_
 #ifdef deb_
-  #define deb_Log(...) StartupStore(__VA_ARGS__)
+  #define deb_Log(...) DebugLog(_T("[FlarmIGCDownload] ") __VA_ARGS__)
 #else
   #define deb_Log(...)
 #endif
@@ -47,14 +47,14 @@ enum thread_state {
   OPEN_BIN_STATE,
   PING_STATE_RX,
   PING_STATE_TX,
-  READ_STATE_RX,
-  READ_STATE_TX,
+  GETIGCDATA_RX,
+  GETIGCDATA_TX,
   SELECTRECORD_STATE_TX,
   SELECTRECORD_STATE_RX,
-  READRECORD_STATE_TX,
-  READRECORD_STATE_RX,
-  START_DOWNLOAD_STATE,
-  DOWNLOAD_START_ANS,
+  GETRECORDINFO_TX,
+  GETRECORDINFO_RX,
+  DOWNLOAD_SELECTRECORD_TX,
+  DOWNLOAD_SELECTRECORD_RX,
   ABORT_STATE,
   ERROR_STATE,
   ALL_RECEIVED_STATE,
@@ -119,140 +119,132 @@ TCHAR szStatusText[STATUS_TXT_LEN];
 
 bool bShowMsg = false;
 
-uint8_t RecChar8(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
-  uint8_t Tmp;
-  uint8_t err = RecChar(d, &Tmp, Timeout);
+uint8_t RecChar8(DeviceDescriptor_t* d, uint8_t& Byte, uint16_t Timeout) {
+  uint8_t err = RecChar(d, Byte, Timeout);
   if (err == REC_NO_ERROR) {
-    if (Tmp == Flarm::ESCAPE) {
-      err = RecChar(d, &Tmp, Timeout);
+    if (Byte == Flarm::ESCAPE) {
+      err = RecChar(d, Byte, Timeout);
       if (err == REC_NO_ERROR) {
-        if (Tmp == Flarm::ESC_ESC) {
-          Tmp = Flarm::ESCAPE;
+        if (Byte == Flarm::ESC_ESC) {
+          Byte = Flarm::ESCAPE;
           deb_Log(TEXT("ESC_ESC"));
         }
-        if (Tmp == Flarm::ESC_START) {
-          Tmp = Flarm::STARTFRAME;
+        if (Byte == Flarm::ESC_START) {
+          Byte = Flarm::STARTFRAME;
           deb_Log(TEXT("ESC_START"));
         }
       }
     }
   }
-  *inchar = Tmp;
   return err;
 }
 
-uint8_t RecChar16(DeviceDescriptor_t* d, uint16_t *inchar, uint16_t Timeout) {
+uint8_t RecChar16(DeviceDescriptor_t* d, uint16_t& Word, uint16_t Timeout) {
   ConvUnion tmp;
-  bool error = RecChar8(d, &(tmp.byte[0]), Timeout);
+  bool error = RecChar8(d, (tmp.byte[0]), Timeout);
   if (error == REC_NO_ERROR) {
-    error = RecChar8(d, &(tmp.byte[1]), Timeout);
+    error = RecChar8(d, (tmp.byte[1]), Timeout);
   }
-  *inchar = tmp.val;
+  Word = tmp.val;
   return error;
 }
 
 template<size_t size>
-static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t *Sequence, uint8_t *Command,
-                    uint8_t (&pBlock)[size], uint16_t *blocksize, uint16_t Timeout) {
+static uint8_t RecBinBlock(DeviceDescriptor_t* d, uint16_t& SeqNo, uint8_t& Type,
+                    uint8_t (&Payload)[size], uint16_t& PayloadSize, uint16_t Timeout) {
+
   uint8_t error = REC_NO_ERROR;
-  uint8_t inchar;
+  uint8_t Byte;
   uint8_t Version;
   uint16_t CRC_in, CRC_calc = 0;
 
   PeriodClock clock;
   clock.Update();
   do {
-      error = RecChar(d, &inchar, Timeout);
-  } while ((inchar != Flarm::STARTFRAME) && (error == REC_NO_ERROR));
+      error = RecChar(d, Byte, Timeout);
+  } while ((Byte != Flarm::STARTFRAME) && (error == REC_NO_ERROR));
 
   if(error != REC_NO_ERROR) {
-    deb_Log(TEXT("STARTFRAME fail! Error code:%i"),error);
+    StartupStore(TEXT("[Flarm IGC Download] STARTFRAME fail! Error code:%i"),error);
     return error;
   }
 
   deb_Log(TEXT("STARTFRAME OK!"));
                     
-  error = RecChar16(d, blocksize, Timeout);
+  error = RecChar16(d, PayloadSize, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
 
-  if ((*blocksize) > size) {
-    StartupStore(TEXT("RecBinBlock : Invalid Block Size %u"), *blocksize);
+  if ((PayloadSize) > size) {
+    StartupStore(TEXT("[Flarm IGC Download] RecBinBlock : Invalid Block Size %u"), PayloadSize);
     return REC_INVALID_SIZE;
   }
 
-  CRC_calc = Flarm::crc_update(CRC_calc, *blocksize);
-  deb_Log(TEXT("Block Size %u"), *blocksize);
+  CRC_calc = Flarm::crc_update(CRC_calc, PayloadSize);
+  deb_Log(TEXT("Block Size %u"), PayloadSize);
 
-  error = RecChar8(d, &Version, Timeout);
+  error = RecChar8(d, Version, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
   CRC_calc = Flarm::crc_update(CRC_calc, Version);
   deb_Log(TEXT("Block Ver %u"), Version);
 
-  error = RecChar16(d, Sequence, Timeout);
+  error = RecChar16(d, SeqNo, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  CRC_calc = Flarm::crc_update(CRC_calc, *Sequence);
-  deb_Log(TEXT("Block Seq %u"), *Sequence);
+  CRC_calc = Flarm::crc_update(CRC_calc, SeqNo);
+  deb_Log(TEXT("Block Seq %u"), SeqNo);
 
-  error = RecChar8(d, Command, Timeout);
+  error = RecChar8(d, Type, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
-  CRC_calc = Flarm::crc_update(CRC_calc, *Command);
-  deb_Log(TEXT("Block Cmd %02X"), *Command);
+  CRC_calc = Flarm::crc_update(CRC_calc, Type);
+  deb_Log(TEXT("Block Cmd %02X"), Type);
 
-  error = RecChar16(d, &CRC_in, Timeout);
+  error = RecChar16(d, CRC_in, Timeout);
   if (error != REC_NO_ERROR) {
     return error;
   }
 
   deb_Log(TEXT("Block CRC %04X"), CRC_in);
   deb_Log(TEXT("Header  received!"));
-  if (*blocksize <= 8) {
+  if (PayloadSize <= 8) {
     return REC_INVALID_SIZE;
   }
 
-  (*blocksize) -= 8;
+  (PayloadSize) -= 8;
 
-  if (*blocksize >= 2) {
-    error = RecChar8(d, &inchar, Timeout);
+  if (PayloadSize >= 2) {
+    error = RecChar16(d, SeqNo, Timeout);
     if (error != REC_NO_ERROR) {
       return error;
     }
-    (*Sequence) = inchar;
-    CRC_calc = Flarm::crc_update(CRC_calc, inchar);
-    error = RecChar8(d, &inchar, Timeout);
-    if (error != REC_NO_ERROR) {
-      return error;
-    }
-    (*Sequence) = (*Sequence) << 8 | inchar;
-    CRC_calc = Flarm::crc_update(CRC_calc, inchar);
-
-    (*blocksize) -= 2;
+    CRC_calc = Flarm::crc_update(CRC_calc, SeqNo);
+    deb_Log(TEXT("Response ReqNo: %u"), SeqNo);
+    (PayloadSize) -= 2;
   }
 
-  for (uint16_t i = 0; i < *blocksize; i++) {
-    error = RecChar8(d, &inchar, Timeout);
+  for (uint16_t i = 0; i < PayloadSize; i++) {
+    error = RecChar8(d, Byte, Timeout);
     if (error != REC_NO_ERROR) {
-      StartupStore(TEXT("Rec Block Body error: %u!"), error);
+      StartupStore(_T("[Flarm IGC Download] Rec Block Body error: %u!"), error);
       return error;
     }
-    pBlock[i] = inchar;
-    CRC_calc = Flarm::crc_update(CRC_calc, inchar);
+    Payload[i] = Byte;
+    CRC_calc = Flarm::crc_update(CRC_calc, Byte);
   }
   if (CRC_calc != CRC_in) {
     error = REC_CRC_ERROR;
-    StartupStore(TEXT("Rec Block CRC error!"));
+    StartupStore(TEXT("[Flarm IGC Download] Rec Block CRC error!"));
   } else {
     error = REC_NO_ERROR;
     deb_Log(TEXT("Rec Block received!"));
   }
-  deb_Log(TEXT("payload : %s"), data_string(pBlock, *blocksize).c_str());
+  deb_Log(TEXT("payload : %s"), data_string(Payload, PayloadSize).c_str());
   return error;
 }
 
@@ -331,6 +323,10 @@ static void OnEnterClicked(WndButton *pWnd) {
     return;
   }
 
+  if (FlarmReadIGC.state() != IDLE_STATE) {
+    return; // download in progress.
+  }
+
   TCHAR Tmp[MAX_PATH];
   if (IGCFileList.size() == 0)
     return;
@@ -338,15 +334,18 @@ static void OnEnterClicked(WndButton *pWnd) {
   if (IGC_CurIndex >= IGCFileList.size()) {
     IGC_CurIndex = IGCFileList.size() - 1;
   }
-  if (IGCFileList.size() < (uint)IGC_CurIndex)
+  if (IGCFileList.size() < (uint)IGC_CurIndex) {
     return;
+  }
   IGC_DLIndex = IGC_CurIndex;
   bAbort = false;
   bShowMsg = false;
-  _stprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(),
-            IGCFileList.at(IGC_DLIndex).Line1);
-  if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes) // _@2404 "Download"
-  {
+  lk::snprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(),
+               IGCFileList.at(IGC_DLIndex).Line1);
+
+
+  // _@2404 "Download"
+  if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes) {
     /** check if file already exist and is not empty ************/
     TCHAR IGCFilename[MAX_PATH];
     if (GetIGCFilename(IGCFilename, IGC_DLIndex)) {
@@ -358,12 +357,13 @@ static void OnEnterClicked(WndButton *pWnd) {
           return;
         }
     }
+    // TODO check for Dowload in progress
+
     /************************************************************/
-    FlarmReadIGC.state(START_DOWNLOAD_STATE); // start thread IGC download
+    FlarmReadIGC.state(DOWNLOAD_SELECTRECORD_TX); // start thread IGC download
     pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // check for end of download every 250ms
-#ifdef PRPGRESS_DLG
+
     CreateIGCProgressDialog();
-#endif
   }
 }
 
@@ -464,9 +464,9 @@ static bool OnTimer(WndForm *pWnd) {
       if (FlarmReadIGC.state() == IDLE_STATE) {
         WndButton *wb = pForm->FindByName<WndButton>(TEXT("cmdClose"));
         wb->SetCaption(MsgToken<186>()); // _@M186_ "Close"
-#ifdef PRPGRESS_DLG
+
         CloseIGCProgressDialog();
-#endif
+
         pForm->SetTimerNotify(0, NULL); // reset Timer
         if (bShowMsg) {
           switch (DownloadError) {
@@ -508,9 +508,7 @@ static bool OnTimer(WndForm *pWnd) {
         }
         DownloadError = REC_NO_ERROR;
       } else {
-#ifdef PRPGRESS_DLG
         IGCProgressDialogText(szStatusText); // update progress dialog text
-#endif
         pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // recall if not idle
       }
     }
@@ -535,10 +533,9 @@ void LeaveBinMode(DeviceDescriptor_t* d) {
     GPS_INFO.FLARM_Available = false;
     UnlockFlightData();
 
-    deb_Log(TEXT("Flarm exit BIN mode!"));
     Flarm::Exit(d, Sequence);
     SetBinaryModeFlag(false);
-
+    StartupStore(_T("Flarm exit BIN mode!"));
   }
 }
 
@@ -546,7 +543,7 @@ void LeaveBinModeWithReset(DeviceDescriptor_t* d) {
   if (d != NULL) {
     LeaveBinMode(d); 
     d->Com->WriteString("$PFLAR,0*55\r\n");
-    deb_Log(TEXT("Flarm Reset!\r\n"));	
+    StartupStore(_T("Flarm Reset!\r\n"));	
   }
 }
 
@@ -625,10 +622,8 @@ void dlgIGCSelectListShowModal(DeviceDescriptor_t* d) {
 void EnterBinMode(DeviceDescriptor_t* d)
 {
   d->Com->WriteString("$PFLAX\r\n"); // set to binary
-  deb_Log(TEXT("$PFLAX\r "));
   FlarmReadIGC.state(PING_STATE_TX);
   SetBinaryModeFlag(true);
-  Sleep(100);
 }
 
 
@@ -643,43 +638,25 @@ bool FormatListEntry(uint8_t* pByteBlk, uint16_t blocksize)
     TempString[i] = pByteBlk[i];
   }
 
+
   TCHAR empty[3] = _T("");
   lk::tokenizer<TCHAR> tok(TempString);
-  TCHAR *Filename = tok.Next({_T('|')});
-  if (Filename == NULL) {
-    Filename = empty;
-  };
-  TCHAR *Date = tok.Next({_T('|')});
-  if (Date == NULL) {
-    Date = empty;
-  };
-  TCHAR *Takeoff = tok.Next({_T('|')});
-  if (Takeoff == NULL) {
-    Takeoff = empty;
-  };
-  TCHAR *Duration = tok.Next({_T('|')});
-  if (Duration == NULL) {
-    Duration = empty;
-  };
-  TCHAR *Pilot = tok.Next({_T('|')});
-  if (Pilot == NULL) {
-    Pilot = empty;
-  };
-  TCHAR *CN = tok.Next({_T('|')});
-  if (CN == NULL) {
-    CN = empty;
+
+  auto NextToken = [&]() {
+    const TCHAR* str = tok.Next({_T('|')});
+    return str ? str : empty;
   };
 
+  const TCHAR* Filename = NextToken();
+  const TCHAR* Date = NextToken();
+  const TCHAR* Takeoff = NextToken();
+  const TCHAR* Duration = NextToken();
+  const TCHAR* Pilot = NextToken();
+  const TCHAR* Cn = NextToken();
+
   lk::snprintf(NewElement.Line1, _T("%s (%s  [%5s])"), Filename, Date, Takeoff);
-  lk::snprintf(NewElement.Line2, _T("%s"), Duration);
-  if (Pilot) {
-    _tcscat(NewElement.Line2, _T(" "));
-    _tcscat(NewElement.Line2, Pilot);
-  };
-  if (CN) {
-    _tcscat(NewElement.Line2, _T(" "));
-    _tcscat(NewElement.Line2, CN);
-  };
+  lk::snprintf(NewElement.Line2, _T("%s %s %s"), Duration, Pilot, Cn);
+
   IGCFileList.push_back(NewElement);
   return true;
 }
@@ -688,18 +665,17 @@ static
 int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
   if (d == NULL)
     return 0; 
-  static uint32_t TotalSize =0;
-  static FILE *file_ptr = NULL;
+  
+  static unique_file_ptr file_ptr;
 
   static uint16_t SeqNo = 0;
   uint16_t ResponseSeqNo = 0;
 
   static uint8_t retrys = 0;
   static uint8_t TimeOutFactor = 1;
-  uint8_t pByteBlk[MAX_FLARM_ANSWER_LEN] = {};
-  pByteBlk[0] = IGC_FileIndex;
-  uint16_t blocksize = 1;
-  uint8_t RecCommand = Flarm::NACK;
+  uint8_t Payload[MAX_FLARM_ANSWER_LEN] = {};
+  uint16_t PayloadSize = 1;
+  uint8_t Type = Flarm::NACK;
   uint8_t err = REC_NO_ERROR;
 
 
@@ -708,378 +684,315 @@ int ReadFlarmIGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
     bAbort = false;
   }
 
-
-  switch(FlarmReadIGC.state())
-  {
+  switch(FlarmReadIGC.state()) {
       case IDLE_STATE:
-      break;
+        break;
+
       /********************  OPEN_BIN_STATE ******************************/
       case OPEN_BIN_STATE:
+        deb_Log(TEXT("OPEN_BIN_STATE"));
         retrys = 0;
         EnterBinMode(d);
         FlarmReadIGC.state(PING_STATE_TX);
-      break;
+        break;
 
       /*******************  PING_STATE_TX  ********************************/
       case PING_STATE_TX:
-        deb_Log(TEXT("PING "));
-
-#ifdef NO_FAKE_FLARM
+        deb_Log(TEXT("PING"));
         if (retrys++ >= 15) {
           FlarmReadIGC.state(ERROR_STATE);
           return 0;
         }
-#endif
 
         ListElementType NewElement;
-        _sntprintf(NewElement.Line1, LST_STRG_LEN, _T("        PING Flarm %u/15"),
-                    retrys);
+        lk::snprintf(NewElement.Line1, _T("        PING Flarm %u/15"), retrys);
         lk::strcpy(NewElement.Line2, _T("        ... "));
         IGCFileList.clear();
         IGCFileList.push_back(NewElement);
         Flarm::Ping(d, ++SeqNo);
 
         FlarmReadIGC.state(PING_STATE_RX);
-      break;
+        break;
+
       /********************  PING_STATE_RX **********************************/
       case PING_STATE_RX:
-        if (!BlockReceived()) {
-
-          deb_Log(TEXT("WAIT FOR PING ANSWER %ums"),
-                          FlarmReadIGC.get_elapsed_time());
-          if (FlarmReadIGC.check_timeout(1000)) {
-            err = REC_TIMEOUT_ERROR;
-            FlarmReadIGC.state(PING_STATE_TX);
+        deb_Log(TEXT("PING_STATE_RX"));
+        err = RecBinBlock(d, ResponseSeqNo, Type, Payload, PayloadSize,
+                          REC_TIMEOUT);
+        if (err == REC_NO_ERROR) {
+          if (ResponseSeqNo == SeqNo) {
+            retrys = 0;
+            FlarmReadIGC.state(SELECTRECORD_STATE_TX);
+            IGCFileList.clear();  // empty list
+          }
+          else {
+            // if this happen, it's probably a reponse of previous ping (timeout
+            // to short ...)
+            deb_Log(_T("Invalid SeqNo : s %d, r %d"), SeqNo, ResponseSeqNo);
           }
         }
         else {
-          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-          if (err == REC_NO_ERROR) { 
-            if (ResponseSeqNo == SeqNo) {
-              retrys = 0;
-              FlarmReadIGC.state(SELECTRECORD_STATE_TX);
-              IGCFileList.clear(); // empty list
-            }
-            else {
-              deb_Log("Invalid response SeqNo");
-            }
+          if (err == REC_TIMEOUT_ERROR) {
+            deb_Log(TEXT("TimeOut %ums"), FlarmReadIGC.get_elapsed_time());
           }
           else {
-            FlarmReadIGC.state(PING_STATE_TX);
+            deb_Log(TEXT("Error: %d"), err);
           }
+          FlarmReadIGC.state(PING_STATE_TX);
         }
-      break;
+        break;
+
       /*******************  SELECTRECORD_STATE_TX ***************************/
       case SELECTRECORD_STATE_TX:
-        deb_Log(TEXT("RECORD_STATE_TX "));
+        deb_Log(TEXT("SELECTRECORD_STATE_TX"));
         Flarm::SelectRecord(d, ++SeqNo, IGCFileList.size());
         FlarmReadIGC.state(SELECTRECORD_STATE_RX);
         DownloadError = REC_NO_ERROR;
-      break;
+        break;
 
       /*******************  SELECTRECORD_STATE_RX ***************************/
-      case SELECTRECORD_STATE_RX:		
-        if (!BlockReceived()) {
-
-          deb_Log(TEXT("SELECTRECORD_STATE_RX %ums"),
-                          FlarmReadIGC.get_elapsed_time());
-
-          if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
-          {
-            FlarmReadIGC.state( SELECTRECORD_STATE_TX);
-            if (retrys++ > MAX_RETRY) {
-              FlarmReadIGC.state( ABORT_STATE);
-              err = REC_TIMEOUT_ERROR;
-            }
+      case SELECTRECORD_STATE_RX:
+        deb_Log(TEXT("SELECTRECORD_STATE_RX"));
+        err = RecBinBlock(d, ResponseSeqNo, Type, Payload, PayloadSize,
+                          REC_TIMEOUT);
+        if (err) {
+          if (err == REC_TIMEOUT_ERROR) {
+            deb_Log(TEXT("TimeOut %ums"), FlarmReadIGC.get_elapsed_time());
           }
+          FlarmReadIGC.state(ABORT_STATE);
         }
-        else
-        {
-          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-          if (err) {
-            FlarmReadIGC.state(ABORT_STATE);
-          }
-          else if (RecCommand == Flarm::ACK) {
-            if (ResponseSeqNo == SeqNo) {          
-              FlarmReadIGC.state( READRECORD_STATE_TX);
-            }
-            else {
-              deb_Log("Invalid response SeqNo");
-            }
-            retrys = 0;
+        else if (Type == Flarm::ACK) {
+          if (ResponseSeqNo == SeqNo) {
+            FlarmReadIGC.state(GETRECORDINFO_TX);
           }
           else {
-            FlarmReadIGC.state(ALL_RECEIVED_STATE);
-            retrys = 0;
+            deb_Log("Invalid SeqNo : s %d, r %d", SeqNo,
+                    ResponseSeqNo);
           }
         }
-      break;
-      /******************  READRECORD_STATE_TX ******************************/
-      case READRECORD_STATE_TX:
-        deb_Log(TEXT("READRECORD_STATE_RX "));
+        else {
+          FlarmReadIGC.state(ALL_RECEIVED_STATE);
+          retrys = 0;
+        }
+        break;
+
+      /******************  GETRECORDINFO_TX ******************************/
+      case GETRECORDINFO_TX:
+        deb_Log(TEXT("GETRECORDINFO_TX"));
         Flarm::GetRecordInfo(d, ++SeqNo);
-        FlarmReadIGC.state( READRECORD_STATE_RX);
-      break;
-      /******************  READRECORD_STATE_RX ******************************/
-      case READRECORD_STATE_RX:
-        if (!BlockReceived()) {
-          deb_Log(TEXT("READRECORD_STATE_RX %ums"),  FlarmReadIGC.get_elapsed_time());
+        FlarmReadIGC.state(GETRECORDINFO_RX);
+        break;
 
-          if  (FlarmReadIGC.check_timeout(GC_BLK_RECTIMEOUT)) 
-          {
-            err = REC_TIMEOUT_ERROR;
-            FlarmReadIGC.state( READRECORD_STATE_TX);
-            if (retrys++ > MAX_RETRY) {
-              FlarmReadIGC.state( ABORT_STATE);
-              err = REC_TIMEOUT_ERROR;
-            }
-          }
+      /******************  GETRECORDINFO_RX ******************************/
+      case GETRECORDINFO_RX:
+        deb_Log(TEXT("GETRECORDINFO_RX"));
+        err = RecBinBlock(d, ResponseSeqNo, Type, Payload, PayloadSize, REC_TIMEOUT);
+        if (err) {
+          FlarmReadIGC.state(ABORT_STATE);
         }
-        else
-        {
-          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize, REC_TIMEOUT);
-          if (err) {
-            FlarmReadIGC.state(ABORT_STATE);
-          }
-          else if (RecCommand == Flarm::ACK) {
-            retrys = 0;
-            if (ResponseSeqNo == SeqNo) {
-              pByteBlk[blocksize++] = 0;
-              if (ResponseSeqNo == SeqNo) {
-                FormatListEntry( pByteBlk, blocksize);
-                FlarmReadIGC.state( SELECTRECORD_STATE_TX);
-              }
-              else {
-                deb_Log("Invalid response SeqNo");
-              }
-            }
+        else if (Type == Flarm::ACK) {
+          retrys = 0;
+          if (ResponseSeqNo == SeqNo) {
+            Payload[PayloadSize++] = 0;
+            FormatListEntry(Payload, PayloadSize);
+            FlarmReadIGC.state(SELECTRECORD_STATE_TX);
           }
           else {
-            retrys = 0;
-            FlarmReadIGC.state(ALL_RECEIVED_STATE);
+            deb_Log("Invalid SeqNo : s %d, r %d", SeqNo,
+                    ResponseSeqNo);
           }
         }
-      break;
+        else {
+          retrys = 0;
+          FlarmReadIGC.state(ALL_RECEIVED_STATE);
+        }
+        break;
       /*******************  ALL_RECEIVED_STATE *****************************/
       case ALL_RECEIVED_STATE:		
-        bFilled = true;
         deb_Log(TEXT("ALL_RECEIVED_STATE"));
-        FlarmReadIGC.state( IDLE_STATE);
-      break;
+        bFilled = true;
+        FlarmReadIGC.state(IDLE_STATE);
+        break;
 
-    /**********************  ERROR_STATE *********************************/
+      /**********************  ERROR_STATE *********************************/
       case ERROR_STATE:		                    
         deb_Log(TEXT("ERROR_STATE"));
-  //   ListElementType NewElement;
         lk::strcpy(NewElement.Line1, _T("        Error:"));
-        _sntprintf(NewElement.Line2, LST_STRG_LEN, _T("         %s"),
-                    MsgToken<2401>()); // _@M2401_ "No Device found"
+        // _@M2401_ "No Device found"
+        lk::snprintf(NewElement.Line2, _T("         %s"), MsgToken<2401>());
         IGCFileList.clear();
         IGCFileList.push_back(NewElement);
-        FlarmReadIGC.state( IDLE_STATE);
+        FlarmReadIGC.state(IDLE_STATE);
         err = REC_NO_DEVICE;
-      break;
+        break;
 
       /*********************  ABORT STATE ***********************************/
       case ABORT_STATE:
         deb_Log(TEXT("ABORT_STATE"));
-        if (file_ptr != NULL) // file incomplete?
-        {
-          fclose(file_ptr);
-          file_ptr = NULL;
+        if (file_ptr) {
+          // file incomplete?
+          file_ptr = nullptr;
 
           TCHAR IGCFilename[MAX_PATH];
           if (GetIGCFilename(IGCFilename, IGC_FileIndex)) {
-            lk::filesystem::deleteFile(
-                IGCFilename); // delete incomplete file (after abort) to prevent
-                              // "file exists warning
-            deb_Log(TEXT("delete incomplete IGC File: %s "), IGCFilename);
+            // delete incomplete file (after abort)
+            lk::filesystem::deleteFile(IGCFilename);
+            StartupStore(_T("delete incomplete IGC File: %s"), IGCFilename);
           }
         }
-        if (!err)
+        if (!err) {
           err = REC_ABORTED;
+        }
         FlarmReadIGC.state( IDLE_STATE);
-      break;
+        break;
 
-      /******************* START_DOWNLOAD_STATE *****************************/
-      case START_DOWNLOAD_STATE:
+      /******************* DOWNLOAD_SELECTRECORD_TX *****************************/
+      case DOWNLOAD_SELECTRECORD_TX:
+        deb_Log(TEXT("DOWNLOAD_SELECTRECORD_TX"));
         SeqNo = 0;
-        TotalSize =0;
-        if (IGCFileList.size() < IGC_FileIndex)
-        {
-          FlarmReadIGC.state( PING_STATE_TX);
+        if (IGCFileList.size() < IGC_FileIndex) {
+          // invalide file index, retry to download track list
+          FlarmReadIGC.state(PING_STATE_TX);
           return 0;
         }
-        /*
-            we must resend the binary mode command before a new IGC file donwload,
-            because PowerFlarm automatcally return from binary mode after a while
-            so we must re-enable it in case user waited too long to start download
-        */
+
+        //  we must resend the binary mode command before a new IGC file donwload,
+        //  because PowerFlarm automatically return from binary mode after a while
+        //  so we must re-enable it in case user waited too long to start download
         EnterBinMode(d);
-        deb_Log(TEXT("START_DOWNLOAD_STATE: %s"),
-                        IGCFileList.at(IGC_FileIndex).Line1);
-        if (file_ptr) {
-          fclose(file_ptr);
-          file_ptr = NULL;
+
+        // binary mode can take time to be active, wait for end of reciving NMEA
+        // Data if NMEA don't stop after 2s, switch to binary probably failed...
+        // TODO: this must be refactored tu use Ping, according to the FTD-026
+        // documentation.
+        while (IsInBinaryMode() && FlarmReadIGC.get_elapsed_time() < 3000) {
+          uint8_t Byte;
+          RecChar(d, Byte, REC_TIMEOUT);
         }
+
+        lk::snprintf(szStatusText, _T("IGC download File : %s "),
+                     IGCFileList.at(IGC_FileIndex).Line1);
+
+        StartupStore(_T("%s"), szStatusText);
+
+        file_ptr = nullptr;
         err = REC_NO_ERROR;
 
         TCHAR IGCFilename[MAX_PATH];
         GetIGCFilename(IGCFilename, IGC_FileIndex);
-        file_ptr = _tfopen(IGCFilename, TEXT("w"));
-        if (file_ptr == NULL) {
+        file_ptr = make_unique_file_ptr(IGCFilename, TEXT("w"));
+        if (file_ptr) {
+          Flarm::SelectRecord(d, ++SeqNo, IGC_FileIndex);
+          bShowMsg = true;
+          retrys = 0;
+          TimeOutFactor = 1;          
+          FlarmReadIGC.state(DOWNLOAD_SELECTRECORD_RX);
+        }
+        else {
           err = FILE_OPEN_ERROR;
-        } // #define FILE_OPEN_ERROR 5
-
-        _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("IGC Dowlnoad File : %s "),
-                    IGCFileList.at(IGC_FileIndex).Line1);
-        
-        deb_Log(_T("%s"), szStatusText);
-  
-        Flarm::SelectRecord(d, ++SeqNo, IGC_FileIndex);
-        bShowMsg = true;
-        retrys = 0;
-        TimeOutFactor = 1;          
-        FlarmReadIGC.state( DOWNLOAD_START_ANS);
-      break;
-        /*************************** DOWNLOAD_START_ANS **********************/      
-      case DOWNLOAD_START_ANS:
-        err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize,
+          FlarmReadIGC.state(ERROR_STATE);
+        }
+        break;
+        /*************************** DOWNLOAD_SELECTRECORD_RX **********************/
+      case DOWNLOAD_SELECTRECORD_RX:
+        deb_Log(TEXT("DOWNLOAD_SELECTRECORD_RX"));
+        err = RecBinBlock(d, ResponseSeqNo, Type, Payload, PayloadSize,
                           REC_TIMEOUT);
         if (err != REC_NO_ERROR) {
           err = IGC_RECEIVE_ERROR;
           FlarmReadIGC.state(ABORT_STATE);
         }
-        else if (RecCommand == Flarm::ACK) {
+        else if (Type == Flarm::ACK) {
           if (ResponseSeqNo == SeqNo) {
-            FlarmReadIGC.state(READ_STATE_TX);
+            FlarmReadIGC.state(GETIGCDATA_TX);
           }
           else {
-            deb_Log("Invalid response SeqNo");
+            deb_Log(_T("Invalid SeqNo : s %d, r %d"), SeqNo, ResponseSeqNo);
           }
         }
         break;
 
-        /*************************** READ STATE TX ***************************/
-      case READ_STATE_TX:
-        blocksize = 0;
+      /*************************** GETIGCDATA_TX ***************************/
+      case GETIGCDATA_TX:
+        deb_Log(TEXT("GETIGCDATA_TX"));
+        PayloadSize = 0;
         DownloadError = REC_NO_ERROR;
         Flarm::GetIGCData(d, ++SeqNo);
-        FlarmReadIGC.state( READ_STATE_RX);
-      break;
-      /************************** READ STATE RX *****************************/
-      case READ_STATE_RX:
-        if (!BlockReceived()) {
-          if(FlarmReadIGC.check_timeout(TimeOutFactor*GC_BLK_RECTIMEOUT))
-          {
-            if (retrys++ > MAX_RETRY) {
-              err = REC_TIMEOUT_ERROR;
-              DownloadError = err;
-
-              StartupStore(TEXT("%u%% Abort after %u Blocks, while wait for answer "
-                              "time:%ums  Size:%uByte"),
-                          pByteBlk[2], SeqNo, FlarmReadIGC.get_elapsed_time(),
-                          TotalSize);
-              FlarmReadIGC.state( ABORT_STATE);              
-            } else {
-
-              StartupStore(TEXT("%u%% %u. timeout %ums at Block %u (%u Bytes), request Block again!"),
-                            pByteBlk[2], retrys, FlarmReadIGC.get_elapsed_time(), SeqNo ,TotalSize );
-              FlarmReadIGC.state( READ_STATE_TX);
-            }
-          }
+        FlarmReadIGC.state( GETIGCDATA_RX);
+        break;
+      /************************** GETIGCDATA_RX *****************************/
+      case GETIGCDATA_RX:
+        deb_Log(TEXT("GETIGCDATA_RX"));
+        err = RecBinBlock(d, ResponseSeqNo, Type, Payload, PayloadSize,
+                          TimeOutFactor * REC_TIMEOUT);
+        if (err) {
+          FlarmReadIGC.state(ABORT_STATE);
         }
-        else
-        {
-          RecCommand = Flarm::NACK;
-          err = RecBinBlock(d, &ResponseSeqNo, &RecCommand, pByteBlk, &blocksize,TimeOutFactor * REC_TIMEOUT);
-          if (err) {
-            if (retrys++ > MAX_RETRY) {
-              DownloadError = err;
-              StartupStore(
-                TEXT("%u%% Block Error:%u Block %u  Abort after %u retrys read time:%ums  Size: %u Bytes"),
-                pByteBlk[2],err, SeqNo, retrys, FlarmReadIGC.get_elapsed_time() , TotalSize);
-              FlarmReadIGC.state( ABORT_STATE);
-            }
-            else
-            {
-              StartupStore(
-                TEXT("%u%% Block Error:%u Block %u retry #%i after read time:%ums  Size:%u Bytes"),
-                pByteBlk[2],err, SeqNo, retrys, FlarmReadIGC.get_elapsed_time(), TotalSize);              
-                FlarmReadIGC.state( READ_STATE_TX);
-            }
+        else if (Type == Flarm::ACK && ResponseSeqNo == SeqNo) {
+          retrys = 0;
+
+          // if more that 50% read, increase TimeOutFactor
+          if (Payload[0] > 50) {
+            // reading last FLARM sentences takes up to 8s, for whatever
+            // reason
+            TimeOutFactor = WATCHDOG_TIMEOUT / GC_BLK_RECTIMEOUT;
           }
-          else if (RecCommand == Flarm::ACK) {
-            if (ResponseSeqNo == SeqNo) {
-              retrys  =0;
-              TotalSize += blocksize;
-            
-              if (pByteBlk[0] > 50) { // if more that 50% read, increase TimeOutFactor
-              TimeOutFactor =
-                  WATCHDOG_TIMEOUT / GC_BLK_RECTIMEOUT; // reading last FLARM sentences takes up
-                                          // to 8s, for whatever reason
-            }
 
-              _sntprintf(
-                    szStatusText, STATUS_TXT_LEN, _T("%s: %u%% %s ..."), MsgToken<2400>(),
-                    pByteBlk[0],
-                    IGCFileList.at(IGC_FileIndex).Line1); // _@M2400_ "Downloading"
+          lk::snprintf(
+              szStatusText, _T("%s: %u%% %s ..."), MsgToken<2400>(), Payload[0],
+              IGCFileList.at(IGC_FileIndex).Line1);  // _@M2400_ "Downloading"
 
-              static int  prevPercent =0;
-              if (abs((int)pByteBlk[0] - prevPercent) >= 5) {
-                prevPercent =  pByteBlk[0];
-                StartupStore(TEXT("%u%% %u. Block (%u Bytes)  Response time:%ums  Total:%u Bytes"),
-                              pByteBlk[0], SeqNo, blocksize, FlarmReadIGC.get_elapsed_time(), TotalSize);
-              }
-              for (int i = 1; i < blocksize; i++) {
-                if (file_ptr)
-                  fputc(pByteBlk[i], file_ptr);
-                if (pByteBlk[i] == Flarm::EOF_)
-                  RecCommand = Flarm::EOF_;
-              }
-              if (RecCommand == Flarm::EOF_) {
-                FlarmReadIGC.state(CLOSE_STATE);
+          if (file_ptr) {
+            for (int i = 1; i < PayloadSize; i++) {
+              if (Payload[i] == Flarm::EOF_) {
+                Type = Flarm::EOF_;
               }
               else {
-                FlarmReadIGC.state(READ_STATE_TX);
+                file_ptr.fputc(Payload[i]);
               }
             }
           }
+
+          if (Type == Flarm::EOF_) {
+            FlarmReadIGC.state(CLOSE_STATE);
+          }
+          else {
+            FlarmReadIGC.state(GETIGCDATA_TX);
+          }
         }
-      break;
+        else {
+          FlarmReadIGC.state(ABORT_STATE);
+        }
+        break;
 
       /************************* CLOSE STATE *********************************/		
       case CLOSE_STATE:
-        if (file_ptr) {
-          fclose(file_ptr);
-          file_ptr = NULL;
-        }
-
-        FlarmReadIGC.state( IDLE_STATE);
-        deb_Log(TEXT("IDLE_STATE"));
+        deb_Log(TEXT("CLOSE_STATE"));
+        file_ptr = nullptr;
+        FlarmReadIGC.state(IDLE_STATE);
         if (err != REC_NO_ERROR) {
-          _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("Error Code:%u"), err);
-          //    err = REC_NO_ERROR;
+          lk::snprintf(szStatusText, _T("Error Code:%u"), err);
         } else {
-          _sntprintf(szStatusText, STATUS_TXT_LEN, TEXT("%s"),
-                      MsgToken<2406>()); // _@M2406_ "IGC File download complete!"
+          // _@M2406_ "IGC File download complete!"
+          lk::snprintf(szStatusText, _T("%s"), MsgToken<2406>());
         }
-        deb_Log(_T("IGC download complete"));
-      break;
+        StartupStore(_T("IGC download complete"));
+        break;
       /********************************************************************/
     } // case
 
-    if(FlarmReadIGC.check_timeout(WATCHDOG_TIMEOUT))// no state change for a longer time ?
-    {    
+    if (FlarmReadIGC.check_timeout(WATCHDOG_TIMEOUT)) {
+      // no state change for a longer time ?
       StartupStore(TEXT("STATE WATCHDOG timeout after %ums in State %i"),
-                   FlarmReadIGC.get_elapsed_time() , FlarmReadIGC.state());
-      FlarmReadIGC.state( ABORT_STATE); // abort!
+                   FlarmReadIGC.get_elapsed_time(), FlarmReadIGC.state());
+      FlarmReadIGC.state(ABORT_STATE);  // abort!
     }
- 
-  if (err)
-    if (DownloadError == REC_NO_ERROR) // no previous error=
+
+    if (err && DownloadError == REC_NO_ERROR) {
+      // no previous error=
       DownloadError = err;
-  return 0;
+    }
+    return 0;
 }
 
 class IGCReadThread : public Thread {

@@ -28,13 +28,13 @@ class WndButton;
 #define REC_NOMSG         8
 #define REC_INVALID_SIZE  9
 
-#define NO_FAKE_FLARM
 typedef union{
   uint16_t val;
   uint8_t byte[2];
 } ConvUnion;
 
-uint8_t RecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout);
+uint8_t RecChar(DeviceDescriptor_t* d, uint8_t& Byte, uint16_t Timeout);
+
 bool BlockReceived();
 bool IsInBinaryMode();
 bool SetBinaryModeFlag(bool bBinMode);
