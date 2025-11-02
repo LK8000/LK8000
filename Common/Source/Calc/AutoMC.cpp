@@ -10,118 +10,116 @@
 #include "McReady.h"
 
 double PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_bearing, const double GlideSlope);
+double MultiLegPirkerAnalysis(NMEA_INFO* Basic, DERIVED_INFO* Calculated);
+
 bool ActiveIsFinalWaypoint();
 
-// Helper function to handle AutoMC in equivalent mode
-static bool TryHandleEquivalentAutoMC(DERIVED_INFO* Calculated) {
-    if (AutoMcMode != amcEquivalent) {
-        return false;
+void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
+    if (!Calculated->AutoMacCready) return;
+
+    bool is_final_glide = false;
+
+    double mc_new = MACCREADY;
+    static bool first_mc = true;
+
+    if (AutoMcMode == amcEquivalent) {
+        LockTaskData();
+        if ((!Calculated->Circling) && (!Calculated->OnGround)) {
+            if (Calculated->EqMc >= 0) {
+                mc_new = Calculated->EqMc;
+            } else {
+                // -1.0 is used as an invalid flag. Normally flying at -1 MC means almost flying
+                // at stall speed, which is pretty unusual. Maybe in wave conditions?
+                if (Calculated->EqMc >-1) {
+                    mc_new = Calculated->EqMc * -1;
+                }
+            }
+        }
+        UnlockTaskData();
+
+        CheckSetMACCREADY(mc_new, nullptr);
+
+        return;
     }
 
-    if (!Calculated->Circling && !Calculated->OnGround) {
-        CheckSetMACCREADY(Calculated->EqMc, nullptr);
-    }
-    return true;
-}
+    LockTaskData();
 
-// Helper function to calculate the average thermal strength
-static double CalculateAverageThermal(const DERIVED_INFO* Calculated) {
+    // otherwise, if AutoMc for finalglide or "both", return if no goto
+    if (ValidTaskPoint(ActiveTaskPoint)) {
+        if (Calculated->FinalGlide) {
+            is_final_glide = true;
+        } else {
+            first_mc = true;
+        }
+    }
+
+    double av_thermal = -1;
     if (flightstats.ThermalAverage.y_ave > 0) {
         if (Calculated->Circling && (Calculated->AverageThermal > 0)) {
             BUGSTOP_LKASSERT((flightstats.ThermalAverage.sum_n + 1) != 0);
             if (flightstats.ThermalAverage.sum_n == -1) {
                 flightstats.ThermalAverage.sum_n = 0;
             }
-            return (flightstats.ThermalAverage.y_ave * flightstats.ThermalAverage.sum_n +
-                    Calculated->AverageThermal) /
-                   (flightstats.ThermalAverage.sum_n + 1);
-        }
-        return flightstats.ThermalAverage.y_ave;
-    }
-    
-    if (Calculated->Circling && (Calculated->AverageThermal > 0)) {
-        // insufficient stats, so use this/last thermal's average
-        return Calculated->AverageThermal;
-    }
-
-    return -1.0;
-}
-
-// Helper function to calculate MacCready value using Pirker analysis
-static double CalculatePirkerMc(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
-    BUGSTOP_LKASSERT((Calculated->WaypointDistance + 1) != 0);
-
-    if (Calculated->WaypointDistance < 0) {
-        Calculated->WaypointDistance = 0; // temporary but ok
-    }
-    const double slope = (Calculated->NavAltitude + Calculated->EnergyHeight -
-                          FAIFinishHeight(Basic, Calculated, ActiveTaskPoint)) /
-                         (Calculated->WaypointDistance + 1);
-
-    const double mc_pirker = PirkerAnalysis(Basic, Calculated, Calculated->WaypointBearing, slope);
-    return max(0.0, mc_pirker);
-}
-
-// Helper function to handle AutoMC during final glide
-static void HandleFinalGlideAutoMC(double& mc_new, bool& first_mc, double av_thermal, NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
-    if (Calculated->TaskAltitudeDifference0 > 0) {
-        // only change if above final glide with zero Mc
-        const double mc_pirker = CalculatePirkerMc(Basic, Calculated);
-        if (first_mc) {
-            // don't allow Mc to wind down to zero when first achieving final glide
-            if (mc_pirker >= mc_new) {
-                mc_new = mc_pirker;
-                first_mc = false;
-            } else if (AutoMcMode == amcFinalAndClimb && av_thermal > 0) {
-                // revert to averager based auto Mc
-                mc_new = av_thermal;
-            }
+            av_thermal = (flightstats.ThermalAverage.y_ave
+                    * flightstats.ThermalAverage.sum_n
+                    + Calculated->AverageThermal) /
+                    (flightstats.ThermalAverage.sum_n + 1);
         } else {
-            mc_new = mc_pirker;
+            av_thermal = flightstats.ThermalAverage.y_ave;
         }
-    } else { // below final glide at zero Mc, never achieved final glide
-        if (first_mc && AutoMcMode == amcFinalAndClimb && av_thermal > 0) {
-            // revert to averager based auto Mc
-            mc_new = av_thermal;
-        }
+    } else if (Calculated->Circling && (Calculated->AverageThermal > 0)) {
+        // insufficient stats, so use this/last thermal's average
+        av_thermal = Calculated->AverageThermal;
     }
-}
-
-
-void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-    if (!Calculated->AutoMacCready) {
-        return;
-    }
-
-    if (TryHandleEquivalentAutoMC(Calculated)) {
-        return;
-    }
-
-    LockTaskData();
-
-    static bool first_mc = true;
-    bool is_final_glide = Calculated->FinalGlide &&
-                          ValidTaskPoint(ActiveTaskPoint) &&
-                          ActiveIsFinalWaypoint();
-
-    if (!is_final_glide) {
-        first_mc = true;
-    }
-
-    double mc_new = MACCREADY;
-    const double av_thermal = CalculateAverageThermal(Calculated);
 
     if (!ValidTaskPoint(ActiveTaskPoint)) {
-        mc_new = (av_thermal > 0) ? av_thermal : 0;
-    } else if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) && is_final_glide) {
-        HandleFinalGlideAutoMC(mc_new, first_mc, av_thermal, Basic, Calculated);
-    } else if ((AutoMcMode == amcAverageClimb) || ((AutoMcMode == amcFinalAndClimb) && !is_final_glide)) {
+        if (av_thermal > 0) {
+            mc_new = av_thermal;
+        } else {
+            mc_new = 0;
+        }
+    } else
+
+    if (((AutoMcMode == amcFinalGlide) || (AutoMcMode == amcFinalAndClimb)) && is_final_glide) {
+        if (Calculated->TaskAltitudeDifference0 > 0) {
+            // only change if above final glide with zero Mc
+            // otherwise when we are well below, it will wind Mc back to zero
+
+            double mc_pirker = MultiLegPirkerAnalysis(Basic, Calculated);
+            mc_pirker = max(0.0, mc_pirker);
+            if (first_mc) {
+                // don't allow Mc to wind down to zero when first achieving
+                // final glide; but do allow it to wind down after that
+                if (mc_pirker >= mc_new) {
+                    mc_new = mc_pirker;
+                    first_mc = false;
+                } else if (AutoMcMode == amcFinalAndClimb) {
+                    // revert to averager based auto Mc
+                    if (av_thermal > 0) {
+                        mc_new = av_thermal;
+                    }
+                }
+            } else {
+                mc_new = mc_pirker;
+            }
+
+        } else { // below final glide at zero Mc, never achieved final glide
+            if (first_mc && (AutoMcMode == amcFinalAndClimb)) {
+                // revert to averager based auto Mc
+                if (av_thermal > 0) {
+                    mc_new = av_thermal;
+                }
+            }
+        }
+    }
+
+    else if ((AutoMcMode == amcAverageClimb) || ((AutoMcMode == amcFinalAndClimb)&& !is_final_glide)) {
         if (av_thermal > 0) {
             mc_new = av_thermal;
         }
     }
-
     UnlockTaskData();
-
     CheckSetMACCREADY(LowPassFilter(MACCREADY, mc_new, 0.6), nullptr);
 }
+

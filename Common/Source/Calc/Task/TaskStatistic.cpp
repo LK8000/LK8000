@@ -150,10 +150,8 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
   double height_above_finish = total_energy_height - final_height;
 
-  if (ISPARAGLIDER) {
-    TaskAltitudeRequired = final_height;
-    TaskAltitudeRequired0 = final_height;
-  }
+  TaskAltitudeRequired = final_height;
+  TaskAltitudeRequired0 = final_height;
 
   // Now add it for remaining waypoints
   int task_index = FinalWayPoint;
@@ -186,18 +184,16 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     TaskAltitudeRequired += LegAltitude;
     TaskAltitudeRequired0 += LegAltitude0;
 
-    if (ISPARAGLIDER) {
-      // if required altitude is less than previous turpoint altitude,
-      //   use previous turn point altitude
-      double w0Alt = FAIFinishHeight(Basic, Calculated, task_index - 1);
-      if (TaskAltitudeRequired < w0Alt) {
+    // if required altitude is less than previous turpoint altitude,
+    //   use previous turn point altitude
+    double w0Alt = FAIFinishHeight(Basic, Calculated, task_index - 1);
+    if (TaskAltitudeRequired < w0Alt) {
         Calculated->TaskAltitudeArrival += w0Alt - TaskAltitudeRequired;
 
         TaskAltitudeRequired = w0Alt;
-      }
-      if (TaskAltitudeRequired0 < w0Alt) {
+    }
+    if (TaskAltitudeRequired0 < w0Alt) {
         TaskAltitudeRequired0 = w0Alt;
-      }
     }
 
     Calculated->TaskDistanceToGo += NextLegDistance;
@@ -210,7 +206,7 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     height_above_finish -= LegAltitude;
 
     task_index--;
-  }
+  } // WHILE
 
   // current waypoint, do this last!
 
@@ -268,13 +264,8 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
   height_above_finish -= LegAltitude;
 #endif
 
-  if (ISPARAGLIDER) {
-    Calculated->TaskAltitudeRequired = TaskAltitudeRequired;
-  } else {
-    Calculated->TaskAltitudeRequired = TaskAltitudeRequired + final_height;
+  Calculated->TaskAltitudeRequired = TaskAltitudeRequired;
 
-    TaskAltitudeRequired0 += final_height;
-  }
 
   Calculated->TaskAltitudeDifference = total_energy_height - Calculated->TaskAltitudeRequired;
   Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;
