@@ -12,4 +12,6 @@
     <string name="error_external_storage">外部存储不可用，请关闭 USB 存储。</string>
     <string name="quit">LK8000关闭中…</string>
     <string name="loading">LK8000加载中…</string>
+    <string name="overwrite_download">已有文件。再次下载？</string>
+    <string name="download_title">下载LK8000</string>
 </resources>
