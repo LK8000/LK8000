@@ -61,16 +61,14 @@ double ComputeTaskRequiredAltitude(NMEA_INFO* Basic, DERIVED_INFO* Calculated,
 
     TaskAltitudeRequired += LegAltitude;
 
-    if (true || ISPARAGLIDER) {
-      // if required altitude is less than previous turpoint altitude,
-      //   use previous turn point altitude
-      double w0Alt = FAIFinishHeight(
-          Basic, Calculated,
-          task_index - 1);
+    // if required altitude is less than previous turpoint altitude,
+    //   use previous turn point altitude
+    double w0Alt = FAIFinishHeight(
+      Basic, Calculated,
+      task_index - 1);
 
-      if (TaskAltitudeRequired < w0Alt) {
-        TaskAltitudeRequired = w0Alt;
-      }
+    if (TaskAltitudeRequired < w0Alt) {
+      TaskAltitudeRequired = w0Alt;
     }
 
     height_above_finish -= LegAltitude;
