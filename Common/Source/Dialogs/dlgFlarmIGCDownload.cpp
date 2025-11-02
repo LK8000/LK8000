@@ -343,7 +343,6 @@ static void OnEnterClicked(WndButton *pWnd) {
   lk::snprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(),
                IGCFileList.at(IGC_DLIndex).Line1);
 
-
   // _@2404 "Download"
   if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes) {
     /** check if file already exist and is not empty ************/
@@ -359,6 +358,7 @@ static void OnEnterClicked(WndButton *pWnd) {
     }
     // TODO check for Dowload in progress
 
+    lk::strcpy(szStatusText, _T(""));
     /************************************************************/
     FlarmReadIGC.state(DOWNLOAD_SELECTRECORD_TX); // start thread IGC download
     pForm->SetTimerNotify(GC_TIMER_INTERVAL, OnTimer); // check for end of download every 250ms
