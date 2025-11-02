@@ -3,6 +3,7 @@
 #include "externs.h"
 #include "lk8000.h"
 #include <iterator>
+#include "BatteryManager.h"
 
 
 /*  **********************************************************

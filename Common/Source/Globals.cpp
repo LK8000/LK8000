@@ -533,7 +533,6 @@ void Globals_Init(void) {
   DialogActive=false;
 
   PDABatteryPercent = 100;
-  PDABatteryTemperature = 0;    // Only valid for UNDER_CE
   PDABatteryStatus=0;
   PDABatteryFlag=0;
 

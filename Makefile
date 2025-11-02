@@ -1379,7 +1379,7 @@ SRC_FILES :=\
 	$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Alarms.cpp\
 	$(SRC)/Backlight.cpp 		\
-	$(SRC)/Battery.cpp \
+	$(SRC)/BatteryManager.cpp \
 	$(SRC)/Bitmaps.cpp \
 	$(SRC)/Buttons.cpp \
 	$(SRC)/ChangeScreen.cpp\

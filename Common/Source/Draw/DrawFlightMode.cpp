@@ -12,6 +12,7 @@
 #include "Multimap.h"
 #include "Asset.hpp"
 #include "Util/Clamp.hpp"
+#include "BatteryManager.h"
 
 extern bool FastZoom; // QUICKDRAW
 

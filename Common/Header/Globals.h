@@ -689,7 +689,6 @@ GEXTERN short ModeTableTop[LKMODE_TOP+1];
 GEXTERN short ModeType[LKMODE_TOP+1];
 
 GEXTERN int PDABatteryPercent;
-GEXTERN int PDABatteryTemperature;
 GEXTERN int PDABatteryStatus;
 GEXTERN int PDABatteryFlag;
 

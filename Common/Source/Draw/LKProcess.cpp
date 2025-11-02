@@ -21,6 +21,7 @@
 #include "OS/CpuLoad.h"
 #include "utils/printf.h"
 #include "Calc/Task/TimeGates.h"
+#include "BatteryManager.h"
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -1444,28 +1445,15 @@ goto_bearing:
 			lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			value = PDABatteryPercent;
-			// We may choose this approach, but it is not as in V5.
-			/*
-			#if TESTBENCH
-                	if ( (!SIMMODE && !HaveBatteryInfo) || value<1||value>100)
-			#else
-                	if (!HaveBatteryInfo || value<1||value>100)
-			#endif
-			*/
-			// This is V5 compatible
-                	if (!HaveBatteryInfo || value<1||value>100)
+			if (!HaveBatteryInfo || value<1||value>100)
 				_stprintf(BufferValue,_T("---"));
-                	else {
-				if (PDABatteryFlag==Battery::CHARGING || PDABatteryStatus==Battery::ONLINE) {
-					_stprintf(BufferValue,TEXT("%2.0f%%C"), value);	 // 100228
-				} else {
-					_stprintf(BufferValue,TEXT("%2.0f%%D"), value);  // 100228
-				}
-
-				valid = true;
+			else if (PDABatteryFlag==Battery::CHARGING || PDABatteryStatus==Battery::ONLINE) {
+				_stprintf(BufferValue,TEXT("%2.0f%%C"), value);	 // 100228
+			} else {
+				_stprintf(BufferValue,TEXT("%2.0f%%D"), value);  // 100228
 			}
+			valid = true;
 			break;
-
 
 		// B66
 		case LK_FIN_GR:

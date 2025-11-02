@@ -9,27 +9,7 @@
 #include "externs.h"
 #include "Time/PeriodClock.hpp"
 
-
 PeriodClock MapWindow::timestamp_newdata;
-
-//
-// Execution at 1hz inside RenderMapWindow
-//
-void MapWindow::DrawFunctions1HZ(LKSurface& Surface, const RECT& rc) {
-
-  ONEHZLIMITER;
-
-// TODO : Remove from Draw thread, that slowdown redraw for nothing
-
-  /**
-   * this function are not drawing functions
-   *  need to be moved outside Draw thread
-   */
-  LKBatteryManager();
-  /***/
-}
-
-
 
 void MapWindow::UpdateTimeStats() {
   timestamp_newdata.Update();
@@ -107,7 +87,6 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
   if (DONTDRAWTHEMAP) {
 	DrawFlightMode(Surface, rc);
 	DrawGPSStatus(Surface, rc);
-	DrawFunctions1HZ(Surface,rc);
 	return;
   }
 
@@ -126,8 +105,5 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 
   // GPS FIX warnings
   DrawGPSStatus(Surface, rc);
-
-  // Alarms &C.
-  DrawFunctions1HZ(Surface,rc);
 
 }

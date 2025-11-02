@@ -234,7 +234,7 @@ add_library( LK8000 SHARED
     Common/Source/AirfieldDetails.cpp
     Common/Source/Alarms.cpp
     Common/Source/Backlight.cpp
-    Common/Source/Battery.cpp
+    Common/Source/BatteryManager.cpp
     Common/Source/Bitmaps.cpp
     Common/Source/Buttons.cpp
     Common/Source/ChangeScreen.cpp

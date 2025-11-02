@@ -9,6 +9,7 @@
 #include "Logger.h"
 #include "Message.h"
 #include "InputEvents.h"
+#include "BatteryManager.h"
 #include "OS/Memory.h"
 
 extern int ConnectionProcessTimer(int itimeout);
@@ -98,7 +99,7 @@ void CommonProcessTimer() {
 
   // 0.5 Hz routines
   if (cp_twohzcounter % 4 == 0) {
-    UpdateBatteryInfos();
+    g_BatteryManager.Update();
   }
 
   Message::Render();

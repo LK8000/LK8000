@@ -100,7 +100,6 @@ bool UseContestEngine();
 int  GetWaypointFileFormatType(const TCHAR* wextension);
 
 // LK Utils
-void LKBatteryManager();
 void ChangeWindCalcSpeed(const int newspeed);
 void GotoWaypoint(const int wpnum);
 void ToggleBaroAltitude();
