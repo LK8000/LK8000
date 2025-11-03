@@ -133,10 +133,10 @@ protected:
     double _SinAngle;
 
     // Fixed point optimization
-    int32_t _CosLatZoom;
-    int32_t _CosAngle_fix;
-    int32_t _SinAngle_fix;
-    static constexpr int32_t fixed_shift = 16;
+    int64_t _CosLatZoom;
+    int64_t _CosAngle_fix;
+    int64_t _SinAngle_fix;
+    static constexpr int32_t fixed_shift = 18;
 
 private:
 
@@ -194,16 +194,16 @@ RasterPoint ScreenProjection::ToScreen<RasterPoint>(const GeoPoint& pt) const {
     //   Y = (geo_origin.latitude - pt.latitude) * _Zoom
     
     // Calculate Y directly (no cosine correction)
-    const int32_t Y = lround((geo_origin.latitude - pt.latitude) * _Zoom);
+    const int64_t Y = lround((geo_origin.latitude - pt.latitude) * _Zoom);
     
     // Calculate X using precomputed _CosLatZoom = _CosLat * _Zoom * (1 << fixed_shift)
     const double diff_lon = geo_origin.longitude - pt.longitude;
-    const int64_t diff_lon_fixed = static_cast<int64_t>(diff_lon * (1LL << fixed_shift));
-    const int32_t X = static_cast<int32_t>((diff_lon_fixed * static_cast<int64_t>(_CosLatZoom)) >> (fixed_shift * 2));
+    const auto diff_lon_fixed = static_cast<int64_t>(diff_lon * (1LL << fixed_shift));
+    const int64_t X = (diff_lon_fixed * _CosLatZoom) >> (fixed_shift * 2);
     
     // Apply rotation with fixed-point trig
-    const int32_t rotated_x = (static_cast<int64_t>(X) * _CosAngle_fix - static_cast<int64_t>(Y) * _SinAngle_fix) >> fixed_shift;
-    const int32_t rotated_y = (static_cast<int64_t>(Y) * _CosAngle_fix + static_cast<int64_t>(X) * _SinAngle_fix) >> fixed_shift;
+    const auto rotated_x = static_cast<int32_t>((X * _CosAngle_fix - Y * _SinAngle_fix) >> fixed_shift);
+    const auto rotated_y = static_cast<int32_t>((Y * _CosAngle_fix + X * _SinAngle_fix) >> fixed_shift);
     
     return {
         static_cast<PixelScalar>(screen_origin.x - rotated_x),

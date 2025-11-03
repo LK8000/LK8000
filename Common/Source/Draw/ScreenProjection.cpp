@@ -27,9 +27,9 @@ ScreenProjection::ScreenProjection(const GeoPoint& geo,
     _CosLat(std::cos(geo.latitude * DEG_TO_RAD)),
     _CosAngle(std::cos(angle * DEG_TO_RAD)),
     _SinAngle(std::sin(angle * DEG_TO_RAD)),
-    _CosLatZoom(lround(_CosLat * _Zoom * (1 << fixed_shift))),
-    _CosAngle_fix(lround(_CosAngle * (1 << fixed_shift))),
-    _SinAngle_fix(lround(_SinAngle * (1 << fixed_shift)))
+    _CosLatZoom(llround(_CosLat * _Zoom * (1 << fixed_shift))),
+    _CosAngle_fix(llround(_CosAngle * (1 << fixed_shift))),
+    _SinAngle_fix(llround(_SinAngle * (1 << fixed_shift)))
 {
 }
 
@@ -271,6 +271,17 @@ TEST_CASE("Geometric Scale and Orthogonality") {
     CHECK(d1 > 0);
     CHECK(d2 > 0);
     CHECK(std::abs(d1 - d2) < d1 * 0.5);  // relaxed 50% tolerance
+  }
+}
+
+TEST_CASE("Implementation Integrity : max zoom") {
+  ScreenProjection proj(orig_geo, orig_screen, 1501119.0, display_angle); // ~10m zoom
+  SUBCASE("Fixed-point vs floating-point consistency") {
+    GeoPoint pt = {45.00001, 9.00001};
+    auto rf = proj.ToScreen<FloatPoint>(pt);
+    auto ri = proj.ToScreen<RasterPoint>(pt);
+    CHECK(std::abs(rf.x - ri.x) < 2.0);
+    CHECK(std::abs(rf.y - ri.y) < 2.0);
   }
 }
 
