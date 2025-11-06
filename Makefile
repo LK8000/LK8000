@@ -8,6 +8,7 @@ UNAME_M := $(shell uname -m)
 HOST_IS_LINUX := $(call string_equals,$(UNAME_S),Linux)
 HOST_IS_ARM := $(call string_contains,$(UNAME_M),armv)
 HOST_IS_ARMV7 := $(call string_equals,$(UNAME_M),armv7l)
+HOST_IS_CYGWIN := $(call string_contains,$(UNAME_S),CYGWIN)
 
 ifeq ($(HOST_IS_ARMV7),y)
  HOST_HAS_NEON := $(call string_contains,$(shell -))
