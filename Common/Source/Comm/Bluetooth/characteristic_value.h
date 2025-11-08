@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
+#include <utility>
 #include "OS/ByteOrder.hpp"
 
 template <typename value_type,
