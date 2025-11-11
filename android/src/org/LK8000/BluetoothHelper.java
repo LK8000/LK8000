@@ -219,7 +219,7 @@ final class BluetoothHelper {
   }
 
   public static boolean startLeScan(String address, ScanCallback cb) {
-    if (hasLe) {
+    if (hasLe && scanner != null) {
 
       final ScanSettings.Builder settings = new ScanSettings.Builder()
               .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -237,7 +237,7 @@ final class BluetoothHelper {
   }
 
   public static void stopLeScan(ScanCallback cb) {
-    if (hasLe) {
+    if (hasLe && scanner != null) {
       scanner.stopScan(cb);
     }
   }

@@ -46,6 +46,7 @@ BluetoothLeScanner::BluetoothLeScanner(WndForm *pWndForm, callback_t callback) :
 
   Java::LocalObject obj_callback = NativeLeScanCallback::Create(env, *this);
   env->CallVoidMethod(obj, start_method, obj_callback.Get());
+  Java::RethrowException(env);
 }
 
 BluetoothLeScanner::~BluetoothLeScanner() {
