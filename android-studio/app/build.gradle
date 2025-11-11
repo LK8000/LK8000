@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'io.sentry.android.gradle' version '5.12.1'
+    id 'io.sentry.android.gradle' version '5.12.2'
 }
 
 def sentryProperties = new Properties()
@@ -20,7 +20,7 @@ if (file(sentryPropertiesFile).exists()) {
 }
 def sentryDsnUrl = sentryProperties["dsn"]
 
-configurations.all {
+configurations.configureEach {
     if (name.toLowerCase().contains("debug") || name.toLowerCase().contains("release")) {
         exclude group: "io.sentry", module: "sentry-android"
     }
@@ -139,9 +139,9 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "androidx.camera:camera-camera2:1.5.0"
-    implementation "androidx.camera:camera-lifecycle:1.5.0"
-    implementation "androidx.camera:camera-view:1.5.0"
+    implementation "androidx.camera:camera-camera2:1.5.1"
+    implementation "androidx.camera:camera-lifecycle:1.5.1"
+    implementation "androidx.camera:camera-view:1.5.1"
 
     implementation "androidx.core:core:1.17.0"
     implementation "androidx.constraintlayout:constraintlayout:2.2.1"
