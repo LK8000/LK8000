@@ -118,7 +118,7 @@ public class BluetoothGattClientPort
 
   final private AsyncCompletionQueue queueCommand = new AsyncCompletionQueue(handler);
 
-  void startLeScan(Context context, String address) {
+  private void startLeScan(Context context, String address) {
     if (callback == null) {
       callback = new LeScanCallback() {
         @Override
