@@ -671,18 +671,20 @@ add_library( LK8000 SHARED
     Common/Source/Devices/DeviceSettings.h
     Common/Source/Devices/DeviceSettings.cpp
 
+    Common/Source/Dialogs/Airspaces/dlgAirspace.cpp
+    Common/Source/Dialogs/Airspaces/dlgAirspaceColours.cpp
+    Common/Source/Dialogs/Airspaces/dlgAirspaceDetails.cpp
+    Common/Source/Dialogs/Airspaces/dlgAirspaceFiles.cpp
+    Common/Source/Dialogs/Airspaces/dlgAirspacePatterns.cpp
+    Common/Source/Dialogs/Airspaces/dlgAirspaceWarningParams.cpp
+    Common/Source/Dialogs/Airspaces/dlgLKAirspaceWarning.cpp
+    Common/Source/Dialogs/Airspaces/dlgSelectAirspace.cpp
+
     Common/Source/Dialogs/dlgSelectObject.cpp
     Common/Source/Dialogs/dlgSelectItem.cpp
-    Common/Source/Dialogs/dlgSelectAirspace.cpp
     Common/Source/Dialogs/dlgSelectWaypoint.cpp
-    Common/Source/Dialogs/dlgAirspace.cpp
-    Common/Source/Dialogs/dlgAirspaceFiles.cpp
     Common/Source/Dialogs/dlgWaypointFiles.cpp
-    Common/Source/Dialogs/dlgAirspaceWarningParams.cpp
-    Common/Source/Dialogs/dlgAirspaceColours.cpp
     Common/Source/Dialogs/dlgMultiSelectList.cpp
-    Common/Source/Dialogs/dlgAirspaceDetails.cpp
-    Common/Source/Dialogs/dlgAirspacePatterns.cpp
     Common/Source/Dialogs/dlgBasicSettings.cpp
     Common/Source/Dialogs/dlgBottomBar.cpp
     Common/Source/Dialogs/dlgChecklist.cpp
@@ -693,7 +695,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgCustomMenu.cpp
     Common/Source/Dialogs/dlgHelp.cpp
     Common/Source/Dialogs/dlgInfoPages.cpp
-    Common/Source/Dialogs/dlgLKAirspaceWarning.cpp
     Common/Source/Dialogs/dlgLKTraffic.cpp
     Common/Source/Dialogs/dlgLoggerReplay.cpp
     Common/Source/Dialogs/dlgMultimaps.cpp

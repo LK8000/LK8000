@@ -1255,17 +1255,19 @@ VOLKS	:=\
 
 
 DLGS	:=\
+	$(DLG)/Airspaces/dlgAirspace.cpp \
+	$(DLG)/Airspaces/dlgAirspaceColours.cpp \
+	$(DLG)/Airspaces/dlgAirspaceDetails.cpp \
+	$(DLG)/Airspaces/dlgAirspaceFiles.cpp \
+	$(DLG)/Airspaces/dlgAirspacePatterns.cpp \
+	$(DLG)/Airspaces/dlgAirspaceWarningParams.cpp \
+	$(DLG)/Airspaces/dlgLKAirspaceWarning.cpp \
+	$(DLG)/Airspaces/dlgSelectAirspace.cpp \
+	\
 	$(DLG)/dlgSelectObject.cpp \
-	$(DLG)/dlgSelectAirspace.cpp \
 	$(DLG)/dlgSelectWaypoint.cpp \
-	$(DLG)/dlgAirspace.cpp \
-	$(DLG)/dlgAirspaceFiles.cpp \
 	$(DLG)/dlgWaypointFiles.cpp \
-	$(DLG)/dlgAirspaceWarningParams.cpp \
-	$(DLG)/dlgAirspaceColours.cpp \
 	$(DLG)/dlgMultiSelectList.cpp \
-	$(DLG)/dlgAirspaceDetails.cpp \
-	$(DLG)/dlgAirspacePatterns.cpp \
 	$(DLG)/dlgBasicSettings.cpp \
 	$(DLG)/dlgBottomBar.cpp \
 	$(DLG)/dlgChecklist.cpp \
@@ -1276,7 +1278,6 @@ DLGS	:=\
 	$(DLG)/dlgCustomMenu.cpp \
 	$(DLG)/dlgHelp.cpp \
 	$(DLG)/dlgInfoPages.cpp \
-	$(DLG)/dlgLKAirspaceWarning.cpp \
 	$(DLG)/dlgLKTraffic.cpp \
 	$(DLG)/dlgLoggerReplay.cpp \
 	$(DLG)/dlgMultimaps.cpp\

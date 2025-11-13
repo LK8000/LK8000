@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "dlgSelectObject.h"
+#include "../dlgSelectObject.h"
 #include "Sound/Sound.h"
 #include "utils/stringext.h"
 #include "InputEvents.h"

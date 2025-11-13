@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "dlgSelectItem.h"
+#include "../dlgSelectItem.h"
 
 namespace {
 

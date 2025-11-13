@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "dlgSelectItem.h"
+#include "../dlgSelectItem.h"
 
 #ifdef HAVE_HATCHED_BRUSH
 
