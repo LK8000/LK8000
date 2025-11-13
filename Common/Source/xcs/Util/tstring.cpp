@@ -17,6 +17,19 @@ trim_inplace(std::basic_string<CharT>& s) {
   return s;
 }
 
+// Trim whitespace (returns trimmed view)
+template<typename CharT>
+std::basic_string_view<CharT>&
+trim_inplace(std::basic_string_view<CharT>& sv) {
+  while (!sv.empty() && std::isspace(static_cast<unsigned char>(sv.front()))) {
+    sv.remove_prefix(1);
+  }
+  while (!sv.empty() && std::isspace(static_cast<unsigned char>(sv.back()))) {
+    sv.remove_suffix(1);
+  }
+  return sv;
+}
+
 template <typename CharT>
 void replace_all(std::basic_string<CharT>& string, const std::basic_string_view<CharT>& old_string,
                  const std::basic_string_view<CharT>& new_string) {
@@ -36,6 +49,15 @@ std::string& trim_inplace(std::string &s) {
 std::wstring& trim_inplace(std::wstring &s) {
   return trim_inplace<std::wstring::value_type>(s);
 }
+
+std::string_view& trim_inplace(std::string_view &s) {
+  return trim_inplace<std::string::value_type>(s);
+}
+
+std::wstring_view& trim_inplace(std::wstring_view &s) {
+  return trim_inplace<std::wstring::value_type>(s);
+}
+
 
 void replace_all(std::string& string, const std::string_view& old_string, const std::string_view& new_string) {
   replace_all<std::string::value_type>(string, old_string, new_string);

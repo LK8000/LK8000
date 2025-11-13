@@ -104,6 +104,9 @@ std::string to_utf8(const char* sz) {
 std::string& trim_inplace(std::string &s);
 std::wstring& trim_inplace(std::wstring &s);
 
+std::string_view& trim_inplace(std::string_view &s);
+std::wstring_view& trim_inplace(std::wstring_view &s);
+
 void replace_all(std::string& string, const std::string_view& old_string, const std::string_view& new_string);
 void replace_all(std::wstring& string, const std::wstring_view& old_string, const std::wstring_view& new_string);
 
