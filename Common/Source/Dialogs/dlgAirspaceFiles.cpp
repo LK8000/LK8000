@@ -84,7 +84,8 @@ static void setVariables(WndForm * pForm) {
       if(dfe) {
         const TCHAR* suffix_filters[] = {
           _T(LKS_AIRSPACES),
-          _T(LKS_OPENAIP)
+          _T(LKS_OPENAIP),
+          _T(LKS_OPENAIR)
         };
         dfe->ScanDirectoryTop(_T(LKD_AIRSPACES), suffix_filters);
         dfe->Lookup(szAirspaceFile[i]);

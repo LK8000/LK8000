@@ -27,6 +27,9 @@ BOOL GetFontPath(TCHAR *pPos);
 double StrToDouble(const wchar_t *str, const wchar_t **endptr);
 double StrToDouble(const char *str, const char **endptr);
 
+int to_integer(const std::wstring_view& sv);
+int to_integer(const std::string_view& sv);
+
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);
 
 template<size_t dest_size>

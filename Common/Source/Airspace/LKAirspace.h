@@ -82,6 +82,22 @@ enum AirspaceWarningDrawStyle_t {
   awsRed
 };
 
+struct ActivationTimeT {
+  /**
+   * @brief Represents a single activation time interval for an airspace.
+   *
+   * This struct defines a period during which an airspace is active. Both start
+   * and end times are optional, allowing for flexible definitions such as
+   * active from an unspecified start until a specific end, or from a specific
+   * start until an unspecified end.
+   * If both are absent, it implies no defined time (inactive by default).
+   * Times are expected to be in UTC.
+   */
+  std::optional<std::time_t> start;
+  std::optional<std::time_t> end;
+};
+using ActivationTimesT = std::vector<ActivationTimeT>;
+
 //
 // AIRSPACE BASE CLASS
 //
@@ -161,6 +177,14 @@ class CAirspaceBase {
     return _except_sunday;
   }
 
+  void ActivationTimes(ActivationTimesT&& times);
+
+  bool HasActivationTimes() const {
+    return !_activationtimes.empty();
+  }
+
+  bool IsInActivationTimes(std::time_t time) const;
+
   int Selected() const { return _selected; }
   void Selected(bool selected) { _selected = selected; }
 
@@ -217,6 +241,7 @@ protected:
   bool _except_saturday = false; // airspace disabled saturday
   bool _except_sunday = false; // airspace disabled sunday
 
+  ActivationTimesT _activationtimes = {};
 
   // Private functions
   void AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const;
@@ -527,7 +552,7 @@ private:
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
   void CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center,
                       int Type, vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment,
-                      bool flyzone, bool enabled, bool except_saturday, bool except_sunday);
+                      bool flyzone, bool enabled, bool except_saturday, bool except_sunday, ActivationTimesT&& ActivationTimes);
 
   static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
 

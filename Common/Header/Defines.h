@@ -177,6 +177,7 @@
 #define LKS_INPUT	".xci"
 #define LKS_IGC		".igc"
 #define LKS_OPENAIP ".aip"
+#define LKS_OPENAIR ".openair"
 
 /*
  * LK8000 files (keep original suffixes)

@@ -37,6 +37,9 @@
 #include "LocalPath.h"
 #include "InputEvents.h"
 #include "utils/charset_helper.h"
+#include <string_view>
+
+using namespace std::string_view_literals;
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;
@@ -740,6 +743,38 @@ void CAirspaceBase::Init(const TCHAR *name, int type, vertical_bound &&base, ver
     _ceiling = top;
 }
 
+void CAirspaceBase::ActivationTimes(ActivationTimesT&& times) {
+  _activationtimes = std::move(times);
+
+  // No specific activation times are defined. The airspace is included in
+  // the data but only shown when activation times are later provided (e.g.
+  // by NOTAM)
+
+  bool disabled =
+      std::any_of(_activationtimes.begin(), _activationtimes.end(),
+                  [](const auto& times) -> bool {
+                    return !times.start.has_value() && !times.end.has_value();
+                  });
+
+  if (disabled) {
+    Enabled(false);
+    _activationtimes.clear();
+  }
+}
+
+bool CAirspaceBase::IsInActivationTimes(std::time_t utc_time) const {
+  if (_activationtimes.empty()) {
+    return true;
+  }
+
+  return std::any_of(_activationtimes.begin(), _activationtimes.end(),
+                     [&](const auto& times) -> bool {
+                       using limits = std::numeric_limits<std::time_t>;
+                       return (utc_time > times.start.value_or(limits::min()) &&
+                               (utc_time <= times.end.value_or(limits::max())));
+                     });
+}
+
 //
 // CAIRSPACE_CIRCLE CLASS
 //
@@ -1324,6 +1359,83 @@ static void AppendComment(tstring& Comment, const TCHAR* str) {
     Comment += str;
 }
 
+// Parse ISO 8601 time in format "YYYY-MM-DDTHH:MMZ"
+static std::optional<std::time_t> ParseIsoTime(tstring_view sv) {
+    trim_inplace(sv);
+    if (sv.empty() || sv == _T("NONE")) {
+        return std::nullopt;
+    }
+
+    // Expected formats:
+    // YYYY-MM-DDTHH:MMZ    (length 17)
+    // YYYY-MM-DDTHH:MM:SSZ (length 20)
+
+    if (sv.size() != 17 && sv.size() != 20) {
+        return std::nullopt;
+    }
+
+    try {
+        // Check fixed separators and 'Z' at the end
+        if (sv[4] != '-' || sv[7] != '-' || sv[10] != 'T' || sv.back() != 'Z') {
+            return std::nullopt;
+        }
+
+        // If it's the longer format, check the colon for seconds
+        if (sv.size() == 20 && sv[16] != ':') {
+            return std::nullopt;
+        }
+
+        auto to_int = [&](size_t pos, size_t len) {
+            return to_integer(sv.substr(pos, len));
+        };
+
+        int year = to_int(0, 4);
+        int mon = to_int(5, 2);
+        int mday = to_int(8, 2);
+        int hour = to_int(11, 2);
+        int min = to_int(14, 2);
+        int sec = (sv.size() == 20) ? to_int(17, 2) : 0;
+        return to_time_t(year, mon, mday, hour, min, sec);
+    }
+    catch (const std::exception& e) {
+        DebugLog(_T("%s : %s"), to_tstring(__func__).c_str(), to_tstring(e.what()).c_str());
+        return std::nullopt;
+    }   
+}
+
+ActivationTimeT ParseActivationTime(tstring_view sv) {
+    trim_inplace(sv);
+
+    if (sv.empty() || sv == _T("NONE")) {
+        // No specific activation times are defined. The airspace is included in
+        // the data but only shown when activation times are later provided (e.g.
+        // by NOTAM)
+        return {};
+    }
+
+    /*
+    2023-12-16T12:00Z/2023-12-16T13:00Z   ; Active from 12:00 to 13:00 UTC
+    2024-12-17T00:00Z/2024-12-17T24:00Z   ; Active for the entire UTC day
+    2024-12-17T00:00Z/NONE                ; Active from midnight UTC until unspecified end
+    NONE/2024-12-18T00:00Z                ; Active until midnight UTC, with unknown start
+    NONE                                  ; No defined time - inactive
+    */
+
+    // Split by '/'
+    tstring_view startPart = sv;
+    tstring_view endPart;
+    size_t slashPos = sv.find('/');
+    if (slashPos != std::string_view::npos) {
+        startPart = sv.substr(0, slashPos);
+        endPart   = sv.substr(slashPos + 1);
+    }
+
+    return {
+        .start = ParseIsoTime(startPart),
+        .end   = ParseIsoTime(endPart)
+    };
+}
+
 // Reading and parsing OpenAir airspace file
 bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
@@ -1359,6 +1471,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     double lat = 0, lon = 0;
     bool flyzone = false;
     bool enabled = true;
+
+    ActivationTimesT ActivationTimes;
 
     bool except_saturday = false;
     bool except_sunday = false;
@@ -1456,7 +1570,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
         // Strip comments from end of line
         TCHAR* Comment = _tcschr(p, _T('*'));
-        if (Comment != NULL) {
+        if (Comment) {
             *Comment = _T('\0'); // Truncate line
         }
         if (*p == 0) {  // always false, but do not remove in case of code change.
@@ -1469,13 +1583,17 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
             case _T('A'):
                 p++; // skip A
                 switch (*p) {
+                    case _T('A'): //AA
+                        p+= 2; // skip A and Space
+                        ActivationTimes.push_back(ParseActivationTime(p));
+                    break;
                     case _T('C'): //AC
                         p++; // skip C
                         if (parsing_state == 10) { // New airspace begin, store the old one, reset parser
                             if (InsideMap) {
                               CreateAirspace(Name.c_str(), points, Radius, Center, Type,
                                             {Base, Base2}, {Top, Top2}, ASComment,
-                                            flyzone, enabled, except_saturday, except_sunday);
+                                            flyzone, enabled, except_saturday, except_sunday, std::move(ActivationTimes));
                             }
 
                             Name.clear();
@@ -1494,6 +1612,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             except_sunday = false;
                             parsing_state = 0;
                             InsideMap = !( WaypointsOutOfRange > 1); // exclude?
+                            ActivationTimes.clear();
                         }
                         // New AC
                         p++; //Skip space
@@ -1560,6 +1679,12 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         }
                         continue;
 
+                    case _T('X'): // AX
+                        if (*(++p) == ' ') {
+                            ++p; //Skip Space ?
+                        }
+                        DebugLog(_T("Airpsace : ignore field AX <%s : %s>"), Name.c_str(), ++p);
+                        break;
                     case _T('Y'): // AY
                         if (*(++p) == ' ') {
                             ++p; //Skip Space ?
@@ -1732,7 +1857,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     if (parsing_state == 10 && InsideMap) {
       CreateAirspace(Name.c_str(), points, Radius, Center, Type,
                      {Base, Base2}, {Top, Top2}, ASComment,
-                     flyzone, enabled, except_saturday, except_sunday);
+                     flyzone, enabled, except_saturday, except_sunday, std::move(ActivationTimes));
     }
 
     unsigned airspaces_count = WithLock(_csairspaces, [&] {
@@ -1749,7 +1874,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
 void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center, int Type,
                            vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment, 
-                           bool flyzone, bool enabled, bool except_saturday, bool except_sunday) {
+                           bool flyzone, bool enabled, bool except_saturday, bool except_sunday, ActivationTimesT&& ActivationTimes) {
     try {
         std::unique_ptr<CAirspace> airspace;
         if (Radius > 0) {
@@ -1781,6 +1906,7 @@ void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon,
             airspace->Enabled(enabled);
             airspace->ExceptSaturday(except_saturday);
             airspace->ExceptSunday(except_sunday);
+            airspace->ActivationTimes(std::move(ActivationTimes));
 
             WithLock(_csairspaces, [&] {
                 _airspaces.push_back(std::move(airspace));
@@ -2051,6 +2177,8 @@ void CAirspaceManager::ReadAirspaces() {
 
             if(wextension != nullptr) { // Check if we have a file extension
                 if(_tcsicmp(wextension,_T(".txt"))==0) { // TXT file: should be an OpenAir
+                    readOk = FillAirspacesFromOpenAir(szFile);
+                } else if(_tcsicmp(wextension,_T(".openair"))==0) { // openair file: ( openair 2.1.0 specification )
                     readOk = FillAirspacesFromOpenAir(szFile);
                 } else if(_tcsicmp(wextension,_T(".aip"))==0) { // AIP file: should be an OpenAIP
                     readOk=FillAirspacesFromOpenAIP(szFile);
@@ -2864,7 +2992,8 @@ void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
         return;
     }
 
-    unsigned current = day_of_week(to_time_t(info), GetUTCOffset());
+    time_t utc_time = to_time_t(info);
+    unsigned current = day_of_week(utc_time, GetUTCOffset());
     if (last_day_of_week != current) {
         last_day_of_week = current;
 
@@ -2875,6 +3004,12 @@ void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
             if (asp->ExceptSunday()) {
                 asp->Enabled(current != 6); // Sunday
             }
+        }
+    }
+
+    for (auto asp : _airspaces) {
+        if (asp->HasActivationTimes()) {
+            asp->Enabled(asp->IsInActivationTimes(utc_time));
         }
     }
 }

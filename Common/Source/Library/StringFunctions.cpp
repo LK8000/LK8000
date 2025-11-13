@@ -7,7 +7,14 @@
 */
 #include "externs.h"
 #include <ctype.h>
+#include <string_view>
+#include <type_traits>
 #include "Util/Clamp.hpp"
+
+#if !defined(UNDER_CE)
+#include <charconv>
+#endif
+
 
 void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber)
 {
@@ -219,6 +226,20 @@ TEST_CASE("testing the StrToDouble function") {
 }
 
 #endif
+
+
+#if !defined(UNDER_CE)
+int to_integer(const std::string_view& sv) {
+  int result = {};
+  std::from_chars(sv.begin(), sv.end(), result);
+  return result;
+};
+#endif
+
+int to_integer(const std::wstring_view& sv) {
+    return std::stoi(std::wstring(sv));
+}
+
 
 // RMN: Volkslogger outputs data in hex-strings.  Function copied from StrToDouble
 // Note: Decimal-point and decimals disregarded.  Assuming integer amounts only.
