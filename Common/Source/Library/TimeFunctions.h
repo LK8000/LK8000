@@ -15,6 +15,7 @@ struct NMEA_INFO;
 int LocalTime();
 int LocalTime(int utc_time);
 
+time_t to_time_t(int year, int mon, int mday, int hour, int min, int sec);
 time_t to_time_t(const NMEA_INFO& info);
 
 unsigned day_of_week(time_t now, int utc_offset);
