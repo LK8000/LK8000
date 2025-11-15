@@ -9,6 +9,7 @@
 #include "Screen/PolygonSaveCallback.h"
 #include "Screen/PenReference.h"
 #ifdef USE_GLSL
+#include "Screen/OpenGL/Buffer.hpp"
 #include <glm/mat4x4.hpp>
 #endif
 
@@ -41,11 +42,19 @@ class AirspaceRenderer final {
                                   // but is used only by CalculateScreenPosition();
   RasterPointList _screenpoints_clipped;
 
-  TessPolygonT<FloatPoint> _tess_polygon;  // triangulated polygon in geographic coordinates
 #ifndef HAVE_GLES
+  TessPolygonT<FloatPoint> _tess_polygon;  // triangulated polygon in geographic coordinates
   TessPolygonT<FloatPoint> _tess_polygon_screen;
 #else
-  glm::mat4 _proj_mat;
+  struct polygon {
+    unsigned type;
+    size_t vertex_count;
+    std::unique_ptr<GLArrayBuffer> vbo;
+  };
+
+  std::vector<polygon> _tess_polygon;
+
+  glm::mat4 _proj_mat = glm::mat4(1.0f);
 #endif
 };
 

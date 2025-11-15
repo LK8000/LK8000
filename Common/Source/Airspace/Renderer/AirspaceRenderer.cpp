@@ -50,7 +50,12 @@ void AirspaceRenderer::Update(CPoint2DArray& geopoints, bool need_clipping, cons
   }
 
   if (_tess_polygon.empty()) {
-    PolygonSaveCallback callback(_tess_polygon);
+#ifdef USE_GLSL
+    TessPolygonT<FloatPoint> tess_polygon;
+#else
+    auto& tess_polygon = _tess_polygon;
+#endif
+    PolygonSaveCallback callback(tess_polygon);
     PolygonRenderer renderer(callback);
     renderer.BeginPolygon();
     renderer.BeginContour();
@@ -59,28 +64,37 @@ void AirspaceRenderer::Update(CPoint2DArray& geopoints, bool need_clipping, cons
     }
     renderer.EndContour();
     renderer.EndPolygon();
+
+#ifdef USE_GLSL
+    for (const auto& item : tess_polygon) {
+      unsigned type = item.type;
+      auto& vertex = item.vertex;
+      auto vbo = std::make_unique<GLArrayBuffer>();
+      vbo->Load(static_cast<GLsizei>(vertex.size() * sizeof(FloatPoint)), vertex.data());
+      _tess_polygon.push_back({type, vertex.size(), std::move(vbo)});
+    }
+#endif
   }
 
-#ifndef USE_GLSL
+#ifdef USE_GLSL
+  _proj_mat = _Proj.ToGLM();
+#else
   _tess_polygon_screen.clear();
 
   for(const auto& item : _tess_polygon) {
 
     std::vector<FloatPoint> screenpoints;
-    screenpoints.reserve(geopoints.size());
-    std::transform(std::begin(item.vertex), std::end(item.vertex), std::back_inserter(screenpoints),
-                   [&](const FloatPoint& p) {
-                     return _Proj.ToScreen<FloatPoint>({p.y, p.x});
-                   });
+    screenpoints.reserve(item.vertex.size());
+    std::transform(std::begin(item.vertex), std::end(item.vertex),
+                   std::back_inserter(screenpoints),
+                   GeoToScreen<FloatPoint>(_Proj));
 
     TessPolygon<FloatPoint> screenpolygon = {
         item.type,
-        screenpoints,
+        std::move(screenpoints),
     };
     _tess_polygon_screen.push_back(std::move(screenpolygon));
   }
-#else
-  _proj_mat = _Proj.ToGLM();
 #endif
 }
 
@@ -101,7 +115,6 @@ void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) con
 
 #ifdef USE_GLSL
   OpenGL::solid_shader->Use();
-  const auto& _tess_polygon_screen = _tess_polygon;
   glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(_proj_mat));
 
   brush.Bind();
@@ -111,15 +124,24 @@ void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) con
     blend = std::make_unique<const ScopeAlphaBlend>();
   }
 
-#endif
+  glEnableVertexAttribArray(OpenGL::Attribute::POSITION);
+  for (const auto& item : _tess_polygon) {
+    item.vbo->Bind();
+    glVertexAttribPointer(OpenGL::Attribute::POSITION, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glDrawArrays(item.type, 0, item.vertex_count);
+    item.vbo->Unbind();
+  }
+  glDisableVertexAttribArray(OpenGL::Attribute::POSITION);
+
+  glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
+
+#else
 
   PolygonDrawCallback renderer(Surface);
   std::for_each(_tess_polygon_screen.begin(), _tess_polygon_screen.end(), [&](const auto& item) {
     renderer(item.type, item.vertex);
   });
 
-#ifdef USE_GLSL
-  glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
 #endif
 
   Surface.SelectObject(old);
