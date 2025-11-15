@@ -290,12 +290,26 @@ class NativeView extends SurfaceView
   }
 
   private boolean setRequestedOrientation(int requestedOrientation) {
-    ((Activity)getContext()).setRequestedOrientation(requestedOrientation);
-    return true;
+    try {
+      ((Activity)getContext()).setRequestedOrientation(requestedOrientation);
+      return true;
+    } catch (Exception e) {
+      /* even though undocumented, there are reports of
+         setRequestedOrientation() throwing IllegalStateException */
+      Log.e(TAG, "setRequestedOrientation error", e);
+      return false;
+    }
   }
 
   private int getRequestedOrientation() {
-    return ((Activity)getContext()).getRequestedOrientation();
+    try {
+      return ((Activity)getContext()).getRequestedOrientation();
+    } catch (Exception e) {
+      /* even though undocumented, there are reports of
+         getRequestedOrientation() throwing IllegalStateException */
+      Log.e(TAG, "getRequestedOrientation error", e);
+      return 0;
+    }
   }
 
   private int getDisplayOrientation() {
