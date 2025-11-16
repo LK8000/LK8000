@@ -106,7 +106,8 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         cameraProviderFuture.addListener(() -> {
             try {
                 bindCameraPreview(cameraProviderFuture.get());
-            } catch (ExecutionException | InterruptedException e) {
+            }
+            catch (Exception e) {
                 Toast.makeText(this, "Error starting camera " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }, ContextCompat.getMainExecutor(this));
