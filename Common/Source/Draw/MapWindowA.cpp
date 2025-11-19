@@ -196,7 +196,8 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   hdcMask.RestoreState(nDC2);
   TempSurface.RestoreState(nDC3);
 } // DrawTptAirSpace()
-#else
+
+#else // ! ENABLE_OPENGL
 
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   ScopeLock guard(CAirspaceManager::Instance().MutexRef());
@@ -207,40 +208,64 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
 
+  if (borders_only) {
+    // Clear the stencil buffer to start from a known state (all bits zero).
+    glStencilMask(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
+  }
+
+  // Then set the standard alpha blending function for rendering (source
+  // over destination).
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  const GLEnable<GL_BLEND> blend;
+
   for (auto& pAsp : airspaces_to_draw) {
     if ((pAsp->DrawStyle() == adsHidden) || pAsp->Top().below_msl()) {
-      continue;  // don't draw on map if hidden or upper limit is on sea level or below
+      // Skip hidden airspaces or those with upper limit at/below sea level
+      continue;
     }
 
     const int airspace_type = pAsp->Type();
 
-    std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;
-    if (borders_only) {
-      stencil = std::make_unique<const GLEnable<GL_STENCIL_TEST>>();
-
-      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-      glDepthMask(GL_FALSE);
-      glStencilFunc(GL_NEVER, 1, 0xFF);
-      glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
-      glStencilMask(0xFF);
-      glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
-
-      // Fill Stencil
-      pAsp->DrawOutline(Surface, hAirspaceBorderPen);
-
-      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-      glDepthMask(GL_TRUE);
-      glStencilMask(0x00);
-      // draw where stencil's value is not 0
-      glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-    }
-
-    // Draw Airspaces
     if (pAsp->DrawStyle() == adsFilled) {
+      std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;
+      if (borders_only) {
+        stencil = std::make_unique<const GLEnable<GL_STENCIL_TEST>>();
+
+        // PASS 1: Mark interior pixels with stencil value 1
+        // - Disable color writes to avoid unnecessary fragment processing
+        // - Always pass stencil test and write value 1 to stencil bit 0
+        // - This creates a mask distinguishing interior from exterior pixels
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glStencilFunc(GL_ALWAYS, 1, 1);  // ref=1, mask=1
+        glStencilMask(1);                // Write to bit 0 only
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+        pAsp->DrawOutline(Surface, hAirspaceBorderPen);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+        // PASS 2: Fill interior where stencil == 1 and automatically clear stencil
+        // - Only pixels marked as "interior" in Pass 1 will be filled
+        // - GL_ZERO clears stencil as we fill, eliminating need for separate clear pass
+        glStencilFunc(GL_EQUAL, 1, 1);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
+      }
+
       pAsp->FillPolygon(Surface, GetAirSpaceSldBrushByClass(airspace_type));
     }
 
-    if (((pAsp->DrawStyle() == adsFilled) && !borders_only) ^ (asp_selected_flash && pAsp->Selected())) {
+    // Determine outline pen based on airspace state
+    bool is_filled_no_borders =
+        (pAsp->DrawStyle() == adsFilled) && !borders_only;
+    bool is_selected_flashing = asp_selected_flash && pAsp->Selected();
+
+    // Use black outline when exactly one condition is true (XOR):
+    // - Filled airspaces (no-borders mode) normally use black outlines
+    // - Selected airspaces flash with black outlines
+    // - When both conditions apply, use default color to avoid over-emphasis
+    bool use_black_outline = is_filled_no_borders ^ is_selected_flashing;
+
+    if (use_black_outline) {
       pAsp->DrawOutline(Surface, LK_BLACK_PEN);
     }
     else if (pAsp->DrawStyle() == adsDisabled) {
@@ -250,6 +275,11 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
       pAsp->DrawOutline(Surface, hAirspacePens[airspace_type]);
     }
   }  // for
+
+  if (borders_only) {
+    // Restore stencil write mask (allow writing all bits again if needed)
+    glStencilMask(0xFF);
+  }
 }
 
 #endif
