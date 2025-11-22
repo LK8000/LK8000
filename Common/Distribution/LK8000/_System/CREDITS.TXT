@@ -10,6 +10,14 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.43]
+* Android
+ - update openaip airspaces download url
+ - fix freeze at low zoom level with border only airspace setting
+ - fix segfault in device config if bluetooth is disabled
+* Language
+ - update chinese translation
+
 [version 7.4.42]
 * Fix
  - Arithmetic overflow at hight zomm level
