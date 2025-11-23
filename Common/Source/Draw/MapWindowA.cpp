@@ -199,6 +199,13 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
 
 #else // ! ENABLE_OPENGL
 
+static void SetupStencilWrite(GLint stencilValue) {
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glStencilFunc(GL_ALWAYS, stencilValue, 1);
+  glStencilMask(1);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+}
+
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   ScopeLock guard(CAirspaceManager::Instance().MutexRef());
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
@@ -236,22 +243,28 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
         // - Disable color writes to avoid unnecessary fragment processing
         // - Always pass stencil test and write value 1 to stencil bit 0
         // - This creates a mask distinguishing interior from exterior pixels
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-        glStencilFunc(GL_ALWAYS, 1, 1);  // ref=1, mask=1
-        glStencilMask(1);                // Write to bit 0 only
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        SetupStencilWrite(1);
 
         pAsp->DrawOutline(Surface, hAirspaceBorderPen);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-        // PASS 2: Fill interior where stencil == 1 and automatically clear stencil
+        // PASS 2: Fill interior where stencil == 1
         // - Only pixels marked as "interior" in Pass 1 will be filled
-        // - GL_ZERO clears stencil as we fill, eliminating need for separate clear pass
         glStencilFunc(GL_EQUAL, 1, 1);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
       }
 
       pAsp->FillPolygon(Surface, GetAirSpaceSldBrushByClass(airspace_type));
+
+      if (borders_only) {
+        // PASS 3: Clear stencil on border area (set to 0)
+        // This is faster than glClear() on Mali GPUs as it only clears
+        // the narrow border region via rasterization instead of the full buffer
+        SetupStencilWrite(0);
+
+        pAsp->DrawOutline(Surface, hAirspaceBorderPen);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+      }
     }
 
     // Determine outline pen based on airspace state
