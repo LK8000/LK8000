@@ -103,6 +103,8 @@ public:
   double GetCovAbsAbs() const { return filter_.GetCovAbsAbs(); }
   double GetCovAbsVel() const { return filter_.GetCovAbsVel(); }
   double GetCovVelVel() const { return filter_.GetCovVelVel(); }
+
+  uint64_t GetLastUpdateUS() const { return t_last_update_us_; }
 };
 
 #endif
