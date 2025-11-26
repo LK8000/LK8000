@@ -9,7 +9,7 @@
 #include "Vario.h"
 
 extern void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-extern void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+extern void SpeedToFly(const NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 void DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(Basic && Calculated) {
