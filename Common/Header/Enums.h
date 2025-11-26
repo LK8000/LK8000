@@ -59,6 +59,7 @@ typedef struct{
 }FontHeightInfo_t;
 
 enum class AircraftCategory_t : uint8_t {
+  umUnknown = 0xFF,
   umGlider = 0,
   umParaglider,
   umCar,
