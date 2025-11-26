@@ -888,6 +888,9 @@ LIBRARY	:=\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
 	$(LIB)/cpp-mmf/memory_mapped_file.cpp \
+	\
+    $(SRC)/xcs/Math/KalmanFilter1d.cpp \
+    $(SRC)/xcs/Math/SelfTimingKalmanFilter1d.cpp \
 
 
 WAYPT	:=\
