@@ -69,6 +69,24 @@ void GLoad(DeviceDescriptor_t& d, NMEA_INFO& info,
   info.Gload.update(d, value / 10.0);
 }
 
+void Roll(DeviceDescriptor_t& d, NMEA_INFO& info,
+            const std::vector<uint8_t>& data) {
+  double value = characteristic_value<int16_t>(data).get()  / 10.;
+  ScopeLock lock(CritSec_FlightData);
+  GyroscopeData GyroData = info.Gyroscope.value(); 
+  GyroData.Roll = value;
+  info.Gyroscope.update(d, std::move(GyroData));
+}
+
+void Pitch(DeviceDescriptor_t& d, NMEA_INFO& info,
+            const std::vector<uint8_t>& data) {
+  double value = characteristic_value<int16_t>(data).get() / 10.;
+  ScopeLock lock(CritSec_FlightData);
+  GyroscopeData GyroData = info.Gyroscope.value(); 
+  GyroData.Pitch = value;
+  info.Gyroscope.update(d, std::move(GyroData));
+}
+
 #ifndef NDEBUG
 void VarioMode(DeviceDescriptor_t& d, NMEA_INFO& info,
            const std::vector<uint8_t>& data) {
@@ -99,6 +117,8 @@ const service_table_t& service_table() {
             {"2fce4895-0197-47e0-a825-d4777b9a5d67", {&GLoad}},
             {"2fce4896-0197-47e0-a825-d4777b9a5d67", {&Azimuth}},
             {"2fce4902-0197-47e0-a825-d4777b9a5d67", {&VarioNetto}},
+            {"2fce4897-0197-47e0-a825-d4777b9a5d67", {&Roll}},
+            {"2fce4898-0197-47e0-a825-d4777b9a5d67", {&Pitch}},
 #ifndef NDEBUG
             {"2fce4903-0197-47e0-a825-d4777b9a5d67", {&VarioMode}},
 #endif
