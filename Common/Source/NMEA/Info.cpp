@@ -22,4 +22,5 @@ void NMEA_INFO::reset_availability(std::optional<unsigned> idx) {
   Acceleration.reset(idx);
   IndicatedAirSpeed.reset(idx);
   TrueAirSpeed.reset(idx);
+  Gyroscope.reset(idx);
 }

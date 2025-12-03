@@ -47,7 +47,7 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc) {
 
 void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
 #ifdef USE_AHRS
-    if (DrawInfo.GyroscopeAvailable) {
+    if (DrawInfo.Gyroscope.available()) {
         DrawAHRS(Surface, rc);
         return;
     }
@@ -171,16 +171,19 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
 
   //if (!CALCULATED_INFO.Flying) {
   // speed is in m/s
-  if(DrawInfo.Speed <5.5 && !DrawInfo.GyroscopeAvailable)
-    disabled=true;
+  if (DrawInfo.Speed < 5.5 && !DrawInfo.Gyroscope.available()) {
+    disabled = true;
+  }
 
   if (disabled) {
-	hpBlack = LKPen_Grey_N1;
-	hbBlack = LKBrush_Grey;
-  } else {
-	hpBlack = LKPen_Black_N1;
-	hbBlack = LKBrush_Black;
-        beta = DrawInfo.GyroscopeAvailable ? DrawInfo.Roll : DerivedDrawInfo.BankAngle;
+    hpBlack = LKPen_Grey_N1;
+    hbBlack = LKBrush_Grey;
+  }
+  else {
+    hpBlack = LKPen_Black_N1;
+    hbBlack = LKBrush_Black;
+    beta = DrawInfo.Gyroscope.available() ? DrawInfo.Gyroscope.value().Roll
+                                          : DerivedDrawInfo.BankAngle;
   }
 
   const BrushReference hbWhite = LKBrush_White;
@@ -423,19 +426,22 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
 
   //if (!CALCULATED_INFO.Flying) {
   // speed is in m/s
-  if(DrawInfo.Speed <5.5 && !DrawInfo.GyroscopeAvailable)
-    disabled=true;
-
-  if (disabled) {
-	hpBlack = LKPen_Grey_N1;
-	hbBlack = LKBrush_Grey;
-  } else {
-	hpBlack = LKPen_Black_N1;
-	hbBlack = LKBrush_Black;
-        beta = DrawInfo.GyroscopeAvailable ? DrawInfo.Roll : DerivedDrawInfo.BankAngle;
+  if (DrawInfo.Speed < 5.5 && !DrawInfo.Gyroscope.available()) {
+    disabled = true;
   }
 
-  double gamma =  -DrawInfo.Pitch;
+  if (disabled) {
+    hpBlack = LKPen_Grey_N1;
+    hbBlack = LKBrush_Grey;
+  }
+  else {
+    hpBlack = LKPen_Black_N1;
+    hbBlack = LKBrush_Black;
+    beta = DrawInfo.Gyroscope.available() ? DrawInfo.Gyroscope.value().Roll
+                                          : DerivedDrawInfo.BankAngle;
+  }
+
+  double gamma =  -DrawInfo.Gyroscope.value().Pitch;
 
   beta  = -beta;
   double beta_sine = fastsine(beta);

@@ -1554,9 +1554,11 @@ BOOL DevLX_EOS_ERA::LXBC(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
           }
           if(bAHRS)
           {
-            info->Pitch = fPitch;
-            info->Roll  = fRoll;
-            info->GyroscopeAvailable = true;
+            GyroscopeData data = {
+              .Pitch = fPitch,
+              .Roll = fRoll,
+            };
+            info->Gyroscope.update(*d, std::move(data));
           }
         }
       }

@@ -152,17 +152,14 @@ bool DevVaulter::PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
 //  3 280.2 Kurs (Grad, bezogen auf rechtweisend Nord)
 //  4 33.0 Angezeigte Geschwindigkeit (m/s)
 //  5 1.1 Lastenvielfaches (g)
-  double tmp=0;
 
-  if (ParToDouble(sentence, 0, &tmp))
-  {
-    info->Roll = tmp;
-    info->GyroscopeAvailable = true;
+  GyroscopeData data;
+  if (ParToDouble(sentence, 0, &data.Roll) &&
+      ParToDouble(sentence, 1, &data.Pitch)) {
+    info->Gyroscope.update(*d, std::move(data));
   }
 
-  if (ParToDouble(sentence, 1, &tmp))
-    info->Pitch = tmp;
-
+  double tmp=0;
   if (ParToDouble(sentence, 2, &tmp))
   {
     info->MagneticHeading.update(*d, tmp);

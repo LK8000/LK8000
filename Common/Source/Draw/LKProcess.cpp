@@ -2358,18 +2358,19 @@ olc_score:
 
                 // B127
 		case LK_BANK_ANGLE:
-                        valid=true;
-			if(DrawInfo.GyroscopeAvailable) { 
-				value=DrawInfo.Roll;
-                                // LKTOKEN _@M1197_ "Bank"
-                                lk::strcpy(BufferTitle, MsgToken<1197>());
-			} else {
-				value=DerivedDrawInfo.BankAngle;
+			valid = true;
+			if (DrawInfo.Gyroscope.available()) {
+				value = DrawInfo.Gyroscope.value().Roll;
+				// LKTOKEN _@M1197_ "Bank"
+				lk::strcpy(BufferTitle, MsgToken<1197>());
+			}
+			else {
+				value = DerivedDrawInfo.BankAngle;
 				_stprintf(BufferTitle, TEXT("e%s"), MsgToken<1197>());
 			}
-            _stprintf(BufferValue,TEXT("%.0f%s"), value, MsgToken<2179>());
+			_stprintf(BufferValue, TEXT("%.0f%s"), value,
+					MsgToken<2179>());
 			break;
-
 		// B128
 		case LK_ALTERN1_RAD:
 		// B129

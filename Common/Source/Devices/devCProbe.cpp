@@ -178,11 +178,11 @@ BOOL CDevCProbe::ParseData(DeviceDescriptor_t* d, nmeastring& wiss, NMEA_INFO *p
 	if(sin_pitch < 1.0 && sin_pitch > -1.0){
 		pINFO->MagneticHeading.update(*d, (PI + atan2(2*(q1 * q2 + q3 * q0), q3 * q3 - q0 * q0 - q1 * q1 + q2 * q2))*RAD_TO_DEG);
 
-		pINFO->GyroscopeAvailable=TRUE;
-		pINFO->Pitch = asin(sin_pitch)*RAD_TO_DEG;
-		pINFO->Roll = atan2( 2 * (q0 * q1 + q3 * q2), q3 * q3 + q0 * q0 - q1 * q1 - q2 * q2)*RAD_TO_DEG;
-	}else{
-		pINFO->GyroscopeAvailable=FALSE;
+		GyroscopeData data = {
+			.Pitch = asin(sin_pitch)*RAD_TO_DEG,
+			.Roll = atan2( 2 * (q0 * q1 + q3 * q2), q3 * q3 + q0 * q0 - q1 * q1 - q2 * q2)*RAD_TO_DEG,
+		};
+		pINFO->Gyroscope.update(*d, std::move(data));
 	}
 
     if (d->OnAcceleration) {
@@ -439,7 +439,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	WndProperty* wp;
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpPitch"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Pitch, MsgToken<2179>());
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Pitch, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpHeading"));
@@ -449,7 +449,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpRoll"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Roll, MsgToken<2179>());
+		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Roll, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 

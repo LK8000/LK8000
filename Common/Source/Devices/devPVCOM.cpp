@@ -252,11 +252,11 @@ bool PVCOM_ProcessPEYI(DeviceDescriptor_t* d, const char *sentence, NMEA_INFO *i
     data.localDeclination = value;
 
   if(status) {
-
-    info->GyroscopeAvailable = true;
-    info->Pitch = data.eulerPitch;
-    info->Roll = data.eulerRoll;
-
+    GyroscopeData  GyroData  = {
+      .Pitch = data.eulerPitch,
+      .Roll = data.eulerRoll,
+    };
+    info->Gyroscope.update(*d, std::move(GyroData));    
     info->MagneticHeading.update(*d, data.magneticHeading);
 
     if (d->OnAcceleration) {

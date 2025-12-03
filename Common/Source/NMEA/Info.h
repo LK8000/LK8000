@@ -75,6 +75,12 @@ struct WindData {
     double Direction = {};
 };
 
+struct GyroscopeData {
+    double Pitch = {};
+    double Roll = {};
+};
+
+
 struct NMEA_INFO final {
     NMEA_INFO() = default;
 
@@ -107,6 +113,7 @@ struct NMEA_INFO final {
     from_device_data<Point3D> Acceleration = {}; // in G
     from_device_data<double> IndicatedAirSpeed = {};
     from_device_data<double> TrueAirSpeed = {};
+    from_device_data<GyroscopeData> Gyroscope = {};
 
     int	ExtBatt_Bank = {};
     double ExtBatt1_Voltage = {};
@@ -128,10 +135,6 @@ struct NMEA_INFO final {
     FANET_NAME FanetName[MAXFANETDEVICES] = {};
 
     double SupplyBatteryVoltage = {};
-
-    bool GyroscopeAvailable = {};
-    double Pitch = {};
-    double Roll = {};
 
     void reset_availability(std::optional<unsigned> idx = {});
 };

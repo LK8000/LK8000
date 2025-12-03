@@ -113,13 +113,11 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
     pGPS->TrueAirSpeed.update(*d, TrueAirSpeed(ias, qne_alt));
   }
 
-  double Roll, Pitch;
-  if (ReadChecked(params[10], Roll)
-      && ReadChecked(params[11], Pitch))
+  GyroscopeData GyroData;
+  if (ReadChecked(params[10], GyroData.Roll)
+      && ReadChecked(params[11], GyroData.Pitch))
   {
-    pGPS->GyroscopeAvailable = true;
-    pGPS->Roll = Roll;
-    pGPS->Pitch = Pitch;
+    pGPS->Gyroscope.update(*d, std::move(GyroData));
   }
 
   if (d->OnAcceleration) {
