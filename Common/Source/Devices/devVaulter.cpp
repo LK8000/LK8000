@@ -146,12 +146,12 @@ BOOL DevVaulter::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INF
 bool DevVaulter::PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 //  $PITV3,20.0,-5.3,280.2,33.0,1.1*44
-//  Feld Beispiel Beschreibung
-//  1 20.0 Rollwinkel (Grad, positiv nach rechts)
-//  2 -5.3 Anstellwinkel (Grad, positiv nach oben)
-//  3 280.2 Kurs (Grad, bezogen auf rechtweisend Nord)
-//  4 33.0 Angezeigte Geschwindigkeit (m/s)
-//  5 1.1 Lastenvielfaches (g)
+//  Field Example Description
+//  1 20.0 Roll angle (degrees, positive to the right)
+//  2 -5.3 Angle of attack (degrees, positive upwards)
+//  3 280.2 Course (degrees, relative to true North)
+//  4 33.0 Indicated speed (m/s)
+//  5 1.1 Load factor (g)
 
   GyroscopeData data;
   if (ParToDouble(sentence, 0, &data.Roll) &&
@@ -198,13 +198,13 @@ bool DevVaulter::PITV3(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
 bool DevVaulter::PITV4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info)
 {
 //  $PITV4,2.0,2.8,2.2,430.2,460.2,460.4*44
-//  Feld Beispiel Beschreibung
-//  1 2.0 Absoultes Variometer (m/s, positiv steigen)
-//  2 2.8 Netto Variometer (m/s, positiv steigen)
-//  3 2.2 Relatives Variometer (m/s, positiv steigen)
-//  4 430.2 Barometrische Höhe (m)
-//  5 460.2 Barometrische Energiehöhe (m)
-//  6 460.4 Inertiale Energiehöhe (m)
+//  Field Example Description
+//  1 2.0 Absolute variometer (m/s, positive for climb)
+//  2 2.8 Netto variometer (m/s, positive for climb)
+//  3 2.2 Relative variometer (m/s, positive for climb)
+//  4 430.2 Barometric altitude (m)
+//  5 460.2 Barometric energy altitude (m)
+//  6 460.4 Inertial energy altitude (m)
   double  tmp=0;
   if (ParToDouble(sentence, 0, &tmp))
   {
@@ -238,15 +238,15 @@ bool DevVaulter::PITV4(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
 bool DevVaulter::PITV5(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info )
 {
 //  $PITV5,5.0,30.0,0.950,0.15,0,2.30*44
-//  Feld Beispiel Beschreibung
-//  1 5.0 Windgeschwindigkeit (m/s)
-//  2 30.0 Windrichtung ind Grad, bezogen au  rechtweisend Nord)
-//  3 0.950 Quadratwurzel des Verhältnisses von  Ludichte zu ISA Meeresspiegel
-//  4 0.15 Turbulenzmessung
-//  5 0 Sollfahrt/Vario:
+//  Field Example Description
+//  1 5.0 Wind speed (m/s)
+//  2 30.0 Wind direction in degrees, relative to true North
+//  3 0.950 Square root of the ratio of air density to ISA sea level
+//  4 0.15 Turbulence measurement
+//  5 0 Speed-to-fly/Vario:
 //  0=Vario
-//  1=Sollfahrt
-//  6 2.30 MacCready-Wert (m/s)
+//  1=Speed-to-fly
+//  6 2.30 MacCready value (m/s)
 
 
   double WindSpeed, WindDirection;
@@ -260,4 +260,3 @@ bool DevVaulter::PITV5(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* i
   }
   return (true);
 } // PITV5()
-
