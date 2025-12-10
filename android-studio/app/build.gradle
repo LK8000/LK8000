@@ -139,16 +139,16 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "androidx.camera:camera-camera2:1.5.1"
-    implementation "androidx.camera:camera-lifecycle:1.5.1"
-    implementation "androidx.camera:camera-view:1.5.1"
+    implementation "androidx.camera:camera-camera2:1.5.2"
+    implementation "androidx.camera:camera-lifecycle:1.5.2"
+    implementation "androidx.camera:camera-view:1.5.2"
 
     implementation "androidx.core:core:1.17.0"
     implementation "androidx.constraintlayout:constraintlayout:2.2.1"
-    implementation "androidx.activity:activity:1.11.0"
+    implementation "androidx.activity:activity:1.12.1"
     implementation "androidx.appcompat:appcompat:1.7.1"
 
-    implementation "com.google.zxing:core:3.5.3"
+    implementation "com.google.zxing:core:3.5.4"
 
     implementation "com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07"
     implementation "com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07"
