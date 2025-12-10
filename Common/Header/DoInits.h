@@ -30,6 +30,7 @@
 	MDI_EVENTINVERTCOLOR,		// OutlinedTp  , to be checked TODO
 	MDI_GETLOCALPATH,		// system path change!
 	MDI_DRAWTRI,			// screen change
+    MDI_DRAWAHRS,			// screen change
 	MDI_DRAWFLARMTRAFFIC,		// screen change
 	MDI_DRAWINFOPAGE,		// screen change
 	MDI_WRITEINFO,			// screen change

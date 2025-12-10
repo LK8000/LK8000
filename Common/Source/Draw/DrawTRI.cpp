@@ -14,6 +14,7 @@
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
 #include "Asset.hpp"
+#include "utils/printf.h"
 
 
 #ifndef LKCOMPETITION
@@ -25,16 +26,17 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc) {
     return;
   }
 
-  const double ScaleX = (rc.right - rc.left)/10;
-  const double ScaleY = (rc.top - rc.bottom)/10;
-  const double ScaleZ = (rc.top - rc.bottom)/20;
-  POINT Pos = {
-      static_cast<decltype(POINT::x)>(
-          std::round((rc.right - rc.left) / 2 + (DerivedDrawInfo.Acceleration.y * ScaleX))),
-      static_cast<decltype(POINT::x)>(
-          std::round((rc.bottom - rc.top) / 2 - ((DerivedDrawInfo.Acceleration.z - 1) * ScaleY)))
-  };
-  const double radius = NIBLSCALE(15) + (DerivedDrawInfo.Acceleration.x * ScaleZ);
+  const double ScaleX = (rc.right - rc.left) / 10;
+  const double ScaleY = (rc.top - rc.bottom) / 10;
+  const double ScaleZ = (rc.top - rc.bottom) / 20;
+  POINT Pos = {static_cast<decltype(POINT::x)>(
+                   std::round((rc.right - rc.left) / 2 +
+                              (DerivedDrawInfo.Acceleration.y * ScaleX))),
+               static_cast<decltype(POINT::x)>(std::round(
+                   (rc.bottom - rc.top) / 2 -
+                   ((DerivedDrawInfo.Acceleration.z - 1) * ScaleY)))};
+  const double radius =
+      NIBLSCALE(15) + (DerivedDrawInfo.Acceleration.x * ScaleZ);
 
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
@@ -304,17 +306,18 @@ void MapWindow::DrawCompassRose(LKSurface& Surface, const RECT& rc, double direc
     Surface.SelectObject(oldBrush);
 }
 
-void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
-{
-  POINT Start;
+void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc) {
 
-  static short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
+  PixelScalar top =
+      (((rc.bottom - BottomSize - (rc.top + TOPLIMITER) - BOTTOMLIMITER) /
+        PANELROWS) +
+       rc.top + TOPLIMITER) -
+      (rc.top + TOPLIMITER);
 
-  Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
-  Start.x = (rc.right - rc.left)/2;
-
-  PenReference hpBlack;
-  BrushReference hbBlack;
+  RasterPoint Start = {
+      (rc.right - rc.left) / 2,
+      ((rc.bottom - BottomSize - top) / 2) + top - NIBLSCALE(10)
+  };
 
   // gauge size radius
   static int radius = NIBLSCALE(75);
@@ -324,322 +327,255 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc)
   //static int tailsize = planesize/4+NIBLSCALE(2);
   static int innerradius = radius - NIBLSCALE(8);
 #define GC_NO_CIRCLE_PTS 90
-  static POINT d00[2][2],d15[2][4],d30[2][4], d45[2][4], d60[2][4], circle[GC_NO_CIRCLE_PTS];
+  static RasterPoint d00[2][2], d15[2][4], d30[2][4], d45[2][4], d60[2][4];
+  static RasterPoint circle[GC_NO_CIRCLE_PTS];
+
   TCHAR Buffer[LKSIZEBUFFERVALUE];
-  double beta=0.0;
-  bool disabled=false;
 
-  if (DoInit[MDI_DRAWTRI])
-  {
+  if (DoInit[MDI_DRAWAHRS]) {
+    innerradius = radius - NIBLSCALE(8);
 
-  innerradius = radius - NIBLSCALE(8);
+    double alpha = 0;
+    int alphastep = 360 / GC_NO_CIRCLE_PTS;
+    for (int i = 0; i < GC_NO_CIRCLE_PTS; i++) {
+      circle[i].x = Start.x + (fastsine(alpha) * (radius + 1));
+      circle[i].y = Start.y - (fastcosine(alpha) * (radius + 1));
+      alpha += alphastep;
+    }
+    // [a][b]  a=0 external circle a=1 inner circle  b=1-4
 
-  double alpha =0;
-  int alphastep = 360/GC_NO_CIRCLE_PTS;
-  for(int i =0; i < GC_NO_CIRCLE_PTS; i++)
-  {
-	circle[i].x =  Start.x + (LONG)(fastsine(alpha) * (radius+1));
-	circle[i].y =  Start.y - (LONG)(fastcosine(alpha) * (radius+1));
-	alpha += alphastep;
-  }
-  // [a][b]  a=0 external circle a=1 inner circle  b=1-4
+    d00[0][0].x = Start.x;
+    d00[0][0].y = Start.y - radius;
+    d00[1][0].x = Start.x;
+    d00[1][0].y = Start.y - innerradius;
+    d00[0][1].x = Start.x;
+    d00[0][1].y = Start.y + radius;
+    d00[1][1].x = Start.x;
+    d00[1][1].y = Start.y + innerradius;
 
-  d00[0][0].x= Start.x ;
-  d00[0][0].y= Start.y - radius;
-  d00[1][0].x= Start.x ;
-  d00[1][0].y= Start.y- innerradius;
-  d00[0][1].x= Start.x ;
-  d00[0][1].y= Start.y+ radius;
-  d00[1][1].x= Start.x ;
-  d00[1][1].y= Start.y+ innerradius;
+    d15[0][0].y = Start.y - radius * fastcosine(15.0);
+    d15[0][0].x = Start.x + radius * fastsine(15.0);
+    d15[1][0].y = Start.y - innerradius * fastcosine(15.0);
+    d15[1][0].x = Start.x + innerradius * fastsine(15.0);
+    d15[0][1].y = Start.y - radius * fastcosine(15.0);
+    d15[0][1].x = Start.x - radius * fastsine(15.0);
+    d15[1][1].y = Start.y - innerradius * fastcosine(15.0);
+    d15[1][1].x = Start.x - innerradius * fastsine(15.0);
+    d15[0][2].y = Start.y + radius * fastcosine(15.0);
+    d15[0][2].x = Start.x + radius * fastsine(15.0);
+    d15[1][2].y = Start.y + innerradius * fastcosine(15.0);
+    d15[1][2].x = Start.x + innerradius * fastsine(15.0);
+    d15[0][3].y = Start.y + radius * fastcosine(15.0);
+    d15[0][3].x = Start.x - radius * fastsine(15.0);
+    d15[1][3].y = Start.y + innerradius * fastcosine(15.0);
+    d15[1][3].x = Start.x - innerradius * fastsine(15.0);
 
-  d15[0][0].y= Start.y - (long) (radius*fastcosine(15.0));
-  d15[0][0].x= Start.x + (long) (radius*fastsine(15.0));
-  d15[1][0].y= Start.y - (long) (innerradius*fastcosine(15.0));
-  d15[1][0].x= Start.x + (long) (innerradius*fastsine(15.0));
-  d15[0][1].y= Start.y - (long) (radius*fastcosine(15.0));
-  d15[0][1].x= Start.x - (long) (radius*fastsine(15.0));
-  d15[1][1].y= Start.y - (long) (innerradius*fastcosine(15.0));
-  d15[1][1].x= Start.x - (long) (innerradius*fastsine(15.0));
-  d15[0][2].y= Start.y + (long) (radius*fastcosine(15.0));
-  d15[0][2].x= Start.x + (long) (radius*fastsine(15.0));
-  d15[1][2].y= Start.y + (long) (innerradius*fastcosine(15.0));
-  d15[1][2].x= Start.x + (long) (innerradius*fastsine(15.0));
-  d15[0][3].y= Start.y + (long) (radius*fastcosine(15.0));
-  d15[0][3].x= Start.x - (long) (radius*fastsine(15.0));
-  d15[1][3].y= Start.y + (long) (innerradius*fastcosine(15.0));
-  d15[1][3].x= Start.x - (long) (innerradius*fastsine(15.0));
+    d30[0][0].x = Start.x - radius * fastcosine(30.0);
+    d30[0][0].y = Start.y + radius * fastsine(30.0);
+    d30[1][0].x = Start.x - innerradius * fastcosine(30.0);
+    d30[1][0].y = Start.y + innerradius * fastsine(30.0);
+    d30[0][1].x = Start.x - radius * fastcosine(30.0);
+    d30[0][1].y = Start.y - radius * fastsine(30.0);
+    d30[1][1].x = Start.x - innerradius * fastcosine(30.0);
+    d30[1][1].y = Start.y - innerradius * fastsine(30.0);
+    d30[0][2].x = Start.x + radius * fastcosine(30.0);
+    d30[0][2].y = Start.y + radius * fastsine(30.0);
+    d30[1][2].x = Start.x + innerradius * fastcosine(30.0);
+    d30[1][2].y = Start.y + innerradius * fastsine(30.0);
+    d30[0][3].x = Start.x + radius * fastcosine(30.0);
+    d30[0][3].y = Start.y - radius * fastsine(30.0);
+    d30[1][3].x = Start.x + innerradius * fastcosine(30.0);
+    d30[1][3].y = Start.y - innerradius * fastsine(30.0);
 
-  d30[0][0].x= Start.x - (long) (radius*fastcosine(30.0));
-  d30[0][0].y= Start.y + (long) (radius*fastsine(30.0));
-  d30[1][0].x= Start.x - (long) (innerradius*fastcosine(30.0));
-  d30[1][0].y= Start.y + (long) (innerradius*fastsine(30.0));
-  d30[0][1].x= Start.x - (long) (radius*fastcosine(30.0));
-  d30[0][1].y= Start.y - (long) (radius*fastsine(30.0));
-  d30[1][1].x= Start.x - (long) (innerradius*fastcosine(30.0));
-  d30[1][1].y= Start.y - (long) (innerradius*fastsine(30.0));
-  d30[0][2].x= Start.x + (long) (radius*fastcosine(30.0));
-  d30[0][2].y= Start.y + (long) (radius*fastsine(30.0));
-  d30[1][2].x= Start.x + (long) (innerradius*fastcosine(30.0));
-  d30[1][2].y= Start.y + (long) (innerradius*fastsine(30.0));
-  d30[0][3].x= Start.x + (long) (radius*fastcosine(30.0));
-  d30[0][3].y= Start.y - (long) (radius*fastsine(30.0));
-  d30[1][3].x= Start.x + (long) (innerradius*fastcosine(30.0));
-  d30[1][3].y= Start.y - (long) (innerradius*fastsine(30.0));
+    d45[0][0].x = Start.x - radius * fastcosine(45.0);
+    d45[0][0].y = Start.y + radius * fastsine(45.0);
+    d45[1][0].x = Start.x - innerradius * fastcosine(45.0);
+    d45[1][0].y = Start.y + innerradius * fastsine(45.0);
+    d45[0][1].x = Start.x - radius * fastcosine(45.0);
+    d45[0][1].y = Start.y - radius * fastsine(45.0);
+    d45[1][1].x = Start.x - innerradius * fastcosine(45.0);
+    d45[1][1].y = Start.y - innerradius * fastsine(45.0);
+    d45[0][2].x = Start.x + radius * fastcosine(45.0);
+    d45[0][2].y = Start.y + radius * fastsine(45.0);
+    d45[1][2].x = Start.x + innerradius * fastcosine(45.0);
+    d45[1][2].y = Start.y + innerradius * fastsine(45.0);
+    d45[0][3].x = Start.x + radius * fastcosine(45.0);
+    d45[0][3].y = Start.y - radius * fastsine(45.0);
+    d45[1][3].x = Start.x + innerradius * fastcosine(45.0);
+    d45[1][3].y = Start.y - innerradius * fastsine(45.0);
 
-  d45[0][0].x= Start.x - (long) (radius*fastcosine(45.0));
-  d45[0][0].y= Start.y + (long) (radius*fastsine(45.0));
-  d45[1][0].x= Start.x - (long) (innerradius*fastcosine(45.0));
-  d45[1][0].y= Start.y + (long) (innerradius*fastsine(45.0));
-  d45[0][1].x= Start.x - (long) (radius*fastcosine(45.0));
-  d45[0][1].y= Start.y - (long) (radius*fastsine(45.0));
-  d45[1][1].x= Start.x - (long) (innerradius*fastcosine(45.0));
-  d45[1][1].y= Start.y - (long) (innerradius*fastsine(45.0));
-  d45[0][2].x= Start.x + (long) (radius*fastcosine(45.0));
-  d45[0][2].y= Start.y + (long) (radius*fastsine(45.0));
-  d45[1][2].x= Start.x + (long) (innerradius*fastcosine(45.0));
-  d45[1][2].y= Start.y + (long) (innerradius*fastsine(45.0));
-  d45[0][3].x= Start.x + (long) (radius*fastcosine(45.0));
-  d45[0][3].y= Start.y - (long) (radius*fastsine(45.0));
-  d45[1][3].x= Start.x + (long) (innerradius*fastcosine(45.0));
-  d45[1][3].y= Start.y - (long) (innerradius*fastsine(45.0));
+    d60[0][0].x = Start.x - radius * fastcosine(60.0);
+    d60[0][0].y = Start.y + radius * fastsine(60.0);
+    d60[1][0].x = Start.x - innerradius * fastcosine(60.0);
+    d60[1][0].y = Start.y + innerradius * fastsine(60.0);
+    d60[0][1].x = Start.x - radius * fastcosine(60.0);
+    d60[0][1].y = Start.y - radius * fastsine(60.0);
+    d60[1][1].x = Start.x - innerradius * fastcosine(60.0);
+    d60[1][1].y = Start.y - innerradius * fastsine(60.0);
+    d60[0][2].x = Start.x + radius * fastcosine(60.0);
+    d60[0][2].y = Start.y + radius * fastsine(60.0);
+    d60[1][2].x = Start.x + innerradius * fastcosine(60.0);
+    d60[1][2].y = Start.y + innerradius * fastsine(60.0);
+    d60[0][3].x = Start.x + radius * fastcosine(60.0);
+    d60[0][3].y = Start.y - radius * fastsine(60.0);
+    d60[1][3].x = Start.x + innerradius * fastcosine(60.0);
+    d60[1][3].y = Start.y - innerradius * fastsine(60.0);
 
-  d60[0][0].x= Start.x - (long) (radius*fastcosine(60.0));
-  d60[0][0].y= Start.y + (long) (radius*fastsine(60.0));
-  d60[1][0].x= Start.x - (long) (innerradius*fastcosine(60.0));
-  d60[1][0].y= Start.y + (long) (innerradius*fastsine(60.0));
-  d60[0][1].x= Start.x - (long) (radius*fastcosine(60.0));
-  d60[0][1].y= Start.y - (long) (radius*fastsine(60.0));
-  d60[1][1].x= Start.x - (long) (innerradius*fastcosine(60.0));
-  d60[1][1].y= Start.y - (long) (innerradius*fastsine(60.0));
-  d60[0][2].x= Start.x + (long) (radius*fastcosine(60.0));
-  d60[0][2].y= Start.y + (long) (radius*fastsine(60.0));
-  d60[1][2].x= Start.x + (long) (innerradius*fastcosine(60.0));
-  d60[1][2].y= Start.y + (long) (innerradius*fastsine(60.0));
-  d60[0][3].x= Start.x + (long) (radius*fastcosine(60.0));
-  d60[0][3].y= Start.y - (long) (radius*fastsine(60.0));
-  d60[1][3].x= Start.x + (long) (innerradius*fastcosine(60.0));
-  d60[1][3].y= Start.y - (long) (innerradius*fastsine(60.0));
+    DoInit[MDI_DRAWAHRS] = false;
+  }  // end dirty hack doinit
 
-  DoInit[MDI_DRAWTRI]=false;
-  } // end dirty hack doinit
-
-  //if (!CALCULATED_INFO.Flying) {
-  // speed is in m/s
-  if (DrawInfo.Speed < 5.5 && !DrawInfo.Gyroscope.available()) {
-    disabled = true;
-  }
-
-  if (disabled) {
-    hpBlack = LKPen_Grey_N1;
-    hbBlack = LKBrush_Grey;
-  }
-  else {
-    hpBlack = LKPen_Black_N1;
-    hbBlack = LKBrush_Black;
-    beta = DrawInfo.Gyroscope.available() ? DrawInfo.Gyroscope.value().Roll
-                                          : DerivedDrawInfo.BankAngle;
-  }
-
-  double gamma =  -DrawInfo.Gyroscope.value().Pitch;
-
-  beta  = -beta;
-  double beta_sine = fastsine(beta);
-  double beta_cosine = fastcosine(beta);
-
-  const BrushReference hbWhite =LKBrush_Lake;// LKBrush_White;
+  const PenReference hpBlack = LKPen_Black_N1;
+  const BrushReference hbBlack = LKBrush_Black;
+  const BrushReference hbWhite = LKBrush_Lake;  // LKBrush_White;
   const BrushReference hbBorder = LKBrush_Grey;
+
+  double beta = -DrawInfo.Gyroscope.value().Roll;
+  double gamma = DrawInfo.Gyroscope.value().Pitch;
 
   const auto hpOld = Surface.SelectObject(LKPen_White_N1);
   const auto hbOld = Surface.SelectObject(hbWhite);
 
-  Surface.DrawCircle(Start.x, Start.y, radius, true );
-/***************************************************************************************/
+  Surface.DrawCircle(Start.x, Start.y, radius, true);
+  /***************************************************************************************/
 
-  POINT earth[GC_NO_CIRCLE_PTS+2];
-  POINT left, right;
-  int alphastep = 360/GC_NO_CIRCLE_PTS;
-  right.x  = Start.x + (LONG) ( radius*fastcosine( beta + gamma));
-  right.y  = Start.y + (LONG) ( radius*fastsine  ( beta + gamma));
-  left.x   = Start.x - (LONG) ( radius*fastcosine( beta - gamma));
-  left.y   = Start.y + (LONG) ( radius*fastsine  (-beta + gamma));
+  double beta_sine = fastsine(beta);
+  double beta_cosine = fastcosine(beta);
 
-  int betacircle =  (int)beta%360;
-  if (betacircle < 0)
-	betacircle +=360;
-  int angleleft   = (int)(betacircle - gamma) + 270;angleleft %= 360;
-  int angleright  = (int)(betacircle + gamma) + 90;angleright %= 360;
-  int iCnt =0;
+  RasterPoint right = Start + RasterPoint{
+    static_cast<PixelScalar>(radius * fastcosine(beta + gamma)),
+    static_cast<PixelScalar>(radius * fastsine(beta + gamma))
+  };
+  RasterPoint left = Start - RasterPoint{
+    static_cast<PixelScalar>(radius * fastcosine(beta - gamma)),
+    static_cast<PixelScalar>(radius * fastsine(beta - gamma))
+  };
 
-  earth[iCnt++] = right;
-  int steps = (angleleft - angleright )/alphastep;
-  if(steps <0)
-   steps += GC_NO_CIRCLE_PTS;
-  int alpha = angleright/alphastep+1;
-  for(int i=0;  i < steps; i++)
-  {
-	if(alpha < 0)
-	  alpha = GC_NO_CIRCLE_PTS-1;
-	if((alpha) > (GC_NO_CIRCLE_PTS-1))
-	  alpha = 0;
+  int alphastep = 360 / GC_NO_CIRCLE_PTS;
 
-	if(iCnt < (GC_NO_CIRCLE_PTS))
-	  earth[iCnt++] =  circle[alpha];
-    alpha++;
+  int start_idx = (90 + beta + gamma) / alphastep;
+  int end_idx = (270 + beta - gamma) / alphastep;
+  while (start_idx < 0 ) {
+      start_idx += GC_NO_CIRCLE_PTS;
+      end_idx += GC_NO_CIRCLE_PTS;
   }
-  if(iCnt <= GC_NO_CIRCLE_PTS)
-	earth[iCnt++] =  left;
 
+  std::vector<POINT> earth_poly;
+  earth_poly.reserve(GC_NO_CIRCLE_PTS + 3);
 
+  earth_poly.push_back(right);
 
+  for (int idx = start_idx; idx < end_idx; ++idx) {
+    earth_poly.push_back(circle[idx % GC_NO_CIRCLE_PTS]);
+  }
 
+  earth_poly.push_back(left);
+  earth_poly.push_back(earth_poly.front());  // close polygon
 
   /*********************************************************************************************/
-    LKPen   hpHorizonGround(PEN_SOLID, IBLSCALE(1),RGB_BLACK);
-  LKBrush hbHorizonGround;
-  if (IsDithered()) {
-     hbHorizonGround = LKBrush(LKColor(125, 20, 0));
-  } else {
-     hbHorizonGround = LKBrush(LKColor(255, 140, 0));
-  }
+  LKPen hpHorizonGround(PEN_SOLID, IBLSCALE(1), RGB_BLACK);
+  LKBrush hbHorizonGround = LKBrush(IsDithered() ? LKColor(125, 20, 0) : LKColor(255, 140, 0));
 
-    const auto oldpen = Surface.SelectObject(hpHorizonGround);
-    const auto oldbrush = Surface.SelectObject(hbHorizonGround);
+  const auto oldpen = Surface.SelectObject(hpHorizonGround);
+  const auto oldbrush = Surface.SelectObject(hbHorizonGround);
 
-    Surface.SelectObject(hpHorizonGround);
-    Surface.SelectObject(hbHorizonGround);
-    Surface.Polygon( earth, iCnt);
-    Surface.SelectObject(oldpen);
-    Surface.SelectObject(oldbrush);
+  Surface.SelectObject(hpHorizonGround);
+  Surface.SelectObject(hbHorizonGround);
+  Surface.Polygon(earth_poly.data(), earth_poly.size());
+  Surface.SelectObject(oldpen);
+  Surface.SelectObject(oldbrush);
 
   /***************************************************************************************/
   DrawAcceleration(Surface, rc);
 
   Surface.SelectObject(LKPen_Grey_N2);
   Surface.SelectObject(hbBorder);
-  Surface.DrawCircle(Start.x, Start.y, radius+NIBLSCALE(2), false);
+  Surface.DrawCircle(Start.x, Start.y, radius + NIBLSCALE(2), false);
 
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d00[0][0], d00[1][0], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d15[0][0], d15[1][0], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d15[0][1], d15[1][1], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d30[0][1], d30[1][1], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d30[0][3], d30[1][3], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d45[0][1], d45[1][1], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d45[0][3], d45[1][3], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d60[0][1], d60[1][1], RGB_BLUE, rc);
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d60[0][3], d60[1][3], RGB_BLUE, rc);
 
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d00[0][0], d00[1][0], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d15[0][0], d15[1][0], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d15[0][1], d15[1][1], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d30[0][1], d30[1][1], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d30[0][3], d30[1][3], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d45[0][1], d45[1][1], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d45[0][3], d45[1][3], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d60[0][1], d60[1][1], RGB_BLUE,rc);
-  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), d60[0][3], d60[1][3], RGB_BLUE,rc);
+  PixelScalar lenght = 0;
 
-  POINT a1, a2;
+  for (int i = -30; i <= 30; i += 5) {
+    if (abs(i % 10) > 0) {
+      lenght = radius / 10;
+    }
+    else {
+      lenght = radius / 5;
+    }
+    PixelScalar offaxis = radius * fastsine(i);
+    RasterPoint newcenter = Start + RasterPoint{
+        static_cast<PixelScalar>(offaxis * beta_sine),
+        static_cast<PixelScalar>(-offaxis * beta_cosine)
+    };
+    RasterPoint a = {
+        static_cast<PixelScalar>(lenght * beta_cosine),
+        static_cast<PixelScalar>(lenght * beta_sine)
+    };
+    Surface.DrawLine<RasterPoint>(PEN_SOLID, NIBLSCALE(1), newcenter + a, newcenter - a, RGB_WHITE, rc);
+  }
 
+  RasterPoint a1 = Start + RasterPoint{
+    static_cast<PixelScalar>(radius * beta_sine),
+    static_cast<PixelScalar>(-radius * beta_cosine)
+  };
+  RasterPoint a2 = Start + RasterPoint{
+    static_cast<PixelScalar>((radius - NIBLSCALE<PixelScalar>(8)) * beta_sine),
+    static_cast<PixelScalar>((-radius - NIBLSCALE<PixelScalar>(8)) * beta_cosine)
+  };
 
+  Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), a1, a2, RGB_WHITE, rc);
 
-int lenght =0;
+  Surface.SelectObject(hpBlack);
+  Surface.SelectObject(hbBlack);
 
-for (int i = -30; i <= 30 ; i+=5)
-{
-  if (abs(i%10) > 0)
-    lenght = radius/10;
-  else
-    lenght = radius/5;
-  int offaxis;
-  POINT newcenter;
-  offaxis = (int)(radius * fastsine(i));
-  newcenter.x = (long)(offaxis * beta_sine);
-  newcenter.y = (long)(-offaxis * beta_cosine);
+  PixelScalar vsize = planesize * 0.25;
 
-  a1.x =  Start.x + (long)(lenght * beta_cosine ) + newcenter.x;
-  a1.y =  Start.y + (long)(lenght * beta_sine   ) + newcenter.y;
-  a2.x =  Start.x - (long)(lenght * beta_cosine ) + newcenter.x;
-  a2.y =  Start.y - (long)(lenght * beta_sine   ) + newcenter.y ;
-   Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), a1, a2, RGB_WHITE,rc);
-}
+  const RasterPoint lines[][2] = {
+    {{Start.x - planesize, Start.y}, {Start.x - vsize, Start.y}},
+    {{Start.x + planesize, Start.y}, {Start.x + vsize, Start.y}},
+    {{Start.x, Start.y + vsize}, {Start.x + vsize, Start.y}},
+    {{Start.x, Start.y + vsize}, {Start.x - vsize, Start.y}}
+  };
 
-a1.x =  Start.x + (long)(radius * beta_sine                 );
-a1.y =  Start.y - (long)(radius * beta_cosine               );
-a2.x =  Start.x + (long)((radius-NIBLSCALE(8)) * beta_sine  );
-a2.y =  Start.y - (long)((radius-NIBLSCALE(8)) * beta_cosine);
- Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), a1, a2, RGB_WHITE,rc);
+  for (auto& line : lines) {
+    Surface.DrawLine(PEN_SOLID, NIBLSCALE(1), line[0], line[1], RGB_RED, rc);
+  }
 
-
-    Surface.SelectObject(hpBlack);
-    Surface.SelectObject(hbBlack);
-//    Circle(hDC, Start.x, Start.y , planeradius, rc, false, true );
-#define V_COLOR RGB_RED
-double vscale = 0.25;
-   a1.x = Start.x - (long)(planesize );
-   a1.y = Start.y ;
-   a2.x = Start.x - (long)(planesize*vscale );
-   a2.y = Start.y ;
-    if (disabled)
-	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-    else
-	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-    a1.x = Start.x + (long)(planesize );
-    a1.y = Start.y ;
-    a2.x = Start.x + (long)(planesize*vscale );
-    a2.y = Start.y ;
-    if (disabled)
-	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-    else
-	  Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-     a1.x = Start.x ;
-     a1.y = Start.y + (long)(planesize*vscale );
-     a2.x = Start.x + (long)(planesize*vscale );
-     a2.y = Start.y ;
-     if (disabled)
-	   Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-     else
-	   Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-     a1.x = Start.x ;
-     a1.y = Start.y + (long)(planesize*vscale );
-     a2.x = Start.x - (long)(planesize*vscale );
-     a2.y = Start.y ;
-     if (disabled)
-       Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, RGB_GREY,rc);
-     else
-       Surface.DrawLine(PEN_SOLID, NIBLSCALE(2), a1, a2, V_COLOR,rc);
-
-
-     Surface.DrawCircle(Start.x, Start.y, NIBLSCALE(2), true );
-/*
-  a1.x = Start.x;
-  a1.y = Start.y;
-  a2.x = Start.x + (long)(tailsize * 0);
-  a2.y = Start.y - (long)(tailsize * 1);
-  if (disabled)
-	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, RGB_GREY,rc);
-  else
-	Surface.DrawLine(PEN_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
-*/
+  Surface.DrawCircle(Start.x, Start.y, NIBLSCALE(2), true);
   Surface.SelectObject(LK8TitleFont);
-  int bankindy=Start.y-radius/2;
-  if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f%s"), beta, MsgToken<2179>());
-  else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f%s"), -beta, MsgToken<2179>());
-  else
-	lk::strcpy(Buffer, TEXT("--"));
 
-  LKWriteText(Surface, Buffer, Start.x , bankindy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
+  int bankindy = Start.y - radius / 2;
+  double abs_beta = std::abs(beta);
+  if (abs_beta >= 1) {
+    lk::snprintf(Buffer, TEXT("%2.0f%s"), beta, MsgToken<2179>());
+  }
+  else {
+    lk::strcpy(Buffer, TEXT("--"));
+  }
 
-//  MapDirty = true;
-//  if (!disabled) MapWindow::RefreshMap();
-  RECT rcCompass;
-  rcCompass.left = (int)((double)Start.x*1.70);
-  rcCompass.top  = (int)((double)Start.y*0.35);
-  rcCompass.right = (int)((double)Start.x*1.95);
-  rcCompass.bottom = rcCompass.top+  (rcCompass.right - rcCompass.left);
+  LKWriteText(Surface, Buffer, Start.x, bankindy, WTMODE_NORMAL, WTALIGN_CENTER,
+              RGB_BLUE, false);
 
- // if(DrawInfo.MagneticHeadingAvailable)
-    DrawCompassRose(Surface, rcCompass,DrawInfo.MagneticHeading.value());
-//  DrawCompass(HDC hdc, const RECT rc);
+  if (DrawInfo.MagneticHeading.available()) {
+    RECT rcCompass;
+    rcCompass.left = Start.x * 1.70;
+    rcCompass.top = Start.y * 0.35;
+    rcCompass.right = Start.x * 1.95;
+    rcCompass.bottom = rcCompass.top + (rcCompass.right - rcCompass.left);
+
+    DrawCompassRose(Surface, rcCompass, DrawInfo.MagneticHeading.value());
+  }
+
   Surface.SelectObject(hbOld);
   Surface.SelectObject(hpOld);
-
 }
 #else // no AHRS
 void MapWindow::DrawCompassRose(LKSurface& Surface, const RECT& rc, double direction) {
