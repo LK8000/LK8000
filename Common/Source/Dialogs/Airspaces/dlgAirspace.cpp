@@ -27,7 +27,7 @@ static int DrawListIndex=0;
 
 static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
-  if (DrawListIndex > 0 && DrawListIndex < AIRSPACECLASSCOUNT) {
+  if (DrawListIndex >= 0 && DrawListIndex < AIRSPACECLASSCOUNT) {
     int i = DrawListIndex;
     const TCHAR* label = CAirspaceManager::GetAirspaceTypeText(i);
 
