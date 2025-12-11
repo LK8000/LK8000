@@ -45,6 +45,10 @@ class airspace_mode {
     }
   }
 
+  bool operator==(const airspace_mode& other) const {
+    return _value == other._value;
+  }
+
  private:
   std::bitset<2> _value;
 
