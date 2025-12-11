@@ -632,7 +632,7 @@ static void OnCompetitionIDClicked(WndButton* pWnd) {
 
 static void OnAirspaceColoursClicked(WndButton* pWnd) {
     bool retval;
-    retval = dlgAirspaceShowModal(true);
+    retval = dlgAirspaceColor();
     if (retval) {
         requirerestart = true;
     }
@@ -695,9 +695,9 @@ static void OnWaypointFilesClicked(WndButton* pWnd) {
 }
 
 static void OnAirspaceModeClicked(WndButton* pWnd) {
-    if (dlgAirspaceShowModal(false)) {
-        requirerestart = true;
-    }
+  if (dlgAirspaceMode()) {
+    requirerestart = true;
+  }
 }
 
 static void OnNextClicked(WndButton* pWnd) {

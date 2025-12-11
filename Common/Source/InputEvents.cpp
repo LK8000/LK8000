@@ -2481,7 +2481,7 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("Task"))==0){
     dlgTaskOverviewShowModal();
   } else if (_tcscmp(misc,TEXT("Airspace"))==0){
-    dlgAirspaceShowModal(false);
+    dlgAirspaceMode();
   } else if (_tcscmp(misc,TEXT("Replay"))==0){
       dlgLoggerReplayShowModal();
   } else if (_tcscmp(misc,TEXT("OlcAnalysis"))==0){

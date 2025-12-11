@@ -13,159 +13,192 @@
 #include "LKObjects.h"
 #include "resource.h"
 
-static bool colormode = false;
+namespace {
 
-
-static void UpdateList(WndListFrame* pWnd){
-  if(pWnd) {
+void UpdateList(WndListFrame* pWnd) {
+  if (pWnd) {
     pWnd->ResetList();
     pWnd->Redraw();
   }
 }
 
-static int DrawListIndex=0;
+template <bool colormode>
+void OnAirspacePaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+  auto pWndList = dynamic_cast<WndListFrame*>(Sender->GetParent());
+  if (!pWndList) {
+    return;
+  }
 
-static void OnAirspacePaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
+  const int DrawIndex = pWndList->GetDrawIndex();
+  if (DrawIndex < 0 || DrawIndex >= AIRSPACECLASSCOUNT) {
+    return;
+  }
 
-  if (DrawListIndex >= 0 && DrawListIndex < AIRSPACECLASSCOUNT) {
-    int i = DrawListIndex;
-    const TCHAR* label = CAirspaceManager::GetAirspaceTypeText(i);
+  const TCHAR* label = CAirspaceManager::GetAirspaceTypeText(DrawIndex);
 
-    const PixelRect rcClient(Sender->GetClientRect());
-    const int w0 = rcClient.GetSize().cx;
-	// LKTOKEN  _@M789_ = "Warn"
-    const int w1 = Surface.GetTextWidth(MsgToken<789>()) + DLGSCALE(10);
-	// LKTOKEN  _@M241_ = "Display"
-    const int w2 = Surface.GetTextWidth(MsgToken<241>()) + DLGSCALE(2);
-    
-    const int x0 = w0-w1-w2;
+  const PixelRect rcClient(Sender->GetClientRect());
+  const int w0 = rcClient.GetSize().cx;
+  // LKTOKEN  _@M789_ = "Warn"
+  const int w1 = Surface.GetTextWidth(MsgToken<789>()) + DLGSCALE(10);
+  // LKTOKEN  _@M241_ = "Display"
+  const int w2 = Surface.GetTextWidth(MsgToken<241>()) + DLGSCALE(2);
 
-    Surface.SetTextColor(RGB_BLACK);
-    Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), label, x0-DLGSCALE(10));
+  const int x0 = w0 - w1 - w2;
 
-    if (colormode) {
-      PixelRect rcColor = {
-          x0, 
-          rcClient.top + DLGSCALE(2), 
-          rcClient.right - DLGSCALE(2), 
-          rcClient.bottom - DLGSCALE(2)
-      };
+  Surface.SetTextColor(RGB_BLACK);
+  Surface.DrawTextClip(DLGSCALE(2), DLGSCALE(2), label, x0 - DLGSCALE(10));
 
-      Surface.SelectObject(LK_WHITE_PEN);
-      Surface.SelectObject(LKBrush_White);
-      Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+  if constexpr (colormode) {
+    PixelRect rcColor = {x0, rcClient.top + DLGSCALE(2),
+                         rcClient.right - DLGSCALE(2),
+                         rcClient.bottom - DLGSCALE(2)};
 
-      Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(i));
-      Surface.SetBkColor(RGB_WHITE);
-      Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(i));
-      Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+    Surface.SelectObject(LK_WHITE_PEN);
+    Surface.SelectObject(LKBrush_White);
+    Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
 
-    } else {
-      if (MapWindow::aAirspaceMode[i].warning()) {
-        // LKTOKEN  _@M789_ = "Warn"
-        Surface.DrawText(x0, DLGSCALE(2), MsgToken<789>());
-      }
-      if (MapWindow::aAirspaceMode[i].display()) {
-        // LKTOKEN  _@M241_ = "Display"
-        Surface.DrawText(w0-w2, DLGSCALE(2), MsgToken<241>());
-      }
-
+    Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(DrawIndex));
+    Surface.SetBkColor(RGB_WHITE);
+    Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(DrawIndex));
+    Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+  }
+  else {
+    if (MapWindow::aAirspaceMode[DrawIndex].warning()) {
+      // LKTOKEN  _@M789_ = "Warn"
+      Surface.DrawText(x0, DLGSCALE(2), MsgToken<789>());
     }
-
+    if (MapWindow::aAirspaceMode[DrawIndex].display()) {
+      // LKTOKEN  _@M241_ = "Display"
+      Surface.DrawText(w0 - w2, DLGSCALE(2), MsgToken<241>());
+    }
   }
 }
 
-
-static bool changed = false;
-
-static void OnAirspaceListEnter(WindowControl * Sender,
-				WndListFrame::ListInfo_t *ListInfo) {
-  (void)Sender;
+template <bool colormode>
+void OnAirspaceListEnter(WindowControl* Sender,
+                         WndListFrame::ListInfo_t* ListInfo) {
   int ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  if (ItemIndex>=AIRSPACECLASSCOUNT) {
-    ItemIndex = AIRSPACECLASSCOUNT-1;
+  if (ItemIndex >= AIRSPACECLASSCOUNT) {
+    ItemIndex = AIRSPACECLASSCOUNT - 1;
   }
-  if (ItemIndex>=0) {
-
-    if (colormode) {
+  if (ItemIndex >= 0) {
+    if constexpr (colormode) {
       int c = dlgAirspaceColoursShowModal();
-      if (c>=0) {
+      if (c >= 0) {
         MapWindow::iAirspaceColour[ItemIndex] = c;
-        changed = true;
       }
 #ifdef HAVE_HATCHED_BRUSH
       int p = dlgAirspacePatternsShowModal();
-      if (p>=0) {
+      if (p >= 0) {
         MapWindow::iAirspaceBrush[ItemIndex] = p;
-        changed = true;
       }
 #endif
-    } else {
+    }
+    else {
       MapWindow::aAirspaceMode[ItemIndex].rotate_set();
-      changed = true;
     }
   }
 }
 
-
-static void OnAirspaceListInfo(WndListFrame * Sender,
-			       WndListFrame::ListInfo_t *ListInfo){
-
-  if (ListInfo->DrawIndex == -1){
+void OnAirspaceListInfo(WndListFrame* Sender,
+                        WndListFrame::ListInfo_t* ListInfo) {
+  if (ListInfo->DrawIndex == -1) {
     ListInfo->ItemCount = AIRSPACECLASSCOUNT;
-  } else {
-    DrawListIndex = ListInfo->DrawIndex+ListInfo->ScrollIndex;
   }
 }
 
-static void OnCloseClicked(WndButton* pWnd){
-  if(pWnd) {
-    WndForm * pForm = pWnd->GetParentWndForm();
-    if(pForm) {
+void OnCloseClicked(WndButton* pWnd) {
+  if (pWnd) {
+    WndForm* pForm = pWnd->GetParentWndForm();
+    if (pForm) {
       pForm->SetModalResult(mrOK);
     }
   }
 }
 
-
-static void OnLookupClicked(WndButton* pWnd) {
+void OnLookupClicked(WndButton* pWnd) {
   dlgSelectAirspace();
 }
 
+template <typename T, std::size_t N>
+std::array<T, N> snapshot(const T (&raw)[N]) {
+  std::array<T, N> out{};
+  std::copy(std::begin(raw), std::end(raw), out.begin());
+  return out;
+}
 
-static CallBackTableEntry_t CallBackTable[]={
-  CallbackEntry(OnAirspacePaintListItem),
-  CallbackEntry(OnAirspaceListInfo),
-  CallbackEntry(OnCloseClicked),
-  CallbackEntry(OnLookupClicked),
-  EndCallbackEntry()
-};
+template <typename T, std::size_t N>
+bool equal_snaphot(const T (&raw)[N], const std::array<T, N>& arr) {
+  return std::equal(std::begin(raw), std::end(raw), arr.begin());
+}
 
+template <typename T, std::size_t N>
+bool changed_snaphot(const T (&raw)[N], const std::array<T, N>& arr) {
+  return !equal_snaphot(raw, arr);
+}
 
-bool dlgAirspaceShowModal(bool coloredit){
+template <bool coloredit>
+bool dlgAirspaceShowModal() {
+  CallBackTableEntry_t CallBackTable[] = {
+      callback_entry("OnAirspacePaintListItem",
+                     OnAirspacePaintListItem<coloredit>),
+      CallbackEntry(OnAirspaceListInfo),
+      CallbackEntry(OnCloseClicked),
+      CallbackEntry(OnLookupClicked),
+      EndCallbackEntry()
+    };
 
-  colormode = coloredit;
+  std::unique_ptr<WndForm> pForm(
+      dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACE_L
+                                                    : IDR_XML_AIRSPACE_P));
+  if (!pForm) {
+    return false;
+  }
 
-  WndForm *wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_AIRSPACE_L : IDR_XML_AIRSPACE_P);
-  if (!wf) return false;
-
-  WndListFrame* wAirspaceList = wf->FindByName<WndListFrame>(TEXT("frmAirspaceList"));
-  LKASSERT(wAirspaceList!=NULL);
-  wAirspaceList->SetBorderKind(BORDERLEFT);
-  wAirspaceList->SetEnterCallback(OnAirspaceListEnter);
-
-  WndOwnerDrawFrame* wAirspaceListEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmAirspaceListEntry"));
-  if(wAirspaceListEntry) {
+  auto wAirspaceList = pForm->FindByName<WndListFrame>(TEXT("frmAirspaceList"));
+  if (wAirspaceList) {
+    wAirspaceList->SetBorderKind(BORDERLEFT);
+    wAirspaceList->SetEnterCallback(OnAirspaceListEnter<coloredit>);
+  }
+  auto wAirspaceListEntry =
+      pForm->FindByName<WndOwnerDrawFrame>(TEXT("frmAirspaceListEntry"));
+  if (wAirspaceListEntry) {
     wAirspaceListEntry->SetCanFocus(true);
   }
 
-  UpdateList(wAirspaceList);
+  if (wAirspaceList) {
+    UpdateList(wAirspaceList);
+  }
 
-  changed = false;
+  const auto oldMode = MapWindow::aAirspaceMode;
+  const auto oldColor = snapshot(MapWindow::iAirspaceColour);
+#ifdef HAVE_HATCHED_BRUSH
+  const auto oldBrush = snapshot(MapWindow::iAirspaceBrush);
+#endif
 
-  wf->ShowModal();
+  pForm->ShowModal();
 
-  delete wf;
+  if (oldMode != MapWindow::aAirspaceMode) {
+    return true;
+  }
+  if (changed_snaphot(MapWindow::iAirspaceColour, oldColor)) {
+    return true;
+  }
+#ifdef HAVE_HATCHED_BRUSH
+  if (changed_snaphot(MapWindow::iAirspaceBrush, oldBrush)) {
+    return true;
+  }
+#endif
 
-  return changed;
+  return false;
+}
+
+}  // namespace
+
+bool dlgAirspaceColor() {
+  return dlgAirspaceShowModal<true>();
+}
+
+bool dlgAirspaceMode() {
+  return dlgAirspaceShowModal<false>();
 }

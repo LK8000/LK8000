@@ -22,7 +22,9 @@ int dlgAirspaceColoursShowModal();
 #ifdef HAVE_HATCHED_BRUSH
 int dlgAirspacePatternsShowModal();
 #endif
-bool dlgAirspaceShowModal(bool colored);
+bool dlgAirspaceColor();
+bool dlgAirspaceMode();
+
 void dlgBasicSettingsShowModal(void);
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText, bool bHelpCapt = true);
 void dlgChecklistShowModal(short checklistmode);
