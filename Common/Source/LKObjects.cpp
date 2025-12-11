@@ -120,13 +120,14 @@ void LKObjects_Create() {
   // MapWindow objects
   //
 
-  for (unsigned i=0; i<AIRSPACECLASSCOUNT; i++) {
-	LKASSERT( MapWindow::iAirspaceColour[i]< NUMAIRSPACECOLORS);
+  for (unsigned i = 0; i < AIRSPACECLASSCOUNT; i++) {
+    LKASSERT(MapWindow::iAirspaceColour[i] < NUMAIRSPACECOLORS);
 
     const LKColor& Color = MapWindow::Colours[MapWindow::iAirspaceColour[i]];
-    
-	MapWindow::hAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(1), Color);
-	MapWindow::hBigAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(3),Color.ChangeBrightness(0.75));
+
+    MapWindow::hAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(1), Color);
+    MapWindow::hBigAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(3),
+                                          Color.ChangeBrightness(0.75));
   }
   MapWindow::hAirspaceBorderPen.Create(PEN_SOLID, NIBLSCALE(10), RGB_WHITE);
 
