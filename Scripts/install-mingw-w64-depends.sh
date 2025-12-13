@@ -1,10 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 # 
 # File:   install-mingw-w64-depends.sh
 # Author: Bruno de Lacheisserie
 #
 # Created on Dec 14, 2016, 10:48:50 PM
 #
+
+SCRIPT_DIR=$(realpath "`dirname $0`")
 
 NB_CORES=$(grep -c '^processor' /proc/cpuinfo)
 export MAKEFLAGS="-j$((NB_CORES+1)) -l${NB_CORES}"
@@ -20,21 +22,29 @@ PREFIX_DIR="/usr"
 
 GEOGRAPHICLIB_VER="2.5.1"
 
+[ ! -d ${DOWNLOAD_DIR} ] && mkdir -p ${DOWNLOAD_DIR}
+[ ! -d ${SOURCE_DIR} ] && mkdir -p ${SOURCE_DIR}
+[ ! -d ${BUILD_DIR} ] && mkdir -p ${BUILD_DIR}
 
 # install additional library dependencies for PC target
 
-if [ ! -f ${DOWNLOAD_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz ]; then
+pushd ${DOWNLOAD_DIR}
 
-    [ ! -d ${DOWNLOAD_DIR} ] && mkdir -p ${DOWNLOAD_DIR}
-    cd ${DOWNLOAD_DIR}
+if [ ! -f ${DOWNLOAD_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz ]; then
     wget http://freefr.dl.sourceforge.net/project/geographiclib/distrib-C%2B%2B/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
     [ -d ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER} ] && rm -rf ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}
-
 fi
 
+if [ ! -f ${DOWNLOAD_DIR}/master.tar.gz ]; then
+    wget https://github.com/brunotl/zziplib/archive/refs/heads/master.tar.gz
+    [ -d "${SOURCE_DIR}/zziplib-master" ] && rm -rf "${SOURCE_DIR}/zziplib-master"
+fi
+
+popd
+
+pushd ${SOURCE_DIR}
+
 if [ ! -d ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER} ]; then
-    [ ! -d ${SOURCE_DIR} ] && mkdir -p ${SOURCE_DIR}
-    cd ${SOURCE_DIR}
     tar xzf ${DOWNLOAD_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
 
     for TC in TOOLCHAINS; do
@@ -42,6 +52,15 @@ if [ ! -d ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER} ]; then
     done
 
 fi
+
+if [ ! -d ${SOURCE_DIR}/zziplib-master ]; then
+    tar xzf ${DOWNLOAD_DIR}/master.tar.gz
+    for TC in TOOLCHAINS; do
+        [ -d ${BUILD_DIR}/${TC}/zziplib-master ] && rm -rf ${BUILD_DIR}/${TC}/zziplib-master
+    done
+fi
+
+popd
 
 for TC in ${TOOLCHAINS}; do
 
@@ -51,10 +70,9 @@ for TC in ${TOOLCHAINS}; do
     # if Prefix directory not exist ignore this toolchain
     [ ! -d ${PREFIX_DIR}/${TC} ] && continue
 
-
     [ ! -d ${BUILD_DIR}/${TC}/GeographicLib-${GEOGRAPHICLIB_VER} ] && mkdir -p ${BUILD_DIR}/${TC}/GeographicLib-${GEOGRAPHICLIB_VER}
 
-    cd ${BUILD_DIR}/${TC}/GeographicLib-${GEOGRAPHICLIB_VER}
+    pushd ${BUILD_DIR}/${TC}/GeographicLib-${GEOGRAPHICLIB_VER}
 
     ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}/configure \
             --host=${TC} \
@@ -62,5 +80,30 @@ for TC in ${TOOLCHAINS}; do
             PKG_CONFIG_LIBDIR=${PREFIX_DIR}/${TC}/lib/pkgconfig
 
     make && make install
+
+    popd
+
+    [ ! -d ${BUILD_DIR}/${TC}/zziplib-master ] && mkdir -p ${BUILD_DIR}/${TC}/zziplib-master
+
+    pushd ${BUILD_DIR}/${TC}/zziplib-master
+
+        cmake ${SOURCE_DIR}/zziplib-master \
+           -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_DIR}/${TC}.cmake \
+            -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR}/${TC} \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DBUILD_TESTS=OFF \
+            -DMSVC_STATIC_RUNTIME=OFF \
+            -DZZIPMMAPPED=ON \
+            -DZZIPFSEEKO=OFF \
+            -DZZIPWRAP=OFF \
+            -DZZIPSDL=OFF \
+            -DZZIPBINS=OFF \
+            -DZZIPTEST=OFF \
+            -DZZIPDOCS=OFF \
+            -DFORTIFY=OFF \
+
+        make install
+
+    popd
 
 done

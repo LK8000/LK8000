@@ -33,33 +33,34 @@
 
 extern "C" {
 
-#ifdef WIN32
+#ifdef UNICODE
+
 static int winpc_open(zzip_char_t* filename, int flags, ...) {
-  TCHAR wpath[MAX_PATH];
+  wchar_t wpath[MAX_PATH];
   from_utf8(filename, wpath, MAX_PATH);
-  return (_topen(wpath, flags));
+  return (_wopen(wpath, flags));
 }
+
+static zzip_plugin_io_t get_default_io() {
+  static zzip_plugin_io_handlers io_handlers = []() {
+    zzip_plugin_io_handlers io = {};
+    zzip_init_io(&io, 0);
+    io.fd.open = &winpc_open;
+    return io;
+  }();
+
+  return (zzip_plugin_io_t)&io_handlers.fd;
+}
+
+#else
+
+static zzip_plugin_io_t get_default_io() {
+  return zzip_get_default_io();
+}
+
 #endif
 
 static zzip_strings_t ext[] = {".zip", ".ZIP", "", 0};
-
-static const struct zzip_plugin_io default_io = {
-#ifdef WIN32
-    &winpc_open,
-#else
-    &open,
-#endif
-    &close,
-    &_zzip_read,
-    &_zzip_lseek,
-    &zzip_filesize,
-    1, 1,
-    &_zzip_write
-};
-
-static zzip_plugin_io_t get_default_io() {
-  return (zzip_plugin_io_t)&default_io;
-}
 
 ZZIP_FILE* openzip(const char* szFile, const char* mode) {
   int o_flags = 0;
