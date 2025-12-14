@@ -576,12 +576,13 @@ add_library( LK8000 SHARED
     Common/Source/utils/md5.cpp
     Common/Source/utils/filesystem.cpp
     Common/Source/utils/openzip.cpp
-    Common/Source/utils/zzip_stream.cpp
     Common/Source/utils/TextWrapArray.cpp
     Common/Source/utils/hmac_sha2.cpp
     Common/Source/utils/base64.cpp
     Common/Source/utils/charset_helper.cpp
     Common/Source/utils/printf.cpp
+    Common/Source/utils/zzip_file_stream.h
+    Common/Source/utils/zzip_file_stream.cpp
 
     Common/Source/Comm/ExternalWind.cpp
     Common/Source/Comm/LKFlarm.cpp

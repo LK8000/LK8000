@@ -7,7 +7,7 @@
 #include "externs.h"
 #include "FlarmIdFile.h"
 #include "utils/array_back_insert_iterator.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "utils/charset_helper.h"
 #include <iostream>
 #include "LocalPath.h"
@@ -99,7 +99,7 @@ void FlarmIdFile::LoadOgnDb() {
   /*
    * we can't use std::ifstream due to lack of unicode file name in mingw32
    */
-  zzip_stream file(OGNIdFileName, "rt");
+  zzip_file_stream file(OGNIdFileName, "rt");
   if (!file) {
     return;
   }
@@ -164,10 +164,10 @@ void FlarmIdFile::LoadFlarmnetDb() {
   /*
    * we can't use std::ifstream due to lack of unicode file name in mingw32
    */
-  zzip_stream file(flarmIdFileName, "rt");
+  zzip_file_stream file(flarmIdFileName, "rt");
   if (!file) {
     LocalPath(flarmIdFileName, _T(LKD_CONF), _T("data.fln"));
-    file.open(flarmIdFileName, "rt");
+    file = zzip_file_stream(flarmIdFileName, "rt");
   }
   if (file) {
     std::string src_line;

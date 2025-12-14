@@ -9,9 +9,9 @@
 */
 
 #include "externs.h"
+#include <streambuf>
 #include "Waypointparser.h"
 #include "utils/stringext.h"
-#include "utils/zzip_stream.h"
 #include <sstream>
 #include "LKStyle.h"
 #include "Util/TruncateString.hpp"
@@ -34,7 +34,7 @@ static bool GetAttribute(const xml_node* parentNode, const char* attributeName, 
 static bool GetValue(const xml_node* parentNode, const char* tagName, double &value);
 static bool GetMeasurement(const xml_node* parentNode, const char* tagName, char expectedUnit, double &value);
 
-bool ParseOpenAIP(zzip_stream& stream)
+bool ParseOpenAIP(std::streambuf& stream)
 {
     std::string ss;
     xml_document xmldoc;

@@ -17,7 +17,7 @@
 #include "utils/charset_helper.h"
 #include "Waypointparser.h"
 #include "Waypoints/SetHome.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "LocalPath.h"
 #include "Calc/Task/TimeGates.h"
 
@@ -280,7 +280,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
 
     try {
 
-        zzip_stream file_stream(taskFileName, "rt");
+        zzip_file_stream file_stream(taskFileName, "rt");
         if (!file_stream) {
             return false;
         }
@@ -359,7 +359,7 @@ void CTaskFileHelper::LoadTimeGate(const xml_node* node) {
         else {
             TimeGates::GateType = TimeGates::fixed_gates;
             GetAttribute(node, "number", TimeGates::PGNumberOfGates);
-            TCHAR szTime[50];
+            char szTime[50];
             GetAttribute(node, "open-time", szTime);
             StrToTime(szTime, &TimeGates::PGOpenTimeH, &TimeGates::PGOpenTimeM);
             GetAttribute(node, "close-time", szTime);

@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "utils/stl_utils.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "picojson.h"
 #include <istream>
 #include "LocalPath.h"
@@ -74,7 +74,7 @@ namespace {
   }
 
   void LoadLanguageList(const TCHAR* szFilePath, std::map<tstring, tstring>& language) {
-    zzip_stream file(szFilePath, "rb");
+    zzip_file_stream file(szFilePath, "rb");
     if (file) {
       std::istream stream(&file);
       json::value lang_json;
@@ -108,10 +108,10 @@ namespace {
     _stprintf(szFileName, _T("%s.json"), code);
     LocalPath(szFilePath, _T(LKD_LANGUAGE), szFileName);
 
-    zzip_stream file(szFilePath, "rb");
+    zzip_file_stream file(szFilePath, "rb");
     if (!file) {
       SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFileName);
-      file.open(szFilePath, "rb");
+      file = zzip_file_stream(szFilePath, "rb");
     }
     if(file) {
       std::istream stream(&file);

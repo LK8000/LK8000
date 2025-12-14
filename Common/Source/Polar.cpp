@@ -10,7 +10,8 @@
 #include "McReady.h"
 #include "LKProfiles.h"
 #include "Dialogs.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
+#include "utils/charset_helper.h"
 #include "Utils.h"
 #include "LocalPath.h"
 
@@ -117,7 +118,6 @@ bool ReadWinPilotPolar(void) {
 
   TCHAR	szFile[MAX_PATH] = TEXT("\0");
   TCHAR ctemp[80];
-  TCHAR TempString[READLINE_LENGTH+1];
 
   double dPOLARV[3];
   double dPOLARW[3];
@@ -156,11 +156,11 @@ bool ReadWinPilotPolar(void) {
 
     tstring str (szPolarFile);
     lk::strcpy(szFile, str.c_str());
-    zzip_stream stream(szFile, "rt");
+    zzip_file_stream stream(szFile, "rt");
     if(!stream) {
         // failed to open absolute. try LocalPath
         LocalPath(szFile, _T(LKD_POLARS), str.c_str());
-        stream.open(szFile, "rt");
+        stream = zzip_file_stream(szFile, "rt");
     }
     if(!stream){
         // failed to open Local. try with converted file name to new file name.
@@ -174,120 +174,134 @@ bool ReadWinPilotPolar(void) {
 
         if(bRetry) {
             LocalPath(szFile,_T(LKD_POLARS), str.c_str());
-            stream.open(szFile, "rt");
+            stream = zzip_file_stream(szFile, "rt");
         }
     }
     if(!stream) {
         // all previous failed. try SystemPath
         SystemPath(szFile, _T(LKD_SYS_POLAR), str.c_str());
-        stream.open(szFile, "rt");
+        stream = zzip_file_stream(szFile, "rt");
     }
 
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
-    if (stream){
+    if (stream) {
+      std::istream in(&stream);
+      std::string src_line;
 
-        while(stream.read_line(TempString) && (!foundline)){
-
-		if (_tcslen(TempString) <10) continue;
-
-          if(_tcsstr(TempString,TEXT("*")) != TempString) // Look For Comment
-            {
-              PExtractParameter(TempString, ctemp, 0);
-		// weight of glider + pilot
-              ww[0] = StrToDouble(ctemp,NULL);
-		// weight of loadable ballast
-              PExtractParameter(TempString, ctemp, 1);
-              ww[1] = StrToDouble(ctemp,NULL);
-
-              PExtractParameter(TempString, ctemp, 2);
-              dPOLARV[0] = StrToDouble(ctemp,NULL);
-              PExtractParameter(TempString, ctemp, 3);
-              dPOLARW[0] = StrToDouble(ctemp,NULL);
-
-              PExtractParameter(TempString, ctemp, 4);
-              dPOLARV[1] = StrToDouble(ctemp,NULL);
-              PExtractParameter(TempString, ctemp, 5);
-              dPOLARW[1] = StrToDouble(ctemp,NULL);
-
-              PExtractParameter(TempString, ctemp, 6);
-              dPOLARV[2] = StrToDouble(ctemp,NULL);
-              PExtractParameter(TempString, ctemp, 7);
-              dPOLARW[2] = StrToDouble(ctemp,NULL);
-
-              ctemp[0] = _T('\0');
-              PExtractParameter(TempString, ctemp, 8);
-		if ( _tcscmp(ctemp,_T("")) != 0) {
-			GlidePolar::WingArea = StrToDouble(ctemp,NULL);
-		} else {
-			GlidePolar::WingArea = 0.0;
-		}
-
-              TestLog(_T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f v2=%.2f,%.2f area=%.2f"),
-                  ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1],
-                  dPOLARW[1], dPOLARV[2], dPOLARW[2], GlidePolar::WingArea);
-
-		if (ww[0]<=0 || dPOLARV[0]==0 || dPOLARW[0]==0 || dPOLARV[1]==0 || dPOLARW[1]==0 || dPOLARV[2]==0 || dPOLARW[2]==0) {
-			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);
-			continue; // read another line searching for polar
-		} else {
-			if (GlidePolar::WingArea == 0) {
-				StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
-			}
-			foundline = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
-		}
-            }
+      while (std::getline(in, src_line) && (!foundline)) {
+        if (src_line.size() < 10) {
+          continue;
         }
+        if (!src_line.starts_with("*")) { // Look For Comment
+          tstring String = from_unknown_charset(src_line.c_str());
+          PExtractParameter(String.c_str(), ctemp, 0);
+          // weight of glider + pilot
+          ww[0] = StrToDouble(ctemp, NULL);
+          // weight of loadable ballast
+          PExtractParameter(String.c_str(), ctemp, 1);
+          ww[1] = StrToDouble(ctemp, NULL);
 
-	int i;
+          PExtractParameter(String.c_str(), ctemp, 2);
+          dPOLARV[0] = StrToDouble(ctemp, NULL);
+          PExtractParameter(String.c_str(), ctemp, 3);
+          dPOLARW[0] = StrToDouble(ctemp, NULL);
 
-	// Reset flaps values after loading a new polar, and init FlapsPos for the first time
-	for (i=0; i<MAX_FLAPS; i++) {
-		GlidePolar::FlapsPos[i]=0.0;
-		lk::strcpy(GlidePolar::FlapsName[i],_T("???"));
-	}
-	GlidePolar::FlapsPosCount=0;
-	GlidePolar::FlapsMass=0.0;
+          PExtractParameter(String.c_str(), ctemp, 4);
+          dPOLARV[1] = StrToDouble(ctemp, NULL);
+          PExtractParameter(String.c_str(), ctemp, 5);
+          dPOLARW[1] = StrToDouble(ctemp, NULL);
 
-	// Unless we check valid string, even with empty string currentFlapsPos will be positive,
-	// and thus force Flaps calculations even with no extended polar.
-	// Let's allow empty lines and comments in the polar file, before the flaps line is found.
-	//
-	do {
-	   if (_tcslen(TempString) <10) continue;
-	   if(_tcsstr(TempString,TEXT("*")) == TempString) continue;
-	   // try to read flaps configuration line
-	   PExtractParameter(TempString, ctemp, 0);
-	   GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
-	   PExtractParameter(TempString, ctemp, 1);
-	   int flapsCount = (int) StrToDouble(ctemp,NULL);
+          PExtractParameter(String.c_str(), ctemp, 6);
+          dPOLARV[2] = StrToDouble(ctemp, NULL);
+          PExtractParameter(String.c_str(), ctemp, 7);
+          dPOLARW[2] = StrToDouble(ctemp, NULL);
 
-	   // int currentFlapsPos = 0;
-	   // GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;  // no need, already initialised
+          ctemp[0] = _T('\0');
+          PExtractParameter(String.c_str(), ctemp, 8);
+          if (_tcscmp(ctemp, _T("")) != 0) {
+            GlidePolar::WingArea = StrToDouble(ctemp, NULL);
+          }
+          else {
+            GlidePolar::WingArea = 0.0;
+          }
 
-	   int currentFlapsPos=1;
-	   for (i=2; i <= flapsCount*2; i=i+2) {
-	        PExtractParameter(TempString, ctemp, i);
-	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);
-			if (GlidePolar::FlapsPos[currentFlapsPos] > 0) {
-			  GlidePolar::FlapsPos[currentFlapsPos] = Units::From(unKiloMeterPerHour, GlidePolar::FlapsPos[currentFlapsPos]);
-			}
-	        PExtractParameter(TempString, ctemp, i+1);
-		ctemp[MAXFLAPSNAME]='\0';
-		if (ctemp[_tcslen(ctemp)-1]=='\r' || ctemp[_tcslen(ctemp)-1]=='\n')
-			ctemp[_tcslen(ctemp)-1]='\0'; // remove trailing cr
-		lk::strcpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
-		if (currentFlapsPos >= (MAX_FLAPS-1)) break; // safe check
-	        currentFlapsPos++;
-	   }
-	   lk::strcpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
-           GlidePolar::FlapsPos[currentFlapsPos] = MAXSPEED;
-           lk::strcpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
-           currentFlapsPos++;
-           GlidePolar::FlapsPosCount = currentFlapsPos;
-	   break;
-	} while(stream.read_line(TempString));
+          TestLog(
+              _T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f ")
+              _T("v2=%.2f,%.2f area=%.2f"),
+              ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1], dPOLARW[1],
+              dPOLARV[2], dPOLARW[2], GlidePolar::WingArea);
 
-	stream.close();
+          if (ww[0] <= 0 || dPOLARV[0] == 0 || dPOLARW[0] == 0 ||
+              dPOLARV[1] == 0 || dPOLARW[1] == 0 || dPOLARV[2] == 0 ||
+              dPOLARW[2] == 0) {
+            continue;  // read another line searching for polar
+          }
+          else {
+            if (GlidePolar::WingArea == 0) {
+              StartupStore(_T("... WARNING Polar file has NO wing area"));
+            }
+            foundline = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
+          }
+        }
+      }
+
+      // Reset flaps values after loading a new polar, and init FlapsPos for the
+      // first time
+      for (int i = 0; i < MAX_FLAPS; i++) {
+        GlidePolar::FlapsPos[i] = 0.0;
+        lk::strcpy(GlidePolar::FlapsName[i], _T("???"));
+      }
+      GlidePolar::FlapsPosCount = 0;
+      GlidePolar::FlapsMass = 0.0;
+
+      // Unless we check valid string, even with empty string currentFlapsPos
+      // will be positive, and thus force Flaps calculations even with no
+      // extended polar. Let's allow empty lines and comments in the polar file,
+      // before the flaps line is found.
+      //
+      do {
+        if (src_line.size() < 10) {
+          continue;
+        }
+        if (!src_line.starts_with("*")) {
+          continue;
+        }
+        tstring String = from_unknown_charset(src_line.c_str());
+        // try to read flaps configuration line
+        PExtractParameter(String.c_str(), ctemp, 0);
+        GlidePolar::FlapsMass = StrToDouble(ctemp, NULL);
+        PExtractParameter(String.c_str(), ctemp, 1);
+        int flapsCount = (int)StrToDouble(ctemp, NULL);
+
+        // int currentFlapsPos = 0;
+        // GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;  // no need, already
+        // initialised
+
+        int currentFlapsPos = 1;
+        for (int i = 2; i <= flapsCount * 2; i = i + 2) {
+          PExtractParameter(String.c_str(), ctemp, i);
+          GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp, NULL);
+          if (GlidePolar::FlapsPos[currentFlapsPos] > 0) {
+            GlidePolar::FlapsPos[currentFlapsPos] = Units::From(
+                unKiloMeterPerHour, GlidePolar::FlapsPos[currentFlapsPos]);
+          }
+          PExtractParameter(String.c_str(), ctemp, i + 1);
+          ctemp[MAXFLAPSNAME] = '\0';
+          if (ctemp[_tcslen(ctemp) - 1] == '\r' ||
+              ctemp[_tcslen(ctemp) - 1] == '\n')
+            ctemp[_tcslen(ctemp) - 1] = '\0';  // remove trailing cr
+          lk::strcpy(GlidePolar::FlapsName[currentFlapsPos], ctemp);
+          if (currentFlapsPos >= (MAX_FLAPS - 1))
+            break;  // safe check
+          currentFlapsPos++;
+        }
+        lk::strcpy(GlidePolar::FlapsName[0], GlidePolar::FlapsName[1]);
+        GlidePolar::FlapsPos[currentFlapsPos] = MAXSPEED;
+        lk::strcpy(GlidePolar::FlapsName[currentFlapsPos], ctemp);
+        currentFlapsPos++;
+        GlidePolar::FlapsPosCount = currentFlapsPos;
+        break;
+      } while (std::getline(in, src_line));
   } else {
         StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
   }

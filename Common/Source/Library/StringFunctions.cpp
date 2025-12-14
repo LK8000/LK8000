@@ -14,7 +14,7 @@
 #include <charconv>
 
 
-void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber)
+void PExtractParameter(const TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber)
 {
   size_t index = 0;
   size_t dest_index = 0;
@@ -515,16 +515,16 @@ const TCHAR *AngleToWindRose(int angle) {
 ///////////////////////////////////////////////////////////////////////
 // Extract H, M, S from string like "HH:MM:SS"
 //   Sec output parameter is optional
-void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec) {
+void StrToTime(const char* szString, int *Hour, int *Min, int *Sec) {
     LKASSERT(Hour && Min);
-    TCHAR* sz = NULL;
+    char* sz = nullptr;
     if (szString && szString[0]) {
-        *Hour = Clamp<int>(_tcstol(szString, &sz, 10), 0, 23);
+        *Hour = Clamp<int>(strtol(szString, &sz, 10), 0, 23);
         if (*sz == _T(':')) {
-            *Min = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
+            *Min = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
 
             if (Sec && (*sz == _T(':'))) {
-                *Sec = Clamp<int>(_tcstol(sz + 1, &sz, 10), 0, 59);
+                *Sec = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
             }
         }
     }

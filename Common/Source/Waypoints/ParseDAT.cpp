@@ -18,7 +18,7 @@ extern int globalFileNum;
 
 
 // This is converting DAT Winpilot
-int ParseDAT(TCHAR *String,WAYPOINT *Temp)
+int ParseDAT(const TCHAR *String, WAYPOINT *Temp)
 {
   TCHAR *Number;
   TCHAR *pToken;

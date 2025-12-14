@@ -11,10 +11,10 @@
 
 
 
-
-double ReadAltitude(const TCHAR *temp)
+template<typename CharT>
+double ReadAltitude(const CharT *temp)
 {
-  const TCHAR *Stop=temp;
+  const CharT* Stop = temp;
   double Altitude = StrToDouble(temp, &Stop);
   if (temp == Stop)		// error at begin
 	Altitude=-9999;
@@ -38,6 +38,15 @@ double ReadAltitude(const TCHAR *temp)
   }
   return Altitude;
 }
+
+double ReadAltitude(const char* str) {
+	return ReadAltitude<char>(str);
+}
+
+double ReadAltitude(const wchar_t* str) {
+	return ReadAltitude<wchar_t>(str);
+}
+
 
 #ifndef DOCTEST_CONFIG_DISABLE
 #include <doctest/doctest.h>

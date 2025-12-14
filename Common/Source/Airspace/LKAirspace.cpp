@@ -25,7 +25,7 @@
 #include "Util/TruncateString.hpp"
 
 #include "Topology/shapelib/mapserver.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "picojson.h"
 #include "Radio.h"
 #include "Library/rapidxml/rapidxml.hpp"
@@ -1442,7 +1442,7 @@ ActivationTimeT ParseActivationTime(tstring_view sv) {
 // Reading and parsing OpenAir airspace file
 bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
-    zzip_stream stream(szFile, "rt");
+    zzip_file_stream stream(szFile, "rt");
     if(!stream) {
       StartupStore(TEXT("... Unable to open airspace file : %s\n"), szFile);
       return false;
@@ -1931,7 +1931,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
     std::string ss;
     xml_document xmldoc;
     try {
-        zzip_stream file(szFile, "rt");
+        zzip_file_stream file(szFile, "rt");
         if(!file) {
             StartupStore(TEXT("... Unable to open airspace file : %s"), szFile);
             return false;

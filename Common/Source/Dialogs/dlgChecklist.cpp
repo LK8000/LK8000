@@ -13,7 +13,8 @@
 #include "Event/Event.h"
 #include "utils/TextWrapArray.h"
 #include "resource.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
+#include "utils/charset_helper.h"
 #include <vector>
 #include "LocalPath.h"
 
@@ -226,7 +227,7 @@ void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Name, bool
 /// @retval false data load error
 ///
 bool LoadChecklist(const TCHAR* fileName, bool warn) {
-  zzip_stream stream(fileName, "rb");
+  zzip_file_stream stream(fileName, "rb");
   if (!stream) {
     if (warn)
       StartupStore(_T("... Not found notes <%s>%s"), fileName, NEWLINE);
@@ -235,21 +236,28 @@ bool LoadChecklist(const TCHAR* fileName, bool warn) {
 
   TestLog(_T(". Loading UTF notes <%s>"), fileName);
 
-  TCHAR TempString[MAXNOTETITLE + 1];
   TCHAR Details[MAXNOTEDETAILS + 1];
   TCHAR Name[MAXNOTETITLE + 1];
   bool inDetails = false;
 
   Details[0] = 0;
   Name[0] = 0;
-  TempString[0] = 0;
 
-  while (stream.read_line(TempString)) {
-    // skip comment lines
-    if (TempString[0] == _T('#')) {
+  std::string src_line;
+  std::istream istream(&stream);
+  while (std::getline(istream, src_line)) {
+    //skip empty lines
+    if (src_line.empty()) {
       continue;
     }
-    AddChecklistLine(TempString, Details, Name, inDetails);
+    // skip comment lines
+    if (src_line.front() == '#') {
+      continue;
+    }
+    tstring Text = from_unknown_charset(src_line.c_str());
+    TCHAR* p = Text.data();
+
+    AddChecklistLine(p, Details, Name, inDetails);
   }  // while
 
   if (inDetails) {

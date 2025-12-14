@@ -1060,7 +1060,6 @@ UTILS	:=\
 	$(SRC)/utils/md5.cpp \
 	$(SRC)/utils/filesystem.cpp \
 	$(SRC)/utils/openzip.cpp \
-	$(SRC)/utils/zzip_stream.cpp \
 	$(SRC)/utils/TextWrapArray.cpp \
 	$(SRC)/utils/hmac_sha2.cpp \
 	$(SRC)/utils/unicode/unicode_to_ascii.cpp \
@@ -1069,6 +1068,7 @@ UTILS	:=\
 	$(SRC)/utils/base64.cpp \
 	$(SRC)/utils/charset_helper.cpp \
 	$(SRC)/utils/printf.cpp \
+	$(SRC)/utils/zzip_file_stream.cpp\
 
 
 COMMS	:=\
