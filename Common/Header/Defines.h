@@ -164,6 +164,7 @@
 #define LKS_WP_WINPILOT	".dat"
 #define LKS_WP_XCSOAR	".xcw"
 #define LKS_WP_CUP	".cup"
+#define LKS_WP_CUPX	".cupx"
 #define LKS_WP_COMPE	".wpt"
 #define LKS_WP_GPX	".gpx"
 #define XCS_MAPS	".xcm"
@@ -825,6 +826,7 @@
 #define LKW_LK8000	7	// mixed format
 #define LKW_VIRTUAL	8	// temporary, cannot save them
 #define LKW_OPENAIP 9   // OpenAIP format
+#define LKW_CUPX   10   // cupx format
 
 // Overtargets Modes
 #define OVT_TASK        0

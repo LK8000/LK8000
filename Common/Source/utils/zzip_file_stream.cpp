@@ -16,8 +16,9 @@ int zzip_file_stream::underflow() {
   if (gptr() < egptr()) {
     return traits_type::to_int_type(*gptr());
   }
-  assert(m_fp);
-
+  if (!m_fp) {
+    return traits_type::eof();
+  }
   zzip_ssize_t bytes_read =
       zzip_read(m_fp.get(), m_buffer.data(), m_buffer.size());
 

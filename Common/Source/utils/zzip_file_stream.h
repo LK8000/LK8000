@@ -17,9 +17,13 @@ class zzip_file_stream : public std::streambuf {
   zzip_file_stream& operator=(const zzip_file_stream&) = delete;
 
   zzip_file_stream(zzip_file_stream&& other) noexcept
-      : std::streambuf(other),
+      : std::streambuf(std::move(other)),
         m_fp(std::exchange(other.m_fp, nullptr)),
-        m_buffer(other.m_buffer) {}
+        m_buffer(other.m_buffer) {
+    // Reset get-area since buffer pointers from other are invalid for this object
+    setg(nullptr, nullptr, nullptr);
+    other.setg(nullptr, nullptr, nullptr);
+  }
 
   zzip_file_stream& operator=(zzip_file_stream&& other) noexcept;
 

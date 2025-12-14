@@ -826,6 +826,7 @@ WAYPT	:=\
 	$(WPT)/ToString.cpp\
 	$(WPT)/Virtuals.cpp\
 	$(WPT)/Write.cpp\
+	$(WPT)/cupx_reader.cpp\
 
 
 LKINTER	:=\
@@ -1069,6 +1070,8 @@ UTILS	:=\
 	$(SRC)/utils/charset_helper.cpp \
 	$(SRC)/utils/printf.cpp \
 	$(SRC)/utils/zzip_file_stream.cpp\
+	$(SRC)/utils/zzip_mem_disk.cpp\
+	$(SRC)/utils/zzip_disk_file_stream.cpp\
 
 
 COMMS	:=\

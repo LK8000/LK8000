@@ -356,6 +356,9 @@ add_library( LK8000 SHARED
     Common/Source/Waypoints/ToString.cpp
     Common/Source/Waypoints/Virtuals.cpp
     Common/Source/Waypoints/Write.cpp
+    Common/Source/Waypoints/cupx_reader.h
+    Common/Source/Waypoints/cupx_reader.cpp
+
 
     Common/Source/Draw/CalculateScreen.cpp
     Common/Source/Draw/CalculateWaypointReachable.cpp
@@ -583,6 +586,10 @@ add_library( LK8000 SHARED
     Common/Source/utils/printf.cpp
     Common/Source/utils/zzip_file_stream.h
     Common/Source/utils/zzip_file_stream.cpp
+    Common/Source/utils/zzip_disk_file_stream.h
+    Common/Source/utils/zzip_disk_file_stream.cpp
+    Common/Source/utils/zzip_mem_disk.h
+    Common/Source/utils/zzip_mem_disk.cpp
 
     Common/Source/Comm/ExternalWind.cpp
     Common/Source/Comm/LKFlarm.cpp
