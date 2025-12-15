@@ -38,7 +38,7 @@ void dlgAnalysisShowModal(int inpage);
 void dlgStatusShowModal(int page);
 void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false, bool Moveallowed=false);
 void dlgTaskOverviewShowModal(int Idx=-1);
-void dlgWayPointDetailsShowModal(short mypage);
+void dlgWayPointDetailsShowModal(int page);
 short dlgWayQuickShowModal(void);
 
 struct key_filter_interface {

@@ -5,7 +5,6 @@
     <WndButton Name="cmdPrev"  Caption="_@M6_" X="3" Y="126" Width="65"  Height="45" Font="2" OnClickNotify="OnPrevClicked" Tag="0"/>
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="113" Width="65"  Height="105" Font="2" Tag="3" />
     <WndFrame Name="frmInfos" X="70" Y="0" Width="-1" Height="222" Font="2">
-
       <WndProperty Name="prpCoordinate"  Caption="_@M918_" X="2" Y="2" Width="-1" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
       <WndProperty Name="prpAltitude"  Caption="_@M255_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpSunset"    Caption="_@M671_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
@@ -13,18 +12,15 @@
       <WndProperty Name="prpBearing"   Caption="_@M138_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc0"       Caption="_@M83_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpMc2"       Caption="_@M84_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
-
       <WndListFrame Name="frmWpComment" X="2" Y="-1" Width="-1" Height="64" Font="2" OnListInfo="OnWpCommentListInfo">
         <WndOwnerDrawFrame Name="frmWpCommentEntry" X="2" Y="-1" Width="-1" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem" />
       </WndListFrame>
-
       <WndOwnerDrawFrame Name="frmWaypointPicto"     X="10" Y="50" Width="50" Height="50" Font="2"  OnPaint="OnPaintWaypointPicto"/>  	  
-      </WndFrame>
-      <WndListFrame Name="frmDetails" X="70" Y="0" Width="-1" Height="222" Font="3"    OnListInfo="OnDetailsListInfo">
-        <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
-      </WndListFrame>
-      <WndFrame Name="frmCommands" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
-
+    </WndFrame>
+    <WndListFrame Name="frmDetails" X="70" Y="0" Width="-1" Height="222" Font="3"    OnListInfo="OnDetailsListInfo">
+      <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
+    </WndListFrame>
+    <WndFrame Name="frmCommands" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
       <WndButton Name="cmdInserInTask" Caption="dynamic" X="4" Y="2" Width="-1"  Height="44" Font="2" />
       <WndButton Name="cmdAppendInTask1" Caption="_@M1827_" X="4" Y="-1" Width="-1"  Height="44" Font="2" />
       <WndButton Name="cmdAppendInTask2" Caption="_@M1828_" X="4" Y="-1" Width="-1"  Height="44" Font="2" />
@@ -32,10 +28,8 @@
       <WndButton Name="cmdReplace" Caption="dynamic" X="4" Y="-1" Width="-1"  Height="41" Font="2" />
     </WndFrame>
     <WndFrame Name="frmSpecial" X="70" Y="0" Width="-1" Height="222" Font="2" Visible="0">
-
       <WndButton Name="cmdNewHome"   Caption="_@M605_"  X="4" Y="4" Width="-1"  Height="51" Font="2" />
       <WndButton Name="cmdTeamCode"  Caption="_@M604_"  X="4" Y="-997" Width="-1"  Height="51" Font="2" />
-
     </WndFrame>
   </WndForm>
 </PMML>
