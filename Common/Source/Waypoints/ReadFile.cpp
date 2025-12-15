@@ -155,7 +155,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
           assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
           assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
-          memcpy(&WayPointList[RESWP_TAKEOFF], &new_waypoint, sizeof(WAYPOINT));
+          WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
@@ -186,7 +186,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
           assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
           assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
-          memcpy(&WayPointList[RESWP_TAKEOFF], &new_waypoint, sizeof(WAYPOINT));
+          WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
@@ -215,7 +215,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
           assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
           assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
-          memcpy(&WayPointList[RESWP_TAKEOFF], &new_waypoint, sizeof(WAYPOINT));
+          WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
@@ -249,7 +249,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
           assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
           assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
-          memcpy(&WayPointList[RESWP_TAKEOFF], &new_waypoint, sizeof(WAYPOINT));
+          WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 

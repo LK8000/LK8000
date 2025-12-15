@@ -348,7 +348,7 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
 
       switch (FileSection) {
         case Waypoint:
-          memset(&newPoint, 0, sizeof(newPoint));
+          newPoint = {};
           if (ParseCUPWayPointString(cup_header, src_line, &newPoint)) {
             mapWaypoint[newPoint.Name] = newPoint;
           }

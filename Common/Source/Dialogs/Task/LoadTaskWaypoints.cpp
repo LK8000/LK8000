@@ -44,13 +44,12 @@ int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield) {
         waypoint_index = FindMatchingWaypoint(read_waypoint);
 
     if (waypoint_index == -1) { // waypoint not found, so add it!
-        WAYPOINT new_waypoint = {};
-
+        WAYPOINT new_waypoint = *read_waypoint;
         //
         // Note: we dont save task waypoints inside WP files!
         // SO WE DONT NEED TO USE COMMENTS and DETAILS. They are useless.
         //
-        memcpy(&new_waypoint, read_waypoint, sizeof(WAYPOINT));
+
         // this is  needed for avoid freeing twice ...
         // ownership of allocated memory is transferred from "read_waypoint" to "new_waypoint"
         read_waypoint->Comment = nullptr;

@@ -12,6 +12,7 @@
 #include "utils/lookup_table.h"
 #include "utils/printf.h"
 #include "utils/charset_helper.h"
+#include <ranges>
 
 extern int globalFileNum;
 
@@ -234,8 +235,17 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header,
     WaypointAltitudeFromTerrain(Temp);
   }
 
+  // ---------------- PICS   ------------------
+  std::string pics = Entries[_T("pics")];
+  if (!pics.empty()) {
+    for (auto&& sub : std::views::split(pics, ';')) {
+      Temp->pictures.emplace_back(sub.begin(), sub.end());
+    }
+  }
+
   if (Temp->Details) {
     free(Temp->Details);
+    Temp->Details = nullptr;
   }
 
   return true;
