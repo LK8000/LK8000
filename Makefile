@@ -769,6 +769,8 @@ SCREEN := \
 ifeq ($(CONFIG_WIN32),y)
 SCREEN += \
 	$(SRC_SCREEN)/GDI/AlphaBlend.cpp \
+	$(SRC_SCREEN)/GDI/WICImageLoad.cpp \
+
 	
 endif
 
