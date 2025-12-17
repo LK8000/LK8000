@@ -476,6 +476,11 @@ ifeq ($(CONFIG_LINUX),y)
  $(eval $(call pkg-config-library,PNG,libpng))
  CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
 
+ $(eval $(call pkg-config-library,JPEG,libjpeg))
+ CE_DEFS += $(JPEG_CPPFLAGS)
+ CE_DEFS += -DUSE_LIBJPEG
+
+
  USE_CURL ?= $(shell $(PKG_CONFIG) --exists libcurl && echo y)
  ifeq ($(USE_CURL),y)
   $(eval $(call pkg-config-library,CURL,libcurl))
@@ -625,6 +630,7 @@ LDFLAGS		+=$(PROFILE)
 ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm
  LDLIBS += $(PNG_LDLIBS)
+ LDLIBS += $(JPEG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
  LDLIBS += $(OPENGL_LDLIBS)
  LDLIBS += $(EGL_LDLIBS)
