@@ -25,10 +25,14 @@ Copyright_License {
 #define XCSOAR_LIBJPEG_HPP
 
 #include <tchar.h>
+#include <stddef.h>
 
 class UncompressedImage;
 
 UncompressedImage
 LoadJPEGFile(const TCHAR *path);
+
+UncompressedImage
+LoadJPEGFromMemory(const void *data, size_t size);
 
 #endif

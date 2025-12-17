@@ -131,3 +131,71 @@ LoadJPEGFile(const TCHAR *path)
                            row_size, width, height,
                            image_buffer);
 }
+
+UncompressedImage
+LoadJPEGFromMemory(const void *data, size_t size)
+{
+  if (data == nullptr || size == 0)
+    return UncompressedImage::Invalid();
+
+  struct jpeg_decompress_struct cinfo;
+
+  JPEGErrorManager err;
+  cinfo.err = jpeg_std_error(&err.base);
+  if (setjmp(err.setjmp_buffer)) {
+    jpeg_destroy_decompress(&cinfo);
+    return UncompressedImage::Invalid();
+  }
+
+  jpeg_create_decompress(&cinfo);
+
+  // Use memory buffer instead of FILE*
+  jpeg_mem_src(&cinfo,
+               reinterpret_cast<const unsigned char *>(data),
+               static_cast<unsigned long>(size));
+
+  jpeg_read_header(&cinfo, (boolean)true);
+
+  if (cinfo.num_components != 3) {
+    jpeg_destroy_decompress(&cinfo);
+    return UncompressedImage::Invalid();
+  }
+
+  cinfo.out_color_space = JCS_RGB;
+  cinfo.quantize_colors = (boolean)false;
+  jpeg_calc_output_dimensions(&cinfo);
+
+  jpeg_start_decompress(&cinfo);
+
+  const unsigned width = cinfo.output_width;
+  const unsigned height = cinfo.output_height;
+
+  const size_t row_size = 3 * width;
+  const size_t image_buffer_size = row_size * height;
+  const size_t row_buffer_size = row_size;
+
+  uint8_t *const image_buffer =
+    new (std::nothrow) uint8_t[image_buffer_size + row_buffer_size];
+  if (image_buffer == nullptr) {
+    jpeg_destroy_decompress(&cinfo);
+    return UncompressedImage::Invalid();
+  }
+
+  uint8_t *const row = image_buffer + image_buffer_size;
+  JSAMPROW rowptr[1] = { row };
+
+  uint8_t *p = image_buffer;
+  while (cinfo.output_scanline < height) {
+    jpeg_read_scanlines(&cinfo, rowptr, (JDIMENSION)1);
+    p = std::copy_n(row, row_size, p);
+  }
+
+  assert(p == image_buffer + image_buffer_size);
+
+  jpeg_finish_decompress(&cinfo);
+  jpeg_destroy_decompress(&cinfo);
+
+  return UncompressedImage(UncompressedImage::Format::RGB,
+                           row_size, width, height,
+                           image_buffer);
+}
