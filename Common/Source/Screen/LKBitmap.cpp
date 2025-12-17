@@ -17,6 +17,9 @@
 
 #ifndef WIN32
 #include "resource_data.h"
+#else
+#include "Screen/GDI/WICImageLoad.h"
+#include "Screen/GDI/WICContext.h"
 #endif
 
 #ifdef ANDROID
@@ -25,6 +28,10 @@
 
 LKBitmap::LKBitmap() {
 
+}
+
+LKBitmap::LKBitmap(const void* data, size_t size) {
+    LoadFromMemory(data, size);
 }
 
 LKBitmap::~LKBitmap() {
@@ -67,4 +74,16 @@ bool LKBitmap::LoadFromResource(const TCHAR* ResourceName) {
     }
 #endif
     return false;
+}
+
+bool LKBitmap::LoadFromMemory(const void* data, size_t size) {
+  Reset();
+#ifdef WIN32
+  WICContext ctx;
+  (*this) = ::LoadImageFromMemoryWIC(ctx, data, size);
+  return IsDefined();
+#else
+  Bitmap::Load(ConstBuffer<void>(data, size));
+  return IsDefined();
+#endif
 }

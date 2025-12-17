@@ -145,3 +145,14 @@ Bitmap::LoadFile(const TCHAR *path)
 
   return Set(new_bmp, Type::STANDARD);
 }
+
+bool
+Bitmap::Load(ConstBuffer<void> buffer, Type type) {
+  Reset();
+
+  auto new_bmp = native_view->loadMemoryBitmap(buffer.data, buffer.size);
+  if (new_bmp == nullptr) {
+    return false;
+  }
+  return Set(new_bmp, type);
+}

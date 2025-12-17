@@ -6,4 +6,4 @@
 
 struct WICContext;
 
-LKBitmap LoadImageFromMemoryWIC(WICContext& ctx, const std::vector<uint8_t>& data);
+LKBitmap LoadImageFromMemoryWIC(WICContext& ctx, const void* data, size_t size);
