@@ -72,7 +72,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
           // this color is used as the black bit
           hdcbuffer.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
           // brush, can be solid or a 1bpp bitmap
-          (*itr)->FillPolygon(hdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+          (*itr)->FillPolygon(hdcbuffer, (*itr)->TypeBrush());
           (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
         }
       }  // for
@@ -85,11 +85,12 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
             ClearAirSpace(true, rc);
             found = true;
           }
+          TempSurface.SelectObject(LK_NULL_PEN);
           // this color is used as the black bit
-          TempSurface.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
+          TempSurface.SetTextColor( (*it)->TypeColor());
           // get brush, can be solid or a 1bpp bitmap
           // brush, can be solid or a 1bpp bitmap
-          (*it)->FillPolygon(hdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+          (*it)->FillPolygon(TempSurface, (*it)->TypeBrush());
         }
       }  // for
     }

@@ -103,6 +103,9 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   int nDC1 = hdcbuffer.SaveState();
   int nDC2 = hdcMask.SaveState();
   int nDC3 = TempSurface.SaveState();
+
+  TempSurface.SelectObject(LK_NULL_PEN);
+
 #ifdef AIRSPACE_BORDER
   DrawAirSpaceBorders(Surface, rc);
 #endif
@@ -135,6 +138,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
             found = true;
             ClearTptAirSpace(Surface, rc);
           }
+          TempSurface.SelectObject(LK_NULL_PEN);
           // set filling brush
           (*it)->FillPolygon(TempSurface, GetAirSpaceSldBrushByClass(airspace_type));
         }
