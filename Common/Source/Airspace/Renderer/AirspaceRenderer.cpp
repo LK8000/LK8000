@@ -49,6 +49,7 @@ void AirspaceRenderer::Update(CPoint2DArray& geopoints, bool need_clipping, cons
     LKGeom::ClipPolygon(MaxRect, _screenpoints, _screenpoints_clipped);
   }
 
+#ifndef USE_GDI  
   if (_tess_polygon.empty()) {
 #ifdef USE_GLSL
     TessPolygonT<FloatPoint> tess_polygon;
@@ -96,6 +97,7 @@ void AirspaceRenderer::Update(CPoint2DArray& geopoints, bool need_clipping, cons
     _tess_polygon_screen.push_back(std::move(screenpolygon));
   }
 #endif
+#endif
 }
 
 void AirspaceRenderer::DrawOutline(LKSurface& Surface, PenReference pen) const {
@@ -112,7 +114,9 @@ void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) con
 #endif
 
   auto old = Surface.SelectObject(brush);
-
+#ifdef USE_GDI
+  Surface.Polygon(_screenpoints_clipped.data(), _screenpoints_clipped.size());
+#else
 #ifdef USE_GLSL
   OpenGL::solid_shader->Use();
   glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(_proj_mat));
@@ -143,6 +147,6 @@ void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) con
   });
 
 #endif
-
+#endif
   Surface.SelectObject(old);
 }

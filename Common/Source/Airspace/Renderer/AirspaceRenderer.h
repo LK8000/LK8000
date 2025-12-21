@@ -42,6 +42,7 @@ class AirspaceRenderer final {
                                   // but is used only by CalculateScreenPosition();
   RasterPointList _screenpoints_clipped;
 
+#ifndef USE_GDI
 #ifndef HAVE_GLES
   TessPolygonT<FloatPoint> _tess_polygon;  // triangulated polygon in geographic coordinates
   TessPolygonT<FloatPoint> _tess_polygon_screen;
@@ -55,6 +56,7 @@ class AirspaceRenderer final {
   std::vector<polygon> _tess_polygon;
 
   glm::mat4 _proj_mat = glm::mat4(1.0f);
+#endif
 #endif
 };
 

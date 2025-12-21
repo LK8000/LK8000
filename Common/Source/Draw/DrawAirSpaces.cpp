@@ -70,7 +70,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
             found = true;
           }
           // this color is used as the black bit
-          hdcbuffer.SetTextColor(Colours[iAirspaceColour[airspace_type]]);
+          hdcbuffer.SetTextColor((*itr)->TypeColor());
           // brush, can be solid or a 1bpp bitmap
           (*itr)->FillPolygon(hdcbuffer, (*itr)->TypeBrush());
           (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
