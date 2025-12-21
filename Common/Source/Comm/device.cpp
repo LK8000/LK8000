@@ -10,11 +10,9 @@
 #include "Dialogs/dlgProgress.h"
 #include "utils/stl_utils.h"
 #include "Util/TruncateString.hpp"
-#include "BtHandler.h"
 #include "SerialPort.h"
 #include "FilePort.h"
 #include "Bluetooth/BthPort.h"
-#include "GpsIdPort.h"
 #include "TCPPort.h"
 #include <functional>
 #include "Calc/Vario.h"
@@ -168,19 +166,8 @@ void RefreshComPortList() {
         COMMPort.emplace_back(szPort);
     }
 
-#ifndef UNDER_CE
-    for (unsigned i = 10; i < 41; ++i) {
-        _stprintf(szPort, _T("COM%u"), i);
-        COMMPort.emplace_back(szPort);
-    }
-#endif
-
     COMMPort.emplace_back(_T("COM0"));
 
-#if defined(PNA) && defined(UNDER_CE)
-    COMMPort.emplace_back(_T("VSP0"));
-    COMMPort.emplace_back(_T("VSP1"));
-#endif
 #endif
     
 #ifdef HAVE_POSIX
@@ -248,18 +235,6 @@ void RefreshComPortList() {
     COMMPort.emplace_back(_T("/lk/ptycom4"));
   }
 
-#endif
-
-
-#ifndef NO_BLUETOOTH
-    CBtHandler* pBtHandler = CBtHandler::Get();
-    if (pBtHandler) {
-        std::copy(
-        	pBtHandler->m_devices.begin(),
-        	pBtHandler->m_devices.end(),
-        	std::back_insert_iterator<COMMPort_t>(COMMPort)
-        );
-    }
 #endif
 
     COMMPort.emplace_back(_T("TCPClient"));
@@ -417,20 +392,6 @@ static bool IsIdenticalPort(int i, int j) {
 
 namespace {
 
-  bool BluetoothStart() {
-#ifdef NO_BLUETOOTH
-      return true;
-#else
-      CBtHandler* pBtHandler = CBtHandler::Get();
-      if (pBtHandler && pBtHandler->IsOk()) {
-        if (pBtHandler->StartHW()) {
-          return true;
-        }
-      }
-      return false;
-#endif
-  }
-
   void StartWifi() {
 #ifdef KOBO
     if(!IsKoboWifiOn()) {
@@ -451,9 +412,7 @@ namespace {
     constexpr tstring_view usb = _T("USB:");
 
     if (check_prefix(Port, bt_spp)) {
-      if(BluetoothStart()) {
-        return new BthPort(idx, &Port[bt_spp.size()]);
-      }
+
     }
     else if (check_prefix(Port, bt_sensor)) {
 #ifdef ANDROID
@@ -463,8 +422,6 @@ namespace {
     else if (check_prefix(Port, DEV_INTERNAL_NAME)) {
 #ifdef ANDROID
       return new InternalPort(idx, Port.data());
-#else
-      return new GpsIdPort(idx, Port.data());
 #endif
     }
     else if (check_prefix(Port, _T("TCPClient"))) {

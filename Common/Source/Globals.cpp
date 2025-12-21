@@ -228,10 +228,7 @@ void Globals_Init(void) {
   WasFlying = false;
 
   LastDoRangeWaypointListTime=0;
-  DeviceNeedClipping=false; // forcing extensive clipping
 
-  EnableAutoBacklight=true;
-  EnableAutoSoundVolume=true;
   AircraftCategory = AircraftCategory_t::umGlider;
 
   HideUnits=false;
@@ -474,9 +471,6 @@ void Globals_Init(void) {
   MultipleStartPoints = false;
   StartHeightRef = 0; // MSL
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
-#if defined(PPC2003) || defined(PNA)
-  SetSystemTimeFromGPS = true;
-#endif
   SaveRuntime = false;
 
   SelectedWaypoint = -1;

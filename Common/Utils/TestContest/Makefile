@@ -48,11 +48,6 @@ else
 	    MINIMAL       :=y
 	    XSCALE	:=y
           endif
-	  ifeq ($(TARGET),PNA)
-	    CONFIG_PNA := y
-	    CONFIG_PPC2003 := y
-	    MINIMAL       :=n
-	  endif
 	endif
       endif
     endif
@@ -79,15 +74,6 @@ MCPU		:= -mcpu=$(CPU)
 else
 CPU		:=
 MCPU		:=
-endif
-
-ifeq ($(TARGET),PNA)
-CPU		:=arm1136j-s
-MCPU		:=
-endif
-ifeq ($(CONFIG_PPC2002),y)
-CPU		:=strongarm1110
-MCPU		:= -mcpu=$(CPU)
 endif
 
 endif
@@ -247,9 +233,7 @@ else
   LDLIBS		:= -lcommctrl -lstdc++ 
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell 
-    ifneq ($(TARGET),PNA)
-      LDLIBS		+= -limgdecmp
-    endif
+	LDLIBS		+= -limgdecmp
   endif
 endif
 
@@ -260,9 +244,6 @@ TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
 else
 
 TARGET_ARCH	:=-mwin32 $(MCPU)
-ifeq ($(TARGET),PNA)
-TARGET_ARCH	:=-mwin32
-endif
 
 endif
 WINDRESFLAGS	:=-I$(LK_HDR) -I$(LK_SRC) -I$(SRC) $(CE_DEFS) -D_MINGW32_

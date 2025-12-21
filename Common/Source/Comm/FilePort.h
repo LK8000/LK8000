@@ -15,16 +15,10 @@
 #include "ComPort.h"
 #include "utils/unique_file_ptr.h"
 
-#ifdef WIN32
-#ifdef PPC2002
-
-#endif
-#else
+#ifndef WIN32
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-
-
 #endif
 
 

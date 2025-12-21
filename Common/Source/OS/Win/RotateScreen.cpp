@@ -103,17 +103,6 @@ bool RotateScreen(short angle) {
 	ShowWindow(main_window->Handle(), SW_SHOWNORMAL);
     BringWindowToTop(main_window->Handle());
 
-#ifdef HAVE_ACTIVATE_INFO
-	SHFullScreen(main_window->Handle(),SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
-#endif
-#ifdef UNDER_CE
-    SetWindowPos(main_window->Handle(), HWND_TOP,
-                 0, 0,
-                 GetSystemMetrics(SM_CXSCREEN),
-                 GetSystemMetrics(SM_CYSCREEN),
-                 SWP_SHOWWINDOW);
-#endif
-
 //	UpdateWindow(*main_window); No! No WM_PAINT please!
 
 	return true;
@@ -129,24 +118,14 @@ bool RotateScreen(short angle) {
 ScopeLockScreen::ScopeLockScreen() :
             previous_state()
 {
-#ifndef UNDER_CE
     HWND hwnd = main_window->Handle();
     if(hwnd) {
         DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
         previous_state = !!(dwStyle&WS_SIZEBOX);
         SetWindowLong(hwnd, GWL_STYLE, dwStyle&(~WS_SIZEBOX));
     }
-#endif
 }
 
 ScopeLockScreen::~ScopeLockScreen() {
-#ifndef UNDER_CE
-    if(previous_state) {
-        HWND hwnd = main_window->Handle();
-        if(hwnd) {
-            DWORD dwStyle = (DWORD)GetWindowLong(hwnd, GWL_STYLE);
-            SetWindowLong(hwnd, GWL_STYLE, dwStyle|WS_SIZEBOX);
-        }
-    }
-#endif
+
 }

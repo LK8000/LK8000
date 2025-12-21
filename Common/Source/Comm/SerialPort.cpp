@@ -39,13 +39,8 @@ bool SerialPort::Initialize() {
     TCHAR sysPortName[20];
     DCB PortDCB;
 
-#ifndef UNDER_CE
     // Do not use COMn , use \\.\COMnn  on PC version
     _stprintf(sysPortName, _T("\\\\.\\%s"), GetPortName());
-#else
-    // Do not use COMn , use COMn:  on WinCE version
-    _stprintf(sysPortName, _T("%s:"), GetPortName());
-#endif
     StartupStore(_T(". ComPort %u Initialize <%s> speed=%lu bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
 
     hPort = CreateFile(sysPortName, // Pointer to the name of the port
@@ -146,13 +141,7 @@ failed:
         }
         hPort = INVALID_HANDLE_VALUE;
 
-#ifdef UNDER_CE
-        if (_PollingMode) {
-            Sleep(2000);
-        }
-#else
         Sleep(2000); // needed for windows bug
-#endif
     }
     return false;
 }
@@ -263,14 +252,8 @@ bool SerialPort::Close() {
             StartupStore(_T("... ComPort %u close failed, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE);
             Ret = false;
         } else {
-
-#ifdef UNDER_CE
-            if (_PollingMode) {
-                Sleep(2000);
-            }
-#else
             Sleep(2000); // needed for windows bug
-#endif
+
             hPort = INVALID_HANDLE_VALUE;
             StartupStore(_T(". ComPort %u closed Ok.%s"), GetPortIndex() + 1, NEWLINE); // 100210 BUGFIX missing
             Ret = true;
@@ -298,18 +281,7 @@ void SerialPort::DirtyPurge() {
 }
 
 void SerialPort::CancelWaitEvent() {
-#ifdef UNDER_CE
-    if(hPort != INVALID_HANDLE_VALUE) {
-        DirtyPurge();
-        if (!_PollingMode) {
-            // setting the comm event mask with the same value
-            SetCommMask(hPort, _dwMask); // will cancel any
-                                        // WaitCommEvent!  this is a
-                                        // documented CE trick to
-                                        // cancel the WaitCommEvent
-        }
-    }
-#endif
+
 }
 
 bool SerialPort::IsReady() {
@@ -356,17 +328,6 @@ unsigned SerialPort::RxThread() {
 
     Purge();
 
-
-#ifdef UNDER_CE
-    DWORD dwCommModemStatus = 0;
-
-    // Specify a set of events to be monitored for the port.
-    _dwMask = EV_RXFLAG | EV_CTS | EV_DSR | EV_RING | EV_RXCHAR;
-    if (!_PollingMode) {
-        SetCommMask(hPort, _dwMask);
-    }
-#endif
-
     bool opened = false;  // Call devOpen() once at startup
     while ((hPort != INVALID_HANDLE_VALUE) && !WaitForStop(0)) {
         if (!opened) {
@@ -376,53 +337,27 @@ unsigned SerialPort::RxThread() {
 
         UpdateStatus();
 
-#ifdef UNDER_CE
-        if (_PollingMode) {
-            Sleep(5);
-        } else {
-            // Wait for an event to occur for the port.
-            if (!WaitCommEvent(hPort, &dwCommModemStatus, 0)) {
-                // error reading from port
-                Sleep(5);
-            }
-        }
-#else
         // PC version does BUSY WAIT
         Sleep(5); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
-#endif
-
-#ifdef UNDER_CE
-        if (_PollingMode || (dwCommModemStatus & EV_RXFLAG) || (dwCommModemStatus & EV_RXCHAR)) // Do this only for non-PC
-#endif
-        {
-            // Loop to wait for the data.
-            do {
-                WithLock(CritSec_Comm, [&](){
-                    // Read the data from the serial port.
-                    dwBytesTransferred = ComPort::Read(szString);
-                    if (dwBytesTransferred > 0) {
-                        ProcessData(szString, dwBytesTransferred);
-                    } else {
-                        dwBytesTransferred = 0;
-                    }
-                });
-                Sleep(1); // JMW20070515: give port some time to
-                // fill... prevents ReadFile from causing the
-                // thread to take up too much CPU
-
-                if (WaitForStop(0)) {
+        // Loop to wait for the data.
+        do {
+            WithLock(CritSec_Comm, [&](){
+                // Read the data from the serial port.
+                dwBytesTransferred = ComPort::Read(szString);
+                if (dwBytesTransferred > 0) {
+                    ProcessData(szString, dwBytesTransferred);
+                } else {
                     dwBytesTransferred = 0;
                 }
-            } while (dwBytesTransferred != 0);
-        }
+            });
+            Sleep(1); // JMW20070515: give port some time to
+            // fill... prevents ReadFile from causing the
+            // thread to take up too much CPU
 
-        // Retrieve modem control-register values.
-#ifdef UNDER_CE
-        if (!_PollingMode) {
-            // this is causing problems on PC BT, apparently. Setting Polling will not call this, but it is a bug
-            GetCommModemStatus(hPort, &dwCommModemStatus);
-        }
-#endif
+            if (WaitForStop(0)) {
+                dwBytesTransferred = 0;
+            }
+        } while (dwBytesTransferred != 0);
     }
 
     DirtyPurge();

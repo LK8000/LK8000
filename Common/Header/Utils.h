@@ -15,15 +15,6 @@ struct windrotary_s;
 extern bool LockSettingsInFlight;
 extern bool LoggerShortName;
 
-
-#if defined(PNA) && defined(UNDER_CE)
-bool SetBacklight();
-#endif
-
-#ifdef PNA
-BOOL GetFontPath(TCHAR *pPos);
-#endif
-
 double StrToDouble(const wchar_t *str, const wchar_t **endptr);
 double StrToDouble(const char *str, const char **endptr);
 
@@ -50,7 +41,7 @@ void propGetFontSettingsFromString(const TCHAR *Buffer, LOGFONT* lplf);
 
 int GetUTCOffset();
 
-#if !defined(UNDER_CE) || defined(__linux__)
+#if !defined(ANDROID)
 bool LK8000GetOpts(const TCHAR *MyCommandLine);
 #endif
 

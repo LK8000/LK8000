@@ -12,17 +12,7 @@
 #ifndef BTHPORT_H
 #define	BTHPORT_H
 
-#ifndef NO_BLUETOOTH
-#include "../SocketPort.h"
-
-class BthPort : public SocketPort {
-public:
-    BthPort(int idx, const tstring& sName) : SocketPort(idx, sName) { }
-
-protected:
-    virtual bool Connect();
-};
-#elif defined (ANDROID)
+#ifdef ANDROID
 #include "Android/BluetoothPort.h"
 typedef  BluetoothPort BthPort;
 #else

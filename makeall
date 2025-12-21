@@ -8,14 +8,6 @@ NB_CORES=$(grep -c '^processor' /proc/cpuinfo)
 export MAKEFLAGS="-j$((NB_CORES+1)) -l${NB_CORES}"
 
 echo "---------------------------------------------------"
-make TARGET=PPC2003 clean
-make TARGET=PPC2003 distrib
-
-echo "---------------------------------------------------"
-make TARGET=PNA clean
-make TARGET=PNA distrib
-
-echo "---------------------------------------------------"
 make TARGET=PC clean
 make TARGET=PC distrib
 

@@ -106,7 +106,6 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
         // ETO_OPAQUE not necessary since we pass a NULL rect
         //
 
-#if !defined(PNA) || !defined(UNDER_CE)
         short emboldsize=IBLSCALE(1); 
         
         for (short a=1; a<=emboldsize; a++) {
@@ -122,22 +121,6 @@ void MapWindow::LKWriteText(LKSurface& Surface, const TCHAR* wText, int x, int y
               Surface.DrawText(x, y - a, wText, ClipRect);
               Surface.DrawText(x, y + a, wText, ClipRect);
         }
-#else
-        Surface.DrawText(x - 1, y - 1, wText, ClipRect);
-        Surface.DrawText(x - 1, y + 1, wText, ClipRect);
-        Surface.DrawText(x + 1, y - 1, wText, ClipRect);
-        Surface.DrawText(x + 1, y + 1, wText, ClipRect);
-
-        // SetTextColor(hDC,RGB_GREY);  // This would give an Emboss effect
-        // Surface.DrawText(x, y+2, 0, wText, maxsize);
-
-        if (moreoutline) {
-            Surface.DrawText(x - 2, y, wText, ClipRect);
-            Surface.DrawText(x + 2, y, wText, ClipRect);
-            Surface.DrawText(x, y - 2, wText, ClipRect);
-            Surface.DrawText(x, y + 2, wText, ClipRect);
-        }
-#endif
 
         Surface.SetTextColor(textColor);
         Surface.DrawText(x, y, wText, ClipRect);

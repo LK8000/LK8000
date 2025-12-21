@@ -286,12 +286,6 @@ private:
 
 #endif
 
-#ifdef UNDER_CE
-// pointer to AlphaBlend() function (initialized by first call of AlphaBlendSupported())
-typedef BOOL (WINAPI *TAlphaBlendF)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION);
-static TAlphaBlendF AlphaBlendF;
-#endif
-
 };
 
 #ifndef USE_GDI

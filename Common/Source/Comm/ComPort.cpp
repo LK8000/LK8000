@@ -124,7 +124,9 @@ bool ComPort::WaitForStop(int time) {
     if (stop) {
         return true;
     }
-    stop_cond.wait_for(lock, std::chrono::milliseconds(time));
+    if (time > 0) {
+        stop_cond.wait_for(lock, std::chrono::milliseconds(time));
+    }
     return stop;
 }
 

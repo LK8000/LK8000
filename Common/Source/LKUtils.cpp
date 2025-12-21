@@ -8,9 +8,6 @@
 
 #include "externs.h"
 #include "LKProcess.h"
-#if defined(PNA) && defined(UNDER_CE)
-#include "Devices/LKHolux.h"
-#endif
 #include "utils/stringext.h"
 #include "Dialogs.h"
 #include "Library/TimeFunctions.h"

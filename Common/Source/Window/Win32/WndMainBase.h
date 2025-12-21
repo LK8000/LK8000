@@ -12,11 +12,6 @@
 #ifndef WndMainBase_H
 #define	WndMainBase_H
 
-#if defined(UNDER_CE) && ((UNDER_CE >= 300) || (_WIN32_WCE >= 0x0300))
-    #include <aygshell.h>
-    #define HAVE_ACTIVATE_INFO
-#endif
-
 #include "WndPaint.h"
 #include "Compiler.h"
 
@@ -62,13 +57,6 @@ protected:
 
 private:
     HWND _hWndFocus;
-
-#ifdef HAVE_ACTIVATE_INFO
-    SHACTIVATEINFO s_sai;
-    bool api_has_SHHandleWMActivate;
-    bool api_has_SHHandleWMSettingChange;
-#endif
-
 };
 
 #endif	/* WndMainBase_H */

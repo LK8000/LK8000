@@ -491,15 +491,6 @@
       <WndProperty Name="prpSaveRuntime" Caption="_@M2305_" X="0" Y="1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H239_">
         <DataField Name="" DataType="boolean"/>
       </WndProperty>
-      <WndProperty Name="prpSetSystemTimeFromGPS" Caption="_@M766_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H210_">
-        <DataField Name="" DataType="boolean"/>
-      </WndProperty>
-      <WndProperty Name="prpAutoBacklight" Caption="_@M106_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H211_">
-        <DataField Name="" DataType="boolean"/>
-      </WndProperty>
-      <WndProperty Name="prpAutoSoundVolume" Caption="_@M110_" X="0" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H212_">
-        <DataField Name="" DataType="boolean"/>
-      </WndProperty>
       <WndProperty Name="prpAndroidAudioVario" Caption="_@M1919_" X="2" Y="-1"  Width="-1" Height="22" CaptionWidth="150" Font="2" Help="_@H1364_">
         <DataField Name="" DataType="boolean" />
       </WndProperty>

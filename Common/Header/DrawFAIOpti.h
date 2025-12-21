@@ -8,13 +8,7 @@
 #ifndef FAI_SECTOR_H_
 #define FAI_SECTOR_H_
 
-
-
-#ifdef PNA
-  #define FAI_SECTOR_STEPS 11
-#else
-  #define FAI_SECTOR_STEPS 21
-#endif
+#define FAI_SECTOR_STEPS 21
 
 typedef std::list<GeoPoint> GPS_Track;
 

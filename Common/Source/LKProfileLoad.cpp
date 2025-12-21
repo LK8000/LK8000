@@ -182,7 +182,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryAppInverseInfoBox, InverseInfoBox_Config)) return;
   if (settings::read(sname, svalue, szRegistryArrivalValue, ArrivalValue)) return;
   if (settings::read(sname, svalue, szRegistryAutoAdvance, AutoAdvance_Config)) return;
-  if (settings::read(sname, svalue, szRegistryAutoBacklight, EnableAutoBacklight)) return;
   if (settings::read(sname, svalue, szRegistryAutoForceFinalGlide, AutoForceFinalGlide)) return;
   if (settings::read(sname, svalue, szRegistryAutoMcMode, AutoMcMode_Config)) return;
   if (settings::read(sname, svalue, szRegistryAutoMcStatus, AutoMacCready_Config)) return;
@@ -193,7 +192,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
 
-  if (settings::read(sname, svalue, szRegistryAutoSoundVolume, EnableAutoSoundVolume)) return;
   if (settings::read(sname, svalue, szRegistryAutoWind, AutoWindMode_Config)) return;
   if (settings::read(sname, svalue, szRegistryAutoZoom, AutoZoom_Config)) return;
   if (settings::read(sname, svalue, szRegistryAverEffTime, AverEffTime)) return;
@@ -566,11 +564,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
 
   if (settings::read(sname, svalue, szRegistrySectorRadius, SectorRadius)) return;
-
-#if defined(PPC2003) || defined(PNA)
-  if( settings::read(sname,svalue,szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS)) return;
-#endif
-
   if (settings::read(sname, svalue, szRegistrySaveRuntime, SaveRuntime)) return;
   if (settings::read(sname, svalue, szRegistryShading, Shading_Config)) return;
   if (settings::read(sname, svalue, szRegistryIsoLine, IsoLine_Config)) return;
@@ -788,6 +781,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryAutoContrast, AutoContrast)) return;
   if (settings::read(sname, svalue, szRegistryEnableAudioVario, EnableAudioVario)) return;
 
+#if !defined(ANDROID)
   if (SaveRuntime && !IsEmbedded()) {
     // Do NOT load resolution from profile, if we have requested a resolution from command line
     // And also, we can only load saved screen parameters from the default profile!
@@ -798,6 +792,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
       if (settings::read(sname, svalue, szRegistryScreenSizeY, ScreenSizeY)) return;
     }
   }
+#endif
 
   if (settings::read(sname, svalue, szRegistrySoundSwitch, EnableSoundModes)) return;
 

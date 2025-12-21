@@ -103,25 +103,6 @@ void LKProfileInitRuntime() {
   if (ModelType::Get() == ModelType::GENERIC ) {
 
   } 
-  else if (ModelType::Get() == ModelType::HP31X ) {
-	  DeviceNeedClipping = true;
-    // key transcoding for this one
-  }
-  else if (ModelType::Get() == ModelType::PN6000 ) {
-	  // key transcoding for this one
-  }
-  else if (ModelType::Get() == ModelType::PNA_MIO ) {
-  	// currently no special settings from MIO but need to handle hw keys
-  }
-  else if (ModelType::Get() == ModelType::NOKIA_500 ) {
-  	// key transcoding is made
-  }
-  else if (ModelType::Get() == ModelType::MEDION_P5 ) {
-  	DeviceNeedClipping=true;
-  } 
-  else if (ModelType::Get() == ModelType::PNA_NAVIGON ) {
-  	DeviceNeedClipping=true;
-  }
   else if (ModelType::Get() == ModelType::BTKA ) {
 
   }

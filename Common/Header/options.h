@@ -28,10 +28,6 @@
 #endif
 #endif
 
-#if !defined(UNDER_CE)
-#define NO_BLUETOOTH
-#endif
-
 // Disable internally generated sounds
 #if !defined(WIN32) && !defined(ENABLE_SDL) && !defined(USE_ALSA) && !defined(ANDROID)
     // audio is only implemented for WIN32 && SDL Enabled TARGET
@@ -97,10 +93,8 @@
 				// For TESTBENCH and beta versions this should be always ENABLED.
 				// Only in official stable versions it should be disabled.
 
-#if !defined(UNDER_CE)
 // Enable Topology Cache 2 (full topology in memory)
-  #define USE_TOPOLOGY_CACHE_LEVEL2
-#endif
+#define USE_TOPOLOGY_CACHE_LEVEL2
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
@@ -160,13 +154,11 @@
 // #define BCT_ALT_FIX
 
 // use WGS84 earth model
-#if !defined(UNDER_CE)
-    #define _WGS84
-    #ifdef __cplusplus
-        #include <GeographicLib/Config.h>
-        #if !(((GEOGRAPHICLIB_VERSION_MAJOR >= 1) && (GEOGRAPHICLIB_VERSION_MINOR >= 37)) || (GEOGRAPHICLIB_VERSION_MAJOR >= 2))
-            #error "GeographicLib version >= 1.37 are required"
-        #endif
+#define _WGS84
+#ifdef __cplusplus
+    #include <GeographicLib/Config.h>
+    #if !(((GEOGRAPHICLIB_VERSION_MAJOR >= 1) && (GEOGRAPHICLIB_VERSION_MINOR >= 37)) || (GEOGRAPHICLIB_VERSION_MAJOR >= 2))
+        #error "GeographicLib version >= 1.37 are required"
     #endif
 #endif
 

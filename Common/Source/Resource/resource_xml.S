@@ -127,9 +127,6 @@
     binfile IDR_XML_MULTIMAPS, Common/Data/Dialogs/dlgMultimaps.xml
     binfile IDR_XML_DEVCPROBE, Common/Data/Dialogs/dlgDevCProbe.xml
 
-    binfile IDR_XML_BLUETOOTH_L, Common/Data/Dialogs/dlgBluetooth_L.xml
-    binfile IDR_XML_BLUETOOTH_P, Common/Data/Dialogs/dlgBluetooth_P.xml
-
     binfile IDR_XML_IGCFILE_L, Common/Data/Dialogs/dlgIgcFile_L.xml
     binfile IDR_XML_IGCFILE_P, Common/Data/Dialogs/dlgIgcFile_P.xml
 

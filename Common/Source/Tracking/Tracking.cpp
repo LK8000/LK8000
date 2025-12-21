@@ -40,10 +40,7 @@ namespace tracking {
 
     namespace {
         // private global;
-#ifndef UNDER_CE
         std::unique_ptr<FFVLTracking> ffvl_tracking;
-#endif
-
         std::unique_ptr<SkylinesGlue> skylines_glue;
         platform tracking_platform = platform::none;
 
@@ -78,12 +75,10 @@ namespace tracking {
 
     void Initialize(platform id) {
 
-#ifndef UNDER_CE
         if (!ffvl_user_key.empty()) {
             ffvl_tracking = std::make_unique<FFVLTracking>(ffvl_user_key);
             ffvl_tracking->Start();
         }
-#endif
 
         tracking_platform = id;
         switch (tracking_platform) {
@@ -122,11 +117,9 @@ namespace tracking {
 
     void Update(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
 
-#ifndef UNDER_CE
         if (ffvl_tracking) {
             ffvl_tracking->Update(Basic, Calculated);
         }
-#endif
 
         switch (tracking_platform) {
             case platform::none:
@@ -152,9 +145,7 @@ namespace tracking {
             LiveTrackerShutdown();
         }
         skylines_glue = nullptr;
-#ifndef UNDER_CE
         ffvl_tracking = nullptr;
-#endif
     }
 
     void ResetSettings() {

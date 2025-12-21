@@ -9,10 +9,6 @@
 #include "../Sound.h"
 #include "externs.h"
 #include "LocalPath.h"
-#if defined(PNA) && defined(UNDER_CE)
-#include "Modeltype.h"
-#include "Devices/LKHolux.h"
-#endif
 
 #include "mmsystem.h"
 
@@ -46,12 +42,6 @@ void PlayResource(const TCHAR* lpName) {
         return;
     }
 
-#if defined(PNA) && defined(UNDER_CE)
-    if (DeviceIsGM130) {
-        MessageBeep(0xffffffff);
-        return;
-    }
-#endif
     BOOL bRtn = false;
     // TODO code: Modify to allow use of WAV Files and/or Embedded files
 
@@ -82,14 +72,7 @@ void PlayResource(const TCHAR* lpName) {
 
 // Play a sound from filesystem
 void LKSound(const TCHAR *lpName) {
-    if(!EnableSoundModes) return;
-
-  #if defined(PNA) && defined(UNDER_CE)
-  if (DeviceIsGM130) {
-	MessageBeep(0xffffffff); // default
-	return;
-  }
-  #endif
+  if(!EnableSoundModes) return;
 
   if (!bSoundFile) return;
 
@@ -99,24 +82,5 @@ void LKSound(const TCHAR *lpName) {
 }
 
 bool SetSoundVolume() {
-
-#if defined(PNA) && defined(UNDER_CE)
-  if (EnableAutoSoundVolume == false ) return false;
-
-  switch (ModelType::Get()) {
-	case ModelType::FUNTREK:
-		GM130MaxSoundVolume();
-		break;
-
-	default:
-		// A general approach normally working fine.
-		// (should we enter critical section ?  probably... )
-		waveOutSetVolume(0, 0xffff); // this is working for all platforms
-		break;
-  }
-
-  return true;
-#else
   return false;
-#endif
 }

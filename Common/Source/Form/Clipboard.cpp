@@ -16,7 +16,7 @@
   #include "Android/LK8000Activity.h"
 #endif
 
-#if defined(WIN32) && !defined(PPC2003)
+#if defined(WIN32)
 #include "windows.h"
 
 namespace {
@@ -61,7 +61,7 @@ private:
 #endif
 
 bool ClipboardAvailable() {
-#if defined(ANDROID) || !defined(NDEBUG) || (defined(WIN32) && !defined(PPC2003))
+#if defined(ANDROID) || !defined(NDEBUG) || (defined(WIN32))
   return true;
 #endif
   return false;
@@ -77,7 +77,7 @@ tstring GetClipboardData() {
   }
 #endif
 
-#if defined(WIN32) && !defined(PPC2003)
+#if defined(WIN32)
   try {
     ScopeClipboard clipboard;
     const wchar_t* data = ScopeGlobalLock<wchar_t>(::GetClipboardData(CF_UNICODETEXT));

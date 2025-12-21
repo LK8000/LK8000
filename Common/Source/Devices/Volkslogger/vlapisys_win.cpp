@@ -20,7 +20,7 @@
 #include "OS/Sleep.h"
 
 #include <stdio.h>
-#if defined(HAVE_POSIX) || !defined(_WIN32_WCE)
+#if defined(HAVE_POSIX)
 #include <time.h>
 #endif
 

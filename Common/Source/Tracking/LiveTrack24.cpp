@@ -344,15 +344,10 @@ static bool SendStartOfTrackPacket(http_session& http, unsigned int *packet_id,
 		strncpy(txbuf, "guest", std::size(txbuf));
 	}
 	UrlEncode(txbuf, password, std::size(password));
-#ifdef PNA
-	to_utf8(ModelType::GetName(), txbuf);
-	UrlEncode(txbuf, phone, std::size(phone));
-#else
 #if (WINDOWSPC>0)
 	UrlEncode("PC", phone, std::size(phone));
 #else
 	UrlEncode("PDA", phone, std::size(phone));
-#endif
 #endif
 	if (SIMMODE)
 		UrlEncode("SIMULATED", gps, std::size(gps));

@@ -65,7 +65,7 @@ GetCpuLoad_Singleton GetGpuLoad;
 #endif
 
 int CpuSummary() {
-#if (WINDOWSPC>0 || (!PNA && PPC2003))
+#if (WINDOWSPC > 0)
   return INVALID_VALUE;
 #else
   int s = GetGpuLoad();

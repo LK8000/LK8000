@@ -75,14 +75,12 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryAppInverseInfoBox, InverseInfoBox_Config);
   write_settings(szRegistryArrivalValue, ArrivalValue);
   write_settings(szRegistryAutoAdvance, AutoAdvance_Config);
-  write_settings(szRegistryAutoBacklight, EnableAutoBacklight);
   write_settings(szRegistryAutoForceFinalGlide, AutoForceFinalGlide);
   write_settings(szRegistryAutoMcMode, AutoMcMode_Config);
 
   write_settings(szRegistryAutoMcStatus, AutoMacCready_Config);
 
   write_settings(szRegistryAutoOrientScale, AutoOrientScale * 10);
-  write_settings(szRegistryAutoSoundVolume, EnableAutoSoundVolume);
   write_settings(szRegistryAutoWind, AutoWindMode_Config);
   write_settings(szRegistryAutoZoom, AutoZoom_Config);
   write_settings(szRegistryAverEffTime, AverEffTime);
@@ -224,11 +222,7 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistrySafetyMacCready, GlidePolar::SafetyMacCready * 10);
 
   write_settings(szRegistrySectorRadius, SectorRadius);
-
-#if defined(PPC2003) || defined(PNA)
-  write_settings(szRegistrySetSystemTimeFromGPS, SetSystemTimeFromGPS);
-#endif
-
+  
   write_settings(szRegistrySaveRuntime, SaveRuntime);
   write_settings(szRegistryShading, Shading_Config);
   write_settings(szRegistryIsoLine, IsoLine_Config);
@@ -387,11 +381,14 @@ void LKProfileSave(const TCHAR *szFile) {
 
   write_settings(szRegistryAutoContrast, AutoContrast);
 
+#if !defined(ANDROID)
   if (SaveRuntime && !IsEmbedded() && !CommandResolution) {
     write_settings(szRegistryScreenSize, ScreenSize);
     write_settings(szRegistryScreenSizeX, ScreenSizeX);
     write_settings(szRegistryScreenSizeY, ScreenSizeY);
   }
+#endif
+
   if (SaveRuntime) {
     write_settings(szRegistrySoundSwitch, EnableSoundModes);
   }

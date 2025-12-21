@@ -14,11 +14,6 @@
 #include "Geoid.h"
 #include "GpsWeekNumberFix.h"
 
-#if defined(PNA) && defined(UNDER_CE)
-#include "Devices/LKHolux.h"
-#include "Devices/LKRoyaltek3200.h"
-#endif
-
 using std::string_view_literals::operator""sv;
 
 extern double EastOrWest(double in, TCHAR EoW);
@@ -71,139 +66,6 @@ void NMEAParser::Reset() {
   GLLtime=0; 
   LastTime = 0;
 }
-
-#if defined(PNA) && defined(UNDER_CE)
-BOOL NMEAParser::ParseGPS_POSITION(int Idx, const GPS_POSITION& loc, NMEA_INFO& GPSData) {
-    LKASSERT(!ReplayLogger::IsEnabled());
-
-    DeviceDescriptor_t* pdev = devGetDeviceOnPort(Idx);
-    if(pdev) {
-      pdev->HB = LKHearthBeats;
-      return pdev->nmeaParser.ParseGPS_POSITION_internal(loc, GPSData);
-    }
-    return FALSE;
-}
-
-BOOL NMEAParser::ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData) {
-
-    gpsValid = !(loc.dwFlags & GPS_DATA_FLAGS_HARDWARE_OFF);
-    if (!gpsValid) {
-        return TRUE;
-    }
-    connected = true;
-
-    switch (loc.FixType) {
-        case GPS_FIX_UNKNOWN:
-            gpsValid = false;
-            break;
-        case GPS_FIX_2D:
-        case GPS_FIX_3D:
-            gpsValid = true;
-            break;
-        default:
-            break;
-    }
-
-    if (loc.dwValidFields & GPS_VALID_SATELLITE_COUNT) {
-        nSatellites = loc.dwSatelliteCount;
-    }
-
-    if (gpsValid) {
-        lastGpsValid.Update();
-    }
-
-    if(!activeGPS) {
-        return TRUE;
-    }
-
-    GPSData.SatellitesUsed = nSatellites;
-    GPSData.NAVWarning = !gpsValid;
-    
-    if (loc.dwValidFields & GPS_VALID_UTC_TIME) {
-        GPSData.Hour = loc.stUTCTime.wHour;
-        GPSData.Minute = loc.stUTCTime.wMinute;
-        GPSData.Second = loc.stUTCTime.wSecond;
-        GPSData.Month = loc.stUTCTime.wMonth;
-        GPSData.Day = loc.stUTCTime.wDay;
-        GPSData.Year = loc.stUTCTime.wYear;
-        if(!TimeHasAdvanced(TimeModify(&GPSData, StartDay), &GPSData)) {
-            return FALSE;
-        }
-    }
-    if (loc.dwValidFields & GPS_VALID_LATITUDE) {
-        GPSData.Latitude = loc.dblLatitude;
-    }
-    if (loc.dwValidFields & GPS_VALID_LONGITUDE) {
-        GPSData.Longitude = loc.dblLongitude;
-    }
-    if (loc.dwValidFields & GPS_VALID_SPEED) {
-        GPSData.Speed = Units::From(unKnots, loc.flSpeed);
-    }
-    if (loc.dwValidFields & GPS_VALID_HEADING) {
-      	if (GPSData.Speed > GetTrackBearingMinSpeed()) {
-            GPSData.TrackBearing = AngleLimit360(loc.flHeading);
-        }
-    }
-    if (loc.dwValidFields & GPS_VALID_MAGNETIC_VARIATION) {
-
-    }
-    
-    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_SEA_LEVEL) {
-        GPSData.Altitude = loc.flAltitudeWRTSeaLevel;
-        GPSData.Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
-    }
-    
-#if 0    
-    if (loc.dwValidFields & GPS_VALID_ALTITUDE_WRT_ELLIPSOID) {
- 
-        /* MSDN says..
-         * "flAltitudeWRTEllipsoid : Altitude, in meters, with respect to the WGS84 ellipsoid. "
-         * "flAltitudeWRTSeaLevel : Altitude, in meters, with respect to sea level. "
-         * 
-         * But when I get this structure, flAltitudeWRTSeaLevel field has proper value. But,
-         * flAltitudeWRTEllipsoid field has different meaning value.
-         * 
-         * But flAltitudeWRTEllipsoid field contains just geodial separation.
-         */
-    } 
-#endif
-    
-    if (loc.dwValidFields & GPS_VALID_POSITION_DILUTION_OF_PRECISION) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_HORIZONTAL_DILUTION_OF_PRECISION) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_VERTICAL_DILUTION_OF_PRECISION) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_SATELLITES_USED_PRNS) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW) {
- 
-    }
-    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_PRNS) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_ELEVATION) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_AZIMUTH) {
-
-    }
-    if (loc.dwValidFields & GPS_VALID_SATELLITES_IN_VIEW_SIGNAL_TO_NOISE_RATIO) {
-
-    }
-    if(gpsValid && !GPSData.NAVWarning && GPSData.SatellitesUsed == 0) {
-        GPSData.SatellitesUsed = -1;
-    }
-    
-    TriggerGPSUpdate();
-    
-    return TRUE;
-}
-#endif
 
 BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* String, NMEA_INFO* pGPS) {
   if (!String) {
@@ -507,28 +369,6 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
   connected = true;
   RMCAvailable=true; // 100409
 
-  #ifdef PNA
-
-  if (DeviceIsGM130) {
-    double ps = GM130BarPressure();
-    double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
-
-    const std::lock_guard<Mutex> lock(CritSec_FlightData);
-    UpdateBaroSource(pGPS, nullptr, Altitude);
-  }
-
-  if (DeviceIsRoyaltek3200) {
-    if (Royaltek3200_ReadBarData()) {
-      double ps = Royaltek3200_GetPressure();
-      double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
-
-      const std::lock_guard<Mutex> lock(CritSec_FlightData);
-      UpdateBaroSource(pGPS, nullptr,  Altitude);
-    }
-  }
-
-  #endif // PNA
-
   if (!activeGPS) {
     return TRUE;
   }
@@ -613,36 +453,6 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
 		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
-
-#if defined(PPC2003) || defined(PNA)
-  // As soon as we get a fix for the first time, set the
-  // system clock to the GPS time.
-  static bool sysTimeInitialised = false;
-  
-  if (!pGPS->NAVWarning && (gpsValid)) {
-	if (SetSystemTimeFromGPS) {
-		if (!sysTimeInitialised) {
-			if ( ( pGPS->Year > 1980 && pGPS->Year<2100) && ( pGPS->Month > 0) && ( pGPS->Hour > 0)) {
-        
-				sysTimeInitialised =true; // Attempting only once
-				SYSTEMTIME sysTime;
-				// ::GetSystemTime(&sysTime);
-				int hours = (int)pGPS->Hour;
-				int mins = (int)pGPS->Minute;
-				int secs = (int)pGPS->Second;
-				sysTime.wYear = (unsigned short)pGPS->Year;
-				sysTime.wMonth = (unsigned short)pGPS->Month;
-				sysTime.wDay = (unsigned short)pGPS->Day;
-				sysTime.wHour = (unsigned short)hours;
-				sysTime.wMinute = (unsigned short)mins;
-				sysTime.wSecond = (unsigned short)secs;
-				sysTime.wMilliseconds = 0;
-				::SetSystemTime(&sysTime);
-			}
-		}
-	}
-  }
-#endif
 
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance

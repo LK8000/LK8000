@@ -81,10 +81,5 @@ void dlgTerminal(int portnum);
 void dlgOverlaysShowModal(void);
 void dlgCustomMenuShowModal(void);
 void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz);
-#ifndef NO_BLUETOOTH
-namespace DlgBluetooth {
-    void Show();
-};
-#endif
 
 #endif

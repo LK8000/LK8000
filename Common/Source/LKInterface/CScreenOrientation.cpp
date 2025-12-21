@@ -12,7 +12,7 @@
 #include "CScreenOrientation.h"
 #include "Hardware/RotateDisplay.hpp"
 
-#if !defined(UNDER_CE) && !defined(WIN32)
+#if !defined(WIN32)
 #include "DisplayOrientation.hpp"
 #include "OS/FileUtil.hpp"
 #endif
@@ -96,15 +96,7 @@ bool CScreenOrientation::Restore(LPCTSTR szFileName) {
 }
 
 unsigned short CScreenOrientation::GetScreenSetting() {
-#ifdef UNDER_CE
-    DEVMODE devMode;
-    memset(&devMode, 0, sizeof(devMode));
-    devMode.dmSize=sizeof(devMode);
-    devMode.dmFields = DM_DISPLAYORIENTATION;
-    if(DISP_CHANGE_SUCCESSFUL == ChangeDisplaySettingsEx(NULL, &devMode, NULL, CDS_TEST, NULL)) {
-        return devMode.dmDisplayOrientation;
-    }
-#elif defined(KOBO)
+#ifdef KOBO
 
     char szLine[100] = {};
     if(File::ReadString("/sys/class/graphics/fb0/rotate", szLine, sizeof(szLine))) {
@@ -140,24 +132,5 @@ unsigned short CScreenOrientation::GetScreenSetting() {
 }
 
 bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {
-#ifdef UNDER_CE
-    DEVMODE devMode;
-    memset(&devMode, 0, sizeof(devMode));
-    devMode.dmSize=sizeof(devMode);
-    devMode.dmFields = DM_DISPLAYORIENTATION;
-
-    if(DISP_CHANGE_SUCCESSFUL == ChangeDisplaySettingsEx(NULL, &devMode, NULL, CDS_TEST, NULL)) {
-        if(devMode.dmDisplayOrientation != NewO) {
-            devMode.dmDisplayOrientation = NewO;
-            return (DISP_CHANGE_SUCCESSFUL == ChangeDisplaySettingsEx(NULL,&devMode,NULL,CDS_RESET,NULL));
-        }
-        return true;
-    }
-#elif defined(KOBO)
-    if(Display::Rotate(static_cast<DisplayOrientation_t>(NewO))) {
-      event_queue->SetDisplayOrientation(static_cast<DisplayOrientation_t>(NewO));
-      return true;
-    }
-#endif
     return false;
 }

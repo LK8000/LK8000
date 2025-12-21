@@ -235,7 +235,6 @@ add_library( LK8000 SHARED
     Common/Source/UIGlobals.cpp
     Common/Source/AirfieldDetails.cpp
     Common/Source/Alarms.cpp
-    Common/Source/Backlight.cpp
     Common/Source/BatteryManager.cpp
     Common/Source/Bitmaps.cpp
     Common/Source/Buttons.cpp
@@ -591,8 +590,6 @@ add_library( LK8000 SHARED
     Common/Source/Comm/Parser.cpp
     Common/Source/Comm/ComCheck.cpp
     Common/Source/Comm/ComPort.cpp
-    Common/Source/Comm/GpsIdPort.cpp
-    Common/Source/Comm/lkgpsapi.cpp
     Common/Source/Comm/SerialPort.cpp
     Common/Source/Comm/TTYPort.cpp
     Common/Source/Comm/SocketPort.cpp
@@ -605,12 +602,7 @@ add_library( LK8000 SHARED
     Common/Source/Comm/DeviceDescriptor.cpp
     Common/Source/Comm/FilePort.cpp
 
-    Common/Source/Comm/Bluetooth/BtHandler.cpp
-    Common/Source/Comm/Bluetooth/BtHandlerWince.cpp
-    Common/Source/Comm/Bluetooth/BthPort.cpp
     Common/Source/Comm/Bluetooth/characteristic_value.cpp
-
-    Common/Source/Comm/Obex/CObexPush.cpp
 
     Common/Source/Comm/GpsWeekNumberFix.h
     Common/Source/Comm/GpsWeekNumberFix.cpp
@@ -645,8 +637,6 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devXCOM760.cpp
     Common/Source/Devices/devZander.cpp
     Common/Source/Devices/devWesterboer.cpp
-    Common/Source/Devices/LKHolux.cpp
-    Common/Source/Devices/LKRoyaltek3200.cpp
     Common/Source/Devices/devFlyNet.cpp
     Common/Source/Devices/devCProbe.cpp
     Common/Source/Devices/devBlueFlyVario.cpp
@@ -725,7 +715,6 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgWaypointEdit.cpp
     Common/Source/Dialogs/dlgWaypointOutOfTerrain.cpp
     Common/Source/Dialogs/dlgWindSettings.cpp
-    Common/Source/Dialogs/dlgBluetooth.cpp
     Common/Source/Dialogs/dlgIgcFile.cpp
     Common/Source/Dialogs/dlgProgress.cpp
     Common/Source/Dialogs/dlgFlarmIGCDownload.cpp

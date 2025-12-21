@@ -22,8 +22,6 @@
 #ifdef __cplusplus
 #include "Screen/Features.hpp"
 #endif
-#include "compatibility.h"
-
 
 #include "utils/filesystem.h"
 #include "Sizes.h"
@@ -61,7 +59,6 @@
 //
 // Common Functions
 //
-void InstallSystem();
 bool CheckRootDir();
 bool CheckDataDir();
 bool CheckLanguageDir();

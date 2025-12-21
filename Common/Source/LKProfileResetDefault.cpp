@@ -142,10 +142,6 @@ void LKProfileResetDefault() {
 
   FinishRadius = 3000;
 
-  EnableAutoBacklight = 1;
-
-  EnableAutoSoundVolume = 0;
-
   AircraftCategory = AircraftCategory_t::umGlider;
 
   gTaskType = task_type_t::DEFAULT;
@@ -204,11 +200,7 @@ void LKProfileResetDefault() {
   else
       BarOpacity = 75;
 
-  #ifdef PPC2002
-  FontRenderer = 1; // AntiAliasing
-  #else
   FontRenderer = 0; // ClearType Compatible
-  #endif
 
   GPSAltitudeOffset = 0;
 
@@ -261,8 +253,6 @@ void LKProfileResetDefault() {
 
   debounceTimeout = 180; // 180ms;
 
-  DeviceNeedClipping=false;
-
   // Landables style
   Appearance.IndLandable=wpLandableDefault;
   // White/Black inversion
@@ -307,9 +297,6 @@ void LKProfileResetDefault() {
 
   BallastSecsToEmpty =  120;
 
-#if defined(PPC2003) || defined(PNA)
-  SetSystemTimeFromGPS = true;
-#endif
   SaveRuntime = false;
 
   AutoForceFinalGlide = false;

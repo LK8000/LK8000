@@ -15,12 +15,6 @@
 
 #include <zzip/file.h>
 
-#ifdef UNDER_CE
-static char * strerror(int e) {
-    return "";
-}
-#endif
-
 /* *INDENT-OFF* */
 static struct errlistentry { int code; const char* mesg; } 
 errlist[] = 

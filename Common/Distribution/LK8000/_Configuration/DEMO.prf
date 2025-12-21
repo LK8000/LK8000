@@ -165,7 +165,6 @@ SafetyAltitudeMode=0
 SafetyAltitudeTerrain1=500
 SafetyMacCready=5
 Radius=5000l
-SetSystemTimeFromGPS=0
 Shading=1
 SnailTrail=1
 SnailWidthScale=16

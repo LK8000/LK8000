@@ -12,7 +12,7 @@ RECT WindowResize(unsigned int x, unsigned int y) {
 
   RECT w = { 0, 0, (LONG)x, (LONG)y };
 
-#if defined(UNDER_CE) || defined(USE_FULLSCREEN)
+#if defined(USE_FULLSCREEN)
   //
   // For Windows CE we disable frames, so no borders to calculate.
   //

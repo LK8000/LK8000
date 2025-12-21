@@ -121,11 +121,6 @@ bool Startup(const TCHAR* szCmdLine) {
   StartupStore(". Android Product:%s",  native_view->GetProduct());
 #endif
 
-
-#elif defined(PNA)
-  StartupStore(TEXT(". Starting %s %s"),LK8000_Version,_T("PNA"));
-#elif defined(UNDER_CE)
-  StartupStore(TEXT(". Starting %s %s"),LK8000_Version,_T("PDA"));
 #elif defined(WIN32)
   StartupStore(TEXT(". Starting %s %s"),LK8000_Version,_T("PC"));
 #endif
@@ -242,18 +237,6 @@ bool Startup(const TCHAR* szCmdLine) {
   LKRunStartEnd(true);
   // END OF PRELOAD, PROGRAM GO!
 
-#ifdef PNA
-  // At this point we still havent loaded profile. Loading profile will also reload registry.
-  // If registry was deleted in PNA, model type is not configured. It is configured in profile, but
-  // it is too early here. So no ModelType .
-  //
-  // if we found no embedded name, try from registry
-  if (ModelType::Get() == ModelType::GENERIC) {
-      // last chance: try from default profile
-      LoadModelFromProfile();
-  }
-#endif
-
 #ifndef ANDROID
   bool datadir = CheckDataDir();
   if (!datadir) {
@@ -268,8 +251,6 @@ bool Startup(const TCHAR* szCmdLine) {
   StartupStore(_T(". Program system directory : <%s>"), LKGetSystemPath());
   StartupStore(_T(". Program data directory :   <%s>"), LKGetLocalPath());
 
-  InstallSystem();
-
   LocalPath(defaultProfileFile, _T(LKD_CONF), _T(LKPROFILE));
   lk::strcpy(startProfileFile, defaultProfileFile);
   LocalPath(defaultAircraftFile,_T(LKD_CONF), _T(LKAIRCRAFT));
@@ -279,8 +260,8 @@ bool Startup(const TCHAR* szCmdLine) {
   LocalPath(defaultDeviceFile,_T(LKD_CONF), _T(LKDEVICE));
   lk::strcpy(startDeviceFile, defaultDeviceFile);
 
-#if !defined(UNDER_CE) || (defined(__linux__) && !defined(ANDROID))
-  if (!LK8000GetOpts(szCmdLine)) return 0;
+#if !defined(ANDROID)
+  if (!LK8000GetOpts(szCmdLine)) return 0; 
 #endif
 
   InitSineTable();
@@ -362,21 +343,6 @@ bool Startup(const TCHAR* szCmdLine) {
 
   ReadWinPilotPolar();
 
-#ifdef PNA // VENTA-ADDON
-    TCHAR sTmp[250];
-	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), ModelType::GetName(), ModelType::Get());
-	CreateProgressDialog(sTmp);
-
-  if ( !datadir ) {
-	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
-    CreateProgressDialog(MsgToken<1208>());
-    Sleep(ERRDELAY);
-    // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
-    CreateProgressDialog(MsgToken<1209>());
-    Sleep(ERRDELAY);
-  }
-#endif // non PNA
-
 // TODO until startup graphics are settled, no need to delay PC start
     if (AircraftCategory == AircraftCategory_t::umParaglider) {
         // LKTOKEN _@M1210_ "PARAGLIDING MODE"
@@ -388,16 +354,6 @@ bool Startup(const TCHAR* szCmdLine) {
         CreateProgressDialog(MsgToken<1211>());
         Sleep(MSGDELAY);
     }
-
-#ifdef PNA
-  if ( SetBacklight() == true ) {
-    // LKTOKEN _@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
-    CreateProgressDialog(MsgToken<1212>());
-  } else {
-    // LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
-    CreateProgressDialog(MsgToken<1213>());
-  }
-#endif
 
   // this should work ok for all pdas as well
   if ( SetSoundVolume() == true ) {
@@ -482,19 +438,6 @@ bool Startup(const TCHAR* szCmdLine) {
     }
 #endif
 
-#ifdef UNDER_CE
-    static bool checktickcountbug = true; // 100510
-    if (checktickcountbug) {
-        DWORD counts = GetTickCount();
-        if (counts > (unsigned) 2073600000l) {
-            // LKTOKEN  _@M527_ = "Please exit LK8000 and reset your device.\n"
-            MessageBoxX(MsgToken<527>(),
-                    TEXT("Device need reset!"),
-                    mbOk);
-        }
-        checktickcountbug = false;
-    }
-#endif
     if (!ISPARAGLIDER && !ISCAR) { // 100925
         if (SAFETYALTITUDEARRIVAL < 500) { // SAFETY is *10, so we check <50 really
             // LKTOKEN  _@M155_ = "CHECK safety arrival altitude\n"
@@ -542,26 +485,15 @@ void Shutdown() {
 #ifdef WIN32
 HINSTANCE _hInstance;
 
-#ifndef UNDER_CE
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
                         LPSTR     lpCmdLine,
                         int       nCmdShow)
-#else
-int WINAPI WinMain(     HINSTANCE hInstance,
-                        HINSTANCE hPrevInstance,
-                        LPWSTR     lpCmdLine,
-                        int       nCmdShow)
-#endif
 {
     (void)hPrevInstance;
 
     _hInstance = hInstance; // this need to be first, always !
-#ifdef UNDER_CE
-    const TCHAR* szCmdLine = _T("");
-#else
     const TCHAR* szCmdLine = GetCommandLine();
-#endif
 
 #ifndef DOCTEST_CONFIG_DISABLE
   auto argc = __argc;

@@ -27,7 +27,6 @@
 
 #include "utils/stl_utils.h"
 #include <iterator>
-#include "BtHandler.h"
 #include <functional>
 #include "Sound/Sound.h"
 #include "resource.h"
@@ -218,16 +217,6 @@ static void UpdateButtons(WndForm* pForm) {
   WindowControl* pFfvlKey = pForm->FindByName(_T("prp_ffvl_key"));
   if (pFfvlKey) {
     pFfvlKey->SetVisible(http_session::ssl_available());
-  }
-
-  WndButton* wCmdBth = (pForm->FindByName<WndButton>(TEXT("cmdBth")));
-  if(wCmdBth) {
-#ifdef NO_BLUETOOTH
-      wCmdBth->SetVisible(false);
-#else
-      CBtHandler* pHandler = CBtHandler::Get();
-      wCmdBth->SetVisible(pHandler && pHandler->IsOk());
-#endif
   }
 }
 
@@ -1014,19 +1003,6 @@ static void OnWaypointDeleteClicked(WndButton* pWnd) {
   }
 }
 
-static void OnBthDevice(WndButton* pWnd) {
-#ifndef NO_BLUETOOTH
-    DlgBluetooth::Show();
-
-    auto pForm = pWnd->GetParentWndForm();
-    if (pForm) {
-      const auto& Port = PortConfig[SelectedDevice];
-      UpdateComPortList(pForm->FindByName<WndProperty>(TEXT("prpComPort1")), Port.GetPort());
-    }
-#endif
-}
-
-
 
 static void OnNextDevice(WndButton* pWnd) {
   WndForm* pForm = pWnd->GetParentWndForm();
@@ -1336,8 +1312,6 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnGearWarningModeChange),
   CallbackEntry(OnLiveTrackerStartConfig),
   CallbackEntry(OnAutoContrastChange),
-
-  CallbackEntry(OnBthDevice),
 
   CallbackEntry(OnNextDevice),
   CallbackEntry(OnA),
@@ -2242,17 +2216,6 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = pForm->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
-  if (wp) {
-#if defined(PPC2003) || defined(PNA)
-      wp->SetVisible(true);
-      wp->GetDataField()->Set(SetSystemTimeFromGPS);
-      wp->RefreshDisplay();
-#else
-      wp->SetVisible(false);
-#endif
-  }
-
   wp = pForm->FindByName<WndProperty>(TEXT("prpSaveRuntime"));
   if (wp) {
     wp->GetDataField()->Set(SaveRuntime);
@@ -2971,28 +2934,6 @@ DataField* dfe = wp->GetDataField();
     wp->RefreshDisplay();
   }
 
-  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoBacklight")); // VENTA4
-  if (wp) {
-#ifndef PPC2003   // PNA is also PPC2003
-    wp->SetVisible(false);
-#else
-    wp->SetVisible(true);
-#endif
-    wp->GetDataField()->Set(EnableAutoBacklight);
-    wp->RefreshDisplay();
-  }
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoSoundVolume")); // VENTA4
-  if (wp) {
-#ifndef PPC2003   // PNA is also PPC2003
-    	wp->SetVisible(false);
-#else
-        wp->SetVisible(true);
-#endif
-    wp->GetDataField()->Set(EnableAutoSoundVolume);
-    wp->RefreshDisplay();
-  }
-
   wp = pForm->FindByName<WndProperty>(TEXT("prpTaskFinishLine"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
@@ -3437,14 +3378,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     GlidePolar::SafetyMacCready = Units::FromVerticalSpeed(wp->GetDataField()->GetAsFloat());
   }
-#if defined(PPC2003) || defined(PNA)
-  wp = pForm->FindByName<WndProperty>(TEXT("prpSetSystemTimeFromGPS"));
-  if (wp) {
-    if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
-      SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
-    }
-  }
-#endif
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpSaveRuntime"));
   if (wp) {
@@ -4330,21 +4263,6 @@ int ival;
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
     }
   }
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoBacklight")); // VENTA4
-  if (wp) {
-    if (EnableAutoBacklight != wp->GetDataField()->GetAsBoolean()) {
-      EnableAutoBacklight = wp->GetDataField()->GetAsBoolean();
-    }
-  }
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpAutoSoundVolume")); // VENTA4
-  if (wp) {
-    if (EnableAutoSoundVolume != wp->GetDataField()->GetAsBoolean()) {
-      EnableAutoSoundVolume = wp->GetDataField()->GetAsBoolean();
-    }
-  }
-
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainContrast"));
   if (wp) {

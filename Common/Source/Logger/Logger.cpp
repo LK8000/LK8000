@@ -318,15 +318,7 @@ static void LoggerHeader(const LoggerBuffer_t& point, const asset_id_t& asset) {
   constexpr const char* competition_indicator = "";
 #endif
 
-#if defined(PPC2002)
-  constexpr const char* model_name = " PPC2002";
-#elif defined(PPC2003)
-  constexpr const char* model_name = " PPC2003";
-#elif defined(PNA)
-  char model_name[200];
-  to_usascii(GlobalModelName, ascii_tmp);
-  sprintf(model_name," PNA %s", ascii_tmp);
-#elif defined(ANDROID)
+#if defined(ANDROID)
   // TODO : get real model name : native_view->GetProduct()
   constexpr const char* model_name = " ANDROID";
 #elif defined(KOBO)

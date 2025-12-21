@@ -19,11 +19,7 @@
 #define MAXAVERAGECLIMBRATESIZE  200
 
 // number of radials to do range footprint calculation on
-#ifndef UNDER_CE
 #define NUMTERRAINSWEEPS 40
-#else
-#define NUMTERRAINSWEEPS 20
-#endif
 
 struct THERMAL_SOURCE_INFO {
     POINT Screen;

@@ -94,11 +94,7 @@ LRESULT CALLBACK Window::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LP
  * On the desktop WM_NCCREATE is the first message so the this pointer should be captured during the its processing.
  * In Windows CE this message doesn't exist. The first message is WM_CREATE so it must be used.
  */
-#ifdef UNDER_CE
-	if (uMsg == WM_CREATE)
-#else
 	if (uMsg == WM_NCCREATE)
-#endif
 	{
 		// get the pointer to the window from lpCreateParams which was set in CreateWindow
         pWnd = reinterpret_cast<Window *>(((LPCREATESTRUCT)lParam)->lpCreateParams);

@@ -34,93 +34,18 @@
 extern "C" {
 
 #ifdef WIN32
-#ifdef UNDER_CE
-
-#include <string.h> 
-#include <windows.h>
-
-int wince_open(const char* path, int oflag, ...) {
-
-  size_t path_len = strlen(path);
-  if (path_len >= MAX_PATH)
-    return -1;
-
-  DWORD fileaccess = 0U;
-  switch (oflag & (O_RDONLY | O_WRONLY | O_RDWR)) {
-    case O_RDONLY:
-      fileaccess = GENERIC_READ;
-      break;
-    case O_WRONLY:
-      fileaccess = GENERIC_WRITE;
-      break;
-    case O_RDWR:
-      fileaccess = GENERIC_READ | GENERIC_WRITE;
-      break;
-    default:
-      return -1;
-  }
-
-  DWORD filecreate = 0;
-  switch (oflag & (O_CREAT | O_EXCL | O_TRUNC)) {
-    case 0:
-    case O_EXCL: /* ignore EXCL w/o CREAT */
-      filecreate = OPEN_EXISTING;
-      break;
-    case O_CREAT:
-      filecreate = OPEN_ALWAYS;
-      break;
-    case O_CREAT | O_EXCL:
-    case O_CREAT | O_TRUNC | O_EXCL:
-      filecreate = CREATE_NEW;
-      break;
-    case O_TRUNC:
-    case O_TRUNC | O_EXCL: /* ignore EXCL w/o CREAT */
-      filecreate = TRUNCATE_EXISTING;
-      break;
-    case O_CREAT | O_TRUNC:
-      filecreate = CREATE_ALWAYS;
-      break;
-    default:
-      /* this can't happen ... all cases are covered */
-      return -1;
-  }
-
-  TCHAR wpath[MAX_PATH];
-  from_utf8(path, wpath, MAX_PATH);
-
-  DWORD fileshare = FILE_SHARE_READ | FILE_SHARE_WRITE;
-  DWORD fileattrib = FILE_ATTRIBUTE_NORMAL;
-
-  HANDLE hnd = CreateFileW(wpath, fileaccess, fileshare, NULL, filecreate, fileattrib, NULL);
-  if (hnd == INVALID_HANDLE_VALUE)
-    return -1;
-
-  if (oflag & O_APPEND)
-    SetFilePointer(hnd, 0, NULL, FILE_END);
-
-  return (int)hnd;
-}
-
-#else
-
 static int winpc_open(zzip_char_t* filename, int flags, ...) {
   TCHAR wpath[MAX_PATH];
   from_utf8(filename, wpath, MAX_PATH);
   return (_topen(wpath, flags));
 }
-
-#endif
 #endif
 
 static zzip_strings_t ext[] = {".zip", ".ZIP", "", 0};
 
 static const struct zzip_plugin_io default_io = {
 #ifdef WIN32
-#ifdef UNDER_CE
-    &wince_open,
-#else
     &winpc_open,
-#endif
 #else
     &open,
 #endif

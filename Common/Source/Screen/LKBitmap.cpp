@@ -34,11 +34,7 @@ LKBitmap::~LKBitmap() {
 bool LKBitmap::LoadFromFile(const TCHAR* FilePath) {
     Reset();
 #ifdef WIN32
-#ifdef UNDER_CE
-    bitmap = (HBITMAP) SHLoadDIBitmap(FilePath);
-#else
     bitmap = (HBITMAP) LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-#endif
     return IsDefined();
 #elif defined(ANDROID)
     return LoadFile(FilePath);
