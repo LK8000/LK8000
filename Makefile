@@ -578,7 +578,7 @@ endif
 
 CPPFLAGS += -DPOCO_STATIC
 
-CXXFLAGS	:= -std=gnu++17 $(OPTIMIZE) $(PROFILE)
+CXXFLAGS	:= -std=c++20 $(OPTIMIZE) $(PROFILE)
 CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 
 ####### linker configuration

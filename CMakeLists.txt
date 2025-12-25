@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(assembler C CXX ASM)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -51,7 +51,6 @@ add_compile_options(
     -Wno-unknown-warning-option
 )
 
-add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
 add_subdirectory(Common/Source/Tracking/Curl tracking_http)
 
