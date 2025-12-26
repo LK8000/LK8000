@@ -51,7 +51,6 @@ add_compile_options(
     -Wno-unknown-warning-option
 )
 
-add_subdirectory( Common/Source/Library/poco lib_poco )
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
 add_subdirectory(Common/Source/Tracking/Curl tracking_http)
 
@@ -905,7 +904,6 @@ target_include_directories( LK8000 PRIVATE
 )
 
 target_link_libraries(LK8000 PRIVATE
-    LK8000_POCO
     LK8000_GLUTESS
     tracking_http
 
