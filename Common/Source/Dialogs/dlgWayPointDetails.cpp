@@ -23,6 +23,8 @@
 #include "Radio.h"
 #include "Waypoints/SetHome.h"
 #include "utils/printf.h"
+#include "Waypoints/cupx_reader.h"
+#include "LocalPath.h"
 
 
 namespace {
@@ -51,26 +53,30 @@ void SetVisible(WndForm* pForm, const TCHAR* szName, bool bVisible) {
     auto plistFrame = dynamic_cast<WndListFrame*>(pWnd);
     if (plistFrame) {
       plistFrame->ResetList();
-      plistFrame->Redraw();
     }
+    pWnd->Redraw();
+    pWnd->ForEachChild([](auto child) {
+      child->Redraw();
+    });
   }
 }
 
-void UpdateVisiblePage(WndForm* pForm, int page) {
+void UpdateVisiblePage(WndForm* pForm, size_t page, size_t PicturesCount) {
   SetVisible(pForm, _T("frmInfos"), (page == 0));
   SetVisible(pForm, _T("frmDetails"), (page == 1));
-  SetVisible(pForm, _T("frmCommands"), (page == 2));
-  SetVisible(pForm, _T("frmSpecial"), (page == 3));
+  SetVisible(pForm, _T("frmPictures"), (page >= 2 && page < 2 + PicturesCount));
+  SetVisible(pForm, _T("frmCommands"), (page == 2 + PicturesCount));
+  SetVisible(pForm, _T("frmSpecial"), (page == 3 + PicturesCount));
 }
 
 template<int step>
-void NextPage(WndForm* pForm, int& page) {
+void NextPage(WndForm* pForm, int& page, int PicturesCount) {
   page += step;
   for (bool page_ok = false; !page_ok;) {
     if (page < 0) {
-      page = 3;
+      page = 3 + PicturesCount;
     }
-    if (page > 3) {
+    if (page > 3 + PicturesCount) {
       page = 0;
     }
     if (page == 1 && !WayPointList[SelectedWaypoint].Details) {
@@ -80,7 +86,7 @@ void NextPage(WndForm* pForm, int& page) {
       page_ok = true;
     }
   }
-  UpdateVisiblePage(pForm, page);
+  UpdateVisiblePage(pForm, page, PicturesCount);
 }
 
 void OnPaintDetailsListItem(WndOwnerDrawFrame* Sender,
@@ -165,19 +171,19 @@ void OnCloseClicked(WndButton* pWnd){
   }
 }
 
-bool FormKeyDown(WndForm* pWnd, unsigned KeyCode, int& page) {
+bool FormKeyDown(WndForm* pWnd, unsigned KeyCode, int& page, size_t PicturesCount) {
     Window * pBtn = nullptr;
 
     switch (KeyCode & 0xffff) {
         case KEY_LEFT:
         case '6':
             pBtn = pWnd->FindByName(TEXT("cmdPrev"));
-            NextPage<-1>(pWnd, page);
+            NextPage<-1>(pWnd, page, PicturesCount);
             break;
         case KEY_RIGHT:
         case '7':
             pBtn = pWnd->FindByName(TEXT("cmdNext"));
-            NextPage<1>(pWnd, page);
+            NextPage<1>(pWnd, page, PicturesCount);
             break;
     }
     if (pBtn) {
@@ -294,6 +300,93 @@ void OnCommentEnter(WindowControl* Sender,
   }
 }
 
+class pictures_cache_t final {
+  using BitmapPtr = std::unique_ptr<LKBitmap>;
+
+ public:
+  pictures_cache_t(const WAYPOINT& wp) : m_wp(wp) {}
+
+  size_t size() const {
+    return m_wp.pictures.size();
+  }
+
+  const LKBitmap* get(size_t index) {
+    if (index < m_wp.pictures.size()) {
+      auto ib = m_cache.emplace(index, nullptr);
+      if (ib.second) {
+        ib.first->second = load(index);
+      }
+      return ib.first->second.get();
+    }
+    return nullptr;
+  }
+
+ private:
+  BitmapPtr load(size_t index) {
+    try {
+      if (index < m_wp.pictures.size()) {
+        if (!m_cache[index]) {
+          int file_num = m_wp.FileNum;
+          if (WpFileType[file_num] == LKW_CUPX) {
+            const TCHAR* file_name = szWaypointFile[file_num];
+            TCHAR file_path[MAX_PATH];
+            LocalPath(file_path, _T(LKD_WAYPOINTS), file_name);
+            cupx_reader cupx(file_path);
+            zzip_disk_file_stream stream =
+                cupx.read_image(m_wp.pictures[index]);
+
+            std::vector<char> image_buf = {
+                (std::istreambuf_iterator<char>(&stream)),
+                (std::istreambuf_iterator<char>())
+            };
+
+            return std::make_unique<LKBitmap>(image_buf.data(),
+                                              image_buf.size());
+          }
+        }
+      }
+    }
+    catch (std::exception& e) {
+      StartupStore(_T("cupx_reader : %s"), to_tstring(e.what()).c_str());
+    }
+    return nullptr;
+  }
+
+  const WAYPOINT& m_wp;
+  std::map<size_t, BitmapPtr> m_cache;
+};
+
+void OnPaintPicture(WndOwnerDrawFrame* Sender, LKSurface& Surface,
+                    pictures_cache_t& PicturesCache, size_t PictureIndex) {
+  const LKBitmap* pPicture = PicturesCache.get(PictureIndex);
+  if (pPicture && pPicture->IsDefined()) {
+    PixelSize img_size = pPicture->GetSize();
+    const PixelRect rc(Sender->GetClientRect());
+    const PixelSize rc_size = rc.GetSize();
+
+    double img_aspect = static_cast<double>(img_size.cx) / img_size.cy;
+    double rc_aspect = static_cast<double>(rc_size.cx) / rc_size.cy;
+
+    double scale = (img_aspect > rc_aspect)
+                       ? (static_cast<double>(rc_size.cx) / img_size.cx)
+                       : (static_cast<double>(rc_size.cy) / img_size.cy);
+
+    PixelSize draw_size = {
+        static_cast<int>(img_size.cx * scale),
+        static_cast<int>(img_size.cy * scale)
+    };
+
+    RasterPoint origin = rc.GetTopLeft() + (rc_size - draw_size) / 2;
+
+    Surface.DrawBitmapCopy(origin, draw_size, *pPicture);
+  }
+  else {
+    Surface.SetTextColor(RGB_BLACK);
+    RECT rc = Sender->GetClientRect();
+    Surface.DrawText(MsgToken<2515>(), &rc, DT_CENTER | DT_VCENTER);
+  }
+}
+
 }  // namespace
 
 void dlgWayPointDetailsShowModal(int page) {
@@ -301,6 +394,8 @@ void dlgWayPointDetailsShowModal(int page) {
     return;
   }
   const WAYPOINT& WPLSEL = WayPointList[SelectedWaypoint];
+  pictures_cache_t PicturesCache(WPLSEL);
+  size_t PicturesCount = PicturesCache.size();
 
   TextWrapArray aDetailTextLine;
   TextWrapArray aCommentTextLine;
@@ -308,11 +403,13 @@ void dlgWayPointDetailsShowModal(int page) {
   const CallBackTableEntry_t CallBackTable[] = {
       callback_entry("OnNextClicked",
                      [&](WndButton* pWnd) {
-                       NextPage<1>(pWnd->GetParentWndForm(), page);
+                       NextPage<1>(pWnd->GetParentWndForm(), page,
+                                   PicturesCount);
                      }),
       callback_entry("OnPrevClicked",
                      [&](WndButton* pWnd) {
-                       NextPage<-1>(pWnd->GetParentWndForm(), page);
+                       NextPage<-1>(pWnd->GetParentWndForm(), page,
+                                    PicturesCount);
                      }),
       callback_entry("OnPaintDetailsListItem",
                      [&](WndOwnerDrawFrame* Sender, LKSurface& Surface) {
@@ -333,8 +430,21 @@ void dlgWayPointDetailsShowModal(int page) {
           [&](WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
             OnWpCommentListInfo(Sender, ListInfo, aCommentTextLine);
           }),
+      callback_entry("OnPaintPicture",
+                     [&](WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+                       OnPaintPicture(Sender, Surface, PicturesCache, page - 2);
+                     }),
       CallbackEntry(OnPaintWaypointPicto),
-      EndCallbackEntry()};
+      CallbackEntry(OnTeamCodeClicked),
+      CallbackEntry(OnNewHomeClicked),
+      CallbackEntry(OnRemoveFromTaskClicked),
+      CallbackEntry(OnAppendInTask2Clicked),
+      CallbackEntry(OnAppendInTask1Clicked),
+      CallbackEntry(OnReplaceClicked),
+      CallbackEntry(OnInserInTaskClicked),
+      CallbackEntry(OnCloseClicked),
+      EndCallbackEntry()
+    };
 
   TCHAR sTmp[128];
   WndProperty *wp;
@@ -347,35 +457,42 @@ void dlgWayPointDetailsShowModal(int page) {
     return;
   }
 
+  const int BorderKind = ScreenLandscape ? BORDERLEFT : BORDERTOP;
+
   auto wInfo = wf->FindByName<WndFrame>(_T("frmInfos"));
   if (wInfo) {
     // Resize Frames up to real screen size on the right.
-    wInfo->SetBorderKind(BORDERLEFT);
+    wInfo->SetBorderKind(BorderKind);
   }
   auto wCommand = wf->FindByName<WndFrame>(_T("frmCommands"));
   if (wCommand) {
-    wCommand->SetBorderKind(BORDERLEFT);
+    wCommand->SetBorderKind(BorderKind);
     wCommand->SetVisible(false);
   }
   auto wSpecial = wf->FindByName<WndFrame>(_T("frmSpecial"));
   if (wSpecial) {
-    wSpecial->SetBorderKind(BORDERLEFT);
+    wSpecial->SetBorderKind(BorderKind);
     wSpecial->SetVisible(false);
   }
 
   auto wDetails = wf->FindByName<WndListFrame>(_T("frmDetails"));
   if (wDetails) {
-    wDetails->SetBorderKind(BORDERLEFT);
+    wDetails->SetBorderKind(BorderKind);
   }
   auto wComment = wf->FindByName<WndListFrame>(_T("frmWpComment"));
   if (wComment) {
-    wComment->SetBorderKind(BORDERLEFT);
+    wComment->SetBorderKind(BorderKind);
     wComment->SetEnterCallback(
         [&](WindowControl* Sender, WndListFrame::ListInfo_t* ListInfo) {
           OnCommentEnter(Sender, ListInfo, aCommentTextLine);
         });
   }
-  
+
+  auto wPicture = wf->FindByName<WndFrame>(_T("frmPictures"));
+  if (wPicture) {
+    wPicture->SetBorderKind(BorderKind);
+  }
+ 
   // if SeeYou waypoint and it is landable
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP) &&  WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
      TCHAR ttmp[50];
@@ -415,7 +532,7 @@ void dlgWayPointDetailsShowModal(int page) {
        _stprintf(sTmp, TEXT("%s: %s  (%s)"), wf->GetCaption(),
                  WPLSEL.Name, code);
      } else {
-	_stprintf(sTmp, TEXT("%s: %s"), wf->GetCaption(), WPLSEL.Name);
+       _stprintf(sTmp, TEXT("%s: %s"), wf->GetCaption(), WPLSEL.Name);
      }
   }
   wf->SetCaption(sTmp);
@@ -534,23 +651,19 @@ void dlgWayPointDetailsShowModal(int page) {
   }
 
   wf->SetKeyDownNotify([&](WndForm* pForm, unsigned KeyCode) {
-    return FormKeyDown(pForm, KeyCode, page);
+    return FormKeyDown(pForm, KeyCode, page, PicturesCount);
   });
-
-  (wf->FindByName<WndButton>(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
-
-  // We DONT use PREV  anymore
-  (wf->FindByName<WndButton>(TEXT("cmdPrev")))->SetVisible(false);
-
 
   //
   // Details (WAYNOTES) page
   //
   aDetailTextLine.clear();
 
-  auto wDetailsEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
-  LKASSERT(wDetailsEntry!=NULL);
-  wDetailsEntry->SetCanFocus(true);
+  auto wDetailsEntry =
+      wf->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
+  if (wDetailsEntry) {
+    wDetailsEntry->SetCanFocus(true);
+  }
 
   {
     LKWindowSurface Surface(*wDetailsEntry);
@@ -562,57 +675,38 @@ void dlgWayPointDetailsShowModal(int page) {
 
   TCHAR captmp[200];
 
-  // Resize also buttons
   wb = (wf->FindByName<WndButton>(TEXT("cmdInserInTask")));
   if (wb) {
-    wb->SetOnClickNotify(OnInserInTaskClicked);
-    wb->SetWidth(wCommand->GetWidth()-wb->GetLeft()*2);
-
-    if ((ActiveTaskPoint<0) || !ValidTaskPoint(0)) {
-	// this is going to be the first tp (ActiveTaskPoint 0)
-	_stprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
-    } else {
-	LKASSERT(ActiveTaskPoint>=0 && ValidTaskPoint(0));
-	int indexInsert = max(ActiveTaskPoint,0); // safe check
-	if (indexInsert==0) {
-		_stprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
-	} else {
-		LKASSERT(ValidWayPoint(Task[indexInsert].Index));
-		_stprintf(captmp,_T("%s <%s>"),MsgToken<1825>(),WayPointList[ Task[indexInsert].Index ].Name); // insert before xx
-	}
+    if ((ActiveTaskPoint < 0) || !ValidTaskPoint(0)) {
+      // this is going to be the first tp (ActiveTaskPoint 0)
+      lk::strcpy(captmp, MsgToken<1824>());  // insert as START
+    }
+    else {
+      LKASSERT(ActiveTaskPoint >= 0 && ValidTaskPoint(0));
+      int indexInsert = max(ActiveTaskPoint, 0);  // safe check
+      if (indexInsert == 0) {
+        lk::strcpy(captmp, MsgToken<1824>());  // insert as START
+      }
+      else {
+        LKASSERT(ValidWayPoint(Task[indexInsert].Index));
+        lk::snprintf(
+            captmp, _T("%s <%s>"), MsgToken<1825>(),
+            WayPointList[Task[indexInsert].Index].Name);  // insert before xx
+      }
     }
     wb->SetCaption(captmp);
   }
 
-  wb = (wf->FindByName<WndButton>(TEXT("cmdAppendInTask1")));
-  if (wb) {
-    wb->SetOnClickNotify(OnAppendInTask1Clicked);
-    wb->SetWidth(wCommand->GetWidth() - wb->GetLeft() * 2);
-  }
-
-  wb = (wf->FindByName<WndButton>(TEXT("cmdAppendInTask2")));
-  if (wb) {
-    wb->SetOnClickNotify(OnAppendInTask2Clicked);
-    wb->SetWidth(wCommand->GetWidth() - wb->GetLeft() * 2);
-  }
-
-  wb = (wf->FindByName<WndButton>(TEXT("cmdRemoveFromTask")));
-  if (wb) {
-    wb->SetOnClickNotify(OnRemoveFromTaskClicked);
-    wb->SetWidth(wCommand->GetWidth() - wb->GetLeft() * 2);
-  }
-
   wb = (wf->FindByName<WndButton>(TEXT("cmdReplace")));
   if (wb) {
-    wb->SetWidth(wCommand->GetWidth() - wb->GetLeft() * 2);
-
-    int tmpIdx =  -1;
-    if (ValidTaskPoint(ActiveTaskPoint))
+    int tmpIdx = -1;
+    if (ValidTaskPoint(ActiveTaskPoint)) {
       tmpIdx = Task[ActiveTaskPoint].Index;
-    if(  ValidTaskPoint(PanTaskEdit))
-     tmpIdx = RealActiveWaypoint;
+    }
+    if (ValidTaskPoint(PanTaskEdit)) {
+      tmpIdx = RealActiveWaypoint;
+    }
     if (tmpIdx != -1) {
-      wb->SetOnClickNotify(OnReplaceClicked);
       lk::snprintf(captmp, _T("%s <%s>"), MsgToken<1826>(),
                    WayPointList[tmpIdx].Name);  // replace  xx
     }
@@ -620,18 +714,6 @@ void dlgWayPointDetailsShowModal(int page) {
       lk::snprintf(captmp, _T("( %s )"), MsgToken<555>());
     }
     wb->SetCaption(captmp);
-  }
-
-  wb = (wf->FindByName<WndButton>(TEXT("cmdNewHome")));
-  if (wb)  {
-    wb->SetOnClickNotify(OnNewHomeClicked);
-    wb->SetWidth(wSpecial->GetWidth() - wb->GetLeft() * 2);
-  }
-
-  wb = (wf->FindByName<WndButton>(TEXT("cmdTeamCode")));
-  if (wb) {
-    wb->SetOnClickNotify(OnTeamCodeClicked);
-    wb->SetWidth(wSpecial->GetWidth() - wb->GetLeft() * 2);
   }
 
   if (WPLSEL.Format == LKW_VIRTUAL) {
@@ -648,7 +730,7 @@ void dlgWayPointDetailsShowModal(int page) {
   if (page == 1 && !WPLSEL.Details) {
     page = 0;
   }
-  UpdateVisiblePage(wf.get(), page);
+  UpdateVisiblePage(wf.get(), page, PicturesCount);
 
   wf->ShowModal();
 }
