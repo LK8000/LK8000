@@ -892,7 +892,6 @@ target_include_directories( LK8000 PRIVATE
 )
 
 target_link_libraries(LK8000 PRIVATE
-    LK8000_POCO
     LK8000_GLUTESS
     tracking_http
 
