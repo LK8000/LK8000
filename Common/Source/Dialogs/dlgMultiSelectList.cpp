@@ -305,12 +305,7 @@ void BuildLandableText(size_t idx, double Distance, TCHAR (&text1)[MAX_LEN], TCH
   }
   const auto& wp = WayPointList[idx];
 
-  if (wp.Comment) {
-    lk::strcpy(Comment, wp.Comment);
-  }
-  else {
-    lk::strcpy(Comment, TEXT(""));
-  }
+  lk::strcpy(Comment, wp.Comment.c_str());
 
   if (_tcslen(wp.Freq) > 0) {
     if (_tcslen(wp.Freq) > 2)
@@ -321,7 +316,7 @@ void BuildLandableText(size_t idx, double Distance, TCHAR (&text1)[MAX_LEN], TCH
   else {
     if (wp.Style == STYLE_THERMAL)
       lk::snprintf(text1, _T("%s: %s"), MsgToken<905>(), wp.Name);
-    else if (wp.Comment)
+    else if (!wp.Comment.empty())
       lk::snprintf(text1, _T("%s %s"), wp.Name, Comment);
     else
       lk::snprintf(text1, _T("%s"), wp.Name);
@@ -424,14 +419,8 @@ struct PaintListItemVisitor {
 
     TCHAR text1[MAX_LEN] = {TEXT("empty")};
     TCHAR text2[MAX_LEN] = {TEXT("empty")};
-    TCHAR Comment[MAX_COMMENT] = {TEXT("")};
     double Distance;
 
-    if (WayPointList[idx].Comment) {
-      lk::strcpy(Comment, WayPointList[idx].Comment);
-    } else {
-      lk::strcpy(Comment, TEXT(""));
-    }
     DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude, WayPointList[idx].Latitude,
                     WayPointList[idx].Longitude, &Distance, NULL);
     BuildLandableText(idx, Distance, text1, text2);

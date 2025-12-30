@@ -95,6 +95,10 @@ char* ToString(xml_document* doc, const wchar_t* szString) {
 
 #endif
 
+char* ToString(xml_document* doc, const tstring& str) {
+    return ToString(doc, str.c_str());
+}
+
 char* ToString(xml_document* doc, double dVal) {
     return AllocFormat(doc, "%f", dVal);
 }
@@ -659,16 +663,6 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
         return;
     }
     mWayPointLoaded[newPoint.Name] = ix;
-
-    if (newPoint.Details) {
-        free(newPoint.Details);
-        newPoint.Details = nullptr;
-    }
-
-    if (newPoint.Comment) {
-        free(newPoint.Comment);
-        newPoint.Comment = nullptr;
-    }
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
@@ -1039,10 +1033,10 @@ bool CTaskFileHelper::SaveWayPoint(xml_node* node, const WAYPOINT& WayPoint) {
     if (_tcslen(WayPoint.Code) > 0) {
         SetAttribute(node, "code", (LPCTSTR)(WayPoint.Code));
     }
-    if (WayPoint.Comment && _tcslen(WayPoint.Comment) > 0) {
+    if (!WayPoint.Comment.empty()) {
         SetAttribute(node, "comment", WayPoint.Comment);
     }
-    if (WayPoint.Details && _tcslen(WayPoint.Details) > 0) {
+    if (!WayPoint.Details.empty()) {
         SetAttribute(node, "details", WayPoint.Details);
     }
     SetAttribute(node, "format", WayPoint.Format);

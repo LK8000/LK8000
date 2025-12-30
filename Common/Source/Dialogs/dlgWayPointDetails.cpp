@@ -79,7 +79,7 @@ void NextPage(WndForm* pForm, int& page, int PicturesCount) {
     if (page > 3 + PicturesCount) {
       page = 0;
     }
-    if (page == 1 && !WayPointList[SelectedWaypoint].Details) {
+    if (page == 1 && WayPointList[SelectedWaypoint].Details.empty()) {
       page += step;
     }
     else {
@@ -546,7 +546,7 @@ void dlgWayPointDetailsShowModal(int page) {
 
     LKWindowSurface Surface(*wCommentEntry);
     Surface.SelectObject(wCommentEntry->GetFont());
-    aCommentTextLine.update(Surface, wCommentEntry->GetWidth(), WPLSEL.Comment);
+    aCommentTextLine.update(Surface, wCommentEntry->GetWidth(), WPLSEL.Comment.c_str());
   }
 
   //
@@ -668,7 +668,7 @@ void dlgWayPointDetailsShowModal(int page) {
   {
     LKWindowSurface Surface(*wDetailsEntry);
     Surface.SelectObject(wDetailsEntry->GetFont());
-    aDetailTextLine.update(Surface, wDetailsEntry->GetWidth(), WPLSEL.Details );
+    aDetailTextLine.update(Surface, wDetailsEntry->GetWidth(), WPLSEL.Details.c_str());
   }
 
   WndButton *wb;
@@ -727,7 +727,7 @@ void dlgWayPointDetailsShowModal(int page) {
     }
   }
 
-  if (page == 1 && !WPLSEL.Details) {
+  if (page == 1 && WPLSEL.Details.empty()) {
     page = 0;
   }
   UpdateVisiblePage(wf.get(), page, PicturesCount);

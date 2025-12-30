@@ -11,7 +11,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "utils/stringext.h"
+#include "utils/charset_helper.h"
 #include "LKStyle.h"
 #include "utils/zzip_file_stream.h"
 #include "Library/rapidxml/rapidxml.hpp"
@@ -83,16 +83,12 @@ bool LoadGpxTask(std::istream& stream) {
 
         xml_node* comment = WPnode->first_node("cmt");
         if(comment && comment->value()) {
-            size_t size = from_utf8(comment->value(), newPoint.Comment, 0) + 1;
-            newPoint.Comment = (TCHAR*) malloc(size * sizeof(TCHAR));
-            from_utf8(comment->value(), newPoint.Comment, size);
+            newPoint.Comment = from_utf8(comment->value());
         }
 
         xml_node* detail = WPnode->first_node("desc");
         if(detail && detail->value()) {
-            size_t size = from_utf8(detail->value(), newPoint.Details, 0) + 1;
-            newPoint.Details = (TCHAR*) malloc(size * sizeof(TCHAR));
-            from_utf8(detail->value(), newPoint.Details, size);
+            newPoint.Details = from_utf8(detail->value());
         }
 
         WPnode = WPnode->next_sibling("rtept");
@@ -111,14 +107,6 @@ bool LoadGpxTask(std::istream& stream) {
         int ix =FindOrAddWaypoint(&newPoint,ISGAAIRCRAFT && (idx==0 || !WPnode)); //if GA check widely if we have already depart and dest airports
         if (ix>=0) {
             Task[idx++].Index=ix;
-        }
-
-        if (newPoint.Details) {
-            free(newPoint.Details);
-        }
-
-        if (newPoint.Comment) {
-            free(newPoint.Comment);
         }
     } while(WPnode); //for(each node in rtept)
 

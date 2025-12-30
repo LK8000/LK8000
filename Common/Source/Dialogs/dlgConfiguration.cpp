@@ -856,16 +856,7 @@ static void OnWaypointNewClicked(WndButton* pWnd){
   }
   edit_waypoint.FileNum = 0; // default, put into primary waypoint file
   edit_waypoint.Flags = 0;
-  edit_waypoint.Comment=(TCHAR*)malloc((COMMENT_SIZE+1)*sizeof(TCHAR));
-
-  if (edit_waypoint.Comment == (TCHAR *)NULL) {
-    OutOfMemory(_T(__FILE__), __LINE__);
-    return;
-  }
-  _tcscpy(edit_waypoint.Comment,_T(""));
-
   edit_waypoint.Name[0] = 0;
-  edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
   edit_waypoint.Format = LKW_NEW;	// 100208
   edit_waypoint.RunwayLen = 0;

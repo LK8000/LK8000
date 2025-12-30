@@ -42,21 +42,19 @@ bool AddWaypoint(WAYPOINT& Waypoint) {
 }
 
 void SetWaypointComment(WAYPOINT& waypoint, const TCHAR* string) {
-    if(waypoint.Comment) {
-        free(waypoint.Comment);
-        waypoint.Comment = nullptr;
+    if(string) {
+        waypoint.Comment = string;
     }
-    if(string && string[0] != _T('\0')) {
-        waypoint.Comment = _tcsdup(string);
+    else {
+        waypoint.Comment.clear();
     }
 }
 
 void SetWaypointDetails(WAYPOINT& waypoint, const TCHAR* string) {
-    if(waypoint.Details) {
-        free(waypoint.Details);
-        waypoint.Details = nullptr;
+    if(string) {
+        waypoint.Details = string;
     }
-    if(string && string[0] != _T('\0')) {
-        waypoint.Details = _tcsdup(string);
+    else {
+        waypoint.Details.clear();
     }
 }

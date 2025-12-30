@@ -270,19 +270,7 @@ bool ParseAirports(const xml_node* airportsNode)
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
-                // ownership of this 2 pointer has benn transfered to WaypointList
-                new_waypoint.Details = nullptr;
-                new_waypoint.Comment = nullptr;
-            }
-        }
-        if(new_waypoint.Comment) { 
-            free(new_waypoint.Comment);
-            new_waypoint.Comment = nullptr;
-        }
-        if(new_waypoint.Details) {
-            free(new_waypoint.Details);
-            new_waypoint.Details = nullptr;
+            AddWaypoint(new_waypoint);
         }
     }
     return true;
@@ -381,18 +369,8 @@ bool ParseNavAids(const xml_node* navAidsNode)
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
             if(AddWaypoint(new_waypoint)) {
-                // ownership of this 2 pointer has been transfered to WaypointList
-                new_waypoint.Details = nullptr;
-                new_waypoint.Comment = nullptr;
+
             } 
-        }
-        if(new_waypoint.Comment) { 
-            free(new_waypoint.Comment);
-            new_waypoint.Comment = nullptr;
-        }
-        if(new_waypoint.Details) {
-            free(new_waypoint.Details);
-            new_waypoint.Details = nullptr;
         }
     } // end of for each nav aid
     return true;
@@ -482,19 +460,7 @@ bool ParseHotSpots(const xml_node* hotSpotsNode) {
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
-                // ownership of this 2 pointer has been transfered to WaypointList
-                new_waypoint.Details = nullptr;
-                new_waypoint.Comment = nullptr;
-            } 
-        }
-        if(new_waypoint.Comment) {
-            free(new_waypoint.Comment);
-            new_waypoint.Comment = nullptr;
-        }
-        if(new_waypoint.Details) {
-            free(new_waypoint.Details);
-            new_waypoint.Details = nullptr;
+            AddWaypoint(new_waypoint);
         }
     } // end of for each nav aid
     return true;

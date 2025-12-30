@@ -243,11 +243,6 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header,
     }
   }
 
-  if (Temp->Details) {
-    free(Temp->Details);
-    Temp->Details = nullptr;
-  }
-
   return true;
 }
 

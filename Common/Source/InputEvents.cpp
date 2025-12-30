@@ -2856,14 +2856,12 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   edit_waypoint.Latitude = GPS_INFO.Latitude;
   edit_waypoint.Longitude = GPS_INFO.Longitude;
   edit_waypoint.Altitude = CALCULATED_INFO.TerrainAlt;
-  edit_waypoint.FileNum = 2; // don't put into file
+  edit_waypoint.FileNum = -1; // don't put into file
   edit_waypoint.Flags = 0;
   if (_tcscmp(misc, TEXT("landable")) == 0) {
     edit_waypoint.Flags += LANDPOINT;
   }
-  edit_waypoint.Comment = NULL;
   _stprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
-  edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
 
   AddWaypoint(edit_waypoint);
