@@ -53,8 +53,8 @@ android {
         minSdkVersion 23 // Marshmallow
         targetSdkVersion 36
 
-        versionCode 173
-        versionName "7.4.45"
+        versionCode 174
+        versionName "7.4.46"
 
         setProperty("archivesBaseName", "LK8000-$versionName")
 

@@ -10,6 +10,15 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.46]
+ * airspaces  
+  - qnh altitude ajustement
+  - support OpenAir files
+  - add "TSA" and "TRA" as "Restricted" alias
+  - add "ASRA" as "Glider Sector" alias
+ * android
+  - fix possible crash at startup 
+
 [version 7.4.45]
  - Add Kalman filter for STF and and SpMe
  - Handle device priority for Gyroscope data
