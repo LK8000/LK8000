@@ -79,7 +79,10 @@ auto type_table = lookup_table<tstring_view, int, start_with_predicate>({
     { _T("TMZ"), CLASSTMZ },
     { _T("RMZ"), CLASSRMZ },
     { _T("NOTAM"), CLASSNOTAM },
-    { _T("GSEC"), GLIDERSECT }
+    { _T("GSEC"), GLIDERSECT },
+    { _T("TRA"), RESTRICT },
+    { _T("TSA"), RESTRICT },
+    { _T("ASRA"), GLIDERSECT },
 });
 
 /**
