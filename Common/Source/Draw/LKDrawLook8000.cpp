@@ -756,7 +756,9 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         } // overlay RighTop
     }
     short yoffset=0;
-    if (OverlayClock && Overlay_TopRight && ScreenLandscape) yoffset = SizeMediumFont.cy-fixBigInterline;
+    if (Overlay_TopRight && ScreenLandscape) {
+      yoffset = SizeMediumFont.cy - fixBigInterline;
+    }
 
     if (IsMultimapOverlaysGauges() && !mode.AnyPan())
         rcx = leftmargin + GlideBarOffset;
