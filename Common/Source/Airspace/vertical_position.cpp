@@ -65,7 +65,9 @@ bool vertical_position::above(double alt_msl, double height_agl) const {
 }
 
 void vertical_position::qnh_update() {
-  _msl = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, _fl));
+  if (_ref == vertical_ref::FL) {
+    _msl = QNEAltitudeToQNHAltitude(Units::From(unFligthLevel, _fl));
+  }
 }
 
 double vertical_position::altitude(double terrain_altitude) const {
