@@ -142,14 +142,21 @@ public class BluetoothGattClientPort
     }
   }
 
-  public BluetoothGattClientPort(Context context, BluetoothDevice device) {
+  // Explicit private constructor prevents direct instantiation
+  // outside of BluetoothGattClientPort.createPort() factory method
+  private BluetoothGattClientPort() {
+  }
+
+  static public BluetoothGattClientPort createPort(Context context, BluetoothDevice device) {
+    BluetoothGattClientPort port = new BluetoothGattClientPort();
     if (BluetoothHelper.isUnknownType(device)) {
       // unknown device : scan for device...
-      startLeScan(context, device.getAddress());
+      port.startLeScan(context, device.getAddress());
     }
     else {
-      connectDevice(context, device);
+      port.connectDevice(context, device);
     }
+    return port;
   }
 
   private void connectDevice(Context context, BluetoothDevice device) {

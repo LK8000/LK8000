@@ -266,7 +266,7 @@ final class BluetoothHelper {
       return null;
 
     try {
-      return new BluetoothGattClientPort(context, device);
+      return BluetoothGattClientPort.createPort(context, device);
     }
     catch (Exception e) {
       e.printStackTrace();
