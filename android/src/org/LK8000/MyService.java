@@ -120,9 +120,7 @@ public class MyService extends Service {
   }
 
   @Override public void onDestroy() {
-
-    stopForeground(true);
-
+    ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
     super.onDestroy();
   }
 
