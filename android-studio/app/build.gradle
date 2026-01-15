@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'io.sentry.android.gradle' version '5.12.2'
+    id 'io.sentry.android.gradle' version '6.0.0-rc.1'
 }
 
 def sentryProperties = new Properties()
@@ -56,8 +56,6 @@ android {
         versionCode 174
         versionName "7.4.46"
 
-        setProperty("archivesBaseName", "LK8000-$versionName")
-
         externalNativeBuild {
             cmake {
                 // Passes optional arguments to CMake.
@@ -102,7 +100,7 @@ android {
             // we can't change this is because first distro on play Store has been made with this suffix
             applicationIdSuffix ".beta"
 
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.config
         }
         debug {
@@ -137,6 +135,16 @@ android {
     }
 }
 
+def appVersionName = android.defaultConfig.versionName
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName.set("LK8000-${appVersionName}-${variant.name}.apk")
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
@@ -146,7 +154,7 @@ dependencies {
 
     implementation "androidx.core:core:1.17.0"
     implementation "androidx.constraintlayout:constraintlayout:2.2.1"
-    implementation "androidx.activity:activity:1.12.1"
+    implementation "androidx.activity:activity:1.12.2"
     implementation "androidx.appcompat:appcompat:1.7.1"
 
     implementation "com.google.zxing:core:3.5.4"
