@@ -89,7 +89,7 @@ public class LK8000 extends Activity {
               });
     }
 
-    Log.d(TAG, "ABI=" + Build.CPU_ABI);
+    Log.d(TAG, "ABI=" + Build.SUPPORTED_ABIS);
     Log.d(TAG, "PRODUCT=" + Build.PRODUCT);
     Log.d(TAG, "MANUFACTURER=" + Build.MANUFACTURER);
     Log.d(TAG, "MODEL=" + Build.MODEL);
@@ -100,7 +100,7 @@ public class LK8000 extends Activity {
     if (!Loader.loaded) {
       TextView tv = new TextView(this);
       tv.setText(getString(R.string.error_native_library) + "\n" +
-                 "ABI=" + Build.CPU_ABI + "\n" +
+                 "ABI=" + Build.SUPPORTED_ABIS + "\n" +
                  "PRODUCT=" + Build.PRODUCT + "\n" +
                  "FINGERPRINT=" + Build.FINGERPRINT + "\n" +
                  "error=" + Loader.error);
