@@ -331,6 +331,7 @@ void CTaskFileHelper::LoadOptions(const xml_node* node) {
                 }
             }
             LoadRules(nodeOpt->first_node("rules"));
+            LoadTimeGate(node->first_node("time-gate"));
         }
     }
 }
@@ -342,9 +343,6 @@ void CTaskFileHelper::LoadOptionAAT(const xml_node* node) {
 }
 
 void CTaskFileHelper::LoadOptionRace(const xml_node* node) {
-    if (node) {
-        LoadTimeGate(node->first_node("time-gate"));
-    }
     // SS Turnpoint
     // ESS Turnpoint
 }
@@ -525,7 +523,7 @@ bool CTaskFileHelper::LoadStartPointList(const xml_node* node) {
             }
             nodePoint = nodePoint->next_sibling("point");
         }
-        EnableMultipleStartPoints = ValidStartPoint(0);
+        MultipleStartPoints = ValidStartPoint(0);
     }
     return true;
 }
@@ -703,7 +701,7 @@ bool CTaskFileHelper::Save(const TCHAR* szFileName) {
         if (!SaveTaskPointList(AddNode(rootNode, "taskpoints"))) {
             return false;
         }
-        if (EnableMultipleStartPoints && ValidStartPoint(0)) {
+        if (EnableMultipleStartPoints()) {
             if (!SaveStartPointList(AddNode(rootNode, "startpoints"))) {
                 return false;
             }
@@ -747,6 +745,12 @@ bool CTaskFileHelper::SaveOption(xml_node* node) {
             break;
     }
 
+    if (TimeGates::GateType != TimeGates::anytime) {
+        if (!SaveTimeGate(AddNode(OptNode, "time-gate"))) {
+            return false;
+        }
+    }    
+
     switch (gTaskType) {
         case task_type_t::AAT: // AAT Task
         SetAttribute(node, "type", "AAT");
@@ -788,12 +792,6 @@ bool CTaskFileHelper::SaveOptionRace(xml_node* node) {
     if (!node) {
         return false;
     }
-    if (TimeGates::GateType != TimeGates::anytime) {
-        if (!SaveTimeGate(AddNode(node, "time-gate"))) {
-            return false;
-        }
-    }
-
     return true;
 }
 
