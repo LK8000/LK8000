@@ -310,7 +310,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
       pItem->Draw(Surface, rc, false);
     }
 
-    if (EnableMultipleStartPoints) {
+    if (EnableMultipleStartPoints()) {
       for (int i = 0; i < MAXSTARTPOINTS; i++) {
         if (StartPoints[i].Active && ValidWayPoint(StartPoints[i].Index)) {
           const TaskRenderer* pItem = gStartSectorRenderer.GetRenderer(i);

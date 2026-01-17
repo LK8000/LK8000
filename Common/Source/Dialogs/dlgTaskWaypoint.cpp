@@ -308,7 +308,7 @@ static void SetValues(bool first) {
   wp = wf->FindByName<WndProperty>(TEXT("prpEnableMultipleStartPoints"));
   if (wp) {
     wp->SetVisible(gTaskType != task_type_t::GP);
-    wp->GetDataField()->Set(EnableMultipleStartPoints);
+    wp->GetDataField()->Set(MultipleStartPoints);
     wp->RefreshDisplay();
   }
 
@@ -333,10 +333,9 @@ static void SetValues(bool first) {
     wp->RefreshDisplay();
   }
 
-  WndButton* wb;
-  wb = wf->FindByName<WndButton>(TEXT("EditStartPoints"));
+  auto wb = wf->FindByName<WndButton>(TEXT("EditStartPoints"));
   if (wb) {
-    wb->SetVisible(EnableMultipleStartPoints!=0 && gTaskType != task_type_t::GP);
+    wb->SetVisible(MultipleStartPoints && gTaskType != task_type_t::GP);
   }
 
 }
@@ -406,7 +405,7 @@ static void ReadValues(void) {
   LockTaskData();
   wp = wf->FindByName<WndProperty>(TEXT("prpEnableMultipleStartPoints"));
   if (wp) {
-    changed = CHECK_CHANGED(EnableMultipleStartPoints,
+    changed = CHECK_CHANGED(MultipleStartPoints,
                   wp->GetDataField()->GetAsBoolean());
   }
 
@@ -692,10 +691,6 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly, bool Mo
 
   bMoveallowed = Moveallowed;
   bAddonly = addonly;
-
-  if (gTaskType != task_type_t::GP) {
-	EnableMultipleStartPoints=false;
-  }
 
   twItemIndex = itemindex;
   twType = tasktype;

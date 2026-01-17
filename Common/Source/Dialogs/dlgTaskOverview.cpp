@@ -261,8 +261,6 @@ static void OverviewRefreshTask(WndForm* pWnd) {
     wTaskList->SetItemIndex(SelectedItem);
   }
 
-  EnableMultipleStartPoints = (gTaskType != task_type_t::GP);
-
   UpdateCaption(pWnd);
   UnlockTaskData();
 }

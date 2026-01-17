@@ -219,7 +219,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			if (ActiveTaskPoint==1) {
 				invalid = !ValidTaskPoint(ActiveTaskPoint-1);
 				lk::strcpy(OutBuffer, MsgToken<804>(), Size); // Waypoint Start
-			} else if (EnableMultipleStartPoints) {
+			} else if (EnableMultipleStartPoints()) {
 				invalid = !ValidTaskPoint(0);
 
 				if (ActiveTaskPoint==0)

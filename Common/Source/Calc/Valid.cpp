@@ -64,6 +64,14 @@ bool ValidStartPoint(size_t i) {
     return retVal;
 }
 
+bool EnableMultipleStartPoints() {
+  if (gTaskType == task_type_t::GP) {
+    return false;
+  }
+  return MultipleStartPoints && ValidStartPoint(0);
+}
+
+
 bool ValidStartSpeed(NMEA_INFO* Basic, DERIVED_INFO* Calculated,
                      unsigned Margin) {
   bool valid = true;

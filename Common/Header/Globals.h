@@ -447,7 +447,7 @@ GEXTERN int SelectedWaypoint;
 GEXTERN sector_type_t SectorType;
 GEXTERN double SectorRadius;
 
-GEXTERN bool EnableMultipleStartPoints;
+GEXTERN bool MultipleStartPoints;
 GEXTERN sector_type_t StartLine;
 GEXTERN double StartRadius;
 GEXTERN sector_type_t FinishLine;

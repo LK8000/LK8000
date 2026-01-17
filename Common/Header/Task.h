@@ -127,6 +127,8 @@ bool ValidResWayPoint(int i);
 bool ValidResWayPointFast(int i);
 bool ValidStartPoint(size_t i);
 
+bool EnableMultipleStartPoints();
+
 struct sector_param {
   sector_type_t type;
   double radius;

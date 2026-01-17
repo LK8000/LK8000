@@ -471,7 +471,7 @@ void Globals_Init(void) {
 
   UTCOffset = GetSystemUTCOffset();
   EnableThermalLocator = 1;
-  EnableMultipleStartPoints = false;
+  MultipleStartPoints = false;
   StartHeightRef = 0; // MSL
   FAI28_45Threshold = FAI_BIG_THRESHOLD;
 #if defined(PPC2003) || defined(PNA)

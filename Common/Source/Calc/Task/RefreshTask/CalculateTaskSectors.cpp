@@ -65,7 +65,7 @@ void CalculateTaskSectors() {
 
     LockTaskData();
 
-    if (EnableMultipleStartPoints) {
+    if (EnableMultipleStartPoints()) {
         for (int i = 0; i < MAXSTARTPOINTS - 1; i++) {
             const START_POINT &StartPt = StartPoints[i];
             if (StartPt.Active && ValidWayPoint(StartPt.Index)) {
@@ -80,8 +80,10 @@ void CalculateTaskSectors() {
                 case sector_type_t::LINE:
                     gStartSectorRenderer.SetLine(i, center, StartRadius, StartPt.OutBound);
                     break;
-                case sector_type_t::SGP_START:
                 case sector_type_t::CIRCLE:
+                    gStartSectorRenderer.SetCircle(i, center, StartRadius);
+                    break;
+                case sector_type_t::SGP_START:
                 case sector_type_t::DAe:
                 case sector_type_t::ESS_CIRCLE:
                     assert(false);

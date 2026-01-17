@@ -39,7 +39,7 @@ void ClearTask() {
   LastTaskFileName[0] = _T('\0');
   ActiveTaskPoint = -1;
 
-  EnableMultipleStartPoints = false;
+  MultipleStartPoints = false;
 
   std::for_each(std::begin(Task), std::end(Task), ResetTaskWpt);
   std::for_each(std::begin(TaskStats), std::end(TaskStats), ResetTaskStat);

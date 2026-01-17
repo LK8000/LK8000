@@ -150,7 +150,7 @@ void RefreshTask(void) {
         WayPointList[Task[i].Index].InTask = true;
       }
     }
-    if (EnableMultipleStartPoints) {
+    if (EnableMultipleStartPoints()) {
       for (i=0; i<MAXSTARTPOINTS; i++) {
         if (ValidWayPoint(StartPoints[i].Index) && StartPoints[i].Active) {
           WayPointList[StartPoints[i].Index].InTask = true;

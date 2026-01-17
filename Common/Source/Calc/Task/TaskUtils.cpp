@@ -282,7 +282,7 @@ void RefreshTaskWaypoint(int i) {
       Task[i-1].OutBound = Task[i].InBound;
       Task[i-1].Bisector = BiSector(Task[i-1].InBound,Task[i-1].OutBound);
       if (i==1) {
-        if (EnableMultipleStartPoints) {
+        if (EnableMultipleStartPoints()) {
           for (int j=0; j<MAXSTARTPOINTS; j++) {
             if ((StartPoints[j].Index != -1)&&(StartPoints[j].Active)) {
               DistanceBearing(WayPointList[StartPoints[j].Index].Latitude,

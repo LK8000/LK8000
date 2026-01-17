@@ -123,7 +123,7 @@ bool InStartSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated, bool StartOut, in
     return isInSector;
   }
 
-  if (EnableMultipleStartPoints) {
+  if (EnableMultipleStartPoints()) {
     for (int i = 0; i < MAXSTARTPOINTS; i++) {
       if (StartPoints[i].Active && (StartPoints[i].Index >= 0) && (StartPoints[i].Index != Task[0].Index)) {
 
