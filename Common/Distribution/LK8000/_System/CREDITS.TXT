@@ -10,8 +10,13 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.4.47]
+- Fix multiple task start point handling
+- Save "PEV-start" settings with task
+- Fix buffer overflow in Fanet parser
+
 [version 7.4.46]
- * airspaces  
+ * airspaces
   - qnh altitude ajustement
   - support OpenAir files
   - add "TSA" and "TRA" as "Restricted" alias

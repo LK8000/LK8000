@@ -53,8 +53,8 @@ android {
         minSdkVersion 23 // Marshmallow
         targetSdkVersion 36
 
-        versionCode 174
-        versionName "7.4.46"
+        versionCode 175
+        versionName "7.4.47"
 
         externalNativeBuild {
             cmake {
