@@ -517,12 +517,12 @@ BOOL devInit() {
       GPS_INFO.reset_availability();
     });
 
-    ScopeLock Lock(CritSec_Comm);
 
     for (unsigned i = 0; i < NUMDEV; i++) {
         const auto& Config = PortConfig[i];
         auto& dev = DeviceList[i];
         
+        ScopeLock Lock(CritSec_Comm);
         dev.Reset();
 
         if (SIMMODE){
