@@ -21,23 +21,16 @@ namespace {
 /*
  * Convert 24bit signed integer to int32_t
  */
-int32_t to_int32_t(const uint8_t *buf) {
-  int32_t value;
-  ((uint8_t*)&value)[0] = buf[0];
-  ((uint8_t*)&value)[1] = buf[1];
-  ((uint8_t*)&value)[2] = buf[2];
-  ((uint8_t*)&value)[3] = ((buf[2]&0x80) ? 0xFF : 0x00); // Sign extension
-  return value;
+int32_t to_int32_t(const uint8_t* buf) {
+  return buf[0] | buf[1] << 8 | buf[2] << 16 |
+         ((buf[2] & 0x80) ? 0xFF : 0x00) << 24;  // Sign extension
 }
 
 /*
  * Convert 2 Byte to uint16_t
  */
-uint16_t to_uint16_t(const uint8_t *buf) {
-  uint16_t value;
-  ((uint8_t*)&value)[0] = buf[0];
-  ((uint8_t*)&value)[1] = buf[1];
-  return value;
+uint16_t to_uint16_t(const uint8_t* buf) {
+  return buf[0] | buf[1] << 8;
 }
 
 /*
@@ -217,7 +210,7 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   if (flarm_slot < 0) {
     // no more slots available,
     DebugLog(_T("... NO SLOTS for Flarm traffic, too many ids!"));
-    return FALSE;
+    return false;
   }
 
   d->nmeaParser.setFlarmAvailable(pGPS);
@@ -235,13 +228,13 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   traffic.Time_Fix = pGPS->Time;
   traffic.Status = LKT_REAL;
 
-  uint8_t payload_length = data.size();
+  size_t payload_length = data.size();
   if ((payload_length < 11) || (payload_length > 13)) {
-    return FALSE;
+    return false;
   }
 
-  payload_absolut2coord(traffic.Latitude, traffic.Longitude, &data[0]);
-  uint16_t Type = to_uint16_t(&data[6]);
+  payload_absolut2coord(traffic.Latitude, traffic.Longitude, &data.at(0));
+  uint16_t Type = to_uint16_t(&data.at(6));
   uint16_t altitude = Type & 0x7FF;
   // OnlineTracking = (Type & 0x8000);
   if (Type & 0x0800) {
@@ -253,14 +246,14 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   traffic.Type = static_cast<uint16_t>(aircraft_type_table.get((aircraft_t) ((Type >> 12) & 0x07),
                                                                  flarm_aircraft_t::unknown));
 
-  if (data[8] & 0x80) {
-    traffic.Speed = Units::From(unKiloMeterPerHour, ((data[8] & 0x007F) * 5) * 0.5);
+  if (data.at(8) & 0x80) {
+    traffic.Speed = Units::From(unKiloMeterPerHour, ((data.at(8) & 0x007F) * 5) * 0.5);
   }
   else {
-    traffic.Speed = Units::From(unKiloMeterPerHour, data[8] * 0.5);
+    traffic.Speed = Units::From(unKiloMeterPerHour, data.at(8) * 0.5);
   }
 
-  uint8_t climb = data[9];
+  uint8_t climb = data.at(9);
   uint8_t climb2 = (climb & 0x7F) | (climb & (1 << 6)) << 1; //create 2-complement
   if (climb & 0x80) {
     traffic.ClimbRate = climb2 * 5.0 / 10.0;
@@ -268,12 +261,12 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
     traffic.ClimbRate = climb2 / 10.0;
   }
 
-  traffic.TrackBearing = AngleLimit360(data[10] * 360. / 255.);
+  traffic.TrackBearing = AngleLimit360(data.at(10) * 360. / 255.);
 
   if (!traffic.Name[0] || traffic.UpdateNameFlag) {
     UpdateName(traffic);
   }
-  return TRUE;
+  return true;
 }
 
 bool FanetParseType2Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
@@ -301,8 +294,7 @@ bool FanetParseType2Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   }
 
   FanetInsert(fanetDevice, pGPS->FanetName, pGPS->Time);
-  return TRUE;
-
+  return true;
 }
 
 bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
@@ -321,18 +313,20 @@ bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
 
   std::string msg = { data.begin(), data.end() };
 
-  TCHAR text[150]; // at least (31 + 2 + 80)
-  if(!GetFanetName(ID, *pGPS, text)) {
-    _stprintf(text, _T("%07X"), ID); // no name, use ID
+  TCHAR name[150]; // at least (31 + 2 + 80)
+  if(!GetFanetName(ID, *pGPS, name)) {
+    _stprintf(name, _T("%07X"), ID); // no name, use ID
   }
-  _tcscat(text, _T("\r\n"));
 
-  TCHAR* Out = text + _tcslen(text);
-  from_unknown_charset(msg.c_str(), Out, Out - text);
+  tstring text = name;
+  text += _T("\r\n");
+  text += from_unknown_charset(msg.c_str());
+
+  StartupStore(_T("Fanet Message : %s"), text.c_str());
 
   PlayResource(TEXT("IDR_WAV_DRIP")); //play sound
-  Message::AddMessage(10000, MSG_COMMS, text); // message time 10s
-  return TRUE;
+  Message::AddMessage(10000, MSG_COMMS, text.c_str()); // message time 10s
+  return true;
 }
 
 bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
@@ -361,60 +355,91 @@ bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   FANET_WEATHER weather;
   weather.ID = id;
 
-  int index = 1;
-  if (data[0] & 0x01){ //check extended header
+  // Validate minimum payload size
+  if (data.empty()) {
+    return false;
+  }
+
+  size_t index = 1;
+  if (data.at(0) & 0x01) { //check extended header
     ++index;
   }
-  payload_absolut2coord(weather.Latitude,weather.Longitude,&data[index]);
-  index+=6;
-  if ((data[0] >> 6) & 0x01){
+
+  // Validate we have enough bytes for position data (6 bytes)
+  if (index + 6 > data.size()) {
+    return false;
+  }
+
+  payload_absolut2coord(weather.Latitude, weather.Longitude, &data.at(index));
+  index += 6;
+  if ((data.at(0) >> 6) & 0x01) {
     //Temperature (+1byte in 0.5 degree, 2-Complement)
-    weather.temp = ((int8_t)data[index++])/2.f;
-  }else{
+    if (index >= data.size()) {
+      return false;
+    }
+    weather.temp = ((int8_t)data.at(index++)) / 2.f;
+  } else {
     weather.temp = 0;
   }
-  if ((data[0] >> 5) & 0x01){
+
+  if ((data.at(0) >> 5) & 0x01) {
     //Wind (+3byte: 1byte Heading in 360/256 degree, 1byte speed and 1byte gusts in 0.2km/h (each: bit 7 scale 5x or 1x, bit 0-6))
-    weather.windDir =  data[index++] * 360.0f / 256.0f;
-    weather.windSpeed = (float)(data[index] & 0x7F);
-    if (!((data[index++] >> 7) & 0x01)){
-      weather.windSpeed /= 5;
+    if (index + 3 > data.size()) {
+      return false;
     }
-    weather.windSpeed /= 3.6; //convert to m/s
-    weather.windGust = (float)(data[index] & 0x7F);
-    if (!((data[index++] >> 7) & 0x01)) {
-      weather.windGust /= 5;
-    }
-    weather.windGust /= 3.6; //convert to m/s
-  }else{
+    weather.windDir = data.at(index++) * 360.0f / 256.0f;
+    
+    // Wind speed: bit 7 = scale (1->5x, 0->1x), bits 0-6 = value in 0.2km/h
+    float windScale = ((data.at(index) >> 7) & 0x01) ? 5.0f : 1.0f;
+    weather.windSpeed = (float)(data.at(index) & 0x7F) * 0.2f * windScale;
+    index++;
+    weather.windSpeed /= 3.6f; //convert to m/s
+    
+    // Wind gust: same scaling as wind speed
+    float gustScale = ((data.at(index) >> 7) & 0x01) ? 5.0f : 1.0f;
+    weather.windGust = (float)(data.at(index) & 0x7F) * 0.2f * gustScale;
+    index++;
+    weather.windGust /= 3.6f; //convert to m/s
+  } else {
     weather.windDir = 0;
     weather.windSpeed = 0;
     weather.windGust = 0;
   }
-  if ((data[0] >> 4) & 0x01){
+
+  if ((data.at(0) >> 4) & 0x01) {
     //Humidity (+1byte: in 0.4% (%rh*10/4))
-    weather.hum = data[index++] * 4.f / 10.f;
-  }else{
+    if (index >= data.size()) {
+      return false;
+    }
+    weather.hum = data.at(index++) * 4.f / 10.f;
+  } else {
     weather.hum = 0;
   }
-  if ((data[0] >> 3) & 0x01){
+
+  if ((data.at(0) >> 3) & 0x01) {
     //Barometric pressure normalized (+2byte: in 10Pa, offset by 430hPa, unsigned little endian (hPa-430)*10)
-    uint16_t pPress = data[index++];
-    pPress += data[index++] * 256U;
+    if (index + 2 > data.size()) {
+      return false;
+    }
+    uint16_t pPress = data.at(index++);
+    pPress += data.at(index++) * 256U;
     weather.pressure = (pPress / 10.0f) + 430.0f;
-  }else{
+  } else {
     weather.pressure = 0;
   }
 
-  if ((data[0] >> 1) & 0x01){
+  if ((data.at(0) >> 1) & 0x01) {
     //State of Charge  (+1byte lower 4 bits: 0x00 = 0%, 0x01 = 6.666%, .. 0x0F = 100%)
-    weather.Battery = (data[index++] & 0x0F) * 100.0f / 15.0f;
-  }else{
+    if (index >= data.size()) {
+      return false;
+    }
+    weather.Battery = (data.at(index++) & 0x0F) * 100.0f / 15.0f;
+  } else {
     weather.Battery = 0;
   }
 
   FanetInsert(weather,pGPS->FANET_Weather, pGPS->Time); //insert data into weather-structure
-  return TRUE;
+  return true;
 }
 
 bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
@@ -444,15 +469,20 @@ bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
     bit 0		Online Tracking
   */
 
+  // Validate payload size (requires at least 7 bytes for position + type)
+  if (data.size() < 7) {
+    return false;
+  }
+
   d->nmeaParser.setFlarmAvailable(pGPS);
 
   /*
   TODO: display static object ?
-  GeoPoint pos = payload_absolut2coord(&data[0]);
-  uint8_t type = data[6] > 4;
-  bool online_tracking = data[6] & 0x01;
+  GeoPoint pos = payload_absolut2coord(&data.at(0));
+  uint8_t type = data.at(6) > 4;
+  bool online_tracking = data.at(6) & 0x01;
   */
-  return TRUE;
+  return true;
 }
 
 bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
@@ -482,23 +512,33 @@ bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
     [Byte 10]	Avg wind heading at thermal (attention: 90degree means the wind is coming from east and blowing towards west)
     bit 0-7		Value		in 360/256 deg  
   */
+
+  // Validate payload size (requires at least 11 bytes)
+  if (data.size() < 11) {
+    return false;
+  }
+
   d->nmeaParser.setFlarmAvailable(pGPS);
 
-  GeoPoint pos = payload_absolut2coord(&data[0]);
+  GeoPoint pos = payload_absolut2coord(&data.at(0));
 
   // ignore this thermal if already in history...
   if (IsThermalExist(pos, Units::From(unMeter, 25))) {
     return true;
   }
 
-  uint16_t Type = to_uint16_t(&data[6]);
-  double altitude = Type & 0x3FF;
-  if (Type & 0x0400) {
+  uint16_t Type = to_uint16_t(&data.at(6));
+  double altitude = Type & 0x7FF;
+  if (Type & 0x0800) {
     altitude *= 4.;
   }
 
-  double avg = static_cast<int8_t>(data[8] & 0x7F) | ((data[8]&0x40) ? 0xFF : 0x00);
-  if (data[8] & 0x80) {
+  int8_t signed_val = data.at(8) & 0x7F;  // Extract bits 0-6
+  if (signed_val & 0x40) {  // If sign bit (bit 6) is set
+    signed_val -= 128;  // Convert to negative value
+  }
+  double avg = signed_val;
+  if (data.at(8) & 0x80) {
     avg *= 5.;
   }
   avg = Units::From(Units_t::unMeterPerSecond, avg * 10.);
@@ -509,5 +549,5 @@ bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
 
 bool FanetParseUnknown(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
   DebugLog(_T("Unknown Fanet Message : id = %x, payloadsize %zu"), id, data.size());
-  return TRUE;
+  return true;
 }

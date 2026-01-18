@@ -94,20 +94,33 @@ std::vector<uint8_t> from_payload(const char* string, uint8_t payload_length) {
   return msg;
 }
 
-template<typename Table>
-BOOL FanetParse(Table& table, DeviceDescriptor_t* d, const char* String, NMEA_INFO *pGPS) {
-  char ctemp[MAX_NMEA_LEN];
-  NMEAParser::ExtractParameter(String,ctemp,4);
-  uint8_t type = strtol(ctemp, nullptr, 10);
-  uint32_t id = getIdFromMsg(String);
+template <typename Table>
+BOOL FanetParse(Table& table, DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS) {
+  try {
+    char ctemp[MAX_NMEA_LEN];
+    NMEAParser::ExtractParameter(String, ctemp, 4);
+    uint8_t type = strtol(ctemp, nullptr, 10);
+    uint32_t id = getIdFromMsg(String);
 
-  NMEAParser::ExtractParameter(String,ctemp,5);
-  uint8_t payloadLen = getByteFromHex(ctemp);
-  NMEAParser::ExtractParameter(String,ctemp,6);
-  std::vector<uint8_t> payload = from_payload(ctemp, payloadLen);
+    NMEAParser::ExtractParameter(String, ctemp, 5);
+    uint8_t payloadLen = getByteFromHex(ctemp);
+    if (payloadLen == 0xFF) {
+      return FALSE;
+    }
 
-  fanet_parse_function parse = table.get(type, FanetParseUnknown);
-  return parse(d, pGPS, id, payload);
+    NMEAParser::ExtractParameter(String, ctemp, 6);
+    if (strlen(ctemp) < payloadLen * 2) {
+      return FALSE; // invalid payload
+    }
+    std::vector<uint8_t> payload = from_payload(ctemp, payloadLen);
+
+    fanet_parse_function parse = table.get(type, FanetParseUnknown);
+    return parse(d, pGPS, id, payload);
+  }
+  catch (std::exception& e) {
+    DebugLog(_T("FanetParse : %s"), to_tstring(e.what()).c_str());
+    return FALSE;
+  }
 }
 
 } // namespace
