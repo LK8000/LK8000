@@ -25,7 +25,7 @@ namespace {
     FILE * stream = _tfopen(filename,_T("wt"));
     if(stream) {
       for (const auto& item : map_flarm_names) {
-        _ftprintf(stream, _T("%x=%s\n"), item.first,item.second.c_str());
+        _ftprintf(stream, _T("%06X=%s\n"), item.first, to_utf8(item.second.c_str()).c_str());
       }
       fclose(stream);
 
