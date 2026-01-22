@@ -42,6 +42,14 @@ bool ComPort::Close() {
 // this is used by all functions to send data out
 bool ComPort::Write(const void *data, size_t size) {
     if (size > 0) {
+        // Acquire CritSec_Comm to ensure thread-safe access to the port.
+        // CritSec_Comm is a reentrant mutex, so the same thread can acquire it multiple times.
+        // This prevents race conditions when multiple threads attempt to write to the same port
+        // (e.g., RxThread calling devOpen() via device callbacks vs main thread calling device functions).
+        // Each port implementation (SerialPort, TTYPort, SocketPort) uses OS resources
+        // (HANDLE, fd, socket) that are not safe for concurrent access.
+        ScopeLock lock(CritSec_Comm);
+
         bool success = Write_Impl(data, size);
 
         DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),

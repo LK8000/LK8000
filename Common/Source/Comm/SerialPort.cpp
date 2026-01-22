@@ -367,7 +367,12 @@ unsigned SerialPort::RxThread() {
     }
 #endif
 
+    bool opened = false;  // Call devOpen() once at startup
     while ((hPort != INVALID_HANDLE_VALUE) && !StopEvt.tryWait(0)) {
+        if (!opened) {
+            devOpen(devGetDeviceOnPort(GetPortIndex()));
+            opened = true;
+        }
 
         UpdateStatus();
 

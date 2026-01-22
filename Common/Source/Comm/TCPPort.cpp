@@ -296,9 +296,15 @@ bool UDPServerPort::Connect() {
 }
 
 unsigned UDPServerPort::RxThread() {
+    bool opened = false;  // Call devOpen() once at startup
     char szString[1024];
 
 	while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+		if (!opened) {
+    	    opened = true;
+	        devOpen(devGetDeviceOnPort(GetPortIndex()));
+		}
+
 		int nRecv;
 		socklen_t slen = sizeof(mSAddressClient);
 		if ((nRecv = recvfrom(mSocket, szString, sizeof(szString), 0, (struct sockaddr *) &mSAddressClient, &slen)) != -1)  {

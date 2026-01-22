@@ -39,6 +39,8 @@ struct Declaration_t {
   const WAYPOINT* waypoint[MAXTASKPOINTS];
 };
 
+// Synchronization lock for protecting ComPort access and DeviceList modifications
+// Note: This is a reentrant (recursive) mutex, so the same thread can acquire it multiple times
 extern Mutex CritSec_Comm;
 
 struct DriverData {

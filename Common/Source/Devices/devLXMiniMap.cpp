@@ -185,7 +185,11 @@ BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t* d) {
 
 BOOL DevLXMiniMap::Open(DeviceDescriptor_t* d){
 
-  devWriteNMEAString(d, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,3"));
+  // Use direct Com->WriteString() to avoid nested ScopeLock(CritSec_Comm)
+  // in devWriteNMEAString() which could cause deadlock when called from RxThread.
+  if (d && d->Com) {
+    d->Com->WriteString("$PFLX0,LXWP0,1,LXWP2,3,LXWP3,3\r\n");
+  }
 
   return(TRUE);
 }

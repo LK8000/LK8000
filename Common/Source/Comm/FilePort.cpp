@@ -80,22 +80,29 @@ int32_t GGA_RMC_seconds(const char *StrTime) {
 unsigned FilePort::RxThread()
 {
 
-PeriodClock Timer;
+  PeriodClock Timer;
 
-char szString[MAX_NMEA_LEN];
-char szRef[3][MAX_NMEA_LEN]= {{"nosync"},{"$GPRMC"}, {"$GPGGA"}};
+  char szString[MAX_NMEA_LEN];
+  char szRef[3][MAX_NMEA_LEN]= {{"nosync"},{"$GPRMC"}, {"$GPGGA"}};
 
 
-int  nRecv =0;
-int32_t LastTimeSeconds=0;
-int32_t TimeInSeconds=0;
+  int  nRecv =0;
+  int32_t LastTimeSeconds=0;
+  int32_t TimeInSeconds=0;
 
   auto& Port = PortConfig[GetPortIndex()];
 
-int32_t i_skip = 1;
+  int32_t i_skip = 1;
   int32_t ms =0;
+
+  bool opened = false;  // Call devOpen() once at startup
   while (!StopEvt.tryWait(5) /*&& FileStream*/ ) 
   {
+    if (!opened) {
+        opened = true;
+        devOpen(devGetDeviceOnPort(GetPortIndex()));
+    }
+
     int32_t speed = Port.ReplaySpeed;
 #define THRESHOLD 10 // max 10Hz GPS Map refresh
 

@@ -183,7 +183,12 @@ unsigned SocketPort::RxThread() {
         // if failed, socket still in blocking mode, it's big problem
     }
 
+    bool opened = false;  // Call devOpen() once at startup
     while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+        if (!opened) {
+            opened = true;
+            devOpen(devGetDeviceOnPort(GetPortIndex()));
+        }
 
         ScopeLock Lock(CritSec_Comm);
         UpdateStatus();

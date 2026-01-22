@@ -364,12 +364,11 @@ void RestartCommPorts() {
     TestLog(_T(". RestartCommPorts end @%s"), WhatTimeIsIt());
 }
 
-// Only called from devInit() above which
-// is in turn called with LockComm
+// Only called from RxThread()
 BOOL devOpen(DeviceDescriptor_t* d) {
-
-  StartupStore(_T(". Device %c ready @%s"), devLetter(d->PortNumber), WhatTimeIsIt());
-
+  StartupStore(_T(". Device %c Open @%s"), devLetter(d->PortNumber), WhatTimeIsIt());
+  
+  ScopeLock lock(CritSec_Comm);
   if (d && d->Open) {
     return d->Open(d);
   }
@@ -574,12 +573,9 @@ BOOL devInit() {
         if (Com && Com->Initialize()) {
             pDev->Install(&dev);
             /*
-             * Need to be done before anny #DeviceDescriptor_t::Callback call.
+             * Need to be done before any #DeviceDescriptor_t::Callback call.
              */
             dev.Com = Com;
-            if (Com->IsReady()) {
-                devOpen(&dev);
-            }
 
             Com->StartRxThread();
         } else {
@@ -601,8 +597,7 @@ BOOL devInit() {
 }
 
 // Tear down methods should always succeed.
-// Called from devInit() above under LockComm
-// Also called when shutting down via devCloseAll()
+// Called on RestartCommPorts() and shutting down via devCloseAll()
 static void devClose(DeviceDescriptor_t& d) {
 
   ComPort* port = WithLock(CritSec_Comm, [&]() {
