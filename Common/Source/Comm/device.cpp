@@ -1048,12 +1048,12 @@ BOOL FlarmDeclare(DeviceDescriptor_t* d, const Declaration_t* decl) {
     char NoS = (point.Latitude > 0) ? 'N' : 'S';
     double latitude = std::abs(point.Latitude);
     int DegLat = latitude;
-    int MinLat = (latitude - DegLat) * 60. * 10000.;
+    int MinLat = (latitude - DegLat) * 60. * 1000.;
 
     char EoW = (point.Longitude > 0) ? 'E' : 'W';
     double longitude = std::abs(point.Longitude);
     int DegLon = longitude;
-    int MinLon = (longitude - DegLon) * 60. * 10000.;
+    int MinLon = (longitude - DegLon) * 60. * 1000.;
 
     TCHAR value[32];
     lk::snprintf(value, _T("%02d%05d%c,%03d%05d%c,P%02d"), DegLat, MinLat, NoS, DegLon, MinLon, EoW, j);
