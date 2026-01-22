@@ -1389,7 +1389,7 @@ BOOL DevLX_EOS_ERA::LXDT(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
   }
   else if(strncmp(szTmp, "FLIGHT_INFO", 11) == 0)
   { 
-    char FileName[50]= "FileName", Pilot[50]= "",Surname[50]= "", Takeoff[50]= "",Date[50]= "",Landing[50]= "",Type[50]= "", Reg[50]= "";
+    TCHAR FileName[50]= _T("FileName"), Pilot[50]= _T(""),Surname[50]= _T(""), Takeoff[50]= _T(""),Date[50]= _T(""),Landing[50]= _T(""),Type[50]= _T(""), Reg[50]= _T("");
     TestLog(TEXT("FLIGHT_INFO %s"), sentence);
 
     NMEAParser::ExtractParameter(sentence, Date     ,2);int  iNo = (int) StrToDouble(Date,nullptr);

@@ -9,6 +9,7 @@
 
 #include "externs.h"
 #include <ctype.h>
+#include "utils/charset_helper.h"
 
 
 /*
@@ -133,6 +134,13 @@ BOOL NMEAParser::NMEAChecksum(const char *String) {
 
 void NMEAParser::ExtractParameter(const wchar_t* Source, wchar_t* Destination, int DesiredFieldNumber) {
   ::ExtractParameter(Source, Destination, DesiredFieldNumber);
+}
+
+void NMEAParser::ExtractParameter(const char* Source, wchar_t* Destination, int DesiredFieldNumber) {
+  size_t len = strlen(Source); // to avoid unused parameter warning
+  auto temp = std::make_unique<char[]>(len + 1);
+  ::ExtractParameter(Source, temp.get(), DesiredFieldNumber);
+  from_unknown_charset(temp.get(), Destination, len + 1);
 }
 
 #endif

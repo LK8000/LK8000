@@ -71,6 +71,7 @@ public:
 
 #ifdef UNICODE
   static void ExtractParameter(const wchar_t* Source, wchar_t* Destination, int DesiredFieldNumber);
+  static void ExtractParameter(const char* Source, wchar_t* Destination, int DesiredFieldNumber);
 #endif
 
   static uint8_t AppendChecksum(char *String, size_t size);

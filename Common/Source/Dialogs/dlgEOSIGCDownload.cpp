@@ -143,7 +143,7 @@ LK_EOS_IGCReadDlg EOS_IGCReadDialog;
 
 
 
-void AddEOSElement(TCHAR Line1[], TCHAR Line2[], uint32_t size) {
+void AddEOSElement(const TCHAR* Line1, const TCHAR* Line2, uint32_t size) {
   EOSListElementType NewElement;
   lk::strcpy(NewElement.Line1, Line1);
   lk::strcpy(NewElement.Line2, Line2);
