@@ -162,7 +162,10 @@ class SourceMonitor {
 //
 // Run every 5 seconds, approx.
 // This is the hearth of LK. Questions? Ask Paolo..
-// THIS IS RUNNING WITH LockComm  from ConnectionProcessTimer .
+// 
+// Note: This function acquires CritSec_Comm internally and holds it
+// for the entire function. Not safe to call with CritSec_Comm already held
+// by caller (recursive lock violation on non-recursive mutexes).
 //
 bool UpdateMonitor() {
   static SourceMonitor monitors[] = {
