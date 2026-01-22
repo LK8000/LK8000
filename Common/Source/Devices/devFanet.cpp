@@ -49,28 +49,16 @@ uint8_t getByteFromHex(const char *in) {
   return tens * 16 + digits;
 }
 
-void fillpaddingZeros(char *String, const char *String2,int len){
-
-
-  int size = strlen(String2);
-  if (size < len){
-    for (int i = size;i < len;i++){
-      strcat(String, "0");
-    }
-  }
-  strcat(String, String2);
-}
-
 uint32_t getIdFromMsg(const char *String) {
   char ctemp[10];
-  char cID[7];
-  cID[0] = 0; //zero-Termination of String;
-  NMEAParser::ExtractParameter(String,ctemp,0);
-  fillpaddingZeros(cID,ctemp,2);
-  NMEAParser::ExtractParameter(String,ctemp,1);
-  fillpaddingZeros(cID,ctemp,4);
 
-  return strtoul(cID, nullptr, 16); //convert HEX-String to long
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  uint32_t Manufacturer = strtoul(ctemp, nullptr, 16); //convert HEX-String to long
+
+  NMEAParser::ExtractParameter(String,ctemp,1);
+  uint32_t Unique_ID = strtoul(ctemp, nullptr, 16); //convert HEX-String to long
+
+  return Manufacturer << 16 | Unique_ID;
 }
 
 std::string to_payload(const std::string& data) {
