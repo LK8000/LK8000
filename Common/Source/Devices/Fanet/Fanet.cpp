@@ -553,7 +553,7 @@ bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   if (data.at(8) & 0x80) {
     avg *= 5.;
   }
-  avg = Units::From(Units_t::unMeterPerSecond, avg * 10.);
+  avg = Units::From(Units_t::unMeterPerSecond, avg / 10.);
 
   InsertThermalHistory(pGPS->Time, pos, altitude, altitude, avg, false);
   return true;
