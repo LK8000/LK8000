@@ -304,29 +304,38 @@ bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
     [Byte 0]	Header
     bit 0-7 	Subheader, Subtype (TBD)
           0: Normal Message
-          
-    8bit String (of arbitrary length)  
+
+    8bit String (of arbitrary length)
    */
+
+  if (data.empty()) {
+    return false;
+  }
 
   // station ID (3 Bytes)
   uint32_t ID = id;
 
-  std::string msg = { data.begin(), data.end() };
-
-  TCHAR name[150]; // at least (31 + 2 + 80)
-  if(!GetFanetName(ID, *pGPS, name)) {
-    _stprintf(name, _T("%07X"), ID); // no name, use ID
+  TCHAR name[150];  // at least (31 + 2 + 80)
+  if (!GetFanetName(ID, *pGPS, name)) {
+    _stprintf(name, _T("%07X"), ID);  // no name, use ID
   }
 
-  tstring text = name;
-  text += _T("\r\n");
-  text += from_unknown_charset(msg.c_str());
+  uint8_t subtype = data[0];
+  if (subtype == 0x00) {
+    std::string msg = {std::next(data.begin()), data.end()};
+    if (msg.empty()) {
+      return true;  // ignore empty message
+    }
 
-  StartupStore(_T("Fanet Message : %s"), text.c_str());
+    tstring text = name;
+    text += _T("\r\n");
+    text += from_unknown_charset(msg.c_str());
 
-  PlayResource(TEXT("IDR_WAV_DRIP")); //play sound
-  Message::AddMessage(10000, MSG_COMMS, text.c_str()); // message time 10s
-  return true;
+    PlayResource(TEXT("IDR_WAV_DRIP"));                   // play sound
+    Message::AddMessage(10000, MSG_COMMS, text.c_str());  // message time 10s
+    return true;
+  }
+  return false;
 }
 
 bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, const std::vector<uint8_t>& data) {
