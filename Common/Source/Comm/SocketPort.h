@@ -48,7 +48,7 @@ typedef struct in_addr IN_ADDR;
 class SocketPort : public ComPort {
 public:
     SocketPort(unsigned idx, const tstring& sName);
-    ~SocketPort();
+    ~SocketPort() override;
     
     bool Initialize() override;
     bool Close() override;
@@ -73,8 +73,8 @@ protected:
     virtual bool Connect() = 0;
     unsigned RxThread() override;
 
-    SOCKET mSocket;
-    unsigned mTimeout;
+    SOCKET mSocket = INVALID_SOCKET;
+    unsigned mTimeout = 40U;
 
 private:
     bool Write_Impl(const void *data, size_t size) override;

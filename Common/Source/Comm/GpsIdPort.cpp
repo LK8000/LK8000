@@ -19,17 +19,6 @@ void GPSResetData(T& data) {
     data.dwVersion = 1;
 }
 
-GpsIdPort::GpsIdPort(unsigned idx, const tstring& sName) : ComPort(idx, sName),
-_hGPS(NULL),
-_hLoc(NULL),
-_hState(NULL) {
-
-}
-
-GpsIdPort::~GpsIdPort() {
-
-}
-
 bool GpsIdPort::Initialize() {
     _hLoc = ::CreateEvent(NULL, FALSE, FALSE, NULL);
     _hState = ::CreateEvent(NULL, FALSE, FALSE, NULL);

@@ -19,7 +19,7 @@
 class TTYPort : public ComPort {
 public:
     TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling);
-    virtual ~TTYPort();
+    ~TTYPort() override;
 
     bool Initialize() override;
     bool Close() override;
@@ -46,9 +46,9 @@ private:
     unsigned _dwPortSpeed;
     BitIndex_t _dwPortBit;
 
-    int _tty;
-    struct termios _oldtio;
-    int _Timeout;
+    int _tty = -1;
+    struct termios _oldtio = {};
+    int _Timeout = RXTIMEOUT;
 
     bool Write_Impl(const void *data, size_t size) override;
 };

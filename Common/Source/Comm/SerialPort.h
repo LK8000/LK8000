@@ -18,7 +18,7 @@
 class SerialPort : public ComPort {
 public:
     SerialPort(unsigned idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling);
-    virtual ~SerialPort();
+    ~SerialPort() override;
 
     bool Initialize() override;
     bool Close() override;

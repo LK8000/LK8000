@@ -30,10 +30,7 @@ using namespace std::placeholders;
 TTYPort::TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
-        _dwPortBit(BitSize),
-        _tty(-1),
-        _oldtio(),
-        _Timeout()
+        _dwPortBit(BitSize)
 {
 }
 

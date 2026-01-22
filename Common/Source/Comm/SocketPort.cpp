@@ -13,7 +13,7 @@
 #include <functional>
 using namespace std::placeholders;
 
-SocketPort::SocketPort(unsigned idx, const tstring& sName) : ComPort(idx, sName), mSocket(INVALID_SOCKET), mTimeout(40) {
+SocketPort::SocketPort(unsigned idx, const tstring& sName) : ComPort(idx, sName) {
 #ifdef WIN32
     WSADATA wsd;
     WSAStartup(MAKEWORD(1, 1), &wsd);

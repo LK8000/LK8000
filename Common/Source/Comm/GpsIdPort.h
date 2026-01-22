@@ -18,8 +18,7 @@
 
 class GpsIdPort : public ComPort {
 public:
-    GpsIdPort(unsigned idx, const tstring& sName);
-    ~GpsIdPort();
+    using ComPort::ComPort;
 
     bool Initialize() override;
     bool Close() override;
@@ -41,9 +40,9 @@ public:
 protected:
     unsigned RxThread() override;
 
-    HANDLE _hGPS;  // GPS device
-    HANDLE _hLoc;  // signals GPS locaton arrival
-    HANDLE _hState;// signals GPS state arrival
+    HANDLE _hGPS = NULL;  // GPS device
+    HANDLE _hLoc = NULL;  // signals GPS locaton arrival
+    HANDLE _hState = NULL;// signals GPS state arrival
 
 private:
     bool Write_Impl(const void *data, size_t size) override;
