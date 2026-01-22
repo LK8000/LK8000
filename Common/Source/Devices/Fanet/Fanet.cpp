@@ -277,6 +277,9 @@ bool FanetParseType2Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
     8bit String (of arbitrary length, \0 termination not required)
 
    */
+  if (data.empty()) {
+    return false;
+  }
 
   FANET_NAME fanetDevice;
   
