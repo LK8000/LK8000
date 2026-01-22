@@ -254,7 +254,7 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   }
 
   uint8_t climb = data.at(9);
-  uint8_t climb2 = (climb & 0x7F) | (climb & (1 << 6)) << 1; //create 2-complement
+  int8_t climb2 = static_cast<int8_t>((climb & 0x7F) | (climb & (1 << 6)) << 1); //create 2-complement
   if (climb & 0x80) {
     traffic.ClimbRate = climb2 * 5.0 / 10.0;
   } else {
