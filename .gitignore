@@ -78,3 +78,5 @@ output.map
 /cov-int/
 /Scripts/kobo-build-rootfs/build-config-user.sh
 /Common/Utils/wind-estimate/build/
+/GEMINI.md
+/local/
