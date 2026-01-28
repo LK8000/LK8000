@@ -37,6 +37,65 @@ namespace {
   Mutex mutex;
   Cond cond;
   bool bFLARM_BinMode = false;
+
+
+  BOOL ParseLicence(DeviceDescriptor_t& d, const char* String) {
+    // $PFLAC,A,LIC,AUD:1;ENL:1;IGC:1;RFB:1;TIS:1*XX
+    std::set<std::string> licence_data;
+    licence_data.clear();
+
+    // Find the start of license data after "$PFLAC,A,LIC,"
+    auto prefix = "$PFLAC,A,LIC,"sv;
+    std::string_view licenses_str(String);
+    licenses_str.remove_prefix(prefix.length());
+
+    // Strip NMEA checksum (*XX) if present
+    size_t checksum_pos = licenses_str.find('*');
+    if (checksum_pos != std::string_view::npos) {
+      licenses_str = licenses_str.substr(0, checksum_pos);
+    }
+
+    // Parse the license entries separated by semicolons
+    size_t pos = 0;
+    
+    while (pos < licenses_str.length()) {
+      // Find the next semicolon or end of string
+      size_t next_semicolon = licenses_str.find(';', pos);
+      if (next_semicolon == std::string::npos) {
+        next_semicolon = licenses_str.length();
+      }
+      
+      // Extract the license entry (e.g., "AUD:1")
+      std::string_view entry = licenses_str.substr(pos, next_semicolon - pos);
+      
+      if (!entry.empty()) {
+        // Find the colon separator
+        size_t colon_pos = entry.find(':');
+        if (colon_pos != std::string::npos) {
+          std::string_view license_name = entry.substr(0, colon_pos);
+          // License is installed if value is "1"
+          std::string_view license_value = entry.substr(colon_pos + 1);
+          if (license_value == "1") {
+            licence_data.emplace(license_name);
+          }
+        }
+      }
+
+      pos = next_semicolon + 1;
+    }
+
+    if (!licence_data.empty()) {
+      std::string licenses;
+      for (auto& item : licence_data) {
+        licenses += item + ";";
+      }
+      StartupStore(_T("Flarm Licence : %s"), to_tstring(licenses).c_str());
+    }
+    // TODO: Store or process licence_data as needed
+
+    return TRUE;
+  }
+
 }
 
 BOOL CDevFlarm::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info) {
@@ -55,6 +114,10 @@ BOOL CDevFlarm::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
     DebugLog(TEXT("Flarm, enable binary mode!"));
     SetBinaryModeFlag(true);
     return TRUE;
+  }
+
+  if (start_with(sentence, "$PFLAC,A,LIC,"sv)) {
+    return ParseLicence(*d, sentence);
   }
 
   if (IsInBinaryMode()) {
@@ -124,7 +187,11 @@ uint8_t RecChar(DeviceDescriptor_t* d, uint8_t& Byte, uint16_t Timeout) {
 
 BOOL CDevFlarm::Open(DeviceDescriptor_t* d) {
 	m_pDevice = d;
-	return TRUE;
+
+  // request for installed licence
+  d->Com->WriteString("$PFLAC,R,LIC*4C");
+
+  return TRUE;
 }
 
 BOOL CDevFlarm::Close (DeviceDescriptor_t* d) {
