@@ -463,6 +463,16 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, uint32_t RadioId)
 			}
 		}
 	}
+
+	// remove the oldest
+	double old_time = std::numeric_limits<double>::max();
+	for (unsigned i=0; i<FLARM_MAX_TRAFFIC; i++) {
+		if (pGPS->FLARM_Traffic[i].Time_Fix < old_time) {
+			old_time = pGPS->FLARM_Traffic[i].Time_Fix;
+			toremove = i;
+		}
+	}
+
 	// did we find a ghost to remove?
 	if (toremove>=0) {
 #ifdef DEBUG_LKT
@@ -472,7 +482,7 @@ int FLARM_FindSlot(NMEA_INFO *pGPS, uint32_t RadioId)
 		FLARM_EmptySlot(pGPS,toremove);
 		return toremove;
 	}
-
+	
 #ifdef DEBUG_LKT
 	StartupStore(_T("... ID=<%lx> NO SPACE in slots!\n"),Id);
 #endif
