@@ -760,7 +760,7 @@ BOOL DevLXNanoIII::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDec
 
     status = SendNmea(d, send_str);
     if (status) {
-      status = wait_ack->wait(10000);
+      status = wait_ack->wait(10000) == wait_ack_result::success;
     }
     wait_ack = nullptr;
 

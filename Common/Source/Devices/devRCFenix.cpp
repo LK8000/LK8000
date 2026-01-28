@@ -333,7 +333,7 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
 
     success =  SendNmea(d, DeclStrings[ii]);
     if (success) {
-      success = wait_ack->wait(20000);
+      success = wait_ack->wait(20000) == wait_ack_result::success;
     }
 
     TestLog(_T(". RC Fenix Decl: < %s"), success ? _T("$RCDT,ANS,OK*59"): _T("failed"));

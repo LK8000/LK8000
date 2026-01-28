@@ -983,6 +983,15 @@ void flarm_command(char (&dst)[size], char command, const char* key, const char*
   }
 }
 
+template <size_t size>
+void flarm_command(char (&dst)[size], char command, const char* key) {
+  size_t out_size = lk::snprintf(dst, "$PFLAC,%c,%s", command, key);
+  if (out_size < size) {
+    unsigned crc = nmea_crc(dst + 1);
+    lk::snprintf(&dst[out_size], size - out_size, "*%02X\r\n", crc);
+  }
+}
+
 BOOL FlarmDeclareSetGet(DeviceDescriptor_t* d, const char* key, const TCHAR* value) {
   if (!d->Com) {
     return FALSE;
@@ -997,18 +1006,32 @@ BOOL FlarmDeclareSetGet(DeviceDescriptor_t* d, const char* key, const TCHAR* val
   char tmp_a[TMP_STR_SIZE];
   flarm_command(tmp_a, 'A', key, ascii_value);
 
-  wait_ack_shared_ptr wait_ack = d->make_wait_ack(tmp_a);
+  char tmp_e[TMP_STR_SIZE];
+  flarm_command(tmp_e, 'A', "ERROR");
+
+  wait_ack_shared_ptr wait_ack = d->make_wait_ack(tmp_a, tmp_e);
 
   TestLog(_T(". Flarm Decl: > %s"), to_tstring(tmp_s).c_str());
 
   d->Com->WriteString(tmp_s);
 
-  bool success = wait_ack->wait(20000);
+  wait_ack_result res = wait_ack->wait(20000);
 
   wait_ack = nullptr;
 
-  TestLog(_T(". Flarm Decl: < %s"), success ? to_tstring(tmp_a).c_str() : _T("failed"));
-  return success;
+  switch (res) {
+    case wait_ack_result::success:
+      TestLog(_T(". Flarm Decl: < %s"), to_tstring(tmp_a).c_str());
+      break;
+    case wait_ack_result::timeout:
+      StartupStore(_T(". Flarm Decl: Timeout"));
+      break;
+    case wait_ack_result::error:
+      StartupStore(_T(". Flarm Decl: Error"));
+      break;
+  }
+
+  return (res == wait_ack_result::success);
 }
 
 }  // namespace

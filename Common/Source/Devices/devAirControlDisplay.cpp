@@ -284,7 +284,7 @@ BOOL PutFreqActive(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationName
   char nmea_ack[MAX_NMEA_LEN];
   Build<Configuration>(nmea_ack, 'A', "COM", "CHN2", khz);
   wait_ack_shared_ptr wait_ack = d->make_wait_ack(nmea_ack);
-  if (SendConfiguration(d, 'S', "COM", "CHN2", khz) && wait_ack->wait(250)) {
+  if (SendConfiguration(d, 'S', "COM", "CHN2", khz) && wait_ack->wait(250) == wait_ack_result::success) {
     wait_ack = d->make_wait_ack("$PAAVX,COM,XCHN,OK*2A");
     SendCommand(d, "COM", "XCHN");
     wait_ack->wait(250);

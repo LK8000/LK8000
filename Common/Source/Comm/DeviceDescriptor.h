@@ -173,8 +173,9 @@ struct DeviceDescriptor_t {
   BOOL RecvBallast(double Ballast);
   PeriodClock IgnoreBallast;
 
-  wait_ack_shared_ptr make_wait_ack(const char* str) {
-    auto wait_ack = make_wait_ack_shared(CritSec_Comm, str);
+  wait_ack_shared_ptr make_wait_ack(const char* success_str,
+                                    const char* error_str = nullptr) {
+    auto wait_ack = make_wait_ack_shared(CritSec_Comm, success_str, error_str);
     wait_ack_weak = wait_ack;
     return wait_ack;
   }
