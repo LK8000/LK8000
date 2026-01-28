@@ -266,6 +266,17 @@ bool FanetParseType1Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   if (!traffic.Name[0] || traffic.UpdateNameFlag) {
     UpdateName(traffic);
   }
+
+  DebugLog(_T("... Flarm Track ID=%06X, Pos=(%f,%f), Alt=%.0f, Spd=%.1f, Cr=%.1f, Hdg=%.1f, Type=%d"),
+           traffic.RadioId,
+           traffic.Latitude,
+           traffic.Longitude,
+           traffic.Altitude,
+           traffic.Speed,
+           traffic.ClimbRate,
+           traffic.TrackBearing,
+           traffic.Type);
+
   return true;
 }
 
@@ -297,6 +308,9 @@ bool FanetParseType2Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   }
 
   FanetInsert(fanetDevice, pGPS->FanetName, pGPS->Time);
+
+  DebugLog(_T("... Fanet Name ID=%06X, Name=%s"), fanetDevice.ID, fanetDevice.Name);
+
   return true;
 }
 
@@ -336,6 +350,9 @@ bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
 
     PlayResource(TEXT("IDR_WAV_DRIP"));                   // play sound
     Message::AddMessage(10000, MSG_COMMS, text.c_str());  // message time 10s
+
+    DebugLog(_T("... Fanet Msg ID=%06X, Name=%s, Msg=%s"), ID, name, text.c_str());
+
     return true;
   }
   return false;
@@ -451,6 +468,18 @@ bool FanetParseType4Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   }
 
   FanetInsert(weather,pGPS->FANET_Weather, pGPS->Time); //insert data into weather-structure
+
+  DebugLog(_T("... Fanet Weather ID=%06X, Pos=(%f,%f), Temp=%.1fC, Wind=%.1fm/s@%.1fdeg, Gust=%.1fm/s, Hum=%.1f%%, Press=%.1fhPa, Batt=%.1f%%"),
+           weather.ID,
+           weather.Latitude,
+           weather.Longitude,
+           weather.temp,
+           weather.windSpeed,
+           weather.windDir,
+           weather.windGust,
+           weather.hum,
+           weather.pressure,
+           weather.Battery);
   return true;
 }
 
@@ -494,6 +523,8 @@ bool FanetParseType7Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   uint8_t type = data.at(6) > 4;
   bool online_tracking = data.at(6) & 0x01;
   */
+
+  DebugLog(_T("... Fanet Ground Track ID=%06X"), id);
   return true;
 }
 
@@ -556,6 +587,14 @@ bool FanetParseType9Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
   avg = Units::From(Units_t::unMeterPerSecond, avg / 10.);
 
   InsertThermalHistory(pGPS->Time, pos, altitude, altitude, avg, false);
+
+  DebugLog(_T("... Fanet Thermal ID=%06X, Pos=(%f,%f), Alt=%.0f, AvgClimb=%.1f"),
+           id,
+           pos.latitude,
+           pos.longitude,
+           altitude,
+           avg);
+
   return true;
 }
 
