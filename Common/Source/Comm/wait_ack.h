@@ -21,6 +21,7 @@ class wait_ack final {
  public:
   /**
    * @str must exist until this is destroyed
+   * @mutex must exist until this is destroyed
    */
   wait_ack(Mutex& mtx, const char* str);
 
@@ -32,6 +33,7 @@ class wait_ack final {
 
   /**
    * wait for and reset `ready` state
+   * @mutex must be locked before calling this method
    */
   bool wait(unsigned timeout_ms);
 
