@@ -100,7 +100,7 @@ void PreloadInitialisation(bool ask) {
 
     InitLKFonts();
     // We are sure that buttons have been created already
-    ButtonLabel::SetFont(MapWindowBoldFont);
+    ButtonLabel::SetFont(LK8ButtonFont);
 
     // font change, we need to reset "Messge
     Message::InitFont();
@@ -200,7 +200,7 @@ BOOL InitInstance()
   LKObjects_Create();
 
   ButtonLabel::CreateButtonLabels(rc);
-  ButtonLabel::SetFont(MapWindowBoldFont);
+  ButtonLabel::SetFont(LK8ButtonFont);
 
   Message::Initialize(rc); // creates window, sets fonts
 

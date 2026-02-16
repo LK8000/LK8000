@@ -707,6 +707,7 @@ GEXTERN TCHAR defaultPilotFile[MAX_PATH];
 GEXTERN LKFont	TitleWindowFont;
 GEXTERN LKFont   MapWindowFont;
 GEXTERN LKFont   MapWindowBoldFont;
+GEXTERN LKFont   LK8ButtonFont;
 GEXTERN LKFont   CDIWindowFont;
 GEXTERN LKFont   LK8GenericVar03Font;
 

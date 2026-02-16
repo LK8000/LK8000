@@ -42,7 +42,20 @@ or elect as home a waypoint after selecting it, entering waypoint details, and g
 Paragliders will not have to use it, because Home is automatically matched to the TAKEOFF place everytime.
 That's all for it.
 
-
+# Reporting points (Oracle): add reportingpoint=north, south, east, west or * to a waypoint.
+# When you are within about 10 km and flying in the matching direction, the Oracle will show it.
+# reportingpoint=south -> show when flying northbound; reportingpoint=north -> when southbound;
+# reportingpoint=east -> when flying westbound; reportingpoint=west -> when flying eastbound.
+# reportingpoint=* -> show for any heading (easier to read than "all").
+#
+# [Hohe Munde]
+# reportingpoint=north
+#
+# [Venet-Berg]
+# reportingpoint=south
+#
+# [KoenigsdorfWP]
+# reportingpoint=*
 
 
 

@@ -81,6 +81,7 @@ void SettingsLeave() {
     ClearTask();
     ReadWayPoints();
     StartupStore(_T(". RELOADED %d WAYPOINTS + %u virtuals%s"),(unsigned)WayPointList.size()-NUMRESWP,NUMRESWP,NEWLINE);
+    ReadAirfieldFile(); // re-apply waynotes (reporting points, etc.) to the new waypoint list
     SetHome(true); // force home reload
     LoadRecentList();
     RangeLandableNumber=0;

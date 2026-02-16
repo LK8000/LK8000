@@ -2916,6 +2916,8 @@ void PopupWaypointDetails()
   // 2 for goto
   // 3 and 4 for alternates
   // 5 for task
+  // 6 for images
+  // 7 for files
 
   // DialogActive is needed if not full screen!
   // DialogActive=true;
@@ -2931,6 +2933,12 @@ void PopupWaypointDetails()
 		break;
 	case 5:
 		dlgWayPointDetailsShowModal(2);
+		break;
+	case 6:
+		dlgWayPointDetailsShowModal(4);
+		break;
+	case 7:
+		dlgWayPointDetailsShowModal(5);
 		break;
 	default:
 		break;

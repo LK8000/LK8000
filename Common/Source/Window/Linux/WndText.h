@@ -79,6 +79,11 @@ public:
         return _Text.c_str();
     }
 
+    /** Whether to draw background as a rounded button (main screen menu buttons). */
+    virtual bool DrawAsButton() const {
+        return false;
+    }
+
     virtual bool OnPaint(LKSurface& Surface, const RECT& Rect) {
 
 #ifdef ENABLE_OPENGL

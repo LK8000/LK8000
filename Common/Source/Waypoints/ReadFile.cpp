@@ -127,6 +127,8 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 
   memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
+  WayPointList.reserve(WayPointList.size() + 2000);
+
   while(stream.read_line(nTemp2String)){
 goto_inloop:
 	nLineNumber++;
@@ -158,7 +160,7 @@ goto_inloop:
 			}
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
-				if(!AddWaypoint(new_waypoint)) {
+				if(!AddWaypointBulk(new_waypoint)) {
 					free(new_waypoint.Comment);
 					free(new_waypoint.Details);
 					return -1; // failed to allocate
@@ -185,7 +187,7 @@ goto_inloop:
 			}
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
-				if(!AddWaypoint(new_waypoint)) {
+				if(!AddWaypointBulk(new_waypoint)) {
 					free(new_waypoint.Comment);
 					free(new_waypoint.Details);
 					return -1; // failed to allocate
@@ -209,7 +211,7 @@ goto_inloop:
 			}
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
-				if(!AddWaypoint(new_waypoint)) {
+				if(!AddWaypointBulk(new_waypoint)) {
 					free(new_waypoint.Comment);
 					free(new_waypoint.Details);
 					return -1; // failed to allocate
@@ -238,7 +240,7 @@ goto_inloop:
 			}
 
 			if (WaypointInTerrainRange(&new_waypoint)) {
-				if(!AddWaypoint(new_waypoint)) {
+				if(!AddWaypointBulk(new_waypoint)) {
 					free(new_waypoint.Comment);
 					free(new_waypoint.Details);
 					return -1; // failed to allocate

@@ -213,6 +213,7 @@ void ButtonLabel::CreateButtonLabels(const PixelRect& rcScreen) {
             currentButton.SetTextColor(RGB_BLACK);
             currentButton.SetBkColor(RGB_BUTTONS);
             currentButton.SetMenuId(i+1);
+            currentButton.SetDrawAsButton(true);
         }
     }
 }

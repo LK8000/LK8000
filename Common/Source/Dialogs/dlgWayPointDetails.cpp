@@ -22,6 +22,11 @@
 #include "Sound/Sound.h"
 #include "Radio.h"
 #include "Waypoints/SetHome.h"
+#include "AirfieldDetails.h"
+#include "Screen/LKBitmap.h"
+#ifdef ANDROID
+#include "Android/Main.hpp"
+#endif
 
 static int page=0;
 static WndForm *wf=NULL;
@@ -30,6 +35,12 @@ static WndOwnerDrawFrame *wDetailsEntry = NULL;
 static WndFrame *wInfo=NULL;
 static WndFrame *wCommand=NULL;
 static WndFrame *wSpecial=NULL;
+static WndFrame *wImages=NULL;
+static WndListFrame *wImagesList=NULL;
+static WndOwnerDrawFrame *wImagesEntry=NULL;
+static WndFrame *wFiles=NULL;
+static WndListFrame *wFilesList=NULL;
+static WndOwnerDrawFrame *wFilesEntry=NULL;
 static WndListFrame *wComment=NULL;
 static WndOwnerDrawFrame *wCommentEntry = NULL;
 
@@ -40,6 +51,9 @@ static TextWrapArray aDetailTextLine;
 
 static int CommentDrawListIndex=0;
 static TextWrapArray aCommentTextLine;
+
+static int ImagesDrawListIndex=0;
+static int FilesDrawListIndex=0;
 
 static void OnPaintWaypointPicto(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
     if (Sender) {
@@ -86,12 +100,24 @@ static void NextPage(int Step){
     case 3: // VENTA3
       page_ok = true;
       break;
-    case 4:
+    case 4: {
+      const std::vector<tstring>* imgs = GetWaypointImages(SelectedWaypoint);
+      if (!imgs || imgs->empty()) {
         page += Step;
+      } else {
+        page_ok = true;
+      }
       break;
-    case 5:
+    }
+    case 5: {
+      const std::vector<tstring>* files = GetWaypointFiles(SelectedWaypoint);
+      if (!files || files->empty()) {
         page += Step;
+      } else {
+        page_ok = true;
+      }
       break;
+    }
     default:
       page_ok = true;
       page = 0;
@@ -104,10 +130,20 @@ static void NextPage(int Step){
   wDetails->SetVisible(page == 1);
   wCommand->SetVisible(page == 2);
   wSpecial->SetVisible(page == 3);
+  if (wImages) wImages->SetVisible(page == 4);
+  if (wFiles) wFiles->SetVisible(page == 5);
 
   if (page==1) {
     wDetails->ResetList();
     wDetails->Redraw();
+  }
+  if (page == 4 && wImagesList) {
+    wImagesList->ResetList();
+    wImagesList->Redraw();
+  }
+  if (page == 5 && wFilesList) {
+    wFilesList->ResetList();
+    wFilesList->Redraw();
   }
 
 }
@@ -179,7 +215,81 @@ static void OnWpCommentListInfo(WndListFrame * Sender, WndListFrame::ListInfo_t 
   }
 }
 
+static void OnPaintImagesListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+  const std::vector<tstring>* images = GetWaypointImages(SelectedWaypoint);
+  if (!images || ImagesDrawListIndex < 0 || (size_t)ImagesDrawListIndex >= images->size()) return;
+  const TCHAR* path = (*images)[ImagesDrawListIndex].c_str();
+  const RECT rc = Sender->GetClientRect();
+  const int dest_w = rc.right - rc.left;
+  const int dest_h = rc.bottom - rc.top;
+  if (dest_w <= 0 || dest_h <= 0) return;
 
+  LKBitmap bmp;
+  if (!bmp.LoadFromFile(path)) {
+    StartupStore(_T(". waypoint image load failed: <%s>%s"), path, NEWLINE);
+    Surface.SetTextColor(RGB_BLACK);
+    Surface.DrawText(rc.left + DLGSCALE(4), rc.top + DLGSCALE(4), _T("Image not found"));
+    TCHAR pathShort[81];
+    _tcsncpy(pathShort, path, 80);
+    pathShort[80] = _T('\0');
+    Surface.DrawText(rc.left + DLGSCALE(4), rc.top + DLGSCALE(22), pathShort);
+    return;
+  }
+  unsigned src_w = bmp.GetWidth();
+  unsigned src_h = bmp.GetHeight();
+  if (src_w == 0 || src_h == 0) {
+    StartupStore(_T(". waypoint image zero size: <%s>%s"), path, NEWLINE);
+    return;
+  }
+  Surface.DrawBitmapCopy(rc.left, rc.top, dest_w, dest_h, bmp, (int)src_w, (int)src_h);
+}
+
+static void OnImagesListInfo(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
+  const std::vector<tstring>* images = GetWaypointImages(SelectedWaypoint);
+  if (ListInfo->DrawIndex == -1) {
+    ListInfo->ItemCount = images ? images->size() : 0;
+  } else {
+    ImagesDrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
+  }
+}
+
+static const TCHAR* BaseName(const TCHAR* path) {
+  const TCHAR* last = _tcsrchr(path, _T('/'));
+  const TCHAR* last2 = _tcsrchr(path, _T('\\'));
+  if (last2 && (!last || last2 > last)) last = last2;
+  return last ? last + 1 : path;
+}
+
+static void OnPaintFilesListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+  const std::vector<tstring>* files = GetWaypointFiles(SelectedWaypoint);
+  if (!files || FilesDrawListIndex < 0 || (size_t)FilesDrawListIndex >= files->size()) return;
+  const RECT rc = Sender->GetClientRect();
+  const TCHAR* name = BaseName((*files)[FilesDrawListIndex].c_str());
+  Surface.SetTextColor(RGB_BLACK);
+  Surface.DrawText(rc.left + DLGSCALE(4), rc.top + DLGSCALE(4), name);
+}
+
+static void OnFilesListInfo(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
+  const std::vector<tstring>* files = GetWaypointFiles(SelectedWaypoint);
+  if (ListInfo->DrawIndex == -1) {
+    ListInfo->ItemCount = files ? files->size() : 0;
+  } else {
+    FilesDrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
+  }
+}
+
+static void OnFilesEnter(WndListFrame* Sender, WndListFrame::ListInfo_t* ListInfo) {
+  int itemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  const std::vector<tstring>* files = GetWaypointFiles(SelectedWaypoint);
+  if (!files || itemIndex < 0 || (size_t)itemIndex >= files->size()) return;
+  const TCHAR* path = (*files)[itemIndex].c_str();
+#ifdef ANDROID
+  std::string pathUtf8 = to_utf8(path);
+  AndroidOpenFile(pathUtf8.c_str());
+#else
+  (void)path;
+#endif
+}
 
 static void OnNextClicked(WndButton* pWnd){
   NextPage(+1);
@@ -323,6 +433,10 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnPaintWaypointPicto),
   CallbackEntry(OnPaintWpCommentListItem),
   CallbackEntry(OnWpCommentListInfo),
+  CallbackEntry(OnPaintImagesListItem),
+  CallbackEntry(OnImagesListInfo),
+  CallbackEntry(OnPaintFilesListItem),
+  CallbackEntry(OnFilesListInfo),
   EndCallbackEntry()
 };
 
@@ -356,6 +470,12 @@ void dlgWayPointDetailsShowModal(short mypage){
   wCommand = (wf->FindByName<WndFrame>(TEXT("frmCommands")));
   wSpecial = (wf->FindByName<WndFrame>(TEXT("frmSpecial")));
   wDetails = wf->FindByName<WndListFrame>(TEXT("frmDetails"));
+  wImages = wf->FindByName<WndFrame>(TEXT("frmImages"));
+  wImagesList = wf->FindByName<WndListFrame>(TEXT("frmImagesList"));
+  wImagesEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmImagesEntry"));
+  wFiles = wf->FindByName<WndFrame>(TEXT("frmFiles"));
+  wFilesList = wf->FindByName<WndListFrame>(TEXT("frmFilesList"));
+  wFilesEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmFilesEntry"));
   wComment = wf->FindByName<WndListFrame>(TEXT("frmWpComment"));
   wCommentEntry = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmWpCommentEntry"));
 
@@ -365,6 +485,17 @@ void dlgWayPointDetailsShowModal(short mypage){
   LKASSERT(wDetails!=NULL);
   LKASSERT(wComment!=NULL);
   LKASSERT(wCommentEntry!=NULL);
+  if (wImages) {
+    wImages->SetBorderKind(BORDERLEFT);
+    wImages->SetVisible(false);
+  }
+  if (wImagesEntry) wImagesEntry->SetCanFocus(true);
+  if (wFiles) {
+    wFiles->SetBorderKind(BORDERLEFT);
+    wFiles->SetVisible(false);
+  }
+  if (wFilesList) wFilesList->SetEnterCallback(OnFilesEnter);
+  if (wFilesEntry) wFilesEntry->SetCanFocus(true);
 
   wComment->SetEnterCallback(OnCommentEnter);
 

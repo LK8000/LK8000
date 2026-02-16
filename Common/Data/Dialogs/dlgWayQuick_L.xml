@@ -6,6 +6,8 @@
     <WndButton Name="cmdSetAlt1" Caption="_@M597_" X="3" Y="-998" Width="155"  Height="52" Font="2" Tag="3" OnClickNotify="OnSetAlt1Clicked" />
     <WndButton Name="cmdSetAlt2" Caption="_@M598_" X="160" Y="-999" Width="155"  Height="52" Font="2" Tag="3" OnClickNotify= "OnSetAlt2Clicked" />
     <WndButton Name="cmdDetails" Caption="_@M231_" X="3" Y="-998" Width="155"  Height="52" Font="2" Tag="3" OnClickNotify="OnDetailsClicked" />
+    <WndButton Name="cmdImages" Caption="Images" X="3" Y="-999" Width="155"  Height="52" Font="2" Tag="3" OnClickNotify="OnImagesClicked" />
+    <WndButton Name="cmdFiles" Caption="Files" X="3" Y="-999" Width="155"  Height="52" Font="2" Tag="3" OnClickNotify="OnFilesClicked" />
     <WndButton Name="cmdTask" Caption="_@M699_" X="160" Y="-999" Width="155"  Height="52" Font="2" Tag="3" OnClickNotify="OnTaskClicked" />
     <WndButton Name="cmdRadioFreqSB" Caption="_@M2174_" X="119" Y="-998" Width="55"  Height="52" Font="2" Tag="3" OnClickNotify="OnRadioFrequencySBClicked" />
     <WndButton Name="cmdRadioFreq" Caption="_@M2174_" X="3" Y="-999" Width="55"  Height="52" Font="2" Tag="3" OnClickNotify="OnRadioFrequencyClicked" />
