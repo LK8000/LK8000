@@ -33,9 +33,13 @@ import android.graphics.Typeface;
 import android.graphics.Canvas;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
 
 public class TextUtil {
+  /** Letter spacing in em units (0 = default). Slightly positive = looser, negative = tighter. */
+  private static final float LETTER_SPACING_EM = -0.04f;
+
   private Paint paint;
   private Paint.FontMetricsInt metrics;
   private int[] extent = new int[2];
@@ -45,21 +49,18 @@ public class TextUtil {
                   int paint_flags, boolean monospace) {
 
     textSize = (int) (textSize / 1.16666);
-    Typeface tf = null;
-    if (  monospace )
-      tf =   Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansMono.ttf");
-    else {
-      switch (style) {
-          case 0:
-              tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed.ttf");
-              break;
-          case 1:
-              tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Bold.ttf");
-              break;
-          case 2:
-              tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansCondensed-Oblique.ttf");
-              break;
-      }
+    Typeface tf;
+    if (monospace) {
+      /* Fallback to asset font if monospace requested */
+      tf = Typeface.createFromAsset(context.getAssets(), "fonts/DejaVuSansMono.ttf");
+      if (tf == null)
+        tf = Typeface.MONOSPACE;
+    } else {
+      /* Default to Roboto (system sans-serif) on Android */
+      int tfStyle = Typeface.NORMAL;
+      if ((style & Typeface.BOLD) != 0)   tfStyle |= Typeface.BOLD;
+      if ((style & Typeface.ITALIC) != 0) tfStyle |= Typeface.ITALIC;
+      tf = Typeface.create(Typeface.SANS_SERIF, tfStyle);
     }
 
 
@@ -70,6 +71,8 @@ public class TextUtil {
       if ((style & Typeface.ITALIC) != 0 && !tf.isItalic())
         paint.setTextSkewX((float) -0.2);
     }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && LETTER_SPACING_EM != 0.0f)
+      paint.setLetterSpacing(LETTER_SPACING_EM);
     metrics = paint.getFontMetricsInt();
   }
 

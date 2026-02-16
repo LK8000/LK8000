@@ -459,7 +459,8 @@ class NativeView extends SurfaceView
       InputStream istr = assetManager.open(pathName);
       return BitmapFactory.decodeStream(istr);
     } catch (IOException e) {
-      Log.e(TAG, "NativeView.loadAssetsBitmap('" + pathName + "') error", e);
+      /* Missing asset is expected when C++ tries fallback resolutions; log at debug only */
+      Log.d(TAG, "NativeView.loadAssetsBitmap('" + pathName + "') not found");
     }
     return null;
   }
@@ -490,21 +491,26 @@ class NativeView extends SurfaceView
   }
 
   /**
-   * Starts a VIEW intent for a given file
+   * Starts a VIEW intent for a given file.
+   * Uses FileProvider (content URI) to avoid FileUriExposedException on Android 7+.
    */
   private void openFile(String pathName) {
-    Intent intent = new Intent();
-    intent.setAction(Intent.ACTION_VIEW);
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK +
-                    Intent.FLAG_RECEIVER_REPLACE_PENDING);
     File file = new File(pathName);
-
+    if (!file.exists() || !file.canRead()) {
+      Log.e(TAG, "NativeView.openFile('" + pathName + "') file not accessible");
+      return;
+    }
     try {
+      Uri uri = LKFileProvider.getUriForFile(getContext(), file);
       String extension = pathName.substring(pathName.lastIndexOf(".") + 1);
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String mimeType = mime.getMimeTypeFromExtension(extension);
 
-      intent.setDataAndType(Uri.fromFile(file), mimeType);
+      Intent intent = new Intent(Intent.ACTION_VIEW);
+      intent.setDataAndType(uri, mimeType);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_RECEIVER_REPLACE_PENDING
+          | Intent.FLAG_GRANT_READ_URI_PERMISSION);
       getContext().startActivity(intent);
     } catch (Exception e) {
       Log.e(TAG, "NativeView.openFile('" + pathName + "') error", e);

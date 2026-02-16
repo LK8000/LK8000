@@ -27,6 +27,7 @@ public:
 
 class WndTextLabel : public WndText<Window> {
     typedef WndText<Window> __super;
+    bool _drawAsButton = false;
 public:
     WndTextLabel() : __super(RGB_BLACK, RGB_WHITE) {
 
@@ -34,6 +35,14 @@ public:
 
     virtual void Create(ContainerWindow* pOwner, const RECT& rect) {
         __super::Create(pOwner, rect, WndTextLabelStyle());
+    }
+
+    bool DrawAsButton() const override {
+        return _drawAsButton;
+    }
+
+    void SetDrawAsButton(bool v) {
+        _drawAsButton = v;
     }
 
 };

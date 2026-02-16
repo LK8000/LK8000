@@ -29,6 +29,8 @@ double AltitudeFromTerrain(double Lat, double Lon);
 void UpdateTargetAltitude(TASK_POINT& TskPt);
 
 bool AddWaypoint(WAYPOINT& waypoint);
+/** For bulk file load only: append to WayPointList; WayPointCalc is filled by InitWayPointCalc(). */
+bool AddWaypointBulk(WAYPOINT& waypoint);
 
 void SetWaypointComment(WAYPOINT& waypoint, const TCHAR* string);
 void SetWaypointDetails(WAYPOINT& waypoint, const TCHAR* string);

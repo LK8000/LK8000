@@ -49,6 +49,12 @@ NativeView *native_view;
 
 IOIOHelper *ioio_helper = nullptr;
 
+void AndroidOpenFile(const char *pathUtf8) {
+  if (native_view && pathUtf8 && pathUtf8[0] != '\0') {
+    native_view->openFile(pathUtf8);
+  }
+}
+
 extern std::unique_ptr<WndMain> main_window;
 
 extern "C" {

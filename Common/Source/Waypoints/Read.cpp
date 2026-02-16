@@ -24,6 +24,8 @@ void ReadWayPoints(void)
     CloseWayPoints(); // BUGFIX 091104 duplicate waypoints entries
     InitVirtualWaypoints();	// 091103
 
+    WayPointList.reserve(WayPointList.size() + 2000);
+
     globalFileNum = 0;
     static_assert(std::size(szWaypointFile) == std::size(WpFileType), "invalid array size");
 

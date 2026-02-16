@@ -183,6 +183,7 @@ void Init_Fonts_1() {
   LOGFONT logfontTitleWindowLogFont;
   LOGFONT logfontMapWindowLogFont;
   LOGFONT logfontMapWindowBoldLogFont;
+  LOGFONT logfontButtonFont;
   LOGFONT logfontCDIWindowLogFont;
   LOGFONT logfontGenericVar03Font;
   LOGFONT logfontMapWaypointFont;
@@ -194,6 +195,7 @@ void Init_Fonts_1() {
   memset ((char *)&logfontTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&logfontMapWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&logfontMapWindowBoldLogFont, 0, sizeof (LOGFONT));
+  memset ((char *)&logfontButtonFont, 0, sizeof (LOGFONT));
   memset ((char *)&logfontCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&logfontGenericVar03Font, 0, sizeof (LOGFONT));
   memset ((char *)&logfontMapWaypointFont, 0, sizeof (LOGFONT));
@@ -444,11 +446,18 @@ void Init_Fonts_1() {
 
   // CREATE STANDARD FONTS
   //
+  logfontButtonFont = logfontMapWindowBoldLogFont;
+  if (logfontButtonFont.lfHeight > 0)
+    logfontButtonFont.lfHeight += 2;
+  else
+    logfontButtonFont.lfHeight -= 2;
+
   InitializeOneFont (TitleWindowFont, logfontTitleWindowLogFont);
   InitializeOneFont (CDIWindowFont, logfontCDIWindowLogFont);
   InitializeOneFont (LK8GenericVar03Font, logfontGenericVar03Font);
   InitializeOneFont (MapWindowFont, logfontMapWindowLogFont);
   InitializeOneFont (MapWindowBoldFont, logfontMapWindowBoldLogFont);
+  InitializeOneFont (LK8ButtonFont, logfontButtonFont);
 
   // CREATE CUSTOM FONTS
   //
@@ -477,6 +486,7 @@ void DeInitLKFonts() {
   TitleWindowFont.Release();
   MapWindowFont.Release();
   MapWindowBoldFont.Release();
+  LK8ButtonFont.Release();
   CDIWindowFont.Release();
   LK8GenericVar03Font.Release();
   MapWaypointFont.Release();

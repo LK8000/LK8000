@@ -339,10 +339,10 @@ std::string xmlLoadFromResource(const TCHAR* lpName) {
 #endif
 }
 
-// The Font=n in dialogs.  0-4, 4 unused kept for compat issue with very old code
+// The Font=n in dialogs.  0-4, 4 unused.  5 = LK8ButtonFont for dialog buttons.
 FontReference GetFontRef(unsigned id) {
   switch (id) {
-    case 0: 
+    case 0:
       return TitleWindowFont;
     case 1:
       return MapWindowFont;
@@ -352,6 +352,8 @@ FontReference GetFontRef(unsigned id) {
       return CDIWindowFont;
     case 4:
       return CDIWindowFont;
+    case 5:
+      return LK8ButtonFont;
   }
   return FontReference();
 }
@@ -500,7 +502,10 @@ void LoadChildsFromXML(WindowControl *Parent,
     if (WC != nullptr) {
 
       if (Font != -1) {
-        FontReference FontRef = GetFontRef(Font);
+        unsigned fontId = Font;
+        if (strcmp(child->name(), "WndButton") == 0 && Font == 2)
+          fontId = 5;
+        FontReference FontRef = GetFontRef(fontId);
         if(FontRef) {
           WC->SetFont(FontRef);
         }

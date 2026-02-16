@@ -20,6 +20,8 @@ public:
     WndTextLabel();
     virtual ~WndTextLabel();
 
+    void SetDrawAsButton(bool /*v*/) { /* no-op on Win32 */ }
+
 protected:
 
 };

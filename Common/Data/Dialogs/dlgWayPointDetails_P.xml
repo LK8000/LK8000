@@ -22,6 +22,16 @@
     <WndListFrame Name="frmDetails" X="0" Y="0" Width="-1" Height="220" Font="3" OnListInfo="OnDetailsListInfo">
       <WndOwnerDrawFrame Name="frmDetailsEntry" X="2" Y="2" Width="-2" Height="18" Font="3"  OnPaint="OnPaintDetailsListItem"/>
     </WndListFrame>
+    <WndFrame Name="frmImages" X="0" Y="0" Width="-1" Height="220" Font="2" Visible="0">
+      <WndListFrame Name="frmImagesList" X="2" Y="2" Width="-2" Height="-2" Font="2" OnListInfo="OnImagesListInfo">
+        <WndOwnerDrawFrame Name="frmImagesEntry" X="2" Y="2" Width="-2" Height="120" Font="2" OnPaint="OnPaintImagesListItem"/>
+      </WndListFrame>
+    </WndFrame>
+    <WndFrame Name="frmFiles" X="0" Y="0" Width="-1" Height="220" Font="2" Visible="0">
+      <WndListFrame Name="frmFilesList" X="2" Y="2" Width="-2" Height="-2" Font="2" OnListInfo="OnFilesListInfo">
+        <WndOwnerDrawFrame Name="frmFilesEntry" X="2" Y="2" Width="-2" Height="28" Font="2" OnPaint="OnPaintFilesListItem"/>
+      </WndListFrame>
+    </WndFrame>
     <WndFrame Name="frmCommands" X="0" Y="0" Width="-1" Height="240" Font="2" Visible="0">
 
       <WndButton Name="cmdInserInTask" Caption="dynamic" X="4" Y="2" Width="-1"  Height="44" Font="2" />

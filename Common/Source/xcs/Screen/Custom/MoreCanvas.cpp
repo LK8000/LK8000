@@ -22,6 +22,7 @@ Copyright_License {
 */
 
 #include "Screen/Canvas.hpp"
+#include "Screen/Util.hpp"
 #include "Asset.hpp"
 
 #ifndef NDEBUG
@@ -33,6 +34,7 @@ Copyright_License {
 #include <string.h>
 //#include <winuser.h>
 
+#ifndef ENABLE_OPENGL
 void
 Canvas::DrawButton(PixelRect rc, bool down)
 {
@@ -41,17 +43,15 @@ Canvas::DrawButton(PixelRect rc, bool down)
   Color gray = IsDithered()
     ? (down ? COLOR_BLACK : COLOR_WHITE)
     : COLOR_LIGHT_GRAY;
-  DrawFilledRectangle(rc, gray);
 
+  DrawFilledRectangle(rc, gray);
   Pen bright(1, IsDithered() ? COLOR_BLACK : LightColor(gray));
   Pen dark(1, IsDithered() ? COLOR_BLACK : DarkColor(gray));
-
   Select(down ? dark : bright);
   DrawTwoLinesExact(rc.left, rc.bottom - 2, rc.left, rc.top,
                     rc.right - 2, rc.top);
   DrawTwoLinesExact(rc.left + 1, rc.bottom - 3, rc.left + 1, rc.top + 1,
                     rc.right - 3, rc.top + 1);
-
   Select(down ? bright : dark);
   DrawTwoLinesExact(rc.left + 1, rc.bottom - 1, rc.right - 1, rc.bottom - 1,
                     rc.right - 1, rc.top + 1);
@@ -60,6 +60,25 @@ Canvas::DrawButton(PixelRect rc, bool down)
 
   pen = old_pen;
 }
+
+void
+Canvas::DrawRoundedRect(PixelRect rc, const Color fillColor)
+{
+  unsigned radius = 6;
+  if (rc.right - rc.left < 2 * (int)radius || rc.bottom - rc.top < 2 * (int)radius) {
+    DrawFilledRectangle(rc, fillColor);
+    DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom,
+                        IsDithered() ? COLOR_BLACK : DarkColor(fillColor));
+  } else {
+    Select(Brush(fillColor));
+    Select(Pen(1, fillColor));
+    RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, radius);
+    SelectHollowBrush();
+    Select(Pen(1, IsDithered() ? COLOR_BLACK : DarkColor(fillColor)));
+    RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, radius);
+  }
+}
+#endif /* !ENABLE_OPENGL */
 
 const PixelSize
 Canvas::CalcTextSize(const TCHAR *text, size_t length) const

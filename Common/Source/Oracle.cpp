@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "AirfieldDetails.h"
 #include "LKProcess.h"
 #include "Waypointparser.h"
 #include "Dialogs.h"
@@ -17,6 +18,10 @@
 #include "NavFunctions.h"
 #include "utils/printf.h"
 #include "Library/TimeFunctions.h"
+
+namespace {
+constexpr double REPORTING_POINT_MAX_DISTANCE_M = 10000.;
+}
 
 const TCHAR *DegreesToText(double brg) {
   if (brg<23||brg>=338) { return MsgToken<1703>(); } // North
@@ -310,6 +315,48 @@ void WhereAmI::Run() {
     }
   }
 
+  // Reporting point: show if within 10 km and track matches (northbound->south, southbound->north, eastbound->west, westbound->east)
+  unsigned idx_reporting_point = static_cast<unsigned>(WayPointList.size());
+  {
+    const double track = GPS_INFO.TrackBearing;
+    const bool northbound = (track >= 315. || track < 45.);
+    const bool southbound = (track >= 135. && track < 225.);
+    const bool eastbound = (track >= 45. && track < 135.);
+    const bool westbound = (track >= 225. && track < 315.);
+    double dist_reporting = REPORTING_POINT_MAX_DISTANCE_M + 1.;
+    for (unsigned i = NUMRESWP; i < WayPointList.size(); ++i) {
+      if (WayPointList[i].Style == STYLE_THERMAL) continue;
+      if (WayPointCalc[i].Distance > REPORTING_POINT_MAX_DISTANCE_M) continue;
+      const TCHAR* rp = GetWaypointReportingPoint(i);
+      if (!rp || !rp[0]) continue;
+      bool match = false;
+      if (_tcscmp(rp, _T("*")) == 0) match = true;
+      else if (northbound && _tcscmp(rp, _T("south")) == 0) match = true;
+      else if (southbound && _tcscmp(rp, _T("north")) == 0) match = true;
+      else if (eastbound && _tcscmp(rp, _T("west")) == 0) match = true;
+      else if (westbound && _tcscmp(rp, _T("east")) == 0) match = true;
+      if (match && WayPointCalc[i].Distance < dist_reporting) {
+        dist_reporting = WayPointCalc[i].Distance;
+        idx_reporting_point = i;
+      }
+#ifdef TESTBENCH
+      if (rp && rp[0] && WayPointCalc[i].Distance <= REPORTING_POINT_MAX_DISTANCE_M) {
+        StartupStore(_T("Oracle: reporting point wp <%s> reportingpoint=%s dist=%.0f m track=%.0f match=%d") NEWLINE,
+                     WayPointList[i].Name, rp, WayPointCalc[i].Distance, track, match ? 1 : 0);
+      }
+#endif
+    }
+#ifdef TESTBENCH
+    if (idx_reporting_point < WayPointList.size()) {
+      StartupStore(_T("Oracle: showing reporting point <%s> distance %.0f m") NEWLINE,
+                  WayPointList[idx_reporting_point].Name, dist_reporting);
+    } else {
+      StartupStore(_T("Oracle: no reporting point within %.0f m (direction match)") NEWLINE,
+                  REPORTING_POINT_MAX_DISTANCE_M);
+    }
+#endif
+  }
+
   int j = idx_nearest_unknown;
   if (!ValidNotResWayPoint(j)) goto _end;
 
@@ -413,6 +460,16 @@ _dowp:
 _end:
 
   UnlockTerrainDataGraphics();
+
+  if (idx_reporting_point < WayPointList.size()) {
+    const double brg_from_wp = AngleLimit360(WayPointCalc[idx_reporting_point].Bearing + 180.);
+    const double dist_rp = WayPointCalc[idx_reporting_point].Distance;
+    _tcscat(toracle, _T("\n"));
+    _stprintf(ttmp, _T("%s %.0f %s %s "), MsgToken<1727>(), Units::ToDistance(dist_rp), Units::GetDistanceName(), DegreesToText(brg_from_wp));
+    _tcscat(toracle, ttmp);
+    _stprintf(ttmp, _T("%s <%s>"), MsgToken<1711>(), WayPointList[idx_reporting_point].Name);
+    _tcscat(toracle, ttmp);
+  }
 
   // VERY SORRY - YOUR POSITION IS UNKNOWN!
   if (!found) _stprintf(toracle,_T("\n\n%s\n\n%s"), MsgToken<1725>(),MsgToken<1726>());

@@ -201,6 +201,12 @@ tasks.register('syncAsset', Sync) {
     }
     duplicatesStrategy "WARN"
 }
+// Ensure full menu is used: copy DEFAULT_MENU.TXT from Language (not _System stub)
+tasks.register('syncAssetDefaultMenu', Copy) {
+    from "../../Common/Data/Language"
+    into "src/main/assets"
+    include "DEFAULT_MENU.TXT"
+}
 tasks.register('syncAssetLanguages', Sync) {
     from "../../Common/Data/Language/Translations",
             "../../Common/Data/Language"
@@ -264,6 +270,7 @@ tasks.register('syncAssetDistribtionPolars', Sync) {
 
 preBuild.dependsOn(
         syncAsset,
+        syncAssetDefaultMenu,
         syncAssetLanguages,
         syncAssetPolars,
         syncAssetSounds,

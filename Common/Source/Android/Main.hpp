@@ -21,4 +21,7 @@ extern NativeView *native_view;
 
 extern IOIOHelper *ioio_helper;
 
+/** Open a file with the system default handler (e.g. PDF viewer). Path must be UTF-8. */
+void AndroidOpenFile(const char *pathUtf8);
+
 #endif /* ANDROID_MAIN_H */

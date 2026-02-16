@@ -702,6 +702,41 @@ Canvas::DrawFocusRectangle(PixelRect rc)
   DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom, COLOR_DARK_GRAY);
 }
 
+void
+Canvas::DrawButton(PixelRect rc, bool down)
+{
+  const Color gray = COLOR_LIGHT_GRAY;
+
+  DrawFilledRectangle(rc, gray);
+  Select(Pen(1, LightColor(gray)));
+  DrawTwoLinesExact(rc.left, rc.bottom - 2, rc.left, rc.top,
+                    rc.right - 2, rc.top);
+  DrawTwoLinesExact(rc.left + 1, rc.bottom - 3, rc.left + 1, rc.top + 1,
+                    rc.right - 3, rc.top + 1);
+  Select(Pen(1, DarkColor(gray)));
+  DrawTwoLinesExact(rc.left + 1, rc.bottom - 1, rc.right - 1, rc.bottom - 1,
+                    rc.right - 1, rc.top + 1);
+  DrawTwoLinesExact(rc.left + 2, rc.bottom - 2, rc.right - 2, rc.bottom - 2,
+                    rc.right - 2, rc.top + 2);
+}
+
+void
+Canvas::DrawRoundedRect(PixelRect rc, const Color fillColor)
+{
+  const unsigned radius = 6;
+  if (rc.right - rc.left >= 2 * (int)radius && rc.bottom - rc.top >= 2 * (int)radius) {
+    Select(Brush(fillColor));
+    Select(Pen(1, fillColor));
+    RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, radius);
+    SelectHollowBrush();
+    Select(Pen(1, DarkColor(fillColor)));
+    RoundRect(*this, rc.left, rc.top, rc.right, rc.bottom, radius);
+  } else {
+    DrawFilledRectangle(rc, fillColor);
+    DrawOutlineRectangle(rc.left, rc.top, rc.right, rc.bottom, DarkColor(fillColor));
+  }
+}
+
 const PixelSize
 Canvas::CalcTextSize(const TCHAR *text) const
 {

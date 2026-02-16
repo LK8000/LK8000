@@ -312,6 +312,9 @@ public:
 
   void DrawButton(PixelRect rc, bool down);
 
+  /** Draw rounded rectangle with fill color and dark outline (button style). */
+  void DrawRoundedRect(PixelRect rc, const Color fillColor);
+
   gcc_pure
   const PixelSize CalcTextSize(const TCHAR *text, size_t length) const;
 

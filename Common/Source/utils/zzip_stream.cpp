@@ -107,9 +107,7 @@ bool zzip_stream::read_line_raw(char *string, size_t size) {
 
   string[out_it.length()] = '\0'; // add leading '\0'
 
-  if(out_it.overflowed()) {
-    printf("read_line_raw overflow %u > %u\n", (unsigned)(out_it.length() + out_it.skipped()), (unsigned)(size - 1));
-  }
+  /* overflow is handled by buffer; no per-line log to avoid spam for long files */
 
   if (_cs == charset::unknown && !ValidateUTF8(string)) {
     _cs = charset::latin1;
@@ -130,9 +128,7 @@ bool zzip_stream::read_line(char *string, size_t size) {
     utf8String.clear();
     utf8String = ansi_to_utf8(string);
 
-    if(utf8String.size() >= (size - 1)) {
-      printf("read_line overflow %u > %u\n", (unsigned)utf8String.size(), (unsigned)(size - 1));
-    }
+    /* truncation is applied below; avoid per-line log spam for long waypoint files */
 
     size_t str_len = std::min(utf8String.size(), size-1);
     (*std::copy_n(utf8String.data(), str_len, string)) = '\0';

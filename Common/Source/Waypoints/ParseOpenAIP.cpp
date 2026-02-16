@@ -270,7 +270,7 @@ bool ParseAirports(const xml_node* airportsNode)
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
+            if(AddWaypointBulk(new_waypoint)) {
                 // ownership of this 2 pointer has benn transfered to WaypointList
                 new_waypoint.Details = nullptr;
                 new_waypoint.Comment = nullptr;
@@ -380,7 +380,7 @@ bool ParseNavAids(const xml_node* navAidsNode)
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
+            if(AddWaypointBulk(new_waypoint)) {
                 // ownership of this 2 pointer has been transfered to WaypointList
                 new_waypoint.Details = nullptr;
                 new_waypoint.Comment = nullptr;
@@ -482,7 +482,7 @@ bool ParseHotSpots(const xml_node* hotSpotsNode) {
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
+            if(AddWaypointBulk(new_waypoint)) {
                 // ownership of this 2 pointer has been transfered to WaypointList
                 new_waypoint.Details = nullptr;
                 new_waypoint.Comment = nullptr;

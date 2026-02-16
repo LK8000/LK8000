@@ -18,6 +18,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Radio.h"
+#include "AirfieldDetails.h"
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
@@ -102,6 +103,26 @@ static void OnDetailsClicked(WndButton* pWnd){
   }
 }
 
+static void OnImagesClicked(WndButton* pWnd){
+  retStatus=6;
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
+}
+
+static void OnFilesClicked(WndButton* pWnd){
+  retStatus=7;
+  if(pWnd) {
+    WndForm * pForm = pWnd->GetParentWndForm();
+    if(pForm) {
+      pForm->SetModalResult(mrOK);
+    }
+  }
+}
+
 static void OnTaskClicked(WndButton* pWnd){
   retStatus=5;
   if(pWnd) {
@@ -158,6 +179,8 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnTaskClicked),
   CallbackEntry(OnCancelClicked),
   CallbackEntry(OnDetailsClicked),
+  CallbackEntry(OnImagesClicked),
+  CallbackEntry(OnFilesClicked),
   CallbackEntry(OnRadioFrequencyClicked),
   CallbackEntry(OnRadioFrequencySBClicked),
   CallbackEntry(OnPaintWaypointPicto),
@@ -268,15 +291,49 @@ short dlgWayQuickShowModal(void){
 	pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
       }
     }
-	pWnd = wf->FindByName(TEXT("cmdDetails"));
-    if(pWnd) {
-      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(5));
-	  pWnd->SetLeft(NIBLSCALE(3));
-    }
-	pWnd = wf->FindByName(TEXT("cmdTask"));
-    if(pWnd) {
-      pWnd->SetWidth((ScreenSizeX/2)-NIBLSCALE(7));
-	  pWnd->SetLeft((ScreenSizeX/2)+NIBLSCALE(2));
+	{
+      const std::vector<tstring>* imgs = GetWaypointImages(SelectedWaypoint);
+      const std::vector<tstring>* files = GetWaypointFiles(SelectedWaypoint);
+      const bool hasImg = imgs && !imgs->empty();
+      const bool hasFiles = files && !files->empty();
+      const bool fourCols = hasImg && hasFiles;
+      const PixelScalar third = (ScreenSizeX/3);
+      const PixelScalar quarter = (ScreenSizeX/4);
+      pWnd = wf->FindByName(TEXT("cmdDetails"));
+      if(pWnd) {
+        if (fourCols) {
+          pWnd->SetWidth(quarter - NIBLSCALE(5));
+        } else {
+          pWnd->SetWidth((hasImg || hasFiles ? third : (ScreenSizeX/2)) - NIBLSCALE(5));
+        }
+        pWnd->SetLeft(NIBLSCALE(3));
+      }
+      pWnd = wf->FindByName(TEXT("cmdImages"));
+      if(pWnd) {
+        pWnd->SetVisible(hasImg);
+        if(hasImg) {
+          pWnd->SetWidth((fourCols ? quarter : third) - NIBLSCALE(4));
+          pWnd->SetLeft((fourCols ? quarter : third) + NIBLSCALE(2));
+        }
+      }
+      pWnd = wf->FindByName(TEXT("cmdFiles"));
+      if(pWnd) {
+        pWnd->SetVisible(hasFiles);
+        if(hasFiles) {
+          pWnd->SetWidth((fourCols ? quarter : third) - NIBLSCALE(4));
+          pWnd->SetLeft((fourCols ? quarter*2 : (hasImg ? third*2 : third)) + NIBLSCALE(2));
+        }
+      }
+      pWnd = wf->FindByName(TEXT("cmdTask"));
+      if(pWnd) {
+        if (fourCols) {
+          pWnd->SetWidth(quarter - NIBLSCALE(7));
+          pWnd->SetLeft(quarter*3 + NIBLSCALE(2));
+        } else {
+          pWnd->SetWidth((hasImg || hasFiles ? third : (ScreenSizeX/2)) - NIBLSCALE(7));
+          pWnd->SetLeft((hasImg || hasFiles ? (third*2) : (ScreenSizeX/2)) + NIBLSCALE(2));
+        }
+      }
     }
 
 	if(bRadioFreq) {
@@ -331,6 +388,24 @@ short dlgWayQuickShowModal(void){
     WindowControl*pWnd = wf->FindByName(TEXT("cmdTask"));
     if(pWnd) {    pWnd->SetVisible(false);}
   }
+
+  {
+    const std::vector<tstring>* waypointImages = GetWaypointImages(SelectedWaypoint);
+    const bool hasImages = waypointImages && !waypointImages->empty();
+    WindowControl* pWndImages = wf->FindByName(TEXT("cmdImages"));
+    if (pWndImages) {
+      pWndImages->SetVisible(hasImages);
+    }
+  }
+  {
+    const std::vector<tstring>* waypointFiles = GetWaypointFiles(SelectedWaypoint);
+    const bool hasFiles = waypointFiles && !waypointFiles->empty();
+    WindowControl* pWndFiles = wf->FindByName(TEXT("cmdFiles"));
+    if (pWndFiles) {
+      pWndFiles->SetVisible(hasFiles);
+    }
+  }
+
   wf->ShowModal();
 
   return retStatus;
