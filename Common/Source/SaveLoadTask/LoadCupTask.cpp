@@ -472,8 +472,8 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
                             } else if (_tcsstr(pToken, _T("A1=")) == pToken) {
                                 // Angle 1 in degrees
                                 TmpZone.mA1 = _tcstod(pToken + 3, &sz);
-                                if( TmpZone.mR1 > 179.5)  //  180° = Circle sector
-                                  if( TmpZone.mR1 < 180.5)
+                                if( TmpZone.mA1 > 179.5)  //  180° = Circle sector
+                                  if( TmpZone.mA1 < 180.5)
                                     SectorType = sector_type_t::CIRCLE;
                             } else if (_tcsstr(pToken, _T("R2=")) == pToken) {
                                 // Radius 2
