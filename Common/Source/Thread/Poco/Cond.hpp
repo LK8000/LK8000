@@ -24,12 +24,21 @@ class Cond : public Poco::Condition {
  public:
   using Poco::Condition::Condition;
 
-  template <typename _Lock, typename _Rep, typename _Period>
-  std::cv_status wait_for(_Lock& __lock, const std::chrono::duration<_Rep, _Period>& __rtime) {
-    if (!tryWait(__lock, std::chrono::duration_cast<std::chrono::milliseconds>(__rtime).count())) {
+  template <typename Lock, typename Rep, typename Period>
+  std::cv_status wait_for(Lock& lock, const std::chrono::duration<Rep, Period>& rtime) {
+    if (!tryWait(lock, std::chrono::duration_cast<std::chrono::milliseconds>(rtime).count())) {
       return std::cv_status::timeout;
     }
     return std::cv_status::no_timeout;
+  }
+
+  template <class Lock, class Clock, class Duration>
+  std::cv_status wait_until(Lock& lock, const std::chrono::time_point<Clock, Duration>& abs_time) {
+    auto remaining = abs_time - Clock::now();
+    if (remaining <= Duration::zero()) {
+        return std::cv_status::timeout;
+    }
+    return wait_for(lock, remaining);
   }
 
   void notify_all() {
