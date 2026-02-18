@@ -15,6 +15,7 @@
 #include <thread>
 #include <string>
 #include <atomic>
+#include <cassert>
 
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -34,9 +35,14 @@ class Thread {
 
   explicit Thread(const char* name) : _thread_name(name) {}
 
-  virtual ~Thread() {}
+  virtual ~Thread() {
+    assert(!_thread.joinable());
+  }
 
   virtual bool Start() {
+    if (_thread.joinable()) {
+      return false;  // Already running
+    }
     _running = true;
 
     _thread = std::thread([&]() {
@@ -47,9 +53,9 @@ class Thread {
       _running = false;
     });
 
-    return _running;
+    return true;
   }
-
+  
   void Join() {
     if (_thread.joinable()) {
       _thread.join();

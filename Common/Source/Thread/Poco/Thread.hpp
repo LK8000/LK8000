@@ -13,16 +13,24 @@
 #define _THREAD_POCO_THREAD_HPP_
 
 #include "Poco/Thread.h"
+#include <cassert>
 
 class Thread : protected Poco::Runnable {
  public:
   explicit Thread(const char* name) : _thread(name) {}
 
+  ~Thread() override {
+    assert(!_thread.isRunning());
+  }
+
   virtual bool Start() {
+    if (_thread.isRunning()) {
+      assert(false);
+      return false;
+    }
     _thread.start(*this);
     return _thread.isRunning();
   }
-
   void Join() {
     _thread.join();
   }
