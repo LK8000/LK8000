@@ -25,7 +25,6 @@ class Thread : protected Poco::Runnable {
 
   virtual bool Start() {
     if (_thread.isRunning()) {
-      assert(false);
       return false;
     }
     _thread.start(*this);

@@ -1373,8 +1373,12 @@ ifneq ($(CONFIG_PPC2003),y)
    $(SRC_TRACKING)/FFVLTracking.cpp
 endif
 
+TEST = \
+	$(SRC)/Thread/test/ThreadTest.cpp \
+	
 
 SRC_FILES :=\
+	$(TEST) \
 	$(WINDOW) \
 	$(SCREEN) \
 	$(SOUND) \
