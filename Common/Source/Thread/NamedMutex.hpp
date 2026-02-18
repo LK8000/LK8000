@@ -60,9 +60,11 @@ class NamedMutex final {
   void lock() {
 #ifdef _WIN32
     DWORD res = WaitForSingleObject(handle_, INFINITE);
-    if (res != WAIT_OBJECT_0) {
+    if (res != WAIT_OBJECT_0 && res != WAIT_ABANDONED) {
       throw std::system_error(GetLastError(), std::system_category(), "WaitForSingleObject failed");
     }
+    // Note: WAIT_ABANDONED means the previous owner terminated without releasing.
+    // The mutex is acquired.
 #else
     while (flock(fd_, LOCK_EX) == -1) {
       if (errno != EINTR) {
@@ -75,7 +77,7 @@ class NamedMutex final {
   bool try_lock() {
 #ifdef _WIN32
     DWORD res = WaitForSingleObject(handle_, 0);
-    if (res == WAIT_OBJECT_0) {
+    if (res == WAIT_OBJECT_0 || res == WAIT_ABANDONED) {
       return true;
     }
     if (res == WAIT_TIMEOUT) {
