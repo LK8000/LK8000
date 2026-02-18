@@ -11,13 +11,16 @@
 
 #ifndef THREAD_MUTEX_HPP
 #define THREAD_MUTEX_HPP
+#include "options.h"
 
-#if defined(__GNUC__) && defined(__MINGW32__) && !defined(__STDCPP_THREADS__)
-// c++11 thread is not available with mingw
+#ifdef USE_STDCPP_THREADS
+#include "stdcpp/Mutex.hpp"
+#elif defined(USE_POCO_THREADS)
 #include "Poco/Mutex.hpp"
 #else
-#include "stdcpp/Mutex.hpp"
+#error multithreading library is not defined
 #endif
+
 
 #include <functional>
 #include <mutex>

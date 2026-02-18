@@ -9,14 +9,17 @@
 
 #ifndef _THREAD_THREAD_HPP_
 #define _THREAD_THREAD_HPP_
+#include "options.h"
+#include <functional>
 
-#if defined(__GNUC__) && defined(__MINGW32__) && !defined(__STDCPP_THREADS__)
-// c++11 thread is not available with mingw
+#ifdef USE_STDCPP_THREADS
+#include "stdcpp/Thread.hpp"
+#elif defined(USE_POCO_THREADS)
 #include "Poco/Thread.hpp"
 #else
-#include "stdcpp/Thread.hpp"
+#error multithreading library is not defined
 #endif
-#include <functional>
+
 
 class InvokeThread : public Thread {
  public:

@@ -11,12 +11,14 @@
 
 #ifndef THREAD_COND_HPP
 #define THREAD_COND_HPP
+#include "options.h"
 
-#if defined(__GNUC__) && defined(__MINGW32__) && !defined(__STDCPP_THREADS__)
-// c++11 thread is not available with mingw
+#ifdef USE_STDCPP_THREADS
+#include "stdcpp/Cond.hpp"
+#elif defined(USE_POCO_THREADS)
 #include "Poco/Cond.hpp"
 #else
-#include "stdcpp/Cond.hpp"
+#error multithreading library is not defined
 #endif
 
 #endif /* THREAD_COND_HPP */
