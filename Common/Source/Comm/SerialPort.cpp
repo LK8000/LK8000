@@ -327,7 +327,7 @@ unsigned SerialPort::RxThread() {
     Purge();
 
     bool opened = false;  // Call devOpen() once at startup
-    while ((hPort != INVALID_HANDLE_VALUE) && !StopEvt.tryWait(0)) {
+    while ((hPort != INVALID_HANDLE_VALUE) && !WaitForStop(0)) {
         if (!opened) {
             devOpen(devGetDeviceOnPort(GetPortIndex()));
             opened = true;
@@ -353,7 +353,7 @@ unsigned SerialPort::RxThread() {
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
 
-                if (StopEvt.tryWait(0)) {
+                if (WaitForStop(0)) {
                     dwBytesTransferred = 0;
                 }
             } while (dwBytesTransferred != 0);

@@ -184,7 +184,7 @@ unsigned SocketPort::RxThread() {
     }
 
     bool opened = false;  // Call devOpen() once at startup
-    while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+    while (mSocket != INVALID_SOCKET && !WaitForStop(5)) {
         if (!opened) {
             opened = true;
             devOpen(devGetDeviceOnPort(GetPortIndex()));
