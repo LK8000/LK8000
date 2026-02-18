@@ -58,6 +58,7 @@ void
 UnlockCPU()
 {
   const std::lock_guard<Mutex> lock(mtx);
+  if (cpu_lock == 0) return;
   if (cpu_lock-- == 1)
     SetCPUFrequencyGovernor("powersave");
 }
