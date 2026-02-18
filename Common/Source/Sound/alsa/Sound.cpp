@@ -330,23 +330,22 @@ private:
 
   void Run() override {
     while (true) {
-      // get copy of queue
-      auto sound = WithLock(queue_mtx, [&]() {
-        return std::exchange(queue, std::nullopt);
-      });
-
-      if (!sound) {
+      std::optional<sound_item> sound;
+      {
         std::unique_lock<Mutex> lock(queue_mtx);
-        // no sound check for stop request
+        // wait for stop or sound
+        queue_cv.wait(lock, [&]() {
+          return thread_stop || queue;
+        });
         if (thread_stop) {
           return;  // stop requested...
         }
-        // wait for stop or sound
-        if (!sound) {
-          queue_cv.wait(lock);
-        }
-      } else {
-        play_sound(sound.value());
+        // pop queued sound
+        sound = std::exchange(queue, std::nullopt);
+      }
+
+      if (sound) {
+        play_sound(*sound);
       }
     }
   }
