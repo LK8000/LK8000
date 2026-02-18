@@ -200,7 +200,9 @@ unsigned BluetoothSensor::RxThread() {
     rxthread_queue.clear();
 
     std::unique_lock<Mutex> lock(mutex);
-    newdata.wait(lock);  // wait for data or state change
+    newdata.wait(lock, [&]() {
+        return !data_queue.empty() || !running || bridge == nullptr;
+    });
   } while (true);
 }
 
