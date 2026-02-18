@@ -126,9 +126,9 @@ void MapWindow::DrawThread() {
   //
 
   TestLog(_T("... Thread_Draw : loop start"));
+  bool lastdrawwasbitblitted = false;
   while (!CLOSETHREAD) {
     if (!ThreadSuspended && GlobalRunning) {
-      bool lastdrawwasbitblitted = false;
 
 #ifdef HAVE_CPU_FREQUENCY
       const ScopeLockCPU cpu;
