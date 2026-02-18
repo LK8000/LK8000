@@ -18,6 +18,9 @@ class ThreadHandle {
   ThreadHandle() = default;
 
   bool IsInside() const {
+    if (_thread == nullptr) {
+      return false;  // default-constructed handle represents no thread
+    }
     return _thread == Poco::Thread::current();
   }
 
