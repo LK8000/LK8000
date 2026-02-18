@@ -87,8 +87,8 @@ static int createSID();
 static std::string passwordToken(const std::string& plainTextPassword,
 		const std::string& sessionID);
 
-std::unique_ptr<InvokeThread> _ThreadTracker;
-std::unique_ptr<InvokeThread> _ThreadRadar;
+static std::unique_ptr<InvokeThread> _ThreadTracker;
+static std::unique_ptr<InvokeThread> _ThreadRadar;
 
 template<typename T>
 std::string toString(const T& value) {
