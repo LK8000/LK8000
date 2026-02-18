@@ -1136,7 +1136,6 @@ static void LiveTrackerThread2() {
 	// Session variables
 	unsigned int packet_id = 0;
 
-	_t_run = true;
 	http_session http;
 
 	try {
