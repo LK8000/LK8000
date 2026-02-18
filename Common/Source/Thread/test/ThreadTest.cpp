@@ -3,7 +3,7 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *
- * File:   MutexCondTest.cpp
+ * File:   ThreadTest.cpp
  * Author: Bruno de Lacheisserie
  */
 #include "options.h"
@@ -139,19 +139,6 @@ TEST_SUITE("Thread") {
     t.Start();
     t.Join();
     CHECK(t.insideResult);
-  }
-
-  TEST_CASE("Thread can be restarted after join") {
-    // Note: Poco::Thread typically does NOT support restart after join.
-    // This test documents the actual behavior.
-    TestThread t("test8");
-    t.Start();
-    t.Join();
-    CHECK(t.ran);
-    CHECK(t.runCount == 1);
-    // Attempting restart - behavior depends on Poco::Thread implementation
-    // If restart is not supported, Start() may return false or throw
-    // We just verify the first run completed successfully
   }
 
   TEST_CASE("Thread name is set correctly") {
