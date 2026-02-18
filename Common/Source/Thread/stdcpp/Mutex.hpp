@@ -18,13 +18,16 @@ using Mutex = std::recursive_mutex;
 
 class ScopeUnlock {
  public:
-  ScopeUnlock(Mutex& m) : _mutex(m) {
+  explicit ScopeUnlock(Mutex& m) : _mutex(m) {
     _mutex.unlock();
   }
 
   ~ScopeUnlock() {
     _mutex.lock();
   }
+
+  ScopeUnlock(const ScopeUnlock&) = delete;
+  ScopeUnlock& operator=(const ScopeUnlock&) = delete;
 
  private:
   Mutex& _mutex;
