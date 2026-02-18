@@ -510,6 +510,12 @@ ifeq ($(FULLSCREEN),y)
  CE_DEFS		+= -DUSE_FULLSCREEN
 endif
 
+ifeq ($(THREADS),stdcpp)
+CE_DEFS		+= -DUSE_STDCPP_THREADS
+else ifeq ($(THREADS),Poco)
+CE_DEFS		+= -DUSE_POCO_THREADS
+endif
+
 ######## paths
 ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat
@@ -1281,7 +1287,12 @@ else
    $(SRC_TRACKING)/Default/http_session.cpp
 endif
 
+TEST = \
+	$(SRC)/Thread/test/MutexCondTest.cpp \
+	
+
 SRC_FILES :=\
+	$(TEST) \
 	$(WINDOW) \
 	$(SCREEN) \
 	$(SOUND) \

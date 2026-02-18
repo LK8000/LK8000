@@ -8,6 +8,17 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#if !defined(USE_POCO_THREADS) && !defined(USE_STDCPP_THREADS)
+#if defined(__GNUC__) && defined(__MINGW32__) && !defined(__STDCPP_THREADS__)
+// c++11 thread is not available with mingw
+#define USE_POCO_THREADS
+#undef USE_STDCPP_THREADS
+#else
+#define USE_STDCPP_THREADS
+#undef USE_POCO_THREADS
+#endif
+#endif
+
 #ifdef MSOFT
 #if !defined(WINDOWSPC)
 #define   WINDOWSPC             0
