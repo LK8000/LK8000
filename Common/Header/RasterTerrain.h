@@ -10,6 +10,7 @@
 #define RASTERTERRAIN_H
 
 #include <memory>
+#include "Thread/Mutex.hpp"
 #include "Library/cpp-mmf/memory_mapped_file.hpp"
 
 struct TERRAIN_INFO {
