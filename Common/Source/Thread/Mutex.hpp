@@ -21,7 +21,7 @@
 
 #include <functional>
 #include <mutex>
-
+#include <type_traits>
 /**
  * Invoke a callable object within Mutex lock.
  */
