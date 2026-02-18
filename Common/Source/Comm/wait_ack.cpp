@@ -61,8 +61,11 @@ bool wait_ack::check(const char* str) {
 }
 
 wait_ack_result wait_ack::wait(unsigned timeout_ms) {
-  if (result == wait_ack_result::timeout) {
-    condition.wait_for(mutex, std::chrono::milliseconds(timeout_ms));
+  auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  while (result == wait_ack_result::timeout) {
+    if (condition.wait_until(mutex, deadline) == std::cv_status::timeout) {
+      break;
+    }
   }
   return std::exchange(result, wait_ack_result::timeout);
 }
