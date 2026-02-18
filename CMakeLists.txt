@@ -57,6 +57,7 @@ add_subdirectory(Common/Source/Tracking/Curl tracking_http)
 
 add_library( LK8000 SHARED
     Common/Source/Thread/test/ThreadTest.cpp
+    Common/Source/Thread/test/MutexCondTest.cpp
 
     Common/Source/utils/unicode/unicode_to_ascii.cpp # put it first to speedup parallel build 
     Common/Source/utils/unicode/UTF16.cpp
