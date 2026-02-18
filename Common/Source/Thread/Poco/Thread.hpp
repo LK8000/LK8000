@@ -29,7 +29,7 @@ class Thread : protected Poco::Runnable {
       return false;
     }
     _thread.start(*this);
-    return _thread.isRunning();
+    return true;
   }
   void Join() {
     _thread.join();
