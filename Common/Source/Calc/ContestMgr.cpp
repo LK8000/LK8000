@@ -89,7 +89,7 @@ void CContestMgr::Reset(unsigned handicap) {
   const std::lock_guard<Mutex> lock(_mainCS);
   _handicap = handicap;
   {
-    const std::lock_guard<Mutex> lock(_traceCS);
+    const std::lock_guard<Mutex> traceLock(_traceCS);
     _trace = std::make_unique<CTrace>(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
   }
   _traceSprint = std::make_unique<CTrace>(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM);
@@ -120,7 +120,7 @@ void CContestMgr::Reset(unsigned handicap) {
   _dFAITriangleClockwise = 0;
   _resultFREETriangle = CResult();
   {
-    const std::lock_guard<Mutex> lock(_resultsCS);
+    const std::lock_guard<Mutex> resultsLock(_resultsCS);
     for (unsigned i = 0; i < TYPE_NUM; i++)
       _resultArray[i] = CResult();
   }
@@ -720,7 +720,7 @@ void CContestMgr::Add(unsigned time, double lat, double lon, int alt) {
   const std::lock_guard<Mutex> lock(_mainCS);
   {
     // Update main trace
-    const std::lock_guard<Mutex> lock(_traceCS);
+    const std::lock_guard<Mutex> traceLock(_traceCS);
     _trace->Push(gps);
     _trace->Compress();
   }
