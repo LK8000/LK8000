@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include "tchar.h"
 #endif
 
@@ -37,7 +38,7 @@ class NamedMutex final {
 #else
     std::string dir = get_temp_dir();
     path_ = dir + "/" + name + ".lock";
-    fd_ = ::open(path_.c_str(), O_CREAT | O_RDWR, 0666);
+    fd_ = ::open(path_.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd_ == -1) {
       throw std::system_error(errno, std::system_category(), "open lock file failed");
     }
