@@ -25,12 +25,11 @@
 /**
  * Invoke a callable object within Mutex lock.
  */
-template <typename _Mutex, typename _Callable, typename... _Args>
-std::invoke_result_t<_Callable, _Args...>
-WithLock(_Mutex& m, _Callable&& fn, _Args&&... args) noexcept(
-    std::is_nothrow_invocable_v<_Callable, _Args...>) {
-  std::lock_guard<_Mutex> lock(m);
-  return std::invoke(std::forward<_Callable>(fn), std::forward<_Args>(args)...);
+template <typename MutexT, typename Callable, typename... Args>
+std::invoke_result_t<Callable, Args...>
+WithLock(MutexT& m, Callable&& fn, Args&&... args) {
+  std::lock_guard<MutexT> lock(m);
+  return std::invoke(std::forward<Callable>(fn), std::forward<Args>(args)...);
 }
 
 #endif /* THREAD_MUTEX_HPP */
