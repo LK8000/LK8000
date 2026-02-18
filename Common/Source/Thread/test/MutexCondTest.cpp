@@ -268,4 +268,103 @@ TEST_CASE("Cond: producer-consumer basic synchronisation") {
   CHECK(consumed);
 }
 
+TEST_CASE("Cond: wait with predicate") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    ready = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  cond.wait(mtx, [&]() {
+    return ready;
+  });
+  CHECK(ready);
+  mtx.unlock();
+
+  t.join();
+}
+
+TEST_CASE("Cond: wait_for with predicate returns true when condition met") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    ready = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  bool result = cond.wait_for(mtx, 500ms, [&]() {
+    return ready;
+  });
+  CHECK(result);
+  CHECK(ready);
+  mtx.unlock();
+
+  t.join();
+}
+
+TEST_CASE("Cond: wait_for with predicate returns false on timeout") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  mtx.lock();
+  bool result = cond.wait_for(mtx, 10ms, [&]() {
+    return ready;
+  });
+  CHECK_FALSE(result);
+  mtx.unlock();
+}
+
+TEST_CASE("Cond: wait_until with predicate returns true when condition met") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    ready = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  auto deadline = std::chrono::steady_clock::now() + 500ms;
+  bool result = cond.wait_until(mtx, deadline, [&]() {
+    return ready;
+  });
+  CHECK(result);
+  CHECK(ready);
+  mtx.unlock();
+
+  t.join();
+}
+
+TEST_CASE("Cond: wait_until with predicate returns false on timeout") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  mtx.lock();
+  auto deadline = std::chrono::steady_clock::now() + 10ms;
+  bool result = cond.wait_until(mtx, deadline, [&]() {
+    return ready;
+  });
+  CHECK_FALSE(result);
+  mtx.unlock();
+}
+
 #endif
