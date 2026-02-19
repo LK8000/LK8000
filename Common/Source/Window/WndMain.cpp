@@ -311,6 +311,9 @@ void WndMain::OnTimer() {
         if (ProgramStarted == psFirstDrawDone) {
             AfterStartup();
             ProgramStarted = psNormalOp;
+#ifndef ENABLE_OPENGL
+            MapWindow::_draw_cv.notify_one();
+#endif
 
             StartupStore(_T(". ProgramStarted=NormalOp %s"), WhatTimeIsIt());
             StartupLogFreeRamAndStorage();
