@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include <chrono>
 
 #include "LKInterface.h"
 #include "Bitmaps.h"
@@ -19,7 +20,6 @@
 #endif
 
 BOOL MapWindow::CLOSETHREAD = FALSE;
-BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 atomic_shared_flag MapWindow::ThreadSuspended;
 
@@ -111,14 +111,18 @@ void MapWindow::Initialize() {
 #ifndef ENABLE_OPENGL
 
 void MapWindow::DrawThread() {
+  using namespace std::chrono_literals;
+  
   TestLog(_T("... Thread_Draw : started"));
   std::unique_lock<Mutex> lock(Surface_Mutex);
 
-  THREADEXIT = FALSE;
+  TestLog(_T("... Thread_Draw : wait for init or stop"));
+  _draw_cv.wait(lock, [&]() {
+    return CLOSETHREAD || ((ProgramStarted >= psInitDone) && Initialised);
+  });
 
-  while ((!ProgramStarted) || (!Initialised)) {
-    TestLog(_T("... Thread_Draw : wait for init"));
-    _draw_cv.wait(lock);
+  if (CLOSETHREAD) {
+    return;
   }
 
   //
@@ -127,7 +131,18 @@ void MapWindow::DrawThread() {
 
   TestLog(_T("... Thread_Draw : loop start"));
   bool lastdrawwasbitblitted = false;
-  while (!CLOSETHREAD) {
+  while (true) {
+
+    if (lastdrawwasbitblitted) {
+      _draw_cv.wait_for(lock, 250ms);
+    } else {
+      _draw_cv.wait(lock);
+    }
+
+    if (CLOSETHREAD) {
+      return;
+    }
+
     if (!ThreadSuspended && GlobalRunning) {
 
 #ifdef HAVE_CPU_FREQUENCY
@@ -200,7 +215,6 @@ void MapWindow::DrawThread() {
           const ScreenProjection _Proj = GetProjection();
           DrawMapScale(BackBufferSurface, MapRect, _Proj);
           DrawCrossHairs(BackBufferSurface, centerscreen, MapRect);
-          lastdrawwasbitblitted = true;
         } else {
           // THIS IS NOT GOING TO HAPPEN!
           //
@@ -210,8 +224,8 @@ void MapWindow::DrawThread() {
           const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
           DrawSurface.CopyTo(BackBufferSurface);
 
-          lastdrawwasbitblitted = true;
         }
+        lastdrawwasbitblitted = true;
 
         // Now we can clear the flag. If it was off already, no problems.
         //		OnFastPanning=false;
@@ -292,33 +306,18 @@ _dontbitblt:
       }
       main_window->Redraw(MapRect);
     }
-
-    _draw_cv.wait(lock);
   }
-
-  THREADEXIT = TRUE;
 
   TestLog(_T("... Thread_Draw : terminated"));
 }
 
-class ThreadDraw : public Thread {
- public:
-  ThreadDraw() : Thread("MapWindow") {}
-
- protected:
-  void Run() override {
-    MapWindow::DrawThread();
-  }
-};
-
-ThreadDraw MapWindowThread;
+InvokeThread MapWindowThread("MapWindow", MapWindow::DrawThread);
 #endif
 
 void MapWindow::CreateDrawingThread() {
   Initialize();
 
   CLOSETHREAD = FALSE;
-  THREADEXIT = FALSE;
 
 #ifndef ENABLE_OPENGL
   MapWindowThread.Start();
@@ -326,11 +325,14 @@ void MapWindow::CreateDrawingThread() {
 }
 
 void MapWindow::SuspendDrawingThread() {
-    ThreadSuspended = true;
+  ThreadSuspended = true;
 }
 
 void MapWindow::ResumeDrawingThread() {
-    ThreadSuspended = false;
+  ThreadSuspended = false;
+#ifndef ENABLE_OPENGL
+  _draw_cv.notify_one();
+#endif
 }
 
 void MapWindow::CloseDrawingThread() {

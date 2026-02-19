@@ -466,6 +466,8 @@ bool Startup(const TCHAR* szCmdLine) {
   GlobalRunning = true;
 #ifdef ENABLE_OPENGL
   main_window->Invalidate();
+#else
+  MapWindow::_draw_cv.notify_one();
 #endif
 	
 	InitAirspaceSonar();
