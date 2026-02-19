@@ -226,6 +226,9 @@ void LKSurface::DrawBitmap(const int x, const int y, const int cx, const int cy,
 }
 
 void LKSurface::Polygon(const POINT *apt, int cpt) {
+    if (cpt < 3) {
+        return; // ignore empty polygon
+    }
     assert(apt[0] == apt[cpt-1]);
 #ifdef USE_GDI
     ::Polygon(*this, apt, cpt);
@@ -237,21 +240,22 @@ void LKSurface::Polygon(const POINT *apt, int cpt) {
 }
 
 void LKSurface::Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect) {
-    assert(apt[0] == apt[cpt-1]);
-    if(cpt>=3) {
-#ifdef ENABLE_OPENGL
-        const GLPushScissor push_scissor;
-        const GLCanvasScissor scissor(ClipRect);
-        Polygon(apt, cpt);
-#else
-        std::vector<RasterPoint> Clipped;
-        Clipped.reserve(cpt);
-        LKGeom::ClipPolygon(ClipRect, make_array(apt, cpt), Clipped);
-        if(Clipped.size() >= 3) {
-            Polygon(Clipped.data(), Clipped.size());
-        }
-#endif
+    if(cpt < 3) {
+        return;
     }
+    assert(apt[0] == apt[cpt-1]);
+#ifdef ENABLE_OPENGL
+    const GLPushScissor push_scissor;
+    const GLCanvasScissor scissor(ClipRect);
+    Polygon(apt, cpt);
+#else
+    std::vector<RasterPoint> Clipped;
+    Clipped.reserve(cpt);
+    LKGeom::ClipPolygon(ClipRect, make_array(apt, cpt), Clipped);
+    if(Clipped.size() >= 3) {
+        Polygon(Clipped.data(), Clipped.size());
+    }
+#endif
 }
 
 
