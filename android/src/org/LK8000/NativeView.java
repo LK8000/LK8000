@@ -22,38 +22,40 @@
 
 package org.LK8000;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewParent;
+import android.webkit.MimeTypeMap;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.util.Log;
-import android.util.DisplayMetrics;
-import android.app.Activity;
-import android.view.MotionEvent;
-import android.view.KeyEvent;
-import android.view.SurfaceView;
-import android.view.SurfaceHolder;
-import android.os.Build;
-import android.os.Handler;
-import android.net.Uri;
-import android.content.Intent;
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.Configuration;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.webkit.MimeTypeMap;
 
 
 class EGLException extends Exception {
@@ -69,6 +71,8 @@ class EGLException extends Exception {
 class NativeView extends SurfaceView
   implements SurfaceHolder.Callback, Runnable {
   private static final String TAG = "LK8000";
+
+  final EdgeTouchFilter edgeTouchFilter = new EdgeTouchFilter();
 
   final Handler quitHandler, errorHandler;
 
@@ -114,11 +118,13 @@ class NativeView extends SurfaceView
     hasKeyboard = resources.getConfiguration().keyboard !=
       Configuration.KEYBOARD_NOKEYS;
 
-    touchInput = DifferentTouchInput.getInstance();
-
     SurfaceHolder holder = getHolder();
     holder.addCallback(this);
     holder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
+
+    // Filters touch events to reject system edge gestures.
+    setOnApplyWindowInsetsListener(edgeTouchFilter);
+    requestApplyInsets(); // trigger initial inset calculation
   }
 
   private void start() {
@@ -525,7 +531,24 @@ class NativeView extends SurfaceView
 
   @Override public boolean onTouchEvent(final MotionEvent event)
   {
-    touchInput.process(event);
+    /* the MotionEvent coordinates are supposed to be relative to this
+       View, but in fact they are not: they seem to be relative to
+       this app's Window; to work around this, we apply an offset;
+       this.getXY() (which is usually 0) plus getParent().getXY()
+       (which is a FrameLayout with non-zero coordinates unless we're
+       in full-screen mode) */
+    float offsetX = getX(), offsetY = getY();
+    ViewParent _p = getParent();
+    if (_p instanceof View) {
+      View p = (View)_p;
+      offsetX += p.getX();
+      offsetY += p.getY();
+    }
+
+    float x = event.getX() - offsetX;
+    float y = event.getY() - offsetY;
+
+    edgeTouchFilter.onTouchEvent(event, x, y);
     return true;
   }
 
@@ -568,8 +591,6 @@ class NativeView extends SurfaceView
     EventBridge.onKeyUp(translateKeyCode(keyCode));
     return true;
   }
-
-  DifferentTouchInput touchInput = null;
 
   public void setHasKeyboard(boolean hasKeyboard) {
     this.hasKeyboard = hasKeyboard;
