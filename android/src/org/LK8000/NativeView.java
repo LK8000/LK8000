@@ -105,6 +105,7 @@ class NativeView extends SurfaceView
   static boolean textureNonPowerOfTwo;
 
   Thread thread;
+  public boolean landscape = false;
 
   public NativeView(Activity context, Handler _quitHandler,
                     Handler _errorHandler) {
@@ -124,7 +125,6 @@ class NativeView extends SurfaceView
 
     // Filters touch events to reject system edge gestures.
     setOnApplyWindowInsetsListener(edgeTouchFilter);
-    requestApplyInsets(); // trigger initial inset calculation
   }
 
   private void start() {
@@ -363,6 +363,9 @@ class NativeView extends SurfaceView
   @Override public void surfaceChanged(SurfaceHolder holder, int format,
                                        int width, int height) {
     haveSurface = true;
+
+    landscape = width > height;
+    requestApplyInsets(); // trigger inset calculation when orientation is known or change
 
     if (thread == null || !thread.isAlive())
       start();

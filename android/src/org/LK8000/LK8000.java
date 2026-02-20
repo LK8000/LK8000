@@ -59,6 +59,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.RoundedCornerCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -243,8 +244,61 @@ public class LK8000 extends Activity {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         // exclude cutout area...
         Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout()).toPlatformInsets();
-        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-        mlp.setMargins(insets.left, insets.top, insets.right, insets.bottom);
+        ViewGroup.LayoutParams lp = v.getLayoutParams();
+        if (!(lp instanceof ViewGroup.MarginLayoutParams)) {
+          return windowInsets;
+        }
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
+        boolean landscape = (nativeView != null) ? nativeView.landscape :
+                v.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+
+        int left = insets.left;
+        int top = insets.top;
+        int right = insets.right;
+        int bottom = insets.bottom;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          RoundedCornerCompat tl = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_TOP_LEFT);
+          if (tl != null) {
+            if (landscape) {
+              left = Math.max(left, tl.getRadius());
+            }
+            else {
+              top = Math.max(top, tl.getRadius());
+            }
+          }
+          RoundedCornerCompat tr = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_TOP_RIGHT);
+          if (tr != null) {
+            if (landscape) {
+              right = Math.max(right, tr.getRadius());
+            }
+            else {
+              top = Math.max(top, tr.getRadius());
+            }
+          }
+
+          RoundedCornerCompat bl = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_BOTTOM_LEFT);
+          if (bl != null) {
+            if (landscape) {
+              left = Math.max(left, bl.getRadius());
+            }
+            else {
+              bottom = Math.max(bottom, bl.getRadius());
+            }
+          }
+
+          RoundedCornerCompat br = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_BOTTOM_RIGHT);
+          if (br != null) {
+            if (landscape) {
+              right = Math.max(right, br.getRadius());
+            }
+            else {
+              bottom = Math.max(bottom, br.getRadius());
+            }
+          }
+        }
+        mlp.setMargins(left, top, right, bottom);
         v.setLayoutParams(mlp);
       }
       return windowInsets;
