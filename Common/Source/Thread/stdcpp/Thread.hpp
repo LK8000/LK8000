@@ -58,11 +58,16 @@ class Thread {
   Thread(const Thread&) = delete;
   Thread(Thread&&) = delete;
 
+  Thread& operator=(const Thread&) = delete;
+  Thread& operator=(Thread&&) = delete;
+
   /**
    * Constructor: requires a thread name for debugging.
    * @param name Thread name visible in debuggers and system tools
    */
-  explicit Thread(const char* name) : _thread_name(name) {}
+  explicit Thread(const char* name) : _thread_name(name ? name : "") {
+    assert(name != nullptr);
+  }
 
   /**
    * Destructor: asserts that thread has been joined before destruction.
@@ -91,16 +96,17 @@ class Thread {
    * @return true if thread was started, false if already running
    */
   virtual bool Start() {
-    // Prevent starting an already running thread.
-    // Calling Start() from inside Run() would also be caught here.
-    if (_running.load(std::memory_order_acquire)) {
-      return false;
-    }
-
     // Block Start() until the new thread has fully initialized both _thread_id
     // and _running. This ensures no caller can observe a window where
     // _running=true but _thread_id is invalid, or vice versa.
     std::unique_lock<std::mutex> lock(_start_mutex);
+
+    // Prevent starting an already running thread.
+    // Calling Start() from inside Run() would also be caught here.
+    if (_running.load(std::memory_order_acquire) || _thread.joinable()) {
+      return false;
+    }
+
     _start_ready = false;
 
     // _thread is only ever accessed from the owner thread (Start, Join,

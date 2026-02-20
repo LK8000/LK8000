@@ -17,13 +17,23 @@
 
 class Thread : protected Poco::Runnable {
  public:
-  explicit Thread(const char* name) : _thread(name) {}
+  Thread() = delete;
+  Thread(const Thread&) = delete;
+  Thread(Thread&&) = delete;
+
+  Thread& operator=(const Thread&) = delete;
+  Thread& operator=(Thread&&) = delete;
+
+  explicit Thread(const char* name) : _thread(name ? name : "") {
+    assert(name != nullptr);
+  }
 
   ~Thread() override {
     assert(!_thread.isRunning());
   }
 
   virtual bool Start() {
+    Poco::ScopedLock<Poco::Mutex> lock(_mutex);
     if (_thread.isRunning()) {
       return false;
     }
@@ -50,6 +60,7 @@ class Thread : protected Poco::Runnable {
     Run();
   }
 
+  mutable Poco::Mutex _mutex;
   Poco::Thread _thread;
 };
 
