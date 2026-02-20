@@ -161,3 +161,16 @@ Java_org_LK8000_EventBridge_onPointerUp(JNIEnv *env, jclass cls)
   event_queue->Push(Event(Event::POINTER_UP));
   ResetUserIdle();
 }
+
+extern "C"
+gcc_visibility_default
+void
+Java_org_LK8000_EventBridge_onMouseCancel(JNIEnv *env, jclass cls)
+{
+  if (event_queue == nullptr)
+    /* XCSoar not yet initialised */
+    return;
+
+  // TODO: Push appropriate cancel event (e.g., Event::MOUSE_CANCEL or synthetic MOUSE_UP)
+  ResetUserIdle();
+}

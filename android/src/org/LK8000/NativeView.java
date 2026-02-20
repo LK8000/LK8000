@@ -22,38 +22,40 @@
 
 package org.LK8000;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewParent;
+import android.webkit.MimeTypeMap;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.util.Log;
-import android.util.DisplayMetrics;
-import android.app.Activity;
-import android.view.MotionEvent;
-import android.view.KeyEvent;
-import android.view.SurfaceView;
-import android.view.SurfaceHolder;
-import android.os.Build;
-import android.os.Handler;
-import android.net.Uri;
-import android.content.Intent;
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.Configuration;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.webkit.MimeTypeMap;
 
 
 class EGLException extends Exception {
@@ -69,6 +71,8 @@ class EGLException extends Exception {
 class NativeView extends SurfaceView
   implements SurfaceHolder.Callback, Runnable {
   private static final String TAG = "LK8000";
+
+  final EdgeTouchFilter edgeTouchFilter = new EdgeTouchFilter();
 
   final Handler quitHandler, errorHandler;
 
@@ -101,6 +105,7 @@ class NativeView extends SurfaceView
   static boolean textureNonPowerOfTwo;
 
   Thread thread;
+  public boolean landscape = false;
 
   public NativeView(Activity context, Handler _quitHandler,
                     Handler _errorHandler) {
@@ -114,11 +119,12 @@ class NativeView extends SurfaceView
     hasKeyboard = resources.getConfiguration().keyboard !=
       Configuration.KEYBOARD_NOKEYS;
 
-    touchInput = DifferentTouchInput.getInstance();
-
     SurfaceHolder holder = getHolder();
     holder.addCallback(this);
     holder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
+
+    // Filters touch events to reject system edge gestures.
+    setOnApplyWindowInsetsListener(edgeTouchFilter);
   }
 
   private void start() {
@@ -358,6 +364,9 @@ class NativeView extends SurfaceView
                                        int width, int height) {
     haveSurface = true;
 
+    landscape = width > height;
+    requestApplyInsets(); // trigger inset calculation when orientation is known or change
+
     if (thread == null || !thread.isAlive())
       start();
     else
@@ -525,7 +534,7 @@ class NativeView extends SurfaceView
 
   @Override public boolean onTouchEvent(final MotionEvent event)
   {
-    touchInput.process(event);
+    edgeTouchFilter.onTouchEvent(event, event.getX(), event.getY());
     return true;
   }
 
@@ -568,8 +577,6 @@ class NativeView extends SurfaceView
     EventBridge.onKeyUp(translateKeyCode(keyCode));
     return true;
   }
-
-  DifferentTouchInput touchInput = null;
 
   public void setHasKeyboard(boolean hasKeyboard) {
     this.hasKeyboard = hasKeyboard;

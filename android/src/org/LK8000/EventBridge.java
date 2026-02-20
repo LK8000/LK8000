@@ -30,4 +30,5 @@ class EventBridge {
   public static native void onMouseMove(int x, int y);
   public static native void onPointerDown();
   public static native void onPointerUp();
+  public static native void onMouseCancel();
 }

@@ -8,6 +8,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
     <style name="QrCodeTheme" parent="Theme.AppCompat">
     </style>
     <style name="LKMAPTheme" parent="Theme.AppCompat">

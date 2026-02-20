@@ -33,6 +33,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Insets;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -48,7 +49,8 @@ import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.Window;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.window.OnBackInvokedDispatcher;
@@ -57,6 +59,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.RoundedCornerCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.LK8000.QRCode.QRCodeScannerActivity;
 
@@ -77,6 +84,9 @@ public class LK8000 extends Activity {
   private ClipboardManager clipboard;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
+    // default Theme as white background (for splash screen)
+    // set background to black to avoid white inset cutout area.
+    setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
 
 
@@ -130,20 +140,17 @@ public class LK8000 extends Activity {
 
     SoundUtil.Initialise();
 
-    // fullscreen mode
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
-                         WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-    /* Workaround for layout problems in Android KitKat with immersive full
-       screen mode: Sometimes the content view was not initialized with the
-       correct size, which caused graphics artifacts. */
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN|
-                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS|
-                         WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR|
-                         WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      // Pre-Android 11: use legacy flags for edge-to-edge layout
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                      WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                      WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                      WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
+                      WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+    }
 
     enableImmersiveModeIfSupported();
+    WindowCompat.enableEdgeToEdge(getWindow());
 
     TextView tv = new TextView(this);
     tv.setText(R.string.loading);
@@ -230,10 +237,88 @@ public class LK8000 extends Activity {
 
     nativeView = new NativeView(this, quitHandler, errorHandler);
     setContentView(nativeView);
+
+    View root = findViewById(android.R.id.content);
+
+    ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        // exclude cutout area...
+        Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout()).toPlatformInsets();
+        ViewGroup.LayoutParams lp = v.getLayoutParams();
+        if (!(lp instanceof ViewGroup.MarginLayoutParams)) {
+          return windowInsets;
+        }
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
+        boolean landscape = (nativeView != null) ? nativeView.landscape :
+                v.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+
+        int left = insets.left;
+        int top = insets.top;
+        int right = insets.right;
+        int bottom = insets.bottom;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          RoundedCornerCompat tl = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_TOP_LEFT);
+          if (tl != null) {
+            if (landscape) {
+              left = Math.max(left, tl.getRadius());
+            }
+            else {
+              top = Math.max(top, tl.getRadius());
+            }
+          }
+          RoundedCornerCompat tr = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_TOP_RIGHT);
+          if (tr != null) {
+            if (landscape) {
+              right = Math.max(right, tr.getRadius());
+            }
+            else {
+              top = Math.max(top, tr.getRadius());
+            }
+          }
+
+          RoundedCornerCompat bl = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_BOTTOM_LEFT);
+          if (bl != null) {
+            if (landscape) {
+              left = Math.max(left, bl.getRadius());
+            }
+            else {
+              bottom = Math.max(bottom, bl.getRadius());
+            }
+          }
+
+          RoundedCornerCompat br = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_BOTTOM_RIGHT);
+          if (br != null) {
+            if (landscape) {
+              right = Math.max(right, br.getRadius());
+            }
+            else {
+              bottom = Math.max(bottom, br.getRadius());
+            }
+          }
+        }
+        mlp.setMargins(left, top, right, bottom);
+        v.setLayoutParams(mlp);
+      }
+      return windowInsets;
+    });
+
+    boolean isNight =
+            (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                    == Configuration.UI_MODE_NIGHT_YES;
+
+    WindowInsetsControllerCompat controller =
+            new WindowInsetsControllerCompat(getWindow(), root);
+    controller.setAppearanceLightStatusBars(!isNight);
+    controller.setAppearanceLightNavigationBars(!isNight);
+
     // Receive keyboard events
     nativeView.setFocusableInTouchMode(true);
     nativeView.setFocusable(true);
     nativeView.requestFocus();
+
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     // Obtain an instance of the Android PowerManager class
     PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -338,14 +423,6 @@ public class LK8000 extends Activity {
   @Override public void onWindowFocusChanged(boolean hasFocus) {
     enableImmersiveModeIfSupported();
     super.onWindowFocusChanged(hasFocus);
-  }
-
-  @Override public boolean dispatchTouchEvent(final MotionEvent ev) {
-    if (nativeView != null) {
-      nativeView.onTouchEvent(ev);
-      return true;
-    } else
-      return super.dispatchTouchEvent(ev);
   }
 
   @Override
@@ -456,6 +533,7 @@ public class LK8000 extends Activity {
         onRuntimePermissionGranted();
         break;
     }
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
   private void onRuntimePermissionGranted() {
