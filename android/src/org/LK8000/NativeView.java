@@ -531,24 +531,7 @@ class NativeView extends SurfaceView
 
   @Override public boolean onTouchEvent(final MotionEvent event)
   {
-    /* the MotionEvent coordinates are supposed to be relative to this
-       View, but in fact they are not: they seem to be relative to
-       this app's Window; to work around this, we apply an offset;
-       this.getXY() (which is usually 0) plus getParent().getXY()
-       (which is a FrameLayout with non-zero coordinates unless we're
-       in full-screen mode) */
-    float offsetX = getX(), offsetY = getY();
-    ViewParent _p = getParent();
-    if (_p instanceof View) {
-      View p = (View)_p;
-      offsetX += p.getX();
-      offsetY += p.getY();
-    }
-
-    float x = event.getX() - offsetX;
-    float y = event.getY() - offsetY;
-
-    edgeTouchFilter.onTouchEvent(event, x, y);
+    edgeTouchFilter.onTouchEvent(event, event.getX(), event.getY());
     return true;
   }
 

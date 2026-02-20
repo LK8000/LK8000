@@ -371,14 +371,6 @@ public class LK8000 extends Activity {
     super.onWindowFocusChanged(hasFocus);
   }
 
-  @Override public boolean dispatchTouchEvent(final MotionEvent ev) {
-    if (nativeView != null) {
-      nativeView.onTouchEvent(ev);
-      return true;
-    } else
-      return super.dispatchTouchEvent(ev);
-  }
-
   @Override
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
