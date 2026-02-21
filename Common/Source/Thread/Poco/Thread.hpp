@@ -49,7 +49,7 @@ class Thread : protected Poco::Runnable {
   }
 
   bool IsInside() const {
-    return (_thread.currentTid() == _thread.tid());
+    return Poco::Thread::current() == &_thread;
   }
 
  protected:
