@@ -214,8 +214,8 @@ ifeq ($(CONFIG_PPC2002),y)
  MCPU   := -mcpu=$(CPU)
 endif
 
--include local.mk
 include build/pkgconfig.mk
+-include local.mk
 
 ############# platform info
 
@@ -659,6 +659,7 @@ ifeq ($(CONFIG_PC),y)
  CPPFLAGS	+=  $(GEOGRAPHIC_CPPFLAGS)
  CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
  CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
+ CPPFLAGS	+= -D_CRT_NON_CONFORMING_WCSTOK 
  CPPFLAGS	+= -D__USE_MINGW_ANSI_STDIO=0
 endif
 
