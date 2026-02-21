@@ -10,6 +10,9 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.5.1]
+ - Android edge-to-edge rendering support
+
 [version 7.5.0]
 * New
  - Add "PEV" task start procedure
