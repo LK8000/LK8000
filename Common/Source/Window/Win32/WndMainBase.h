@@ -20,7 +20,7 @@
 #include "WndPaint.h"
 #include "Compiler.h"
 
-class Event;
+struct Event;
 
 class WndMainBase : public WndPaint {
 public:
