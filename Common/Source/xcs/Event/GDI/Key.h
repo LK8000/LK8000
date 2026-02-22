@@ -122,9 +122,4 @@ enum {
   KEY_Z = 0x5A,  // 'Z'
 };
 
-#ifndef _WIN32_WCE
-enum {
-};
-#endif
-
 #endif
