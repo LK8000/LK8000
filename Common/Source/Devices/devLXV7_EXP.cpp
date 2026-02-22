@@ -425,7 +425,7 @@ bool DevLXV7_EXP::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pG
 #ifdef DEVICE_SERIAL
   char ctemp[180];
   static int NoMsg=0;
-  static tstring oldSerial=0;
+  static tstring oldSerial;
   if (strlen(String) < 180) {
     if((d->SerialNumber.empty() || ( d->SerialNumber != oldSerial)) && (NoMsg < 5)) {
       NoMsg++;
