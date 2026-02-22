@@ -654,7 +654,7 @@ ifeq ($(CONFIG_PNA),y)
 endif
 
 ifeq ($(CONFIG_PC),y)
- $(eval $(call pkg-config-library,LIBGEOGRAPHICLIB,geographiclib))
+ $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
 
  CPPFLAGS	+=  $(GEOGRAPHIC_CPPFLAGS)
  CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
@@ -730,7 +730,7 @@ endif
 ifeq ($(CONFIG_WIN32),y)
  ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++ -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
-  LDLIBS += $(LIBGEOGRAPHICLIB_LDLIBS)
+  LDLIBS += $(GEOGRAPHIC_LDLIBS)
  else
   LDLIBS := -Wl,-Bstatic -lstdc++ 
   LDLIBS += -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
