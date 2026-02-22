@@ -35,18 +35,18 @@ public:
         return this->IsDefined();
     }
 
-    virtual void Redraw(const RECT& Rect) { 
+    void Redraw(const RECT& Rect) override {
         __super::Redraw(Rect);
         PostRedrawEvent();
     }
 
-    virtual void Redraw() {
+    void Redraw() override {
         __super::Redraw();
         PostRedrawEvent();
     }
 
-    virtual void SetWndText(const TCHAR* lpszText) { assert(false); }
-    virtual const TCHAR* GetWndText() const { assert(false); return _T(""); }
+    void SetWndText(const TCHAR* lpszText) override { assert(false); }
+    const TCHAR* GetWndText() const  override { assert(false); return _T(""); }
 
     void RunModalLoop() {
         this->RunEventLoop();

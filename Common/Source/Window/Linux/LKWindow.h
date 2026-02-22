@@ -152,6 +152,9 @@ public:
     virtual bool OnLButtonDown(const POINT& Pos) { return false; }
     virtual bool OnLButtonUp(const POINT& Pos) { return false; }
 
+    virtual bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode) { return false; }
+    virtual bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) { return false; }
+
     virtual bool OnLButtonDblClick(const POINT& Pos) { return false; }
 
     virtual bool OnSize(int cx, int cy) { return false; }

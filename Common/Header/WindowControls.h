@@ -761,7 +761,7 @@ class WndListFrame:public WndFrame{
     WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
                  int Width, int Height, OnListCallback_t&& OnListCallback);
 
-    virtual bool OnMouseMove(const POINT& Pos);
+    bool OnMouseMove(const POINT& Pos) override;
     bool OnItemKeyDown(WindowControl *Sender, unsigned KeyCode);
     int PrepareItemDraw(void);
     void ResetList(void);
@@ -773,7 +773,7 @@ class WndListFrame:public WndFrame{
 
     void RedrawScrolled(bool all);
     bool RecalculateIndices(bool bigscroll);
-    void Redraw(void);
+    void Redraw() override;
 
     int GetItemIndex() { 
       return (mListInfo.ScrollIndex + mListInfo.ItemIndex);
@@ -788,7 +788,7 @@ class WndListFrame:public WndFrame{
     void SetItemIndex(int iValue);
     void SelectItemFromScreen(int xPos, int yPos, RECT *rect, bool select);
 
-    void CalcChildRect(int& x, int& y, int& cx, int& cy) const;
+    void CalcChildRect(int& x, int& y, int& cx, int& cy) const override;
 
 protected:
     int GetScrollBarWidth();
@@ -802,14 +802,14 @@ protected:
 
     void DrawScrollBar(LKSurface& Surface);
 
-    virtual void Paint(LKSurface& Surface);
+    void Paint(LKSurface& Surface) override;
 
 #ifdef WIN32
     bool OnLButtonDownNotify(Window* pWnd, const POINT& Pos) override;
 #endif
 
-    virtual bool OnLButtonDown(const POINT& Pos);
-    virtual bool OnLButtonUp(const POINT& Pos);
+    bool OnLButtonDown(const POINT& Pos) override;
+    bool OnLButtonUp(const POINT& Pos) override;
 
 private:
     constexpr static int ScrollbarWidthInitial = 32;
@@ -945,9 +945,9 @@ class WndForm:public WindowControl{
   void ReinitialiseLayout(const RECT& Rect) { }
 
 protected:
-    bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode);
+    bool OnKeyDownNotify(Window* pWnd, unsigned KeyCode) override;
 
-    bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) {
+    bool OnKeyUpNotify(Window* pWnd, unsigned KeyCode) override {
         return (mOnKeyUpNotify && (mOnKeyUpNotify)(this, KeyCode));
     }
 

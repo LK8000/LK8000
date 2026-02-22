@@ -186,7 +186,7 @@ public:
         return (::GetFocus() == _hWnd);
     }
 
-    void Redraw(const RECT& Rect) {
+    virtual void Redraw(const RECT& Rect) {
         ::InvalidateRect(_hWnd, &Rect, FALSE);
         if(::GetCurrentThreadId() == ::GetWindowThreadProcessId(_hWnd, NULL)) {
             // ::UpdateWindow() can'be called by another thread, otherwise, we can have deadlock with MsgPump
@@ -194,7 +194,7 @@ public:
         }
     }
 
-    void Redraw() {
+    virtual void Redraw() {
         ::InvalidateRect(_hWnd, NULL, FALSE);
         if(::GetCurrentThreadId() == ::GetWindowThreadProcessId(_hWnd, NULL)) {
             // ::UpdateWindow() can'be called by another thread, otherwise, we can have deadlock with MsgPump
