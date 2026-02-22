@@ -133,14 +133,18 @@ bool Startup(const TCHAR* szCmdLine) {
   TestLog(_T(". TestLog Enabled"));
 
 #ifdef __clang_version__
-  TestLog(". Built with clang " __clang_version__);
+  #ifdef __MINGW32__
+    StartupStore(_T(". Built with llvm-mingw32 ") __clang_version__);  
+  #else
+    StartupStore(_T(". Built with clang ") __clang_version__);
+  #endif
 #elif defined(__GNUC__)
   #ifdef __MINGW32__
-    TestLog(TEXT(". Built with mingw32 %d.%d (GCC %d.%d.%d)"),
+    StartupStore(_T(". Built with mingw32 %d.%d (GCC %d.%d.%d)"),
             __MINGW32_MAJOR_VERSION, __MINGW32_MINOR_VERSION,
             __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
   #else
-    TestLog(TEXT(". Built with GCC %d.%d.%d"),
+    StartupStore(_T(". Built with GCC %d.%d.%d"),
             __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
   #endif
 #endif
