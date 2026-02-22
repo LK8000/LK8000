@@ -276,14 +276,10 @@ ifneq ($(TARGET),OPENVARIO)
  AR		:=$(TCPATH)ar$(EXE)
  SIZE		:=$(TCPATH)size$(EXE)
  WINDRES	:=$(TCPATH)windres$(EXE)
- LD		:=$(TCPATH)ld$(EXE)
- OBJCOPY	:=$(TCPATH)objcopy$(EXE)
 endif
 	
-SYNCE_PCP	:=synce-pcp
-SYNCE_PRM	:=synce-prm
 CE_VERSION	:=0x0$(CE_MAJOR)$(CE_MINOR)
-ARFLAGS		:=r
+ARFLAGS		:=rcs
 MKDIR           :=mkdir -p
 FIND            :=find
 ETAGS           :=etags
@@ -640,7 +636,7 @@ CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized -Wmi
 CPPFLAGS	+= -Wredundant-decls
 CPPFLAGS	+= -Wall -Wno-char-subscripts -fsigned-char
 CPPFLAGS	+= -Wno-psabi
-CPPFLAGS	+= -Werror=stringop-overflow
+#CPPFLAGS	+= -Werror=stringop-overflow
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
@@ -1710,11 +1706,11 @@ endif
 #
 PREPROC=Preproc/$(TARGET)
 
-$(PREPROC)/%.i: $(SRC)/%.c $(DEPDIR)/%.d FORCE
+$(PREPROC)/%.i: $(SRC)/%.cpp
 	$(Q)$(MKDIR) $(dir $@)
 	$(CXX) $(cxx-flags) -E $(OUTPUT_OPTION) $<
 
-$(PREPROC)/%.i: $(SRC)/%.cpp $(DEPDIR)/%.d FORCE
+$(PREPROC)/%.i: $(SRC)/%.c
 	$(Q)$(MKDIR) $(dir $@)
 	$(CC) $(cc-flags) -E $(OUTPUT_OPTION) $<
 
@@ -1743,7 +1739,7 @@ endif
 
 $(OUTPUTS_NS): $(OBJS)
 	@$(NQ)echo "  LINK    $@"
-	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
+	$(Q)$(CXX) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 $(BIN)/glutess.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(GLU)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(GLU))
 	@$(NQ)echo "  AR      $@"
@@ -1761,23 +1757,23 @@ $(BIN)/poco.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(POCO)) $(patsubst $(SRC)%.c,$(
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
-$(BIN)/%.o: $(SRC)/%.c $(DEPDIR)/%.d
+$(BIN)/%.o: $(SRC)/%.c
 	@$(NQ)echo "  CC      $@"
 	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(MKDIR) $(DEPDIR)/$(dir $*)
 	$(Q)$(CC) $(cc-flags) -c $(OUTPUT_OPTION) $<
 
-$(BIN)/%.o: $(SRC)/%.cpp $(DEPDIR)/%.d
+$(BIN)/%.o: $(SRC)/%.cpp
 	@$(NQ)echo "  CPP     $@"
 	$(Q)$(MKDIR)  $(dir $@)
+	$(Q)$(MKDIR) $(DEPDIR)/$(dir $*)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
 
-$(BIN)/%.o: $(SRC)/%.cxx $(DEPDIR)/%.d
+$(BIN)/%.o: $(SRC)/%.cxx
 	@$(NQ)echo "  CXX     $@"
 	$(Q)$(MKDIR) $(dir $@)
+	$(Q)$(MKDIR) $(DEPDIR)/$(dir $*)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
-
-$(DEPDIR)/%.d:
-	$(Q)$(MKDIR) $(dir $@)
 
 $(BIN)/resource.a: $(BIN)/Resource/resource_wave.o $(BIN)/Resource/resource_data.o $(BIN)/Resource/resource_xml.o $(BITMAP_RES_O) 
 	@$(NQ)echo "  AR      $@"
@@ -1852,11 +1848,13 @@ endif
 
 ####### include depends files
 
-DEPFILES := $(patsubst $(SRC)%.c,$(DEPDIR)%.d,$(patsubst $(SRC)%.cpp,$(DEPDIR)%.d,$(patsubst $(SRC)%.cxx,$(DEPDIR)%.d,$(SRC_FILES))))
-DEPFILES += $(patsubst $(SRC)%.cpp,$(DEPDIR)%.d,$(POCO))
-DEPFILES += $(patsubst $(SRC)%.c,$(DEPDIR)%.d,$(ZZIP))
-DEPFILES += $(patsubst $(SRC)%.c,$(DEPDIR)%.d,$(GLU))
+src_to_dep = $(patsubst $(SRC)%.c,$(DEPDIR)%.d,\
+             $(patsubst $(SRC)%.cpp,$(DEPDIR)%.d,\
+             $(patsubst $(SRC)%.cxx,$(DEPDIR)%.d,$(1))))
 
-$(DEPFILES):
+DEPFILES := $(call src_to_dep,$(SRC_FILES))
+DEPFILES += $(call src_to_dep,$(POCO))
+DEPFILES += $(call src_to_dep,$(ZZIP))
+DEPFILES += $(call src_to_dep,$(GLU))
 
 include $(wildcard $(DEPFILES))
