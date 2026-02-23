@@ -111,10 +111,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		TestLog(_T("...... DrawBottom FALSE in virtual key processing!"));
 	}
 
-	#ifdef DEBUG_PROCVK
-	TCHAR buf[100];
-	#endif
-
 	// Handle fullscreen 8000 mode
 	// sound clicks require some attention here
 	if (DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) {
