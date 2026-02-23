@@ -1357,12 +1357,12 @@ TRACKING := \
 	$(SRC)/xcs/Tracking/TrackingSettings.cpp \
 	\
 	$(SRC)/xcs/Util/CRC.cpp \
-	$(SRC)/xcs/Net/AllocatedSocketAddress.cpp \
-	$(SRC)/xcs/Net/IPv4Address.cpp \
-	$(SRC)/xcs/Net/SocketAddress.cpp \
+	$(SRC)/xcs/Net/AllocatedSocketAddress.cxx \
+	$(SRC)/xcs/Net/IPv4Address.cxx \
+	$(SRC)/xcs/Net/SocketAddress.cxx \
 	$(SRC)/xcs/Net/SocketDescriptor.cpp \
 	$(SRC)/xcs/Net/State.cpp \
-	$(SRC)/xcs/Net/StaticSocketAddress.cpp \
+	$(SRC)/xcs/Net/StaticSocketAddress.cxx \
 
 ifeq ($(USE_CURL),y)
  TRACKING += \
@@ -1431,14 +1431,14 @@ SRC_FILES :=\
 	$(SRC)/Logger/NMEAlogger.cpp\
 	$(SRC)/Logger/ReplayLogger.cpp \
 	$(SRC)/Logger/StartStopLogger.cpp \
-	$(SHP)/mapbits.cpp \
-	$(SHP)/mapprimitive.cpp \
-	$(SHP)/mapsearch.cpp\
-	$(SHP)/mapshape.cpp \
-	$(SHP)/maptree.cpp\
-	$(SHP)/mapxbase.cpp \
-	$(SHP)/mapalloc.cpp \
-	$(SHP)/mapstring.cpp \
+	$(SHP)/mapbits.c \
+	$(SHP)/mapprimitive.c \
+	$(SHP)/mapsearch.c\
+	$(SHP)/mapshape.c \
+	$(SHP)/maptree.c \
+	$(SHP)/mapxbase.c \
+	$(SHP)/mapalloc.c \
+	$(SHP)/mapstring.c \
 	$(SRC)/Message.cpp \
 	$(SRC)/MessageLog.cpp	\
 	$(SRC)/Models.cpp\
