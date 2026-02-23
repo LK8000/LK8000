@@ -290,17 +290,8 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
                 #endif
 		TCHAR text[100];
 		 Surface.SetTextColor(RGB_BLUE);
-/*
-		if ((i==nwps-1) && (Task[i].Index == Task[0].Index))
-		{
-		  lk::snprintf(text,TEXT("%0d"),1);
-		  DrawLabel(hdc, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
-		}
-		else */
-		{
-		  lk::snprintf(text,TEXT("%0d"),i);
-		  DrawLabel(Surface, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
-		}
+		lk::snprintf(text,TEXT("%0d"),i);
+		DrawLabel(Surface, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
 
 		if ((i==ActiveTaskPoint)&&(!UseAATTarget()))
 		{
