@@ -49,8 +49,8 @@ void WaypointLongitudeToString(double Longitude, TCHAR (&Buffer)[size]) {
 void WaypointLatitudeToString(double Latitude, TCHAR *Buffer, size_t size);
 
 template<size_t size>
-void WaypointLatitudeToString(double Longitude, TCHAR (&Buffer)[size]) {
-    WaypointLatitudeToString(Longitude, Buffer, size);
+void WaypointLatitudeToString(double Latitude, TCHAR (&Buffer)[size]) {
+    WaypointLatitudeToString(Latitude, Buffer, size);
 }
 
 void LongitudeToCUPString(double Longitude, TCHAR *Buffer, size_t size);
@@ -63,8 +63,8 @@ void LongitudeToCUPString(double Longitude, TCHAR (&Buffer)[size]) {
 void LatitudeToCUPString(double Latitude, TCHAR *Buffer, size_t size);
 
 template<size_t size>
-void LatitudeToCUPString(double Longitude, TCHAR (&Buffer)[size]) {
-    LatitudeToCUPString(Longitude, Buffer, size);
+void LatitudeToCUPString(double Latitude, TCHAR (&Buffer)[size]) {
+    LatitudeToCUPString(Latitude, Buffer, size);
 }
 
 double ReadAltitude(const TCHAR *temp);
