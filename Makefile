@@ -1585,8 +1585,12 @@ SRC_FILES += \
 
 endif
 
+src_to_obj = $(patsubst $(SRC)%.c,$(BIN)%.o,\
+             $(patsubst $(SRC)%.cpp,$(BIN)%.o,\
+             $(patsubst $(SRC)%.cxx,$(BIN)%.o,$(1))))
+
 OBJS 	:=\
-	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
+	$(call src_to_obj,$(SRC_FILES)) \
 	$(BIN)/poco.a \
     $(BIN)/zzip.a
 
