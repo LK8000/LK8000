@@ -56,7 +56,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
   int nDC3 = TempSurface.SaveState();
 
   if (GetAirSpaceFillType() != asp_fill_border_only) {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    const std::lock_guard<Mutex> lock(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
       // Draw in reverse order!
       // The idea behind this, is lower top level airspaces are smaller. (statistically)

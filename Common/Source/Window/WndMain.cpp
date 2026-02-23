@@ -230,7 +230,7 @@ bool WndMain::OnPaint(LKSurface& Surface, const RECT& Rect) {
     }
 #else
     if(ProgramStarted >= psFirstDrawDone) {
-        ScopeLock Lock(BackBuffer_Mutex);
+        const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
         BackBufferSurface.CopyTo(Surface);
     } else {
 
@@ -311,7 +311,11 @@ void WndMain::OnTimer() {
         if (ProgramStarted == psFirstDrawDone) {
             AfterStartup();
             ProgramStarted = psNormalOp;
-            StartupStore(_T(". ProgramStarted=NormalOp %s%s"), WhatTimeIsIt(), NEWLINE);
+#ifndef ENABLE_OPENGL
+            MapWindow::_draw_cv.notify_one();
+#endif
+
+            StartupStore(_T(". ProgramStarted=NormalOp %s"), WhatTimeIsIt());
             StartupLogFreeRamAndStorage();
         }
     }

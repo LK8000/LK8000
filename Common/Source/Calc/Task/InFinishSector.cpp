@@ -18,7 +18,7 @@ bool InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i)
   double AircraftBearing;
   double FirstPointDistance;
 
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   if (!ValidFinish(Basic, Calculated)) {
     return false;

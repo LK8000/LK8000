@@ -2227,7 +2227,7 @@ void CAirspaceManager::ReadAirspaces() {
 }
 
 void CAirspaceManager::CloseAirspaces() {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     if (_airspaces.size() == 0) return;
     SaveSettings();
 
@@ -2254,7 +2254,7 @@ void CAirspaceManager::CloseAirspaces() {
 }
 
 void CAirspaceManager::QnhChangeNotify() {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     for (auto& pAsp : _airspaces) {
         pAsp->QnhChangeNotify();
     }
@@ -2265,7 +2265,7 @@ AspSideViewList_t CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AI
                                                          const double (&terrain_heights)[AIRSPACE_SCANSIZE_X]) const {
   AspSideViewList_t list;
 
-  ScopeLock guard(_csairspaces);
+  const std::lock_guard<Mutex> lock(_csairspaces);
 
   for (const auto& pAsp : _airspaces_near) {
     LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
@@ -2347,12 +2347,12 @@ void CAirspaceManager::SortAirspaces(void) {
     TestLog(_T(". SortAirspace"));
 
     // Sort by top altitude for drawing
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     std::sort(_airspaces.begin(), _airspaces.end(), airspace_sorter());
 }
 
 bool CAirspaceManager::ValidAirspaces(void) const {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     return !_airspaces.empty();
 }
 
@@ -2388,7 +2388,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         return;
     }
 
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     if (_airspaces.empty()) {
         return; // no airspaces no nothing to do
     }
@@ -2515,7 +2515,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
 CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const {
     CAirspaceList res;
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     for (const auto& pAsp : _airspaces) {
         if (pAsp->DrawStyle()) {
             if (pAsp->IsHorizontalInside(lon, lat)) {
@@ -2528,7 +2528,7 @@ CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, co
 
 CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const double &lat, long searchrange) const {
     CAirspaceList res;
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     for (const auto& pAsp : _airspaces) {
         if (pAsp->DrawStyle() || !pAsp->Top().below_msl()) {
             int HorDist;
@@ -2542,7 +2542,7 @@ CAirspaceList CAirspaceManager::GetNearAirspacesAtPoint(const double &lon, const
 }
 
 void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     _airspaces_near.clear();
     for (const auto& pAsp : _airspaces) {
         // Check if airspace overlaps given bounds
@@ -2553,7 +2553,7 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
 }
 
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     for (auto asp : _airspaces_near) {
         asp->CalculateScreenPosition(screenbounds_latlon, aAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
     }
@@ -2564,7 +2564,7 @@ const CAirspaceList& CAirspaceManager::GetNearAirspacesRef() const {
 }
 
 const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     return _airspaces;
 }
 
@@ -2578,7 +2578,7 @@ struct airspace_label_priority_sorter {
 // Get airspaces list for label drawing
 
 const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels() {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter());
     return _airspaces_of_interest;
 }
@@ -2586,7 +2586,7 @@ const CAirspaceList& CAirspaceManager::GetAirspacesForWarningLabels() {
 // Feedback from mapwindow DrawAirspaceLabels to set a round-robin priority
 
 void CAirspaceManager::AirspaceWarningLabelPrinted(CAirspace &airspace, bool success) {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     if (success) airspace.LabelPriorityZero();
     else airspace.LabelPriorityInc();
 }
@@ -2595,7 +2595,7 @@ void CAirspaceManager::AirspaceWarningLabelPrinted(CAirspace &airspace, bool suc
 
 CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
     CAirspaceList res;
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     for (const auto& pAsp : _airspaces_near) {
         if (pAsp->WarningLevel() > awNone || pAsp->WarningAckLevel() > awNone) {
             res.push_back(pAsp);
@@ -2611,7 +2611,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const {
 
 CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspacePtr& airspace) const {
     if(airspace) {
-        ScopeLock guard(_csairspaces);
+        const std::lock_guard<Mutex> lock(_csairspaces);
         return *airspace;
     }
     return {};
@@ -2620,7 +2620,7 @@ CAirspaceBase CAirspaceManager::GetAirspaceCopy(const CAirspacePtr& airspace) co
 // Calculate distances from a given airspace
 
 bool CAirspaceManager::AirspaceCalculateDistance(const CAirspacePtr& airspace, int *hDistance, int *Bearing, int *vDistance) {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     return airspace->CalculateDistance(hDistance, Bearing, vDistance);
 }
 
@@ -2629,7 +2629,7 @@ bool CAirspaceManager::AirspaceCalculateDistance(const CAirspacePtr& airspace, i
 bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
     if (msg == NULL) return false;
 
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     if(_user_warning_queue.empty()) {
       return false;
     }
@@ -2641,7 +2641,7 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg) {
 
 
 void CAirspaceManager::AirspaceApply(CAirspace &airspace, std::function<void(CAirspace&)> func) {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     if (!AirspaceAckAllSame) {
         func(airspace);
     }
@@ -2795,7 +2795,7 @@ const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
 
 void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius) {
 
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     if (_airspaces.size() < 1) return;
 
     // Calculate area of interest
@@ -2850,7 +2850,7 @@ void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const dou
 }
 
 void CAirspaceManager::CalculateDistancesForPage24() {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     for (const auto& pAsp : _airspaces_page24) {
         pAsp->CalculateDistance(nullptr, nullptr, nullptr);
     }
@@ -2858,7 +2858,7 @@ void CAirspaceManager::CalculateDistancesForPage24() {
 
 // Set or change or deselect selected airspace
 void CAirspaceManager::AirspaceSetSelect(const CAirspacePtr &airspace) {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
     auto old_selected = _selected_airspace.lock();
     // Deselect if we get the same asp
     if (old_selected == airspace) {
@@ -2890,7 +2890,7 @@ void CAirspaceManager::SaveSettings() const {
         fprintf(f, "# LK8000 AIRSPACE SETTINGS\n");
         fprintf(f, "# THIS FILE IS GENERATED AUTOMATICALLY ON LK SHUTDOWN - DO NOT ALTER BY HAND, DO NOT COPY BEETWEEN DEVICES!\n");
 
-        ScopeLock guard(_csairspaces);
+        const std::lock_guard<Mutex> lock(_csairspaces);
         for (const auto& pAsp : _airspaces) {
             std::string hash = pAsp->Hash();
             //Asp hash
@@ -2936,7 +2936,7 @@ void CAirspaceManager::LoadSettings() {
     FILE *f = _tfopen(szFileName, TEXT("r"));
     if (f != NULL) {
         // Generate hash map on loaded airspaces
-        ScopeLock guard(_csairspaces);
+        const std::lock_guard<Mutex> lock(_csairspaces);
 
         std::map<std::string, CAirspacePtr> map;
         for (const auto& pAsp : _airspaces) {
@@ -2972,7 +2972,7 @@ void CAirspaceManager::LoadSettings() {
 #if ASPWAVEOFF
 
 void CAirspaceManager::AirspaceDisableWaveSectors() {
-    ScopeLock guard(_csairspaces);
+    const std::lock_guard<Mutex> lock(_csairspaces);
 
     for (const auto& pAsp : _airspaces) {
         if (pAsp->Type() == WAVE) {
@@ -3023,7 +3023,7 @@ void CAirspaceManager::AutoDisable(const NMEA_INFO& info) {
 //  therefore we can be considered is thread safe.
 
 void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    const std::lock_guard<Mutex> guard(CAirspaceManager::Instance().MutexRef());
 
     RasterPointList screenpoints_picto;
     CalculatePictPosition(rc, 0.9, screenpoints_picto);

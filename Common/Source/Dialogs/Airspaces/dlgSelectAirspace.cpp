@@ -25,7 +25,7 @@ struct AirspaceInfo_t : public ObjectAdaptor_t {
   }
 
   bool Toggle() const override {
-    ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+    const std::lock_guard<Mutex> lock(CAirspaceManager::Instance().MutexRef());
     if (airspace->Enabled()) {
       LKSound(TEXT("LK_BEEP0.WAV"));
       CAirspaceManager::Instance().AirspaceDisable(*airspace);

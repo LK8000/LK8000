@@ -14,6 +14,7 @@
 #include "FFVLTracking.h"
 #include "NMEA/Info.h"
 #include "http_session.h"
+#include "../Thread/Mutex.hpp"
 #include "../Thread/Thread.hpp"
 
 FFVLTracking::FFVLTracking(std::string user_key)
@@ -24,7 +25,7 @@ FFVLTracking::~FFVLTracking() {
   WithLock(queue_mtx, [&]() {
     thread_stop = true;
   });
-  queue_cv.Broadcast();
+  queue_cv.notify_all();
   if (IsDefined()) {
     Join();
   }
@@ -45,7 +46,7 @@ void FFVLTracking::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated
     WithLock(queue_mtx, [&]() {
       queue = {{basic.Latitude, basic.Longitude}, basic.Altitude};
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
   }
 }
 
@@ -79,10 +80,10 @@ void FFVLTracking::Run() {
 }
 
 bool FFVLTracking::Wait() {
-  ScopeLock lock(queue_mtx);
+  std::unique_lock<Mutex> lock(queue_mtx);
   // if no new position wait for stop or new position
   while (!thread_stop && !queue.has_value()) {
-    queue_cv.Wait(queue_mtx);
+    queue_cv.wait(lock);
   }
   return !thread_stop;
 }

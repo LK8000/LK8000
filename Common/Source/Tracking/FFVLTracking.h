@@ -16,6 +16,7 @@
 #include <optional>
 #include <chrono>
 #include "Thread/Thread.hpp"
+#include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
 #include "Geographic/GeoPoint.h"
 #include "http_session.h"

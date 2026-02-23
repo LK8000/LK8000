@@ -60,7 +60,7 @@ struct StartStateT {
 
 void SwitchZoomClimb(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool isclimb, bool left) {
   if ( (AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG) ) {
-    ScopeLock lock(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
     windanalyser->slot_newFlightMode();
   }
 }
@@ -225,7 +225,7 @@ void Turning(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   TurningLog(_T("...Turning : Rate = %+6.1f° / %+6.1f° / %6.2fs" ), Calculated->TurnRate, Rate, dT);
 
   if ((AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode == D_AUTOWIND_BOTHCIRCZAG)) {
-    ScopeLock lock(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
     windanalyser->slot_newSample(Basic, Calculated);
   }
 
@@ -375,7 +375,7 @@ void Turning(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   // generate new wind vector if altitude changes or a new
   // estimate is available
   if (AutoWindMode > D_AUTOWIND_MANUAL && AutoWindMode < D_AUTOWIND_EXTERNAL) {
-    ScopeLock lock(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
     windanalyser->slot_Altitude(Basic, Calculated);
   }
 

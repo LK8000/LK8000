@@ -55,14 +55,17 @@ bool wait_ack::check(const char* str) {
   });
 
   if (signal) {
-    condition.Broadcast();
+    condition.notify_all();
   }
   return signal;
 }
 
 wait_ack_result wait_ack::wait(unsigned timeout_ms) {
-  if (result == wait_ack_result::timeout) {
-    condition.Wait(mutex, timeout_ms);
+  auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  while (result == wait_ack_result::timeout) {
+    if (condition.wait_until(mutex, deadline) == std::cv_status::timeout) {
+      break;
+    }
   }
   return std::exchange(result, wait_ack_result::timeout);
 }
@@ -112,18 +115,18 @@ TEST_CASE("testing the wait_ack class") {
 
     test.check("abcd");
     {
-      ScopeLock lock(mtx);
+      std::lock_guard<Mutex> lock(mtx);
       CHECK_EQ(test.wait(0), wait_ack_result::success);
     }
   }
 
   SUBCASE("method : wait_ack::wait()") {
     Mutex mtx;
-    ScopeLock lock(mtx);
+    std::lock_guard<Mutex> lock(mtx);
     wait_ack test(mtx, "abcd", "error");
 
     std::thread success_thread([&] {
-      ScopeLock lock(mtx);
+      std::lock_guard<Mutex> lock(mtx);
       std::this_thread::sleep_for(500ms);
       test.check("abcd");
     });
@@ -133,7 +136,7 @@ TEST_CASE("testing the wait_ack class") {
     success_thread.join();
 
     std::thread error_thread([&] {
-      ScopeLock lock(mtx);
+      std::lock_guard<Mutex> lock(mtx);
       std::this_thread::sleep_for(500ms);
       test.check("error");
     });

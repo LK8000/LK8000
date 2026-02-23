@@ -10,6 +10,7 @@
 #define RASTERTERRAIN_H
 
 #include <memory>
+#include "Thread/Mutex.hpp"
 #include "Library/cpp-mmf/memory_mapped_file.hpp"
 
 struct TERRAIN_INFO {
@@ -178,7 +179,7 @@ public:
   static void OpenTerrain();
   static void CloseTerrain();
   static bool isTerrainLoaded() {
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     return static_cast<bool>(TerrainMap);
   }
 

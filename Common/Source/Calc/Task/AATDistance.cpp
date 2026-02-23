@@ -33,7 +33,7 @@ void AATDistance::AddPoint(const GeoPoint& position, int taskwaypoint) {
     return;
   }
 
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
   if (gTaskType != task_type_t::AAT) {
     return;  // nothing else to do for non-AAT tasks
   }
@@ -348,12 +348,12 @@ JMW
 
 
 double AATDistance::DistanceCovered(const GeoPoint& position) {
-  ScopeLock lock(CritSec_TaskData); 
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
   return DistanceCovered_internal(position, false);
 }
 
 bool AATDistance::HasEntered(int taskwaypoint) const {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
   return aat_datas[taskwaypoint].has_entered;
 }
 

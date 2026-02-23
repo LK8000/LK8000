@@ -69,7 +69,7 @@ unsigned GpsIdPort::RxThread() {
     GPSResetData(dev);
 
     bool listen = true;
-    while (listen && !StopEvt.tryWait(0)) {
+    while (listen && !WaitForStop(0)) {
         DWORD dw = ::WaitForMultipleObjects(nh, handles, FALSE, 100);
         switch (dw) {
             case WAIT_OBJECT_0:

@@ -309,7 +309,7 @@ namespace dlgBlueFlyConfig {
                             break;
                     }
 
-                    ScopeLock Lock(CritSec_Comm);
+                    const std::lock_guard<Mutex> lock(CritSec_Comm);
                     if(pDevice && pDevice->Com) {
                         Parameters.UpdateDevice(Param, pDevice->Com);
                     }
@@ -323,7 +323,7 @@ namespace dlgBlueFlyConfig {
     }
 
     void OnReset(WndButton* pWnd) {
-        ScopeLock Lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
         if(dlgBlueFlyConfig::pDevice && dlgBlueFlyConfig::pDevice->Com) {
             dlgBlueFlyConfig::pDevice->Com->WriteString("$RSX*\r\n");
         }

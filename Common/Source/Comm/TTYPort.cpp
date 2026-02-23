@@ -279,13 +279,13 @@ unsigned TTYPort::RxThread() {
     Purge();
 
     bool opened = false;  // Call devOpen() once at startup
-    while ((_tty != -1) && !StopEvt.tryWait(5)) {
+    while ((_tty != -1) && !WaitForStop(5)) {
         if (!opened) {
             opened = true;
             devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
 
-        ScopeLock Lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
         UpdateStatus();
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {

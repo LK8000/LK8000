@@ -23,7 +23,7 @@ void Vario(DeviceDescriptor_t& d, NMEA_INFO& info,
   auto value = Units::From(unDecimeterPersecond,
                            characteristic_value<int32_t>(data).get());
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   UpdateVarioSource(info, d, value);
 }
 
@@ -32,7 +32,7 @@ void VarioNetto(DeviceDescriptor_t& d, NMEA_INFO& info,
   auto value = Units::From(unDecimeterPersecond,
                            characteristic_value<int32_t>(data).get());
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.NettoVario.update(d, value);
 }
 
@@ -41,7 +41,7 @@ void TAS(DeviceDescriptor_t& d, NMEA_INFO& info,
   auto value = Units::From(unDecimeterPersecond,
                            characteristic_value<int32_t>(data).get());
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.TrueAirSpeed.update(d, value);
 }
 
@@ -50,7 +50,7 @@ void IAS(DeviceDescriptor_t& d, NMEA_INFO& info,
   auto value = Units::From(unDecimeterPersecond,
                            characteristic_value<int32_t>(data).get());
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.IndicatedAirSpeed.update(d, value);
 }
 
@@ -58,21 +58,21 @@ void Azimuth(DeviceDescriptor_t& d, NMEA_INFO& info,
          const std::vector<uint8_t>& data) {
   auto value = characteristic_value<uint16_t>(data).get();
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.MagneticHeading.update(d, value);
 }
 
 void GLoad(DeviceDescriptor_t& d, NMEA_INFO& info,
             const std::vector<uint8_t>& data) {
   auto value = characteristic_value<int32_t>(data).get();
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.Gload.update(d, value / 10.0);
 }
 
 void Roll(DeviceDescriptor_t& d, NMEA_INFO& info,
             const std::vector<uint8_t>& data) {
   double value = characteristic_value<int16_t>(data).get()  / 10.;
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   GyroscopeData GyroData = info.Gyroscope.value(); 
   GyroData.Roll = value;
   info.Gyroscope.update(d, std::move(GyroData));
@@ -81,7 +81,7 @@ void Roll(DeviceDescriptor_t& d, NMEA_INFO& info,
 void Pitch(DeviceDescriptor_t& d, NMEA_INFO& info,
             const std::vector<uint8_t>& data) {
   double value = characteristic_value<int16_t>(data).get() / 10.;
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   GyroscopeData GyroData = info.Gyroscope.value(); 
   GyroData.Pitch = value;
   info.Gyroscope.update(d, std::move(GyroData));

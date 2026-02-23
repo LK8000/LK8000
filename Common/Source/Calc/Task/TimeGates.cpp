@@ -235,7 +235,7 @@ void AlertGateClose(int utc_time) {
 
 bool ValidTask() {
   // check for valid taskpoint 0 can be useless, should be valid if we have a valid taskpoint 1
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
   return ValidTaskPointFast(1) && ValidTaskPointFast(0);
 }
 

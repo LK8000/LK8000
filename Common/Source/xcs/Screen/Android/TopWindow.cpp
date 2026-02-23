@@ -40,7 +40,7 @@ TopWindow::Invalidate()
 void
 TopWindow::AnnounceResize(PixelSize _new_size)
 {
-  ScopeLock protect(paused_mutex);
+  const std::lock_guard<Mutex> lock(paused_mutex);
   resized = true;
   new_size = _new_size;
 }
@@ -81,7 +81,7 @@ TopWindow::RefreshSize()
   PixelSize new_size_copy;
 
   {
-    ScopeLock protect(paused_mutex);
+    const std::lock_guard<Mutex> lock(paused_mutex);
     if (!resized)
       return;
 
@@ -113,10 +113,10 @@ TopWindow::OnPause()
 
   native_view->deinitSurface();
 
-  const ScopeLock lock(paused_mutex);
+  const std::lock_guard<Mutex> lock(paused_mutex);
   paused = true;
   resumed = false;
-  paused_cond.Signal();
+  paused_cond.notify_one();
 }
 
 void
@@ -144,9 +144,9 @@ TopWindow::Pause()
   event_queue->Purge(match_pause_and_resume, nullptr);
   event_queue->Push(Event::PAUSE);
 
-  const ScopeLock lock(paused_mutex);
+  std::unique_lock<Mutex> lock(paused_mutex);
   while (running && !paused)
-    paused_cond.Wait(paused_mutex);
+    paused_cond.wait(lock);
 }
 
 void
@@ -234,19 +234,19 @@ TopWindow::OnEvent(const Event &event)
 void
 TopWindow::OnStartEventLoop()
 {
-  ScopeLock protect(paused_mutex);
+  const std::lock_guard<Mutex> lock(paused_mutex);
   ++running;
 }
 
 void
 TopWindow::OnStopEventLoop()
 {
-  ScopeLock protect(paused_mutex);
+  const std::lock_guard<Mutex> lock(paused_mutex);
   assert(running);
   --running;
   /* wake up the Android Activity thread, just in case it's waiting
      inside Pause() */
-  paused_cond.Signal();
+  paused_cond.notify_one();
 }
 
 int

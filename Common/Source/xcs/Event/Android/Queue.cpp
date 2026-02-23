@@ -31,18 +31,18 @@ EventQueue::EventQueue()
 void
 EventQueue::Push(const Event &event)
 {
-  ScopeLock protect(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   if (quit)
     return;
 
   events.push(event);
-  cond.Signal();
+  cond.notify_one();
 }
 
 bool
 EventQueue::Pop(Event &event)
 {
-  ScopeLock protect(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   if (events.empty())
     return false;
 
@@ -67,7 +67,7 @@ EventQueue::Generate(Event &event)
 bool
 EventQueue::Wait(Event &event)
 {
-  ScopeLock protect(mutex);
+  std::unique_lock<Mutex> lock(mutex);
 
   if (events.empty())
     now_us = MonotonicClockUS();
@@ -79,11 +79,14 @@ EventQueue::Wait(Event &event)
     if (Generate(event))
       return true;
 
-    const int64_t timeout_us = timers.GetTimeoutUS(now_us);
-    if (timeout_us < 0)
-      cond.Wait(mutex);
-    else
-      cond.Wait(mutex, (timeout_us + 999) / 1000);
+    using namespace std::chrono_literals;
+    auto timeout = std::chrono::microseconds(timers.GetTimeoutUS(now_us));
+    if (timeout < 0us) {
+      cond.wait(lock);
+    }
+    else {
+      cond.wait_for(lock, timeout);
+    }
 
     now_us = MonotonicClockUS();
   }
@@ -96,7 +99,7 @@ EventQueue::Wait(Event &event)
 void
 EventQueue::Purge(bool (*match)(const Event &event, void *ctx), void *ctx)
 {
-  ScopeLock protect(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
   size_t n = events.size();
   while (n-- > 0) {
     if (!match(events.front(), ctx))
@@ -148,16 +151,16 @@ EventQueue::Purge(Window &window)
 void
 EventQueue::AddTimer(Timer &timer, unsigned ms)
 {
-  ScopeLock protect(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   timers.Add(timer, MonotonicClockUS() + ms * 1000);
-  cond.Signal();
+  cond.notify_one();
 }
 
 void
 EventQueue::CancelTimer(Timer &timer)
 {
-  ScopeLock protect(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   timers.Cancel(timer);
 }

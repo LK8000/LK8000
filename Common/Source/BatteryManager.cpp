@@ -184,7 +184,7 @@ Java_org_LK8000_BatteryReceiver_setBatteryPercent(JNIEnv* env, jclass cls,
 }
 
 void BatteryManager::SetBatteryState(int percent, int plugged, int status) {
-  ScopeLock lock(android_battery_mutex);
+  const std::lock_guard<Mutex> lock(android_battery_mutex);
   android_BatteryLifePercent = percent;
   android_acStatus = (!plugged) ? Battery::OFFLINE : Battery::ONLINE;
 
@@ -213,7 +213,7 @@ void BatteryManager::SetBatteryState(int percent, int plugged, int status) {
 }
 
 bool BatteryManager::GetBatteryInfo(BATTERYINFO& BatteryInfo) {
-  ScopeLock lock(android_battery_mutex);
+  const std::lock_guard<Mutex> lock(android_battery_mutex);
 
   // assume failure at entry
   BatteryInfo.BatteryLifePercent = android_BatteryLifePercent;

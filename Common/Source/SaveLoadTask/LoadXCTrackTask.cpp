@@ -347,7 +347,7 @@ bool LoadXctrackTask(const json::value& task_json) {
     return false;
   }
 
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   ClearTask();
 

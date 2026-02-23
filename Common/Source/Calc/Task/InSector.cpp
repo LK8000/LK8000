@@ -15,7 +15,7 @@
 void InSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   static int LastStartSector = -1;
 
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   if (ActiveTaskPoint < 0) {
     return;

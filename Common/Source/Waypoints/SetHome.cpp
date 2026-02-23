@@ -42,7 +42,7 @@ bool SetNewHome(size_t idx) {
   if (home_position != AGeoPoint({0, 0}, 0)) {
     // SIM mode or no valid fix and before takeoff
     //   -> set aircraft position to new home position
-    ScopeLock lock(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
     if (SIMMODE || (GPS_INFO.NAVWarning && !CALCULATED_INFO.Flying)) {
       GPS_INFO.Latitude = home_position.latitude;
       GPS_INFO.Longitude = home_position.longitude;
@@ -132,7 +132,7 @@ void SetHome(bool reset) {
     // no home at all, so set it from center of terrain if available
     double lon, lat;
     if (RasterTerrain::GetTerrainCenter(&lat, &lon)) {
-      ScopeLock lock(CritSec_FlightData);
+      const std::lock_guard<Mutex> lock(CritSec_FlightData);
       GPS_INFO.Latitude = lat;
       GPS_INFO.Longitude = lon;
       GPS_INFO.Altitude = 0;

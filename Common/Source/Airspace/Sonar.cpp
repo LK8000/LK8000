@@ -10,6 +10,8 @@
 #include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 
+namespace {
+
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
 #define GC_VERTICAL_THRESHOLD        250
@@ -18,8 +20,6 @@
 #define GC_VERTICAL_DELAY_FACT      25.0f
 
 //#define DEBUG_SONAR	1
-
-
 
 const AirSpaceSonarLevelStruct sSonarLevel[] = {
     /* horizontal sonar levels */
@@ -37,15 +37,11 @@ const AirSpaceSonarLevelStruct sSonarLevel[] = {
     {  110,     7,         false, TEXT("LK_SONAR_H5.WAV")}
    };
 
-
-
-
 //
 // calc the sonar delay time
 // This function can manage more than 1 airspace as Input.
 // However currently we only use one, the closest.
 //
-static
 int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAltitudeAGL, int iAltitude)
 {
   int iAS_HorDist;
@@ -148,13 +144,11 @@ int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAl
   return iTreadLevel;
 }
 
-
-
 //
 // We do Sonar from draw thread, because it is reasonable to think that without a visual aid on map,
 // the simple sonar sound alone is an halved solution.
 //
-void DoSonar(void) {
+void DoSonar() {
 
   static unsigned long lSonarCnt = 0;
 
@@ -210,41 +204,56 @@ void DoSonar(void) {
 
 }
 
-class SonarThread : public Thread
-{
+class SonarThread final : public Thread {
 public:
-	SonarThread() : Thread("SonarThread") { }
 
-    bool Start() override {
-		bStop = false;
-        return Thread::Start();
-    }
-		
-    void Stop() {
-		bStop = true;
+	SonarThread() : Thread("SonarThread") {
+		Start();
+	}
+
+	~SonarThread() {
+		WithLock(mutexRun, [&](){
+			stop = true;
+		});
+		condClose.notify_one();
 		Join();
 	}
 
 protected:
-    void Run() override {
-		PeriodClock Timer;
-		while (!bStop) {
+
+	// return false every second
+	// return true if stop is signaled
+	bool WaitForStop() {
+		std::unique_lock<Mutex> lock(mutexRun);
+		while (!stop && Timer.Elapsed() < 1000) {
+			auto timeout = Clamp<unsigned>(1000U - Timer.Elapsed(), 0U, 1000U);
+			condClose.wait_for(lock, std::chrono::milliseconds(timeout));
+		}
+		Timer.Update();
+		return stop;
+	}
+
+	void Run() override {
+		while(!WaitForStop()) {
 			DoSonar();
-			unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
-			Sleep(n);
-			Timer.Update();
 		}
 	}
 
-	bool bStop = false;
+	PeriodClock Timer;
+
+	bool stop = false;
+	Mutex mutexRun;
+	Cond condClose;
 };
 
-SonarThread SonarThreadInstance;
+std::unique_ptr<SonarThread> SonarThreadInstance;
+
+} // namespace
 
 void InitAirspaceSonar() {
-	SonarThreadInstance.Start();
+	SonarThreadInstance = std::make_unique<SonarThread>();
 }
 
 void DeinitAirspaceSonar() {
-	SonarThreadInstance.Stop();
+	SonarThreadInstance = nullptr;
 }

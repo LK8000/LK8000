@@ -33,7 +33,7 @@ bool CorrectSide(const DERIVED_INFO& Calculated) {
 }
 
 bool ExitStart(const DERIVED_INFO& Calculated) {
-	ScopeLock lock(CritSec_TaskData);
+	const std::lock_guard<Mutex> lock(CritSec_TaskData);
 	if (gTaskType != task_type_t::GP) {
 		return true; // start IN and go out, OLD CLASSIC MODE
 	}

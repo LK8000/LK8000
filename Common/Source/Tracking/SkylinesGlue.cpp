@@ -29,7 +29,7 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
 
     tstring pilote_name = WithLock(data.mutex, &SkyLinesTracking::Data::GetUserName, data, pilot_id);
 
-    const ScopeLock protect(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
 	double Time_Fix = GPS_INFO.Time;
 
@@ -92,7 +92,7 @@ void SkylinesGlue::OnTraffic(uint32_t pilot_id, unsigned time_of_day_ms,
 void SkylinesGlue::OnUserName(uint32_t user_id, const TCHAR *name) {
     TrackingGlue::OnUserName(user_id, name);
 
-    const ScopeLock protect(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
     int flarm_slot = FLARM_FindSlot(&GPS_INFO, user_id);
     if (flarm_slot < 0) {

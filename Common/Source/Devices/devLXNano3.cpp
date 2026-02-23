@@ -862,7 +862,7 @@ void DevLXNanoIII::Class::SetName(const TCHAR* text){
 // static
 bool DevLXNanoIII::SendNmea(DeviceDescriptor_t* d, const TCHAR buf[], unsigned errBufSize, TCHAR errBuf[]){
 
-  ScopeLock Lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
   if(!d || !d->Com) {
     return false;
   }

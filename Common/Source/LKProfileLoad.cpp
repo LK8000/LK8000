@@ -414,7 +414,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryPort1Index, dwIdxPort)) {
 
 #ifdef ANDROID
-    ScopeLock lock(COMMPort_mutex);
+    const std::lock_guard<Mutex> lock(COMMPort_mutex);
 #endif
 
     if (COMMPort.size() == 0) {
@@ -429,7 +429,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   if (settings::read(sname, svalue, szRegistryPort2Index, dwIdxPort)) {
 
 #ifdef ANDROID
-    ScopeLock lock(COMMPort_mutex);
+    const std::lock_guard<Mutex> lock(COMMPort_mutex);
 #endif
 
     if (COMMPort.size() == 0) {

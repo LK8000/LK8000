@@ -211,7 +211,7 @@ static void SetupStencilWrite(GLint stencilValue) {
 }
 
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
-  ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+  const std::lock_guard<Mutex> lock(CAirspaceManager::Instance().MutexRef());
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
   const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);

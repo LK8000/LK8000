@@ -31,7 +31,7 @@ bool ComPort::Close() {
     if (status_thread.IsDefined()) {
         WithLock(status_mutex, [&]() {
             status_thread_stop = true;
-            status_cv.Signal();
+            status_cv.notify_one();
         });
         status_thread.Join();
     }
@@ -48,13 +48,12 @@ bool ComPort::Write(const void *data, size_t size) {
         // (e.g., RxThread calling devOpen() via device callbacks vs main thread calling device functions).
         // Each port implementation (SerialPort, TTYPort, SocketPort) uses OS resources
         // (HANDLE, fd, socket) that are not safe for concurrent access.
-        ScopeLock lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
 
         bool success = Write_Impl(data, size);
 
-        DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),
+        DebugLog(_T(R"(<%s> ComPort::Write("%s"))"),
                     success ? _T("success"): _T("failed"),
-                    thread_name().c_str(),
                     data_string(data, size).c_str());
 
         return success;
@@ -79,23 +78,25 @@ int ComPort::GetChar() {
 
 bool ComPort::StopRxThread() {
 
-    StopEvt.set();
+    WithLock(stop_mtx, [&]() {
+        stop = true;
+    });
+    stop_cond.notify_one();
 
-    DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), GetPortIndex() + 1);
+    DebugLog(_T("... ComPort %u StopRxThread: Cancel Wait Event !"), GetPortIndex() + 1U);
     CancelWaitEvent();
 
-    if (rx_thread.IsDefined()) {
-        DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), GetPortIndex() + 1);
-        rx_thread.Join();
-    }
-    StopEvt.reset();
+    DebugLog(_T("... ComPort %u StopRxThread: Wait End of thread !"), GetPortIndex() + 1);
+    rx_thread.Join();
 
     return true;
 }
 
 bool ComPort::StartRxThread() {
   try {
-      StopEvt.reset();
+      WithLock(stop_mtx, [&]() {
+          stop = false;
+      });
 
       // Create a read thread for reading data from the communication port.
       rx_thread.Start();
@@ -111,15 +112,20 @@ bool ComPort::StartRxThread() {
           return false;
       }
       return true;
-  } catch(Poco::Exception& e) {
-      const tstring error = to_tstring(e.displayText());
-      StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), GetPortIndex() + 1, GetPortName(), error.c_str());
-      return false;
   } catch(std::exception& e) {
       const tstring error = to_tstring(e.what());
       StartupStore(_T(". ComPort %u <%s> StartRxThread : %s"), GetPortIndex() + 1, GetPortName(), error.c_str());
       return false;
   }
+}
+
+bool ComPort::WaitForStop(int time) {
+    std::unique_lock<Mutex> lock(stop_mtx);
+    if (stop) {
+        return true;
+    }
+    stop_cond.wait_for(lock, std::chrono::milliseconds(time));
+    return stop;
 }
 
 void ComPort::ProcessChar(char c) {
@@ -202,10 +208,10 @@ tstring ComPort::GetDeviceName() {
 }
 
 void ComPort::NotifyConnected() {
-    ScopeLock lock(status_mutex);
+    const std::lock_guard<Mutex> lock(status_mutex);
     status_connected = true;
     if (status_disconnected_notify) {
-        status_cv.Signal();
+        status_cv.notify_one();
         return;
     }
 
@@ -216,12 +222,13 @@ void ComPort::NotifyConnected() {
 }
 
 void ComPort::status_thread_loop() {
+    using namespace std::chrono_literals;
     try {
-        ScopeLock lock(status_mutex);
+        std::unique_lock<Mutex> lock(status_mutex);
         while (!status_thread_stop) { // until stop not request
             if (status_disconnected_notify) { // if disconnect notify requested
                 tstring name = GetDeviceName();
-                status_cv.Wait(status_mutex, 10000); // wait 10s for reconnecting
+                status_cv.wait_for(lock, 10s); // wait 10s for reconnecting
                 if(status_thread_stop) {
                   return; // must exit otherwise thread never end ...
                 }
@@ -234,7 +241,7 @@ void ComPort::status_thread_loop() {
                 }
                 status_disconnected_notify = false; // reset notify request
             }
-            status_cv.Wait(status_mutex);  // wait for notification request or stop
+            status_cv.wait(lock);  // wait for notification request or stop
         }
     }
     catch (std::exception& e) {
@@ -246,11 +253,11 @@ void ComPort::NotifyDisconnected() {
     tstring name = GetDeviceName();
     StartupStore(_T(". Device %c [%s] : disconnected"), devLetter(GetPortIndex()), name.c_str());
     // notify user in next 10 sec, notification canceled if reconnect happen...
-    ScopeLock lock(status_mutex);
+    const std::lock_guard<Mutex> lock(status_mutex);
     status_connected = false;
     if (!status_thread.IsDefined()) {
         status_thread.Start();
     }
     status_disconnected_notify = true;
-    status_cv.Signal();
+    status_cv.notify_one();
 }

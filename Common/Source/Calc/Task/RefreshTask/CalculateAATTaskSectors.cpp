@@ -15,7 +15,7 @@
 extern bool TargetDialogOpen;
 
 void CalculateAATTaskSectors() {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int awp = ActiveTaskPoint;
 

@@ -588,6 +588,12 @@ ifeq ($(FULLSCREEN),y)
 CE_DEFS		+= -DUSE_FULLSCREEN
 endif
 
+ifeq ($(THREADS),stdcpp)
+CE_DEFS		+= -DUSE_STDCPP_THREADS
+else ifeq ($(THREADS),Poco)
+CE_DEFS		+= -DUSE_POCO_THREADS
+endif
+
 ######## paths
 ifeq ($(CONFIG_LINUX),y)
  INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
@@ -1373,8 +1379,13 @@ ifneq ($(CONFIG_PPC2003),y)
    $(SRC_TRACKING)/FFVLTracking.cpp
 endif
 
+TEST = \
+	$(SRC)/Thread/test/ThreadTest.cpp \
+	$(SRC)/Thread/test/MutexCondTest.cpp \
+	
 
 SRC_FILES :=\
+	$(TEST) \
 	$(WINDOW) \
 	$(SCREEN) \
 	$(SOUND) \

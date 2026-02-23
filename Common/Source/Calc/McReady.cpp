@@ -51,7 +51,7 @@ double GlidePolar::GetAUW() {
 
 
 void GlidePolar::SetBallast() {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   double BallastWeight;
   BallastLitres = WEIGHTS[2] * BALLAST;

@@ -184,13 +184,13 @@ unsigned SocketPort::RxThread() {
     }
 
     bool opened = false;  // Call devOpen() once at startup
-    while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+    while (mSocket != INVALID_SOCKET && !WaitForStop(5)) {
         if (!opened) {
             opened = true;
             devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
 
-        ScopeLock Lock(CritSec_Comm);
+        const std::lock_guard<Mutex> lock(CritSec_Comm);
         UpdateStatus();
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {

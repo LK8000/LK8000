@@ -224,7 +224,7 @@ unsigned TCPServerPort::RxThread() {
         // if failed, socket still in blocking mode, it's big problem
     }  
     
-    while (mServerSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+    while (mServerSocket != INVALID_SOCKET && !WaitForStop(5)) {
 
         fd_set readfs;
         FD_ZERO(&readfs);
@@ -299,7 +299,7 @@ unsigned UDPServerPort::RxThread() {
     bool opened = false;  // Call devOpen() once at startup
     char szString[1024];
 
-	while (mSocket != INVALID_SOCKET && !StopEvt.tryWait(5)) {
+	while (mSocket != INVALID_SOCKET && !WaitForStop(5)) {
 		if (!opened) {
     	    opened = true;
 	        devOpen(devGetDeviceOnPort(GetPortIndex()));
@@ -308,7 +308,7 @@ unsigned UDPServerPort::RxThread() {
 		int nRecv;
 		socklen_t slen = sizeof(mSAddressClient);
 		if ((nRecv = recvfrom(mSocket, szString, sizeof(szString), 0, (struct sockaddr *) &mSAddressClient, &slen)) != -1)  {
-			ScopeLock Lock(CritSec_Comm);
+			const std::lock_guard<Mutex> lock(CritSec_Comm);
 			UpdateStatus();
 			if (nRecv > 0) {
                 ProcessData(szString, nRecv);

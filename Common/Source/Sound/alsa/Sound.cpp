@@ -312,14 +312,14 @@ public:
     WithLock(queue_mtx, [&]() {
       queue = { type, std::move(name) };
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
   }
 
   void Stop() {
     WithLock(queue_mtx, [&]() {
       thread_stop = true;
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
   }
 
 private:
@@ -330,21 +330,22 @@ private:
 
   void Run() override {
     while (true) {
-      // get copy of queue
-      auto sound = WithLock(queue_mtx, [&]() {
-        return std::exchange(queue, std::nullopt);
-      });
-
-      if (!sound) {
-        ScopeLock lock(queue_mtx);
-        // no sound check for stop request
+      std::optional<sound_item> sound;
+      {
+        std::unique_lock<Mutex> lock(queue_mtx);
+        // wait for stop or sound
+        queue_cv.wait(lock, [&]() {
+          return thread_stop || queue;
+        });
         if (thread_stop) {
           return;  // stop requested...
         }
-        // wait for stop or sound
-        queue_cv.Wait(queue_mtx);
-      } else {
-        play_sound(sound.value());
+        // pop queued sound
+        sound = std::exchange(queue, std::nullopt);
+      }
+
+      if (sound) {
+        play_sound(*sound);
       }
     }
   }

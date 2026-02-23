@@ -81,7 +81,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   template <auto callback>
   bool EnableCharacteristic() const {
-    ScopeLock lock(CritSec_Comm);
+    const std::lock_guard<Mutex> lock(CritSec_Comm);
     auto port = devGetDeviceOnPort(GetPortIndex());
     return port && port->*callback;
   }
@@ -93,7 +93,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   template <auto callback, typename... Args>
   void OnSensorData(Args&& ...args) {
-    ScopeLock lock(CritSec_Comm);
+    const std::lock_guard<Mutex> lock(CritSec_Comm);
     auto port = devGetDeviceOnPort(GetPortIndex());
     if (port && port->*callback) {
       std::invoke(port->*callback, *port, GPS_INFO, std::forward<Args>(args)...);

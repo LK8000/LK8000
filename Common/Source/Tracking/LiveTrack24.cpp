@@ -16,8 +16,7 @@
 #include "LiveTrack24.h"
 #include "LiveTrack24APIKey.h"
 #include "utils/stringext.h"
-#include "Poco/Event.h"
-#include "Poco/ThreadTarget.h"
+#include "Thread/Thread.hpp"
 #include "picojson.h"
 #include "utils/hmac_sha2.h"
 #include "FlarmCalculations.h"
@@ -36,7 +35,6 @@
 
 static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
-static Poco::Event NewDataEvent;       //new data event trigger
 #define SERVERNAME_MAX  100
 static char _server_name[SERVERNAME_MAX];      // server name, or ip
 static int _server_port;
@@ -77,6 +75,7 @@ using PointQueue = std::deque<livetracker_point_t>;
 
 //Protected thread storage
 static Mutex _t_mutex;                  // Mutex
+static Cond _t_cond; 					// to signal new data available
 static bool _t_run = false;             // Thread run
 static PointQueue _t_points;            // Point FIFO
 
@@ -88,11 +87,8 @@ static int createSID();
 static std::string passwordToken(const std::string& plainTextPassword,
 		const std::string& sessionID);
 
-Poco::Thread _ThreadTracker("ThreadTracker"); //worker thread for Tracker
-Poco::Thread _ThreadRadar("ThreadRadar");     //worker thread for Radar
-Poco::ThreadTarget _ThreadTargetTracker(LiveTrackerThread);
-Poco::ThreadTarget _ThreadTargetTracker2(LiveTrackerThread2);
-Poco::ThreadTarget _ThreadTargetRadar(LiveTrackRadarThread2);
+static std::unique_ptr<InvokeThread> _ThreadTracker;
+static std::unique_ptr<InvokeThread> _ThreadRadar;
 
 template<typename T>
 std::string toString(const T& value) {
@@ -187,22 +183,23 @@ void LiveTrackerInit() {
 		if (snu.compare("WWW.LIVETRACK24.COM") == 0) {
 			v2_sid = createSID();
 			v2_pwt = passwordToken(_password, toString(v2_sid));
-			_ThreadTracker.start(_ThreadTargetTracker2);
-			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
+			_ThreadTracker = std::make_unique<InvokeThread>("ThreadTracker", LiveTrackerThread2);
 			StartupStore(_T(". LiveTracker API V2 will use server %s if available."),
 							tracking::server_config);
 		} else {
-			_ThreadTracker.start(_ThreadTargetTracker);
-			_ThreadTracker.setPriority(Poco::Thread::PRIO_NORMAL);
+			_ThreadTracker = std::make_unique<InvokeThread>("ThreadTracker", LiveTrackerThread);
 			StartupStore(_T(". LiveTracker API V1 will use server %s if available."),
 							tracking::server_config);
 		}
+		_t_run = true; // thread not started, no need to lock `_t_mutex`
+		_ThreadTracker->Start();
 	}
 
 	// Create a thread fo getting radar data from livetrack24.com
 	if (tracking::radar_config && EnableFLARMMap) {
-		_ThreadRadar.start(_ThreadTargetRadar);
-		_ThreadRadar.setPriority(Poco::Thread::PRIO_NORMAL);
+		_ThreadRadar = std::make_unique<InvokeThread>("ThreadRadar", LiveTrackRadarThread2);
+		_t_radar_run = true; // thread not started, no need to lock `_t_mutex`
+		_ThreadRadar->Start();
 		StartupStore(_T(". LiveTracker Radar Enabled."));
 	}
 	_inited = true;
@@ -210,17 +207,21 @@ void LiveTrackerInit() {
 
 // Shutdown Live Tracker
 void LiveTrackerShutdown() {
-	if (_ThreadTracker.isRunning()) {
+	WithLock(_t_mutex, [&]() {
 		_t_run = false;
-		NewDataEvent.set();
-		_ThreadTracker.join();
+		_t_radar_run = false;
+	});
+	_t_cond.notify_all();
+
+	if (_ThreadTracker && _ThreadTracker->IsDefined()) {
+		_ThreadTracker->Join();
+		_ThreadTracker = nullptr;
 		StartupStore(_T(". LiveTracker closed."));
 	}
 
-	if (_ThreadRadar.isRunning()) {
-		_t_radar_run = false;
-		NewDataEvent.set();
-		_ThreadRadar.join();
+	if (_ThreadRadar && _ThreadRadar->IsDefined()) {
+		_ThreadRadar->Join();
+		_ThreadRadar = nullptr;
 		StartupStore(_T(". LiveRadar closed."));
 	}
 }
@@ -233,9 +234,6 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 		return; // Disabled
 	if (Basic.NAVWarning)
 		return;      // Do not log if no gps fix
-
-//	if (!Calculated->Flying)
-//		return;  // Do not feed if not necessary
 
 	static int logtime = 0;
 
@@ -277,20 +275,7 @@ void LiveTrackerUpdate(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
 		}
 		_t_points.emplace_back(newpoint);
 	});
-	NewDataEvent.set();
-}
-
-static bool InterruptibleSleep(int msecs) {
-	int secs = msecs / 1000;
-	do {
-		if (1) {
-			ScopeLock guard(_t_mutex);
-			if (!_t_run)
-				return true;
-		}
-		Sleep(1000);
-	} while (secs--);
-	return false;
+	_t_cond.notify_all();
 }
 
 // Get the user id from Leonardo servername
@@ -471,41 +456,45 @@ static bool SendGPSPointPacket(http_session& http, unsigned int *packet_id,
 	return false;
 }
 
+struct stop : public std::exception {
+	using std::exception::exception;
+};
+
+static std::optional<livetracker_point_t> get_point_to_send() {
+	std::unique_lock<Mutex> lock(_t_mutex);
+	while (_t_run && _t_points.empty()) {
+		_t_cond.wait(lock);
+	}
+	if (!_t_run) {
+		throw stop();
+	}
+	if (!_t_points.empty()) {
+		return _t_points.front();
+	}
+	return {};
+}
+
 // Leonardo Live Tracker (www.livetrack24.com) data exchange thread
 static void LiveTrackerThread() {
 	int tracker_fsm = 0;
 	livetracker_point_t sendpoint = {};
-	bool sendpoint_valid = false;
-	bool sendpoint_processed = false;
+
 	bool sendpoint_processed_old = false;
 	// Session variables
 	unsigned int packet_id = 0;
 	unsigned int session_id = 0;
 	int userid = -1;
 
-	_t_run = true;
-
 	srand(MonotonicClockMS());
 
 	http_session http;
-
-	do {
-		if (NewDataEvent.tryWait(5000))
-			NewDataEvent.reset();
-		if (!_t_run)
-			break;
-		do {
-			sendpoint_valid = WithLock(_t_mutex, [&]() {
-				if (!_t_points.empty()) {
-					sendpoint = _t_points.front();
-					return true;
-				}
-				return false;
-			});
-
+	try {
+		while (true) {
+			auto sendpoint_valid = get_point_to_send();
 			if (sendpoint_valid) {
-				sendpoint_processed = false;
-				do {
+				sendpoint = sendpoint_valid.value();
+
+				for (bool sendpoint_processed = false; !sendpoint_processed;) {
 					switch (tracker_fsm) {
 					default:
 					case 0:   // Wait for flying
@@ -528,11 +517,9 @@ static void LiveTrackerThread() {
 						//Start of track packet
 						sendpoint_processed = SendStartOfTrackPacket(http, &packet_id,
 								&session_id, userid);
-						if (sendpoint_processed) {
-							StartupStore(_T(". Livetracker new track started."));
-							sendpoint_processed_old = true;
-							tracker_fsm++;
-						}
+						StartupStore(_T(". Livetracker new track started."));
+						sendpoint_processed_old = true;
+						tracker_fsm++;
 						break;
 
 					case 3:
@@ -546,14 +533,9 @@ static void LiveTrackerThread() {
 						}
 						//Connection established to server
 						if (!sendpoint_processed_old && sendpoint_processed) {
-							int queue_size = WithLock(_t_mutex, [&]() {
-								return _t_points.size();
-							});
-							StartupStore(_T(". Livetracker connection to server established, start sending %d queued packets."),
-											queue_size);
+							StartupStore(_T(". Livetracker connection to server established, start sending"));
 						}
 						sendpoint_processed_old = sendpoint_processed;
-
 						if (!sendpoint.flying) {
 							tracker_fsm++;
 						}
@@ -569,17 +551,24 @@ static void LiveTrackerThread() {
 						break;
 					}   // sw
 
-					if (sendpoint_processed) {
-						ScopeLock guard(_t_mutex);
-						_t_points.pop_front();
-					} else {
-						InterruptibleSleep(2500);
-					}
+					WithLock(_t_mutex, [&]() {
+						if (sendpoint_processed) {
+							_t_points.pop_front();
+						}
+						else {
+							_t_cond.wait_for(_t_mutex, std::chrono::milliseconds(DELAY));
+							if (!_t_run) {
+								throw stop();
+							}
+						}
+					});
 					sendpoint_processed_old = sendpoint_processed;
-				} while (!sendpoint_processed && _t_run);
+				}
 			}
-		} while (sendpoint_valid && _t_run);
-	} while (_t_run);
+		}
+	}
+	catch(stop& e) {
+	}
 }
 
 // Leonardo Live Info (www.livetrack24.com) data exchange thread for API V2
@@ -899,7 +888,7 @@ static bool InterruptibleSleepRadar(int msecs) {
 	int secs = msecs / 1000;
 	do {
 		if (1) {
-			ScopeLock guard(_t_mutex);
+			const std::lock_guard<Mutex> lock(_t_mutex);
 			if (!_t_radar_run)
 				return true;
 		}
@@ -909,8 +898,6 @@ static bool InterruptibleSleepRadar(int msecs) {
 }
 
 static void LiveTrackRadarThread2() {
-	_t_radar_run = true;
-
 	http_session http; 
 
 	InterruptibleSleepRadar(5000);
@@ -1082,7 +1069,7 @@ static bool SendGPSPointPacket2(http_session& http, unsigned int *packet_id) {
 	std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
 	{
-		ScopeLock guard(_t_mutex);
+		const std::lock_guard<Mutex> lock(_t_mutex);
 
 		if(_t_points.empty()) {
 			return false;
@@ -1146,77 +1133,74 @@ static void LiveTrackerThread2() {
 	bool sendpoint_processed = false;
 	bool packet_processed = false;
 
-	bool sendpoint_valid = false;
 	// Session variables
 	unsigned int packet_id = 0;
 
-	_t_run = true;
 	http_session http;
 
-	do {
-		if (NewDataEvent.tryWait(5000))
-			NewDataEvent.reset();
-		if (!_t_run)
-			break;
-		sendpoint_processed = false;
+	try {
+		while (true) {
+			auto sendpoint_valid = get_point_to_send();
+			if (sendpoint_valid) {
+				sendpoint = sendpoint_valid.value();
 
-		sendpoint_valid = WithLock(_t_mutex, [&]() {
-			if (!_t_points.empty()) {
-				sendpoint = _t_points.front();
-				return true;
-			}
-			return false;
-		});
+				DebugLog(_T(". Livetracker TRACKER sendpoint.flying: %d - tracker_fsm: %d"),
+							sendpoint.flying,tracker_fsm);
 
-		if (sendpoint_valid) {
-			DebugLog(_T(". Livetracker TRACKER sendpoint.flying: %d - tracker_fsm: %d"),
-						sendpoint.flying,tracker_fsm);
-
-			switch (tracker_fsm) {
-			default:
-			case 0:   // Wait for flying
-				if (!sendpoint.flying) {
-					ScopeLock guard(_t_mutex);
-					_t_points.pop_front();
-					sendpoint_processed = true;
+				switch (tracker_fsm) {
+				default:
+				case 0:   // Wait for flying
+					if (!sendpoint.flying) {
+						const std::lock_guard<Mutex> lock(_t_mutex);
+						_t_points.pop_front();
+						sendpoint_processed = true;
+						break;
+					}
+					tracker_fsm++;
 					break;
-				}
-				tracker_fsm++;
-				break;
-			case 1:
-				// Get User ID
-				v2_userid = GetUserIDFromServer2(http);
-				sendpoint_processed = false;
-				if (v2_userid >= 0)
+				case 1:
+					// Get User ID
+					v2_userid = GetUserIDFromServer2(http);
+					sendpoint_processed = false;
+					if (v2_userid >= 0)
+						tracker_fsm++;
+					break;
+				case 2:
+					//Start of track packet
+					sendpoint_processed = false;
 					tracker_fsm++;
-				break;
-			case 2:
-				//Start of track packet
-				sendpoint_processed = false;
-				tracker_fsm++;
-				break;
-			case 3:
-				//Gps point packet
-				packet_processed = SendGPSPointPacket2(http, &packet_id);
-				if (!sendpoint.flying) {
-					tracker_fsm++;
-				}
-				break;
-			case 4:
-				//End of track packet
-				sendpoint_processed = SendEndOfTrackPacket2(http, &packet_id);
-				StartupStore(_T(". Livetracker TRACKER  SendEndOfTrackPacket2 .%d ..."), sendpoint_processed);
+					break;
+				case 3:
+					//Gps point packet
+					packet_processed = SendGPSPointPacket2(http, &packet_id);
+					if (!sendpoint.flying) {
+						tracker_fsm++;
+					}
+					break;
+				case 4:
+					//End of track packet
+					sendpoint_processed = SendEndOfTrackPacket2(http, &packet_id);
+					StartupStore(_T(". Livetracker TRACKER  SendEndOfTrackPacket2 .%d ..."), sendpoint_processed);
 
-				if (sendpoint_processed) {
-					tracker_fsm = 0;
+					if (sendpoint_processed) {
+						tracker_fsm = 0;
+					}
+					break;
+				}   // sw
+
+				if (!packet_processed) {
+					WithLock(_t_mutex, [&]() {
+						_t_cond.wait_for(_t_mutex, std::chrono::milliseconds(DELAY));
+						if (!_t_run) {
+							throw stop();
+						}
+					});
 				}
-				break;
-			}   // sw
+			}
 
 		}
-		if (packet_processed) {
-			InterruptibleSleep(DELAY);
+	}
+	catch (stop&) {
 
-		}
-	} while (_t_run);
+	}
 }

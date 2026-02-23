@@ -24,7 +24,7 @@ void DebugStore(const char* fmt, ...) {
 #ifndef NDEBUG
 
   static Mutex mutex;
-  ScopeLock Lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   static TCHAR szFileName[MAX_PATH];
   static bool initialised = false;
@@ -46,7 +46,7 @@ void DebugStore(const char* fmt, ...) {
 void StartupStoreV(const TCHAR* fmt, va_list args)
 {
   static Mutex mutex;
-  ScopeLock Lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   TCHAR buf[1024]; // 2 kByte for unicode, 1kByte for utf-8
 
@@ -115,14 +115,6 @@ tstring toHexString(const void* data, size_t size) {
     szHex += (hex_chars[((*p) & 0x0F) >> 0]);
   }
   return szHex;
-}
-
-tstring thread_name() {
-  Poco::Thread* pThread = Poco::Thread::current();
-  if (pThread) {
-    return to_tstring(pThread->getName());
-  }
-  return _T("unknown");
 }
 
 namespace {

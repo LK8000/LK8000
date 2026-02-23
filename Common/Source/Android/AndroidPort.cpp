@@ -74,7 +74,7 @@ bool AndroidPort::StopRxThread() {
 }
 
 bool AndroidPort::StartRxThread() {
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     running = true;
 
     return ComPort::StartRxThread();
@@ -88,12 +88,12 @@ void AndroidPort::Purge() {
 }
 
 void AndroidPort::Flush() {
-    ScopeLock protect(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     buffer.clear();
 }
 
 void AndroidPort::CancelWaitEvent() {
-    newdata.Broadcast();
+    newdata.notify_all();
 }
 
 int AndroidPort::SetRxTimeout(int TimeOut) {
@@ -140,11 +140,11 @@ bool AndroidPort::Write_Impl(const void *data, size_t size) {
 
 size_t AndroidPort::Read(void *szString, size_t size) {
 
-    ScopeLock lock(mutex);
+    std::unique_lock<Mutex> lock(mutex);
     assert(!running);
 
     if(buffer.empty()) {
-        newdata.Wait(mutex, timeout);
+        newdata.wait_for(lock, std::chrono::milliseconds(timeout));
     }
 
     if(running || buffer.empty()) {
@@ -168,7 +168,7 @@ size_t AndroidPort::Read(void *szString, size_t size) {
 
 void AndroidPort::DataReceived(const void *data, size_t length) {
 
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     const auto *src_data = static_cast<const uint8_t *>(data);
 
     // limit vector size to 16 KByte
@@ -182,11 +182,11 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
         AddStatErrRx(length - insert_size);
     }
 
-    newdata.Broadcast();
+    newdata.notify_all();
 }
 
 bool AndroidPort::IsReady() {
-    ScopeLock lock(mutex);
+    const std::lock_guard<Mutex> lock(mutex);
     if (bridge) {
         return bridge->getState(Java::GetEnv()) == STATE_READY;
     }
@@ -194,7 +194,7 @@ bool AndroidPort::IsReady() {
 }
 
 void AndroidPort::PortStateChanged() {
-    newdata.Signal();
+    newdata.notify_one();
 }
 
 void AndroidPort::PortError(const char *msg) {
@@ -241,8 +241,8 @@ unsigned AndroidPort::RxThread() {
           NotifyDisconnected();
         }
 
-        ScopeLock lock(mutex);
-        newdata.Wait(mutex); // wait for data or state change
+        std::unique_lock<Mutex> lock(mutex);
+        newdata.wait(lock); // wait for data or state change
     }
     while(true);
 }

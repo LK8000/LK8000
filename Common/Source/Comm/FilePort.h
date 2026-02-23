@@ -52,7 +52,6 @@ public:
 
     size_t Read(void *data, size_t size) override {  return 0; };
 
-    Poco::Event FileStopEvt;
 protected:
 
     unsigned RxThread() override;

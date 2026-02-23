@@ -191,7 +191,7 @@ BOOL PVCOMRequestAllData(DeviceDescriptor_t* d) {
   _stprintf(szTmp, TEXT("$PVCOM,R,ALL"));
   PVCOMNMEAddCheckSumStrg(szTmp);
 
-  ScopeLock Lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
 
   if(d != NULL)
     if(!d->Disabled)
