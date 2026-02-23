@@ -213,32 +213,33 @@ void dlgProfilesShowModal(short mode){
   wp = wf->FindByName<WndProperty>(TEXT("prpFile"));
   if (wp) {
     wp->SetVisible(false);
-    DataFieldFileReader* dfe = static_cast<DataFieldFileReader*>(wp->GetDataField());
-    if(dfe) {
-	  switch (profilemode) {
-		case 0:
-			lk::snprintf(profilesuffix,_T("%s"),_T(LKS_PRF));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PRF));
-			break;
-		case 1:
-			wf->SetCaption(MsgToken<1784>()); // Aircraft profiles
-			lk::snprintf(profilesuffix,_T("%s"),_T(LKS_PILOT));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PILOT));
-			break;
-		case 2:
-			wf->SetCaption(MsgToken<1783>()); // Pilot profiles
-			lk::snprintf(profilesuffix,_T("%s"),_T(LKS_AIRCRAFT));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
-			break;
-		case 3:
-			wf->SetCaption(MsgToken<1819>()); // Device profiles
-			lk::snprintf(profilesuffix,_T("%s"),_T(LKS_DEVICE));
-            dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
-			break;
-		default:
-			return;
-	  }
-	  dfe->Set(0);
+    DataFieldFileReader* dfe =
+        dynamic_cast<DataFieldFileReader*>(wp->GetDataField());
+    if (dfe) {
+      switch (profilemode) {
+        case 0:
+          lk::strcpy(profilesuffix, _T(LKS_PRF));
+          dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PRF));
+          break;
+        case 1:
+          wf->SetCaption(MsgToken<1784>());  // Aircraft profiles
+          lk::strcpy(profilesuffix, _T(LKS_PILOT));
+          dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_PILOT));
+          break;
+        case 2:
+          wf->SetCaption(MsgToken<1783>());  // Pilot profiles
+          lk::strcpy(profilesuffix, _T(LKS_AIRCRAFT));
+          dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_AIRCRAFT));
+          break;
+        case 3:
+          wf->SetCaption(MsgToken<1819>());  // Device profiles
+          lk::strcpy(profilesuffix, _T(LKS_DEVICE));
+          dfe->ScanDirectoryTop(_T(LKD_CONF), _T(LKS_DEVICE));
+          break;
+        default:
+          return;
+      }
+      dfe->Set(0);
     }
   }
 
