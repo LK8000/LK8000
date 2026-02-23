@@ -126,14 +126,6 @@ void SetRadioFrequency(WndButton* pWnd, devPutFreq_t&& devPutFreq, const TCHAR (
 
   if (khz > 0) {
     devPutFreq(khz, name.c_str());
-
-#ifdef STATUS_RADIO   // Status Popup not realy needed
-    TCHAR szMessage[60] = {0};
-    lk::snprintf(szMessage,_T("%s \n %s %6.3f ") ,Name, Type, Frequency);
-    DoStatusMessage(_T(""), szMessage);
-
-    retStatus=3;
-#endif
   }
   
   if(pWnd) {
