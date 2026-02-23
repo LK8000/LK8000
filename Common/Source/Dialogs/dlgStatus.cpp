@@ -343,7 +343,7 @@ static void UpdateValuesSystem() {
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpBatt2Volt"));
   if (wp) {
-	if (GPS_INFO.ExtBatt1_Voltage>=1000)
+	if (GPS_INFO.ExtBatt2_Voltage>=1000)
 		lk::snprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt2_Voltage-1000);
 	else
 		lk::snprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt2_Voltage);
