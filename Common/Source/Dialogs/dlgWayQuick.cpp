@@ -18,6 +18,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Radio.h"
+#include "util/TruncateString.hpp"
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
@@ -186,45 +187,45 @@ short dlgWayQuickShowModal(void){
   wFreqSB->Redraw();
   retStatus=0;
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP)&& WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
-        TCHAR ttmp[50];
+    CopyTruncateString(sTmp, std::size(sTmp), WPLSEL.Name, 9);
+    _tcscat(sTmp, _T(" "));
+    TCHAR* begin = sTmp + _tcslen(sTmp);
+    TCHAR* end = std::end(sTmp);
 
-                lk::snprintf(sTmp, TEXT("%s "), WPLSEL.Name);
-		if (_tcslen(sTmp)>9) {
-			sTmp[9]='\0';
-			_tcscat(sTmp, _T(" "));
-		}
+    if (_tcslen(WPLSEL.Freq) > 0) {
+      begin += lk::snprintf(begin, std::distance(begin, end), _T("%s "),
+                            WPLSEL.Freq);
+    } 
+    if (WPLSEL.RunwayDir >= 0) {
+      begin += lk::snprintf(begin, std::distance(begin, end), _T("RW %d "),
+                            WPLSEL.RunwayDir);
+    }
+    if (WPLSEL.RunwayLen > 0) {
+      // we use Altitude instead of distance, to keep meters and feet
+      begin += lk::snprintf(begin, std::distance(begin, end), _T("%.0f%s"),
+                            Units::ToAltitude(WPLSEL.RunwayLen),
+                            Units::GetAltitudeName());
+    }
+  }
+  else {
+    TCHAR code[20];
+    double wpdistance = 0;
+    double wpbearing = 0;
 
-                if ( _tcslen(WPLSEL.Freq)>0 )  {
-                        lk::snprintf(ttmp,_T("%s "),WPLSEL.Freq);
-                        _tcscat(sTmp, ttmp);
-                }
+    if (TeamCodeRefWaypoint >= 0) {
+      DistanceBearing(WayPointList[TeamCodeRefWaypoint].Latitude,
+                      WayPointList[TeamCodeRefWaypoint].Longitude,
+                      WayPointList[SelectedWaypoint].Latitude,
+                      WayPointList[SelectedWaypoint].Longitude, &wpdistance,
+                      &wpbearing);
 
-                if ( WPLSEL.RunwayDir>=0 )  {
-                        lk::snprintf(ttmp,_T("RW %d "),WPLSEL.RunwayDir);
-                        _tcscat(sTmp, ttmp);
-                }
-                if ( WPLSEL.RunwayLen>0 )  {
-                        // we use Altitude instead of distance, to keep meters and feet
-                        lk::snprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
-                        _tcscat(sTmp, ttmp);
-                }
-  } else {
-     TCHAR code[20];
-     double wpdistance = 0;
-     double wpbearing = 0;
-
-     if (TeamCodeRefWaypoint >= 0) {
-        DistanceBearing(WayPointList[TeamCodeRefWaypoint].Latitude,
-                  WayPointList[TeamCodeRefWaypoint].Longitude,
-                  WayPointList[SelectedWaypoint].Latitude,
-                  WayPointList[SelectedWaypoint].Longitude,
-                  &wpdistance, &wpbearing);
-
-        GetTeamCode(code,wpbearing, wpdistance);
-        lk::snprintf(sTmp, TEXT(" %s  (%s)"), WayPointList[SelectedWaypoint].Name, code);
-     } else {
-        lk::snprintf(sTmp, TEXT(" %s"), WayPointList[SelectedWaypoint].Name);
-     }
+      GetTeamCode(code, wpbearing, wpdistance);
+      lk::snprintf(sTmp, TEXT(" %s  (%s)"), WayPointList[SelectedWaypoint].Name,
+                   code);
+    }
+    else {
+      lk::snprintf(sTmp, TEXT(" %s"), WayPointList[SelectedWaypoint].Name);
+    }
   }
   wf->SetCaption(sTmp);
 
