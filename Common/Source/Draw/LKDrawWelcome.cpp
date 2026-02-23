@@ -101,7 +101,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   y+=(textSize.cy)/2; // spacing
 
   if (GPSAltitudeOffset != 0) {
-      lk::snprintf(Buffer, _T("WARNING: HGPS offset: %+.0f)"), Units::ToAltitude(GPSAltitudeOffset/1000.0));
+      lk::snprintf(Buffer, _T("WARNING: HGPS offset: %+.0f"), Units::ToAltitude(GPSAltitudeOffset/1000.0));
       y+=(textSize.cy);
       LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }
