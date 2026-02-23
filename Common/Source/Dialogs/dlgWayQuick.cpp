@@ -18,7 +18,7 @@
 #include "resource.h"
 #include "LKStyle.h"
 #include "Radio.h"
-#include "util/TruncateString.hpp"
+#include "Util/TruncateString.hpp"
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
