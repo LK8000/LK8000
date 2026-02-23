@@ -354,7 +354,7 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 	case CustomKeyMode_t::ckSonarToggle:
 		SonarWarning = !SonarWarning;
 		TCHAR sonarmsg[60];
-		_stprintf(sonarmsg,_T("%s "),MsgToken<1293>()); // SONAR
+		lk::snprintf(sonarmsg,_T("%s "),MsgToken<1293>()); // SONAR
 		if (SonarWarning)
 			_tcscat(sonarmsg,MsgToken<1643>()); // ENABLED
 		else
@@ -400,13 +400,13 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 	      MapWindow::SetAutoOrientation(); // 101008 reset it
 	      switch(DisplayOrientation)
 	      {
-            case TRACKUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken<737>()) ; break;  // _@M737_ "Track up"
-            case NORTHUP     : _stprintf(MapOrientMsg,_T("%s"),MsgToken<483>()) ; break;  // _@M483_ "North up"
-            case NORTHCIRCLE : _stprintf(MapOrientMsg,_T("%s"),MsgToken<482>()) ; break;  // _@M482_ "North circling"
-            case TARGETCIRCLE: _stprintf(MapOrientMsg,_T("%s"),MsgToken<682>()) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
-            case NORTHTRACK  : _stprintf(MapOrientMsg,_T("%s"),MsgToken<484>()) ; break;  // _@M484_ "North/track"
-            case NORTHSMART  : _stprintf(MapOrientMsg,_T("%s"),MsgToken<481>()) ; break;  // _@M481_ "North Smart"
-            case TARGETUP    : _stprintf(MapOrientMsg,_T("%s"),MsgToken<2349>()); break;  // _@M2349_"Target up"
+            case TRACKUP     : lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<737>()) ; break;  // _@M737_ "Track up"
+            case NORTHUP     : lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<483>()) ; break;  // _@M483_ "North up"
+            case NORTHCIRCLE : lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<482>()) ; break;  // _@M482_ "North circling"
+            case TARGETCIRCLE: lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<682>()) ; break;  // _@M682_ "Target circling"  _@M485_ "NorthUp above "
+            case NORTHTRACK  : lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<484>()) ; break;  // _@M484_ "North/track"
+            case NORTHSMART  : lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<481>()) ; break;  // _@M481_ "North Smart"
+            case TARGETUP    : lk::snprintf(MapOrientMsg,_T("%s"),MsgToken<2349>()); break;  // _@M2349_"Target up"
 
 	      }
 	      DoStatusMessage(MapOrientMsg,NULL,false);

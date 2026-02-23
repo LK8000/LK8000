@@ -1412,7 +1412,7 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
-    _stprintf(Temp,TEXT("%0.1f"),Units::ToVerticalSpeed(MACCREADY));
+    lk::snprintf(Temp,TEXT("%0.1f"),Units::ToVerticalSpeed(MACCREADY));
     DoStatusMessage(TEXT("MacCready "), Temp);
   }
 }
@@ -1665,7 +1665,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 			lk::strcpy(mbuf,MsgToken<345>());
 			break;
 		default:
-			_stprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw);
+			lk::snprintf(mbuf,_T("INVALID DATA CALCULATING WIND %d"), resw);
 			break;
 	}
 	if (automode==true) {
@@ -1686,17 +1686,17 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	return;
   }
 
-  _stprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"),
+  lk::snprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"),
         Units::ToHorizontalSpeed(wspeed / 3.6), 
         Units::GetHorizontalSpeedName(), 
         wfrom, MsgToken<2179>());
 
 #if 0
-  if (reswp<80) _stprintf(ttmp,_T("TrueWind! Quality: low"));
-  if (reswp<98) _stprintf(ttmp,_T("TrueWind! Quality: fair"));
-  if (reswp>=98) _stprintf(ttmp,_T("TrueWind! Quality: good"));
+  if (reswp<80) lk::snprintf(ttmp,_T("TrueWind! Quality: low"));
+  if (reswp<98) lk::snprintf(ttmp,_T("TrueWind! Quality: fair"));
+  if (reswp>=98) lk::snprintf(ttmp,_T("TrueWind! Quality: good"));
 #else
-  _stprintf(ttmp,_T("TrueWind! %s: %d%%"),MsgToken<866>(),resw); // Quality
+  lk::snprintf(ttmp,_T("TrueWind! %s: %d%%"),MsgToken<866>(),resw); // Quality
 #endif
 
   if (MessageBoxX(mbuf, ttmp, mbYesNo) == IdYes) {
@@ -1886,14 +1886,14 @@ void InputEvents::eventService(const TCHAR *misc) {
 	TCHAR mbuf[80];
 	PlayResource(TEXT("IDR_WAV_CLICK"));
 	LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
-	_stprintf(mbuf,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+	lk::snprintf(mbuf,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
 	Message::Lock();
 	Message::AddMessage(60000, 1, mbuf);
 	TCHAR sLongitude[16];
 	TCHAR sLatitude[16];
 	Units::LongitudeToString(GPS_INFO.Longitude, sLongitude);
 	Units::LatitudeToString(GPS_INFO.Latitude, sLatitude);
-	_stprintf(mbuf,_T("%s %s"), sLatitude, sLongitude);
+	lk::snprintf(mbuf,_T("%s %s"), sLatitude, sLongitude);
 	Message::AddMessage(60000, 1, mbuf);
 	Message::Unlock();
 	return;
@@ -2174,7 +2174,7 @@ void InputEvents::eventBugs(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
-    _stprintf(Temp,TEXT("%d"), iround(BUGS*100));
+    lk::snprintf(Temp,TEXT("%d"), iround(BUGS*100));
     DoStatusMessage(TEXT("Bugs Performance"), Temp);
   }
 }
@@ -2204,7 +2204,7 @@ void InputEvents::eventBallast(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
-    _stprintf(Temp,TEXT("%d"),iround(BALLAST*100));
+    lk::snprintf(Temp,TEXT("%d"),iround(BALLAST*100));
     DoStatusMessage(TEXT("Ballast %"), Temp);
   }
 }
@@ -2397,16 +2397,16 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 	if (_tcslen(buffer)>0) fp = _tfopen(buffer, TEXT("rb"));
 	if(fp == NULL) {
 		if (factory)
-			_stprintf(buffer2,_T("Profile \"%s\" not found inside _System"),misc);
+			lk::snprintf(buffer2,_T("Profile \"%s\" not found inside _System"),misc);
 		else
-			_stprintf(buffer2,_T("Profile \"%s\" not found inside _Configuration"),misc);
+			lk::snprintf(buffer2,_T("Profile \"%s\" not found inside _Configuration"),misc);
 		MessageBoxX(buffer2, _T("Load Profile"), mbOk);
 		return;
 	}
 	fclose(fp);
 
 	if (!factory) {
-		_stprintf(buffer2,_T("Confirm loading \"%s\" from _Configuration ?"),misc);
+		lk::snprintf(buffer2,_T("Confirm loading \"%s\" from _Configuration ?"),misc);
 		if (MessageBoxX(
 			buffer2,
 			_T("Load Profile"),
@@ -2419,7 +2419,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 	LKProfileLoad(buffer);
     LKProfileInitRuntime();
 	SettingsLeave();
-	_stprintf(buffer2,_T("Profile \"%s\" loaded"),misc);
+	lk::snprintf(buffer2,_T("Profile \"%s\" loaded"),misc);
 	MessageBoxX(buffer2, _T("Load Profile"), mbOk);
   }
 }
@@ -2429,7 +2429,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 void InputEvents::eventProfileSave(const TCHAR *misc) {
   TCHAR buffer[MAX_PATH];
   if (_tcslen(misc)>0) {
-	_stprintf(buffer,_T("Confirm saving \"%s\" to _Configuration ?"),misc);
+	lk::snprintf(buffer,_T("Confirm saving \"%s\" to _Configuration ?"),misc);
 	if (MessageBoxX(
 		buffer,
 		_T("Save Profile"),
@@ -2441,7 +2441,7 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
 	_tcscat(buffer,_T(DIRSEP));
 	_tcscat(buffer,misc);
 	LKProfileSave(buffer);
-	_stprintf(buffer,_T("%s saved to _Configuration "),misc);
+	lk::snprintf(buffer,_T("%s saved to _Configuration "),misc);
 	MessageBoxX(buffer, _T("Save Profile"), mbOk);
   }
 }
@@ -2509,7 +2509,7 @@ void InputEvents::eventAdjustForecastTemperature(const TCHAR *misc) {
   }
   if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
-    _stprintf(Temp,TEXT("%f"),CuSonde::maxGroundTemperature);
+    lk::snprintf(Temp,TEXT("%f"),CuSonde::maxGroundTemperature);
     DoStatusMessage(TEXT("Forecast temperature"), Temp);
   }
 }
@@ -2768,7 +2768,7 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   TCHAR tmode[50];
-  _stprintf(tmode,_T("%s: "), MsgToken<2249>());
+  lk::snprintf(tmode,_T("%s: "), MsgToken<2249>());
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
@@ -2860,7 +2860,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
     edit_waypoint.Flags += LANDPOINT;
   }
   edit_waypoint.Comment = NULL;
-  _stprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
+  lk::snprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
   edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
 

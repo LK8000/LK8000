@@ -31,7 +31,7 @@ bool WaypointInTerrainRange(WAYPOINT *List) {
       TCHAR sTmp[250];
       int res;
 
-      _stprintf(sTmp, _T("Waypoint #%d \"%s\" \r\n%s\r\n\r\n%s"),
+      lk::snprintf(sTmp, _T("Waypoint #%d \"%s\" \r\n%s\r\n\r\n%s"),
                 List->Number, List->Name,
 	// LKTOKEN  _@M837_ = "out of Terrain bound"
 		MsgToken<837>(),

@@ -163,7 +163,7 @@ static void UpdateButtons(WndForm* pForm) {
       lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M524_ = "Pilot name" 
-    _stprintf(text,TEXT("%s: %s"), MsgToken<524>(), val);
+    lk::snprintf(text,TEXT("%s: %s"), MsgToken<524>(), val);
     buttonPilotName->SetCaption(text);
   }
 
@@ -175,7 +175,7 @@ static void UpdateButtons(WndForm* pForm) {
       lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M59_ = "Aircraft type" 
-    _stprintf(text,TEXT("%s: %s"), MsgToken<59>(), val);
+    lk::snprintf(text,TEXT("%s: %s"), MsgToken<59>(), val);
     buttonAircraftType->SetCaption(text);
   }
 
@@ -187,7 +187,7 @@ static void UpdateButtons(WndForm* pForm) {
       lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M57_ = "Aircraft Reg" 
-    _stprintf(text,TEXT("%s: %s"), MsgToken<57>(), val);
+    lk::snprintf(text,TEXT("%s: %s"), MsgToken<57>(), val);
     buttonAircraftRego->SetCaption(text);
   }
 
@@ -199,7 +199,7 @@ static void UpdateButtons(WndForm* pForm) {
       lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M936_ = "Competition Class" 
-    _stprintf(text,TEXT("%s: %s"), MsgToken<936>(), val);
+    lk::snprintf(text,TEXT("%s: %s"), MsgToken<936>(), val);
     buttonCompetitionClass->SetCaption(text);
   }
 
@@ -211,7 +211,7 @@ static void UpdateButtons(WndForm* pForm) {
       lk::strcpy(val, MsgToken<7>());
     }
 	// LKTOKEN  _@M938_ = "Competition ID" 
-    _stprintf(text,TEXT("%s: %s"), MsgToken<938>(), val);
+    lk::snprintf(text,TEXT("%s: %s"), MsgToken<938>(), val);
     buttonCompetitionID->SetCaption(text);
   }
 
@@ -592,7 +592,7 @@ static void OnLiveTrackersrvClicked(WndButton* pWnd) {
 
 static void OnLiveTrackerportClicked(WndButton* pWnd) {
   TCHAR Temp[100];
-  _stprintf(Temp, _T("%d"), tracking::port_config);
+  lk::snprintf(Temp, _T("%d"), tracking::port_config);
   dlgNumEntryShowModal(Temp, 100);
   tracking::port_config = _tcstol(Temp, nullptr, 10);
   UpdateButtons(pWnd->GetParentWndForm());
@@ -741,7 +741,7 @@ static void InfoBoxPropName(TCHAR *name, int item, int mode) {
     break;
   }
   TCHAR buf[12];
-  _stprintf(buf,TEXT("%1d"), item);
+  lk::snprintf(buf,TEXT("%1d"), item);
   _tcscat(name,buf);
 }
 
@@ -1144,7 +1144,7 @@ void UpdateComPortSetting(WndForm* pForm,  size_t idx, const TCHAR* szPortName) 
     TCHAR newname[25];
 
     if(pForm) {
-      _stprintf(newname,  TEXT("%s"), MsgToken<232>());
+      lk::snprintf(newname,  TEXT("%s"), MsgToken<232>());
       newname[_tcslen(newname)-1] = (TCHAR)('A'+SelectedDevice);
       WndFrame  *wDev = (pForm->FindByName<WndFrame>(TEXT("frmCommName")));
       if(wDev) {
@@ -2576,13 +2576,13 @@ DataField* dfe = wp->GetDataField();
 	// LKTOKEN  _@M781_ = "Vario green+red" 
     dfe->addEnumText(MsgToken<781>());
 
-    _stprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<782>() );
+    lk::snprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<782>() );
     dfe->addEnumText(newtoken);
-    _stprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<780>() );
+    lk::snprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<780>() );
     dfe->addEnumText(newtoken);
-    _stprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<783>() );
+    lk::snprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<783>() );
     dfe->addEnumText(newtoken);
-    _stprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<781>() );
+    lk::snprintf(newtoken,_T("%s %s"),MsgToken<953>(),MsgToken<781>() );
     dfe->addEnumText(newtoken);
 
     dfe->Set(LKVarioBar);
@@ -3268,7 +3268,7 @@ static void InitDlgDevice(WndForm *pWndForm) {
 
   for(unsigned i = 0; i < MAXNUMDEVICES; ++i) {
     TCHAR szWndName[5];
-    _stprintf(szWndName, _T("cmd%c"), _T('A')+i);
+    lk::snprintf(szWndName, _T("cmd%c"), _T('A')+i);
     WindowControl * pWnd = pWndForm->FindByName(szWndName);
     if(pWnd) {
       pWnd->SetWidth(w);

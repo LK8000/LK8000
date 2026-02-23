@@ -19,11 +19,11 @@
 
 namespace {
 
-    void setFileSuffix(TCHAR* Out, PixelSize size) {
+    void setFileSuffix(TCHAR* Out, size_t OutSize, PixelSize size) {
         if(ScreenLandscape || size.cx < size.cy) {
-            _stprintf(Out, _T("_%03dx%03d." IMG_EXT), size.cx, size.cy);
+            lk::snprintf(Out, OutSize, _T("_%03dx%03d." IMG_EXT), size.cx, size.cy);
         } else {
-            _stprintf(Out, _T("_%03dx%03d." IMG_EXT), size.cy, size.cx);
+            lk::snprintf(Out, OutSize, _T("_%03dx%03d." IMG_EXT), size.cy, size.cx);
         }
     }
 
@@ -50,17 +50,18 @@ LKBitmap LoadSplash(const TCHAR *splashfile) {
     TCHAR* pSuffixStart = srcfile + _tcslen(srcfile); // end of path
     _tcscpy(pSuffixStart, splashfile); // add filename
     pSuffixStart += _tcslen(pSuffixStart);
+    TCHAR* pSuffixEnd = std::end(srcfile);
 
     LKBitmap hWelcomeBitmap;
 
 
     // first look for lkstart_480x272.bmp for example
-    setFileSuffix(pSuffixStart, {ScreenSizeX, ScreenSizeY});
+    setFileSuffix(pSuffixStart, std::distance(pSuffixStart, pSuffixEnd), {ScreenSizeX, ScreenSizeY});
     hWelcomeBitmap = LoadSplashBitmap(srcfile);
 
     if (!hWelcomeBitmap.IsDefined()) {
         if ((ScreenLandscape && ScreenSizeX > 800) || ScreenSizeX > 480) {
-            setFileSuffix(pSuffixStart, {1920, 1080});
+            setFileSuffix(pSuffixStart, std::distance(pSuffixStart, pSuffixEnd), {1920, 1080});
             hWelcomeBitmap = LoadSplashBitmap(srcfile);
         }
     }
@@ -68,13 +69,13 @@ LKBitmap LoadSplash(const TCHAR *splashfile) {
     if (!hWelcomeBitmap.IsDefined()) {
         switch(ScreenGeometry) {
         case SCREEN_GEOMETRY_43:
-            setFileSuffix(pSuffixStart, {640, 480});
+            setFileSuffix(pSuffixStart, std::distance(pSuffixStart, pSuffixEnd), {640, 480});
 	        break;
 	    case SCREEN_GEOMETRY_53:
-            setFileSuffix(pSuffixStart, {800, 480});
+            setFileSuffix(pSuffixStart, std::distance(pSuffixStart, pSuffixEnd), {800, 480});
             break;
 	    case SCREEN_GEOMETRY_169:
-            setFileSuffix(pSuffixStart, {480, 272});
+            setFileSuffix(pSuffixStart, std::distance(pSuffixStart, pSuffixEnd), {480, 272});
             break;
 	    default:
 	        break;

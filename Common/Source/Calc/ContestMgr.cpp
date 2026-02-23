@@ -988,13 +988,13 @@ void CContestMgr::SolveXC() {
     lk::strcpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("FAI"));
     switch (_XCFAIStatus) {
       case XCTriangleStatus::INVALID:
-        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI*%.0f"),predicted_distance_fai/1000.);
+        lk::snprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI*%.0f"),predicted_distance_fai/1000.);
         break;
       case XCTriangleStatus::VALID:
-        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI %.0f"),predicted_distance_fai/1000.);
+        lk::snprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI %.0f"),predicted_distance_fai/1000.);
         break;
       case XCTriangleStatus::CLOSED:
-        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI!%.0f"),predicted_distance_fai/1000.);
+        lk::snprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("FAI!%.0f"),predicted_distance_fai/1000.);
         break;
     }
   } else if (predicted_score_ft > 0) {
@@ -1013,13 +1013,13 @@ void CContestMgr::SolveXC() {
     lk::strcpy(WayPointList[RESWP_FAIOPTIMIZED].Code, _T("TRI"));
     switch (_XCFTStatus) {
       case XCTriangleStatus::INVALID:
-        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI*%.0f"),predicted_distance_ft/1000.);
+        lk::snprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI*%.0f"),predicted_distance_ft/1000.);
         break;
       case XCTriangleStatus::VALID:
-        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI %.0f"),predicted_distance_ft/1000.);
+        lk::snprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI %.0f"),predicted_distance_ft/1000.);
         break;
       case XCTriangleStatus::CLOSED:
-        _stprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI!%.0f"),predicted_distance_ft/1000.);
+        lk::snprintf(WayPointList[RESWP_FAIOPTIMIZED].Name, _T("TRI!%.0f"),predicted_distance_ft/1000.);
         break;
     }
   } else {

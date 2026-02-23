@@ -42,7 +42,7 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 	TCHAR textBuffer[12];
 	const auto oldfont = Surface.SelectObject(LK8InfoNormalFont); // always remember to save object or we miss font
 	const int hdg = (int)round(DrawInfo.TrackBearing);
-	_stprintf(textBuffer,_T("%03d"), hdg);
+	lk::snprintf(textBuffer,_T("%03d"), hdg);
 	SIZE textSize;
 	Surface.GetTextSize(textBuffer, &textSize); // get size of heading printed digits
 	const int halfBrgSize = textSize.cx/2;
@@ -103,19 +103,19 @@ void MapWindow::DrawGAscreen(LKSurface& Surface, const POINT& AircraftPos, const
 			const int drawHdg = displayHeading/10;
 			switch (drawHdg) {
 			case 0:
-				_stprintf(textBuffer, _T("N"));
+				lk::strcpy(textBuffer, _T("N"));
 				break;
 			case 9:
-				_stprintf(textBuffer, _T("E"));
+				lk::strcpy(textBuffer, _T("E"));
 				break;
 			case 18:
-				_stprintf(textBuffer, _T("S"));
+				lk::strcpy(textBuffer, _T("S"));
 				break;
 			case 27:
-				_stprintf(textBuffer, _T("W"));
+				lk::strcpy(textBuffer, _T("W"));
 				break;
 			default:
-				_stprintf(textBuffer, _T("%d"), drawHdg);
+				lk::snprintf(textBuffer, _T("%d"), drawHdg);
 				break;
 			}
 			Surface.GetTextSize(textBuffer, &textSize);

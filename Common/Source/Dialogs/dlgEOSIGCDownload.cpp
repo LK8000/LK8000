@@ -245,7 +245,7 @@ static void OnEnterClicked(WndButton *pWnd) {
   TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next(TEXT(" "));
   _tcscat(IGCFilename, _T(".IGC"));  
   lk::strcpy(DownoadIGCFilename, IGCFilename);
-  _stprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(), IGCFilename);
+  lk::snprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(), IGCFilename);
   if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes)  // _@2404 "Download"
   {
     /** check if file already exist and is not empty ************/

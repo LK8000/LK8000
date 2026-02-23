@@ -197,7 +197,7 @@ namespace {
 
     // prepare and send command
     TCHAR buffer[128];
-    _stprintf(buffer, TEXT("C,%d,%02d%07.4f%c,%03d%07.4f%c,%d,%d,%d,%-12s%-12s\r"),
+    lk::snprintf(buffer, TEXT("C,%d,%02d%07.4f%c,%03d%07.4f%c,%d,%d,%d,%-12s%-12s\r"),
               idx + 1,
               DegLat, MinLat, NoS,
               DegLon, MinLon, EoW,
@@ -225,7 +225,7 @@ namespace {
 
     // prepare and send command
     TCHAR buffer[128];
-    _stprintf(buffer, TEXT("Y%-*s\r"), TASK_NAME_LENGTH, tskName);
+    lk::snprintf(buffer, TEXT("Y%-*s\r"), TASK_NAME_LENGTH, tskName);
     d->Com->WriteString(buffer);
 
     // wait for command prompt
@@ -246,14 +246,16 @@ namespace {
     // prepare and send command
     TCHAR buffer[128];
     TCHAR *text = buffer;
-    text += _stprintf(text, TEXT("T,0"));
+    TCHAR *text_end = std::end(buffer);
+
+    text += lk::snprintf(text, std::distance(text, text_end), _T("%s"), _T("T,0"));
     for(size_t i=0; i<9; i++) {
       if(i < task.size())
-        text += _stprintf(text, TEXT(",%d"), task[i] + 1);
+        text += lk::snprintf(text, std::distance(text, text_end), _T(",%d"), task[i] + 1);
       else
-        text += _stprintf(text, TEXT(",0"));
+        text += lk::snprintf(text, std::distance(text, text_end), _T("%s"), _T(",0"));
     }
-    text += _stprintf(text, TEXT("\r"));
+    text += lk::snprintf(text, std::distance(text, text_end), _T("%s"), _T("\r"));
     d->Com->WriteString(buffer);
 
     // wait for command prompt
@@ -292,7 +294,7 @@ namespace {
     TCHAR compId[4];
     LK_tcsncpy(compId, decl.CompetitionID, 3);
     TCHAR buffer[128];
-    _stprintf(buffer, TEXT("X,%d,%-24s,%-9s%-3s,%d,%d,%d,%d\r"),
+    lk::snprintf(buffer, TEXT("X,%d,%-24s,%-9s%-3s,%d,%d,%d,%d\r"),
               recordX.units,
               pilot,
               glider,

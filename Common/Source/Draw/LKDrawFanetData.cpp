@@ -177,7 +177,7 @@ void MapWindow::LKDrawFanetData(LKSurface& Surface, const RECT& rc, const Screen
 	sc_name.y -= NIBLSCALE(16);
 	sc_av = sc_name;
 
-	_stprintf(lbuffer, _T("%d|%d"), 
+	lk::snprintf(lbuffer, _T("%d|%d"), 
 					(int)round(Units::ToWindSpeed(DrawInfo.FANET_Weather[i].windSpeed)), 
 					(int)round(Units::ToWindSpeed(DrawInfo.FANET_Weather[i].windGust)));
 	displaymode.Border=1;

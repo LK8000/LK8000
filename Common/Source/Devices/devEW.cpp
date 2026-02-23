@@ -34,7 +34,7 @@ void appendCheckSum(TCHAR *String){
     CalcCheckSum = (unsigned char)(CalcCheckSum ^ (unsigned char)String[i]);
   }
 
-  _stprintf(sTmp, TEXT("%02X\r\n"), CalcCheckSum);
+  lk::snprintf(sTmp, TEXT("%02X\r\n"), CalcCheckSum);
 	_tcscat(String, sTmp);
 
 }
@@ -83,7 +83,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
     return FALSE;
   }
 
-  _stprintf(sTmp, TEXT("#SPI"));                  // send SetPilotInfo
+  lk::strcpy(sTmp, TEXT("#SPI"));                  // send SetPilotInfo
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
   Sleep(50);
@@ -93,7 +93,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
   LK_tcsncpy(sGliderID, decl->AircraftRego, 8);
 
   // build string (field 4-5 are GPS info, no idea what to write)
-  _stprintf(sTmp, TEXT("%-12s%-8s%-8s%-12s%-12s%-6s\r"),
+  lk::snprintf(sTmp, TEXT("%-12s%-8s%-8s%-12s%-12s%-6s\r"),
            sPilot,
            sGliderType,
            sGliderID,
@@ -113,7 +113,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
 
 
   /*
-  _stprintf(sTmp, TEXT("#SUI%02d"), 0);           // send pilot name
+  lk::snprintf(sTmp, TEXT("#SUI%02d"), 0);           // send pilot name
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
   Sleep(50);
@@ -125,7 +125,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
     return(FALSE);
   };
 
-  _stprintf(sTmp, TEXT("#SUI%02d"), 1);           // send type of aircraft
+  lk::snprintf(sTmp, TEXT("#SUI%02d"), 1);           // send type of aircraft
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
   Sleep(50);
@@ -137,7 +137,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
     return(FALSE);
   };
 
-  _stprintf(sTmp, TEXT("#SUI%02d"), 2);           // send aircraft ID
+  lk::snprintf(sTmp, TEXT("#SUI%02d"), 2);           // send aircraft ID
   appendCheckSum(sTmp);
   d->Com->WriteString(sTmp);
   Sleep(50);
@@ -151,7 +151,7 @@ BOOL EWDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned errBuf
   */
 
   for (int i=0; i<6; i++){                        // clear all 6 TP's
-    _stprintf(sTmp, TEXT("#CTP%02d"), i);
+    lk::snprintf(sTmp, TEXT("#CTP%02d"), i);
     appendCheckSum(sTmp);
     d->Com->WriteString(sTmp);
     if (!ExpectString(d, TEXT("OK\r"))){
@@ -252,7 +252,7 @@ BOOL EWDeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
   EW_Flags = (short)(EoW_Flag | NoS_Flag);
 
                                                   // setup command string
-  _stprintf(EWRecord,TEXT("#STP%02X%02X%02X%02X%02X%02X%02X%02X%02X%04X%02X%04X"),
+  lk::snprintf(EWRecord,TEXT("#STP%02X%02X%02X%02X%02X%02X%02X%02X%02X%04X%02X%04X"),
                       ewDecelTpIndex,
                       IDString[0],
                       IDString[1],

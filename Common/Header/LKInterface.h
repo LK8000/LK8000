@@ -42,7 +42,14 @@ int	GetInfoboxType(int i);
 int	GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode);
 
 int GetOvertargetIndex();
-void GetOvertargetName(TCHAR *overtargetname);
+
+void GetOvertargetName(TCHAR *overtargetname, size_t size);
+
+template<size_t size>
+void GetOvertargetName(TCHAR (&overtargetname)[size]) {
+	GetOvertargetName(overtargetname, size);
+}
+
 extern TCHAR * GetOvertargetHeader(void);
 extern void RotateOvertarget(void);
 void ExternalDeviceSendTarget();

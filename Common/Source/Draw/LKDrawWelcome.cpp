@@ -43,9 +43,9 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
 
   #ifndef LKCOMPETITION
-  _stprintf(Buffer,TEXT("%s v%s.%s %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
+  lk::snprintf(Buffer,TEXT("%s v%s.%s %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
   #else
-  _stprintf(Buffer,TEXT("%sC v%s.%s %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
+  lk::snprintf(Buffer,TEXT("%sC v%s.%s %s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE),_T(__DATE__));
   #endif
   Surface.GetTextSize(Buffer, &textSize);
   y+=(textSize.cy)/2;
@@ -53,12 +53,12 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
   #ifdef LKCOMPETITION
   y+=(textSize.cy);
-  _stprintf(Buffer,_T("COMPETITION VERSION"));
+  lk::snprintf(Buffer,_T("COMPETITION VERSION"));
   LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   #endif
 
   if (HaveSystemInfo) {
-     _stprintf(Buffer, _T("CPUs: #%d running at %d Mhz, %d bogoMips"),SystemInfo_Cpus(),
+     lk::snprintf(Buffer, _T("CPUs: #%d running at %d Mhz, %d bogoMips"),SystemInfo_Cpus(),
      SystemInfo_Mhz(), SystemInfo_Bogomips());
      y+=(textSize.cy);
      LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
@@ -89,19 +89,19 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
 
   y+=(textSize.cy)/2; // spacing
 
-  _stprintf(Buffer, _T("Waypoints loaded: %u"), (unsigned int)(WayPointList.size()-NUMRESWP));
+  lk::snprintf(Buffer, _T("Waypoints loaded: %u"), (unsigned int)(WayPointList.size()-NUMRESWP));
   y+=(textSize.cy);
   LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
 
-  _stprintf(Buffer, _T("Free RAM: %0.1fM"),freeram);
+  lk::snprintf(Buffer, _T("Free RAM: %0.1fM"),freeram);
   y+=(textSize.cy);
   LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
 
   y+=(textSize.cy)/2; // spacing
 
   if (GPSAltitudeOffset != 0) {
-      _stprintf(Buffer, _T("WARNING: HGPS offset: %+.0f)"), Units::ToAltitude(GPSAltitudeOffset/1000.0));
+      lk::snprintf(Buffer, _T("WARNING: HGPS offset: %+.0f)"), Units::ToAltitude(GPSAltitudeOffset/1000.0));
       y+=(textSize.cy);
       LKWriteText(Surface, Buffer, x, y , WTMODE_NORMAL, WTALIGN_LEFT,RGB_WHITENOREV, false);
   }

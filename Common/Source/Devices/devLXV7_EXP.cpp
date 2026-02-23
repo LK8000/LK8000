@@ -73,7 +73,7 @@ TCHAR  szTmp[254];
 
 if(LXV7_EXP_iGPSBaudrate ==0)
 {
-  _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+  lk::strcpy(szTmp, TEXT("$PLXV0,BRGPS,R"));
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
   Sleep(CHANGE_DELAY);
@@ -87,7 +87,7 @@ if(LXV7_EXP_iGPSBaudrate ==0)
 	TestLog(_T("V7: enable LX V7 direct Link"));
 	LXV7_EXP_iPDABaudrate = d->Com->GetBaudrate();
 
-	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
+	lk::strcpy(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Sleep(CHANGE_DELAY);
@@ -111,7 +111,7 @@ if(LXV7_EXP_iGPSBaudrate ==0)
     }
 
 	TestLog(_T("v7: Return from V7 link"));
-	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
+	lk::strcpy(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
 	LXV7_EXPNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Sleep(CHANGE_DELAY);
@@ -151,7 +151,7 @@ TCHAR  szCheck[254];
 	//  if(szStrgi0] != ' ')
 	    iCheckSum ^= szStrg[i];
   }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+  lk::snprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
   return iCheckSum;
 }
@@ -159,10 +159,9 @@ TCHAR  szCheck[254];
 
 bool DevLXV7_EXP::SetupLX_Sentence(DeviceDescriptor_t* d)
 {
-TCHAR  szTmp[254];
+  TCHAR szTmp[254];
 
-
-_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
+  lk::strcpy(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,10,1,0,0"));
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
@@ -202,7 +201,7 @@ BOOL LXV7_EXPPutMacCready(DeviceDescriptor_t* d, double MacCready){
     return false;
   }
 
-  _stprintf(szTmp, TEXT("$PLXV0,MC,W,%3.1f"), MacCready );
+  lk::snprintf(szTmp, TEXT("$PLXV0,MC,W,%3.1f"), MacCready );
 
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
@@ -217,7 +216,7 @@ BOOL LXV7_EXPPutBallast(DeviceDescriptor_t* d, double Ballast) {
     return false;
   }
   double fLXBalFact = CalculateLXBalastFactor(Ballast);
-  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"), fLXBalFact);
+  lk::snprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"), fLXBalFact);
 
   LXV7_EXPNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
@@ -231,8 +230,8 @@ if(LXV7_EXP_bValid == false)
   return false;
 
 
-    //  _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
-    _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),CalculateLXBugs(Bugs));
+    //  lk::snprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
+    lk::snprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),CalculateLXBugs(Bugs));
     LXV7_EXPNMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
 
@@ -262,7 +261,7 @@ BOOL  DevLXV7_EXP::PutTarget(DeviceDescriptor_t* d, const WAYPOINT& wpt) {
   MinLon *=60;
 
   TCHAR szTmp[MAX_NMEA_LEN];
-  _stprintf(szTmp, _T("$PLXVTARG,%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
+  lk::snprintf(szTmp, _T("$PLXVTARG,%s,%02d%05.2f,%c,%03d%05.2f,%c,%i"),
               wpt.Name,
               DegLat, MinLat, NoS, DegLon, MinLon, EoW,
               (int)(wpt.Altitude + 0.5));
@@ -320,7 +319,7 @@ BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_IN
     int iQNH = (int)(QNH * 100.0);
     if (iQNH != iOldQNH) {
       iOldQNH = iQNH;
-      _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"), (int)iQNH);
+      lk::snprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"), (int)iQNH);
       LXV7_EXPNMEAddCheckSumStrg(szTmp);
       d->Com->WriteString(szTmp);
     }
@@ -328,13 +327,13 @@ BOOL DevLXV7_EXP::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_IN
     int QFE = (int)QFEAltitudeOffset;
     if (QFE != oldQFEOff) {
       oldQFEOff = QFE;
-      _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"), (int)(QFEAltitudeOffset));
+      lk::snprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"), (int)(QFEAltitudeOffset));
       LXV7_EXPNMEAddCheckSumStrg(szTmp);
       //    d->Com->WriteString(szTmp);
     }
   }
   if (LXV7_EXP_iGPSBaudrate == 0) {
-    _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+    lk::strcpy(szTmp, TEXT("$PLXV0,BRGPS,R"));
     LXV7_EXPNMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
   }
@@ -446,9 +445,9 @@ bool DevLXV7_EXP::LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pG
       StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, d->HardwareId / 10.0);
 
       TCHAR str[255];
-      _stprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
+      lk::snprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
       DoStatusMessage(str);
-      _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, d->HardwareId / 10.0);
+      lk::snprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, d->HardwareId / 10.0);
       DoStatusMessage(str);
     }
   }

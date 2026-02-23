@@ -256,7 +256,7 @@ BOOL CDevCProbe::ParseFW( nmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int Version = HexStrToInt(wiss.GetNextString());
 
 	LockDeviceData();
-	_stprintf(m_szVersion, TEXT("%u.%.02u"), ((Version&0xFF00) >> 8), (Version&0x00FF));
+	lk::snprintf(m_szVersion, TEXT("%u.%.02u"), ((Version&0xFF00) >> 8), (Version&0x00FF));
 	UnlockDeviceData();
 
 	return TRUE;
@@ -431,7 +431,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	UnlockFlightData();
 
 	LockDeviceData();
-	_stprintf(Temp, TEXT("C-Probe - Version: %s"), m_szVersion);
+	lk::snprintf(Temp, TEXT("C-Probe - Version: %s"), m_szVersion);
 	UnlockDeviceData();
 
 	pWnd->SetCaption(Temp);
@@ -439,51 +439,51 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	WndProperty* wp;
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpPitch"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Pitch, MsgToken<2179>());
+		lk::snprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Pitch, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpHeading"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading.value(), MsgToken<2179>());
+		lk::snprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading.value(), MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpRoll"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Roll, MsgToken<2179>());
+		lk::snprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Roll, MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 
 
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpGx"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().x);
+		lk::snprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().x);
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpGy"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().y);
+		lk::snprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().y);
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpGz"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().z);
+		lk::snprintf(Temp, TEXT("%.2f"), _INFO.Acceleration.value().z);
 		wp->SetText(Temp);
 	}
 	
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpTemp"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature.value(), MsgToken<2179>());
+		lk::snprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature.value(), MsgToken<2179>());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpRh"));
 	if(wp){
-		_stprintf(Temp, TEXT("%.2f %%"), _INFO.RelativeHumidity.value());
+		lk::snprintf(Temp, TEXT("%.2f %%"), _INFO.RelativeHumidity.value());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpDeltaPress"));
 	if(wp){
 		LockDeviceData();
-		_stprintf(Temp, TEXT("%.2f Pa"), m_delta_press);
+		lk::snprintf(Temp, TEXT("%.2f Pa"), m_delta_press);
 		UnlockDeviceData();
 
 		wp->SetText(Temp);
@@ -491,7 +491,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpAbsPress"));
 	if(wp){
 		LockDeviceData();
-		_stprintf(Temp, TEXT("%.2f hPa"), m_abs_press/100.);
+		lk::snprintf(Temp, TEXT("%.2f hPa"), m_abs_press/100.);
 		UnlockDeviceData();
 
 		wp->SetText(Temp);

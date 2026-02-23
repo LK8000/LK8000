@@ -520,7 +520,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			} else if (DisplayTextType == DISPLAYICAO) {
 				lk::strcpy(Buffer2,tp.Code);
 			} else if (DisplayTextType == DISPLAYNUMBER) {
-				_stprintf(Buffer2, _T("%d"),tp.Number);
+				lk::snprintf(Buffer2, _T("%d"),tp.Number);
 			} else if(intask || (DisplayTextType != DISPLAYNAMEIFINTASK)) {
 				CopyTruncateString(Buffer2, std::size(Buffer2), tp.Name, label_resizer[DisplayTextType]);
 			}
@@ -533,15 +533,15 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 					break;
 
 					case avGR :
-						_stprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)tpc.GR);
+						lk::snprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)tpc.GR);
 					break;
 
 					case avAltitude :
-						_stprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)Units::ToAltitude(tp.AltArivalAGL), sAltUnit);
+						lk::snprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)Units::ToAltitude(tp.AltArivalAGL), sAltUnit);
 					break;
 
 					case avGR_Altitude :
-						_stprintf(Buffer, TEXT("%s:%d/%d%s"), Buffer2, (int)tpc.GR, (int)Units::ToAltitude(tp.AltArivalAGL), sAltUnit);
+						lk::snprintf(Buffer, TEXT("%s:%d/%d%s"), Buffer2, (int)tpc.GR, (int)Units::ToAltitude(tp.AltArivalAGL), sAltUnit);
 					break;
 				}
 				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {

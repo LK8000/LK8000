@@ -44,9 +44,9 @@ void OnInfoBoxHelp(WndProperty * Sender){
     return;
   }
 
-  _stprintf(caption, TEXT("InfoBox %s in %s mode"), Sender->GetCaption(), mode);
+  lk::snprintf(caption, TEXT("InfoBox %s in %s mode"), Sender->GetCaption(), mode);
 
-  _stprintf(shelp,_T("_@H%d_"),type+800);
+  lk::snprintf(shelp,_T("_@H%d_"),type+800);
   dlgHelpShowModal(caption, shelp);
 
 

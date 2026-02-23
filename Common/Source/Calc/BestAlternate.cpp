@@ -130,16 +130,16 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   #ifdef DEBUG_BESTALTERNATE
   FILE *fp;
   if ( (fp=_tfopen(_T("DEBUG.TXT"),_T("a"))) != NULL )  {
-	_stprintf(ventabuffer,TEXT("==================\n"));
+	lk::snprintf(ventabuffer,TEXT("==================\n"));
 	fprintf(fp,"%S",ventabuffer);
-	_stprintf(ventabuffer,TEXT("[GPSTIME=%02d:%02d:%02d] Altitude=%dm searchrange=%dKm Curr.Best=%d\n\n"),
+	lk::snprintf(ventabuffer,TEXT("[GPSTIME=%02d:%02d:%02d] Altitude=%dm searchrange=%dKm Curr.Best=%d\n\n"),
 	     GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second,
 	     (int)Calculated->NavAltitude, (int)searchrange, BestAlternate);
 	fprintf(fp,"%S",ventabuffer);
 	for ( int dbug=0; dbug<MAXBEST*2; dbug++) {
-		if ( sortApproxIndex[dbug] <0 ) _stprintf(ventabuffer,_T("%d=empty\n"), dbug);
+		if ( sortApproxIndex[dbug] <0 ) lk::snprintf(ventabuffer,_T("%d=empty\n"), dbug);
 		else
-			_stprintf(ventabuffer,TEXT("%d=%s(%d)\n"), dbug, 
+			lk::snprintf(ventabuffer,TEXT("%d=%s(%d)\n"), dbug, 
 			WayPointList[sortApproxIndex[dbug]].Name, sortApproxDistance[dbug] );
 		fprintf(fp,"%S",ventabuffer);
 	}
@@ -254,23 +254,23 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   #ifdef DEBUG_BESTALTERNATE
   if ( (fp=_tfopen(_T("DEBUG.TXT"),_T("a"))) != NULL )  {
-	_stprintf(ventabuffer,_T("\nLandable:\n"));
+	lk::snprintf(ventabuffer,_T("\nLandable:\n"));
 	fprintf(fp,"%S",ventabuffer);
 	for ( int dbug=0; dbug<MAXBEST; dbug++) {
 		if ( sortedLandableIndex[dbug] <0 ) {
-			_stprintf(ventabuffer,_T("%d=empty\n"), dbug);
+			lk::snprintf(ventabuffer,_T("%d=empty\n"), dbug);
 			fprintf(fp,"%S",ventabuffer);
 		} else {
-			_stprintf(ventabuffer,_T("%d=%s (%dm)"), dbug, 
+			lk::snprintf(ventabuffer,_T("%d=%s (%dm)"), dbug, 
 			WayPointList[sortedLandableIndex[dbug]].Name, (int)sortedArrivalAltitude[dbug] );
 			fprintf(fp,"%S",ventabuffer);
 			if ( sortedLandableIndex[dbug] == HomeWaypoint )
-				_stprintf(ventabuffer,_T(":HOME") );
+				lk::snprintf(ventabuffer,_T(":HOME") );
 			else
 				if ( WayPointCalc[sortedLandableIndex[dbug]].Preferred == TRUE )
-					_stprintf(ventabuffer,_T(":PREF") );
+					lk::snprintf(ventabuffer,_T(":PREF") );
 				else
-					_stprintf(ventabuffer,_T("") );
+					lk::snprintf(ventabuffer,_T("") );
 				fprintf(fp,"%S\n",ventabuffer);
 		}
 				
@@ -291,7 +291,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	* Use the closer, hopefully you are landing on your airport
 	*/
 	#ifdef DEBUG_BESTALTERNATE
-	_stprintf(ventabuffer,TEXT("Under safety at MSL, using closer"));
+	lk::snprintf(ventabuffer,TEXT("Under safety at MSL, using closer"));
 	if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL){;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 	// DoStatusMessage(ventabuffer);
 	#endif
@@ -302,7 +302,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		if ( !ValidWayPoint(curwp) ) {
 			//#ifdef DEBUG_BESTALTERNATE
-			//_stprintf(ventabuffer,TEXT("k=%d skip invalid waypoint curwp=%d"), k, curwp );
+			//lk::snprintf(ventabuffer,TEXT("k=%d skip invalid waypoint curwp=%d"), k, curwp );
 			//if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL){;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 			//#endif
 			continue;
@@ -323,7 +323,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if ( grsafe > grpolar ) {
 			// Over degraded polar GR for this waypoint
 			#ifdef DEBUG_BESTALTERNATE
-			_stprintf(ventabuffer,TEXT("k=%d %s grsafe=%d > grpolar=%d, skipping. "), 
+			lk::snprintf(ventabuffer,TEXT("k=%d %s grsafe=%d > grpolar=%d, skipping. "), 
 			 k, WayPointList[curwp].Name, (int)grsafe, (int)grpolar );
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			  {;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -339,7 +339,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		if ( (HomeWaypoint >= 0) && (curwp == HomeWaypoint) ) {
 			#ifdef DEBUG_BESTALTERNATE
-			_stprintf(ventabuffer,TEXT("k=%d locking HOME!"), k);
+			lk::snprintf(ventabuffer,TEXT("k=%d locking HOME!"), k);
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 			#endif
@@ -359,7 +359,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			curbestgr_preferred=curgr;
 			
 			#ifdef DEBUG_BESTALTERNATE
-			_stprintf(ventabuffer,TEXT("k=%d PREFERRED bestalternate=%d,%s"), k,curwp,
+			lk::snprintf(ventabuffer,TEXT("k=%d PREFERRED bestalternate=%d,%s"), k,curwp,
 			WayPointList[curwp].Name );
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -371,7 +371,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// If we already found a preferred, stop searching for anything but home
 		if ( bestalternate >= 0 && WayPointCalc[bestalternate].Preferred) {
 			#ifdef DEBUG_BESTALTERNATE
-			_stprintf(ventabuffer,TEXT("Ignoring:[k=%d]%s because current best <%s> is a PREF"), k, 
+			lk::snprintf(ventabuffer,TEXT("Ignoring:[k=%d]%s because current best <%s> is a PREF"), k, 
 			WayPointList[curwp].Name, WayPointList[bestalternate].Name);
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -387,7 +387,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				curbestairport=curwp;
 				curbestgr=curgr; // ONLY FOR AIRPORT! NOT FOR OUTLANDINGS!!
 				#ifdef DEBUG_BESTALTERNATE
-				_stprintf(ventabuffer,TEXT("[k=%d]<%s> (curgr=%d < curbestgr=%d) set as bestairport"), 
+				lk::snprintf(ventabuffer,TEXT("[k=%d]<%s> (curgr=%d < curbestgr=%d) set as bestairport"), 
 				k, WayPointList[curwp].Name, (int)curgr, (int)curbestgr );
 				if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 				{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -399,7 +399,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				curbestgr_outlanding=curgr;
 				curbestoutlanding=curwp;
 				#ifdef DEBUG_BESTALTERNATE
-				_stprintf(ventabuffer,TEXT("[k=%d]<%s> (curgr=%d < curbestgr=%d and <curbestgr_outland=%d) set as bestoutlanding"), 
+				lk::snprintf(ventabuffer,TEXT("[k=%d]<%s> (curgr=%d < curbestgr=%d and <curbestgr_outland=%d) set as bestoutlanding"), 
 				k, WayPointList[curwp].Name, (int)curgr, (int)curbestgr, (int)curbestgr_outlanding );
 				if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 				{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -413,7 +413,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	if ( curbestairport >= 0 ) {
 		#ifdef DEBUG_BESTALTERNATE
-		_stprintf(ventabuffer,TEXT("--> no bestalternate, choosing airport <%s> with gr=%d"), 
+		lk::snprintf(ventabuffer,TEXT("--> no bestalternate, choosing airport <%s> with gr=%d"), 
 		WayPointList[curbestairport].Name, (int)curbestgr );
 		if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 		{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -423,7 +423,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	} else {
 		if ( curbestoutlanding >= 0 ) {
 			#ifdef DEBUG_BESTALTERNATE
-			_stprintf(ventabuffer,TEXT("--> no bestalternate, choosing outlanding <%s> with gr=%d"), 
+			lk::snprintf(ventabuffer,TEXT("--> no bestalternate, choosing outlanding <%s> with gr=%d"), 
 			WayPointList[curbestoutlanding].Name, 
 			(int)WayPointCalc[curbestoutlanding].GR);
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
@@ -441,7 +441,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			if ( ValidWayPoint(sortedLandableIndex[0]) ) {
 				bestalternate=sortedLandableIndex[0];
 				#ifdef DEBUG_BESTALTERNATE
-				_stprintf(ventabuffer,TEXT("--> No bestalternate was found, and no good airport or outlanding!\n    Setting first available: <%s>"),
+				lk::snprintf(ventabuffer,TEXT("--> No bestalternate was found, and no good airport or outlanding!\n    Setting first available: <%s>"),
 				WayPointList[bestalternate].Name);
 				if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 				{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -464,7 +464,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 					bestalternate=active_bestalternate_on_entry;
 					if ( WayPointCalc[bestalternate].AltArriv[AltArrivMode] <0 ) {
 						#ifdef DEBUG_BESTALTERNATE
-						_stprintf(ventabuffer,TEXT("Landable list is empty and old bestalternate <%s> has Arrival=%d <0, NO good."),
+						lk::snprintf(ventabuffer,TEXT("Landable list is empty and old bestalternate <%s> has Arrival=%d <0, NO good."),
 						WayPointList[bestalternate].Name, (int) WayPointCalc[bestalternate].AltArriv[AltArrivMode]);
 						if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 						{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -473,7 +473,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 						if ( ValidWayPoint( sortApproxIndex[0]) ) {
 							bestalternate=sortApproxIndex[0];
 							#ifdef DEBUG_BESTALTERNATE
-							_stprintf(ventabuffer,
+							lk::snprintf(ventabuffer,
 							TEXT(".. using the closer point found: <%s> distance=~%d Km, you need to climb!"),
 							WayPointList[bestalternate].Name, sortApproxDistance[0]);
 							if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
@@ -485,7 +485,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 							// nothing, either keep the old best or set it empty
 							// Put here "PULL-UP! PULL-UP! Boeing cockpit voice sound and possibly shake the stick.
 							#ifdef DEBUG_BESTALTERNATE
-							_stprintf(ventabuffer,TEXT("Out of ideas..good luck"));
+							lk::snprintf(ventabuffer,TEXT("Out of ideas..good luck"));
 							if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 							{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 							#endif
@@ -497,7 +497,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 							if ( WayPointList[sortApproxIndex[0]].Reachable ) {
 								bestalternate = sortApproxIndex[0];
 								#ifdef DEBUG_BESTALTERNATE
-								_stprintf(ventabuffer,
+								lk::snprintf(ventabuffer,
 								TEXT("Closer point found: <%s> distance=~%d Km, Reachable with arrival at %d!"),
 								WayPointList[bestalternate].Name, sortApproxDistance[0], 
 								(int) WayPointList[bestalternate].AltArivalAGL);
@@ -506,7 +506,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 								#endif
 							} else {
 								#ifdef DEBUG_BESTALTERNATE
-								_stprintf(ventabuffer,
+								lk::snprintf(ventabuffer,
 								TEXT("Closer point found: <%s> distance=~%d Km, UNReachable"),
 								WayPointList[bestalternate].Name, sortApproxDistance[0]);
 								if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
@@ -515,7 +515,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 							}
 						} else {
 							#ifdef DEBUG_BESTALTERNATE
-							_stprintf(ventabuffer, _T("Landable list is empty, no Closer Approx, but old best %s is still reachable (arrival=%d)"),
+							lk::snprintf(ventabuffer, _T("Landable list is empty, no Closer Approx, but old best %s is still reachable (arrival=%d)"),
 							WayPointList[bestalternate].Name, (int)WayPointCalc[bestalternate].AltArriv[AltArrivMode]);
 							if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 							{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
@@ -525,7 +525,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				} else {
 					// CRITIC POINT
 					#ifdef DEBUG_BESTALTERNATE
-					_stprintf(ventabuffer,TEXT("Landable list is empty, and NO valid old bestalternate"));
+					lk::snprintf(ventabuffer,TEXT("Landable list is empty, and NO valid old bestalternate"));
 					if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 					{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 					#endif
@@ -556,7 +556,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if ( bestalternate < 0 ) {
 	if ( HomeWaypoint >= 0 ) {
 		#ifdef DEBUG_BESTALTERNATE
-		_stprintf(ventabuffer,TEXT("BESTALTERNATE HOME (%s)"), WayPointList[HomeWaypoint].Name );
+		lk::snprintf(ventabuffer,TEXT("BESTALTERNATE HOME (%s)"), WayPointList[HomeWaypoint].Name );
 		if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 		{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 		//DoStatusMessage(ventabuffer);
@@ -568,7 +568,7 @@ bool SearchBestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if ( !ValidWayPoint(bestalternate) ) {
 		AlertBestAlternate(2);
 		#ifdef DEBUG_BESTALTERNATE
-		_stprintf(ventabuffer,TEXT("WARNING ERROR INVALID BEST=%d"),bestalternate);
+		lk::snprintf(ventabuffer,TEXT("WARNING ERROR INVALID BEST=%d"),bestalternate);
 		if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 		{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 		#endif
@@ -617,14 +617,14 @@ void AlertBestAlternate(short soundmode) {
 			case 1:
 				LKSound(_T("LK_GREEN.WAV"));
 
-				_stprintf(mbuf,_T("%s %s  @%.0f%s"), MsgToken<1840>(), WayPointList[BestAlternate].Name,
+				lk::snprintf(mbuf,_T("%s %s  @%.0f%s"), MsgToken<1840>(), WayPointList[BestAlternate].Name,
 				Units::ToDistance(WayPointCalc[BestAlternate].Distance),
 				Units::GetDistanceName());
 				Message::AddMessage(2000, 3, mbuf);
 				break;
 			case 2: 
 				LKSound(_T("LK_RED.WAV"));
-				_stprintf(mbuf,_T("%s %s"), MsgToken<1840>(), MsgToken<916>()); // WARNING, NO LANDINGS
+				lk::snprintf(mbuf,_T("%s %s"), MsgToken<1840>(), MsgToken<916>()); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
 				Message::AddMessage(2000, 3, mbuf);
@@ -638,13 +638,13 @@ void AlertBestAlternate(short soundmode) {
 				break;
 		}
 		#ifdef DEBUG_BESTALTERNATE
-		_stprintf(ventabuffer,TEXT("(PLAYED ALERT SOUND, soundmode=%d)"), soundmode);
+		lk::snprintf(ventabuffer,TEXT("(PLAYED ALERT SOUND, soundmode=%d)"), soundmode);
 		if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 		{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 		#endif
   } else {
 	#ifdef DEBUG_BESTALTERNATE
-	_stprintf(ventabuffer,TEXT("(QUIET, NO PLAY ALERT SOUND, soundmode=%d)"), soundmode);
+	lk::snprintf(ventabuffer,TEXT("(QUIET, NO PLAY ALERT SOUND, soundmode=%d)"), soundmode);
 	if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 	{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 	#endif

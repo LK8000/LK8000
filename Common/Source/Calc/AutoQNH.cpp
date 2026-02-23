@@ -86,7 +86,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			devPutQNH(new_qnh);
 		}
 		TCHAR qmes[80];
-		_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),
+		lk::snprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),
 							Units::ToPressure(Units::From(unhPa, QNH)),
 							Units::ToAltitude(fixaltitude),
 							Units::GetAltitudeName());

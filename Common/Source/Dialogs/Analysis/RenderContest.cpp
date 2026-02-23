@@ -303,7 +303,7 @@ void Statistics::RenderFAIOptimizer(LKSurface &Surface, const RECT &rc) {
       if ((result.Distance() > 5000) && bFAITri) {
         TCHAR text[180];
         SIZE tsize;
-        _stprintf(text, TEXT("%3.1f%%"), (fDist / result.Distance() * 100.0));
+        lk::snprintf(text, TEXT("%3.1f%%"), (fDist / result.Distance() * 100.0));
         Surface.GetTextSize(text, &tsize);
         if (!IsDithered()) {
           Surface.SetTextColor(RGB_BLUE);

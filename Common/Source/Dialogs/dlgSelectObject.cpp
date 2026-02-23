@@ -63,7 +63,7 @@ void SetNameCaption(WndButton* pWnd, const TCHAR* tFilter) {
     lk::strcpy(NameFilter, _T("*"));
   } else {
     if (_tcslen(tFilter) < 6) {
-      _stprintf(NameFilter, _T("*%s*"), tFilter);
+      lk::snprintf(NameFilter, _T("*%s*"), tFilter);
     } else {
       lk::strcpy(NameFilter, _T("*"));
       CopyTruncateString(NameFilter + 1, (50 - 1), tFilter, 5);
@@ -217,22 +217,22 @@ void dlgSelectObject::SetDirectionData(DataField *Sender) {
 
   switch (direction) {
     case DirNoFilter: 
-      _stprintf(sTmp, TEXT("%c"), '*');
+      lk::snprintf(sTmp, TEXT("%c"), '*');
       break;
     case DirHDG:
-      _stprintf(sTmp, TEXT("%s(%d%s)"), 
+      lk::snprintf(sTmp, TEXT("%s(%d%s)"), 
                   MsgToken<1229>(), // _@1229 HDG
                   iround(AngleLimit360(CALCULATED_INFO.Heading)),
                   MsgToken<2179>()); // _@M2179 °
       break;
     case DirBRG:
-      _stprintf(sTmp, TEXT("%s(%d%s)"),
+      lk::snprintf(sTmp, TEXT("%s(%d%s)"),
                   MsgToken<154>(), // _@M154 Brg
                   iround(GetTaskBearing()),
                   MsgToken<2179>()); // _@M2179 °
       break;
     default:
-      _stprintf(sTmp, TEXT("%d%s"), direction, MsgToken<2179>()); // _@M2179 °
+      lk::snprintf(sTmp, TEXT("%d%s"), direction, MsgToken<2179>()); // _@M2179 °
       break;
   }
 
@@ -259,7 +259,7 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
   const int w0 = LineHeight; // Picto Width
 
   const int w2 = Surface.GetTextWidth(TEXT("0000km")); // distance Width
-  _stprintf(sTmp, _T(" 000%s"), MsgToken<2179>());
+  lk::snprintf(sTmp, _T(" 000%s"), MsgToken<2179>());
   const int w3 = Surface.GetTextWidth(sTmp); // bearing width
   
   const int w4 = GetTypeWidth(Surface);
@@ -309,12 +309,12 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
     }
 
     // Draw Distance : right justified after waypoint Name
-    _stprintf(sTmp, TEXT("%.0f%s"), info.Distance, Units::GetDistanceName());
+    lk::snprintf(sTmp, TEXT("%.0f%s"), info.Distance, Units::GetDistanceName());
     const int x2 = width - w3 - Surface.GetTextWidth(sTmp);
     Surface.DrawText(x2, TextPos, sTmp);
 
     // Draw Bearing right justified after distance
-    _stprintf(sTmp, TEXT("%d%s"), iround(info.Direction), MsgToken<2179>());
+    lk::snprintf(sTmp, TEXT("%d%s"), iround(info.Direction), MsgToken<2179>());
     const int x3 = width - Surface.GetTextWidth(sTmp);
     Surface.DrawText(x3, TextPos, sTmp);
   } else {
@@ -428,9 +428,9 @@ void dlgSelectObject::OnFilterDistance(DataField *Sender,
   }
 
   if (idx == 0) {
-    _stprintf(sTmp, TEXT("%c"), '*');
+    lk::snprintf(sTmp, TEXT("%c"), '*');
   } else {
-    _stprintf(sTmp, TEXT("%.0f%s"), 
+    lk::snprintf(sTmp, TEXT("%.0f%s"), 
               DistanceFilter[idx],
               Units::GetDistanceName());
   }

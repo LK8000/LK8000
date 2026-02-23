@@ -48,7 +48,7 @@ static void NextPage(int Step){
   case 1:
     if (SIMMODE) {
 	TCHAR sysmode[100];
-	_stprintf(sysmode,_T("%s (%s)"),MsgToken<664>(),MsgToken<1211>() );
+	lk::snprintf(sysmode,_T("%s (%s)"),MsgToken<664>(),MsgToken<1211>() );
 	wf->SetCaption(sysmode);
     } else {
 	// LKTOKEN  _@M664_ = "Status: System"
@@ -216,13 +216,16 @@ static void UpdateValuesSystem() {
       wp = wf->FindByName<WndProperty>(TEXT("prpNumSat"));
       if (wp) {
         if (GPS_INFO.SatellitesUsed >= 0) {  // known numer of sats
-          _stprintf(Temp,TEXT("%d"),GPS_INFO.SatellitesUsed);
+          lk::snprintf(Temp,TEXT("%d"),GPS_INFO.SatellitesUsed);
         } else { // valid but unknown number of sats
-          _stprintf(Temp,TEXT(">3"));
+          lk::strcpy(Temp,TEXT(">3"));
         }
         for(const auto& dev : DeviceList) {
           if(dev.nmeaParser.activeGPS) {
-            _stprintf(Temp+_tcslen(Temp),_T("  (Dev:%c)"), _T('A')+dev.PortNumber);
+            TCHAR* text = Temp + _tcslen(Temp);
+            TCHAR* text_end = std::end(Temp);
+
+            lk::snprintf(text, std::distance(text, text_end), _T("  (Dev:%c)"), _T('A')+dev.PortNumber);
             break; // we have got the first active port.
           }
         }
@@ -243,7 +246,7 @@ static void UpdateValuesSystem() {
       const TCHAR* devName = dev->Name;
 #ifdef DEVICE_SERIAL
       if(dev->HardwareId > 0) {
-        _stprintf(Temp,TEXT("%s (%i)"),dev->Name, dev->HardwareId);
+        lk::snprintf(Temp,TEXT("%s (%i)"),dev->Name, dev->HardwareId);
         devName = Temp;
       }
 #endif
@@ -264,7 +267,7 @@ static void UpdateValuesSystem() {
       if(FLARM_SW_Version > 0.0)
       {
     //	StartupStore(_T("STATUS: Flarm Version: %4.2f/%4.2f\n"),FLARM_SW_Version, FLARM_HW_Version);
-		_stprintf(Temp,TEXT("OK (%4.2f/%4.2f) "),FLARM_SW_Version, FLARM_HW_Version);
+		lk::snprintf(Temp,TEXT("OK (%4.2f/%4.2f) "),FLARM_SW_Version, FLARM_HW_Version);
 	wp->SetText(Temp);
       }
       else
@@ -315,9 +318,9 @@ static void UpdateValuesSystem() {
   if (wp) {
       TCHAR softversion[100];
 #ifndef LKCOMPETITION
-      _stprintf(softversion,_T("%s.%s"),_T(LKVERSION), _T(LKRELEASE));
+      lk::snprintf(softversion,_T("%s.%s"),_T(LKVERSION), _T(LKRELEASE));
 #else
-      _stprintf(softversion,_T("%s.%s Competition"),_T(LKVERSION), _T(LKRELEASE));
+      lk::snprintf(softversion,_T("%s.%s Competition"),_T(LKVERSION), _T(LKRELEASE));
 #endif
       wp->SetText(softversion);
       wp->RefreshDisplay();
@@ -325,25 +328,25 @@ static void UpdateValuesSystem() {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpBattBank"));
   if (wp) {
-    _stprintf(Temp,TEXT("%d"),GPS_INFO.ExtBatt_Bank);
+    lk::snprintf(Temp,TEXT("%d"),GPS_INFO.ExtBatt_Bank);
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpBatt1Volt"));
   if (wp) {
 	if (GPS_INFO.ExtBatt1_Voltage>=1000)
-		_stprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt1_Voltage-1000);
+		lk::snprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt1_Voltage-1000);
 	else
-		_stprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt1_Voltage);
+		lk::snprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt1_Voltage);
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpBatt2Volt"));
   if (wp) {
 	if (GPS_INFO.ExtBatt1_Voltage>=1000)
-		_stprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt2_Voltage-1000);
+		lk::snprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt2_Voltage-1000);
 	else
-		_stprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt2_Voltage);
+		lk::snprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt2_Voltage);
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }
@@ -352,13 +355,13 @@ static void UpdateValuesSystem() {
   if (wp) {
     lk::strcpy(Temp,TEXT("\0"));
     if (HaveBatteryInfo) {
-        _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
+        lk::snprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
         _tcscat(Temp, Temp2);
     }
     if (GPS_INFO.SupplyBatteryVoltage == 0) {
       lk::strcpy(Temp2,TEXT("\0"));
     } else {
-      _stprintf(Temp2,TEXT("%.1f V"),GPS_INFO.SupplyBatteryVoltage);
+      lk::snprintf(Temp2,TEXT("%.1f V"),GPS_INFO.SupplyBatteryVoltage);
     }
     _tcscat(Temp, Temp2);
 
@@ -437,14 +440,14 @@ static void UpdateValuesFlight(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
   if (wp) {
 
-    _stprintf(sBaroDevice, TEXT("GPS"));
+    lk::strcpy(sBaroDevice, TEXT("GPS"));
     if(EnableNavBaroAltitude)
     {
       if (BaroAltitudeAvailable(GPS_INFO)) {
-        _stprintf(sBaroDevice, TEXT("%s"), DeviceList[GPS_INFO.BaroAltitude.index()].Name);
+        lk::strcpy(sBaroDevice, DeviceList[GPS_INFO.BaroAltitude.index()].Name);
       }
     }
-    _stprintf(Temp, _T("%.0f%s (%s)"),
+    lk::snprintf(Temp, _T("%.0f%s (%s)"),
                     Units::ToAltitude(CALCULATED_INFO.NavAltitude),
                     Units::GetAltitudeName(),
                     sBaroDevice);
@@ -453,7 +456,7 @@ static void UpdateValuesFlight(void) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpMaxHeightGain"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"),
+    lk::snprintf(Temp, TEXT("%.0f %s"),
               Units::ToAltitude(CALCULATED_INFO.MaxHeightGain),
               Units::GetAltitudeName());
     wp->SetText(Temp);
@@ -475,7 +478,7 @@ static void UpdateValuesFlight(void) {
 
     wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
     if (wp) {
-      _stprintf(Temp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
+      lk::snprintf(Temp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
       wp->SetText(Temp);
     }
 
@@ -542,7 +545,7 @@ static void UpdateValuesRules(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpStartSpeed"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
-      _stprintf(Temp, TEXT("%.0f %s"),
+      lk::snprintf(Temp, TEXT("%.0f %s"),
                 Units::ToTaskSpeed(CALCULATED_INFO.TaskStartSpeed),
                 Units::GetTaskSpeedName());
       wp->SetText(Temp);
@@ -572,7 +575,7 @@ static void UpdateValuesRules(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpStartHeight"));
   if (wp) {
     if (CALCULATED_INFO.TaskStartTime>0) {
-      _stprintf(Temp, TEXT("%.0f %s"),
+      lk::snprintf(Temp, TEXT("%.0f %s"),
                 Units::ToAltitude(CALCULATED_INFO.TaskStartAltitude),
                 Units::GetAltitudeName());
       wp->SetText(Temp);
@@ -584,7 +587,7 @@ static void UpdateValuesRules(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpFinishAlt"));
   if (wp) {
     double finish_min = FAIFinishHeight(&GPS_INFO, &CALCULATED_INFO, -1);
-    _stprintf(Temp, TEXT("%.0f %s"),
+    lk::snprintf(Temp, TEXT("%.0f %s"),
               Units::ToAltitude(finish_min),
               Units::GetAltitudeName());
     wp->SetText(Temp);
@@ -631,7 +634,7 @@ static void UpdateValuesTask(void) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskDistance"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"),
+    lk::snprintf(Temp, TEXT("%.0f %s"),
               Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo +CALCULATED_INFO.TaskDistanceCovered),
               Units::GetDistanceName());
     wp->SetText(Temp);
@@ -640,11 +643,11 @@ static void UpdateValuesTask(void) {
   wp = wf->FindByName<WndProperty>(TEXT("prpRemainingDistance"));
   if (wp) {
     if (UseAATTarget()) {
-      _stprintf(Temp, TEXT("%.0f %s"),
+      lk::snprintf(Temp, TEXT("%.0f %s"),
                 Units::ToDistance(CALCULATED_INFO.AATTargetDistance),
                 Units::GetDistanceName());
     } else {
-      _stprintf(Temp, TEXT("%.0f %s"),
+      lk::snprintf(Temp, TEXT("%.0f %s"),
                 Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo),
                 Units::GetDistanceName());
     }
@@ -659,14 +662,14 @@ static void UpdateValuesTask(void) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpEstimatedSpeed"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"),
+    lk::snprintf(Temp, TEXT("%.0f %s"),
               Units::ToTaskSpeed(d1), Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpAverageSpeed"));
   if (wp) {
-    _stprintf(Temp, TEXT("%.0f %s"),
+    lk::snprintf(Temp, TEXT("%.0f %s"),
               Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed),
               Units::GetTaskSpeedName());
     wp->SetText(Temp);

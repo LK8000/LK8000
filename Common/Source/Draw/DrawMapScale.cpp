@@ -104,7 +104,7 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
         } else {
           alt = Units::ToAltitude(alt);
         }
-        _stprintf(Scale1, _T(" %.0f%s "), alt, Units::GetAltitudeName());
+        lk::snprintf(Scale1, _T(" %.0f%s "), alt, Units::GetAltitudeName());
       }
       double pandistance, panbearing;
 
@@ -116,15 +116,15 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     	if( DerivedDrawInfo.TaskFAI)
     	{
     	  Dist = DerivedDrawInfo.TaskFAIDistance;
-          _stprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
+          lk::snprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
     	}
         else
-    	  _stprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
+    	  lk::snprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
     }
     else
     {
 
-	  _stprintf(Scale2, _T(" %.1f%s %s %.0f%s "), Units::ToDistance(pandistance), Units::GetDistanceName(),Scale1, panbearing, MsgToken<2179>() );
+	  lk::snprintf(Scale2, _T(" %.1f%s %s %.0f%s "), Units::ToDistance(pandistance), Units::GetDistanceName(),Scale1, panbearing, MsgToken<2179>() );
     }
 
 	goto _skip1;
@@ -216,14 +216,14 @@ _skip1:
     if (inpanmode) goto _skip2;
 
     if (ReplayLogger::IsEnabled()) {
-	_stprintf(Scale,_T("%s %.0fX"),
+	lk::snprintf(Scale,_T("%s %.0fX"),
 		MsgToken<1350>(), // " REPLAY"
 		ReplayLogger::TimeScale);
       _tcscat(Scale2, Scale);
     }
     if (BallastTimerActive) {
 		// LKTOKEN _@M1351_ " BALLAST"
-      _stprintf(TEMP,TEXT("%s %3.0fL"), MsgToken<1351>(), WEIGHTS[2]*BALLAST);
+      lk::snprintf(TEMP,TEXT("%s %3.0fL"), MsgToken<1351>(), WEIGHTS[2]*BALLAST);
       _tcscat(Scale2, TEMP);
     }
 

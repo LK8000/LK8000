@@ -251,26 +251,26 @@ void MapWindow::DrawFinalGlide(LKSurface& Surface, const RECT& rc) {
             if (((GlideBarMode == (GlideBarMode_t) gbFinish) && ValidTaskPoint(1))) {
                 if (ISPARAGLIDER && DerivedDrawInfo.TaskAltitudeDifference > 0.0) {
                     if (Units::ToAltitude(DerivedDrawInfo.TaskAltitudeArrival) < ALTDIFFLIMIT) //@ 091114
-                        _stprintf(Value, TEXT("---"));
+                        lk::strcpy(Value, TEXT("---"));
                     else
-                        _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(DerivedDrawInfo.TaskAltitudeArrival));
+                        lk::snprintf(Value, TEXT("%1.0f"), Units::ToAltitude(DerivedDrawInfo.TaskAltitudeArrival));
                 } else {
                     if (Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
-                        _stprintf(Value, TEXT("---"));
+                        lk::strcpy(Value, TEXT("---"));
                     else
-                        _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference));
+                        lk::snprintf(Value, TEXT("%1.0f"), Units::ToAltitude(DerivedDrawInfo.TaskAltitudeDifference));
                 }
             } else {
                 if (Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
-                    _stprintf(Value, TEXT("---"));
+                    lk::strcpy(Value, TEXT("---"));
                 else
-                    _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
+                    lk::snprintf(Value, TEXT("%1.0f"), Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
             }
         } else {
             if (Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
-                _stprintf(Value, TEXT("---"));
+                lk::strcpy(Value, TEXT("---"));
             else
-                _stprintf(Value, TEXT("%1.0f"), Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
+                lk::snprintf(Value, TEXT("%1.0f"), Units::ToAltitude(WayPointCalc[barindex].AltArriv[AltArrivMode]));
         }
 
 _skipout:

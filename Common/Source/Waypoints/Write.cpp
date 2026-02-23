@@ -101,21 +101,21 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	LongitudeToCUPString(wpt->Longitude, longitude);
 
 	if (wpt->RunwayDir >= 0)
-		_stprintf(rwdirection,_T("%d"),wpt->RunwayDir);
+		lk::snprintf(rwdirection,_T("%d"),wpt->RunwayDir);
 	else
 		lk::strcpy(rwdirection,_T(""));
 	if (wpt->RunwayLen > 0)
-		_stprintf(rwlen,_T("%d.0m"),wpt->RunwayLen);
+		lk::snprintf(rwlen,_T("%d.0m"),wpt->RunwayLen);
 	else
 		lk::strcpy(rwlen,_T(""));
 
 	if ( (_tcslen(wpt->Freq)>0) && (_tcslen(wpt->Freq)<=CUPSIZE_FREQ)) { // 100221 buffer overflow fix
-		_stprintf(cupFreq,_T("\"%s\""),wpt->Freq);
+		lk::snprintf(cupFreq,_T("\"%s\""),wpt->Freq);
 	} else
 		lk::strcpy(cupFreq,_T(""));
 
 	if ( (_tcslen(wpt->Code)>0)&&(_tcslen(wpt->Code)<=CUPSIZE_CODE)) {
-		_stprintf(cupCode,_T("\"%s\""),wpt->Code);
+		lk::snprintf(cupCode,_T("\"%s\""),wpt->Code);
 	} else
 		lk::strcpy(cupCode,_T(""));
 

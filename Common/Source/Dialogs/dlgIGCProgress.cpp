@@ -132,7 +132,7 @@ void dlgIGCProgressShowModal(void){
 
 
 void CloseIGCProgressDialog() {
-  _stprintf(m_szTmp, TEXT("..."));
+  lk::strcpy(m_szTmp, TEXT("..."));
     bClose = true;
 
 }

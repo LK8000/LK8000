@@ -67,19 +67,19 @@ static int OnRemoteUpdate(void)
 		CopyTruncateString(ActiveName, DEVICE_NAME_LEN, RadioPara.ActiveName);
 
     if(RadioPara.TX) {
-      _stprintf(Name,_T(">%s<"),ActiveName);
+      lk::snprintf(Name,_T(">%s<"),ActiveName);
     } else if(RadioPara.RX_active) {
-      _stprintf(Name,_T("<%s>"),ActiveName);
+      lk::snprintf(Name,_T("<%s>"),ActiveName);
     } else if(RadioPara.ActiveValid) {
-      _stprintf(Name,_T("[%s]"),ActiveName);
+      lk::snprintf(Name,_T("[%s]"),ActiveName);
     } else {
-      _stprintf(Name,_T("%s"),ActiveName);
+      lk::snprintf(Name,_T("%s"),ActiveName);
     }
 
     if(wpnewActive) {
       wpnewActive->SetCaption(Name);
     }
-    _stprintf(Name,_T("%6.03f"), (RadioPara.ActiveKhz / 1000.));
+    lk::snprintf(Name,_T("%6.03f"), (RadioPara.ActiveKhz / 1000.));
     if(wpnewActiveFreq)
       wpnewActiveFreq->SetCaption(Name);
 
@@ -87,17 +87,17 @@ static int OnRemoteUpdate(void)
 		CopyTruncateString(PassiveName, DEVICE_NAME_LEN, RadioPara.PassiveName );
 
     if(RadioPara.RX_standy) {
-      _stprintf(Name,_T("<%s>"),PassiveName);
+      lk::snprintf(Name,_T("<%s>"),PassiveName);
     } else if(RadioPara.PassiveValid) {
-      _stprintf(Name,_T("[%s]"),PassiveName);
+      lk::snprintf(Name,_T("[%s]"),PassiveName);
     } else {
-      _stprintf(Name,_T("%s"),PassiveName);
+      lk::snprintf(Name,_T("%s"),PassiveName);
     }
 
     if(wpnewPassive) {
       wpnewPassive->SetCaption(Name);
     }
-    _stprintf(Name,_T("%6.03f"), (RadioPara.PassiveKhz / 1000.));
+    lk::snprintf(Name,_T("%6.03f"), (RadioPara.PassiveKhz / 1000.));
     if(wpnewPassiveFreq) {
       wpnewPassiveFreq->SetCaption(Name);
     }
@@ -112,15 +112,15 @@ static int OnRemoteUpdate(void)
     if(wpnewVol) {
       if(VolMode == VOL) {
         if(RadioPara.VolValid) {
-          _stprintf(Name,_T("V [%i]"),RadioPara.Volume);
+          lk::snprintf(Name,_T("V [%i]"),RadioPara.Volume);
         } else {
-          _stprintf(Name,_T("V %i"),RadioPara.Volume);
+          lk::snprintf(Name,_T("V %i"),RadioPara.Volume);
         }
       } else {
         if(RadioPara.SqValid) {
-          _stprintf(Name,_T("S [%i]"),RadioPara.Squelch);
+          lk::snprintf(Name,_T("S [%i]"),RadioPara.Squelch);
         } else {
-          _stprintf(Name,_T("S %i"),RadioPara.Squelch);
+          lk::snprintf(Name,_T("S %i"),RadioPara.Squelch);
         }
       }
       wpnewVol->SetCaption(Name);
@@ -129,15 +129,15 @@ static int OnRemoteUpdate(void)
     if(wpnewDual) {
       if(RadioPara.Dual) {
         if(RadioPara.DualValid) {
-          _stprintf(Name,_T("[Dual Off]"));
+          lk::strcpy(Name,_T("[Dual Off]"));
         } else {
-          _stprintf(Name,_T("Dual Off"));
+          lk::strcpy(Name,_T("Dual Off"));
         }
       } else {
         if(RadioPara.DualValid) {
-          _stprintf(Name,_T("[Dual On]"));
+          lk::strcpy(Name,_T("[Dual On]"));
         } else {
-          _stprintf(Name,_T("Dual On"));
+          lk::strcpy(Name,_T("Dual On"));
         }
       }
       wpnewDual->SetCaption(Name);
@@ -155,14 +155,14 @@ static int OnUpdate(void) {
 	CopyTruncateString(Name, DEVICE_NAME_LEN, RadioPara.ActiveName);
 	if(wpnewActive) 
 		wpnewActive->SetCaption(Name);
-	_stprintf(Name,_T("%7.3f"), (RadioPara.ActiveKhz / 1000.));
+	lk::snprintf(Name,_T("%7.3f"), (RadioPara.ActiveKhz / 1000.));
 	if(wpnewActiveFreq)
 		wpnewActiveFreq->SetCaption(Name);
 
 	CopyTruncateString(Name, DEVICE_NAME_LEN, RadioPara.PassiveName);		
 	if(wpnewPassive)
 		wpnewPassive->SetCaption(Name);
-	_stprintf(Name,_T("%7.3f"), (RadioPara.PassiveKhz / 1000.));
+	lk::snprintf(Name,_T("%7.3f"), (RadioPara.PassiveKhz / 1000.));
 	if(wpnewPassiveFreq)
 		wpnewPassiveFreq->SetCaption(Name);
 
@@ -170,10 +170,10 @@ static int OnUpdate(void) {
     if(wpnewVol)
     {
         if(VolMode == VOL)   {
-           _stprintf(Name,_T("V%i"),lVolume);
+           lk::snprintf(Name,_T("V%i"),lVolume);
            wpnewVol->SetCaption(Name);
         }    else      {
-        _stprintf(Name,_T("S%i"),lSquelch);
+        lk::snprintf(Name,_T("S%i"),lSquelch);
           wpnewVol->SetCaption(Name);
         }
     }
@@ -198,16 +198,16 @@ return 0;
 
 
 static void OnDualButton(WndButton* pWnd){
-TCHAR Name[250];
+  TCHAR Name[250];
 
-    RadioPara.Dual = !RadioPara.Dual;
-    devPutRadioMode((int)RadioPara.Dual);
-    if(RadioPara.Dual)
-      _stprintf(Name,_T("Dual Off"));
-    else
-      _stprintf(Name,_T("Dual On"));
-    if(wpnewDual)
-       wpnewDual->SetCaption(Name);
+  RadioPara.Dual = !RadioPara.Dual;
+  devPutRadioMode((int)RadioPara.Dual);
+  if (RadioPara.Dual)
+    lk::strcpy(Name, _T("Dual Off"));
+  else
+    lk::strcpy(Name, _T("Dual On"));
+  if (wpnewDual)
+    wpnewDual->SetCaption(Name);
 
 }
 
@@ -258,7 +258,7 @@ static void OnPassiveButton(WndButton* pWnd){
 
 static void OnActiveFreq(WndButton* pWnd){
   TCHAR	szFreq[20];
-  _stprintf(szFreq, _T("%7.3f"), (RadioPara.ActiveKhz / 1000.));
+  lk::snprintf(szFreq, _T("%7.3f"), (RadioPara.ActiveKhz / 1000.));
 
   dlgNumEntryShowModal(szFreq,8);
 
@@ -277,7 +277,7 @@ static void OnActiveFreq(WndButton* pWnd){
 
 static void OnPassiveFreq(WndButton* pWnd){
   TCHAR	szFreq[20];
-  _stprintf(szFreq, _T("%7.3f"), (RadioPara.PassiveKhz / 1000.));
+  lk::snprintf(szFreq, _T("%7.3f"), (RadioPara.PassiveKhz / 1000.));
 
   dlgNumEntryShowModal(szFreq,8);
 

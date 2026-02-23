@@ -44,7 +44,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];
-	_stprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0,
+	lk::snprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0,
 	ScreenSizeX, ScreenSizeY,X,Y,keytime);
 	DoStatusMessage(buf);
 	#endif
@@ -130,7 +130,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 					if (ScreenKeyHandler(ScreenKey::CKI_BOTTOMRIGHT)) return 0;
 				}
 				#ifdef DEBUG_PROCVK
-				_stprintf(buf,_T("RIGHT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
+				lk::snprintf(buf,_T("RIGHT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(true); // advance
@@ -145,7 +145,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 
 				#ifdef DEBUG_PROCVK
-				_stprintf(buf,_T("LEFT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
+				lk::snprintf(buf,_T("LEFT in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(false); // backwards
@@ -154,7 +154,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				return 0;
 			}
 			#ifdef DEBUG_PROCVK
-			_stprintf(buf,_T("CENTER in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
+			lk::snprintf(buf,_T("CENTER in limit=%d"),MapWindow::Y_BottomBar-NIBLSCALE(20));
 			DoStatusMessage(buf);
 			#endif
 
@@ -177,7 +177,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// Simulate incoming NMEA string
 			if (keytime>1000) {
 				static TCHAR mbuf[200];
-				_stprintf(mbuf,_T("$VARIO,1010.18,0.0,0.00,2.34,2,000.0,000.0*51\n"));
+				lk::snprintf(mbuf,_T("$VARIO,1010.18,0.0,0.00,2.34,2,000.0,000.0*51\n"));
 				NMEAParser::ParseNMEAString(0, (TCHAR *) mbuf, &GPS_INFO);
 				return 0;
 			}
@@ -186,7 +186,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			// Print a message on the screen for debugging purposes
 			TCHAR mbuf[100];
 			if (keytime>1000) {
-				// _stprintf(mbuf,_T("Cache MCA %d/%d F=%d"), Cache_Hits_MCA, Cache_Calls_MCA, Cache_False_MCA );
+				// lk::snprintf(mbuf,_T("Cache MCA %d/%d F=%d"), Cache_Hits_MCA, Cache_Calls_MCA, Cache_False_MCA );
 				char *point;
 				point=(char*)&mbuf;
 				*point++='A';
@@ -557,7 +557,7 @@ int ProcessSubScreenVirtualKey(int X, int Y, long keytime, short vkmode) {
 
     #if TESTBENCH
     TCHAR buf[100];
-    _stprintf(buf,_T("SubScreen Key: X=%d Y=%d kt=%ld vk=%d"),X,Y,keytime,vkmode);
+    lk::snprintf(buf,_T("SubScreen Key: X=%d Y=%d kt=%ld vk=%d"),X,Y,keytime,vkmode);
     DoStatusMessage(buf);
     StartupStore(_T(".... %s%s"),buf,NEWLINE);
     #endif

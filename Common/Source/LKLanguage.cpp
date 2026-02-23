@@ -105,7 +105,7 @@ namespace {
 
     TCHAR szFileName[MAX_PATH] = {};
     TCHAR szFilePath[MAX_PATH] = {};
-    _stprintf(szFileName, _T("%s.json"), code);
+    lk::snprintf(szFileName, _T("%s.json"), code);
     LocalPath(szFilePath, _T(LKD_LANGUAGE), szFileName);
 
     zzip_stream file(szFilePath, "rb");

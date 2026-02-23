@@ -86,10 +86,10 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     line2Font = LK8VisualBotFont;
     SIZE textSizeTop, textSizeBot;
     Surface.SelectObject(line1Font);
-    _stprintf(tmpT, _T("MMMM"));
+    lk::strcpy(tmpT, _T("MMMM"));
     Surface.GetTextSize(tmpT, &textSizeTop);
     Surface.SelectObject(line2Font);
-    _stprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken<2179>(), MsgToken<2183>());
+    lk::snprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken<2179>(), MsgToken<2183>());
     Surface.GetTextSize(tmpT, &textSizeBot);
 
     // we can cut the waypoint name, but not the value data, so we use the second row of data
@@ -369,7 +369,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
             bcolor.Create(rgbcolor);
         }
 
-        TCHAR value[40], unit[30];
+        TCHAR value[LKSIZEBUFFERVALUE], unit[LKSIZEBUFFERUNIT];
         TCHAR line2[140], line3[50];
         TCHAR name[NAME_SIZE + 1];
         double ar = Units::ToAltitude(WayPointCalc[wp].AltArriv[AltArrivMode]);
@@ -397,13 +397,13 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
                 // Should we print also the GR?
                 if ((ar >= -9999 && ar <= 9999) && (WayPointCalc[wp].GR < MAXEFFICIENCYSHOW)) {
                     if (ar >= -999 && ar <= 999)
-                        _stprintf(line2, _T("%s   "), value);
+                        lk::snprintf(line2, _T("%s   "), value);
                     else
-                        _stprintf(line2, _T("%s  "), value);
+                        lk::snprintf(line2, _T("%s  "), value);
                     LKFormatGR(wp, value, unit);
                     _tcscat(line2, value);
                 } else {
-                    _stprintf(line2, _T("%s   ---"), value);
+                    lk::snprintf(line2, _T("%s   ---"), value);
                 }
 
                 VGTextInBox(Surface, n, 2, name, line2, NULL, slotCenterX[n], ty, textcolor, bcolor);
@@ -412,23 +412,23 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
             case 3:
                 // 3 lines: waypoint name + dist + altdiff
                 LKFormatDist(wp, value, unit);
-                _stprintf(line2, _T("%s%s"), value, unit);
+                lk::snprintf(line2, _T("%s%s"), value, unit);
 
                 LKFormatBrgDiff(wp, value, unit);
-                _stprintf(tmpT, _T(" %s%s"), value, unit);
+                lk::snprintf(tmpT, _T(" %s%s"), value, unit);
                 _tcscat(line2, tmpT);
 
                 LKFormatAltDiff(wp, value, unit);
                 // Should we print also the GR?
                 if ((ar >= -9999 && ar <= 9999) && (WayPointCalc[wp].GR < MAXEFFICIENCYSHOW)) {
                     if (ar >= -999 && ar <= 999)
-                        _stprintf(line3, _T("%s   "), value);
+                        lk::snprintf(line3, _T("%s   "), value);
                     else
-                        _stprintf(line3, _T("%s  "), value);
+                        lk::snprintf(line3, _T("%s  "), value);
                     LKFormatGR(wp, value, unit);
                     _tcscat(line3, value);
                 } else {
-                    _stprintf(line3, _T("%s   ---"), value);
+                    lk::snprintf(line3, _T("%s   ---"), value);
                 }
 
                 VGTextInBox(Surface, n, 3, name, line2, line3, slotCenterX[n], ty, textcolor, bcolor);

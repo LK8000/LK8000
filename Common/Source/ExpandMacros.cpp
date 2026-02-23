@@ -153,16 +153,16 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 1:	// Pan Supertoggle  PanModeStatus  mode=pan location=8
 			if ( MapWindow::mode.AnyPan() )
-				_stprintf(OutBuffer, _T("%s%s"),MsgToken<2004>(),MsgToken<491>());	// OFF
+				lk::snprintf(OutBuffer,Size,  _T("%s%s"),MsgToken<2004>(),MsgToken<491>());	// OFF
 			else
-				_stprintf(OutBuffer, _T("%s%s"),MsgToken<2004>(),MsgToken<894>());	// ON
+				lk::snprintf(OutBuffer,Size,  _T("%s%s"),MsgToken<2004>(),MsgToken<894>());	// ON
 			break;
 
 		case 2:	// Pan Supertoggle  PanModeStatus  mode=ScreenMode location=8
 			if ( MapWindow::mode.AnyPan() )
-				_stprintf(OutBuffer, _T("%s\n%s"),MsgToken<2082>(),MsgToken<491>());	// OFF
+				lk::snprintf(OutBuffer,Size,  _T("%s\n%s"),MsgToken<2082>(),MsgToken<491>());	// OFF
 			else
-				_stprintf(OutBuffer, _T("%s\n%s"),MsgToken<2082>(),MsgToken<894>());	// ON
+				lk::snprintf(OutBuffer,Size,  _T("%s\n%s"),MsgToken<2082>(),MsgToken<894>());	// ON
 			break;
 
 		case 3: // DISABLED
@@ -171,38 +171,38 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 
 		case 4: // MacCreadyValue + 2078
-			_stprintf(tbuf,_T("%2.1lf"), iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0);
-			_stprintf(OutBuffer, _T("%s\n%s"), MsgToken<2078>(), tbuf);
+			lk::snprintf(tbuf,_T("%2.1lf"), iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0);
+			lk::snprintf(OutBuffer,Size,  _T("%s\n%s"), MsgToken<2078>(), tbuf);
 			break;
 
 		case 5:
 			if (CALCULATED_INFO.AutoMacCready)  {
 				switch(AutoMcMode) {
 					case amcFinalGlide:
-						_stprintf(tbuf,_T("%s"), MsgToken<1681>());
+						lk::snprintf(tbuf,_T("%s"), MsgToken<1681>());
 						break;
 					case amcAverageClimb:
-						_stprintf(tbuf,_T("%s"), MsgToken<1682>());
+						lk::snprintf(tbuf,_T("%s"), MsgToken<1682>());
 						break;
 					case amcEquivalent:
-						_stprintf(tbuf,_T("%s"), MsgToken<1683>());
+						lk::snprintf(tbuf,_T("%s"), MsgToken<1683>());
 						break;
 					case amcFinalAndClimb:
 						if (CALCULATED_INFO.FinalGlide)
-							_stprintf(tbuf,_T("%s"), MsgToken<1681>());
+							lk::snprintf(tbuf,_T("%s"), MsgToken<1681>());
 						else
-							_stprintf(tbuf,_T("%s"), MsgToken<1682>());
+							lk::snprintf(tbuf,_T("%s"), MsgToken<1682>());
 						break;
 					default:
 						// LKTOKEN _@M1202_ "Auto"
-						_stprintf(tbuf,_T("%s"), MsgToken<1202>());
+						lk::snprintf(tbuf,_T("%s"), MsgToken<1202>());
 						break;
 				}
 			} else {
 				// LKTOKEN _@M1201_ "Man"
-				_stprintf(tbuf,_T("%s"), MsgToken<1201>());
+				lk::snprintf(tbuf,_T("%s"), MsgToken<1201>());
 			}
-			_stprintf(OutBuffer,_T("Mc %s\n%2.1lf"), tbuf,iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0);
+			lk::snprintf(OutBuffer,Size, _T("Mc %s\n%2.1lf"), tbuf,iround(Units::ToVerticalSpeed(MACCREADY*10))/10.0);
 
 			break;
 
@@ -251,13 +251,13 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		case 10: // TOGGLEHBAR HBARAVAILABLE for Toggle HBAR button
 
 			if (!BaroAltitudeAvailable(GPS_INFO)) {
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2045>(),MsgToken<1068>()); // Nav by HBAR
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2045>(),MsgToken<1068>()); // Nav by HBAR
 				invalid=true;
 			} else {
 				if (EnableNavBaroAltitude)
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2045>(),MsgToken<1174>()); // Nav by HGPS
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2045>(),MsgToken<1174>()); // Nav by HGPS
 				else
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2045>(),MsgToken<1068>()); // Nav by HBAR
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2045>(),MsgToken<1068>()); // Nav by HBAR
 			}
 			break;
 
@@ -273,32 +273,32 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 13:
 			if(UseTotalEnergy) {
-                           _stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2115>(),MsgToken<491>()); // TE OFF
+                           lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2115>(),MsgToken<491>()); // TE OFF
                         } else {
-                           _stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2115>(),MsgToken<894>()); // TE ON
+                           lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2115>(),MsgToken<894>()); // TE ON
 			}
 			break;
 
 		case 14:
 			if ( Shading )
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2080>(),MsgToken<491>()); // OFF
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2080>(),MsgToken<491>()); // OFF
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2080>(),MsgToken<894>()); // ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2080>(),MsgToken<894>()); // ON
 			break;
 
 		case 15:
 			if (EnableSoundModes)
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2055>(),MsgToken<491>()); // OFF
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2055>(),MsgToken<491>()); // OFF
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2055>(),MsgToken<894>()); // ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2055>(),MsgToken<894>()); // ON
 			break;
 
 		case 16: // ActiveMap no more used now Radio Button
 			if (RadioPara.Enabled) {
-			   _stprintf(OutBuffer,_T("%s\n"),MsgToken<2306>()); // TEXT
+			   lk::snprintf(OutBuffer,Size, _T("%s\n"),MsgToken<2306>()); // TEXT
 			   invalid=false;
 			} else {
-			  _stprintf(OutBuffer,_T("%s\n"),MsgToken<2306>()); // TEXT
+			  lk::snprintf(OutBuffer,Size, _T("%s\n"),MsgToken<2306>()); // TEXT
 			  invalid=true;
 			}
 			break;
@@ -306,143 +306,143 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			// Order is:  ALL ON, TEXT ONLY, GAUGES ONLY, ALL OFF
 			if (!HaveGauges()) {
 				if (!IsMultimapOverlaysText()) {
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2079>(),MsgToken<2234>()); // TEXT
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2079>(),MsgToken<2234>()); // TEXT
 				} else {
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2079>(),MsgToken<491>()); // OFF
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2079>(),MsgToken<491>()); // OFF
 				}
 				break;
 			}
 			if (!IsMultimapOverlaysText()&&!IsMultimapOverlaysGauges()) {
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2079>(),MsgToken<899>()); // ALL ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2079>(),MsgToken<899>()); // ALL ON
 			} else {
 				if (IsMultimapOverlaysAll()) {
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2079>(),MsgToken<2234>()); // TEXT
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2079>(),MsgToken<2234>()); // TEXT
 				} else {
 					if (IsMultimapOverlaysText())
-						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2079>(),MsgToken<2235>()); // GAUGES
+						lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2079>(),MsgToken<2235>()); // GAUGES
 					else
-						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2079>(),MsgToken<898>()); // ALL OFF
+						lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2079>(),MsgToken<898>()); // ALL OFF
 				}
 			}
 			break;
 
 		case 18:
 			if (Orbiter)
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2065>(),MsgToken<491>()); // OFF
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2065>(),MsgToken<491>()); // OFF
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2065>(),MsgToken<894>()); // ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2065>(),MsgToken<894>()); // ON
 			if (!EnableThermalLocator) invalid = true;
 			break;
 
 		case 19:
 			if (IsMultimapAirspace())
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<491>()); // OFF
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<491>()); // OFF
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<894>()); // ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<894>()); // ON
 			break;
 
 		case 20:
 			if (MapWindow::zoom.AutoZoom() )
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2009>(),MsgToken<418>());
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2009>(),MsgToken<418>());
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2009>(),MsgToken<897>());
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2009>(),MsgToken<897>());
 			break;
 
 		case 21:
 			if (IsMultimapTopology())
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2027>(),MsgToken<491>()); // OFF
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2027>(),MsgToken<491>()); // OFF
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2027>(),MsgToken<894>()); // ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2027>(),MsgToken<894>()); // ON
 			break;
 
 		case 22:
 			if (IsMultimapTerrain())
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2028>(),MsgToken<491>()); // OFF
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2028>(),MsgToken<491>()); // OFF
 			else
-				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2028>(),MsgToken<894>()); // ON
+				lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2028>(),MsgToken<894>()); // ON
 			break;
 
 		case 23:
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_CIRCLING)
-				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken<2031>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n_%s_"),MsgToken<2031>());
 			else
-				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken<2031>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n%s"),MsgToken<2031>());
 			break;
 
 		case 24:
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_CRUISE)
-				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken<2032>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n_%s_"),MsgToken<2032>());
 			else
-				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken<2032>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n%s"),MsgToken<2032>());
 			break;
 		case 25:
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_NONE)
-				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken<2034>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n_%s_"),MsgToken<2034>());
 			else
-				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken<2034>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n%s"),MsgToken<2034>());
 			break;
 		case 26:
 			if (MapSpaceMode!=MSM_MAP) invalid=true;
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_FINAL_GLIDE)
-				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken<2033>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n_%s_"),MsgToken<2033>());
 			else
-				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken<2033>());
+				lk::snprintf(OutBuffer,Size, _T("DspMode\n%s"),MsgToken<2033>());
 			break;
 
 		case 27: // amcIsBoth
 			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalAndClimb)
-				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken<2117>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n_%s_"),MsgToken<2117>());
 			else
-				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken<2117>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n%s"),MsgToken<2117>());
 			break;
 		case 28: // amcIsFinal
 			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalGlide)
-				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken<2033>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n_%s_"),MsgToken<2033>());
 			else
-				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken<2033>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n%s"),MsgToken<2033>());
 			break;
 		case 29: // amcIsClimb
 			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcAverageClimb)
-				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken<2075>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n_%s_"),MsgToken<2075>());
 			else
-				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken<2075>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n%s"),MsgToken<2075>());
 			break;
 		case 30: // amcIsEquiv
 			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcEquivalent)
-				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken<2076>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n_%s_"),MsgToken<2076>());
 			else
-				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken<2076>());
+				lk::snprintf(OutBuffer,Size, _T("Auto\n%s"),MsgToken<2076>());
 			break;
 		case 31: // CheckManMc
 			if (CALCULATED_INFO.AutoMacCready)
-				_stprintf(OutBuffer,_T("Mc\n%s"),MsgToken<2077>());
+				lk::snprintf(OutBuffer,Size, _T("Mc\n%s"),MsgToken<2077>());
 			else
-				_stprintf(OutBuffer,_T("Mc\n_%s_"),MsgToken<2077>());
+				lk::snprintf(OutBuffer,Size, _T("Mc\n_%s_"),MsgToken<2077>());
 			break;
 
 		case 32: // AirspaceMode
 			switch(AltitudeMode) {
 				case 0:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<184>()); // Clip
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<184>()); // Clip
 					break;
 				case 1:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<897>()); // Auto
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<897>()); // Auto
 					break;
 				case 2:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<139>()); // Below
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<139>()); // Below
 					break;
 				case 3:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<359>()); // Inside
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<359>()); // Inside
 					break;
 				case 4:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<75>()); // All Off
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<75>()); // All Off
 					break;
 				case 5:
 				default:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2029>(),MsgToken<76>()); // All On
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2029>(),MsgToken<76>()); // All On
 					break;
 			}
 			break;
@@ -453,17 +453,17 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
                         // the new order is artificially off-short-long-full, as in the inputevents button management
 			switch(TrailActive) {
 				case 0: // off to short
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2035>(),MsgToken<612>()); // Short
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2035>(),MsgToken<612>()); // Short
 					break;
 				case 1: // long to full
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2035>(),MsgToken<312>()); // Full
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2035>(),MsgToken<312>()); // Full
 					break;
 				case 2: // short to long
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2035>(),MsgToken<410>()); // Long
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2035>(),MsgToken<410>()); // Long
 					break;
 				case 3: // full to off
 				default:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2035>(),MsgToken<491>()); // OFF
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2035>(),MsgToken<491>()); // OFF
 					break;
 			}
 			break;
@@ -471,17 +471,17 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		case 34: // MapLabelsToggleActionName
 			switch(GetMultimap_Labels()) {
 				case MAPLABELS_ALLON:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2026>(),MsgToken<1203>()); // WPTS
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2026>(),MsgToken<1203>()); // WPTS
 					break;
 				case MAPLABELS_ONLYWPS:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2026>(),MsgToken<1204>()); // TOPO
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2026>(),MsgToken<1204>()); // TOPO
 					break;
 				case MAPLABELS_ONLYTOPO:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2026>(),MsgToken<898>());
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2026>(),MsgToken<898>());
 					break;
 				case MAPLABELS_ALLOFF:
 				default:
-					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken<2026>(),MsgToken<899>());
+					lk::snprintf(OutBuffer,Size, _T("%s\n%s"),MsgToken<2026>(),MsgToken<899>());
 					break;
 			}
 			break;
@@ -541,14 +541,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
             break;
 		case 41:
 			if (Flags_DrawXC )
-				_stprintf(OutBuffer,_T("%s"),MsgToken<2388>());  //  "Draw\nXC"
+				lk::snprintf(OutBuffer,Size, _T("%s"),MsgToken<2388>());  //  "Draw\nXC"
 			else
-				_stprintf(OutBuffer,_T("%s"),MsgToken<2389>());  //	"NoDraw\nXC"
+				lk::snprintf(OutBuffer,Size, _T("%s"),MsgToken<2389>());  //	"NoDraw\nXC"
 		break;
 
 
 		default:
-			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
+			lk::snprintf(OutBuffer,Size,  _T("INVALID\n%d"),i);
 			break;
 	}
 	goto label_ret;
@@ -703,32 +703,32 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   if (_tcsstr(OutBuffer, TEXT("$(WCSpeed)"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f%s"), Units::ToHorizontalSpeed(WindCalcSpeed), Units::GetHorizontalSpeedName());
+	lk::snprintf(tbuf,_T("%.0f%s"), Units::ToHorizontalSpeed(WindCalcSpeed), Units::GetHorizontalSpeedName());
 	ReplaceInString(OutBuffer, TEXT("$(WCSpeed)"), tbuf, Size);
 	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(GS"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f%s"), Units::ToHorizontalSpeed(GPS_INFO.Speed), Units::GetHorizontalSpeedName());
+	lk::snprintf(tbuf,_T("%.0f%s"), Units::ToHorizontalSpeed(GPS_INFO.Speed), Units::GetHorizontalSpeedName());
 	ReplaceInString(OutBuffer, TEXT("$(GS)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }
   if (_tcsstr(OutBuffer, TEXT("$(HGPS"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f%s"), Units::ToAltitude(GPS_INFO.Altitude), Units::GetAltitudeName());
+	lk::snprintf(tbuf,_T("%.0f%s"), Units::ToAltitude(GPS_INFO.Altitude), Units::GetAltitudeName());
 	ReplaceInString(OutBuffer, TEXT("$(HGPS)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }
   if (_tcsstr(OutBuffer, TEXT("$(TURN"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.0f"),SimTurn);
+	lk::snprintf(tbuf,_T("%.0f"),SimTurn);
 	ReplaceInString(OutBuffer, TEXT("$(TURN)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }
   if (_tcsstr(OutBuffer, TEXT("$(NETTO"))) {
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%.1f"),SimNettoVario);
+	lk::snprintf(tbuf,_T("%.1f"),SimNettoVario);
 	ReplaceInString(OutBuffer, TEXT("$(NETTO)"), tbuf, Size);
 	if (--items<=0) goto label_ret;
   }

@@ -82,7 +82,7 @@ void SetValues(WndForm* pForm, int indexid) {
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpLift"));
   if (wp) {
-    _stprintf(buffer,_T("%+.1f %s"),Units::ToVerticalSpeed(thermal->Lift), Units::GetVerticalSpeedName());
+    lk::snprintf(buffer,_T("%+.1f %s"),Units::ToVerticalSpeed(thermal->Lift), Units::GetVerticalSpeedName());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }

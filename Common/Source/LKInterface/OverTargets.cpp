@@ -82,24 +82,24 @@ int GetOvertargetIndex() {
 
 // return current overtarget waypoint name with leading identifier, even if empty
 // exception for TEAM MATE: always report OWN CODE if available
-void GetOvertargetName(TCHAR *overtargetname) {
+void GetOvertargetName(TCHAR *overtargetname, size_t size) {
   int index;
   if (OvertargetMode == OVT_MATE) {
 	if (ValidWayPoint(TeamCodeRefWaypoint)) {
 		if (TeammateCodeValid)
-			_stprintf(overtargetname,_T("%s> %s"), GetOvertargetHeader(),CALCULATED_INFO.OwnTeamCode);
+			lk::snprintf(overtargetname, size, _T("%s> %s"), GetOvertargetHeader(),CALCULATED_INFO.OwnTeamCode);
 		else
-			_stprintf(overtargetname,_T("%s: %s"), GetOvertargetHeader(),CALCULATED_INFO.OwnTeamCode);
+			lk::snprintf(overtargetname, size,_T("%s: %s"), GetOvertargetHeader(),CALCULATED_INFO.OwnTeamCode);
 	} else
-		_stprintf(overtargetname,_T("%s ---"),GetOvertargetHeader());
+		lk::snprintf(overtargetname, size,_T("%s ---"),GetOvertargetHeader());
 	return;
   }
   LockTaskData();
   index=GetOvertargetIndex();
   if (index<0)
-	_stprintf(overtargetname,_T("%s ---"),GetOvertargetHeader());
+	lk::snprintf(overtargetname, size,_T("%s ---"),GetOvertargetHeader());
   else
-	_stprintf(overtargetname,_T("%s%s"), GetOvertargetHeader(),WayPointList[index].Name);
+	lk::snprintf(overtargetname, size,_T("%s%s"), GetOvertargetHeader(),WayPointList[index].Name);
   UnlockTaskData();
 }
 

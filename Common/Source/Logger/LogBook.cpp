@@ -95,7 +95,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   // Header line for new note
   //
-  _stprintf(line,_T("[%04d-%02d-%02d  @%02d:%02d]"),
+  lk::snprintf(line,_T("[%04d-%02d-%02d  @%02d:%02d]"),
     GPS_INFO.Year,
     GPS_INFO.Month,
     GPS_INFO.Day,
@@ -111,7 +111,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   // D-1234 (Ka6-CR)
   //
-  _stprintf(line,_T("%s (%s)"), AircraftRego_Config,AircraftType_Config);
+  lk::snprintf(line,_T("%s (%s)"), AircraftRego_Config,AircraftType_Config);
   file.WriteLn(line);
   file.WriteLn();
 
@@ -123,7 +123,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 
   lk::snprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken<680>(),Temp,TUtc);
   file.WriteLn(line);
-  _stprintf(line,_T("%s:  %s"),MsgToken<930>(),TAKEOFFWP_Name);
+  lk::snprintf(line,_T("%s:  %s"),MsgToken<930>(),TAKEOFFWP_Name);
   file.WriteLn(line);
 
   //
@@ -136,11 +136,11 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     lk::snprintf(line,_T("%s:  %s  (UTC %s)"),MsgToken<386>(),Temp,TUtc);
     file.WriteLn(line);
 
-    _stprintf(line,_T("%s:  %s"),MsgToken<931>(),LANDINGWP_Name);
+    lk::snprintf(line,_T("%s:  %s"),MsgToken<931>(),LANDINGWP_Name);
     file.WriteLn(line);
   } else {
     TestLog(_T(".... LogBookTXT, logging but still flying!"));
-    _stprintf(line,_T("%s: ??:??:??"),MsgToken<386>());
+    lk::snprintf(line,_T("%s: ??:??:??"),MsgToken<386>());
     file.WriteLn(line);
   }
 
@@ -184,7 +184,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     //
     ivalue=CContestMgr::TYPE_OLC_CLASSIC;
     if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-        _stprintf(Temp, TEXT("%5.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
+        lk::snprintf(Temp, TEXT("%5.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
         lk::snprintf(line,_T("%s: %s %s"),
             MsgToken<1455>(),
             Temp,
@@ -197,7 +197,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     //
     ivalue=CContestMgr::TYPE_OLC_FAI;
     if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-        _stprintf(Temp, TEXT("%5.0f"), Units::ToDistance(OlcResults[ivalue].Distance()));
+        lk::snprintf(Temp, TEXT("%5.0f"), Units::ToDistance(OlcResults[ivalue].Distance()));
         lk::snprintf(line,_T("%s: %s %s"),
                 MsgToken<1457>(),
                 Temp,
@@ -208,7 +208,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
     //
     // Max Altitude gained
     //
-    _stprintf(line,_T("%s: %.0f %s"),
+    lk::snprintf(line,_T("%s: %.0f %s"),
               MsgToken<1769>(),
               Units::ToAltitude(CALCULATED_INFO.MaxHeightGain),
               Units::GetAltitudeName());
@@ -218,7 +218,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   // Max Altitude reached
   //
-  _stprintf(line,_T("%s: %.0f %s"),
+  lk::snprintf(line,_T("%s: %.0f %s"),
           MsgToken<1767>(),
           Units::ToAltitude(CALCULATED_INFO.MaxAltitude),
           Units::GetAltitudeName());
@@ -227,7 +227,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   // Odometer, add a spare CR LF to separate next logfield
   //
-  _stprintf(line,_T("%s: %.0f %s"),
+  lk::snprintf(line,_T("%s: %.0f %s"),
           MsgToken<1167>(),
           Units::ToDistance(CALCULATED_INFO.Odometer),
           Units::GetDistanceName());
@@ -279,7 +279,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 
   ivalue=CContestMgr::TYPE_OLC_CLASSIC;
   if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-    _stprintf(solcdist, _T("%.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
+    lk::snprintf(solcdist, _T("%.0f"),Units::ToDistance(OlcResults[ivalue].Distance()));
   } else {
     lk::strcpy(solcdist, _T("---"));
   }
@@ -349,7 +349,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
   if (dofirstline) {
     file.WriteLn(_T("### AUTO-GENERATED LOGBOOK (ENCODED IN UTF-8)"));
     file.WriteLn(_T("###"));
-    _stprintf(line,_T("[%s]"),MsgToken<1753>()); // List of flights
+    lk::snprintf(line,_T("[%s]"),MsgToken<1753>()); // List of flights
     file.WriteLn(line);
   }
 
@@ -384,7 +384,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
     file.WriteLn(MsgToken<1211>());
   }
 
-  _stprintf(line,_T("%04d/%02d/%02d   %s  %s %s"),
+  lk::snprintf(line,_T("%04d/%02d/%02d   %s  %s %s"),
     GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
     sflighttime,
     AircraftRego_Config,
@@ -392,9 +392,9 @@ bool UpdateLogBookLST(bool welandedforsure) {
 
   file.WriteLn(line);
 
-  _stprintf(line,_T("  %s  %s  %s"),stakeoff,stakeoffutc,TAKEOFFWP_Name);
+  lk::snprintf(line,_T("  %s  %s  %s"),stakeoff,stakeoffutc,TAKEOFFWP_Name);
   file.WriteLn(line);
-  _stprintf(line,_T("  %s  %s  %s"),slanding,slandingutc,LANDINGWP_Name);
+  lk::snprintf(line,_T("  %s  %s  %s"),slanding,slandingutc,LANDINGWP_Name);
   file.WriteLn(line);
 
   return true;

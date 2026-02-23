@@ -128,9 +128,9 @@ bool LXWP1(DeviceDescriptor_t* d, const char* String, NMEA_INFO* pGPS)
         StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, (double)(d->HardwareId)/10.0);
 
         TCHAR str[255];
-        _stprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
+        lk::snprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
         DoStatusMessage(str);
-        _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, d->HardwareId / 10.0);
+        lk::snprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "),  d->SoftwareVer, d->HardwareId / 10.0);
         DoStatusMessage(str);
     }
 #endif

@@ -35,7 +35,7 @@ LKBitmap LKLoadBitmap(const TCHAR *sName, bool Hires) {
     TCHAR srcfile[MAX_PATH];
 #ifdef ANDROID
 
-    _stprintf(srcfile,_T(LKD_BITMAPS "/%s%s." IMG_EXT), sName, Hires?_T("_H"):_T(""));
+    lk::snprintf(srcfile,_T(LKD_BITMAPS "/%s%s." IMG_EXT), sName, Hires?_T("_H"):_T(""));
     bool success = hBmp.LoadAssetsFile(srcfile);
 #else
     TCHAR sDir[MAX_PATH];

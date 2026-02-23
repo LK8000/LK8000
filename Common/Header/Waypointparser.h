@@ -38,10 +38,35 @@ int FindMatchingAirfield(WAYPOINT *waypoint);
 int FindOrAddWaypoint(WAYPOINT *read_waypoint, bool look_for_airfield);
 
 void WaypointFlagsToString(int FlagsNum, TCHAR *Flags);
-void WaypointLongitudeToString(double Longitude, TCHAR *Buffer);
-void WaypointLatitudeToString(double Latitude, TCHAR *Buffer);
-void LongitudeToCUPString(double Longitude, TCHAR *Buffer);
-void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
+
+void WaypointLongitudeToString(double Longitude, TCHAR *Buffer, size_t size);
+
+template<size_t size>
+void WaypointLongitudeToString(double Longitude, TCHAR (&Buffer)[size]) {
+    WaypointLongitudeToString(Longitude, Buffer, size);
+}
+
+void WaypointLatitudeToString(double Latitude, TCHAR *Buffer, size_t size);
+
+template<size_t size>
+void WaypointLatitudeToString(double Longitude, TCHAR (&Buffer)[size]) {
+    WaypointLatitudeToString(Longitude, Buffer, size);
+}
+
+void LongitudeToCUPString(double Longitude, TCHAR *Buffer, size_t size);
+
+template<size_t size>
+void LongitudeToCUPString(double Longitude, TCHAR (&Buffer)[size]) {
+    LongitudeToCUPString(Longitude, Buffer, size);
+}
+
+void LatitudeToCUPString(double Latitude, TCHAR *Buffer, size_t size);
+
+template<size_t size>
+void LatitudeToCUPString(double Longitude, TCHAR (&Buffer)[size]) {
+    LatitudeToCUPString(Longitude, Buffer, size);
+}
+
 double ReadAltitude(const TCHAR *temp);
 double ReadLength(const TCHAR *temp);
 double CUPToLat(const TCHAR *str);

@@ -40,7 +40,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
   TCHAR BufferTitle[LKSIZEBUFFERTITLE];
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
   TCHAR BufferUnit[LKSIZEBUFFERUNIT];
-  TCHAR Empty[2]; // 100407
+  TCHAR Empty[LKSIZEBUFFERUNIT]; // 100407
   DrawBmp_t BmpValue = BmpNone;
   int index=-1;
 
@@ -187,38 +187,38 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 	Surface.SelectObject(LK8PanelMediumFont);
 	switch(curtype) {
 		case IM_THERMAL:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<905>()); // Thermal
+			lk::snprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<905>()); // Thermal
 			break;
 		case IM_CRUISE:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<906>()); // Cruise
+			lk::snprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<906>()); // Cruise
 			break;
 		case IM_TASK:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<907>()); // Task
+			lk::snprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<907>()); // Task
 			break;
 		case IM_AUX:
-			_stprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<908>()); // Custom
+			lk::snprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, MsgToken<908>()); // Custom
 			break;
 		case IM_TRI:
 #ifndef LKCOMPETITION
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<909>()); // Turn
+			lk::snprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<909>()); // Turn
 #else
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<1600>()); // DISABLED
+			lk::snprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<1600>()); // DISABLED
 #endif
 			break;
 		case IM_HSI:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<1860>()); // HSI
+			lk::snprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, MsgToken<1860>()); // HSI
 			break;
 		case IM_CONTEST:
-			  _stprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, CContestMgr::XCRuleToString(AdditionalContestRule)); // Contest
+			  lk::snprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, CContestMgr::XCRuleToString(AdditionalContestRule)); // Contest
 			break;
 		case IM_TRF+IM_TOP:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, MsgToken<910>()); // Target
+			lk::snprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, MsgToken<910>()); // Target
 			break;
 		case IM_TARGET+IM_TOP:
-			_stprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, MsgToken<911>()); // Sight
+			lk::snprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, MsgToken<911>()); // Sight
 			break;
 		default:
-			_stprintf(Buffer,_T("error"));
+			lk::strcpy(Buffer,_T("error"));
 			break;
 	}
         LKWriteText(Surface, Buffer, qcolumn[0],qrow[0], WTMODE_NORMAL, WTALIGN_LEFT,IsDithered()?RGB_WHITE:RGB_LIGHTGREEN,false);
@@ -270,9 +270,9 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 				}
 				//TCHAR status[80];
 				if (_tcslen(pTarget->Name) == 1) {
-					_stprintf(Buffer,_T("%0x"),pTarget->RadioId);
+					lk::snprintf(Buffer,_T("%0x"),pTarget->RadioId);
 				} else {
-					_stprintf(Buffer,_T("%s"),pTarget->Name);
+					lk::snprintf(Buffer,_T("%s"),pTarget->Name);
 				}
 
 			} else {
@@ -282,7 +282,7 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 			break;
 		default:
-			_stprintf(Buffer,_T("error"));
+			lk::strcpy(Buffer,_T("error"));
 			icolor=AMBERCOLOR;
 			break;
 	}
@@ -296,16 +296,16 @@ void MapWindow::DrawInfoPage(LKSurface& Surface,  const RECT& rc, bool forceinit
 
 			switch (pTarget->Status) {
 				case LKT_REAL:
-					_stprintf(Buffer,_T("LIVE"));
+					lk::strcpy(Buffer,_T("LIVE"));
 					break;
 				case LKT_GHOST:
-					_stprintf(Buffer,_T("ghost %s\""),tpas);
+					lk::snprintf(Buffer,_T("ghost %s\""),tpas);
 					break;
 				case LKT_ZOMBIE:
-					_stprintf(Buffer,_T("zombie %s\""),tpas);
+					lk::snprintf(Buffer,_T("zombie %s\""),tpas);
 					break;
 				default:
-					_stprintf(Buffer,_T("??? %s\""),tpas);
+					lk::snprintf(Buffer,_T("??? %s\""),tpas);
 					break;
 			}
 			LKWriteText(Surface, Buffer, qcolumn[16],qrow[0], WTMODE_NORMAL, WTALIGN_RIGHT, icolor, false);
@@ -961,7 +961,7 @@ label_TRI:
 		WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 	}
 #if 0
-	_stprintf(BufferValue,_T("%0.1f"),CALCULATED_INFO.TurnRate);
+	lk::snprintf(BufferValue,_T("%0.1f"),CALCULATED_INFO.TurnRate);
 	lk::strcpy(BufferTitle,_T("Rate"));
 	WriteInfo(Surface, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
 
@@ -995,7 +995,7 @@ label_HSI:
 		}
 		if(showVFRlanding || showQFU) { //show QFU or "VFR landing"
 			if(showVFRlanding) {
-				_stprintf(Buffer,TEXT("VFR %s"),MsgToken<931>()); //TODO: toupper()
+				lk::snprintf(Buffer,TEXT("VFR %s"),MsgToken<931>()); //TODO: toupper()
 				if (!IsDithered()) {
 					icolor = INVERTCOLORS ? RGB_YELLOW : RGB_DARKYELLOW;
 				} else {
@@ -1003,7 +1003,7 @@ label_HSI:
 				}
 			}
 			if(showQFU) {
-				_stprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken<2179>());
+				lk::snprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken<2179>());
 				icolor = IsDithered() ? RGB_WHITE : RGB_GREEN;
 			}
 		} else { //show next waypoint name
@@ -1135,11 +1135,12 @@ label_End:
 
 }
 
-
-
-void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
-				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3,DrawBmp_t *BmpValue) {
-
+void MapWindow::WriteInfo(LKSurface& Surface, bool* showunit,
+                          TCHAR (&BufferValue)[LKSIZEBUFFERVALUE],
+                          TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT],
+                          TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE],
+                          short* columnvalue, short* columntitle, short* row1,
+                          short* row2, short* row3, DrawBmp_t* BmpValue) {
   DrawBmp_t lBmpValue = BmpNone;
   if (BmpValue != NULL) lBmpValue = *BmpValue;
   static short unitrowoffset=0;
@@ -1233,5 +1234,4 @@ void MapWindow::WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue
 	else {
 		LKWriteText(Surface, BufferTitle, *columntitle, *row3, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	}
-
 }

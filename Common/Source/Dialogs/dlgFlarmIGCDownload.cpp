@@ -389,12 +389,12 @@ static void OnMultiSelectListPaintListItem(WndOwnerDrawFrame *Sender,
           lk::strcpy(FileExist, _T("✔")); // check! already copied
         else
           lk::strcpy(FileExist, _T("*")); // * already copied
-        _stprintf(text1, _T("%s %s"), FileExist,IGCFileList.at(IGC_DrawListIndex).Line1);   
+        lk::snprintf(text1, _T("%s %s"), FileExist,IGCFileList.at(IGC_DrawListIndex).Line1);   
       }   
     }
 
 
-    _stprintf(text2, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line2);
+    lk::snprintf(text2, _T("%s"), IGCFileList.at(IGC_DrawListIndex).Line2);
     Surface.SetBkColor(RGB_WHITE);
 
     PixelRect rc = {0, 0, 0, // DLGSCALE(PICTO_WIDTH),

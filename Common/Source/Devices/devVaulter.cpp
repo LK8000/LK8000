@@ -59,7 +59,7 @@ TCHAR  szCheck[254];
 	//  if(szStrgi0] != ' ')
 	    iCheckSum ^= szStrg[i];
   }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+  lk::snprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
   return iCheckSum;
 }
@@ -73,7 +73,7 @@ BOOL VaulterPutMacCready(DeviceDescriptor_t* d, double MacCready){
     return false;
   }
 
-  _stprintf(szTmp, TEXT("$PITV1,MC=%4.2f"), MacCready);
+  lk::snprintf(szTmp, TEXT("$PITV1,MC=%4.2f"), MacCready);
   VaulterNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
   return true;
@@ -87,7 +87,7 @@ BOOL VaulterPutBallast(DeviceDescriptor_t* d, double Ballast){
     return false;
   }
 
-  _stprintf(szTmp, TEXT("$PITV1,WL=%4.2f"), (1.0+Ballast));
+  lk::snprintf(szTmp, TEXT("$PITV1,WL=%4.2f"), (1.0+Ballast));
   VaulterNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 

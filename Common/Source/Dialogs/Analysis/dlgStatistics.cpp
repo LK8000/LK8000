@@ -64,11 +64,11 @@ static bool OnTimerNotify(WndForm* pWnd) {
 }
 
 
-void Statistics::FormatTicText(TCHAR *text, double val, double step) {
+void Statistics::FormatTicText(TCHAR *text, size_t size, double val, double step) {
   if (step<1.0) {
-    _stprintf(text, TEXT("%.1f"), val);
+    lk::snprintf(text, size, TEXT("%.1f"), val);
   } else {
-    _stprintf(text, TEXT("%.0f"), val);
+    lk::snprintf(text, size, TEXT("%.0f"), val);
   }
 }
 

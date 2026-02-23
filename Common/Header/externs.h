@@ -24,7 +24,7 @@
 #endif
 #include "compatibility.h"
 
-
+#include "utils/printf.h"
 #include "utils/filesystem.h"
 #include "Sizes.h"
 #include "Defines.h"

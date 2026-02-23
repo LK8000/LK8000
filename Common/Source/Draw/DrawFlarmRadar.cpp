@@ -83,12 +83,12 @@ const LKBrush * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_pos4
 };
 
-
-void FormatTicText(TCHAR *text, const double val, const double step) {
+template<size_t size>
+static void FormatTicText(TCHAR (&text)[size], const double val, const double step) {
   if (step<1.0) {
-    _stprintf(text, TEXT("%.1f"), val);
+    lk::snprintf(text, TEXT("%.1f"), val);
   } else {
-    _stprintf(text, TEXT("%.0f"), val);
+    lk::snprintf(text, TEXT("%.0f"), val);
   }
 }
 
@@ -265,27 +265,29 @@ void MapWindow::DrawYGrid(LKSurface& Surface, const RECT& rc, double ticstep,dou
 
     if (iTextAling != TEXT_NO_TEXT)
     {
-	  TCHAR unit_text[MAX_PATH];
-	  LKASSERT(ticstep!=0);
-	  FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
-	  if(pUnit != NULL)
-            if(yval+ticstep >y_max)
-              _stprintf(unit_text + _tcslen(unit_text), TEXT("%s"), pUnit);
-	  Surface.GetTextSize(unit_text, &tsize);
-	  switch(iTextAling)
-	  {
-	    case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy-2  ; break;
-	    case TEXT_ABOVE_RIGHT   : xoff = 1          ; yoff= -tsize.cy-2  ; break;
-	    case TEXT_ABOVE_CENTER  : xoff = -tsize.cx/2; yoff= -tsize.cy-2  ; break;
-	    case TEXT_UNDER_LEFT    : xoff = -tsize.cx  ; yoff= 0          ; break;
-	    case TEXT_UNDER_RIGHT   : xoff = 1          ; yoff= 0          ; break;
-	    default:
-	    case TEXT_UNDER_CENTER  : xoff = -tsize.cx/2; yoff= 0          ; break;
-	    case TEXT_MIDDLE_LEFT   : xoff = -tsize.cx  ; yoff= -tsize.cy/2-1; break;
-	    case TEXT_MIDDLE_RIGHT  : xoff = 1          ; yoff= -tsize.cy/2-1; break;
-	    case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2-1; break;
-	  }
-	  Surface.DrawText(xmin+xoff, ymin+yoff, unit_text);
+      TCHAR unit_text[MAX_PATH];
+      LKASSERT(ticstep!=0);
+      FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
+      if (pUnit && (yval + ticstep > y_max)) {
+        TCHAR* begin = unit_text + _tcslen(unit_text);
+        TCHAR* end = std::end(unit_text);
+        lk::snprintf(begin, std::distance(begin, end), TEXT("%s"), pUnit);
+      }
+      Surface.GetTextSize(unit_text, &tsize);
+      switch(iTextAling)
+      {
+        case TEXT_ABOVE_LEFT    : xoff = -tsize.cx  ; yoff= -tsize.cy-2  ; break;
+        case TEXT_ABOVE_RIGHT   : xoff = 1          ; yoff= -tsize.cy-2  ; break;
+        case TEXT_ABOVE_CENTER  : xoff = -tsize.cx/2; yoff= -tsize.cy-2  ; break;
+        case TEXT_UNDER_LEFT    : xoff = -tsize.cx  ; yoff= 0          ; break;
+        case TEXT_UNDER_RIGHT   : xoff = 1          ; yoff= 0          ; break;
+        default:
+        case TEXT_UNDER_CENTER  : xoff = -tsize.cx/2; yoff= 0          ; break;
+        case TEXT_MIDDLE_LEFT   : xoff = -tsize.cx  ; yoff= -tsize.cy/2-1; break;
+        case TEXT_MIDDLE_RIGHT  : xoff = 1          ; yoff= -tsize.cy/2-1; break;
+        case TEXT_MIDDLE_CENTER : xoff = -tsize.cx/2; yoff= -tsize.cy/2-1; break;
+      }
+      Surface.DrawText(xmin+xoff, ymin+yoff, unit_text);
     }
   }
 
@@ -1089,7 +1091,7 @@ if(SPLITSCREEN_FACTOR >0)
 		    /*************************************************************************
 		     * draw label
 		     *************************************************************************/
-		   _stprintf(lbuffer,_T("%3.1f"),Units::ToVerticalSpeed(LKTraffic[i].Average30s));
+		   lk::snprintf(lbuffer,_T("%3.1f"),Units::ToVerticalSpeed(LKTraffic[i].Average30s));
 
 		    Surface.SetBackgroundTransparent();
 		    if (_tcslen(lbuffer)>0) {
@@ -1266,7 +1268,7 @@ if(bSideview)
 	  }
 	  lk::strcpy(lbuffer,_T(""));
 	  if (LKTraffic[i].Cn[0]!=_T('?')) { // 100322
-	    _stprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
+	    lk::snprintf(lbuffer,_T("%s: %s"),asFLARMPos[i].szGliderType,LKTraffic[i].Cn);
 	  }
 
 

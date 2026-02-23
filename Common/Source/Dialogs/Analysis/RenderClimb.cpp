@@ -59,7 +59,7 @@ void Statistics::RenderClimb(LKSurface& Surface, const RECT& rc)
   TCHAR text[80];
 
   DrawXLabel(Surface, rc, TEXT("n"));
-  _stprintf(text,TEXT(" v/%s "),Units::GetVerticalSpeedName());
+  lk::snprintf(text,TEXT(" v/%s "),Units::GetVerticalSpeedName());
   DrawYLabel(Surface, rc, text);
 
 }

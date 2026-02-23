@@ -51,9 +51,9 @@ void dlgWeatherStDetails(int indexid) {
 
   TCHAR caption[MAX_LEN + 10];
   if(_tcslen(StationName) == 0)
-    _stprintf(caption, TEXT("%X"),Station.ID);
+    lk::snprintf(caption, TEXT("%X"),Station.ID);
   else
-    _stprintf(caption, TEXT("%s [%X]"),StationName,Station.ID);
+    lk::snprintf(caption, TEXT("%s [%X]"),StationName,Station.ID);
   wf->SetCaption(caption);
 
 
@@ -61,19 +61,19 @@ void dlgWeatherStDetails(int indexid) {
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, Station.Latitude,  Station.Longitude, &Distance, &Bear);
   wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
-    _stprintf(buffer, TEXT(" %d%s"), iround(Bear),MsgToken<2179>());
+    lk::snprintf(buffer, TEXT(" %d%s"), iround(Bear),MsgToken<2179>());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f %s"), Units::ToDistance(Distance), Units::GetDistanceName());
+    lk::snprintf(buffer,_T("%.1f %s"), Units::ToDistance(Distance), Units::GetDistanceName());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpWSpeed"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f | %.1f %s"),
+    lk::snprintf(buffer,_T("%.1f | %.1f %s"),
                 Units::ToWindSpeed(Station.windSpeed),
                 Units::ToWindSpeed(Station.windGust),
                 Units::GetName(Units::GetHorizontalSpeedUnit()));
@@ -83,31 +83,31 @@ void dlgWeatherStDetails(int indexid) {
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpWBearing"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f %s"),Station.windDir, MsgToken<2179>());
+    lk::snprintf(buffer,_T("%.1f %s"),Station.windDir, MsgToken<2179>());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpTemp"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f %s"),Station.temp, MsgToken<2180>());
+    lk::snprintf(buffer,_T("%.1f %s"),Station.temp, MsgToken<2180>());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpHum"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f %%"),Station.hum);
+    lk::snprintf(buffer,_T("%.1f %%"),Station.hum);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpBaro"));
   if (wp) {
-    _stprintf(buffer, _T("%.2f %s"), Units::ToPressure(Station.pressure), Units::GetPressureName());
+    lk::snprintf(buffer, _T("%.2f %s"), Units::ToPressure(Station.pressure), Units::GetPressureName());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpCharge"));
   if (wp) {
-    _stprintf(buffer,_T("%.1f %%"),Station.Battery);
+    lk::snprintf(buffer,_T("%.1f %%"),Station.Battery);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }

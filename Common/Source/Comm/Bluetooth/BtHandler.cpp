@@ -22,7 +22,7 @@ const tstring BTPortPrefix(_T("BT_SPP:"));
 
 tstring BTAddrToStr(BT_ADDR ba) {
     TCHAR szAddress[25] = {0};
-    _stprintf(szAddress, _T("%04x%08x"), GET_NAP(ba), (unsigned int)GET_SAP(ba));
+    lk::snprintf(szAddress, _T("%04x%08x"), GET_NAP(ba), (unsigned int)GET_SAP(ba));
     return szAddress;
 }
 
@@ -46,7 +46,7 @@ BT_ADDR StrToBTAddr(const TCHAR* szAddr) {
 
 tstring GetHandleFile(const TCHAR* szPort) {
     TCHAR szFile[25] = {0};
-    _stprintf(szFile, _T("\\N%s.VPH"), szPort);
+    lk::snprintf(szFile, _T("\\N%s.VPH"), szPort);
     return szFile;
 }
 

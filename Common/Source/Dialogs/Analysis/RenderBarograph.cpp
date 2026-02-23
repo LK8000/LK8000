@@ -79,7 +79,7 @@ void Statistics::RenderBarograph(LKSurface& Surface, const RECT& rc)
 
   TCHAR text[80];
   DrawXLabel(Surface, rc, TEXT(" t/h "));
-  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  lk::snprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
   DrawYLabel(Surface, rc, text);
 
 

@@ -409,7 +409,7 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
 	      {
 	    	if( FDR[i].iWarningDelay  == ARMED)
 	    	{
-	          _stprintf(szTmp,_T("%s: (%4.2f < %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMin);
+	          lk::snprintf(szTmp,_T("%s: (%4.2f < %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMin);
               DoStatusMessage(szTmp);
 			  FDR[i].aiWarningCnt++;
 			  if(FDR[i].aiCheckInterval >0)
@@ -425,7 +425,7 @@ void CheckFDRAlarms(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
 		  {
 		    if( FDR[i].iWarningDelay  == ARMED)
 		    {
-			  _stprintf(szTmp,_T("%s: (%4.2f > %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMax);
+			  lk::snprintf(szTmp,_T("%s: (%4.2f > %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMax);
 			  DoStatusMessage(szTmp);
 			  FDR[i].aiWarningCnt++;
 			  if(FDR[i].aiCheckInterval >0)

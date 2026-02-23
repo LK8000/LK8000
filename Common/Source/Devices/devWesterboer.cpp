@@ -44,7 +44,7 @@ TCHAR  szCheck[254];
   {
 	    iCheckSum ^= szStrg[i];
   }
-  _stprintf(szCheck,TEXT("*%X\r\n"),iCheckSum);
+  lk::snprintf(szCheck,TEXT("*%X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
   return iCheckSum;
 }
@@ -58,7 +58,7 @@ if (i++ > 5)
 {
 	i=0;
 
-  _stprintf(szTmp, TEXT("$PWES4,1,,,,,,,,"));
+  lk::strcpy(szTmp, TEXT("$PWES4,1,,,,,,,,"));
   NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 }
@@ -70,7 +70,7 @@ else
   { // request hardware/serial informations
 	if(j++> 10)
 	{ j=0;
-	  _stprintf(szTmp, TEXT("$PWES4,2,,,,,,,,"));
+	  lk::strcpy(szTmp, TEXT("$PWES4,2,,,,,,,,"));
 	  NMEAddCheckSumStrg(szTmp);
 	  d->Com->WriteString(szTmp);
 	}
@@ -201,7 +201,7 @@ static BOOL PWES0(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
       }
 
       TCHAR str[255];
-    	_stprintf(str, _T("%s  DETECTED"), d->Name);
+    	lk::snprintf(str, _T("%s  DETECTED"), d->Name);
     	oldSerial = d->SerialNumber;
 	    DoStatusMessage(str);
 	    StartupStore(_T(". %s\n"), str);
@@ -352,7 +352,7 @@ BOOL devWesterboerPutMacCready(DeviceDescriptor_t* d, double Mc){
 #ifdef  VW_BIDIRECTIONAL
 iReceiveSuppress = 1;
 TCHAR  szTmp[254];
-  _stprintf(szTmp, TEXT("$PWES4,,%d,,,,,,,"),(int)(Mc*10.0f+0.49f));
+  lk::snprintf(szTmp, TEXT("$PWES4,,%d,,,,,,,"),(int)(Mc*10.0f+0.49f));
   NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 #endif
@@ -366,7 +366,7 @@ BOOL devWesterboerPutWingload(DeviceDescriptor_t* d, double fWingload){
 #ifdef  VW_BIDIRECTIONAL
   TCHAR  szTmp[254];
   iReceiveSuppress = 1;
-    _stprintf(szTmp, TEXT("$PWES4,,,,%d,,,,,"),(int)(fWingload *10.0f+0.5f));
+    lk::snprintf(szTmp, TEXT("$PWES4,,,,%d,,,,,"),(int)(fWingload *10.0f+0.5f));
     NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
 #endif
@@ -387,7 +387,7 @@ BOOL devWesterboerPutBugs(DeviceDescriptor_t* d, double Bug){
 #ifdef  VW_BIDIRECTIONAL
 iReceiveSuppress = 1;
   TCHAR  szTmp[254];
-    _stprintf(szTmp, TEXT("$PWES4,,,,,%d,,,,"),(int)((1.0-Bug)*100.0+0.5));
+    lk::snprintf(szTmp, TEXT("$PWES4,,,,,%d,,,,"),(int)((1.0-Bug)*100.0+0.5));
     NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
 #endif
@@ -437,11 +437,11 @@ static BOOL PWES2(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
     d->SoftwareVer = StrToDouble(ctemp, nullptr) / 100.0;
 
     TCHAR str[255];
-    _stprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
+    lk::snprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
     DoStatusMessage(str);
   	StartupStore(_T(". %s"), str);
 
-    _stprintf(str, _T("SW Ver:%3.2f  HW Ver:%i "), d->SoftwareVer, Year);
+    lk::snprintf(str, _T("SW Ver:%3.2f  HW Ver:%i "), d->SoftwareVer, Year);
     DoStatusMessage(str);
 	  StartupStore(_T(". %s"),ctemp);
   }

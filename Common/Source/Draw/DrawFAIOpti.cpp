@@ -710,9 +710,9 @@ int iCnt = 0;
     {
     TCHAR text[180];
     if(bFirstUnit)
-      _stprintf(text, TEXT("%i%s"), (int)Units::ToDistance(fDistTri+0.5), Units::GetDistanceName());
+      lk::snprintf(text, TEXT("%i%s"), (int)Units::ToDistance(fDistTri+0.5), Units::GetDistanceName());
     else
-      _stprintf(text, TEXT("%i"), (int)Units::ToDistance(fDistTri+0.5));
+      lk::snprintf(text, TEXT("%i"), (int)Units::ToDistance(fDistTri+0.5));
     bFirstUnit = false;
 
 

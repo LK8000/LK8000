@@ -142,7 +142,7 @@ static void EWMicroRecorderWriteWayPoint(DeviceDescriptor_t* d,
   MinLon *= 60;
   MinLon *= 1000;
 
-  _stprintf(EWRecord,
+  lk::snprintf(EWRecord,
             TEXT("%s%02d%05d%c%03d%05d%c %s\r\n"),
             EWType,
             DegLat, (int)MinLat, NoS,
@@ -197,13 +197,13 @@ BOOL EWMicroRecorderDeclare(DeviceDescriptor_t* d, const Declaration_t *decl, un
   d->Com->WriteString(user_data);
 
   TCHAR EWRecord[128];
-  _stprintf(EWRecord, TEXT("Pilot Name:     %s\r\n"), decl->PilotName);
+  lk::snprintf(EWRecord, TEXT("Pilot Name:     %s\r\n"), decl->PilotName);
   d->Com->WriteString(EWRecord);
-  _stprintf(EWRecord, TEXT("Competition ID: %s\r\n"), decl->CompetitionID);
+  lk::snprintf(EWRecord, TEXT("Competition ID: %s\r\n"), decl->CompetitionID);
   d->Com->WriteString(EWRecord);
-  _stprintf(EWRecord, TEXT("Aircraft Type:  %s\r\n"), decl->AircraftType);
+  lk::snprintf(EWRecord, TEXT("Aircraft Type:  %s\r\n"), decl->AircraftType);
   d->Com->WriteString(EWRecord);
-  _stprintf(EWRecord, TEXT("Aircraft ID:    %s\r\n"), decl->AircraftRego);
+  lk::snprintf(EWRecord, TEXT("Aircraft ID:    %s\r\n"), decl->AircraftRego);
   d->Com->WriteString(EWRecord);
 
   d->Com->WriteString("Description:      Declaration\r\n");

@@ -221,7 +221,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     //Print the current track indication
     TCHAR Buffer[LKSIZEBUFFERVALUE];
     Surface.SelectObject(LK8InfoSmallFont);
-    _stprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),MsgToken<2179>());
+    lk::snprintf(Buffer, TEXT("%03d%s"),(int)round(DrawInfo.TrackBearing),MsgToken<2179>());
     if (!IsDithered()) {
         LKWriteText(Surface, Buffer, posTRKx, posTRKy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_RED, false);
     } else {
@@ -271,11 +271,11 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
             } else {
                 LKWriteText(Surface, Buffer, VertSpeedX, VertSpeedLabelY, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
             }
-            _stprintf(Buffer, TEXT("%+.0f"),varioFtMin); //print the value
+            lk::snprintf(Buffer, TEXT("%+.0f"),varioFtMin); //print the value
             if(!ScreenLandscape || (ScreenSize!=ss800x480 && ScreenSize!=ss480x272)) Surface.SelectObject(LK8PanelMediumFont);
             else Surface.SelectObject(LK8PanelBigFont);
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedValueY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
-            _stprintf(Buffer,TEXT("FPM")); //measure unit
+            lk::strcpy(Buffer,TEXT("FPM")); //measure unit
             Surface.SelectObject(LK8PanelUnitFont);
             LKWriteText(Surface,Buffer,VertSpeedX,VertSpeedUnitY,WTMODE_NORMAL,WTALIGN_RIGHT,RGB_WHITE,false);
             if(DerivedDrawInfo.WaypointDistance<fiveNauticalMiles && WPstyle>=STYLE_AIRFIELDGRASS && WPstyle<=STYLE_AIRFIELDSOLID) { //if we are close to the destination airport
@@ -343,7 +343,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
                     Surface.SelectObject(LK8PanelSmallFont);
                     if (ScreenLandscape) {
                         for(int i=0;i<=6;i++) {
-                            _stprintf(Buffer, TEXT("%d"),i);
+                            lk::snprintf(Buffer, TEXT("%d"),i);
                             if (!IsDithered()) {
                                 LKWriteText(Surface,
                                             Buffer,
@@ -366,7 +366,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
                         }
                     } else {
                         if (!IsDithered()) {
-                            _stprintf(Buffer, TEXT("0"));
+                            lk::strcpy(Buffer, TEXT("0"));
                             LKWriteText(Surface,
                                         Buffer,
                                         gssLabelX,
@@ -375,7 +375,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
                                         WTALIGN_CENTER,
                                         isOutOfScale ? RGB_LIGHTRED : RGB_WHITE,
                                         false);
-                            _stprintf(Buffer, TEXT("6"));
+                            lk::strcpy(Buffer, TEXT("6"));
                             LKWriteText(Surface,
                                         Buffer,
                                         gssLabelX,
@@ -385,7 +385,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
                                         isOutOfScale ? RGB_LIGHTRED : RGB_WHITE,
                                         false);
                         } else {
-                            _stprintf(Buffer, TEXT("0"));
+                            lk::strcpy(Buffer, TEXT("0"));
                             LKWriteText(Surface,
                                         Buffer,
                                         gssLabelX,
@@ -394,7 +394,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
                                         WTALIGN_CENTER,
                                         isOutOfScale ? RGB_WHITE : RGB_WHITE,
                                         false);
-                            _stprintf(Buffer, TEXT("6"));
+                            lk::strcpy(Buffer, TEXT("6"));
                             LKWriteText(Surface,
                                         Buffer,
                                         gssLabelX,
@@ -420,7 +420,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
         //Print the desired course
         Surface.SelectObject(LK8InfoSmallFont);
-        _stprintf(Buffer, TEXT("%03d%s"),(int)round(course),MsgToken<2179>());
+        lk::snprintf(Buffer, TEXT("%03d%s"),(int)round(course),MsgToken<2179>());
         if (!IsDithered()) {
             LKWriteText(Surface, Buffer, posDTKx, posTRKy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_GREEN, false);
         } else {
@@ -534,14 +534,14 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
             if (Units::GetDistanceUnit() == unKiloMeter) { //Km
                 if(xtk>1000) {
                      xtk = Units::To(unKiloMeter, xtk);
-                     if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f km"),xtk);
-                     else _stprintf(Buffer,TEXT("%d km"),(int)round(xtk));
-                 } else _stprintf(Buffer,TEXT("%d m"),(int)round(xtk));
+                     if(xtk<=99.9) lk::snprintf(Buffer, TEXT("%.1f km"),xtk);
+                     else lk::snprintf(Buffer,TEXT("%d km"),(int)round(xtk));
+                 } else lk::snprintf(Buffer,TEXT("%d m"),(int)round(xtk));
             } else { //Miles or Nautical miles
                 xtk = Units::ToDistance(xtk);
-                if(xtk<1) _stprintf(Buffer, TEXT("%.2f %s"),xtk,Units::GetDistanceName());
-                else if(xtk<=99.9) _stprintf(Buffer, TEXT("%.1f %s"),xtk,Units::GetDistanceName());
-                else _stprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());
+                if(xtk<1) lk::snprintf(Buffer, TEXT("%.2f %s"),xtk,Units::GetDistanceName());
+                else if(xtk<=99.9) lk::snprintf(Buffer, TEXT("%.1f %s"),xtk,Units::GetDistanceName());
+                else lk::snprintf(Buffer,TEXT("%d %s"),(int)round(xtk),Units::GetDistanceName());
             }
             if (!IsDithered()) {
                 LKWriteText(Surface, Buffer, posXTKx, posXTKy + NIBLSCALE(2), WTMODE_NORMAL, WTALIGN_CENTER, cdiColor, false);
@@ -585,7 +585,7 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
             //Print the actual bearing to next WayPoint
             Surface.SelectObject(LK8InfoSmallFont);
-            _stprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),MsgToken<2179>());
+            lk::snprintf(Buffer, TEXT("%03d%s"),(int)round(DerivedDrawInfo.WaypointBearing),MsgToken<2179>());
             if (!IsDithered()) {
                 LKWriteText(Surface, Buffer, posDTKx, posBRGy + NIBLSCALE(2), WTMODE_NORMAL, WTALIGN_CENTER, RGB_MAGENTA, false);
             } else {
@@ -703,19 +703,19 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
 
         //Print +scale and -scale at top and bottom of VSI
         Surface.SelectObject(LK8SmallFont);
-        if(scale<10000) _stprintf(Buffer, TEXT("+%.0fft"),scale);
-        else _stprintf(Buffer, TEXT("+%.0ff"),scale);
+        if(scale<10000) lk::snprintf(Buffer, TEXT("+%.0fft"),scale);
+        else lk::snprintf(Buffer, TEXT("+%.0ff"),scale);
         if (!IsDithered()) {
             LKWriteText(Surface, Buffer, VSIlabelX, VSIlabelUpY, WTMODE_NORMAL, WTALIGN_CENTER, outOfScale ? RGB_LIGHTRED : RGB_WHITE, false);
-            if (scale < 10000) _stprintf(Buffer, TEXT("-%.0fft"), scale);
+            if (scale < 10000) lk::snprintf(Buffer, TEXT("-%.0fft"), scale);
             else
-                _stprintf(Buffer, TEXT("-%.0ff"), scale);
+                lk::snprintf(Buffer, TEXT("-%.0ff"), scale);
             LKWriteText(Surface, Buffer, VSIlabelX, VSIlabelDwY, WTMODE_NORMAL, WTALIGN_CENTER, outOfScale ? RGB_LIGHTRED : RGB_WHITE, false);
         } else {
             LKWriteText(Surface, Buffer, VSIlabelX, VSIlabelUpY, WTMODE_NORMAL, WTALIGN_CENTER, outOfScale ? RGB_WHITE : RGB_WHITE, false);
-            if (scale < 10000) _stprintf(Buffer, TEXT("-%.0fft"), scale);
+            if (scale < 10000) lk::snprintf(Buffer, TEXT("-%.0fft"), scale);
             else
-                _stprintf(Buffer, TEXT("-%.0ff"), scale);
+                lk::snprintf(Buffer, TEXT("-%.0ff"), scale);
             LKWriteText(Surface, Buffer, VSIlabelX, VSIlabelDwY, WTMODE_NORMAL, WTALIGN_CENTER, outOfScale ? RGB_WHITE : RGB_WHITE, false);
         }
 
