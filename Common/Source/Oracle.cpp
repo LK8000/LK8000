@@ -47,20 +47,22 @@ TCHAR *AltDiffToText(double youralt, double wpalt) {
 }
 #endif
 
-const TCHAR *WhatTimeIsIt(void) {
+const TCHAR* WhatTimeIsIt() {
   static thread_local TCHAR time_temp[48];
+
   TCHAR tlocal[20];
-  TCHAR tutc[20];
+  Units::TimeToTextS(tlocal, LocalTime());
 
-  Units::TimeToTextS(tlocal, LocalTime()),
-  Units::TimeToText(tutc, GPS_INFO.Time);
-  lk::snprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
-  if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0))
+  if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0)) {
     lk::snprintf(time_temp, _T("h%s (NO FIX)"), tlocal);
-  else
+  }
+  else {
+    TCHAR tutc[20];
+    Units::TimeToText(tutc, GPS_INFO.Time);
     lk::snprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
+  }
 
-  return (time_temp);
+  return time_temp;
 }
 
 //
