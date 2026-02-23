@@ -726,7 +726,11 @@ endif
 
 ifeq ($(CONFIG_WIN32),y)
  ifeq ($(CONFIG_PC),y)
-  LDLIBS := -Wl,-Bstatic -lstdc++ -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
+  LDLIBS := -static -Wl,-Bstatic \
+            -lmingw32 -lcomctl32 -lkernel32 -luser32 \
+            -lgdi32 -ladvapi32 -lwinmm -lmsimg32 \
+            -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
+
   LDLIBS += $(GEOGRAPHIC_LDLIBS)
  else
   LDLIBS := -Wl,-Bstatic -lstdc++ 
@@ -756,7 +760,7 @@ ifeq ($(CONFIG_PC),y)
  ifeq ($(TARGET),PCX64)
   TARGET_ARCH := -m64
  else
-  TARGET_ARCH	:=-mwindows -march=i586 -mms-bitfields
+  TARGET_ARCH	:= -mms-bitfields
  endif
 else ifeq ($(CONFIG_LINUX),y)
  TARGET_ARCH	:= $(MCPU)
