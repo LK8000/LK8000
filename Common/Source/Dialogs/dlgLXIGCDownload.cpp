@@ -197,6 +197,9 @@ static void OnEnterClicked(WndButton *pWnd) {
   lk::strcpy(szTmp, LX_IGCReadDialog.FileList()->at(LX_IGCReadDialog.DrawIndex()).Line1);
 
   TCHAR *IGCFilename = lk::tokenizer<TCHAR>(szTmp).Next({_T(' ')});
+  if (!IGCFilename) {
+    return;
+  }
 
   lk::snprintf(Tmp, _T("%s %s ?"), MsgToken<2404>(), IGCFilename);
   if (MessageBoxX(Tmp, MsgToken<2404>(), mbYesNo) == IdYes)  // _@2404 "Download"
