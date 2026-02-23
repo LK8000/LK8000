@@ -354,16 +354,17 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 	case CustomKeyMode_t::ckSonarToggle:
 		SonarWarning = !SonarWarning;
 		TCHAR sonarmsg[60];
-		lk::snprintf(sonarmsg,_T("%s "),MsgToken<1293>()); // SONAR
-		if (SonarWarning)
-			_tcscat(sonarmsg,MsgToken<1643>()); // ENABLED
+		lk::snprintf(sonarmsg, _T("%s %s"), 
+						MsgToken<1293>(),  // SONAR
+						SonarWarning ? 
+							MsgToken<1643>() : // ENABLED
+							MsgToken<1600>()); // DISABLED
+		DoStatusMessage(sonarmsg, NULL, false);
+		if (SonarWarning) {
+			LKSound(TEXT("LK_TONEUP.WAV"));
+		}
 		else
-			_tcscat(sonarmsg,MsgToken<1600>()); // DISABLED
-		DoStatusMessage(sonarmsg,NULL,false);
-        if (SonarWarning)
-            LKSound(TEXT("LK_TONEUP.WAV"));
-        else
-            LKSound(TEXT("LK_TONEDOWN.WAV"));
+			LKSound(TEXT("LK_TONEDOWN.WAV"));
 		return true;
     case CustomKeyMode_t::ckDrawXCToggle:
       Flags_DrawXC = !Flags_DrawXC;
