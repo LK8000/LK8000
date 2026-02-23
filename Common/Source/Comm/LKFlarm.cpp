@@ -182,7 +182,7 @@ void FLARM_EmptySlot(NMEA_INFO *pGPS,int i) {
 #ifdef DEBUG_LKT
 void FLARM_DumpSlot(NMEA_INFO *pGPS,int i) {
 	TCHAR dump[256];
-	_stprintf(dump, _T("... DumpSlot (%d) status=%d id=<%lx> Name=<%s> Cn=<%s> Speed=%.0f rAlt=%.0f  %s"),
+	lk::snprintf(dump, _T("... DumpSlot (%d) status=%d id=<%lx> Name=<%s> Cn=<%s> Speed=%.0f rAlt=%.0f  %s"),
 		i,
 		pGPS->FLARM_Traffic[i].Status,
 		pGPS->FLARM_Traffic[i].ID,
@@ -709,7 +709,7 @@ void UpdateFlarmTarget(NMEA_INFO &Info) {
 		wpt.Altitude   = trf.Altitude;
 
 		if (_tcslen(trf.Name) <= 1) {
-			_stprintf(wpt.Name,_T("%0x"),trf.RadioId);
+			lk::snprintf(wpt.Name,_T("%0x"),trf.RadioId);
 		} else {
 			lk::strcpy(wpt.Name, trf.Name);
 		}

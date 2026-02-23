@@ -37,10 +37,10 @@ static void Update()
 			Value -= 360.0;
 
 	if (Value > 1)
-		_stprintf(Text, TEXT("%2.0f%s>"), Value, MsgToken<2179>());
+		lk::snprintf(Text, TEXT("%2.0f%s>"), Value, MsgToken<2179>());
 	else
 		if (Value < -1)
-			_stprintf(Text, TEXT("<%2.0f%s"), -Value, MsgToken<2179>());
+			lk::snprintf(Text, TEXT("<%2.0f%s"), -Value, MsgToken<2179>());
 		else
 			lk::strcpy(Text, TEXT("<>"));
 

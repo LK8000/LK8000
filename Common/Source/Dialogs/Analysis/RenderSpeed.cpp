@@ -63,7 +63,7 @@ void Statistics::RenderSpeed(LKSurface& Surface, const RECT& rc)
 
   TCHAR text[80];
   DrawXLabel(Surface, rc, TEXT(" t/h "));
-  _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
+  lk::snprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawYLabel(Surface, rc, text);
 
 

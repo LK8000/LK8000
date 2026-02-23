@@ -75,13 +75,13 @@ void NextPage(WndForm* pForm, int Step) {
 
   switch (checklist_data.size()) {
     case 0:
-      _stprintf(buffer, _T("%s %s"), NoteModeTitle, MsgToken<1750>());  // empty
+      lk::snprintf(buffer, _T("%s %s"), NoteModeTitle, MsgToken<1750>());  // empty
       break;
     case 1:
-      _stprintf(buffer, _T("%s"), NoteModeTitle);
+      lk::snprintf(buffer, _T("%s"), NoteModeTitle);
       break;
     default:
-      _stprintf(buffer, _T("%s %d/%d"), NoteModeTitle, page + 1, static_cast<int>(checklist_data.size()));
+      lk::snprintf(buffer, _T("%s %d/%d"), NoteModeTitle, page + 1, static_cast<int>(checklist_data.size()));
       break;
   }
 
@@ -268,7 +268,7 @@ bool LoadChecklist(short checklistmode) {
     // notepad
     case 0:
       LocalPath(filename, _T(LKD_CONF), _T(LKF_CHECKLIST));
-      _stprintf(NoteModeTitle, _T("%s"), MsgToken<878>());  // notepad
+      lk::snprintf(NoteModeTitle, _T("%s"), MsgToken<878>());  // notepad
 
       if (LoadChecklist(filename, false))
         return true;
@@ -278,19 +278,19 @@ bool LoadChecklist(short checklistmode) {
     // logbook TXT
     case 1:
       LocalPath(filename, _T(LKD_LOGS), _T(LKF_LOGBOOKTXT));
-      _stprintf(NoteModeTitle, _T("%s"), MsgToken<1748>());  // logbook
+      lk::snprintf(NoteModeTitle, _T("%s"), MsgToken<1748>());  // logbook
       return LoadChecklist(filename, true);
     // logbook LST
     case 2:
       LocalPath(filename, _T(LKD_LOGS), _T(LKF_LOGBOOKLST));
-      _stprintf(NoteModeTitle, _T("%s"), MsgToken<1748>());  // logbook
+      lk::snprintf(NoteModeTitle, _T("%s"), MsgToken<1748>());  // logbook
       return LoadChecklist(filename, true);
       break;
     case 3:
       SystemPath(filename, _T(LKD_SYSTEM));
       _tcscat(filename, _T(DIRSEP));
       _tcscat(filename, _T(LKF_CREDITS));
-      _stprintf(NoteModeTitle, _T("%s"), LKGetText(_T("Info")));
+      lk::snprintf(NoteModeTitle, _T("%s"), LKGetText(_T("Info")));
       return LoadChecklist(filename, true);
       break;
     default:

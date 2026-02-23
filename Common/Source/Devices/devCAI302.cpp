@@ -132,7 +132,7 @@ BOOL cai302ParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS)
 static BOOL cai302PutMacCready(DeviceDescriptor_t* d, double MacCready) {
   TCHAR szTmp[32];
 
-  _stprintf(szTmp, TEXT("!g,m%d\r"), static_cast<int>(round(Units::To(unKnots, MacCready) * 10.0)));
+  lk::snprintf(szTmp, TEXT("!g,m%d\r"), static_cast<int>(round(Units::To(unKnots, MacCready) * 10.0)));
   d->Com->WriteString(szTmp);
   return (TRUE);
 }
@@ -140,7 +140,7 @@ static BOOL cai302PutMacCready(DeviceDescriptor_t* d, double MacCready) {
 static
 BOOL cai302PutBugs(DeviceDescriptor_t* d, double Bugs) {
   TCHAR szTmp[32];
-  _stprintf(szTmp, TEXT("!g,u%d\r"), int((Bugs * 100) + 0.5));
+  lk::snprintf(szTmp, TEXT("!g,u%d\r"), int((Bugs * 100) + 0.5));
   d->Com->WriteString(szTmp);
   return (TRUE);
 }
@@ -148,7 +148,7 @@ BOOL cai302PutBugs(DeviceDescriptor_t* d, double Bugs) {
 static
 BOOL cai302PutBallast(DeviceDescriptor_t* d, double Ballast) {
   TCHAR szTmp[32];
-  _stprintf(szTmp, TEXT("!g,b%d\r"), int((Ballast * 10) + 0.5));
+  lk::snprintf(szTmp, TEXT("!g,b%d\r"), int((Ballast * 10) + 0.5));
   d->Com->WriteString(szTmp);
   return (TRUE);
 }
@@ -292,7 +292,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
   LK_tcsncpy(GliderType, decl->AircraftType, 12);
   LK_tcsncpy(GliderID, decl->AircraftRego, 12);
 
-  _stprintf(szTmp, TEXT("O,%-24s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r"),
+  lk::snprintf(szTmp, TEXT("O,%-24s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r"),
     PilotName,
     cai302_OdataPilot.OldUnit,
     cai302_OdataPilot.OldTemperaturUnit,
@@ -318,7 +318,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
     return(FALSE);
   }
 
-  _stprintf(szTmp, TEXT("G,%-12s,%-12s,%d,%d,%d,%d,%d,%d,%d,%d\r"),
+  lk::snprintf(szTmp, TEXT("G,%-12s,%-12s,%d,%d,%d,%d,%d,%d,%d,%d\r"),
             GliderType,
             GliderID,
             (int)GlidePolar::bestld,
@@ -344,7 +344,7 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
 
   if (nDeclErrorCode == 0){
 
-    _stprintf(szTmp, TEXT("D,%d\r"), 255 /* end of declaration */);
+    lk::snprintf(szTmp, TEXT("D,%d\r"), 255 /* end of declaration */);
     d->Com->WriteString(szTmp);
 
     d->Com->SetRxTimeout(1500);            // D,255 takes more than 800ms
@@ -407,7 +407,7 @@ BOOL cai302DeclAddWayPoint(DeviceDescriptor_t* d, const WAYPOINT *wp){
     }
   MinLon *=60;
 
-  _stprintf(szTmp, TEXT("D,%d,%02d%07.4f%c,%03d%07.4f%c,%s,%d\r"),
+  lk::snprintf(szTmp, TEXT("D,%d,%02d%07.4f%c,%03d%07.4f%c,%s,%d\r"),
     DeclIndex,
     DegLat, MinLat, NoS,
     DegLon, MinLon, EoW,

@@ -182,7 +182,7 @@ static void UpdateCaption(void) {
       break;
     case 1:
 	// LKTOKEN  _@M749_ = "Turnpoint"
-      _stprintf(title, TEXT("%s %i"),  MsgToken<749>(),twItemIndex);
+      lk::snprintf(title, TEXT("%s %i"),  MsgToken<749>(),twItemIndex);
       break;
     case 2:
 	// LKTOKEN  _@M299_ = "Finish" 
@@ -194,7 +194,7 @@ static void UpdateCaption(void) {
     // LKTOKEN _@M1238_ "L"
     landableStr[2] = MsgToken<1238>()[0];
     
-    _stprintf(sTmp, TEXT("%s: %s%s"), title,
+    lk::snprintf(sTmp, TEXT("%s: %s%s"), title,
               WayPointList[Task[twItemIndex].Index].Name,
               (WayPointList[Task[twItemIndex].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
     wf->SetCaption(sTmp);

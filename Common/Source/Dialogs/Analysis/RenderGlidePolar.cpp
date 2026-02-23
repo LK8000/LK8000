@@ -95,9 +95,9 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
   Surface.SetBackgroundOpaque();
   TCHAR text[80];
-  _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
+  lk::snprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawXLabel(Surface, rc, text);
-  _stprintf(text,TEXT(" w/%s "),Units::GetVerticalSpeedName());
+  lk::snprintf(text,TEXT(" w/%s "),Units::GetVerticalSpeedName());
   DrawYLabel(Surface, rc, text);
 
 
@@ -110,19 +110,19 @@ void Statistics::RenderGlidePolar(LKSurface& Surface, const RECT& rc)
 
   auto hfOldU = Surface.SelectObject(LK8InfoNormalFont);
   if( GlidePolar::WingArea>0.1 ) {
-    _stprintf(text,TEXT("%s %.1f kg/m2"),
+    lk::snprintf(text,TEXT("%s %.1f kg/m2"),
 	             MsgToken<821>(), // Wing load
 	             GlidePolar::WingLoading);
     Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(90), text);
   }
-  _stprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
+  lk::snprintf(text, TEXT("%s: %3.1f  @ %3.0f %s"),
 		MsgToken<140>(), // Best LD
                   GlidePolar::bestld,
                   Units::ToHorizontalSpeed(GlidePolar::Vbestld()),
                   Units::GetHorizontalSpeedName());
   Surface.DrawText(rc.left+IBLSCALE(30), rc.bottom-IBLSCALE(70), text);
 
-  _stprintf(text, TEXT("%s: %3.2f %s @ %3.0f %s"),
+  lk::snprintf(text, TEXT("%s: %3.2f %s @ %3.0f %s"),
                   MsgToken<437>(), // Min sink
                   Units::ToVerticalSpeed(GlidePolar::minsink),
                   Units::GetVerticalSpeedName(),

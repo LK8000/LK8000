@@ -60,7 +60,7 @@ static void UpdateCaption (WndForm* pWnd) {
   	// LKTOKEN  _@M688_ = "Task Overview"
     lk::snprintf(title, _T("%s: %s"), MsgToken<688>(), name);
   } else {
-    _stprintf(title, TEXT("%s"),
+    lk::snprintf(title, TEXT("%s"),
 	// LKTOKEN  _@M688_ = "Task Overview"
               MsgToken<688>());
   }
@@ -84,7 +84,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   
   const int w0 = rcClient.GetSize().cx - DLGSCALE(1);
   const int w1 = Surface.GetTextWidth(TEXT(" 000km"));
-  _stprintf(sTmp, _T("  000%s"), MsgToken<2179>());
+  lk::snprintf(sTmp, _T("  000%s"), MsgToken<2179>());
   const int w2 = Surface.GetTextWidth(sTmp);
 
   const int TextMargin = (rcClient.GetSize().cy - Surface.GetTextHeight(TEXT("A"))) / 2;
@@ -103,37 +103,37 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
     int i = LowLimit + DrawListIndex;
     MapWindow::DrawTaskPicto(Surface, DrawListIndex,  rc);
     if (Task[i].Index>=0) {
-      _stprintf(wpName, TEXT("%s%s"),
+      lk::snprintf(wpName, TEXT("%s%s"),
                 WayPointList[Task[i].Index].Name,
                 (WayPointList[Task[i].Index].Flags & LANDPOINT) ? landableStr : TEXT(""));
 
       if (UseAATTarget() && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType == sector_type_t::CIRCLE || Task[i].AATType == sector_type_t::ESS_CIRCLE) {
-          _stprintf(sTmp, TEXT("%.1f %s"),
+          lk::snprintf(sTmp, TEXT("%.1f %s"),
                     Units::ToDistance(Task[i].AATCircleRadius), wpName);
         } else {
-          _stprintf(sTmp, TEXT("%.1f %s"),
+          lk::snprintf(sTmp, TEXT("%.1f %s"),
                     Units::ToDistance(Task[i].AATSectorRadius),wpName);
         }
       } else {
         if (i == 0) // start
-          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(StartRadius), wpName);
+          lk::snprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(StartRadius), wpName);
         else if (i == (UpLimit - 1)) //Finish
-          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(FinishRadius), wpName);
+          lk::snprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(FinishRadius), wpName);
         else // turnpoint
-          _stprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(SectorRadius), wpName);
+          lk::snprintf(sTmp, TEXT("%.1f %s"), Units::ToDistance(SectorRadius), wpName);
       }
 
       Surface.SetBackgroundTransparent();
       Surface.SetTextColor(RGB_BLACK);
       Surface.DrawTextClip(rc.right + DLGSCALE(2), TextMargin, sTmp, p1-DLGSCALE(4));
 
-      _stprintf(sTmp, TEXT("%.0f %s"),
+      lk::snprintf(sTmp, TEXT("%.0f %s"),
                 Units::ToDistance(Task[i].Leg),
                 Units::GetDistanceName());
       Surface.DrawText(rc.right+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
-      _stprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken<2179>());
+      lk::snprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken<2179>());
       Surface.DrawText(rc.right +p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
     }
@@ -144,14 +144,14 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
     if (DrawListIndex == UpLimit) {
 	    // LKTOKEN  _@M832_ = "add waypoint"
-      _stprintf(sTmp, TEXT("  (%s)"), MsgToken<832>());
+      lk::snprintf(sTmp, TEXT("  (%s)"), MsgToken<832>());
       Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, sTmp);
     } else if ((DrawListIndex == (UpLimit + 1)) && ValidTaskPoint(1)) {
 
       if (gTaskType != task_type_t::AAT) {
         // LKTOKEN  _@M735_ = "Total:"
         Surface.DrawText(rc.right +DLGSCALE(2), TextMargin, MsgToken<735>());
-        _stprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""), Units::ToDistance(lengthtotal), Units::GetDistanceName());
+        lk::snprintf(sTmp, TEXT("%s %.0f %s"),  fai_ok?_T(" FAI"):_T(""), Units::ToDistance(lengthtotal), Units::GetDistanceName());
         Surface.DrawText(rc.right +p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
       }
       else
@@ -163,7 +163,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
         if (d1==0.0) {
           d1 = CALCULATED_INFO.AATTargetDistance;
         }
-        _stprintf(sTmp, TEXT("%s %2i:%02ih %.0f (%.0f) %s"),
+        lk::snprintf(sTmp, TEXT("%s %2i:%02ih %.0f (%.0f) %s"),
                   // LKTOKEN  _@M735_ = "Total:"
                   MsgToken<735>(),
                   (int)AATTaskLength/60,
@@ -181,7 +181,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
           }
           dd= min(24.0*60.0,dd/60.0);
           int idd = (int) (dd+0.5);
-          _stprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken<247>(), MsgToken<1022>(), Units::ToVerticalSpeed(MACCREADY), Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
+          lk::snprintf(sTmp, TEXT("%s(%s=%3.1f%s): %i:%02ih "),MsgToken<247>(), MsgToken<1022>(), Units::ToVerticalSpeed(MACCREADY), Units::GetVerticalSpeedName(), idd/60, idd%60 );  //_@M247_ ETE
           Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
      }
   }
@@ -553,7 +553,7 @@ static void OnLoadClicked(WndButton* pWnd){ // 091216
 
   if (file_index>0) {
     if (ValidTaskPoint(ActiveTaskPoint) && ValidTaskPoint(1) && (_tcsicmp(wextension,_T(LKS_WP_CUP))!=0)) {
-      _stprintf(file_name, TEXT("%s '%s' ?"), MsgToken<891>(), dfe->GetAsString()); // Clear old task and load
+      lk::snprintf(file_name, TEXT("%s '%s' ?"), MsgToken<891>(), dfe->GetAsString()); // Clear old task and load
       if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
         return;
       }
@@ -601,7 +601,7 @@ static void OnDeleteClicked(WndButton* pWnd){
 
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
-	_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken<1789>(), dfe->GetAsString()); // Delete task file?
+	lk::snprintf(file_name, TEXT("%s '%s' ?"), MsgToken<1789>(), dfe->GetAsString()); // Delete task file?
 	if(MessageBoxX(file_name, _T(" "), mbYesNo) == IdNo) {
 		return;
 	}

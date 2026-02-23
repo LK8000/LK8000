@@ -11,6 +11,7 @@
 #include "Message.h"
 #include "Calc/ThermalHistory.h"
 #include "utils/strcpy.h"
+#include "utils/printf.h"
 
 static_assert(IsLittleEndian(), "Big-Endian Arch is not supported");
 
@@ -334,7 +335,7 @@ bool FanetParseType3Msg(DeviceDescriptor_t* d, NMEA_INFO* pGPS, uint32_t id, con
 
   TCHAR name[150];  // at least (31 + 2 + 80)
   if (!GetFanetName(ID, *pGPS, name)) {
-    _stprintf(name, _T("%07X"), ID);  // no name, use ID
+    lk::snprintf(name, _T("%07X"), ID);  // no name, use ID
   }
 
   uint8_t subtype = data[0];

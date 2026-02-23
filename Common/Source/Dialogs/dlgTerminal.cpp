@@ -52,14 +52,14 @@ static void OnPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
   unsigned int y=0, first, last;
 
-  _stprintf(tmps,_T("[ Rx=%u Tx=%u ErrRx=%u ErrTx=%u ]"),
+  lk::snprintf(tmps,_T("[ Rx=%u Tx=%u ErrRx=%u ErrTx=%u ]"),
       DeviceList[active].Rx ,  DeviceList[active].Tx,  DeviceList[active].ErrRx ,  DeviceList[active].ErrTx);
   Surface.DrawText(0, 0, tmps);
   y+=hline;
 
 
   if (ComCheck_Reset>=0 || (ComCheck_LastLine==0 && ComCheck_BufferFull==false)) {
-      _stprintf(tmps,_T("%s"),MsgToken<1872>()); // NO DATA RECEIVED
+      lk::snprintf(tmps,_T("%s"),MsgToken<1872>()); // NO DATA RECEIVED
       Surface.DrawText(0, y, tmps);
       return;
   }
@@ -92,7 +92,7 @@ static bool stopped=false;
 
 static void OnPortClicked(WndButton* pWnd) {
   // Name is available only in Fly mode, not inited in SIM mode because no devices, and not inited if disabled
-  _stprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
+  lk::snprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
      _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken<1600>());
   wf->SetCaption(tmps);
   ComCheck_ActivePort=SelectedDevice; // needed
@@ -108,14 +108,14 @@ static void OnStopClicked(WndButton* pWnd) {
   stopped=!stopped;
   wf->SetCaption(tmps);
   if (stopped) {
-      _stprintf(tmps,_T("%s: %s  %s"),MsgToken<1871>(), MsgToken<670>(),
+      lk::snprintf(tmps,_T("%s: %s  %s"),MsgToken<1871>(), MsgToken<670>(),
           DeviceName(SelectedDevice));
       wf->SetCaption(tmps);
       wf->SetTimerNotify(0, NULL);
       (wf->FindByName<WndButton>(TEXT("cmdSelectStop")))->SetCaption(MsgToken<1200>()); // Start
   } else {
       {
-        _stprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
+        lk::snprintf(tmps,_T("%s: %s (%s)"),MsgToken<1871>(),DeviceName(SelectedDevice),
         _tcslen(DeviceList[SelectedDevice].Name)>0?DeviceList[SelectedDevice].Name:MsgToken<1600>());
 
       }
@@ -200,7 +200,7 @@ TCHAR  szCheck[254];
 	 else
 	  iCheckSum ^= szStrg[i];
   }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+  lk::snprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
   return iCheckSum;
 }

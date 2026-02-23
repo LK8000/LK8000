@@ -44,7 +44,7 @@ void InstallSystem() {
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
   // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is
   // much more faster.
-  _stprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
+  lk::snprintf(srcfile,TEXT("%s%s_SYSTEM"),srcdir, _T(DIRSEP));
   if ( !lk::filesystem::exist(srcfile) ) {
 	StartupStore(_T("------ InstallSystem ERROR could not find valid system directory <%s>%s"),srcdir,NEWLINE); // 091104
 	StartupStore(_T("------ Missing checkfile <%s>%s"),srcfile,NEWLINE);
@@ -62,12 +62,12 @@ void InstallSystem() {
 
 		StartupStore(_T(". InstallSystem checking desktop links for HP31X%s"),NEWLINE);
 
-		_stprintf(dstdir,TEXT("\\Windows\\Desktop"));
+		lk::snprintf(dstdir,TEXT("\\Windows\\Desktop"));
 		if ( !lk::filesystem::isDirectory(dstdir) ) { // FIX
 			StartupStore(_T("------ Desktop directory <%s> NOT found! Is this REALLY an HP31X?%s"),dstdir,NEWLINE);
 		} else {
-			_stprintf(srcfile,TEXT("%s\\LK8_HP310.lnk"),srcdir);
-			_stprintf(dstfile,TEXT("%s\\LK8000.lnk"),dstdir);
+			lk::snprintf(srcfile,TEXT("%s\\LK8_HP310.lnk"),srcdir);
+			lk::snprintf(dstfile,TEXT("%s\\LK8000.lnk"),dstdir);
 			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to LK8000 already found on the desktop, ok.%s"),NEWLINE);
 			} else {
@@ -79,8 +79,8 @@ void InstallSystem() {
 					StartupStore(_T(". Installed <%s> link.%s"),dstfile,NEWLINE);
 			}
 			#if 0
-			_stprintf(srcfile,TEXT("%s\\LK8SIM_HP310.lnk"),srcdir);
-			_stprintf(dstfile,TEXT("%s\\SIM.lnk"),dstdir);
+			lk::snprintf(srcfile,TEXT("%s\\LK8SIM_HP310.lnk"),srcdir);
+			lk::snprintf(dstfile,TEXT("%s\\SIM.lnk"),dstdir);
 			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to SIM LK8000 already found on the desktop, ok.%s"),NEWLINE);
 			} else {
@@ -92,8 +92,8 @@ void InstallSystem() {
 					StartupStore(_T(". Installed <%s> link.%s"),dstfile,NEWLINE);
 			}
 			#endif
-			_stprintf(srcfile,TEXT("%s\\BT_HP310.lnk"),srcdir);
-			_stprintf(dstfile,TEXT("%s\\BlueTooth.lnk"),dstdir);
+			lk::snprintf(srcfile,TEXT("%s\\BT_HP310.lnk"),srcdir);
+			lk::snprintf(dstfile,TEXT("%s\\BlueTooth.lnk"),dstdir);
 			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to BlueTooth already found on the desktop, ok.%s"),NEWLINE);
 			} else {
@@ -104,8 +104,8 @@ void InstallSystem() {
 				} else
 					StartupStore(_T(". Installed <%s> link.%s"),dstfile,NEWLINE);
 			}
-			_stprintf(srcfile,TEXT("%s\\NAV_HP310.lnk"),srcdir);
-			_stprintf(dstfile,TEXT("%s\\CarNav.lnk"),dstdir);
+			lk::snprintf(srcfile,TEXT("%s\\NAV_HP310.lnk"),srcdir);
+			lk::snprintf(dstfile,TEXT("%s\\CarNav.lnk"),dstdir);
 			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to Car Navigator already found on the desktop, ok.%s"),NEWLINE);
 			} else {
@@ -116,8 +116,8 @@ void InstallSystem() {
 				} else
 					StartupStore(_T(". Installed <%s> link.%s"),dstfile,NEWLINE);
 			}
-			_stprintf(srcfile,TEXT("%s\\TLOCK_HP310.lnk"),srcdir);
-			_stprintf(dstfile,TEXT("%s\\TouchLock.lnk"),dstdir);
+			lk::snprintf(srcfile,TEXT("%s\\TLOCK_HP310.lnk"),srcdir);
+			lk::snprintf(dstfile,TEXT("%s\\TouchLock.lnk"),dstdir);
 			if ( lk::filesystem::exist(dstfile) ) {
 				StartupStore(_T(". Link to TouchLock already found on the desktop, ok.%s"),NEWLINE);
 			} else {
@@ -139,10 +139,10 @@ void InstallSystem() {
 
 //  SHGetSpecialFolderPath(MainWindow, dstdir, CSIDL_WINDOWS, false);
   if ( _tcslen(dstdir) <6) {
-	_stprintf(tbuf,_T("------ InstallSystem PROBLEM: cannot locate the Windows folder, got string:<%s>%s"),dstdir,NEWLINE);
+	lk::snprintf(tbuf,_T("------ InstallSystem PROBLEM: cannot locate the Windows folder, got string:<%s>%s"),dstdir,NEWLINE);
 	StartupStore(tbuf);
 	StartupStore(_T("------ InstallSystem attempting to use default \"\\Windows\" but no warranty!%s"),NEWLINE);
-	_stprintf(dstdir,TEXT("\\Windows")); // 091118
+	lk::snprintf(dstdir,TEXT("\\Windows")); // 091118
   } else {
 	StartupStore(_T(". InstallSystem: Windows path reported from device is: <%s>%s"),dstdir,NEWLINE);
   }
@@ -157,9 +157,9 @@ void InstallSystem() {
 	StartupStore(_T(". Special RegKey for fonts not found on this PNA, using standard folder.%s"), NEWLINE);
 //	SHGetSpecialFolderPath(MainWindow, dstdir, CSIDL_FONTS, false);
 	if ( _tcslen(dstdir) <5 ) {
-		_stprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
+		lk::snprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
 		StartupStore(tbuf);
-		_stprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
+		lk::snprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
 		StartupStore(tbuf);
 		lk::strcpy(dstdir,maindir);
 	}
@@ -173,15 +173,15 @@ void InstallSystem() {
   // this is not working correctly on PNA, it is reporting Windows Fonts even with another value in regkey
   SHGetSpecialFolderPath(main_window->Handle(), dstdir, CSIDL_FONTS, false);
   if ( _tcslen(dstdir) <5 ) {
-	_stprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
+	lk::snprintf(tbuf,_T("------ PROBLEM: cannot locate the Fonts folder, got string:<%s>%s"),dstdir,NEWLINE);
 	StartupStore(tbuf);
-	_stprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
+	lk::snprintf(tbuf,_T("------ Attempting to use directory <%s> as a fallback%s"),maindir,NEWLINE);
 	StartupStore(tbuf);
 	lk::strcpy(dstdir,maindir);
   }
   #endif
 
-  _stprintf(tbuf,_T(". InstallSystem: Copy/Check Fonts from <%s> to <%s>%s"), srcdir, dstdir,NEWLINE);
+  lk::snprintf(tbuf,_T(". InstallSystem: Copy/Check Fonts from <%s> to <%s>%s"), srcdir, dstdir,NEWLINE);
   StartupStore(tbuf);
   // on PNAs sometimes FolderPath is reported correctly, but the directory is not existing!
   // this is not needed really on PNA, but doesnt hurt
@@ -192,8 +192,8 @@ void InstallSystem() {
   // we can only rely on singe real file existance, not on directories
 
   TestLog(_T(". Checking TAHOMA font"));
-  _stprintf(srcfile,TEXT("%s\\TAHOMA.TTF"),srcdir);
-  _stprintf(dstfile,TEXT("%s\\TAHOMA.TTF"),dstdir);
+  lk::snprintf(srcfile,TEXT("%s\\TAHOMA.TTF"),srcdir);
+  lk::snprintf(dstfile,TEXT("%s\\TAHOMA.TTF"),dstdir);
   if ( lk::filesystem::exist(dstfile) ) {
 	TestLog(_T(". Font TAHOMA.TTF is already installed"));
   } else {
@@ -208,8 +208,8 @@ void InstallSystem() {
   // Problem solved, look at FontPath !!
 
   TestLog(_T(". Checking TAHOMABD font"));
-  _stprintf(srcfile,TEXT("%s\\TAHOMABD.TTF"),srcdir);
-  _stprintf(dstfile,TEXT("%s\\TAHOMABD.TTF"),dstdir);
+  lk::snprintf(srcfile,TEXT("%s\\TAHOMABD.TTF"),srcdir);
+  lk::snprintf(dstfile,TEXT("%s\\TAHOMABD.TTF"),dstdir);
   if ( lk::filesystem::exist(dstfile) ) {
 	TestLog(_T(". Font TAHOMABD.TTF is already installed"));
   } else {

@@ -44,7 +44,6 @@ typedef char	_TCHAR;
 
 #define	_tprintf	printf
 #define _ftprintf	fprintf
-#define	_stprintf	sprintf
 #define	_sntprintf	snprintf
 #define	_vtprintf	vprintf
 #define	_vftprintf	vfprintf

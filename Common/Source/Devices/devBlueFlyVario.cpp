@@ -259,7 +259,7 @@ namespace dlgBlueFlyConfig {
             }
 
             TCHAR szTmp[50] = {0};
-            _stprintf(szTmp, _T("BlueFlyVario %u/%u"), CurrentPage+1, (unsigned)lstPageWnd.size());
+            lk::snprintf(szTmp, _T("BlueFlyVario %u/%u"), CurrentPage+1, (unsigned)lstPageWnd.size());
             wfDlg->SetCaption(szTmp);
         }
     }

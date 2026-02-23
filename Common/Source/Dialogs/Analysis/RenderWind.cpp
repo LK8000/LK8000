@@ -114,9 +114,9 @@ void Statistics::RenderWind(LKSurface& Surface, const RECT& rc)
   Surface.SetBackgroundOpaque();
 
   TCHAR text[80];
-  _stprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
+  lk::snprintf(text,TEXT(" v/%s "),Units::GetHorizontalSpeedName());
   DrawXLabel(Surface, rc, text);
-  _stprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  lk::snprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
   DrawYLabel(Surface, rc, text);
 
  // DrawXLabel(hdc, rc, TEXT("w"));

@@ -81,7 +81,7 @@ TCHAR  szCheck[254];
 	//  if(szStrgi0] != ' ')
 	    iCheckSum ^= szStrg[i];
   }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+  lk::snprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
   return iCheckSum;
 }
@@ -93,7 +93,7 @@ TCHAR  szTmp[254];
   if(bLinkEnable)
   {
 	StartupStore(TEXT("enable LX 16xx direct Link %s"), NEWLINE);
-	_stprintf(szTmp, TEXT("$PFLX0,COLIBRI"));
+	lk::strcpy(szTmp, TEXT("$PFLX0,COLIBRI"));
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	Sleep(100);
@@ -103,7 +103,7 @@ TCHAR  szTmp[254];
 	// exit transfer mode
 	// and return to normal LX16xx  communication
 	StartupStore(TEXT("return from LX 16xx link %s"), NEWLINE);
-	_stprintf(szTmp, TEXT("$PFLX0,LX1600"));
+	lk::strcpy(szTmp, TEXT("$PFLX0,LX1600"));
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 	unsigned long lOldBR =   d->Com->GetBaudrate();
@@ -130,9 +130,9 @@ TCHAR  szTmp[254];
 
 bool DevLX16xx::SetupLX_Sentence(DeviceDescriptor_t* d)
 {
-TCHAR  szTmp[254];
+  TCHAR szTmp[254];
 
-  _stprintf(szTmp, TEXT("$PFLX0,GPGGA,1,GPRMC,1,LXWP0,1,LXWP1,0,LXWP2,5,LXWP3,17,LXWP4,20,LXWP5,50"));
+  lk::strcpy(szTmp, TEXT("$PFLX0,GPGGA,1,GPRMC,1,LXWP0,1,LXWP1,0,LXWP2,5,LXWP3,17,LXWP4,20,LXWP5,50"));
 
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
@@ -144,7 +144,7 @@ TCHAR  szTmp[254];
     if(iQNH != oldQNH)
     {
 	  oldQNH  = iQNH;
-      _stprintf(szTmp, TEXT("$PFLX3,%i,,,,,,,,,,,,"), (int)Units::To(unFeet, QFEAltitudeOffset-(double)LX16xxAlt) );
+      lk::snprintf(szTmp, TEXT("$PFLX3,%i,,,,,,,,,,,,"), (int)Units::To(unFeet, QFEAltitudeOffset-(double)LX16xxAlt) );
       LX16xxNMEAddCheckSumStrg(szTmp);
       LX166AltitudeUpdateTimeout = 5;
       d->Com->WriteString(szTmp);
@@ -161,7 +161,7 @@ BOOL LX16xxPutMacCready(DeviceDescriptor_t* d, double MacCready){
   if(bValid == false) {
     return false;
   }
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,CalculateLXBalastFactor(BALLAST),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  lk::snprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,CalculateLXBalastFactor(BALLAST),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
   return true;
@@ -174,7 +174,7 @@ BOOL LX16xxPutBallast(DeviceDescriptor_t* d, double Ballast){
     return false;
   }
 
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,CalculateLXBalastFactor(Ballast),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  lk::snprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,CalculateLXBalastFactor(Ballast),CalculateLXBugs(BUGS),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
@@ -195,7 +195,7 @@ BOOL LX16xxPutBugs(DeviceDescriptor_t* d, double Bugs){
     Bugs = 0.7;
   }
 
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , CalculateLXBalastFactor(BALLAST),CalculateLXBugs(Bugs),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  lk::snprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%.0f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , CalculateLXBalastFactor(BALLAST),CalculateLXBugs(Bugs),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
@@ -355,9 +355,9 @@ if (strlen(String) < 180)
   	StartupStore(_T(". %s Hardware Vers.: %3.2f"), d->Name, d->HardwareId / 10.0);
 
     TCHAR str[255];
-    _stprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
+    lk::snprintf(str, _T("%s (#%s) DETECTED"), d->Name, d->SerialNumber.c_str());
     DoStatusMessage(str);
-    _stprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "), d->SoftwareVer, d->HardwareId / 10.0);
+    lk::snprintf(str, _T("SW Ver: %3.2f HW Ver: %3.2f "), d->SoftwareVer, d->HardwareId / 10.0);
     DoStatusMessage(str);
   }
   // nothing to do

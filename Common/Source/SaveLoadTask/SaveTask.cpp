@@ -46,7 +46,7 @@ void RenameIfVirtual(const unsigned int i) {
     if ( _tcslen(WayPointList[i].Name) < (NAME_SIZE-5))
     {
       TCHAR tmp[NAME_SIZE+10];
-      _stprintf(tmp,_T("TSK_%s"),WayPointList[i].Name);
+      lk::snprintf(tmp,_T("TSK_%s"),WayPointList[i].Name);
       LK_tcsncpy(WayPointList[i].Name,tmp,NAME_SIZE);
     }
   }

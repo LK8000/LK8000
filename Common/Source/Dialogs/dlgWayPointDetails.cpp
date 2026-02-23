@@ -387,25 +387,25 @@ void dlgWayPointDetailsShowModal(short mypage){
   // if SeeYou waypoint and it is landable
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP) &&  WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
      TCHAR ttmp[50];
-		_stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
+		lk::snprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		// ICAO name probably, let's print it
 		if ( _tcslen(WPLSEL.Code)==4 ) {
-			_stprintf(ttmp,_T("(%s) "),WPLSEL.Code);
+			lk::snprintf(ttmp,_T("(%s) "),WPLSEL.Code);
 			_tcscat(sTmp, ttmp);
 		}
 
 		if ( _tcslen(WPLSEL.Freq)>0 )  {
-			_stprintf(ttmp,_T("%s "),WPLSEL.Freq);
+			lk::snprintf(ttmp,_T("%s "),WPLSEL.Freq);
 			_tcscat(sTmp, ttmp);
 		}
 
 		if ( WPLSEL.RunwayDir>=0 )  {
-			_stprintf(ttmp,_T("RW %d "),WPLSEL.RunwayDir);
+			lk::snprintf(ttmp,_T("RW %d "),WPLSEL.RunwayDir);
 			_tcscat(sTmp, ttmp);
 		}
 		if ( WPLSEL.RunwayLen>0 )  {
 			// we use Altitude instead of distance, to keep meters and feet
-			_stprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
+			lk::snprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
 			_tcscat(sTmp, ttmp);
 		}
   } else {
@@ -421,9 +421,9 @@ void dlgWayPointDetailsShowModal(short mypage){
                   &wpdistance, &wpbearing);
 
         GetTeamCode(code,wpbearing, wpdistance);
-	_stprintf(sTmp, TEXT("%s: %s  (%s)"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name, code);
+	lk::snprintf(sTmp, TEXT("%s: %s  (%s)"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name, code);
      } else {
-	_stprintf(sTmp, TEXT("%s: %s"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name);
+	lk::snprintf(sTmp, TEXT("%s: %s"), wf->GetCaption(), WayPointList[SelectedWaypoint].Name);
      }
   }
   wf->SetCaption(sTmp);
@@ -487,9 +487,9 @@ void dlgWayPointDetailsShowModal(short mypage){
       if ( Units::GetDistanceUnit() == unNauticalMiles ||
            Units::GetDistanceUnit() == unStatuteMiles ) {
 
-          _stprintf(sTmp,_T("  (%.1fkm)"), Units::To(unKiloMeter, distance));
+          lk::snprintf(sTmp,_T("  (%.1fkm)"), Units::To(unKiloMeter, distance));
       } else {
-	  _stprintf(sTmp,_T("  (%.1fnm)"), Units::To(unNauticalMiles, distance));
+	  lk::snprintf(sTmp,_T("  (%.1fnm)"), Units::To(unNauticalMiles, distance));
       }
       _tcscat(DistanceText,sTmp);
   } else {
@@ -498,10 +498,10 @@ void dlgWayPointDetailsShowModal(short mypage){
   (wf->FindByName<WndProperty>(TEXT("prpDistance")))->SetText(DistanceText);
 
   if (ScreenLandscape) {
-      _stprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), MsgToken<2179>(),
+      lk::snprintf(sTmp, TEXT("%d%s  (R:%d%s)"),iround(bearing), MsgToken<2179>(),
          iround(AngleLimit360(bearing+180)), MsgToken<2179>());
   } else {
-      _stprintf(sTmp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
+      lk::snprintf(sTmp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
   }
   (wf->FindByName<WndProperty>(TEXT("prpBearing")))->SetText(sTmp);
 
@@ -522,7 +522,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable)
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
-  _stprintf(sTmp, TEXT("%.0f %s"),
+  lk::snprintf(sTmp, TEXT("%.0f %s"),
             Units::ToAltitude(alt),
             Units::GetAltitudeName());
 
@@ -545,7 +545,7 @@ void dlgWayPointDetailsShowModal(short mypage){
   if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable)
 	alt-=(SAFETYALTITUDEARRIVAL/10);
 
-  _stprintf(sTmp, TEXT("%.0f %s"),
+  lk::snprintf(sTmp, TEXT("%.0f %s"),
             Units::ToAltitude(alt),
             Units::GetAltitudeName());
 
@@ -591,15 +591,15 @@ void dlgWayPointDetailsShowModal(short mypage){
 
     if ((ActiveTaskPoint<0) || !ValidTaskPoint(0)) {
 	// this is going to be the first tp (ActiveTaskPoint 0)
-	_stprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
+	lk::snprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
     } else {
 	LKASSERT(ActiveTaskPoint>=0 && ValidTaskPoint(0));
 	int indexInsert = max(ActiveTaskPoint,0); // safe check
 	if (indexInsert==0) {
-		_stprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
+		lk::snprintf(captmp,_T("%s"),MsgToken<1824>()); // insert as START
 	} else {
 		LKASSERT(ValidWayPoint(Task[indexInsert].Index));
-		_stprintf(captmp,_T("%s <%s>"),MsgToken<1825>(),WayPointList[ Task[indexInsert].Index ].Name); // insert before xx
+		lk::snprintf(captmp,_T("%s <%s>"),MsgToken<1825>(),WayPointList[ Task[indexInsert].Index ].Name); // insert before xx
 	}
     }
     wb->SetCaption(captmp);
@@ -635,9 +635,9 @@ void dlgWayPointDetailsShowModal(short mypage){
     if(tmpIdx != -1)
     {
 	wb->SetOnClickNotify(OnReplaceClicked);
-	_stprintf(captmp,_T("%s <%s>"),MsgToken<1826>(),WayPointList[tmpIdx ].Name); // replace  xx
+	lk::snprintf(captmp,_T("%s <%s>"),MsgToken<1826>(),WayPointList[tmpIdx ].Name); // replace  xx
     } else {
-	_stprintf(captmp,_T("( %s )"),MsgToken<555>());
+	lk::snprintf(captmp,_T("( %s )"),MsgToken<555>());
     }
     wb->SetCaption(captmp);
   }

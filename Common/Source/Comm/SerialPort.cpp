@@ -41,10 +41,10 @@ bool SerialPort::Initialize() {
 
 #ifndef UNDER_CE
     // Do not use COMn , use \\.\COMnn  on PC version
-    _stprintf(sysPortName, _T("\\\\.\\%s"), GetPortName());
+    lk::snprintf(sysPortName, _T("\\\\.\\%s"), GetPortName());
 #else
     // Do not use COMn , use COMn:  on WinCE version
-    _stprintf(sysPortName, _T("%s:"), GetPortName());
+    lk::snprintf(sysPortName, _T("%s:"), GetPortName());
 #endif
     StartupStore(_T(". ComPort %u Initialize <%s> speed=%lu bit=%u %s"),GetPortIndex()+1,GetPortName(),_dwPortSpeed,8-_dwPortBit,NEWLINE);
 

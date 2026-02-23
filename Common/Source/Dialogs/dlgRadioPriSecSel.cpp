@@ -87,7 +87,7 @@ void dlgRadioPriSecSelShowModal(const TCHAR*  pName, unsigned khz){
   }
 
   WndOwnerDrawFrame* frmFreq  = wf->FindByName<WndOwnerDrawFrame>(TEXT("frmStationFreq"));
-  _stprintf(Name,_T("%7.3f"),  frequency_khz / 1000.);
+  lk::snprintf(Name,_T("%7.3f"),  frequency_khz / 1000.);
   if (frmFreq) {
     frmFreq->SetCaptionStyle(DT_CENTER|DT_VCENTER|DT_SINGLELINE);
     frmFreq->SetCaption(Name);

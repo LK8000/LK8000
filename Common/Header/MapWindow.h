@@ -555,7 +555,7 @@ class MapWindow {
 
   static bool LKFormatValue(const short lkindex, const bool lktitle, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT], TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE], DrawBmp_t *BmpValue = nullptr, DrawBmp_t *BmpTitle = nullptr);
   static void LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *BmpValue,TCHAR *BufferValue = NULL);
-  static void LKFormatBrgDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]);
 
   static bool IsMapFullScreen();
   static bool ChangeDrawRect(const RECT rectarea);
@@ -643,13 +643,17 @@ class MapWindow {
   static void DrawHeadUpLine(LKSurface& Surface, const POINT& Orig, const RECT& rc , double, double);
   static void DrawFuturePos(LKSurface& Surface, const POINT& Orig, const RECT& rc, const bool headUpLine = false);
   static void DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool& approach, bool& landing);
-  static void WriteInfo(LKSurface& Surface, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
-                                short *columnvalue, short *columntitle, short *row1, short *row2, short *row3,DrawBmp_t *BmpValue = NULL);
-  // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
-  static void LKFormatDist(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
-  // static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
-  static void LKFormatGR(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
-  static void LKFormatAltDiff(const int wpindex, TCHAR *BufferValue, TCHAR *BufferUnit);
+  
+  static void WriteInfo(LKSurface& Surface, bool* showunit,
+                        TCHAR (&BufferValue)[LKSIZEBUFFERVALUE],
+                        TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT],
+                        TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE],
+                        short* columnvalue, short* columntitle, short* row1,
+                        short* row2, short* row3, DrawBmp_t* BmpValue = NULL);
+
+  static void LKFormatDist(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]);
+  static void LKFormatGR(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]);
+  static void LKFormatAltDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]);
   static void LKUpdateOlc(void);
 
   static void DrawWelcome8000(LKSurface& Surface, const RECT& rc);

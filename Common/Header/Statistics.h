@@ -84,7 +84,13 @@ class Statistics {
   static bool unscaled_y;
   static void ResetScale();
 
-  static void FormatTicText(TCHAR *text, double val, double step);
+  static void FormatTicText(TCHAR *text, size_t size, double val, double step);
+
+  template<size_t size>
+  static void FormatTicText(TCHAR (&text)[size], double val, double step) {
+    FormatTicText(text, size, val, step);
+  }
+
   static void DrawXGrid(LKSurface& Surface, const RECT& rc,
                         double tic_step, double zero, int Style,
                         double unit_step, bool draw_units=false);

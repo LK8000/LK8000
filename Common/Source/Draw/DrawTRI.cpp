@@ -249,9 +249,9 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   int bankindy=Start.y-radius/2;
 
   if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f%s"), beta, MsgToken<2179>());
+	lk::snprintf(Buffer, TEXT("%2.0f%s"), beta, MsgToken<2179>());
   else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f%s"), -beta, MsgToken<2179>());
+	lk::snprintf(Buffer, TEXT("%2.0f%s"), -beta, MsgToken<2179>());
   else
 	lk::strcpy(Buffer, TEXT("--"));
 

@@ -166,13 +166,13 @@ void RefreshComPortList() {
 #ifdef WIN32    
     TCHAR szPort[10];
     for (unsigned i = 1; i < 10; ++i) {
-        _stprintf(szPort, _T("COM%u"), i);
+        lk::snprintf(szPort, _T("COM%u"), i);
         COMMPort.emplace_back(szPort);
     }
 
 #ifndef UNDER_CE
     for (unsigned i = 10; i < 41; ++i) {
-        _stprintf(szPort, _T("COM%u"), i);
+        lk::snprintf(szPort, _T("COM%u"), i);
         COMMPort.emplace_back(szPort);
     }
 #endif

@@ -245,11 +245,11 @@ void dlgAirspaceDetails::SetValues() {
           wClose->SetWidth(IBLSCALE(80));
         }
 
-        _stprintf(buffer2, _T("%s %7.3f"), GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
+        lk::snprintf(buffer2, _T("%s %7.3f"), GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
         wFreq->SetCaption(buffer2);
         wFreq->Redraw();
 
-        _stprintf(buffer2, _T("%s %7.3f"), GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
+        lk::snprintf(buffer2, _T("%s %7.3f"), GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
         wSeqFreq->SetCaption(buffer2);
         wSeqFreq->Redraw();
         bRadio = true;

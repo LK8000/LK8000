@@ -74,7 +74,7 @@ BOOL DevLXMiniMap::LXMiniMapPutBallast(DeviceDescriptor_t* d, double	Ballast)
 
 		double newBallastFactor = CalculateBalastFactor(Ballast) ;
 
-		_stprintf(mcbuf, TEXT("PFLX2,,%.2f,,,,"), newBallastFactor);
+		lk::snprintf(mcbuf, TEXT("PFLX2,,%.2f,,,,"), newBallastFactor);
 		devWriteNMEAString(d, mcbuf);
 
 		return (TRUE);
@@ -85,7 +85,7 @@ BOOL DevLXMiniMap::LXMiniMapPutBugs(DeviceDescriptor_t* d, double	Bugs)
 
 		int TransformedBugsValue = 100 - (int)(Bugs*100.0);
 
-		_stprintf(mcbuf, TEXT("PFLX2,,,%d,,,"), TransformedBugsValue);
+		lk::snprintf(mcbuf, TEXT("PFLX2,,,%d,,,"), TransformedBugsValue);
 		devWriteNMEAString(d, mcbuf);
 
 		return (TRUE);
@@ -102,7 +102,7 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t* d, double NewQNH){
 
 
 	TCHAR mcbuf[100];
-	_stprintf(mcbuf, TEXT("PFLX3,%.2f,,,,,,,,,,,,"),AltOffset * M2FT );
+	lk::snprintf(mcbuf, TEXT("PFLX3,%.2f,,,,,,,,,,,,"),AltOffset * M2FT );
 	devWriteNMEAString(d, mcbuf);
 
   return(TRUE);
@@ -110,7 +110,7 @@ BOOL DevLXMiniMap::LXMiniMapPutQNH(DeviceDescriptor_t* d, double NewQNH){
 
 BOOL DevLXMiniMap::LXMiniMapPutMacCready(DeviceDescriptor_t* d, double MacCready) {
 	TCHAR mcbuf[100];
-	_stprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
+	lk::snprintf(mcbuf, TEXT("PFLX2,%.2f,,,,,"), MacCready);
 	devWriteNMEAString(d, mcbuf);
 
 	return (TRUE);
@@ -156,7 +156,7 @@ BOOL DevLXMiniMap::SendPFLX4(DeviceDescriptor_t* d)
 
 			TCHAR mcbuf[100];
 
-		    _stprintf(mcbuf, TEXT("PFLX4,,,,%.2f,%d,,,,,"),
+		    lk::snprintf(mcbuf, TEXT("PFLX4,,,,%.2f,%d,,,,,"),
 		//	 CALCULATED_INFO.NettoVario,
 			 CALCULATED_INFO.WaypointDistance,
 			 (int)(finalGlide  * M2FT)
@@ -175,7 +175,7 @@ BOOL DevLXMiniMap::LXMiniMapOnSysTicker(DeviceDescriptor_t* d) {
 
         if (TICKER.CheckUpdate(20*1000)) {
             TCHAR mcbuf[100];
-            _stprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"), 4);
+            lk::snprintf(mcbuf, TEXT("PFLX0,LXWP0,1,LXWP2,3,LXWP3,%d"), 4);
             devWriteNMEAString(d, mcbuf);
         }
     }

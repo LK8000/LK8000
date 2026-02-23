@@ -26,7 +26,7 @@ void Refresh(WndForm* pForm) {
   auto pWnd = pForm->FindByName(_T("frmValue"));
   if(pWnd) {
     TCHAR sTmp[32];
-    _stprintf(sTmp, _T("%3.1f%s"),
+    lk::snprintf(sTmp, _T("%3.1f%s"),
               Units::ToVerticalSpeed(MACCREADY),
               Units::GetVerticalSpeedName());
 

@@ -584,7 +584,7 @@ void dlgTarget(int TaskPoint) {
   for (int i=ActiveWayPointOnEntry; i<MAXTASKPOINTS; i++) {
     if (ValidTaskPoint(i)) {
       LK_tcsncpy(tp_short, WayPointList[Task[i].Index].Name, 20);
-      _stprintf(tp_label, TEXT("%d %s"), i, tp_short);
+      lk::snprintf(tp_label, TEXT("%d %s"), i, tp_short);
       dfe->addEnumText(tp_label);
     } else {
       if (target_point>= i) {

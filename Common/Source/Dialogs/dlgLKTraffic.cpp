@@ -233,7 +233,7 @@ static void SetValues(int indexid) {
 	wlen=_tcslen(LKTraffic[indexid].Name);
 	// a ? probably
 	if (wlen==1) {
-		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].RadioId);
+		lk::snprintf(buffer,_T("%06x"),LKTraffic[indexid].RadioId);
 		buffer[MAXFLARMNAME]='\0';
 	} else {
 		LK_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
@@ -284,7 +284,7 @@ static void SetValues(int indexid) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
-	_stprintf(buffer,_T("%.1f %s"),
+	lk::snprintf(buffer,_T("%.1f %s"),
 						Units::ToDistance(LKTraffic[indexid].Distance),
 						Units::GetDistanceName());
 	wp->SetText(buffer);
@@ -293,7 +293,7 @@ static void SetValues(int indexid) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpAltitude"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),
+	lk::snprintf(buffer,_T("%.0f %s"),
 	                    Units::ToAltitude(LKTraffic[indexid].Altitude),
 	                    Units::GetAltitudeName());
 	wp->SetText(buffer);
@@ -302,7 +302,7 @@ static void SetValues(int indexid) {
   wp = wf->FindByName<WndProperty>(TEXT("prpAltDiff"));
   if (wp) {
 	// this has to be reverted, because it is a relative altitude to us
-	_stprintf(buffer,_T("%+.0f %s"),
+	lk::snprintf(buffer,_T("%+.0f %s"),
 	                    Units::ToAltitude(CALCULATED_INFO.NavAltitude - LKTraffic[indexid].Altitude)*-1,
 	                    Units::GetAltitudeName());
 	wp->SetText(buffer);
@@ -310,7 +310,7 @@ static void SetValues(int indexid) {
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
   if (wp) {
-	_stprintf(buffer,_T("%.0f %s"),
+	lk::snprintf(buffer,_T("%.0f %s"),
 	                    Units::ToHorizontalSpeed(LKTraffic[indexid].Speed),
 	                    Units::GetHorizontalSpeedName());
 	wp->SetText(buffer);
@@ -318,7 +318,7 @@ static void SetValues(int indexid) {
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpVario"));
   if (wp) {
-	_stprintf(buffer,_T("%+.1f %s"),
+	lk::snprintf(buffer,_T("%+.1f %s"),
 	                    Units::ToVerticalSpeed(LKTraffic[indexid].Average30s),
 	                    Units::GetVerticalSpeedName());
 	wp->SetText(buffer);
@@ -327,7 +327,7 @@ static void SetValues(int indexid) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
-	_stprintf(buffer, TEXT(" %d%s"), iround(LKTraffic[indexid].Bearing),MsgToken<2179>());
+	lk::snprintf(buffer, TEXT(" %d%s"), iround(LKTraffic[indexid].Bearing),MsgToken<2179>());
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }
@@ -336,19 +336,19 @@ static void SetValues(int indexid) {
   if (flarmId != NULL) {
 	wp = wf->FindByName<WndProperty>(TEXT("prpName"));
 	if (wp) {
-		_stprintf(buffer,_T("%s"),flarmId->name);
+		lk::snprintf(buffer,_T("%s"),flarmId->name);
 		wp->SetText(buffer);
 		wp->RefreshDisplay();
 	}
 	wp = wf->FindByName<WndProperty>(TEXT("prpAirfield"));
 	if (wp) {
-		_stprintf(buffer,_T("%s"),flarmId->airfield);
+		lk::snprintf(buffer,_T("%s"),flarmId->airfield);
 		wp->SetText(buffer);
 		wp->RefreshDisplay();
 	}
 	wp = wf->FindByName<WndProperty>(TEXT("prpType"));
 	if (wp) {
-		_stprintf(buffer,_T("%s"),flarmId->type);
+		lk::snprintf(buffer,_T("%s"),flarmId->type);
 		wp->SetText(buffer);
 		wp->RefreshDisplay();
 	}
@@ -362,7 +362,7 @@ static void SetValues(int indexid) {
 	{
 		if(bValidFreq )
 		{
-			_stprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);	
+			lk::snprintf(buffer,_T("%s %7.3f"),GetActiveStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);	
 			wFreq->SetCaption(buffer);
 			wFreq->SetVisible(true) ;
 		}
@@ -379,7 +379,7 @@ static void SetValues(int indexid) {
 	{
 		if(bValidFreq )
 		{
-			_stprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
+			lk::snprintf(buffer,_T("%s %7.3f"),GetStandyStationSymbol(Appearance.UTF8Pictorials), khz / 1000.);
 			wSecFreq->SetCaption(buffer);
 			wSecFreq->SetVisible(true) ;
 		}
@@ -438,7 +438,7 @@ void dlgLKTrafficDetails(int indexid) {
   }
   Units::TimeToTextDown(tpas,(int)(GPS_INFO.Time - LKTraffic[indexid].Time_Fix));
   TCHAR caption[120];
-  _stprintf(caption,_T("%s (%s\" old)"),status,tpas);
+  lk::snprintf(caption,_T("%s (%s\" old)"),status,tpas);
 
   wf->SetCaption(caption);
   SelectedTraffic=indexid;

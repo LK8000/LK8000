@@ -363,7 +363,7 @@ bool Startup(const TCHAR* szCmdLine) {
 
 #ifdef PNA // VENTA-ADDON
     TCHAR sTmp[250];
-	_stprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), ModelType::GetName(), ModelType::Get());
+	lk::snprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), ModelType::GetName(), ModelType::Get());
 	CreateProgressDialog(sTmp);
 
   if ( !datadir ) {

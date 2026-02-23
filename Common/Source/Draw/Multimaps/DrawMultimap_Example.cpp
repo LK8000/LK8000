@@ -68,7 +68,7 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		lk::strcpy(ttext,_T("Event = DOWN"));
 		break;
 	case LKEVENT_LONGCLICK:
-		_stprintf(ttext,_T("Event = LONG CLICK"));
+		lk::snprintf(ttext,_T("Event = LONG CLICK"));
 		break;
 	case LKEVENT_SHORTCLICK:
 		//
@@ -78,7 +78,7 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 		// OR, if you have ActiveMap enabled, anywhere, since UP and DOWN are disabled.
 		// Even in this last case, TOPRIGHT, TOPLEFT are managed all the way and SHORTCLICK
 		// will not be sent.
-		_stprintf(ttext,_T("Event = SHORT CLICK"));
+		lk::snprintf(ttext,_T("Event = SHORT CLICK"));
 		break;
 	case LKEVENT_PAGEUP:
 		lk::strcpy(ttext,_T("Event = PAGE UP"));
@@ -134,7 +134,7 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
   // Be sure to check that an EVENT was generated, otherwise you are checking even bottombar key presses.
   //
   if (LKevent!=LKEVENT_NONE) {
-	_stprintf(ttext,_T("Last coords: X=%d Y=%d  , duration=%ld ms"),X,Y,VKtime);
+	lk::snprintf(ttext,_T("Last coords: X=%d Y=%d  , duration=%ld ms"),X,Y,VKtime);
 	LKWriteBoxedText(hdc, ttext, 1, 100 , WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
   }
 

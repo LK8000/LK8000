@@ -132,12 +132,12 @@ void FlarmIdFile::LoadOgnDb() {
         ExtractOgnField(t_line, flarmId->reg, 3);
         if (_tcslen(flarmId->reg) == 0) {
           // reg empty use id...
-          _stprintf(flarmId->reg, _T("%X"), RadioId);
+          lk::snprintf(flarmId->reg, _T("%X"), RadioId);
           InvalidIDs++;
         }
 
         ExtractOgnField(t_line, flarmId->type, 2);
-        _stprintf(flarmId->name, _T("OGN: %X"), RadioId);
+        lk::snprintf(flarmId->name, _T("OGN: %X"), RadioId);
         ExtractOgnField(t_line, flarmId->cn, 4);
 
         ib.first->second = std::move(flarmId);  // transfert flarmId ownership to 'flarmIds' map.

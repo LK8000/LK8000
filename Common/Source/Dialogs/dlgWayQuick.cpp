@@ -128,7 +128,7 @@ void SetRadioFrequency(WndButton* pWnd, devPutFreq_t&& devPutFreq, const TCHAR (
 
 #ifdef STATUS_RADIO   // Status Popup not realy needed
     TCHAR szMessage[60] = {0};
-    _stprintf(szMessage,_T("%s \n %s %6.3f ") ,Name, Type, Frequency);
+    lk::snprintf(szMessage,_T("%s \n %s %6.3f ") ,Name, Type, Frequency);
     DoStatusMessage(_T(""), szMessage);
 
     retStatus=3;
@@ -175,12 +175,12 @@ short dlgWayQuickShowModal(void){
   TCHAR buffer2[80];
   WindowControl* wFreq = wf->FindByName(TEXT("cmdRadioFreq"));
   WindowControl* wFreqSB = wf->FindByName(TEXT("cmdRadioFreqSB"));
-  _stprintf(buffer2,_T("%s %s"), GetActiveStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
+  lk::snprintf(buffer2,_T("%s %s"), GetActiveStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
 
   wFreq->SetCaption(buffer2);
   wFreq->Redraw();
 
-  _stprintf(buffer2,_T("%s %s"), GetStandyStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
+  lk::snprintf(buffer2,_T("%s %s"), GetStandyStationSymbol(Appearance.UTF8Pictorials), WPLSEL.Freq );
 
   wFreqSB->SetCaption(buffer2);
   wFreqSB->Redraw();
@@ -188,24 +188,24 @@ short dlgWayQuickShowModal(void){
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP)&& WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
         TCHAR ttmp[50];
 
-                _stprintf(sTmp, TEXT("%s "), WPLSEL.Name);
+                lk::snprintf(sTmp, TEXT("%s "), WPLSEL.Name);
 		if (_tcslen(sTmp)>9) {
 			sTmp[9]='\0';
 			_tcscat(sTmp, _T(" "));
 		}
 
                 if ( _tcslen(WPLSEL.Freq)>0 )  {
-                        _stprintf(ttmp,_T("%s "),WPLSEL.Freq);
+                        lk::snprintf(ttmp,_T("%s "),WPLSEL.Freq);
                         _tcscat(sTmp, ttmp);
                 }
 
                 if ( WPLSEL.RunwayDir>=0 )  {
-                        _stprintf(ttmp,_T("RW %d "),WPLSEL.RunwayDir);
+                        lk::snprintf(ttmp,_T("RW %d "),WPLSEL.RunwayDir);
                         _tcscat(sTmp, ttmp);
                 }
                 if ( WPLSEL.RunwayLen>0 )  {
                         // we use Altitude instead of distance, to keep meters and feet
-                        _stprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
+                        lk::snprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
                         _tcscat(sTmp, ttmp);
                 }
   } else {
@@ -221,9 +221,9 @@ short dlgWayQuickShowModal(void){
                   &wpdistance, &wpbearing);
 
         GetTeamCode(code,wpbearing, wpdistance);
-        _stprintf(sTmp, TEXT(" %s  (%s)"), WayPointList[SelectedWaypoint].Name, code);
+        lk::snprintf(sTmp, TEXT(" %s  (%s)"), WayPointList[SelectedWaypoint].Name, code);
      } else {
-        _stprintf(sTmp, TEXT(" %s"), WayPointList[SelectedWaypoint].Name);
+        lk::snprintf(sTmp, TEXT(" %s"), WayPointList[SelectedWaypoint].Name);
      }
   }
   wf->SetCaption(sTmp);

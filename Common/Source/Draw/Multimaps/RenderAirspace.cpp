@@ -515,7 +515,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     Surface.SetBackgroundTransparent();
     Surface.SetTextColor(txtCol);
 
-    _stprintf(text, TEXT("%s"), Units::GetName(Units::GetDistanceUnit()));
+    lk::snprintf(text, TEXT("%s"), Units::GetName(Units::GetDistanceUnit()));
 
     if (Current_Multimap_SizeY < SIZE4)
         switch (GetMMNorthUp(getsideviewpage)) {
@@ -541,7 +541,7 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     if (Units::GetAltitudeUnit() == unFeet)
         ytick = ytick * FEET_FACTOR;
 
-    _stprintf(text, TEXT("%s"), Units::GetAltitudeName());
+    lk::snprintf(text, TEXT("%s"), Units::GetAltitudeName());
 
     // Draw only if topview is not fullscreen
     if (Current_Multimap_SizeY < SIZE4)
@@ -760,12 +760,12 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         altarriv = wpt_altarriv_mc0; // + wpt_altitude;
 
         // size a template
-        _stprintf(text, TEXT("Mc 99.9: +12345"));
+        lk::strcpy(text, TEXT("Mc 99.9: +12345"));
         Surface.GetTextSize(text, &tsize);
 
         if (IsSafetyAltitudeInUse(overindex)) altarriv += (SAFETYALTITUDEARRIVAL / 10);
 
-        _stprintf(text, TEXT("Mc %3.1f: "), Units::ToVerticalSpeed(fMC0));
+        lk::snprintf(text, TEXT("Mc %3.1f: "), Units::ToVerticalSpeed(fMC0));
         if (wpt_altarriv_mc0 > ALTDIFFLIMIT) {
             Units::FormatArrival(wpt_altarriv_mc0, buffer, 7);
             _tcscat(text, buffer);
@@ -814,7 +814,7 @@ _skip_mc0:
         // ALTITUDE ARRIVAL AT CURRENT MACCREADY
         //
 
-        _stprintf(text, TEXT("Mc %3.1f: "), Units::ToVerticalSpeed(MACCREADY));
+        lk::snprintf(text, TEXT("Mc %3.1f: "), Units::ToVerticalSpeed(MACCREADY));
         if (wpt_altarriv > ALTDIFFLIMIT) {
             Units::FormatArrival(wpt_altarriv, buffer, 7);
             _tcscat(text, buffer);
@@ -851,7 +851,7 @@ _skip_mc0:
   if(bConicalFinal) {
     double mc = (Sink * Slope + VOpt) / Slope;
     if( fabs(mc-MACCREADY) > 0.05 ) {
-      _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),
+      lk::snprintf(text, TEXT("Mc %3.1f @%.0f%s"),
                 Units::ToVerticalSpeed(mc),
                 Units::ToHorizontalSpeed(VOpt),
                 Units::GetHorizontalSpeedName());
@@ -912,7 +912,7 @@ _skip_mc0:
                     NULL, 1.0e6, 1.0);
 
 
-            _stprintf(text, TEXT("Mc %3.1f @%.0f%s"),
+            lk::snprintf(text, TEXT("Mc %3.1f @%.0f%s"),
                       Units::ToVerticalSpeed(mc_pirker),
                       Units::ToHorizontalSpeed(mcspeed),
                       Units::GetHorizontalSpeedName());
@@ -947,7 +947,7 @@ _after_additionals:
         // FIX overindex check if you want to use it!
         if (altarriv > 0) {
             // Print GR
-            _stprintf(text, TEXT("1/%i"), (int) fLD);
+            lk::snprintf(text, TEXT("1/%i"), (int) fLD);
             Surface.GetTextSize(text, &tsize);
             x = CalcDistanceCoordinat(wpt_dist / 2, &sDia) - tsize.cx / 2;
             y = CalcHeightCoordinat((DerivedDrawInfo.NavAltitude + altarriv) / 2 + wpt_altitude, &sDia) + tsize.cy;

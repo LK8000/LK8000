@@ -2907,7 +2907,7 @@ void CAirspaceManager::SaveSettings() const {
             else fprintf(f, "-");
 
             //Comment
-            _stprintf(ubuf, TEXT(" #%s"), pAsp->Name());
+            lk::snprintf(ubuf, TEXT(" #%s"), pAsp->Name());
             to_utf8(ubuf, buf);
             fprintf(f, "%s", buf);
             //Newline

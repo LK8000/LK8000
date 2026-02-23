@@ -27,7 +27,7 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
   TCHAR fname[MAX_PATH];
   LocalPath(fname,TEXT(LKD_WAYPOINTS));
   _tcscat(fname,_T(DIRSEP));
-  _stprintf(tstring,_T("LK%04d%02d%02d.cup"), GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day);
+  lk::snprintf(tstring,_T("LK%04d%02d%02d.cup"), GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day);
   _tcscat(fname,tstring);
 
   stream = _tfopen(fname,TEXT("r"));
@@ -83,7 +83,7 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
 	lk::snprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
 	from_utf8(snear, tstring);
 	TCHAR comment[60];
-	_stprintf(comment, _T("Near: %s"), tstring);
+	lk::snprintf(comment, _T("Near: %s"), tstring);
 	SetWaypointComment(WayPointList[j], comment);
 
 

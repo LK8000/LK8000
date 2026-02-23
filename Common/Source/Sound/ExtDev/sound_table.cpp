@@ -38,7 +38,7 @@ bool sound_table::init() {
 		 for (int i=DEFAULT;i<last;i++) {
 			 TCHAR str[200]; // Nmea string can have max (200 - soundCodeSize - 1)
 			 str[std::size(str)-1] = _T('\0');  // added make sure the string is terminated
-			 _stprintf(str,_T("LKALARM,%d"), i);
+			 lk::snprintf(str,_T("LKALARM,%d"), i);
 			 set((sound_code_t)i,str);
 		 }
 		 return true;

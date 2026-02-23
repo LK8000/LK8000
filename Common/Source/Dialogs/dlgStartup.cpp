@@ -191,13 +191,13 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
                 break;
         }
         if (FullResetAsked) {
-            _stprintf(mes, _T("*** %s ***"), MsgToken<1757>());
+            lk::snprintf(mes, _T("*** %s ***"), MsgToken<1757>());
             RawWrite(Surface, mes, pos, 1, RGBDARKWHITE, WTMODE_NORMAL);
         } else {
 #ifndef LKCOMPETITION
-            _stprintf(mes, _T("Version %s.%s (%s)"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
+            lk::snprintf(mes, _T("Version %s.%s (%s)"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
 #else
-            _stprintf(mes, _T("V%s.%s (%s) COMPETITION"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
+            lk::snprintf(mes, _T("V%s.%s (%s) COMPETITION"), _T(LKVERSION), _T(LKRELEASE), _T(__DATE__));
 #endif
             RawWrite(Surface, mes, pos, 1, RGBDARKWHITE, WTMODE_NORMAL);
 #ifdef KOBO
@@ -212,9 +212,9 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
 
         TCHAR mes[100];
 #ifndef LKCOMPETITION
-        _stprintf(mes, _T("%s v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken<2054>());
+        lk::snprintf(mes, _T("%s v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken<2054>());
 #else
-        _stprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken<2054>());
+        lk::snprintf(mes, _T("%sC v%s.%s - %s"), _T(LKFORK), _T(LKVERSION), _T(LKRELEASE), MsgToken<2054>());
 #endif
         RawWrite(Surface, mes, 1, 1, RGBLIGHTGREY, (IsDithered() ? WTMODE_OUTLINED : WTMODE_NORMAL));
 
@@ -222,25 +222,25 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
         TCHAR buffer[MAX_PATH];
         LocalPath(buffer);
         size_t freestorage = FindFreeSpace(buffer);
-        _stprintf(mes, _T("free ram %.1uM  storage %.1uM"), (unsigned int) freeram / 1024, (unsigned int) freestorage / 1024);
+        lk::snprintf(mes, _T("free ram %.1uM  storage %.1uM"), (unsigned int) freeram / 1024, (unsigned int) freestorage / 1024);
         RawWrite(Surface, mes, 3, 0, RGBLIGHTGREY, IsDithered() ? WTMODE_OUTLINED : WTMODE_NORMAL);
 
         if (ScreenSize != ss320x240 && ScreenLandscape)
             RawWrite(Surface, _T("_______________________"), 2, 2, RGBLIGHTGREY, WTMODE_NORMAL);
 
         if (FullResetAsked) {
-            _stprintf(mes, _T("%s"), MsgToken<1757>()); // LK8000 PROFILES RESET
+            lk::snprintf(mes, _T("%s"), MsgToken<1757>()); // LK8000 PROFILES RESET
             RawWrite(Surface, mes, 5, 2, RGBICEWHITE, WTMODE_OUTLINED);
-            _stprintf(mes, _T("%s"), MsgToken<1759>()); // SELECTED IN SYSTEM
+            lk::snprintf(mes, _T("%s"), MsgToken<1759>()); // SELECTED IN SYSTEM
             RawWrite(Surface, mes, 6, 2, RGBICEWHITE, WTMODE_OUTLINED);
         } else {
-            _stprintf(mes, _T("%s"), PilotName_Config);
+            lk::snprintf(mes, _T("%s"), PilotName_Config);
             RawWrite(Surface, mes, 4, 2, RGBICEWHITE, WTMODE_OUTLINED);
 
-            _stprintf(mes, _T("%s"), AircraftRego_Config);
+            lk::snprintf(mes, _T("%s"), AircraftRego_Config);
             RawWrite(Surface, mes, 5, 2, RGBAMBER, WTMODE_OUTLINED);
 
-            _stprintf(mes, _T("%s"), AircraftType_Config);
+            lk::snprintf(mes, _T("%s"), AircraftType_Config);
             RawWrite(Surface, mes, 6, 2, RGBAMBER, WTMODE_OUTLINED);
 
             LKASSERT(szPolarFile[0]);
@@ -826,7 +826,7 @@ short dlgStartupShowModal(void) {
     extern unsigned short Bitmaps_Errors;
     if (Bitmaps_Errors) {
         TCHAR mes[MAX_PATH];
-        _stprintf(mes, _T("MISSING %d SYSTEM BITMAPS! CHECK INSTALLATION."), Bitmaps_Errors);
+        lk::snprintf(mes, _T("MISSING %d SYSTEM BITMAPS! CHECK INSTALLATION."), Bitmaps_Errors);
         MessageBoxX(mes, _T("MISSING FILES!"), mbOk, true);
     }
 

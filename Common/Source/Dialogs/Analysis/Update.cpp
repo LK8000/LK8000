@@ -37,7 +37,7 @@ void UpdateAnalysis(WndForm* pForm){
   }
   switch(analysis_page){
     case ANALYSIS_PAGE_BAROGRAPH:
-      _stprintf(sTmp, TEXT("%s: %s"),
+      lk::snprintf(sTmp, TEXT("%s: %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
                 MsgToken<93>(),
 	// LKTOKEN  _@M127_ = "Barograph"
@@ -46,7 +46,7 @@ void UpdateAnalysis(WndForm* pForm){
       if (flightstats.Altitude_Ceiling.sum_n<2) {
         lk::strcpy(sTmp, TEXT("\0"));
       } else if (flightstats.Altitude_Ceiling.sum_n<4) {
-        _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s"),
+        lk::snprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s"),
 	// LKTOKEN  _@M823_ = "Working band"
                   MsgToken<823>(),
                   Units::ToAltitude(flightstats.Altitude_Base.y_ave),
@@ -55,7 +55,7 @@ void UpdateAnalysis(WndForm* pForm){
 
       } else {
 
-        _stprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s\r\n\r\n%s:\r\n  %.0f %s/hr"),
+        lk::snprintf(sTmp, TEXT("%s:\r\n  %.0f-%.0f %s\r\n\r\n%s:\r\n  %.0f %s/hr"),
 	// LKTOKEN  _@M823_ = "Working band"
                   MsgToken<823>(),
                   Units::ToAltitude(flightstats.Altitude_Base.y_ave),
@@ -70,7 +70,7 @@ void UpdateAnalysis(WndForm* pForm){
 
     break;
     case ANALYSIS_PAGE_CLIMB:
-      _stprintf(sTmp, TEXT("%s: %s"),
+      lk::snprintf(sTmp, TEXT("%s: %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
                 MsgToken<93>(),
 	// LKTOKEN  _@M182_ = "Climb"
@@ -80,14 +80,14 @@ void UpdateAnalysis(WndForm* pForm){
       if (flightstats.ThermalAverage.sum_n==0) {
         lk::strcpy(sTmp, TEXT("\0"));
       } else if (flightstats.ThermalAverage.sum_n==1) {
-        _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s"),
+        lk::snprintf(sTmp, TEXT("%s:\r\n  %3.1f %s"),
 	// LKTOKEN  _@M116_ = "Av climb"
                   MsgToken<116>(),
                   Units::ToVerticalSpeed(flightstats.ThermalAverage.y_ave),
                   Units::GetVerticalSpeedName()
                   );
       } else {
-        _stprintf(sTmp, TEXT("%s:\r\n  %3.1f %s\r\n\r\n%s:\r\n  %3.2f %s"),
+        lk::snprintf(sTmp, TEXT("%s:\r\n  %3.1f %s\r\n\r\n%s:\r\n  %3.2f %s"),
 	// LKTOKEN  _@M116_ = "Av climb"
                   MsgToken<116>(),
                   Units::ToVerticalSpeed(flightstats.ThermalAverage.y_ave),
@@ -103,18 +103,18 @@ void UpdateAnalysis(WndForm* pForm){
 
     break;
     case ANALYSIS_PAGE_WIND:
-      _stprintf(sTmp, TEXT("%s: %s"),
+      lk::snprintf(sTmp, TEXT("%s: %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
                 MsgToken<93>(),
 	// LKTOKEN  _@M820_ = "Wind at Altitude"
                 MsgToken<820>());
       pForm->SetCaption(sTmp);
-      _stprintf(sTmp, TEXT(" "));
+      lk::strcpy(sTmp, TEXT(" "));
       waInfo->SetCaption(sTmp);
     break;
     case ANALYSIS_PAGE_POLAR:
 	if (ScreenLandscape) {
-		_stprintf(sTmp, TEXT("%s: %s %s (%s %3.0f kg)"),
+		lk::snprintf(sTmp, TEXT("%s: %s %s (%s %3.0f kg)"),
 	                MsgToken<93>(), // Analysis:
 	                szPolarName,
 	                MsgToken<325>(),  // Glide Polar
@@ -122,25 +122,25 @@ void UpdateAnalysis(WndForm* pForm){
 	                GlidePolar::GetAUW());
 	} else {
 		// Portrait reduced size
-		_stprintf(sTmp, TEXT("%s: %s (%3.0f kg)"),
+		lk::snprintf(sTmp, TEXT("%s: %s (%3.0f kg)"),
 	                MsgToken<93>(), // Analysis:
 	                szPolarName,
 	                GlidePolar::GetAUW());
 
 	}
       pForm->SetCaption(sTmp);
-      _stprintf(sTmp, TEXT(" "));
+      lk::strcpy(sTmp, TEXT(" "));
       waInfo->SetCaption(sTmp);
     break;
   case ANALYSIS_PAGE_TEMPTRACE:
-    _stprintf(sTmp, TEXT("%s: %s"),
+    lk::snprintf(sTmp, TEXT("%s: %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
               MsgToken<93>(),
 	// LKTOKEN  _@M701_ = "Temp trace"
               MsgToken<701>());
     pForm->SetCaption(sTmp);
 
-    _stprintf(sTmp, TEXT("%s:\r\n  %5.0f %s\r\n\r\n%s:\r\n  %5.0f %s\r\n"),
+    lk::snprintf(sTmp, TEXT("%s:\r\n  %5.0f %s\r\n\r\n%s:\r\n  %5.0f %s\r\n"),
 	// LKTOKEN  _@M714_ = "Thermal height"
 	      MsgToken<714>(),
           Units::ToAltitude(CuSonde::thermalHeight),
@@ -153,7 +153,7 @@ void UpdateAnalysis(WndForm* pForm){
     waInfo->SetCaption(sTmp);
     break;
   case ANALYSIS_PAGE_TASK_SPEED:
-    _stprintf(sTmp, TEXT("%s: %s"),
+    lk::snprintf(sTmp, TEXT("%s: %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
               MsgToken<93>(),
 	// LKTOKEN  _@M697_ = "Task speed"
@@ -163,12 +163,14 @@ void UpdateAnalysis(WndForm* pForm){
     break;
   case ANALYSIS_PAGE_TASK:
       TCHAR FAI[10];
-      if(CALCULATED_INFO.TaskFAI)
-	_stprintf(FAI, TEXT("FAI"));
-      else
-	lk::strcpy(FAI, TEXT(""));
+      if (CALCULATED_INFO.TaskFAI) {
+        lk::strcpy(FAI, TEXT("FAI"));
+      }
+      else {
+        lk::strcpy(FAI, TEXT(""));
+      }
 
-    _stprintf(sTmp, TEXT("%s: %s %.0f%s %s"),
+    lk::snprintf(sTmp, TEXT("%s: %s %.0f%s %s"),
 	// LKTOKEN  _@M93_ = "Analysis"
               MsgToken<93>(),
 	// LKTOKEN  _@M699_ = "Task"
@@ -197,7 +199,7 @@ void UpdateAnalysis(WndForm* pForm){
         Units::TimeToText(timetext2, (int)CALCULATED_INFO.AATTimeToGo);
 
         if (ScreenLandscape) {
-          _stprintf(sTmp,
+          lk::snprintf(sTmp,
                     TEXT("%s:\r\n  %s\r\n%s:\r\n  %s\r\n%s:\r\n  %5.0f %s\r\n%s%.0f %s\r\n"), // 100429
 	// LKTOKEN  _@M698_ = "Task to go"
                     MsgToken<698>(),
@@ -215,7 +217,7 @@ void UpdateAnalysis(WndForm* pForm){
                     Units::GetTaskSpeedName()
                     );
         } else {
-          _stprintf(sTmp,
+          lk::snprintf(sTmp,
                     TEXT("%s: %s\r\n%s: %s\r\n%s: %5.0f %s\r\n%s: %5.0f %s \r\n"),
 	// LKTOKEN  _@M698_ = "Task to go"
                     MsgToken<698>(),
@@ -234,7 +236,7 @@ void UpdateAnalysis(WndForm* pForm){
                     );
         }
       } else {
-        _stprintf(sTmp, TEXT("%.0f%s %s\r\n\r\n%s: %s\r\n%s: %.0f%s\r\n"),
+        lk::snprintf(sTmp, TEXT("%.0f%s %s\r\n\r\n%s: %s\r\n%s: %.0f%s\r\n"),
                   Units::ToDistance(CALCULATED_INFO.TaskTotalDistance),
                   Units::GetDistanceName(),
                   FAI ,
@@ -251,7 +253,7 @@ void UpdateAnalysis(WndForm* pForm){
     waInfo->SetCaption(sTmp);
     break;
     case ANALYSIS_PAGE_CONTEST:
-      _stprintf(sTmp, TEXT("%s: %s - %s"),
+      lk::snprintf(sTmp, TEXT("%s: %s - %s"),
           // LKTOKEN  _@M93_ = "Analysis"
                 MsgToken<93>(),
           // LKTOKEN  _@M1450_ = "Contest"
@@ -298,30 +300,30 @@ void UpdateAnalysis(WndForm* pForm){
           const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
 
           if (bFAI) {
-            _stprintf(distStr,
+            lk::snprintf(distStr,
                       _T("D:%.0f%s\r\nD*:%.0f%s FAI\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
                       Units::ToDistance(fDist), Units::GetDistanceName(),
                       Units::ToDistance(fTotalDistance), Units::GetDistanceName(),
                       Units::ToDistance(fCPDist), percC,
                       Units::ToDistance(fB_CPDist), percB);
           } else {
-            _stprintf(distStr, _T("Not FAI yet\r\n"));
+            lk::strcpy(distStr, _T("Not FAI yet\r\n"));
           }
 
-          _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
+          lk::snprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
         } else {
           if (contestType == CContestMgr::TYPE_XC_FREE_TRIANGLE || contestType == CContestMgr::TYPE_XC_FAI_TRIANGLE) {
             const double percC = 100 * (fTotalDistance == 0 ? 0 : fCPDist / (double) fTotalDistance);
             const double percB = 100 * (fTotalDistance == 0 ? 0 : fB_CPDist / (double) fTotalDistance);
-            _stprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
+            lk::snprintf(distStr, _T("D:%.0f%s\r\nD*:%.0f%s\r\nC:%.1f(%.1f%%)\r\nB:%.1f(%.1f%%)\r\n"),
                       Units::ToDistance(fDist), Units::GetDistanceName(),
                       Units::ToDistance(fTotalDistance), Units::GetDistanceName(),
                       Units::ToDistance(fCPDist), percC,
                       Units::ToDistance(fB_CPDist), percB);
-            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
+            lk::snprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
           } else {
-            _stprintf(distStr, _T("D: %.1f %s\r\n"), Units::ToDistance(fTotalDistance), Units::GetDistanceName());
-            _stprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
+            lk::snprintf(distStr, _T("D: %.1f %s\r\n"), Units::ToDistance(fTotalDistance), Units::GetDistanceName());
+            lk::snprintf(speedStr, TEXT("S: %.1f %s\r\n"), Units::ToTaskSpeed(result.Speed()), Units::GetTaskSpeedName());
 
           }
         }
@@ -329,14 +331,14 @@ void UpdateAnalysis(WndForm* pForm){
         TCHAR timeTempStr[30];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
-        _stprintf(timeStr, _T("T: %s\r\n"), timeTempStr);
+        lk::snprintf(timeStr, _T("T: %s\r\n"), timeTempStr);
 
 
         TCHAR scoreStr[50] = _T("");
         if (result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
             result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED &&
             result.Type() != CContestMgr::TYPE_FAI_ASSISTANT )
-          _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
+          lk::snprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
 
         TCHAR plusStr[50] = _T("");
         if (result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
@@ -348,21 +350,21 @@ void UpdateAnalysis(WndForm* pForm){
                                     CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
           CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
           if (ScreenLandscape)
-            _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
+            lk::snprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
                       CContestMgr::TypeToString(type),
                       resultPlus.Score());
           else
-            _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
+            lk::snprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
                       CContestMgr::TypeToString(type),
                       resultPlus.Score());
         }
         if ( result.Type() == CContestMgr::TYPE_FAI_ASSISTANT) {
-          _stprintf(plusStr, TEXT("\r\nCurrent FAI* %.0fkm"),resultFAI.PredictedDistance()/1000.0);
+          lk::snprintf(plusStr, TEXT("\r\nCurrent FAI* %.0fkm"),resultFAI.PredictedDistance()/1000.0);
         }
 
-        _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
+        lk::snprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
       } else {
-        _stprintf(sTmp, TEXT("%s\r\n"),
+        lk::snprintf(sTmp, TEXT("%s\r\n"),
             // LKTOKEN  _@M477_ = "No valid path"
                   MsgToken<477>());
       }

@@ -77,7 +77,7 @@ LKASSERT(szStrg != NULL);
 	//  if(szStrgi0] != ' ')
 	    iCheckSum ^= szStrg[i];
   }
-  _stprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
+  lk::snprintf(szCheck,TEXT("*%02X\r\n"),iCheckSum);
   _tcscat(szStrg,szCheck);
   return iCheckSum;
 }
@@ -85,9 +85,9 @@ LKASSERT(szStrg != NULL);
 BOOL PVCOMRadioMode(DeviceDescriptor_t* d, int mode) {
 	  TCHAR  szTmp[255];
 	  if(mode == 0)
-	    _stprintf(szTmp, TEXT("$PVCOM,S,MOD,N"));
+	    lk::strcpy(szTmp, TEXT("$PVCOM,S,MOD,N"));
 	  else
-	    _stprintf(szTmp, TEXT("$PVCOM,S,MOD,D"));
+	    lk::strcpy(szTmp, TEXT("$PVCOM,S,MOD,D"));
 	  PVCOMNMEAddCheckSumStrg(szTmp);
 	  if(d != NULL)
 		if(!d->Disabled)
@@ -98,7 +98,7 @@ BOOL PVCOMRadioMode(DeviceDescriptor_t* d, int mode) {
 
 BOOL PVCOMPutVolume(DeviceDescriptor_t* d, int Volume) {
   TCHAR  szTmp[255];
-  _stprintf(szTmp, TEXT("$PVCOM,S,VOL,%d"), Volume);
+  lk::snprintf(szTmp, TEXT("$PVCOM,S,VOL,%d"), Volume);
 #ifdef TESTBENCH
     StartupStore(_T(". RADIO Volume  %i%s"), Volume,NEWLINE);
 #endif
@@ -112,7 +112,7 @@ BOOL PVCOMPutVolume(DeviceDescriptor_t* d, int Volume) {
 
 BOOL PVCOMPutSquelch(DeviceDescriptor_t* d, int Squelch) {
   TCHAR  szTmp[255];
-  _stprintf(szTmp, TEXT("$PVCOM,S,SQL,%d"), Squelch);
+  lk::snprintf(szTmp, TEXT("$PVCOM,S,SQL,%d"), Squelch);
 #ifdef TESTBENCH
       StartupStore(_T(". RADIO Squelch  %i%s"), Squelch,NEWLINE);
 #endif
@@ -132,7 +132,7 @@ BOOL PVCOMPutFreqActive(DeviceDescriptor_t* d, unsigned Freq, const TCHAR* Stati
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL) {
-     _stprintf(StationName, TEXT("%s"), Station);
+     lk::snprintf(StationName, TEXT("%s"), Station);
   }
   ReplaceNMEAControlChars(StationName);
 
@@ -154,7 +154,7 @@ BOOL PVCOMPutFreqStandby(DeviceDescriptor_t* d, unsigned Freq,  const TCHAR* Sta
   TCHAR  szTmp[255];
   TCHAR  StationName[255] =_T("???");;
   if(Station != NULL)
-     _stprintf(StationName, TEXT("%s"), Station);
+     lk::snprintf(StationName, TEXT("%s"), Station);
   ReplaceNMEAControlChars(StationName);
 
   double Mhz = (Freq / 1000.);
@@ -176,7 +176,7 @@ BOOL PVCOMStationSwap(DeviceDescriptor_t* d) {
 #ifdef TESTBENCH
    StartupStore(_T(". RADIO Station swap %s"), NEWLINE);
 #endif
-  _stprintf(szTmp, TEXT("$PVCOM,S,CHG"));
+  lk::strcpy(szTmp, TEXT("$PVCOM,S,CHG"));
   PVCOMNMEAddCheckSumStrg(szTmp);
   if(d != NULL)
     if(!d->Disabled)
@@ -188,7 +188,7 @@ BOOL PVCOMStationSwap(DeviceDescriptor_t* d) {
 
 BOOL PVCOMRequestAllData(DeviceDescriptor_t* d) {
   TCHAR  szTmp[255];
-  _stprintf(szTmp, TEXT("$PVCOM,R,ALL"));
+  lk::strcpy(szTmp, TEXT("$PVCOM,R,ALL"));
   PVCOMNMEAddCheckSumStrg(szTmp);
 
   ScopeLock Lock(CritSec_Comm);

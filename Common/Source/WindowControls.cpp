@@ -860,12 +860,12 @@ double DataFieldInteger::GetAsFloat(void){
 }
 
 const TCHAR *DataFieldInteger::GetAsString(void){
-  _stprintf(mOutBuf, mEditFormat, mValue);
+  lk::snprintf(mOutBuf, mEditFormat, mValue);
   return(mOutBuf);
 }
 
 const TCHAR *DataFieldInteger::GetAsDisplayString(void){
-  _stprintf(mOutBuf, mDisplayFormat, mValue, mUnits);
+  lk::snprintf(mOutBuf, mDisplayFormat, mValue, mUnits);
   return(mOutBuf);
 }
 
@@ -982,12 +982,12 @@ double DataFieldFloat::GetAsFloat(void){
 }
 
 const TCHAR *DataFieldFloat::GetAsString(void){
-  _stprintf(mOutBuf, mEditFormat, mValue);
+  lk::snprintf(mOutBuf, mEditFormat, mValue);
   return(mOutBuf);
 }
 
 const TCHAR *DataFieldFloat::GetAsDisplayString(void) {
-  _stprintf(mOutBuf, mDisplayFormat, mValue, mUnits);
+  lk::snprintf(mOutBuf, mDisplayFormat, mValue, mUnits);
   return(mOutBuf);
 }
 
@@ -1121,7 +1121,7 @@ int DataFieldFloat::CreateComboList(void) {
 const TCHAR *DataFieldTime::GetAsDisplayString(void) {
   double hours = 0;
   double minutes = modf(mValue, &hours);
-  _stprintf(mOutBuf, mDisplayFormat, (int)hours, (int)(std::abs(minutes)*60.));
+  lk::snprintf(mOutBuf, mDisplayFormat, (int)hours, (int)(std::abs(minutes)*60.));
   return(mOutBuf);
 }
 

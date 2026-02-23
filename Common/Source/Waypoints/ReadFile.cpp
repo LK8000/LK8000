@@ -95,7 +95,7 @@ int ReadWayPointFile(zzip_stream& stream, int fileformat)
 	// the virtual wps (including the 0);
 	// Warning, using virtualdatheader 3 tcsncmp because virtuals are now more than 9.
 	TCHAR virtualdatheader[5];
-	_stprintf(virtualdatheader,_T("%d,"),RESWP_END+2);
+	lk::snprintf(virtualdatheader,_T("%d,"),RESWP_END+2);
 	if ( _tcsncmp(_T("1,"),nTemp2String,2) == 0 ||
 	  _tcsncmp(virtualdatheader,nTemp2String,3) == 0) {
 		StartupStore(_T(". Waypoint file %d format: WinPilot"),globalFileNum);

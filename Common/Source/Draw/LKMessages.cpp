@@ -20,7 +20,7 @@ void MSG_ASSERTION(int line, const TCHAR *filename) {
 #ifndef ANDROID
   TCHAR ames[256];
 
-  _stprintf(ames,_T("Execution failure in file\n%s\nat line %d\n\nLK8000 terminated!"),filename,line);
+  lk::snprintf(ames,_T("Execution failure in file\n%s\nat line %d\n\nLK8000 terminated!"),filename,line);
   MessageBoxX(ames,
     _T("CRITICAL ASSERTION FAILURE !"),
     mbOk,true);

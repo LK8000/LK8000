@@ -293,12 +293,12 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 /*
 		if ((i==nwps-1) && (Task[i].Index == Task[0].Index))
 		{
-		  _stprintf(text,TEXT("%0d"),1);
+		  lk::snprintf(text,TEXT("%0d"),1);
 		  DrawLabel(hdc, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
 		}
 		else */
 		{
-		  _stprintf(text,TEXT("%0d"),i);
+		  lk::snprintf(text,TEXT("%0d"),i);
 		  DrawLabel(Surface, rc, text, x1+(x2-x1)/2, y1+(y2-y1)/2);
 		}
 
