@@ -378,7 +378,7 @@ TCHAR* StringMallocParse(const TCHAR* old_string) {
 	OutOfMemory(_T(__FILE__),__LINE__);
 	return NULL;
   }
-  lk::snprintf(new_string, new_len, _T("%s%s%s"), buffer, tokentext, pnext);
+  lk::snprintf(new_string, new_len + 1, _T("%s%s%s"), buffer, tokentext, pnext);
   return new_string;
 
 _notoken:
