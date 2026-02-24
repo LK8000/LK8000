@@ -86,6 +86,7 @@ static void setVariables(WndForm * pForm) {
           _T(LKS_WP_WINPILOT),
           _T(LKS_WP_XCSOAR),
           _T(LKS_WP_CUP),
+          _T(LKS_WP_CUPX),
           _T(LKS_WP_COMPE),
           _T(LKS_OPENAIP),
         };
