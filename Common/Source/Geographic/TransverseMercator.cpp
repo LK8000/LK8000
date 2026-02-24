@@ -12,6 +12,7 @@
 #include "TransverseMercator.h"
 #include "GeoPoint.h"
 #include <cmath>
+#include <numbers>
 
 extern bool earth_model_wgs84;
 
@@ -46,11 +47,11 @@ const DATUM Datum_FAI = {
 };
 
 inline double rad2deg(double rad) {
-  return (rad * 180 / M_PI);
+  return (rad * 180 / std::numbers::pi);
 }
 
 inline double deg2rad(double deg) {
-  return (deg * M_PI / 180);
+  return (deg * std::numbers::pi / 180);
 }
 
 } // namespace

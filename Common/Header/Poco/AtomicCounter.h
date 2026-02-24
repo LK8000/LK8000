@@ -134,7 +134,7 @@ private:
 	struct ImplType 
 	{
 		mutable FastMutex mutex;
-		volatile int      value;
+		int      value;
 	};
 #endif // POCO_OS
 

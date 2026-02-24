@@ -655,7 +655,7 @@ void StopEOS_IGCReadThread() {
 
 int ReadEOS_IGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
  ScopeLock lock(DLmutex);
-static volatile uint16_t BlockNo=1; 
+static uint16_t BlockNo=1; 
 static uint8_t ErrCnt = 0;
 static uint32_t FileSize = 0;
 static uint32_t  BytesRead =0;
