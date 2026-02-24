@@ -163,6 +163,27 @@ public:
     return { env, env->CallObjectMethod(obj, loadFileBitmap_method, path2.Get()) };
   }
 
+  Java::LocalObject loadMemoryBitmap(const void* data, size_t size) {
+    Java::Class factory(env, "android/graphics/BitmapFactory");
+    if (!factory) {
+      return nullptr;
+    }
+    jmethodID decodeMethod = env->GetStaticMethodID(
+        factory, "decodeByteArray", "([BII)Landroid/graphics/Bitmap;");
+    if (!decodeMethod) {
+      return nullptr;
+    }
+
+    Java::LocalRef<jbyteArray> arr = {env, env->NewByteArray(size)};
+    if (!arr) {
+      return nullptr;
+    }
+    env->SetByteArrayRegion(arr, 0, size, static_cast<const jbyte*>(data));
+
+    return {env, env->CallStaticObjectMethod(factory, decodeMethod, arr.Get(),
+                                             0, size)};
+  }
+
   bool bitmapToTexture(jobject bmp, bool alpha, jint *result) {
     Java::LocalRef<jintArray> intArray = {env, env->NewIntArray(5) };
 
