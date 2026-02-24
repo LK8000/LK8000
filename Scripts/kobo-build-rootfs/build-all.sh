@@ -23,6 +23,7 @@ for i in \
 	geographiclib \
 	openssl \
 	curl \
+	zzip \
 ; do
 	if echo "${SKIP:-}" | grep -q \\\<"$i"\\\> ; then
 		echo "Building of $i suppressed by \$SKIP"

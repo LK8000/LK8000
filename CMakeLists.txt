@@ -765,13 +765,6 @@ add_library( LK8000 SHARED
     Common/Source/Android/fdsan.h
     Common/Source/Android/fdsan.c
 
-    Common/Source/Library/zzip/err.c
-    Common/Source/Library/zzip/fetch.c
-    Common/Source/Library/zzip/file.c
-    Common/Source/Library/zzip/info.c
-    Common/Source/Library/zzip/plugin.c
-    Common/Source/Library/zzip/zip.c
-
     Common/Source/Sound/Android/Sound.cpp
 
     Common/Source/Geographic/GeoPoint.cpp
@@ -878,6 +871,7 @@ find_package (boost_mp11 REQUIRED CONFIG)
 find_package (boost_describe REQUIRED CONFIG)
 find_package (boost_intrusive REQUIRED CONFIG)
 find_package (boost_container REQUIRED)
+find_package (zziplib REQUIRED)
 
 target_include_directories( LK8000 PRIVATE
     Common/Header/linuxcompat
@@ -913,6 +907,8 @@ target_link_libraries(LK8000 PRIVATE
     boost_describe::boost_describe
 	boost_intrusive::boost_intrusive
 	boost_container::boost_container
+    zziplib::zzip
+    zziplib::zzipmmapped
     android
     log
     z

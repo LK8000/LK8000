@@ -35,6 +35,8 @@ public class Loader {
     try {
       System.loadLibrary("c++_shared");
       System.loadLibrary("oboe");
+      System.loadLibrary("zzip");
+      System.loadLibrary("zzipmmapped");
       System.loadLibrary("crypto");
       System.loadLibrary("ssl");
       System.loadLibrary("curl");
