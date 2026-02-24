@@ -58,16 +58,7 @@ RawBitmap::RawBitmap(unsigned nWidth, unsigned nHeight)
   bi.bmiHeader.biClrUsed = 0;
   bi.bmiHeader.biClrImportant = 0;
 
-#if defined(_WIN32_WCE) && _WIN32_WCE < 0x0400
-  /* StretchDIBits() is bugged on PPC2002, workaround follows */
-  VOID *pvBits;
-  HDC hDC = ::GetDC(nullptr);
-  bitmap = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
-  ::ReleaseDC(nullptr, hDC);
-  buffer = (BGRColor *)pvBits;
-#else
   buffer = new BGRColor[corrected_width * height];
-#endif
 }
 
 RawBitmap::~RawBitmap()
@@ -88,19 +79,8 @@ RawBitmap::StretchTo(unsigned width, unsigned height,
                      Canvas &dest_canvas,
                      unsigned dest_x, unsigned dest_y, unsigned dest_width, unsigned dest_height) const
 {
-#if defined(_WIN32_WCE) && _WIN32_WCE < 0x0400
-  /* StretchDIBits() is bugged on PPC2002, workaround follows */
-  HDC source_dc = ::CreateCompatibleDC(dest_canvas);
-  ::SelectObject(source_dc, bitmap);
-  ::StretchBlt(dest_canvas, dest_x, dest_y,
-               dest_width, dest_height,
-               source_dc, 0, 0, width, height,
-               SRCCOPY);
-  ::DeleteDC(source_dc);
-#else
   ::StretchDIBits(dest_canvas, dest_x, dest_y,
                   dest_width, dest_height,
                   0, GetHeight() - height, width, height,
                   buffer, &bi, DIB_RGB_COLORS, SRCCOPY);
-#endif
 }

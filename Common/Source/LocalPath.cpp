@@ -134,36 +134,6 @@ const TCHAR * LKGetLocalPath(void) {
 #endif
 }
 
-#ifdef PNA
-#include <shlobj.h>
-BOOL GetFontPath(TCHAR *pPos)
-{
-  HKEY    hKey;
-  DWORD   dwType = REG_SZ;
-  DWORD dwSize = MAX_PATH;
-  long    hRes;
-  unsigned int i;
-  for (i=0; i<dwSize; i++) {
-    pPos[i]=0;
-  }
-
-  pPos[0]= '\0';
-  hRes = RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\FontPath"), 0, KEY_READ /*KEY_ALL_ACCESS*/, &hKey);
-  if (hRes != ERROR_SUCCESS) {
-    RegCloseKey(hKey);
-    return FALSE;
-  }
-
-  dwSize *= 2;  // BUGFIX 100913 ?? to remove? check
-
-  hRes = RegQueryValueEx(hKey, _T("FontPath"), 0, &dwType, (LPBYTE)pPos, &dwSize);
-
-  RegCloseKey(hKey);
-  if (hRes==ERROR_SUCCESS) return TRUE;
-  else return FALSE;
-}
-#endif
-
 namespace {
 
 bool IsDirectorySeparator(TCHAR c) {

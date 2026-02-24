@@ -12,7 +12,7 @@
 
 #include "Screen/RawBitmap.hpp"
 
-#if (!defined(GREYSCALE) && !defined(_WIN32_WCE) && !defined(ENABLE_OPENGL))
+#if (!defined(GREYSCALE) && !defined(ENABLE_OPENGL))
 #define USE_TERRAIN_BLUR
 #endif
 /////////////////////////////////////////////////////////////////////////////

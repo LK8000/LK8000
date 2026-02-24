@@ -267,22 +267,6 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
     // ETO_OPAQUE not necessary since we pass a NULL rect
     //
 
-#if !defined(PNA) || defined(UNDER_CE)
-    short emboldsize=IBLSCALE(1);
-    for (short a=1; a<=emboldsize; a++) {
-       Surface.DrawText(x-a, y-a, Value);
-       Surface.DrawText(x-a, y+a, Value);
-       Surface.DrawText(x+a, y-a, Value);
-       Surface.DrawText(x+a, y+a, Value);
-    }
-    if (OutlinedTp) {
-        short a=emboldsize+1;
-        Surface.DrawText(x-a, y, Value);
-        Surface.DrawText(x+a, y, Value);
-        Surface.DrawText(x, y-a, Value);
-        Surface.DrawText(x, y+a, Value);
-    }
-#else
     Surface.DrawText(x-1, y-1, Value);
     Surface.DrawText(x-1, y+1, Value);
     Surface.DrawText(x+1, y-1, Value);
@@ -294,7 +278,6 @@ bool MapWindow::TextInBox(LKSurface& Surface, const RECT *clipRect,  const TCHAR
         Surface.DrawText(x, y-2, Value);
         Surface.DrawText(x, y+2, Value);
     }
-#endif
 
       if (OutlinedTp) {
         Surface.SetTextColor(Mode->Color);

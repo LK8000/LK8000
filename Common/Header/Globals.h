@@ -171,10 +171,7 @@ GEXTERN double QFEAltitudeOffset; // VENTA3
 GEXTERN bool WasFlying;
 
 GEXTERN double LastDoRangeWaypointListTime;
-GEXTERN bool DeviceNeedClipping;
 
-GEXTERN bool EnableAutoBacklight;
-GEXTERN bool EnableAutoSoundVolume;
 GEXTERN unsigned EnableFLARMMap;
 GEXTERN AircraftCategory_t AircraftCategory;
 GEXTERN bool CheckSum;
@@ -518,10 +515,6 @@ GEXTERN short TerrainRamp_Config;
 GEXTERN double QNH;
 GEXTERN int NettoSpeed;
 GEXTERN unsigned debounceTimeout;
-
-#if defined(PPC2003) || defined(PNA)
-GEXTERN bool SetSystemTimeFromGPS;
-#endif
 
 GEXTERN bool SaveRuntime;
 GEXTERN bool ForceFinalGlide;

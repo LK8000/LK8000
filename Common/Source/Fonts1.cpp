@@ -76,9 +76,6 @@ void ApplyCustomResize(LOGFONT *logfont, short change) {
 
 
 void ApplyClearType(LOGFONT *logfont) {
-
-  // this has to be checked on PPC and old 2002 CE devices: using ANTIALIASED quality could be better
-  // 110120  .. and in fact on ppc2002 no cleartype available
   logfont->lfQuality = GetFontRenderer();
 }
 

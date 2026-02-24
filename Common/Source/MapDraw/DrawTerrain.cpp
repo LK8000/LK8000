@@ -976,13 +976,8 @@ private:
         // For CE it is also a matter of CPU, reducing calculations for low zoom.
         // For the rest of platforms, if using AUTOCONTRAST this value may be rised up to 18 or more.
         // 
-#ifdef UNDER_CE
-        // After 7.5Km zoom
-        constexpr double NOSHADING_REALSCALE = 5.4;
-#else
         // After 20Km  zoom 14.3
         constexpr double NOSHADING_REALSCALE = 14.3;
-#endif
         return AutoContrast ? 18.0 : NOSHADING_REALSCALE;
     }
 

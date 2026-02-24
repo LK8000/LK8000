@@ -36,15 +36,6 @@ RUN ./build-all.sh && \
         rm -rf /tmp/kobo-build-rootfs
 ENV KOBO=/opt/kobo-rootfs
 
-# Install WinCE toolchain
-WORKDIR /tmp/WinCE
-RUN wget http://lk8000.it/toolchain/arm-mingw32ce-9.3.0.buster.x86_64.tar.xz && \
-        tar -xJf arm-mingw32ce-9.3.0.buster.x86_64.tar.xz && \
-        mv arm-mingw32ce /opt/arm-mingw32ce && \
-        rm -rf /tmp/WinCE
-
-ENV PATH=$PATH:/opt/arm-mingw32ce/bin
-
 # add compiler user
 RUN adduser --disabled-password --gecos '' compiler
 

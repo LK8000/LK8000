@@ -89,8 +89,6 @@
 #define IDR_XML_OVERLAYS            681
 #define IDR_XML_MULTIMAPS           682
 #define IDR_XML_DEVCPROBE           683
-#define IDR_XML_BLUETOOTH_P         684
-#define IDR_XML_BLUETOOTH_L         685
 #define IDR_XML_IGCFILE_P           686
 #define IDR_XML_IGCFILE_L           687
 #define IDR_XML_BLUEFLYCONFIG_L     688

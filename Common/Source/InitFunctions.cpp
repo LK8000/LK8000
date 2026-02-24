@@ -174,7 +174,7 @@ BOOL InitInstance()
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);
 #endif
 #ifdef WIN32
-#if defined(UNDER_CE) || defined(USE_FULLSCREEN)
+#if defined(USE_FULLSCREEN)
   WindowSize=WindowResize( GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 #else
   WindowSize=WindowResize(ScreenSizeX, ScreenSizeY);

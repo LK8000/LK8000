@@ -77,9 +77,7 @@ protected:
   const short* TerrainMem;
 
   std::unique_ptr<short[]> pTerrainMem;
-#ifndef UNDER_CE
   memory_mapped_file::read_only_mmf TerrainFile;
-#endif
 };
 /**
  * JMW rounding further reduces data as required to speed up terrain display on low zoom levels

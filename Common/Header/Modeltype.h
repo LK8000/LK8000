@@ -48,22 +48,6 @@ namespace ModelType {
         XCREMOTE     = 10024, // XCRemote stick
 
         QWERTY		 = 10025, // VR-PC QWERTY Keyboard
-
-        HP31X        = 10201,	// HP310, 312, 314, 316
-
-        PN6000       = 10401,
-
-        PNA_MIO      = 10600,	// Generic definitions
-
-        PNA_NAVIGON  = 10700,	// Navigon
-
-        MEDION_P5    = 11401,	// clipping problems for P5430 and P5 family
-
-        NOKIA_500    = 12001, // 480x272
-
-        FUNTREK      = 14001, // 400x240 240x400
-        ROYALTEK3200 = 14101, // 320x240  aka Medion S3747
-
         LX_MINI_MAP  = 15000,
     };
 
@@ -104,10 +88,5 @@ namespace ModelType {
     bool LoadSettings(const char *key, const char *value);
     void SaveSettings(settings::writer& writer_settings);
 };
-
-#ifdef PNA
-bool LoadModelFromProfile();
-bool SetModelType();
-#endif
 
 #endif

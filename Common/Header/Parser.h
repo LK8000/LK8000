@@ -9,10 +9,6 @@
 #include "Time/PeriodClock.hpp"
 #include "Sizes.h"
 
-#if defined(PNA) && defined(UNDER_CE)
-#include "lkgpsapi.h"
-#endif
-
 struct DeviceDescriptor_t;
 struct NMEA_INFO;
 
@@ -38,11 +34,6 @@ class NMEAParser {
     }
   }
 
-#if defined(PNA) && defined(UNDER_CE)
-  static BOOL ParseGPS_POSITION(int portnum,
-			      const GPS_POSITION& loc, NMEA_INFO& GPSData);
-  BOOL ParseGPS_POSITION_internal(const GPS_POSITION& loc, NMEA_INFO& GPSData);
-#endif
   bool connected; // true if GGA or RMC is received.
   bool gpsValid;  // true if we have Valid GPS fix
   bool dateValid; // true if we got RMC sentence with valid fix.

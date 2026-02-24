@@ -12,52 +12,8 @@
 #include "BatteryManager.h"
 #include "utils/printf.h"
 
-#if defined(PNA) && defined(UNDER_CE)
-#include "Devices/LKHolux.h"
-#endif
-
 #include "DoInits.h"
 
-#ifdef WIN32
-#ifdef UNDER_CE
-bool BatteryManager::GetBatteryInfo(BATTERYINFO& BatteryInfo) {
-  // set default return value
-  DWORD result = 0;
-
-  SYSTEM_POWER_STATUS_EX2 sps;
-
-  // request the power status
-  result = GetSystemPowerStatusEx2(&sps, sizeof(sps), TRUE);
-
-  // only update the caller if the previous call succeeded
-  if (result) {
-    BatteryInfo.acStatus =
-        static_cast<Battery::battery_status>(sps.ACLineStatus);
-    BatteryInfo.chargeStatus =
-        static_cast<Battery::battery_charge_status>(sps.BatteryFlag);
-    BatteryInfo.BatteryLifePercent = sps.BatteryLifePercent;
-    BatteryInfo.BatteryVoltage = sps.BatteryVoltage;
-    BatteryInfo.BatteryAverageCurrent = sps.BatteryAverageCurrent;
-    BatteryInfo.BatteryCurrent = sps.BatteryCurrent;
-    BatteryInfo.BatterymAHourConsumed = sps.BatterymAHourConsumed;
-    BatteryInfo.BatteryTemperature = sps.BatteryTemperature;
-  }
-
-  return result != 0;
-}
-#else
-bool BatteryManager::GetBatteryInfo(BATTERYINFO& BatteryInfo) {
-  // not implemented on Windows PC
-  BatteryInfo.BatteryLifePercent = BATTERY_UNKNOWN;
-  BatteryInfo.acStatus = Battery::UNKNOWN;
-  BatteryInfo.chargeStatus = Battery::CHARGE_UNKNOWN;
-
-  return false;
-}
-#endif
-#endif
-
-#if defined(__linux__)
 #ifdef KOBO
 #include "OS/FileUtil.hpp"
 #include "Hardware/CPU.hpp"
@@ -235,23 +191,12 @@ bool BatteryManager::GetBatteryInfo(BATTERYINFO& BatteryInfo) {
 }
 
 #endif
-#endif
 
 void BatteryManager::Update() {
   BATTERYINFO BatteryInfo;
   BatteryInfo.acStatus = Battery::UNKNOWN;
 
-#ifdef PNA
-  if (DeviceIsGM130) {
-    PDABatteryPercent = GM130PowerLevel();
-    PDABatteryStatus = GM130PowerStatus();
-    PDABatteryFlag = GM130PowerFlag();
-
-    HaveBatteryInfo = true;
-  }
-  else
-#endif
-      if (GetBatteryInfo(BatteryInfo)) {
+  if (GetBatteryInfo(BatteryInfo)) {
     PDABatteryPercent = BatteryInfo.BatteryLifePercent;
     PDABatteryStatus = BatteryInfo.acStatus;
     PDABatteryFlag = BatteryInfo.chargeStatus;

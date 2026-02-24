@@ -140,8 +140,6 @@ IDR_XML_CUSTOMMENU      XMLDIALOG                "../Data/Dialogs/dlgCustomMenu.
 IDR_XML_OVERLAYS        XMLDIALOG                "../Data/Dialogs/dlgOverlays.xml"
 IDR_XML_MULTIMAPS       XMLDIALOG                "../Data/Dialogs/dlgMultimaps.xml"
 IDR_XML_DEVCPROBE       XMLDIALOG                "../Data/Dialogs/dlgDevCProbe.xml"
-IDR_XML_BLUETOOTH_P     XMLDIALOG                "../Data/Dialogs/dlgBluetooth_P.xml"
-IDR_XML_BLUETOOTH_L     XMLDIALOG                "../Data/Dialogs/dlgBluetooth_L.xml"
 IDR_XML_IGCFILE_P       XMLDIALOG                "../Data/Dialogs/dlgIgcFile_P.xml"
 IDR_XML_IGCFILE_L       XMLDIALOG                "../Data/Dialogs/dlgIgcFile_L.xml"
 IDR_XML_BLUEFLYCONFIG_L XMLDIALOG                "../Data/Dialogs/dlgBlueFlyConfig_L.xml"

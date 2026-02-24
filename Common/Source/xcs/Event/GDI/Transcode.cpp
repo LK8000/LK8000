@@ -106,35 +106,14 @@ KeyMapLookup(const KeyMap *map, unsigned key_code)
 unsigned
 TranscodeKey(unsigned key_code)
 {
-  if (IsAltair())
+  if (IsAltair()) {
     return KeyMapLookup(altair_key_map, key_code);
+  }
 
-#ifdef _WIN32_WCE
-  /* VK_F23 is the "action" key on some iPaqs */
-  static bool seen_return = false;
-  if (key_code == VK_RETURN)
-    /* some devices send both VK_F23 and VK_RETURN; don't translate
-       VK_F23 to VK_RETURN if get a "real" VK_RETURN message */
-    seen_return = true;
-  else if (key_code == VK_F23 && !seen_return)
-    return VK_RETURN;
-
-#endif
-
-
-    switch (ModelType::Get()) {
-        case ModelType::HP31X:
-            return KeyMapLookup(hp31x_key_map, key_code);
-        case ModelType::MEDION_P5:
-            return KeyMapLookup(medion_p5_key_map, key_code);
-        case ModelType::NOKIA_500:
-            return KeyMapLookup(nokia_500_key_map, key_code);
-        case ModelType::PN6000:
-            return KeyMapLookup(pn_6000_key_map, key_code);
-        case ModelType::LX_MINI_MAP:
-            return KeyMapLookup(lx_mm_key_map, key_code);
-        default:
-            return key_code;
-    }
-
+  switch (ModelType::Get()) {
+    case ModelType::LX_MINI_MAP:
+      return KeyMapLookup(lx_mm_key_map, key_code);
+    default:
+      return key_code;
+  }
 }

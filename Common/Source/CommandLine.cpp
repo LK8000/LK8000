@@ -8,7 +8,7 @@
 
 #include "externs.h"
 
-#if !defined(UNDER_CE) || defined(__linux__) && !defined(ANDROID)
+#if !defined(ANDROID)
 
 // This is a quick solution to tell profiles not to override a command line choice, for v5
 bool CommandResolution=false;

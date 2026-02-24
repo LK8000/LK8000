@@ -449,11 +449,7 @@ TransparentImage is not defined in arm-mingw32ce
 #ifndef ENABLE_OPENGL
 bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int hDest, const LKSurface& Surface, int xoriginSrc, int yoriginSrc) {
 #ifdef USE_GDI
-#ifdef UNDER_CE
-    return ::TransparentImage(*this, xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc, wDest, hDest, COLOR_WHITE);
-#else
     return ::TransparentBlt(*this, xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc, wDest, hDest, COLOR_WHITE);
-#endif
 #else
     if(_pCanvas && Surface.IsDefined()) {
         _pCanvas->CopyTransparentWhite(xoriginDest, yoriginDest, wDest, hDest, Surface, xoriginSrc, yoriginSrc);
@@ -475,21 +471,11 @@ bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, co
 #endif
 }
 
-#ifdef UNDER_CE
-LKSurface::TAlphaBlendF LKSurface::AlphaBlendF = NULL;
-#endif
 #endif
 // tries to locate AlphaBlend() function
 // sets pointer to AlphaBlend function (AlphaBlendF) 
 // (returns false when AlphaBlending is not supported)
 bool LKSurface::AlphaBlendSupported() {
-#ifdef UNDER_CE
-    static bool bInit = false;
-    if(!bInit) {
-        AlphaBlendF = (TAlphaBlendF) GetProcAddress(GetModuleHandle(TEXT("coredll.dll")), TEXT("AlphaBlend"));        
-        bInit = true;
-    }
-#endif
     // always supported on all.
     return true;
 }
@@ -501,47 +487,6 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
     }
 
 #ifdef USE_GDI
-#ifdef UNDER_CE
-
-    extern BOOL DoAlphaBlend_internal(HDC,int,int,int,int,HDC,int,int,int,int, DWORD);
-
-    static unsigned failedCount = 0;
-    static bool Success = false;
-
-    bool bOK = false;
-    if (AlphaBlendF) {
-        //BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, AC_SRC_ALPHA };
-        // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
-        BLENDFUNCTION bf = {AC_SRC_OVER, 0, globalOpacity, 0};
-        bOK = AlphaBlendF(
-                *this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
-                Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
-
-        if (!Success) {
-            if (!bOK && dstRect.right - dstRect.left > 0 &&
-                    dstRect.bottom - dstRect.top > 0 &&
-                    srcRect.right - srcRect.left > 0 &&
-                    srcRect.bottom - srcRect.top > 0) {
-
-                // after more 10 consecutive failed, we assume AlphaBlend is not supported, don't use it anymore
-                ++failedCount;
-                if (failedCount > 10) {
-                    AlphaBlendF = NULL;
-                }
-            }
-            Success = bOK;
-        }
-    }
-
-    if (!bOK) {
-        bOK = DoAlphaBlend_internal(
-                *this, dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,
-                Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, globalOpacity);
-    }
-
-    return bOK;
-
-#else
     //BLENDFUNCTION bf = { AC_SRC_OVER, 0, globalOpacity, AC_SRC_ALPHA };
     // we are not using per-pixel alpha, so do not use AC_SRC_ALPHA flag
     BLENDFUNCTION bf = {AC_SRC_OVER, 0, globalOpacity, 0};
@@ -549,7 +494,6 @@ bool LKSurface::AlphaBlend(const RECT& dstRect, const LKSurface& Surface, const 
             Surface, srcRect.left, srcRect.top, srcRect.right - srcRect.left, srcRect.bottom - srcRect.top, bf);
 
     return true; // always return true because always implemented on Windows PC
-#endif
 #else
     if(_pCanvas) {
         _pCanvas->AlphaBlend(dstRect.left, dstRect.top, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top,

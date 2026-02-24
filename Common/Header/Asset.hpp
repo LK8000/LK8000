@@ -54,22 +54,6 @@ IsKobo()
 }
 
 /**
- * Returns whether the application is running on an old version of
- * Windows CE (pre 5.0).  Starting with version 5.0, several bug
- * workarounds are disabled at compile time.
- */
-constexpr
-static inline bool
-IsOldWindowsCE()
-{
-#if defined(_WIN32_WCE) && _WIN32_WCE < 0x0500
-  return true;
-#else
-  return false;
-#endif
-}
-
-/**
  * Returns whether the application is running on Android
  */
 constexpr
@@ -77,21 +61,6 @@ static inline bool
 IsAndroid()
 {
 #if defined(ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
-/**
- * Returns whether the application is running on Pocket PC / Windows
- * CE / Windows Mobile.
- */
-constexpr
-static inline bool
-IsWindowsCE()
-{
-#ifdef _WIN32_WCE
   return true;
 #else
   return false;
@@ -107,7 +76,7 @@ constexpr
 static inline bool
 HasTouchScreen()
 {
-  return IsAndroid() || (IsWindowsCE() && !IsAltair()) || IsKobo();
+  return IsAndroid() || IsKobo();
 }
 
 /**
@@ -121,7 +90,7 @@ IsEmbedded()
 #ifdef USE_FULLSCREEN
   return true;
 #else
-  return IsAndroid() || IsWindowsCE() || IsKobo();
+  return IsAndroid() || IsKobo();
 #endif
 }
 
@@ -139,7 +108,7 @@ HasKeyboard() {
 constexpr
 static inline bool
 HasKeyboard() {
-  return !(IsWindowsCE() || IsKobo());
+  return !(IsKobo());
 }
 #endif
 

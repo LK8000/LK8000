@@ -18,14 +18,6 @@ namespace ModelType {
 
     constexpr list::value_type model_list[] = {
         { GENERIC, _T("GENERIC") },
-        { HP31X, _T("HP31x") }, 
-        { MEDION_P5, _T("MedionP5") },
-        { PNA_MIO, _T("MIO") },
-        { NOKIA_500, _T("Nokia500") },
-        { PN6000, _T("PN6000") },
-        { PNA_NAVIGON, _T("Navigon") },
-        { FUNTREK, _T("Holux FunTrek GM-130 / GM-132") },
-        { ROYALTEK3200, _T("Medion S3747 / Royaltek BV-3200") },
         { LX_MINI_MAP, _T("LX MiniMap") },
         { BTKA, _T("Keyboard A") },
         { BTKB, _T("KeyBoard B") },
@@ -130,42 +122,3 @@ namespace ModelType {
   }
 
 } // namespace  ModelType
-
-#ifdef PNA
-
-//
-// A special case for preloading a modeltype directly from
-// Default profile, at the very beginning of runtime.
-//
-bool LoadModelFromProfile()
-{
-  TCHAR tmpTbuf[MAX_PATH*2];
-  char  tmpbuf[MAX_PATH*2];
-
-  LocalPath(tmpTbuf,_T(LKD_CONF), _T(LKPROFILE));
-
-  TestLog(_T("... Searching modeltype inside default profile <%s>"), tmpTbuf);
-
-  FILE *fp = _tfopen(tmpTbuf, _T("rb"));
-  if(fp == NULL) {
-    StartupStore(_T("... No default profile found%s"),NEWLINE);
-    return false;
-  }
-
-  AtScopeExit(&) {
-    fclose(fp);
-  };
-
-  while (fgets(tmpbuf, (MAX_PATH*2)-1, fp) != NULL ) {
-    if (strlen(tmpbuf)<21) continue;
-    if (strncmp(tmpbuf,"AppInfoBoxModel",15) == 0) { // MUST MATCH!  szRegistryAppInfoBoxModel
-      ModelType::Set(static_cast<ModelType::Type_t>(atoi(&tmpbuf[16])));
-      TestLog(_T("... ModelType found: <%s> val=%d"), ModelType::GetName(), ModelType::Get());
-      return true;
-    }
-  }
-  TestLog(_T("... Modeltype not found in profile, probably Generic PNA is used.\n"));
-  return false;
-}
-
-#endif

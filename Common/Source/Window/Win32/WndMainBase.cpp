@@ -18,14 +18,6 @@ extern HINSTANCE _hInstance; // Set by WinMain
 
 WndMainBase::WndMainBase() : WndPaint(NULL), _hWndFocus()  {
 
-#ifdef HAVE_ACTIVATE_INFO
-    if(GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"))) {
-        api_has_SHHandleWMActivate = true;
-    }
-    if(GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMSettingChange"))) {
-        api_has_SHHandleWMSettingChange = true;
-    }
-#endif
 }
 
 WndMainBase::~WndMainBase() {
@@ -56,14 +48,7 @@ bool WndMainBase::Create(const RECT& rect) {
  * dialog box class must be set to at least DLGWINDOWEXTRA.
  */
 
-#ifdef UNDER_CE
-    WNDCLASS dc;
-    GetClassInfo(_hInstance, TEXT("DIALOG"), &dc);
-    wc.cbWndExtra = dc.cbWndExtra;
-#else
     wc.cbWndExtra = DLGWINDOWEXTRA;
-#endif
-
 
     // Register the window class.
     _szClassName = wc.lpszClassName;
@@ -74,25 +59,13 @@ bool WndMainBase::Create(const RECT& rect) {
 
 
     _szWindowText = _T("LK8000");
-    _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;
-    
-#ifndef UNDER_CE
+    _dwStyles = WS_SYSMENU|WS_CLIPCHILDREN|WS_CLIPSIBLINGS;    
     _dwStyles |= WS_SIZEBOX;
-#endif
 
     return WndPaint::Create(NULL, rect);
 }
 
 void WndMainBase::OnCreate() {
-
-#ifdef HAVE_ACTIVATE_INFO
-    SHSetAppKeyWndAssoc(VK_APP1, _hWnd);
-    SHSetAppKeyWndAssoc(VK_APP2, _hWnd);
-    SHSetAppKeyWndAssoc(VK_APP3, _hWnd);
-    SHSetAppKeyWndAssoc(VK_APP4, _hWnd);
-    SHSetAppKeyWndAssoc(VK_APP5, _hWnd);
-    SHSetAppKeyWndAssoc(VK_APP6, _hWnd);
-#endif
 
     WndPaint::OnCreate();
 }
@@ -104,18 +77,7 @@ void WndMainBase::OnDestroy() {
 
 void WndMainBase::Fullscreen() {
     SetForegroundWindow(_hWnd);
-#ifndef UNDER_CE
     SetWindowPos(_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
-#else
-#ifndef CECORE
-    SHFullScreen(_hWnd, SHFS_HIDETASKBAR | SHFS_HIDESIPBUTTON | SHFS_HIDESTARTICON);
-#endif
-    SetWindowPos(_hWnd, HWND_TOP,
-                 0, 0,
-                 GetSystemMetrics(SM_CXSCREEN),
-                 GetSystemMetrics(SM_CYSCREEN),
-                 SWP_SHOWWINDOW);
-#endif
 }
 
 bool WndMainBase::FilterEvent(const Event &event, Window *allowed) const {

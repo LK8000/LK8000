@@ -67,34 +67,13 @@ endif
 
 # CONFIG_WIN32 = y for all windows target
 CONFIG_WIN32    :=n
-CONFIG_PPC2002	:=n
-CONFIG_PPC2003	:=n
 CONFIG_PC	:=n
 CONFIG_WINE	:=n
-CONFIG_PNA	:=n
 CONFIG_LINUX	:=n
 CONFIG_ANDROID	:=n
 MINIMAL		:=n
-XSCALE		:=n
 GTARGET		:=$(TARGET)
 DLG-ENCODING    := UTF-8
-	
-ifeq ($(TARGET),PPC2002)
-  CONFIG_PPC2002 :=y
-  CONFIG_WIN32   :=y
-endif
-
-ifeq ($(TARGET),PPC2003)
-  CONFIG_PPC2003 :=y
-  CONFIG_WIN32   :=y
-endif
-
-ifeq ($(TARGET),PPC2003X)
-  CONFIG_PPC2003 :=y
-  XSCALE         :=y
-  GTARGET        :=PPC2003
-  CONFIG_WIN32   :=y
-endif
 
 ifeq ($(TARGET),PC)
   CONFIG_PC      :=y
@@ -109,12 +88,6 @@ endif
 ifeq ($(TARGET),WINE)
   CONFIG_WINE  :=y
   CONFIG_WIN32 :=y
-endif
-
-ifeq ($(TARGET),PNA)
-  CONFIG_PNA     :=y
-  CONFIG_PPC2003 :=y
-  CONFIG_WIN32   :=y
 endif
 
 ifeq ($(TARGET),LINUX)
@@ -192,54 +165,15 @@ else ifeq ($(HOST_IS_PI)$(TARGET_IS_PI),ny)
 else ifeq ($(TARGET_IS_CUBIE),y)
  TCPATH := arm-linux-gnueabihf-
  MCPU   := -mtune=cortex-a7 -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
-else ifeq ($(CONFIG_LINUX),y)
+else
  TCPATH :=
  MCPU   :=
-else
- TCPATH	:=arm-mingw32ce-
-endif
-
-ifeq ($(XSCALE),y)
- CPU    :=xscale
- MCPU   := -mcpu=$(CPU)
-endif
-
-ifeq ($(TARGET),PNA)
- CPU    :=arm1136j-s
- MCPU	:=
-endif
-
-ifeq ($(CONFIG_PPC2002),y)
- CPU    :=strongarm1110
- MCPU   := -mcpu=$(CPU)
 endif
 
 include build/pkgconfig.mk
 -include local.mk
 
 ############# platform info
-
-ifeq ($(CONFIG_PPC2002),y)
- CE_MAJOR	:=3
- CE_MINOR	:=00
- CE_PLATFORM	:=310
- TARGET		:=PPC2002
- PCPU		:=ARM
-endif
-
-ifeq ($(CONFIG_PPC2003),y)
- CE_MAJOR	:=4
- CE_MINOR	:=00
- CE_PLATFORM	:=400
- PCPU		:=ARMV4
-endif
-
-ifeq ($(CONFIG_PNA),y)
-# armv4i
- CE_MAJOR	:=5
- CE_MINOR	:=00
- CE_PLATFORM	:=500
-endif
 
 ifeq ($(CONFIG_PC),y)
  CE_MAJOR	:=5
@@ -531,18 +465,18 @@ ifeq ($(CONFIG_LINUX),y)
 
  endif
 
-  $(eval $(call pkg-config-library,ZLIB,zlib))
-  CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
+ $(eval $(call pkg-config-library,ZLIB,zlib))
+ CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
 
-  $(eval $(call pkg-config-library,FREETYPE,freetype2))
-  CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
-  CE_DEFS += -DUSE_FREETYPE
+ $(eval $(call pkg-config-library,FREETYPE,freetype2))
+ CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
+ CE_DEFS += -DUSE_FREETYPE
 
-  $(eval $(call pkg-config-library,PNG,libpng))
-  CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
+ $(eval $(call pkg-config-library,PNG,libpng))
+ CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
 
-  $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
-  CE_DEFS += $(GEOGRAPHIC_CPPFLAGS)
+ $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
+ CE_DEFS += $(GEOGRAPHIC_CPPFLAGS)
 
  USE_CURL ?= $(shell $(PKG_CONFIG) --exists libcurl && echo y)
  ifeq ($(USE_CURL),y)
@@ -560,14 +494,6 @@ ifeq ($(CONFIG_WIN32),y)
  ifeq ($(CONFIG_PC),y)
   CE_DEFS +=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
   CE_DEFS +=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 -DMSOFT
- else
-  CE_DEFS +=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
-  CE_DEFS +=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM) -DMSOFT
-  # UNIX like ressource don't work on CE5.
-  WIN32_RESOURCE := y
-
-  AYGSHELL := Common/Distribution/LK8000/aygshell.dll
-
  endif
 
  ifeq ($(WIN32_RESOURCE), y)
@@ -575,32 +501,21 @@ ifeq ($(CONFIG_WIN32),y)
  endif
 endif
 
-ifeq ($(CONFIG_PPC2002),y)
- CE_DEFS +=-DPPC2002=1
-endif
-ifeq ($(CONFIG_PPC2003),y)
- CE_DEFS +=-DPPC2003=1
-endif
-
 CE_DEFS	 += -DPOCO_NO_UNWINDOWS
 
 ifeq ($(FULLSCREEN),y)
-CE_DEFS		+= -DUSE_FULLSCREEN
+ CE_DEFS		+= -DUSE_FULLSCREEN
 endif
 
 ######## paths
 ifeq ($(CONFIG_LINUX),y)
- INCLUDES	:= -I$(HDR)/linuxcompat -I$(HDR) -I$(SRC)
+ INCLUDES	:= -I$(HDR)/linuxcompat
 else
- INCLUDES	:= -I$(HDR)/mingw32compat 
+ INCLUDES	:= -I$(HDR)/mingw32compat
  INCLUDES	+= -I$(HDR)/mingw32compat/zlib 
- INCLUDES	+= -I$(HDR) 
- INCLUDES	+= -I$(SRC)
- ifneq ($(CONFIG_PC),y)
-  INCLUDES	+= -I$(HDR)/mingw32compat/WinCE
- endif
 endif
-
+INCLUDES	+= -I$(HDR) 
+INCLUDES	+= -I$(SRC)
 INCLUDES	+= -I$(SRC)/Library 
 INCLUDES	+= -I$(SRC)/xcs
 INCLUDES	+= -Ilib/doctest
@@ -644,10 +559,6 @@ CPPFLAGS	+= -Wno-psabi
 
 #CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
-
-ifeq ($(CONFIG_PNA),y)
- CPPFLAGS	+= -DCECORE -DPNA
-endif
 
 ifeq ($(CONFIG_PC),y)
  $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
@@ -725,47 +636,24 @@ endif
 
 
 ifeq ($(CONFIG_WIN32),y)
- ifeq ($(CONFIG_PC),y)
   LDLIBS := -static -Wl,-Bstatic \
             -lmingw32 -lcomctl32 -lkernel32 -luser32 \
             -lgdi32 -ladvapi32 -lwinmm -lmsimg32 \
             -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
 
   LDLIBS += $(GEOGRAPHIC_LDLIBS)
- else
-  LDLIBS := -Wl,-Bstatic -lstdc++ 
-  LDLIBS += -Wl,-Bdynamic -lcommctrl -lole32 -loleaut32 -luuid
-
-  ifeq ($(GCC_GTEQ_820),1) 
-    LDLIBS += -Wl,-Bstatic -latomic
-  endif
-
-  ifeq ($(CONFIG_PPC2002), y)
-   LDLIBS		+= -lwinsock
-  else
-   LDLIBS		+= -lws2
-  endif
-  ifeq ($(MINIMAL),n)
-   LDLIBS		+= -laygshell
-   ifneq ($(TARGET),PNA)
-    LDLIBS		+= -limgdecmp
-   endif
-  endif
- endif
 endif
 
 ####### compiler target
 
 ifeq ($(CONFIG_PC),y)
  ifeq ($(TARGET),PCX64)
-  TARGET_ARCH := -m64
+  TARGET_ARCH   := -m64
  else
   TARGET_ARCH	:= -mms-bitfields
  endif
 else ifeq ($(CONFIG_LINUX),y)
  TARGET_ARCH	:= $(MCPU)
-else ifeq ($(TARGET),PNA)
- TARGET_ARCH	:=-mwin32
 else
  TARGET_ARCH	:=-mwin32 $(MCPU)
 endif
@@ -789,10 +677,6 @@ NQ		:=\#
 else
 NQ		:=
 endif
-endif
-
-ifeq ($(CONFIG_PC),n)
-#CPPFLAGS_Common_Source_ :=-Werror
 endif
 
 include build/xcs_screen.mk
@@ -1168,8 +1052,6 @@ COMMS	:=\
 	$(CMM)/Parser.cpp\
 	$(CMM)/ComCheck.cpp\
 	$(CMM)/ComPort.cpp\
-	$(CMM)/GpsIdPort.cpp\
-	$(CMM)/lkgpsapi.cpp\
 	$(CMM)/SerialPort.cpp\
 	$(CMM)/TTYPort.cpp\
 	$(CMM)/SocketPort.cpp\
@@ -1181,11 +1063,7 @@ COMMS	:=\
 	$(CMM)/device.cpp \
 	$(CMM)/DeviceDescriptor.cpp \
 	$(CMM)/GpsWeekNumberFix.cpp \
-	$(CMM)/Bluetooth/BtHandler.cpp \
-	$(CMM)/Bluetooth/BtHandlerWince.cpp \
-	$(CMM)/Bluetooth/BthPort.cpp \
 	$(CMM)/Bluetooth/characteristic_value.cpp \
-	$(CMM)/Obex/CObexPush.cpp \
 	$(CMM)/FilePort.cpp\
 	$(CMM)/wait_ack.cpp\
 
@@ -1224,8 +1102,6 @@ DEVS	:=\
 	$(DEV)/devXCOM760.cpp \
 	$(DEV)/devZander.cpp \
 	$(DEV)/devWesterboer.cpp \
-	$(DEV)/LKHolux.cpp \
-	$(DEV)/LKRoyaltek3200.cpp	\
 	$(DEV)/devFlyNet.cpp \
 	$(DEV)/devCProbe.cpp \
 	$(DEV)/devFlarm.cpp \
@@ -1332,7 +1208,6 @@ DLGS	:=\
 	$(DLG)/Task/ReplaceWaypoint.cpp\
 	$(DLG)/Task/RotateStartPoints.cpp\
 	$(DLG)/Task/SwapWaypoint.cpp\
-	$(DLG)/dlgBluetooth.cpp\
 	$(DLG)/dlgIgcFile.cpp\
 	$(DLG)/dlgProgress.cpp \
 	$(DLG)/dlgIGCProgress.cpp \
@@ -1372,10 +1247,8 @@ else
    $(SRC_TRACKING)/Default/http_session.cpp
 endif
 
-ifneq ($(CONFIG_PPC2003),y)
- TRACKING += \
-   $(SRC_TRACKING)/FFVLTracking.cpp
-endif
+TRACKING += \
+	$(SRC_TRACKING)/FFVLTracking.cpp
 
 
 SRC_FILES :=\
@@ -1384,7 +1257,6 @@ SRC_FILES :=\
 	$(SOUND) \
 	$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Alarms.cpp\
-	$(SRC)/Backlight.cpp 		\
 	$(SRC)/BatteryManager.cpp \
 	$(SRC)/Bitmaps.cpp \
 	$(SRC)/Buttons.cpp \

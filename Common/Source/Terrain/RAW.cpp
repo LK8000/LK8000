@@ -84,11 +84,6 @@ bool RasterMap::Open(const TCHAR* zfilename) {
       }
     }
   } else {
-    /* 
-     * Note : memory mapped file require SEH exception handling 
-     * Mingw32ce don't implement SEH, so this part of code is disabled
-     */
-#ifndef UNDER_CE
     StartupStore(_T("... Terrain : use memory mapped file"));
 
     TerrainFile.open(zfilename, false);
@@ -105,9 +100,6 @@ bool RasterMap::Open(const TCHAR* zfilename) {
         TerrainFile.close();
       }
     }
-#else
-    StartupStore(_T("... Terrain File too large."));
-#endif    
   }
   
   if(!isMapLoaded()) {
@@ -127,9 +119,7 @@ void RasterMap::Close(void) {
   TerrainMem = nullptr;
   pTerrainMem = nullptr;
 
-#ifndef UNDER_CE  
   if(TerrainFile.is_open()) {
     TerrainFile.close();
   }
-#endif
 }

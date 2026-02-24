@@ -27,7 +27,7 @@ void ReplaceNMEAControlChars(TCHAR *String)
      {
        case  _T('$'): String[i]  = 's'; break;
        case  _T('*'): String[i]  = '#'; break;
-#if ((WINDOWSPC >0)    ||  (PNA > 0))
+#if (WINDOWSPC >0)
        case  (int)_T('ü'): String[i]  = 'u'; break;
        case  _T('ö'): String[i]  = 'o'; break;
 

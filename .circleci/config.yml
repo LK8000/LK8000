@@ -1,14 +1,6 @@
 version: 2.1
 
 commands:
-  build_ppc2003:
-    steps:
-      - run: make -j2 TARGET=PPC2003 distrib
-
-  build_pna:
-    steps:
-      - run: make -j2 TARGET=PNA distrib
-
   build_pc:
     steps:
       - run: make -j2 TARGET=PC distrib
@@ -35,14 +27,6 @@ jobs:
       - build_linux
       - store_artifacts:
           path: LINUX-install.zip
-
-      - build_ppc2003
-      - store_artifacts:
-          path: PPC2003-install.zip
-
-      - build_pna
-      - store_artifacts:
-          path: PNA-install.zip
 
       - build_pc
       - store_artifacts:

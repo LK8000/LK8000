@@ -14,14 +14,7 @@
 #include "ComPort.h"
 
 #ifdef WIN32
-#ifdef PPC2002
-#include <winsock.h>
-// WSAGetLastError is alias of GetLastError, WSAGetLastError is not exported by winsok.dll
-// and ws2.dll not exist on PPC2002 device.
-//#define WSAGetLastError GetLastError
-#else
 #include <winsock2.h>
-#endif
 #else
 #include <sys/types.h>
 #include <sys/socket.h>

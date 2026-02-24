@@ -15,9 +15,6 @@
 #ifdef WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>  // typedef int socklen_t;
-// WSAGetLastError is alias of GetLastError, WSAGetLastError is not exported by winsok.dll
-// and ws2.dll not exist on PPC2002 device.
-//#define WSAGetLastError GetLastError
 #else
 #include <netinet/in.h>
 #endif

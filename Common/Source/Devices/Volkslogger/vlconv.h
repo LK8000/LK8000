@@ -18,8 +18,6 @@
 #ifndef VLCONV_H
 #define VLCONV_H
 
-#include "compatibility.h"
-
 #include <stdio.h>
 #ifndef NOTIME_H
 #include <time.h>

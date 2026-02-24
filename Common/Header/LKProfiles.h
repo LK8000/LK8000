@@ -64,7 +64,6 @@ extern const char szRegistryAutoMcMode[];
 extern const char szRegistryMacCready[];
 extern const char szRegistryAutoMcStatus[];
 extern const char szRegistryAutoOrientScale[];
-extern const char szRegistryAutoSoundVolume[];
 extern const char szRegistryAutoWind[];
 extern const char szRegistryAutoZoom[];
 extern const char szRegistryAverEffTime[];
