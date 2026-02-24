@@ -2648,7 +2648,7 @@
     "_@H001365_": "[Gate type]\nAnytime: The gate is open for the entire task.\nFixed Time: The gate is open for a fixed time.\nPilot Event: The gate is open when the pilot presses the button.",
 
     "_@H001366_": "[Waiting Time]\nThe time you need to wait for your personal start gate to open after you press the PEV button",
-    "_@H001367_": "[Start Window]\nHow long your personal start gate window is open"
+    "_@H001367_": "[Start Window]\nHow long your personal start gate window is open",
 
-
+    "_@M002515_": "Invalid Image"
 }
