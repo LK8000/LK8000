@@ -8,7 +8,8 @@
 
 #include "externs.h"
 #include "FlarmIdFile.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
+#include "utils/charset_helper.h"
 #include <unordered_map>
 #include <memory>
 #include "LocalPath.h"
@@ -54,16 +55,18 @@ void OpenFLARMDetails() {
   LocalPath(filename,TEXT(LKD_CONF),_T(LKF_FLARMIDS));
   TestLog(_T("... OpenFLARMDetails: <%s>"),filename);
 
-  zzip_stream stream(filename, "rt");
+  zzip_file_stream stream(filename, "rt");
   if( !stream ) {
     TestLog(_T("... No flarm details local file found"));
     return;
   }
+  std::istream in(&stream);
 
-  TCHAR line[READLINE_LENGTH];
-  while (stream.read_line(line)) {
+  std::string src_line;
+  while (std::getline(in, src_line)) {
+    tstring line = from_unknown_charset(src_line.c_str());
     TCHAR* next = nullptr;
-    uint32_t RadioId = _tcstoul(line, &next, 16);
+    uint32_t RadioId = _tcstoul(line.c_str(), &next, 16);
     if ( next && (*next) == _T('=')) {
       AddFlarmLookupItem(RadioId, ++next, false);
     }

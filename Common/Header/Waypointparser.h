@@ -6,7 +6,6 @@
 #include "tchar.h"
 #include "Util/tstring.hpp"
 
-class zzip_stream;
 struct WAYPOINT;
 struct TASK_POINT;
 
@@ -17,7 +16,6 @@ struct TASK_POINT;
 #define wpTerrainBoundsNoAll  103
 
 // for extended formats, returns the type of file
-///int ReadWayPointFile(HANDLE hFile);
 void ReadWayPoints(void);
 int FindNearestWayPoint(double X, double Y, double MaxRange);
 int FindNearestFarVisibleWayPoint(double X, double Y, double MaxRange, short wpType);
@@ -67,23 +65,26 @@ void LatitudeToCUPString(double Latitude, TCHAR (&Buffer)[size]) {
     LatitudeToCUPString(Latitude, Buffer, size);
 }
 
-double ReadAltitude(const TCHAR *temp);
-double ReadLength(const TCHAR *temp);
-double CUPToLat(const TCHAR *str);
-double CUPToLon(const TCHAR *str);
-int ReadWayPointFile(zzip_stream& stream, int fileformat);
-int ParseDAT(TCHAR *String,WAYPOINT *Temp);
+double ReadAltitude(const char* str);
+double ReadAltitude(const wchar_t* str);
 
-std::vector<tstring> CupStringToFieldArray(const TCHAR *row);
+double ReadLength(const char *str);
+double CUPToLat(const char *str);
+double CUPToLon(const char *str);
+int ReadWayPointFile(std::istream& stream, int fileformat);
+int ParseDAT(const TCHAR *String, WAYPOINT *Temp);
 
-typedef std::unordered_map<tstring, size_t> cup_header_t;
-cup_header_t CupStringToHeader(const TCHAR *row);
+std::vector<std::string> CupStringToFieldArray(std::string_view row);
 
-bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,WAYPOINT *Temp);
-bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
+using cup_header_t = std::unordered_map<tstring, size_t>;
+cup_header_t CupStringToHeader(std::string_view row);
+
+bool ParseCUPWayPointString(const cup_header_t& cup_header, std::string_view row, WAYPOINT *Temp);
+
+bool ParseOZIWayPointString(const TCHAR *mTempString, WAYPOINT *Temp);
 bool ParseCOMPEWayPointString(const TCHAR *mTempString,WAYPOINT *Temp);
 bool WaypointInTerrainRange(WAYPOINT *List);
-bool ParseOpenAIP(zzip_stream& stream);
+bool ParseOpenAIP(std::streambuf& stream);
 
 
 

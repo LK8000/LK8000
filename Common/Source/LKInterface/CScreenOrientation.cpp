@@ -118,6 +118,7 @@ unsigned short CScreenOrientation::GetScreenSetting() {
         std::smatch pair_match;
         std::string line;
         while (std::getline (ifs, line)) {
+            trim_inplace(line);
             if (std::regex_match(line, pair_match, pair_regex)) {
                 if (pair_match.size() == 3) {
                     return static_cast<short>(strtoul(pair_match[2].str().c_str(), nullptr, 10));

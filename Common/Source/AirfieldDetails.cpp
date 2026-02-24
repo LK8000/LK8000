@@ -11,7 +11,7 @@
 #include "Dialogs/dlgProgress.h"
 #include "AirfieldDetails.h"
 #include "Waypointparser.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "LocalPath.h"
 #include "utils/charset_helper.h"
 #include <regex>
@@ -86,14 +86,13 @@ void SetAirfieldDetail(const std::string& Name, const std::string& Details) {
 }
 
 void ParseAirfieldDetails() {
-
-  zzip_stream stream;
-
-  if (_tcslen(szAirfieldFile)>0) {
-    TCHAR zfilename[MAX_PATH];
-    LocalPath(zfilename, _T(LKD_WAYPOINTS), szAirfieldFile);
-    stream.open(zfilename, "rb");
+  if (szAirfieldFile[0] == _T('\0')) {
+    return;
   }
+
+  TCHAR zfilename[MAX_PATH];
+  LocalPath(zfilename, _T(LKD_WAYPOINTS), szAirfieldFile);
+  zzip_file_stream stream(zfilename, "rb");
 
   if(!stream) {
     StartupStore(_T(". open AirfieldFile FAILED <%s>"), szAirfieldFile);

@@ -11,7 +11,7 @@
 #include "externs.h"
 #include "Util/ScopeExit.hxx"
 #include "Util/Clamp.hpp"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "utils/stringext.h"
 #include "picojson.h"
 #include <string>
@@ -384,7 +384,7 @@ void LogError(std::exception& e) {
 
 bool LoadXctrackTask(const TCHAR* szFilePath) {
   try {
-    zzip_stream file(szFilePath, "rb");
+    zzip_file_stream file(szFilePath, "rb");
     if (file) {
       std::istream stream(&file);
       return LoadXctrackTask(stream);

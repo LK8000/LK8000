@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "LocalPath.h"
 
 int globalFileNum = 0;
@@ -34,19 +34,20 @@ void ReadWayPoints(void)
             LocalPath(szFilePath, _T(LKD_WAYPOINTS), szFile);
             int fileformat=GetWaypointFileFormatType(szFilePath);
             bool not_found = true;
-            zzip_stream stream(szFilePath, "rt");
+            zzip_file_stream stream(szFilePath, "rt");
             if (stream) {
-              if(fileformat == LKW_OPENAIP) {
-                if(ParseOpenAIP(stream)) {
+              if (fileformat == LKW_OPENAIP) {
+                if (ParseOpenAIP(stream)) {
                   WpFileType[globalFileNum] = LKW_OPENAIP;
                   not_found = false;
                 }
-              } else {
-                WpFileType[globalFileNum] = ReadWayPointFile(stream, fileformat);
+              }
+              else {
+                std::istream in(&stream);
+                WpFileType[globalFileNum] = ReadWayPointFile(in, fileformat);
                 not_found = false;
               }
             }
-            
             if (not_found) {
                 StartupStore(TEXT("--- No waypoint file %d"), globalFileNum);
                 // file not found : reset config

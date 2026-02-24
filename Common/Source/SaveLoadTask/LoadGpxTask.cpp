@@ -13,7 +13,7 @@
 #include "Waypointparser.h"
 #include "utils/stringext.h"
 #include "LKStyle.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "Library/rapidxml/rapidxml.hpp"
 
 using xml_document = rapidxml::xml_document<char>;
@@ -150,7 +150,7 @@ bool LoadGpxTask(std::istream& stream) {
 bool LoadGpxTask(LPCTSTR szFileName) {
     StartupStore(_T(". LoadGpxTask : <%s>"), szFileName);
 
-    zzip_stream file(szFileName, "rt");
+    zzip_file_stream file(szFileName, "rt");
     if (file) {
         std::istream stream(&file);
         if (LoadGpxTask(stream)) {
