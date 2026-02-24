@@ -27,7 +27,7 @@ if [ ! -f ${DOWNLOAD_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz ]; then
 
     [ ! -d ${DOWNLOAD_DIR} ] && mkdir -p ${DOWNLOAD_DIR}
     cd ${DOWNLOAD_DIR}
-    wget http://freefr.dl.sourceforge.net/project/geographiclib/distrib-C%2B%2B/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
+    wget https://sourceforge.net/projects/geographiclib/files/distrib-C%2B%2B/GeographicLib-${GEOGRAPHICLIB_VER}.tar.gz
     [ -d ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER} ] && rm -rf ${SOURCE_DIR}/GeographicLib-${GEOGRAPHICLIB_VER}
 
 fi
