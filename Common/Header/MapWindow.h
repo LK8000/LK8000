@@ -183,8 +183,8 @@ struct WAYPOINT
   int   RunwayDir;
   TCHAR Country[CUPSIZE_COUNTRY+1];
   short Style;
+  std::vector<std::string> pictures;
 };
-
 
 // This struct is separated from 'WAYPOINT' and will not be used in task files.
 // It is managed by the same functions that manage WayPointList, only add variables here

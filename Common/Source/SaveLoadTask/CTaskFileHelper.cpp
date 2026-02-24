@@ -620,8 +620,7 @@ bool CTaskFileHelper::LoadStartPoint(const xml_node* node) {
 }
 
 void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname) {
-    WAYPOINT newPoint;
-    memset(&newPoint, 0, sizeof (newPoint));
+    WAYPOINT newPoint = {};
 
     GetAttribute(node, "code", newPoint.Code);
     GetAttribute(node, "name", newPoint.Name);
