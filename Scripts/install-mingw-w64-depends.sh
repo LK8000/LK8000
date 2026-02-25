@@ -5,6 +5,7 @@
 #
 # Created on Dec 14, 2016, 10:48:50 PM
 #
+set -e -u
 
 SCRIPT_DIR=$(realpath "`dirname $0`")
 
