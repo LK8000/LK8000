@@ -501,30 +501,29 @@ void dlgWayPointDetailsShowModal(int page) {
     wPicture->SetBorderKind(BorderKind);
   }
  
-  // if SeeYou waypoint and it is landable
+  // if SeeYou or OpenAIP waypoint and it is landable
   if ((WPLSEL.Format == LKW_CUP  || WPLSEL.Format == LKW_OPENAIP) &&  WPLSEL.Style >= STYLE_AIRFIELDGRASS && WPLSEL.Style <= STYLE_AIRFIELDSOLID) {
-     TCHAR ttmp[50];
-		lk::snprintf(sTmp, TEXT("%s "), WPLSEL.Name);
-		// ICAO name probably, let's print it
-		if ( _tcslen(WPLSEL.Code)==4 ) {
-			lk::snprintf(ttmp,_T("(%s) "),WPLSEL.Code);
-			_tcscat(sTmp, ttmp);
-		}
+    constexpr size_t tmp_size = std::size(sTmp);
+    size_t len = lk::snprintf(sTmp, TEXT("%s"), WPLSEL.Name);
+    // ICAO name probably, let's print it
+    if (_tcslen(WPLSEL.Code) == 4 && len < tmp_size) {
+      len += lk::snprintf(sTmp + len, tmp_size - len, _T(" (%s)"), WPLSEL.Code);
+    }
 
-		if ( _tcslen(WPLSEL.Freq)>0 )  {
-			lk::snprintf(ttmp,_T("%s "),WPLSEL.Freq);
-			_tcscat(sTmp, ttmp);
-		}
+    if (_tcslen(WPLSEL.Freq) > 0 && len < tmp_size) {
+      len += lk::snprintf(sTmp + len, tmp_size - len, _T(" %s"), WPLSEL.Freq);
+    }
 
-		if ( WPLSEL.RunwayDir>=0 )  {
-			lk::snprintf(ttmp,_T("RW %d "),WPLSEL.RunwayDir);
-			_tcscat(sTmp, ttmp);
-		}
-		if ( WPLSEL.RunwayLen>0 )  {
-			// we use Altitude instead of distance, to keep meters and feet
-			lk::snprintf(ttmp,_T("%.0f%s"),Units::ToAltitude((double)WPLSEL.RunwayLen), Units::GetAltitudeName());
-			_tcscat(sTmp, ttmp);
-		}
+    if (WPLSEL.RunwayDir >= 0 && len < tmp_size) {
+      len += lk::snprintf(sTmp + len, tmp_size - len, _T(" RW %d"),
+                          WPLSEL.RunwayDir);
+    }
+    if (WPLSEL.RunwayLen > 0 && len < tmp_size) {
+      // we use Altitude instead of distance, to keep meters and feet
+      len += lk::snprintf(sTmp + len, tmp_size - len, _T(" %.0f%s"),
+                          Units::ToAltitude((double)WPLSEL.RunwayLen),
+                          Units::GetAltitudeName());
+    }
   } else {
      TCHAR code[20];
      double wpdistance = 0;
@@ -594,19 +593,25 @@ void dlgWayPointDetailsShowModal(int page) {
 
   TCHAR DistanceText[MAX_PATH];
   if (ScreenLandscape) {
-    Units::FormatDistance(distance, DistanceText, 10);
+    constexpr size_t max_len = std::size(DistanceText);
+    Units::FormatDistance(distance, DistanceText, max_len);
 
-    if (Units::GetDistanceUnit() == unNauticalMiles ||
-        Units::GetDistanceUnit() == unStatuteMiles) {
-      lk::snprintf(sTmp, _T("  (%.1fkm)"), Units::To(unKiloMeter, distance));
-    } else {
-      lk::snprintf(sTmp, _T("  (%.1fnm)"),
-                   Units::To(unNauticalMiles, distance));
+    // Append unit-converted distance directly into DistanceText
+    size_t len = _tcslen(DistanceText);
+    if (len < max_len) {
+      if (Units::GetDistanceUnit() == unNauticalMiles ||
+          Units::GetDistanceUnit() == unStatuteMiles) {
+        lk::snprintf(DistanceText + len, max_len - len, _T("  (%.1fkm)"),
+                     Units::To(unKiloMeter, distance));
       }
-      _tcscat(DistanceText, sTmp);
+      else {
+        lk::snprintf(DistanceText + len, max_len - len, _T("  (%.1fnm)"),
+                     Units::To(unNauticalMiles, distance));
+      }
+    }
   }
   else {
-    Units::FormatDistance(distance, DistanceText, 10);
+    Units::FormatDistance(distance, DistanceText, std::size(DistanceText));
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
