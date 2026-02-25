@@ -685,9 +685,7 @@ void dlgWayPointDetailsShowModal(int page) {
       wf->FindByName<WndOwnerDrawFrame>(TEXT("frmDetailsEntry"));
   if (wDetailsEntry) {
     wDetailsEntry->SetCanFocus(true);
-  }
 
-  {
     LKWindowSurface Surface(*wDetailsEntry);
     Surface.SelectObject(wDetailsEntry->GetFont());
     aDetailTextLine.update(Surface, wDetailsEntry->GetWidth(), WPLSEL.Details );
