@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "FlarmIdFile.h"
 #include "utils/zzip_file_stream.h"
-#include "utils/charset_helper.h"
+#include "utils/stream_helper.h"
 #include <unordered_map>
 #include <memory>
 #include "LocalPath.h"
@@ -62,9 +62,8 @@ void OpenFLARMDetails() {
   }
   std::istream in(&stream);
 
-  std::string src_line;
-  while (std::getline(in, src_line)) {
-    tstring line = from_unknown_charset(src_line.c_str());
+  tstring line;
+  while (lk::getline_unknown_charset(in, line)) {
     TCHAR* next = nullptr;
     uint32_t RadioId = _tcstoul(line.c_str(), &next, 16);
     if ( next && (*next) == _T('=')) {
