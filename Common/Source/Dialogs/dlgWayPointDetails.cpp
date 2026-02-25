@@ -325,24 +325,22 @@ class pictures_cache_t final {
   BitmapPtr load(size_t index) {
     try {
       if (index < m_wp.pictures.size()) {
-        if (!m_cache[index]) {
-          int file_num = m_wp.FileNum;
-          if (WpFileType[file_num] == LKW_CUPX) {
-            const TCHAR* file_name = szWaypointFile[file_num];
-            TCHAR file_path[MAX_PATH];
-            LocalPath(file_path, _T(LKD_WAYPOINTS), file_name);
-            cupx_reader cupx(file_path);
-            zzip_disk_file_stream stream =
-                cupx.read_image(m_wp.pictures[index]);
+        int file_num = m_wp.FileNum;
+        if (WpFileType[file_num] == LKW_CUPX) {
+          const TCHAR* file_name = szWaypointFile[file_num];
+          TCHAR file_path[MAX_PATH];
+          LocalPath(file_path, _T(LKD_WAYPOINTS), file_name);
+          cupx_reader cupx(file_path);
+          zzip_disk_file_stream stream =
+              cupx.read_image(m_wp.pictures[index]);
 
-            std::vector<char> image_buf = {
-                (std::istreambuf_iterator<char>(&stream)),
-                (std::istreambuf_iterator<char>())
-            };
+          std::vector<char> image_buf = {
+              (std::istreambuf_iterator<char>(&stream)),
+              (std::istreambuf_iterator<char>())
+          };
 
-            return std::make_unique<LKBitmap>(image_buf.data(),
-                                              image_buf.size());
-          }
+          return std::make_unique<LKBitmap>(image_buf.data(),
+                                            image_buf.size());
         }
       }
     }
