@@ -327,12 +327,14 @@ class pictures_cache_t final {
       if (index < m_wp.pictures.size()) {
         int file_num = m_wp.FileNum;
         if (WpFileType[file_num] == LKW_CUPX) {
-          const TCHAR* file_name = szWaypointFile[file_num];
-          TCHAR file_path[MAX_PATH];
-          LocalPath(file_path, _T(LKD_WAYPOINTS), file_name);
-          cupx_reader cupx(file_path);
+          if (!m_cupx) {
+            const TCHAR* file_name = szWaypointFile[file_num];
+            TCHAR file_path[MAX_PATH];
+            LocalPath(file_path, _T(LKD_WAYPOINTS), file_name);
+            m_cupx = std::make_unique<cupx_reader>(file_path);
+          }
           zzip_disk_file_stream stream =
-              cupx.read_image(m_wp.pictures[index]);
+              m_cupx->read_image(m_wp.pictures[index]);
 
           std::vector<char> image_buf = {
               (std::istreambuf_iterator<char>(&stream)),
@@ -351,6 +353,8 @@ class pictures_cache_t final {
   }
 
   const WAYPOINT& m_wp;
+
+  std::unique_ptr<cupx_reader> m_cupx;
   std::map<size_t, BitmapPtr> m_cache;
 };
 
