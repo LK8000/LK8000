@@ -310,9 +310,16 @@ void InputEvents::readFile() {
   std::string buffer;
   std::istream in(&stream);
 
-  while ((std::getline(in, buffer) && buffer.empty()) ||
-	   ((found = sscanf(buffer.c_str(), "%[^#=]=%[^\r\n][\r\n]", key, value)) != EOF))
-  {
+  while (std::getline(in, buffer)) {
+    if (buffer.empty()) {
+      found = 0;
+    } else {
+      found = sscanf(buffer.c_str(), "%[^#=]=%[^\r\n][\r\n]", key, value);
+      if (found == EOF) {
+        continue;
+      }
+    }  
+
     line++;
 
     // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file
