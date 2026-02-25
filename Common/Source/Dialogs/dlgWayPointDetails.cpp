@@ -70,7 +70,7 @@ void UpdateVisiblePage(WndForm* pForm, size_t page, size_t PicturesCount) {
 }
 
 template<int step>
-void NextPage(WndForm* pForm, int& page, int PicturesCount) {
+void NextPage(WndForm* pForm, int& page, int PicturesCount, bool DetailsEmpty) {
   page += step;
   for (bool page_ok = false; !page_ok;) {
     if (page < 0) {
@@ -79,7 +79,7 @@ void NextPage(WndForm* pForm, int& page, int PicturesCount) {
     if (page > 3 + PicturesCount) {
       page = 0;
     }
-    if (page == 1 && WayPointList[SelectedWaypoint].Details.empty()) {
+    if (page == 1 && DetailsEmpty) {
       page += step;
     }
     else {
@@ -171,19 +171,19 @@ void OnCloseClicked(WndButton* pWnd){
   }
 }
 
-bool FormKeyDown(WndForm* pWnd, unsigned KeyCode, int& page, size_t PicturesCount) {
+bool FormKeyDown(WndForm* pWnd, unsigned KeyCode, int& page, size_t PicturesCount, bool DetailsEmpty) {
     Window * pBtn = nullptr;
 
     switch (KeyCode & 0xffff) {
         case KEY_LEFT:
         case '6':
             pBtn = pWnd->FindByName(TEXT("cmdPrev"));
-            NextPage<-1>(pWnd, page, PicturesCount);
+            NextPage<-1>(pWnd, page, PicturesCount, DetailsEmpty);
             break;
         case KEY_RIGHT:
         case '7':
             pBtn = pWnd->FindByName(TEXT("cmdNext"));
-            NextPage<1>(pWnd, page, PicturesCount);
+            NextPage<1>(pWnd, page, PicturesCount, DetailsEmpty);
             break;
     }
     if (pBtn) {
@@ -304,7 +304,8 @@ class pictures_cache_t final {
   using BitmapPtr = std::unique_ptr<LKBitmap>;
 
  public:
-  pictures_cache_t(const WAYPOINT& wp) : m_wp(wp) {}
+  pictures_cache_t(const WAYPOINT& wp, int type, const tstring& file_name)
+      : m_wp(wp), m_file_type(type), m_file_name(file_name) {}
 
   size_t size() const {
     return m_wp.pictures.size();
@@ -325,12 +326,10 @@ class pictures_cache_t final {
   BitmapPtr load(size_t index) {
     try {
       if (index < m_wp.pictures.size()) {
-        int file_num = m_wp.FileNum;
-        if (WpFileType[file_num] == LKW_CUPX) {
+        if (m_file_type == LKW_CUPX) {
           if (!m_cupx) {
-            const TCHAR* file_name = szWaypointFile[file_num];
             TCHAR file_path[MAX_PATH];
-            LocalPath(file_path, _T(LKD_WAYPOINTS), file_name);
+            LocalPath(file_path, _T(LKD_WAYPOINTS), m_file_name.c_str());
             m_cupx = std::make_unique<cupx_reader>(file_path);
           }
           zzip_disk_file_stream stream =
@@ -353,6 +352,8 @@ class pictures_cache_t final {
   }
 
   const WAYPOINT& m_wp;
+  int m_file_type;
+  const tstring& m_file_name;
 
   std::unique_ptr<cupx_reader> m_cupx;
   std::map<size_t, BitmapPtr> m_cache;
@@ -400,11 +401,28 @@ void OnPaintPicture(WndOwnerDrawFrame* Sender, LKSurface& Surface,
 }  // namespace
 
 void dlgWayPointDetailsShowModal(int page) {
-  if (!ValidWayPoint(SelectedWaypoint)) {
-    return;
+  int file_type = {};
+  tstring file_name = {};
+  WAYPOINT WPLSEL = {};
+
+  {
+    ScopeLock lock(CritSec_TaskData);
+
+    if (!ValidWayPointFast(SelectedWaypoint)) {
+      return;
+    }
+    WPLSEL = WayPointList[SelectedWaypoint];
+
+    static_assert(std::size(WpFileType) == std::size(szWaypointFile));
+
+    size_t file_num = WPLSEL.FileNum;
+    if (file_num < std::size(WpFileType)) {
+      file_type = WpFileType[file_num];
+      file_name = szWaypointFile[file_num];
+    }
   }
-  const WAYPOINT& WPLSEL = WayPointList[SelectedWaypoint];
-  pictures_cache_t PicturesCache(WPLSEL);
+
+  pictures_cache_t PicturesCache(WPLSEL, file_type, file_name);
   size_t PicturesCount = PicturesCache.size();
 
   TextWrapArray aDetailTextLine;
@@ -414,12 +432,12 @@ void dlgWayPointDetailsShowModal(int page) {
       callback_entry("OnNextClicked",
                      [&](WndButton* pWnd) {
                        NextPage<1>(pWnd->GetParentWndForm(), page,
-                                   PicturesCount);
+                                   PicturesCount, WPLSEL.Details.empty());
                      }),
       callback_entry("OnPrevClicked",
                      [&](WndButton* pWnd) {
                        NextPage<-1>(pWnd->GetParentWndForm(), page,
-                                    PicturesCount);
+                                    PicturesCount, WPLSEL.Details.empty());
                      }),
       callback_entry("OnPaintDetailsListItem",
                      [&](WndOwnerDrawFrame* Sender, LKSurface& Surface) {
@@ -674,7 +692,7 @@ void dlgWayPointDetailsShowModal(int page) {
   }
 
   wf->SetKeyDownNotify([&](WndForm* pForm, unsigned KeyCode) {
-    return FormKeyDown(pForm, KeyCode, page, PicturesCount);
+    return FormKeyDown(pForm, KeyCode, page, PicturesCount, WPLSEL.Details.empty());
   });
 
   //
