@@ -104,10 +104,6 @@ int ParseDAT(const TCHAR *String, WAYPOINT *Temp)
     WaypointAltitudeFromTerrain(Temp);
   }
 
-  if (Temp->Details) {
-    free(Temp->Details);
-  }
-
   return TRUE;
 }
 

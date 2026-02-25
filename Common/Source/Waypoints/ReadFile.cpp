@@ -142,8 +142,8 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
       continue;  // Skip comment
     }
 
-    new_waypoint.Details = NULL;
-    new_waypoint.Comment = NULL;
+    new_waypoint.Details.clear();
+    new_waypoint.Comment.clear();
 
     if (fileformat == LKW_DAT || fileformat == LKW_XCW) {
       tstring String = from_unknown_charset(src_line.c_str());
@@ -153,24 +153,14 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
             (new_waypoint.Number == RESWP_ID)) {
           StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"),
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-          assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
-          assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
           WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
         if (WaypointInTerrainRange(&new_waypoint)) {
           if (!AddWaypoint(new_waypoint)) {
-            free(new_waypoint.Comment);
-            free(new_waypoint.Details);
             return -1;  // failed to allocate
           }
-        }
-        else {
-          free(new_waypoint.Comment);
-          free(new_waypoint.Details);
-          new_waypoint.Details = nullptr;
-          new_waypoint.Comment = nullptr;
         }
       }
     }
@@ -184,24 +174,14 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
             (new_waypoint.Number == RESWP_ID)) {
           StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"),
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-          assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
-          assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
           WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
         if (WaypointInTerrainRange(&new_waypoint)) {
           if (!AddWaypoint(new_waypoint)) {
-            free(new_waypoint.Comment);
-            free(new_waypoint.Details);
             return -1;  // failed to allocate
           }
-        }
-        else {
-          free(new_waypoint.Comment);
-          free(new_waypoint.Details);
-          new_waypoint.Details = nullptr;
-          new_waypoint.Comment = nullptr;
         }
       }
     }
@@ -213,24 +193,14 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
             (new_waypoint.Number == RESWP_ID)) {
           StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"),
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-          assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
-          assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
           WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
         if (WaypointInTerrainRange(&new_waypoint)) {
           if (!AddWaypoint(new_waypoint)) {
-            free(new_waypoint.Comment);
-            free(new_waypoint.Details);
             return -1;  // failed to allocate
           }
-        }
-        else {
-          free(new_waypoint.Comment);
-          free(new_waypoint.Details);
-          new_waypoint.Details = nullptr;
-          new_waypoint.Comment = nullptr;
         }
       }
     }
@@ -247,24 +217,14 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
             (new_waypoint.Number == RESWP_ID)) {
           StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"),
                        LKGetText(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-          assert(WayPointList[RESWP_TAKEOFF].Comment == nullptr);
-          assert(WayPointList[RESWP_TAKEOFF].Details == nullptr);
           WayPointList[RESWP_TAKEOFF] = new_waypoint;
           continue;
         }
 
         if (WaypointInTerrainRange(&new_waypoint)) {
           if (!AddWaypoint(new_waypoint)) {
-            free(new_waypoint.Comment);
-            free(new_waypoint.Details);
             return -1;  // failed to allocate
           }
-        }
-        else {
-          free(new_waypoint.Comment);
-          free(new_waypoint.Details);
-          new_waypoint.Details = nullptr;
-          new_waypoint.Comment = nullptr;
         }
       }
     }

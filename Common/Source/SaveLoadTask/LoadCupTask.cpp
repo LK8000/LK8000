@@ -541,14 +541,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
       }
   }
   UnlockTaskData();
-  for (mapCode2Waypoint_t::iterator It = mapWaypoint.begin(); It != mapWaypoint.end(); ++It) {
-      if (It->second.Comment) {
-          free(It->second.Comment);
-      }
-      if (It->second.Details) {
-          free(It->second.Details);
-      }
-  }
   mapWaypoint.clear();
 
   return TaskFound;

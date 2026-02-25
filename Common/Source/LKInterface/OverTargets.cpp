@@ -254,8 +254,8 @@ std::optional<WAYPOINT> GetTargetSyncData() {
   });
 
   if (curr_tp) {
-    curr_tp->Comment = nullptr;
-    curr_tp->Details = nullptr;
+    curr_tp->Comment.clear();
+    curr_tp->Details.clear();
     lk::snprintf(curr_tp->Name, _T("%s%s"), name, tstring(curr_tp->Name).c_str());
   }
   return curr_tp;

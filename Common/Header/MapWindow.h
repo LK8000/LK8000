@@ -157,8 +157,7 @@ static constexpr double ScaleListNauticalMiles[SCALELISTSIZE] = {
     75.0
 };
 
-struct WAYPOINT
-{
+struct WAYPOINT {
   // Number is used as an alternate short name, and can also be duplicated
   int Number;
   double Latitude;
@@ -166,23 +165,23 @@ struct WAYPOINT
   double Altitude;
   int Flags;
   TCHAR Name[NAME_SIZE + 1];
-  TCHAR *Comment;
   int UnusedZoom;	// THIS IS UNUSED AND CAN BE REALLOCATED. WE DONT REMOVE TO KEEP COMPATIBILITY WITH OLD TASKS!
   BOOL Reachable;
   double AltArivalAGL;
   BOOL Visible;
-  bool InTask;
-  TCHAR *Details;
-  bool FarVisible;
   int FileNum; // which file it is in, or -1 to delete
-  // waypoint original format, LKW_DAT CUP etc.
-  short Format;
   TCHAR Code[CUPSIZE_CODE+1];
   TCHAR Freq[CUPSIZE_FREQ+1];
   int   RunwayLen;
   int   RunwayDir;
   TCHAR Country[CUPSIZE_COUNTRY+1];
+  // waypoint original format, LKW_DAT CUP etc.
+  short Format;
   short Style;
+  bool InTask;
+  bool FarVisible;
+  tstring Comment;
+  tstring Details;
   std::vector<std::string> pictures;
 };
 

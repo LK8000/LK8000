@@ -15,6 +15,7 @@
 #include "Waypointparser.h"
 #include "Library/TimeFunctions.h"
 #include "utils/printf.h"
+#include <format>
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.
@@ -354,21 +355,14 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         WayPointList[RESWP_FREEFLY].Visible = TRUE;
         WayPointList[RESWP_FREEFLY].Format = LKW_VIRTUAL;
 
-        BUGSTOP_LKASSERT(WayPointList[RESWP_FREEFLY].Comment != NULL);
+        TCHAR Temp[30];
+        Units::TimeToTextS(Temp, LocalTime(Calculated->FreeFlightStartTime));          
 
-        if (WayPointList[RESWP_FREEFLY].Comment) {
-            TCHAR Temp[30];
-            Units::TimeToTextS(Temp, LocalTime(Calculated->FreeFlightStartTime));          
-            TCHAR Comment[100];
-
-            lk::snprintf(Comment, _T("%s: %s  @%.0f%s QNH"),
-                    MsgToken<1754>(), // Free flight start
-                    Temp,
-                    Units::ToAltitude(Calculated->FreeFlightStartQNH),
-                    Units::GetAltitudeName());
-            Comment[99] = _T('\0'); // for safety
-            SetWaypointComment(WayPointList[RESWP_FREEFLY], Comment);
-        }
+        WayPointList[RESWP_FREEFLY].Comment =
+            std::format(_T("{}: {} @{:.0f}{} QNH"),
+                        MsgToken<1754>(),  // Free flight start
+                        Temp, Units::ToAltitude(Calculated->FreeFlightStartQNH),
+                        Units::GetAltitudeName());
   });
 
   ResetFreeFlightStats(Calculated);

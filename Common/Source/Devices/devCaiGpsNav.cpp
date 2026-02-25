@@ -189,11 +189,7 @@ namespace {
       flags = WP_FLAGS_WAYPOINT;
 
     TCHAR remark[16];
-    if(wp.Comment) {
-      LK_tcsncpy(remark, wp.Comment, 12);
-    }
-    else
-      remark[0] = '\0';
+    lk::strcpy(remark, wp.Comment.c_str(), 12);
 
     // prepare and send command
     TCHAR buffer[128];

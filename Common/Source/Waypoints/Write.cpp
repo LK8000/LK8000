@@ -28,7 +28,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
   TCHAR flags[MAX_PATH];
   TCHAR latitude[MAX_PATH];
   TCHAR longitude[MAX_PATH];
-  TCHAR comment[COMMENT_SIZE*2]; //@ 101112
   TCHAR rwdirection[30];
   TCHAR rwlen[30];
   TCHAR cupFreq[CUPSIZE_FREQ*2];
@@ -52,11 +51,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	WaypointLongitudeToString(wpt->Longitude, longitude);
 	WaypointFlagsToString(wpt->Flags, flags);
 
-	if (wpt->Comment!=NULL) {
-		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
-	} else
-		lk::strcpy(comment,_T(""));
-
 	fprintf(fp,"%d," PF_ASCIISTR "," PF_ASCIISTR ",%dM," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "\r\n",
 		wpt->Number,
 		latitude,
@@ -64,7 +58,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		iround(wpt->Altitude),
 		flags,
 		wpt->Name,
-		comment);
+		wpt->Comment.c_str());
 
 	return;
   } // DAT
@@ -73,12 +67,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 
 	char NS[]= "SN";
 	char EW[]= "WE";
-
-
-	if (wpt->Comment!=NULL) {
-		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
-	} else
-		lk::strcpy(comment,_T(""));
 
 	fprintf(fp,"W  " PF_ASCIISTR " A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f " PF_ASCIISTR "\r\n",
 	wpt->Name,
@@ -89,7 +77,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	0xba,
 	EW[wpt->Longitude<0?0:1],
 	wpt->Altitude,
-	comment);
+	wpt->Comment.c_str());
 
 
 	return;
@@ -119,10 +107,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	} else
 		lk::strcpy(cupCode,_T(""));
 
-	if (wpt->Comment!=NULL) {
-		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
-	} else
-		lk::strcpy(comment,_T(""));
 	fprintf(fp,"\"" PF_ASCIISTR"\"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR ",%d.0m,%d," PF_ASCIISTR"," PF_ASCIISTR "," PF_ASCIISTR "," PF_ASCIISTR "\r\n",
 		wpt->Name,
 		cupCode,
@@ -134,21 +118,13 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		rwdirection,
 		rwlen,
 		cupFreq,
-		comment);
+		wpt->Comment.c_str());
 
 	return;
   }
 
   if(filemode == LKW_OZI) {
-
-	if (wpt->Comment!=NULL) {
-		LK_tcsncpy(comment,wpt->Comment,COMMENT_SIZE);
-	} else
-		lk::strcpy(comment,_T(""));
-
-	if(_tcslen(comment) > 40){
-		comment[40] = _T('\0');
-	}
+    tstring comment = wpt->Comment.substr(0, 40);
 
 	// Calc Waypoint pos in file
 	int nWaypointPos = 1;
@@ -162,9 +138,10 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 			wpt->Name,
 			wpt->Latitude,
 			wpt->Longitude,
-			comment,
+			comment.c_str(),
 			iround(Units::To(unFeet, wpt->Altitude)));
 
+    return;
   }
 
 
