@@ -1,3 +1,4 @@
+#include "options.h"
 #include "cupx_reader.h"
 #include "utils/zzip_mem_disk.h"
 #include <iostream>
@@ -119,3 +120,65 @@ zzip_disk_file_stream cupx_reader::read_image(const std::string& filename) const
   }
   throw std::runtime_error(filename + " not found in CupX file");
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+#include <filesystem>
+
+TEST_CASE("cupx_reader - CUPX file operations") {
+  // Get the test file path
+  // TODO: this only work if run from source folder
+  //   must change update to use demo file from waypoint folder
+  const char* test_file = "Common/Data/Test/small_sample_file.cupx";
+  
+  SUBCASE("Valid CUPX file initialization") {
+    REQUIRE(std::filesystem::exists(test_file));
+    
+    cupx_reader reader(test_file);
+    // If we get here without exception, initialization succeeded
+    CHECK(true);
+  }
+
+  SUBCASE("Invalid file path throws exception") {
+
+    CHECK_THROWS_AS(
+      cupx_reader("/nonexistent/path/file.cupx"),
+      std::runtime_error
+    );
+  }
+
+  SUBCASE("Read POINTS.CUP from valid CUPX file") {
+    cupx_reader reader(test_file);
+    
+    auto points_stream = reader.read_points_cup();
+    // Verify stream is valid by checking if we can read from it
+    std::string content = {
+        (std::istreambuf_iterator<char>(&points_stream)),
+        (std::istreambuf_iterator<char>())
+    };
+    CHECK(!content.empty());
+    CHECK(content.find("N088E00517Rosans2.jpg") != std::string::npos);
+  }
+
+  SUBCASE("Read image from valid CUPX file") {
+    cupx_reader reader(test_file);
+    
+    auto image_1 = reader.read_image("N088E00517Rosans1.jpg");
+    std::vector<char> image_buf = {
+        (std::istreambuf_iterator<char>(&image_1)),
+        (std::istreambuf_iterator<char>())
+    };
+    CHECK(!image_buf.empty());
+  }
+
+  SUBCASE("Read non-existent image from valid CUPX file") {
+    cupx_reader reader(test_file);
+    
+    CHECK_THROWS_AS(
+      reader.read_image("invalid.jpg"),
+      std::runtime_error
+    );
+  }
+}
+
+#endif
