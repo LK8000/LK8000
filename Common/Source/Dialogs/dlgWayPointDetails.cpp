@@ -608,7 +608,10 @@ void dlgWayPointDetailsShowModal(int page) {
   else {
     Units::FormatDistance(distance, DistanceText, 10);
   }
-  (wf->FindByName<WndProperty>(TEXT("prpDistance")))->SetText(DistanceText);
+  wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
+  if (wp) {
+    wp->SetText(DistanceText);
+  }
 
   if (ScreenLandscape) {
     lk::snprintf(sTmp, _T("%d%s  (R:%d%s)"), iround(bearing), MsgToken<2179>(),
@@ -617,7 +620,10 @@ void dlgWayPointDetailsShowModal(int page) {
   else {
     lk::snprintf(sTmp, TEXT("%d%s"), iround(bearing), MsgToken<2179>());
   }
-  (wf->FindByName<WndProperty>(TEXT("prpBearing")))->SetText(sTmp);
+  wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
+  if (wp) {
+    wp->SetText(sTmp);
+  }
 
   //
   // Altitude reqd at mc 0
