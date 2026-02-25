@@ -131,7 +131,7 @@ zzip_disk_file_stream cupx_reader::read_image(const std::string& filename) const
 TEST_CASE("cupx_reader - CUPX file operations") {
   // Get the test file path
   TCHAR test_file[MAX_PATH];
-  LocalPath(test_file, _T(LKD_WAYPOINTS), "DEMO.cupx");
+  LocalPath(test_file, _T(LKD_WAYPOINTS), _T("DEMO.cupx"));
   REQUIRE(std::filesystem::exists(test_file));
  
   SUBCASE("Valid CUPX file initialization") {
@@ -144,7 +144,7 @@ TEST_CASE("cupx_reader - CUPX file operations") {
   SUBCASE("Invalid file path throws exception") {
 
     CHECK_THROWS_AS(
-      cupx_reader("/nonexistent/path/file.cupx"),
+      cupx_reader(_T("/nonexistent/path/file.cupx")),
       std::runtime_error
     );
   }
