@@ -28,6 +28,7 @@ LANGUAGE_FILES += Common/Data/Language/language.json
 CONFIG_FILES = Common/Distribution/LK8000/_Configuration/NOTEDEMO.TXT
 
 WAYPOINT_FILES = Common/Distribution/LK8000/_Waypoints/WAYNOTES.TXT
+WAYPOINT_FILES += Common/Distribution/LK8000/_Waypoints/DEMO.cupx
 
 
 define build_distrib_common

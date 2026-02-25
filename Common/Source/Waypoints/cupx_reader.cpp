@@ -124,15 +124,17 @@ zzip_disk_file_stream cupx_reader::read_image(const std::string& filename) const
 #ifndef DOCTEST_CONFIG_DISABLE
 #include <doctest/doctest.h>
 #include <filesystem>
+#include "Defines.h"
+#include "LocalPath.h"
+
 
 TEST_CASE("cupx_reader - CUPX file operations") {
   // Get the test file path
-  // TODO: this only work if run from source folder
-  //   must change update to use demo file from waypoint folder
-  const char* test_file = "Common/Data/Test/small_sample_file.cupx";
-  
+  TCHAR test_file[MAX_PATH];
+  LocalPath(test_file, _T(LKD_WAYPOINTS), "DEMO.cupx");
+  REQUIRE(std::filesystem::exists(test_file));
+ 
   SUBCASE("Valid CUPX file initialization") {
-    REQUIRE(std::filesystem::exists(test_file));
     
     cupx_reader reader(test_file);
     // If we get here without exception, initialization succeeded
@@ -157,13 +159,13 @@ TEST_CASE("cupx_reader - CUPX file operations") {
         (std::istreambuf_iterator<char>())
     };
     CHECK(!content.empty());
-    CHECK(content.find("N088E00517Rosans2.jpg") != std::string::npos);
+    CHECK(content.find("IMGD54A.jpg") != std::string::npos);
   }
 
   SUBCASE("Read image from valid CUPX file") {
     cupx_reader reader(test_file);
     
-    auto image_1 = reader.read_image("N088E00517Rosans1.jpg");
+    auto image_1 = reader.read_image("IMGD54A.jpg");
     std::vector<char> image_buf = {
         (std::istreambuf_iterator<char>(&image_1)),
         (std::istreambuf_iterator<char>())
