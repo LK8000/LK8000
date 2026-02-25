@@ -314,7 +314,7 @@ void InputEvents::readFile() {
     if (buffer.empty()) {
       found = 0;
     } else {
-      found = sscanf(buffer.c_str(), "%[^#=]=%[^\r\n][\r\n]", key, value);
+      found = sscanf(buffer.c_str(), "%2048[^#=]=%2048[^\r\n][\r\n]", key, value);
       if (found == EOF) {
         continue;
       }
