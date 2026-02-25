@@ -442,7 +442,9 @@ void dlgWayPointDetailsShowModal(int page) {
           }),
       callback_entry("OnPaintPicture",
                      [&](WndOwnerDrawFrame* Sender, LKSurface& Surface) {
-                       OnPaintPicture(Sender, Surface, PicturesCache, page - 2);
+                       if (page >= 2) {
+                         OnPaintPicture(Sender, Surface, PicturesCache, page - 2);
+                       }
                      }),
       CallbackEntry(OnPaintWaypointPicto),
       CallbackEntry(OnTeamCodeClicked),
@@ -453,8 +455,7 @@ void dlgWayPointDetailsShowModal(int page) {
       CallbackEntry(OnReplaceClicked),
       CallbackEntry(OnInserInTaskClicked),
       CallbackEntry(OnCloseClicked),
-      EndCallbackEntry()
-    };
+      EndCallbackEntry()};
 
   TCHAR sTmp[128];
   WndProperty *wp;
