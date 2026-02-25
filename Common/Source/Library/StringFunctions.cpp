@@ -520,10 +520,10 @@ void StrToTime(const char* szString, int *Hour, int *Min, int *Sec) {
     char* sz = nullptr;
     if (szString && szString[0]) {
         *Hour = Clamp<int>(strtol(szString, &sz, 10), 0, 23);
-        if (*sz == _T(':')) {
+        if (*sz == ':') {
             *Min = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
 
-            if (Sec && (*sz == _T(':'))) {
+            if (Sec && (*sz == ':')) {
                 *Sec = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
             }
         }
