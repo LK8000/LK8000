@@ -11,6 +11,12 @@
 // class to read CUPX files contents
 class cupx_reader {
  public:
+  cupx_reader() = delete;
+  cupx_reader(const cupx_reader&) = delete;
+  cupx_reader(cupx_reader&&) = delete;
+  cupx_reader& operator=(const cupx_reader&) = delete;
+  cupx_reader& operator=(cupx_reader&&) = delete;
+
   explicit cupx_reader(const tstring& path);
 
   // Read POINTS.CUP
