@@ -358,9 +358,17 @@ class pictures_cache_t final {
 
 void OnPaintPicture(WndOwnerDrawFrame* Sender, LKSurface& Surface,
                     pictures_cache_t& PicturesCache, size_t PictureIndex) {
-  const LKBitmap* pPicture = PicturesCache.get(PictureIndex);
-  if (pPicture && pPicture->IsDefined()) {
+  try {
+    const LKBitmap* pPicture = PicturesCache.get(PictureIndex);
+    if (!(pPicture && pPicture->IsDefined())) {
+      throw std::runtime_error("Invalid image dimensions.");
+    }
+
     PixelSize img_size = pPicture->GetSize();
+    if (img_size.cx <= 0 || img_size.cy <= 0) {
+      throw std::runtime_error("Invalid image dimensions.");
+    }
+
     const PixelRect rc(Sender->GetClientRect());
     const PixelSize rc_size = rc.GetSize();
 
@@ -380,7 +388,7 @@ void OnPaintPicture(WndOwnerDrawFrame* Sender, LKSurface& Surface,
 
     Surface.DrawBitmapCopy(origin, draw_size, *pPicture);
   }
-  else {
+  catch (std::exception&) {
     Surface.SetTextColor(RGB_BLACK);
     RECT rc = Sender->GetClientRect();
     Surface.DrawText(MsgToken<2515>(), &rc, DT_CENTER | DT_VCENTER);
