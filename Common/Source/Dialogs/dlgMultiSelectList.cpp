@@ -298,14 +298,10 @@ void ShowTextEntries(LKSurface& Surface, const RECT& rc, TCHAR (&text1)[MAX_LEN]
 }
 
 void BuildLandableText(size_t idx, double Distance, TCHAR (&text1)[MAX_LEN], TCHAR (&text2)[MAX_LEN]) {
-  TCHAR Comment[MAX_COMMENT] = _T("");
-
   if (idx >= WayPointList.size()) {
     return;
   }
   const auto& wp = WayPointList[idx];
-
-  lk::strcpy(Comment, wp.Comment.c_str());
 
   if (_tcslen(wp.Freq) > 0) {
     if (_tcslen(wp.Freq) > 2)
@@ -317,7 +313,7 @@ void BuildLandableText(size_t idx, double Distance, TCHAR (&text1)[MAX_LEN], TCH
     if (wp.Style == STYLE_THERMAL)
       lk::snprintf(text1, _T("%s: %s"), MsgToken<905>(), wp.Name);
     else if (!wp.Comment.empty())
-      lk::snprintf(text1, _T("%s %s"), wp.Name, Comment);
+      lk::snprintf(text1, _T("%s %s"), wp.Name, wp.Comment.c_str());
     else
       lk::snprintf(text1, _T("%s"), wp.Name);
   }
