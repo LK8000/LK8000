@@ -41,10 +41,8 @@ zzip_disk_file_stream::~zzip_disk_file_stream() {
 }
 
 zzip_disk_file_stream::zzip_disk_file_stream(zzip_disk_file_stream&& other) noexcept
-    : std::streambuf(),
-      m_disk(std::move(other.m_disk)),
-      m_file(std::exchange(other.m_file, nullptr)),
-      m_buffer(std::move(other.m_buffer)) {
+      : m_disk(std::move(other.m_disk)),
+      m_file(std::exchange(other.m_file, nullptr)) {
   // Transfer the get-area pointers (eback/gptr/egptr) from other to this.
   // Compute offsets relative to the buffer base so they remain valid after m_buffer is moved.
   char* other_eback = other.eback();
@@ -53,6 +51,7 @@ zzip_disk_file_stream::zzip_disk_file_stream(zzip_disk_file_stream&& other) noex
     std::ptrdiff_t eback_offset = other_eback - other.m_buffer.data();
     std::ptrdiff_t gptr_offset = other.gptr() - other.m_buffer.data();
     std::ptrdiff_t egptr_offset = other.egptr() - other.m_buffer.data();
+    m_buffer = std::move(other.m_buffer);
     // Apply the same offsets to this->m_buffer (now holding other's data)
     setg(m_buffer.data() + eback_offset, m_buffer.data() + gptr_offset, m_buffer.data() + egptr_offset);
   } else {
@@ -65,10 +64,16 @@ zzip_disk_file_stream::zzip_disk_file_stream(zzip_disk_file_stream&& other) noex
 
 zzip_disk_file_stream& zzip_disk_file_stream::operator=(
     zzip_disk_file_stream&& other) noexcept {
-  std::streambuf::operator=(std::move(other));
-  std::swap(m_disk, other.m_disk);
-  std::swap(m_file, other.m_file);
-  std::swap(m_buffer, other.m_buffer);
+  if (this == &other) {
+    return *this;
+  }
+
+  if (m_file) {
+    zzip_disk_fclose(m_file);
+  }
+
+  m_disk = std::move(other.m_disk);
+  m_file = std::exchange(other.m_file, nullptr);
   
   // After swapping m_buffer, transfer the get-area pointers from other to this.
   // Compute offsets relative to the buffer base so they remain valid.
@@ -78,9 +83,12 @@ zzip_disk_file_stream& zzip_disk_file_stream::operator=(
     std::ptrdiff_t eback_offset = other_eback - other.m_buffer.data();
     std::ptrdiff_t gptr_offset = other.gptr() - other.m_buffer.data();
     std::ptrdiff_t egptr_offset = other.egptr() - other.m_buffer.data();
+
+    m_buffer = std::move(other.m_buffer);
     // this now holds other's m_buffer, so apply offsets to this->m_buffer
     setg(m_buffer.data() + eback_offset, m_buffer.data() + gptr_offset, m_buffer.data() + egptr_offset);
   } else {
+    m_buffer = std::move(other.m_buffer);
     // other has no buffered data; this starts with empty get-area
     setg(nullptr, nullptr, nullptr);
   }
