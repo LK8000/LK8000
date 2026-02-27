@@ -11,8 +11,8 @@
 #include "externs.h"
 #include "Util/ScopeExit.hxx"
 #include "Util/Clamp.hpp"
-#include "utils/zzip_stream.h"
-#include "utils/stringext.h"
+#include "utils/zzip_file_stream.h"
+#include "utils/charset_helper.h"
 #include "picojson.h"
 #include <string>
 #include <cassert>
@@ -90,23 +90,12 @@ struct waypoint_helper : public WAYPOINT {
       Altitude = polyline[2];
   }
 
-  ~waypoint_helper() {
-    if(Comment) {
-      free(Comment);
-    }
-    if (Details) {
-      free(Details);
-    }
-  }
-
   void set_name(const char* utf8_string) {
     from_utf8(utf8_string, Name);
   }
 
   void set_description(const char* utf8_string) {
-    size_t size = from_utf8(utf8_string, Comment, 0) + 1;
-    Comment = (TCHAR*) malloc(size * sizeof(TCHAR));
-    from_utf8(utf8_string, Comment, size);
+    Comment = from_utf8(utf8_string);
   }
 
 };
@@ -384,7 +373,7 @@ void LogError(std::exception& e) {
 
 bool LoadXctrackTask(const TCHAR* szFilePath) {
   try {
-    zzip_stream file(szFilePath, "rb");
+    zzip_file_stream file(szFilePath, "rb");
     if (file) {
       std::istream stream(&file);
       return LoadXctrackTask(stream);

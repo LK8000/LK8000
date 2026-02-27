@@ -42,13 +42,13 @@ static void UpdateButtons(WndForm* pForm) {
 
   WindowControl* wndComment = pForm->FindByName(TEXT("cmdComment"));
   if (wndComment) {
-    if ((!global_wpt->Comment) || (_tcslen(global_wpt->Comment)<=0) ) {
+    if (global_wpt->Comment.empty()) {
       // LKTOKEN  _@M190_ = "Comment"
       // LKTOKEN  _@M7_ = "(blank)"
       lk::snprintf(text,TEXT("%s: %s"), MsgToken<190>(), MsgToken<7>());
     } else {
       // LKTOKEN  _@M190_ = "Comment"
-      lk::snprintf(text, _T("%s: %.30s"), MsgToken<190>(), global_wpt->Comment);
+      lk::snprintf(text, _T("%s: %s"), MsgToken<190>(), global_wpt->Comment.c_str());
     }
     wndComment->SetCaption(text);
   }
@@ -64,11 +64,7 @@ static void OnNameClicked(WndButton* pWnd) {
 static void OnCommentClicked(WndButton* pWnd) {
 	//@ 101219
 	TCHAR comment[COMMENT_SIZE*2];
-	if (global_wpt->Comment != NULL) {
-		LK_tcsncpy(comment,global_wpt->Comment, COMMENT_SIZE);
-	} else {
-		lk::strcpy(comment,_T(""));
-	}
+	lk::strcpy(comment, global_wpt->Comment.c_str());
 	dlgTextEntryShowModal(comment, COMMENT_SIZE);
 	SetWaypointComment(*global_wpt, comment);
 

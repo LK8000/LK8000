@@ -21,10 +21,10 @@ double StrToDouble(const char *str, const char **endptr);
 int to_integer(const std::wstring_view& sv);
 int to_integer(const std::string_view& sv);
 
-void PExtractParameter(TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);
+void PExtractParameter(const TCHAR *Source, TCHAR *Destination, size_t dest_size, int DesiredFieldNumber);
 
 template<size_t dest_size>
-void PExtractParameter(TCHAR *Source, TCHAR (&Destination)[dest_size], int DesiredFieldNumber) {
+void PExtractParameter(const TCHAR *Source, TCHAR (&Destination)[dest_size], int DesiredFieldNumber) {
 	PExtractParameter(Source, Destination, dest_size, DesiredFieldNumber);
 }
 
@@ -84,8 +84,7 @@ int HexStrToInt(const char *Source);
 ///////////////////////////////////////////////////////////////////////
 // Extract H, M, S from string like "HH:MM:SS"
 //   Sec output parameter is optional
-void StrToTime(LPCTSTR szString, int *Hour, int *Min, int *Sec = NULL);
-
+void StrToTime(const char* szString, int* Hour, int* Min, int* Sec = nullptr);
 
 const TCHAR *AngleToWindRose(int angle);
 

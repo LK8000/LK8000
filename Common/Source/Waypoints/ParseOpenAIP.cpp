@@ -9,9 +9,9 @@
 */
 
 #include "externs.h"
+#include <streambuf>
 #include "Waypointparser.h"
 #include "utils/stringext.h"
-#include "utils/zzip_stream.h"
 #include <sstream>
 #include "LKStyle.h"
 #include "Util/TruncateString.hpp"
@@ -34,7 +34,7 @@ static bool GetAttribute(const xml_node* parentNode, const char* attributeName, 
 static bool GetValue(const xml_node* parentNode, const char* tagName, double &value);
 static bool GetMeasurement(const xml_node* parentNode, const char* tagName, char expectedUnit, double &value);
 
-bool ParseOpenAIP(zzip_stream& stream)
+bool ParseOpenAIP(std::streambuf& stream)
 {
     std::string ss;
     xml_document xmldoc;
@@ -104,8 +104,6 @@ bool ParseAirports(const xml_node* airportsNode)
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
         new_waypoint.Visible = true; // default all waypoints visible at start
         new_waypoint.FarVisible = true;
         new_waypoint.Format = LKW_OPENAIP;
@@ -265,24 +263,11 @@ bool ParseAirports(const xml_node* airportsNode)
             if(new_waypoint.Style!=STYLE_GLIDERSITE) new_waypoint.Style=maxstyle; //if is not already a gliding site we just check if is "solid" surface or not...
         }
 
-        // Add the comments
-        SetWaypointComment(new_waypoint, comments.str().c_str());
+        new_waypoint.Comment = comments.str();
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
-                // ownership of this 2 pointer has benn transfered to WaypointList
-                new_waypoint.Details = nullptr;
-                new_waypoint.Comment = nullptr;
-            }
-        }
-        if(new_waypoint.Comment) { 
-            free(new_waypoint.Comment);
-            new_waypoint.Comment = nullptr;
-        }
-        if(new_waypoint.Details) {
-            free(new_waypoint.Details);
-            new_waypoint.Details = nullptr;
+            AddWaypoint(new_waypoint);
         }
     }
     return true;
@@ -303,8 +288,6 @@ bool ParseNavAids(const xml_node* navAidsNode)
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
         new_waypoint.Visible = true; // default all waypoints visible at start
         new_waypoint.FarVisible = true;
         new_waypoint.Format = LKW_OPENAIP;
@@ -380,19 +363,7 @@ bool ParseNavAids(const xml_node* navAidsNode)
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
-                // ownership of this 2 pointer has been transfered to WaypointList
-                new_waypoint.Details = nullptr;
-                new_waypoint.Comment = nullptr;
-            } 
-        }
-        if(new_waypoint.Comment) { 
-            free(new_waypoint.Comment);
-            new_waypoint.Comment = nullptr;
-        }
-        if(new_waypoint.Details) {
-            free(new_waypoint.Details);
-            new_waypoint.Details = nullptr;
+            AddWaypoint(new_waypoint);
         }
     } // end of for each nav aid
     return true;
@@ -442,8 +413,6 @@ bool ParseHotSpots(const xml_node* hotSpotsNode) {
 
         // Prepare the new waypoint
         WAYPOINT new_waypoint;
-        new_waypoint.Details = nullptr;
-        new_waypoint.Comment = nullptr;
         new_waypoint.Visible = true; // default all waypoints visible at start
         new_waypoint.FarVisible = true;
         new_waypoint.Format = LKW_OPENAIP;
@@ -482,19 +451,7 @@ bool ParseHotSpots(const xml_node* hotSpotsNode) {
 
         // Add the new waypoint
         if (WaypointInTerrainRange(&new_waypoint)) {
-            if(AddWaypoint(new_waypoint)) {
-                // ownership of this 2 pointer has been transfered to WaypointList
-                new_waypoint.Details = nullptr;
-                new_waypoint.Comment = nullptr;
-            } 
-        }
-        if(new_waypoint.Comment) {
-            free(new_waypoint.Comment);
-            new_waypoint.Comment = nullptr;
-        }
-        if(new_waypoint.Details) {
-            free(new_waypoint.Details);
-            new_waypoint.Details = nullptr;
+            AddWaypoint(new_waypoint);
         }
     } // end of for each nav aid
     return true;

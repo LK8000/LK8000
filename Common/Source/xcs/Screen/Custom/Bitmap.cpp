@@ -27,6 +27,7 @@ Copyright_License {
 #include "LibJPEG.hpp"
 #include "UncompressedImage.hpp"
 #include "Util/ConstBuffer.hpp"
+#include "Screen/image_type.h"
 
 Bitmap::Bitmap(ConstBuffer<void> _buffer)
 {
@@ -36,8 +37,24 @@ Bitmap::Bitmap(ConstBuffer<void> _buffer)
 bool
 Bitmap::Load(ConstBuffer<void> buffer, Type type)
 {
-  const UncompressedImage uncompressed = LoadPNG(buffer.data, buffer.size);
-  return (uncompressed.IsVisible() && Load(uncompressed, type));
+  image_type::type t = image_type::detect(static_cast<const uint8_t*>(buffer.data), buffer.size);
+  if (t == image_type::type::unknown) {
+    return false;
+  }
+
+  if (t == image_type::type::png) {
+    const UncompressedImage uncompressed = LoadPNG(buffer.data, buffer.size);
+    return (uncompressed.IsVisible() && Load(uncompressed, type));
+  }
+
+#ifdef USE_LIBJPEG
+  if (t == image_type::type::jpeg) {
+    const UncompressedImage uncompressed = LoadJPEGFromMemory(buffer.data, buffer.size);
+    return (uncompressed.IsVisible() && Load(uncompressed, type));
+  }
+#endif
+
+  return false;
 }
 
 #ifdef USE_LIBJPEG

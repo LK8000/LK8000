@@ -16,6 +16,10 @@ else
  HOST_HAS_NEON := n
 endif
 
+ifeq ($(HOST_IS_LINUX),y)
+ HOST_IS_WIN32 := n
+endif
+
 ifeq ($(HOST_IS_LINUX)$(HOST_IS_ARM),yy)
 # Check for VideoCore headers present on a Raspberry Pi
  HOST_IS_PI := $(call string_equals,$(shell test -f /opt/vc/include/interface/vmcs_host/vc_dispmanx.h && echo y),y)
@@ -465,9 +469,6 @@ ifeq ($(CONFIG_LINUX),y)
 
  endif
 
- $(eval $(call pkg-config-library,ZLIB,zlib))
- CE_DEFS += $(patsubst -I%,-isystem %,$(ZLIB_CPPFLAGS))
-
  $(eval $(call pkg-config-library,FREETYPE,freetype2))
  CE_DEFS += $(patsubst -I%,-isystem %,$(FREETYPE_CPPFLAGS))
  CE_DEFS += -DUSE_FREETYPE
@@ -475,8 +476,10 @@ ifeq ($(CONFIG_LINUX),y)
  $(eval $(call pkg-config-library,PNG,libpng))
  CE_DEFS += $(patsubst -I%,-isystem %,$(PNG_CPPFLAGS))
 
- $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
- CE_DEFS += $(GEOGRAPHIC_CPPFLAGS)
+ $(eval $(call pkg-config-library,JPEG,libjpeg))
+ CE_DEFS += $(JPEG_CPPFLAGS)
+ CE_DEFS += -DUSE_LIBJPEG
+
 
  USE_CURL ?= $(shell $(PKG_CONFIG) --exists libcurl && echo y)
  ifeq ($(USE_CURL),y)
@@ -560,10 +563,17 @@ CPPFLAGS	+= -Wno-psabi
 #CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 
-ifeq ($(CONFIG_PC),y)
- $(eval $(call pkg-config-library,GEOGRAPHIC,geographiclib))
+$(eval $(call pkg-config-library,ZLIB,zlib))
+$(eval $(call pkg-config-library,ZZIPLIB,zziplib))
+$(eval $(call pkg-config-library,ZZIPMMAPPED,zzipmmapped))
+$(eval $(call pkg-config-library,GEOGRAPHICLIB,geographiclib))
 
- CPPFLAGS	+=  $(GEOGRAPHIC_CPPFLAGS)
+CPPFLAGS += $(ZLIB_CPPFLAGS) \
+			$(ZZIPLIB_CPPFLAGS)\
+			$(ZZIPMMAPPED_CPPFLAGS) \
+			$(GEOGRAPHICLIB_CPPFLAGS)
+
+ifeq ($(CONFIG_PC),y)
  CPPFLAGS	+= -D_WINDOWS -DWIN32 -DCECORE $(UNICODE)
  CPPFLAGS	+= -D_CRT_NON_CONFORMING_SWPRINTFS
  CPPFLAGS	+= -D_CRT_NON_CONFORMING_WCSTOK 
@@ -613,10 +623,9 @@ LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm
- LDLIBS += $(subst @lib_postfix@,,$(GEOGRAPHIC_LDLIBS))
  LDLIBS += $(PNG_LDLIBS)
+ LDLIBS += $(JPEG_LDLIBS)
  LDLIBS += $(FREETYPE_LDLIBS)
- LDLIBS += $(ZLIB_LDLIBS)
  LDLIBS += $(OPENGL_LDLIBS)
  LDLIBS += $(EGL_LDLIBS)
  LDLIBS += $(X11_LDLIBS)
@@ -634,15 +643,17 @@ ifeq ($(CONFIG_LINUX),y)
  endif
 endif
 
-
 ifeq ($(CONFIG_WIN32),y)
   LDLIBS := -static -Wl,-Bstatic \
             -lmingw32 -lcomctl32 -lkernel32 -luser32 \
             -lgdi32 -ladvapi32 -lwinmm -lmsimg32 \
             -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
-
-  LDLIBS += $(GEOGRAPHIC_LDLIBS)
 endif
+
+LDLIBS += $(subst @lib_postfix@,,$(GEOGRAPHICLIB_LDLIBS)) \
+		$(ZLIB_LDLIBS) \
+		$(ZZIPLIB_LDLIBS) \
+		$(ZZIPMMAPPED_LDLIBS) \
 
 ####### compiler target
 
@@ -743,6 +754,8 @@ SCREEN := \
 ifeq ($(CONFIG_WIN32),y)
 SCREEN += \
 	$(SRC_SCREEN)/GDI/AlphaBlend.cpp \
+	$(SRC_SCREEN)/GDI/WICImageLoad.cpp \
+
 	
 endif
 
@@ -800,6 +813,7 @@ WAYPT	:=\
 	$(WPT)/ToString.cpp\
 	$(WPT)/Virtuals.cpp\
 	$(WPT)/Write.cpp\
+	$(WPT)/cupx_reader.cpp\
 
 
 LKINTER	:=\
@@ -1034,7 +1048,6 @@ UTILS	:=\
 	$(SRC)/utils/md5.cpp \
 	$(SRC)/utils/filesystem.cpp \
 	$(SRC)/utils/openzip.cpp \
-	$(SRC)/utils/zzip_stream.cpp \
 	$(SRC)/utils/TextWrapArray.cpp \
 	$(SRC)/utils/hmac_sha2.cpp \
 	$(SRC)/utils/unicode/unicode_to_ascii.cpp \
@@ -1043,6 +1056,9 @@ UTILS	:=\
 	$(SRC)/utils/base64.cpp \
 	$(SRC)/utils/charset_helper.cpp \
 	$(SRC)/utils/printf.cpp \
+	$(SRC)/utils/zzip_file_stream.cpp\
+	$(SRC)/utils/zzip_mem_disk.cpp\
+	$(SRC)/utils/zzip_disk_file_stream.cpp\
 
 
 COMMS	:=\
@@ -1361,29 +1377,6 @@ SRC_FILES :=\
 ####### libraries
 RSCSRC  := $(SRC)/Resource
 
-ZZIPSRC	:=$(LIB)/zzip
-ZZIP	:=\
-	$(ZZIPSRC)/zip.c \
-	$(ZZIPSRC)/file.c \
-	$(ZZIPSRC)/dir.c \
-	$(ZZIPSRC)/err.c \
-	$(ZZIPSRC)/plugin.c \
-	$(ZZIPSRC)/fetch.c\
-
-ifeq ($(CONFIG_WIN32),y)
-  ZZIP +=\
-	$(LIB)/zlib/adler32.c \
-	$(LIB)/zlib/crc32.c \
-	$(LIB)/zlib/infback.c \
-	$(LIB)/zlib/inffast.c \
-	$(LIB)/zlib/inflate.c \
-	$(LIB)/zlib/inftrees.c \
-	$(LIB)/zlib/zstat.c \
-	$(LIB)/zlib/zutil.c \
-	$(LIB)/zlib/uncompr.c \
-
-endif
-
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
 	$(COMPATSRC)/errno.cpp
@@ -1463,8 +1456,7 @@ src_to_obj = $(patsubst $(SRC)%.c,$(BIN)%.o,\
 
 OBJS 	:=\
 	$(call src_to_obj,$(SRC_FILES)) \
-	$(BIN)/poco.a \
-    $(BIN)/zzip.a
+	$(BIN)/poco.a
 
 ifneq ($(WIN32_RESOURCE), y)	
 OBJS	+= $(BIN)/resource.a
@@ -1526,7 +1518,6 @@ tags:
 
 cppcheck : 
 	$(Q)cppcheck --force --enable=all -q -j4 $(SRC_FILES)
-#	$(Q)cppcheck --force --enable=warning -q -j4 $(ZZIPSRC)
 #	$(Q)cppcheck --force --enable=warning -q -j4 $(COMPAT)
 	
 install : $(OUTPUTS) $(SYSTEM_FILES) $(BITMAP_FILES) $(SOUND_FILES) \
@@ -1622,10 +1613,6 @@ $(OUTPUTS_NS): $(OBJS)
 	$(Q)$(CXX) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 $(BIN)/glutess.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(GLU)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(GLU))
-	@$(NQ)echo "  AR      $@"
-	$(Q)$(AR) $(ARFLAGS) $@ $^
-
-$(BIN)/zzip.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(ZZIP)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(ZZIP))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
@@ -1734,7 +1721,6 @@ src_to_dep = $(patsubst $(SRC)%.c,$(DEPDIR)%.d,\
 
 DEPFILES := $(call src_to_dep,$(SRC_FILES))
 DEPFILES += $(call src_to_dep,$(POCO))
-DEPFILES += $(call src_to_dep,$(ZZIP))
 DEPFILES += $(call src_to_dep,$(GLU))
 
 include $(wildcard $(DEPFILES))

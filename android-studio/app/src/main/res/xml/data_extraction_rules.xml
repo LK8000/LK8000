@@ -20,6 +20,7 @@
         <exclude domain="file" path="_Tasks/DEMO.lkt" />
         <exclude domain="file" path="_Polars/Example.plr" />
         <exclude domain="file" path="_Waypoints/DEMO.cup" />
+        <exclude domain="file" path="_Waypoints/DEMO.cupx" />
 
     </cloud-backup>
     <device-transfer>
@@ -33,6 +34,7 @@
         <exclude domain="file" path="_Tasks/DEMO.lkt" />
         <exclude domain="file" path="_Polars/Example.plr" />
         <exclude domain="file" path="_Waypoints/DEMO.cup" />
+        <exclude domain="file" path="_Waypoints/DEMO.cupx" />
         <exclude domain="file" path="_Airspaces/DEMO.txt" />
 
     </device-transfer>

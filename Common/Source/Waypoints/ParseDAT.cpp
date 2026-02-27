@@ -18,7 +18,7 @@ extern int globalFileNum;
 
 
 // This is converting DAT Winpilot
-int ParseDAT(TCHAR *String,WAYPOINT *Temp)
+int ParseDAT(const TCHAR *String, WAYPOINT *Temp)
 {
   TCHAR *Number;
   TCHAR *pToken;
@@ -102,10 +102,6 @@ int ParseDAT(TCHAR *String,WAYPOINT *Temp)
 
   if(Temp->Altitude <= 0) {
     WaypointAltitudeFromTerrain(Temp);
-  }
-
-  if (Temp->Details) {
-    free(Temp->Details);
   }
 
   return TRUE;

@@ -13,52 +13,55 @@
 
 constexpr double invalid_angle = -9999;
 
-double CUPToLat(const TCHAR *str) {
+double CUPToLat(const char* str) {
   // latitude is 4555.0X minimum
   if (!str) {
-	return invalid_angle;
+    return invalid_angle;
   }
 
   int degree = 0;
   // first 2 digit are degree
-  if(_istdigit(str[0]) && _istdigit(str[1])) {
-    degree = (str[0] - _T('0'))*10 + (str[1] - _T('0'));
-  } else {
+  if (isdigit(str[0]) && isdigit(str[1])) {
+    degree = (str[0] - '0') * 10 + (str[1] - '0');
+  }
+  else {
     return invalid_angle;
   }
 
   int minute = 0;
   // next 2 digit are minute
-  if(_istdigit(str[2]) && _istdigit(str[3])) {
-    minute = (str[2] - _T('0'))*10 + (str[3] - _T('0'));
-  } else {
+  if (isdigit(str[2]) && isdigit(str[3])) {
+    minute = (str[2] - '0') * 10 + (str[3] - '0');
+  }
+  else {
     return invalid_angle;
   }
   // next char is dot
-  if(str[4] != _T('.')) {
+  if (str[4] != '.') {
     return invalid_angle;
   }
 
   int divisor = 1;
   int radix = 0;
   // next digit are decimal minutes
-  const TCHAR* next = &str[5];
-  for(; _istdigit(*next); ++next) {
-    radix = radix * 10 + (*next - _T('0'));
-	divisor *= 10;
+  const char* next = &str[5];
+  for (; isdigit(*next); ++next) {
+    radix = radix * 10 + (*next - '0');
+    divisor *= 10;
   }
 
   double angle = degree + ((minute + (static_cast<double>(radix) / divisor)) / 60.);
-  if((*next) == _T('S')) {
+  if ((*next) == 'S') {
     return angle * -1;
-  } else if((*next) == _T('N')) {
+  }
+  else if ((*next) == 'N') {
     return angle;
-  } 
+  }
   // error
   return invalid_angle;
 }
 
-double CUPToLon(const TCHAR *str) {
+double CUPToLon(const char* str) {
   // longitude can be 01234.5X
   if (!str) {
     return invalid_angle;
@@ -66,17 +69,18 @@ double CUPToLon(const TCHAR *str) {
 
   int degree = 0;
   // first 3 digit are degree
-  if(_istdigit(str[0]) && _istdigit(str[1]) && _istdigit(str[2])) {
-    degree = (str[0] - _T('0'))*100 + (str[1] - _T('0'))*10 + (str[2] - _T('0'));
+  if(isdigit(str[0]) && isdigit(str[1]) && isdigit(str[2])) {
+    degree = (str[0] - '0') * 100 + (str[1] - '0') * 10 + (str[2] - '0');
   } else {
     return invalid_angle;
   }
 
   int minute = 0;
   // next 2 digit are minute
-  if(_istdigit(str[3]) && _istdigit(str[4])) {
-    minute = (str[3] - _T('0'))*10 + (str[4] - _T('0'));
-  } else {
+  if (isdigit(str[3]) && isdigit(str[4])) {
+    minute = (str[3] - '0') * 10 + (str[4] - '0');
+  }
+  else {
     return invalid_angle;
   }
   // next char is dot
@@ -87,18 +91,18 @@ double CUPToLon(const TCHAR *str) {
   int divisor = 1;
   int radix = 0;
   // next digit are decimal minutes
-  const TCHAR* next = &str[6];
-  for(; _istdigit(*next); ++next) {
-	radix = radix * 10 + (*next - _T('0'));
-	divisor *= 10;
+  const char* next = &str[6];
+  for (; isdigit(*next); ++next) {
+    radix = radix * 10 + (*next - _T('0'));
+    divisor *= 10;
   }
 
   double angle = degree + ((minute + (static_cast<double>(radix) / divisor)) / 60.);
-  if((*next) == _T('W')) {
+  if((*next) == 'W') {
     return angle * -1;
-  } else if((*next) == _T('E')) {
+  } else if((*next) == 'E') {
     return angle;
-  } 
+  }
   // error
   return invalid_angle;
 }
@@ -109,27 +113,27 @@ double CUPToLon(const TCHAR *str) {
 TEST_CASE("CUPToLatLon") {
 
 	SUBCASE("CUPToLat") {
-		CHECK(CUPToLat(_T("4555.5555N")) == doctest::Approx(45.925925).epsilon(0.0000001));
-		CHECK(CUPToLat(_T("4555.0S")) == doctest::Approx(-45.916667).epsilon(0.0000001));
-		CHECK(CUPToLat(_T("955.0S")) == -9999);
-		CHECK(CUPToLat(_T("9555.55x")) == -9999);
-		CHECK(CUPToLat(_T("9555.55")) == -9999);
-		CHECK(CUPToLat(_T("9555")) == -9999);
-		CHECK(CUPToLat(_T("955")) == -9999);
-		CHECK(CUPToLat(_T("")) == -9999);
-		CHECK(CUPToLat(nullptr) == -9999);
+		CHECK(CUPToLat("4555.5555N") == doctest::Approx(45.925925).epsilon(0.0000001));
+		CHECK(CUPToLat("4555.0S") == doctest::Approx(-45.916667).epsilon(0.0000001));
+		CHECK(CUPToLat("955.0S") == invalid_angle);
+		CHECK(CUPToLat("9555.55x") == invalid_angle);
+		CHECK(CUPToLat("9555.55") == invalid_angle);
+		CHECK(CUPToLat("9555") == invalid_angle);
+		CHECK(CUPToLat("955") == invalid_angle);
+		CHECK(CUPToLat("") == invalid_angle);
+		CHECK(CUPToLat(nullptr) == invalid_angle);
 	}
 
 	SUBCASE("CUPToLon") {
-		CHECK(CUPToLon(_T("12555.5555E")) == doctest::Approx(125.925925).epsilon(0.0000001));
-		CHECK(CUPToLon(_T("04555.0W")) == doctest::Approx(-45.916667).epsilon(0.0000001));
-		CHECK(CUPToLon(_T("9555.0S")) == -9999);
-		CHECK(CUPToLon(_T("95555.55x")) == -9999);
-		CHECK(CUPToLon(_T("99555.55")) == -9999);
-		CHECK(CUPToLon(_T("9555")) == -9999);
-		CHECK(CUPToLon(_T("955")) == -9999);
-		CHECK(CUPToLon(_T("")) == -9999);
-		CHECK(CUPToLon(nullptr) == -9999);
+		CHECK(CUPToLon("12555.5555E") == doctest::Approx(125.925925).epsilon(0.0000001));
+		CHECK(CUPToLon("04555.0W") == doctest::Approx(-45.916667).epsilon(0.0000001));
+		CHECK(CUPToLon("9555.0S") == invalid_angle);
+		CHECK(CUPToLon("95555.55x") == invalid_angle);
+		CHECK(CUPToLon("99555.55") == invalid_angle);
+		CHECK(CUPToLon("9555") == invalid_angle);
+		CHECK(CUPToLon("955") == invalid_angle);
+		CHECK(CUPToLon("") == invalid_angle);
+		CHECK(CUPToLon(nullptr) == invalid_angle);
 	}
 }
 #endif

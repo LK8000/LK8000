@@ -136,10 +136,16 @@ public:
     void DrawBitmapCopy(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
     void DrawBitmap(const int x, const int y, const int cx, const int cy, const LKBitmap& Bitmap);
 
+    void DrawBitmapCopy(const RasterPoint& origin, const PixelSize& size, const LKBitmap& Bitmap) {
+        DrawBitmapCopy(origin.x, origin.y, size.cx, size.cy, Bitmap);
+    }
     void DrawBitmap(const RasterPoint& origin, const PixelSize& size, const LKBitmap& Bitmap) {
         DrawBitmap(origin.x, origin.y, size.cx, size.cy, Bitmap);
     }
 
+    void DrawBitmapCopy(const PixelRect& rect, const LKBitmap& Bitmap) {
+        DrawBitmapCopy(rect.GetOrigin(), rect.GetSize(), Bitmap);
+    }
     void DrawBitmap(const PixelRect& rect, const LKBitmap& Bitmap) {
         DrawBitmap(rect.GetOrigin(), rect.GetSize(), Bitmap);
     }
@@ -286,6 +292,8 @@ private:
 
 #endif
 
+private:
+    void DrawBitmapInternal(int x, int y, int cx, int cy, const LKBitmap& Bitmap, int cxSrc, int cySrc, bool Copy);
 };
 
 #ifndef USE_GDI

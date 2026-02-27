@@ -228,6 +228,9 @@ int GetWaypointFileFormatType(const TCHAR* wfilename) {
   if ( _tcsicmp(wextension,_T(LKS_OPENAIP))==0 ) {
        return LKW_OPENAIP;
   }
+  if ( _tcsicmp(wextension,_T(LKS_WP_CUPX))==0 ) {
+       return LKW_CUPX;
+  }
 
   return -1;
 

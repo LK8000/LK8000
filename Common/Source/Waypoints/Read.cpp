@@ -8,8 +8,9 @@
 
 #include "externs.h"
 #include "Waypointparser.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "LocalPath.h"
+#include "cupx_reader.h"
 
 int globalFileNum = 0;
 
@@ -34,19 +35,35 @@ void ReadWayPoints(void)
             LocalPath(szFilePath, _T(LKD_WAYPOINTS), szFile);
             int fileformat=GetWaypointFileFormatType(szFilePath);
             bool not_found = true;
-            zzip_stream stream(szFilePath, "rt");
-            if (stream) {
-              if(fileformat == LKW_OPENAIP) {
-                if(ParseOpenAIP(stream)) {
-                  WpFileType[globalFileNum] = LKW_OPENAIP;
-                  not_found = false;
-                }
-              } else {
-                WpFileType[globalFileNum] = ReadWayPointFile(stream, fileformat);
+            if (fileformat == LKW_CUPX) {
+              try {
+                cupx_reader cupx(szFilePath);
+                zzip_disk_file_stream stream = cupx.read_points_cup();
+                std::istream in(&stream);
+                ReadWayPointFile(in, LKW_CUP);
+                WpFileType[globalFileNum] = LKW_CUPX;
                 not_found = false;
               }
+              catch (const std::exception& e) {
+                StartupStore(TEXT(R"(---- cupx exception : %d : "%s")"), globalFileNum, e.what());
+              }
             }
-            
+            else {
+              zzip_file_stream stream(szFilePath, "rt");
+              if (stream) {
+                if (fileformat == LKW_OPENAIP) {
+                  if (ParseOpenAIP(stream)) {
+                    WpFileType[globalFileNum] = LKW_OPENAIP;
+                    not_found = false;
+                  }
+                }
+                else {
+                  std::istream in(&stream);
+                  WpFileType[globalFileNum] = ReadWayPointFile(in, fileformat);
+                  not_found = false;
+                }
+              }
+            }
             if (not_found) {
                 StartupStore(TEXT("--- No waypoint file %d"), globalFileNum);
                 // file not found : reset config

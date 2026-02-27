@@ -12,8 +12,9 @@
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Dialogs/dlgProgress.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
 #include "LocalPath.h"
 
 
@@ -48,8 +49,7 @@ void OpenTopology() {
   std::fill(std::begin(TopoStore), std::end(TopoStore), nullptr);
 
   // Ready to open the file now..
-  zzip_stream stream(szFile, "rt");
-
+  zzip_file_stream stream(szFile, "rt");
   if (!stream) {
     UnlockTerrainDataGraphics();
     StartupStore(TEXT(". No topology file <%s>%s"), szFile,NEWLINE);
@@ -57,7 +57,6 @@ void OpenTopology() {
   }
 
   TCHAR ctemp[80];
-  TCHAR TempString[READLINE_LENGTH+1];
   TCHAR ShapeName[80];
   double ShapeRange;
   long ShapeIcon;
@@ -68,14 +67,20 @@ void OpenTopology() {
   int numtopo = 0;
   int shapeIndex=0;
 
-  while(stream.read_line(TempString)) {
+  std::string src_line;
+  std::istream istream(&stream);
+  while(std::getline(istream, src_line)) {
+	trim_inplace(src_line);
+	//skip empty lines
+	if (src_line.empty()) {
+		continue; // Skip empty line
+	}
+	if (src_line.front() == '*') {
+		continue; // Skip Comment
+	}
 
-    if(TempString[0] == _T('\0')) {
-      continue; // Skip empty line
-    }
-    if(TempString[0] == _T('*')) {
-      continue; // Skip Comment
-    }
+	tstring Text = from_unknown_charset(src_line.c_str());
+	const TCHAR* TempString = Text.data();
 
     BYTE red, green, blue;
     // filename,range,icon,field

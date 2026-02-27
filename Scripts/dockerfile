@@ -10,13 +10,16 @@ RUN apt-get update && \
                 libgl1-mesa-dev libegl1-mesa-dev libx11-dev \
                 libsdl2-dev libsdl2-mixer-dev \
                 libasound2-dev libsndfile1-dev \
-                mingw-w64 libfl2 zlib1g-dev libcurl4-openssl-dev && \
+                libfl2 zlib1g-dev libcurl4-openssl-dev libjpeg-dev cmake \
+                mingw-w64 libz-mingw-w64-dev && \
         apt-get clean && \
         rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* /var/log/*
 
 # Install PC library dependencies
 WORKDIR /tmp/mingw
 ADD install-mingw-w64-depends.sh /tmp/mingw/install-mingw-w64-depends.sh
+ADD i686-w64-mingw32.cmake /tmp/mingw/i686-w64-mingw32.cmake
+ADD x86_64-w64-mingw32.cmake /tmp/mingw/x86_64-w64-mingw32.cmake 
 RUN ./install-mingw-w64-depends.sh && \
          rm -rf /tmp/mingw
 

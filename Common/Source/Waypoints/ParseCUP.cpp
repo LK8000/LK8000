@@ -11,6 +11,8 @@
 #include "LKStyle.h"
 #include "utils/lookup_table.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
+#include <ranges>
 
 extern int globalFileNum;
 
@@ -20,7 +22,7 @@ enum class CSVState {
     QuotedQuote,
 };
 
-cup_header_t CupStringToHeader(const TCHAR *row) {
+cup_header_t CupStringToHeader(std::string_view row) {
 
 /* 
   this "alias" table is required to maintain backward compatibility 
@@ -43,72 +45,70 @@ cup_header_t CupStringToHeader(const TCHAR *row) {
   cup_header_t header;
   const auto entries = CupStringToFieldArray(row);
   for (size_t i = 0; i < entries.size(); ++i) {
-    const tstring lower_text = to_lower_ascii(entries[i]);
+    const tstring lower_text = to_lower_ascii(from_unknown_charset(entries[i].c_str()));
     header[tstring(alias.get(lower_text))] = i;
   }
   return header;
 }
 
-std::vector<tstring> CupStringToFieldArray(const TCHAR *row) {
+std::vector<std::string> CupStringToFieldArray(std::string_view row) {
+  std::vector<std::string> fields = {""};
 
-    std::vector<tstring> fields = {_T("")};
+  CSVState state = CSVState::UnquotedField;
 
-    if(row) {
-
-      CSVState state = CSVState::UnquotedField;
-
-      for( size_t n =0 ; n < _tcslen(row); n++)
-      {
-        const TCHAR c = row [n];
-        switch (state) {
-            case CSVState::UnquotedField:
-                switch (c) {
-                    case ',': // end of field
-                              fields.push_back(_T(""));
-                              break;
-                    case '"': state = CSVState::QuotedField;
-                              break;
-                    default:  fields.back().push_back(c);
-                              break; 
-                }
-                break;
-            case CSVState::QuotedField:
-                switch (c) {
-                    case '"': state = CSVState::QuotedQuote;
-                              break;
-                    default:  fields.back().push_back(c);
-                              break; 
-                }
-                break;
-            case CSVState::QuotedQuote:
-                switch (c) {
-                    case ',': // , after closing quote
-                              fields.push_back(_T(""));
-                              state = CSVState::UnquotedField;
-                              break;
-                    case '"': // "" -> "
-                              fields.back().push_back('"');
-                              state = CSVState::QuotedField;
-                              break;
-                    default:  // end of quote
-                              fields.back().push_back(c);
-                              state = CSVState::QuotedField;
-                              break; 
-                }
-                break;
+  for (auto c : row) {
+    switch (state) {
+      case CSVState::UnquotedField:
+        switch (c) {
+          case ',':  // end of field
+            fields.push_back("");
+            break;
+          case '"':
+            state = CSVState::QuotedField;
+            break;
+          default:
+            fields.back().push_back(c);
+            break;
         }
-      }
+        break;
+      case CSVState::QuotedField:
+        switch (c) {
+          case '"':
+            state = CSVState::QuotedQuote;
+            break;
+          default:
+            fields.back().push_back(c);
+            break;
+        }
+        break;
+      case CSVState::QuotedQuote:
+        switch (c) {
+          case ',':  // , after closing quote
+            fields.push_back("");
+            state = CSVState::UnquotedField;
+            break;
+          case '"':  // "" -> "
+            fields.back().push_back('"');
+            state = CSVState::QuotedField;
+            break;
+          default:  // end of quote
+            fields.back().push_back(c);
+            state = CSVState::QuotedField;
+            break;
+        }
+        break;
     }
-    return fields;
+  }
+  return fields;
 }
 
 namespace {
   class cup_line {
   public:
-    cup_line(const cup_header_t& _Headers, std::vector<tstring>&& _Entries) 
-          : empty(), Headers(_Headers), Entries(std::forward<std::vector<tstring>>(_Entries)) {}
+    cup_line(const cup_header_t& _Headers, std::vector<std::string>&& _Entries) 
+          : empty(), Headers(_Headers), Entries(std::forward<std::vector<std::string>>(_Entries)) {}
 
-    const tstring& operator[](const TCHAR* Name) const {
+    const std::string& operator[](const TCHAR* Name) const {
       auto it = Headers.find(Name);
       if(it != Headers.end()) {
         return Entries[it->second];
@@ -121,15 +121,15 @@ namespace {
     }
 
   private:
-    const tstring empty;
+    const std::string empty;
     const cup_header_t& Headers;
-    const std::vector<tstring> Entries;
+    const std::vector<std::string> Entries;
   };
 }
 
 //#define CUPDEBUG
-bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,WAYPOINT *Temp)
-{
+bool ParseCUPWayPointString(const cup_header_t& cup_header,
+                            std::string_view row, WAYPOINT* Temp) {
   int flags=0;
   bool ishome=false; // 100310
 
@@ -139,66 +139,41 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
   Temp->Number = WayPointList.size();
   Temp->FileNum = globalFileNum;
 
-  cup_line Entries(cup_header, CupStringToFieldArray(String));
+  cup_line Entries(cup_header, CupStringToFieldArray(row));
 
   if(Entries.size() < 11) {
     return false;
   }
 
   // ---------------- NAME ----------------
-  lk::snprintf(Temp->Name, _T("%s"), Entries[_T("name")].c_str());
-#ifdef CUPDEBUG
-  StartupStore(_T("   CUP NAME=<%s>%s"), Temp->Name, NEWLINE);
-#endif
+  from_unknown_charset(Entries[_T("name")].c_str(), Temp->Name);
 
   // ---------------- CODE ------------------
-  lk::snprintf(Temp->Code, _T("%s"), Entries[_T("code")].c_str());
-#ifdef CUPDEBUG
-  StartupStore(_T("   CUP CODE=<%s>%s"), Temp->Code, NEWLINE);
-#endif
+  from_unknown_charset(Entries[_T("code")].c_str(), Temp->Code);
 
   // ---------------- COUNTRY ------------------
-  lk::snprintf(Temp->Country, _T("%s"), Entries[_T("country")].c_str());
-#ifdef CUPDEBUG
-  StartupStore(_T("   CUP COUNTRY=<%s>%s"), Temp->Country, NEWLINE);
-#endif
+  from_unknown_charset(Entries[_T("country")].c_str(), Temp->Country);
 
   // ---------------- LATITUDE  ------------------
-  Temp->Latitude = CUPToLat( Entries[_T("lat")].c_str() );
-
-  if((Temp->Latitude > 90) || (Temp->Latitude < -90)) {
-	return false;
+  Temp->Latitude = CUPToLat(Entries[_T("lat")].c_str());
+  if ((Temp->Latitude > 90) || (Temp->Latitude < -90)) {
+    return false;
   }
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP LATITUDE=<%f>%s"),Temp->Latitude,NEWLINE);
-  #endif
-
 
   // ---------------- LONGITUDE  ------------------
-  Temp->Longitude  = CUPToLon( Entries[_T("lon")].c_str());
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP LONGITUDE=<%f>%s"),Temp->Longitude,Entries[4].c_str());
-  #endif
-  if((Temp->Longitude  > 180) || (Temp->Longitude  < -180)) {
-	return false;
+  Temp->Longitude = CUPToLon(Entries[_T("lon")].c_str());
+  if ((Temp->Longitude > 180) || (Temp->Longitude < -180)) {
+    return false;
   }
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP LONGITUDE=<%f>%s"),Temp->Longitude,NEWLINE);
-  #endif
-
 
   // ---------------- ELEVATION  ------------------
-  Temp->Altitude = ReadAltitude( Entries[_T("elev")].c_str());
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP ELEVATION=<%f>%s"),Temp->Altitude,NEWLINE);
-  #endif
-  if (Temp->Altitude == -9999){
-	  Temp->Altitude=0;
+  Temp->Altitude = ReadAltitude(Entries[_T("elev")].c_str());
+  if (Temp->Altitude == -9999) {
+    Temp->Altitude = 0;
   }
 
-
   // ---------------- STYLE  ------------------
-  Temp->Style = (int)_tcstol( Entries[_T("style")].c_str(),NULL,10);
+  Temp->Style = (int)strtol(Entries[_T("style")].c_str(), nullptr, 10);
   switch(Temp->Style) {
 	case STYLE_AIRFIELDGRASS:	// airfield grass
 	case STYLE_GLIDERSITE:		// glider site
@@ -221,11 +196,11 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
   #endif
 
   // ---------------- RWY DIRECTION   ------------------
-  const tstring& rwdir =  Entries[_T("rwdir")];
+  const std::string& rwdir =  Entries[_T("rwdir")];
   if ((rwdir.length()) == 1) {
     Temp->RunwayDir=-1;
   } else {
-    Temp->RunwayDir = (int)AngleLimit360(_tcstol(rwdir.c_str(), NULL, 10));
+    Temp->RunwayDir = (int)AngleLimit360(strtol(rwdir.c_str(), nullptr, 10));
   }
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP RUNWAY DIRECTION=<%d>%s"),Temp->RunwayDir,NEWLINE);
@@ -233,11 +208,11 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
 
 
   // ---------------- RWY LENGTH   ------------------
-  const tstring& rwlen =  Entries[_T("rwlen")];
+  const std::string& rwlen =  Entries[_T("rwlen")];
   if (rwlen.length() == 1) {
     Temp->RunwayLen = -1;
   } else {
-    Temp->RunwayLen = (int)ReadLength(rwlen.c_str());
+    Temp->RunwayLen = ReadLength(rwlen.c_str());
   }
   #ifdef CUPDEBUG
   StartupStore(_T("   CUP RUNWAY LEN=<%d>%s"),Temp->RunwayLen,NEWLINE);
@@ -246,34 +221,35 @@ bool ParseCUPWayPointString(const cup_header_t& cup_header, const TCHAR *String,
 
 
   // ---------------- AIRPORT FREQ   ------------------
-  const tstring& freq =  Entries[_T("freq")];
-  lk::snprintf(Temp->Freq, _T("%s"), freq.c_str());
+  const std::string& freq =  Entries[_T("freq")];
+  from_unknown_charset(freq.c_str(), Temp->Freq);
 #ifdef CUPDEBUG
   StartupStore(_T("   CUP FREQ=<%s>%s"), Temp->Freq, NEWLINE);
 #endif
 
   // ---------------- COMMENT   ------------------
-  SetWaypointComment(*Temp,  Entries[_T("desc")].c_str());
-  #ifdef CUPDEBUG
-  StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
-  #endif
+  tstring Comment = from_unknown_charset(Entries[_T("desc")].c_str());
+  SetWaypointComment(*Temp,  Comment.c_str());
 
   if(Temp->Altitude <= 0) {
     WaypointAltitudeFromTerrain(Temp);
   }
 
-  if (Temp->Details) {
-    free(Temp->Details);
+  // ---------------- PICS   ------------------
+  const std::string& pics = Entries[_T("pics")];
+  Temp->pictures.clear();
+  if (!pics.empty()) {
+    for (auto&& sub : std::views::split(pics, ';')) {
+      Temp->pictures.emplace_back(sub.begin(), sub.end());
+    }
   }
 
   return true;
 }
 
-
-
-double ReadLength(const TCHAR *temp)
+double ReadLength(const char *temp)
 {
-  const TCHAR *stop=temp;
+  const char *stop=temp;
   double len = StrToDouble(temp, &stop);
   if (temp == stop) {		// error at begin
 	len=-9999;
@@ -307,13 +283,13 @@ double ReadLength(const TCHAR *temp)
 TEST_CASE("ParseCUP") {
 
 	SUBCASE("ReadLength") {
-		CHECK(ReadLength(_T("1m")) == doctest::Approx(1).epsilon(0.0000001));
-		CHECK(ReadLength(_T("12345.12m")) == doctest::Approx(12345.12).epsilon(0.0000001));
-		CHECK(ReadLength(_T("6.6658315335nm")) == doctest::Approx(12345.12).epsilon(0.0000001));
-		CHECK(ReadLength(_T("7.6709019327ml")) == doctest::Approx(12345.12).epsilon(0.0000001));
-		CHECK(ReadLength(_T("1000000.0m")) == doctest::Approx(1000000.0).epsilon(0.0000001));
-		CHECK(ReadLength(_T("539.956803nm")) == doctest::Approx(1000000.0).epsilon(0.0000001));
-		CHECK(ReadLength(_T("621.371192ml")) == doctest::Approx(1000000.0).epsilon(0.0000001));
+		CHECK(ReadLength("1m") == doctest::Approx(1).epsilon(0.0000001));
+		CHECK(ReadLength("12345.12m") == doctest::Approx(12345.12).epsilon(0.0000001));
+		CHECK(ReadLength("6.6658315335nm") == doctest::Approx(12345.12).epsilon(0.0000001));
+		CHECK(ReadLength("7.6709019327ml") == doctest::Approx(12345.12).epsilon(0.0000001));
+		CHECK(ReadLength("1000000.0m") == doctest::Approx(1000000.0).epsilon(0.0000001));
+		CHECK(ReadLength("539.956803nm") == doctest::Approx(1000000.0).epsilon(0.0000001));
+		CHECK(ReadLength("621.371192ml") == doctest::Approx(1000000.0).epsilon(0.0000001));
 	}
 }
 #endif

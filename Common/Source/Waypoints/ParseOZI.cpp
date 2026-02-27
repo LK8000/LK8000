@@ -15,7 +15,7 @@ extern int globalFileNum;
 
 
 
-bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
+bool ParseOZIWayPointString(const TCHAR *String, WAYPOINT *Temp){
 
 	Temp->Visible = true; // default all waypoints visible at start
 	Temp->FarVisible = true;

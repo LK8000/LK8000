@@ -17,7 +17,7 @@
 #include "utils/charset_helper.h"
 #include "Waypointparser.h"
 #include "Waypoints/SetHome.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "LocalPath.h"
 #include "Calc/Task/TimeGates.h"
 
@@ -94,6 +94,10 @@ char* ToString(xml_document* doc, const wchar_t* szString) {
 }
 
 #endif
+
+char* ToString(xml_document* doc, const tstring& str) {
+    return ToString(doc, str.c_str());
+}
 
 char* ToString(xml_document* doc, double dVal) {
     return AllocFormat(doc, "%f", dVal);
@@ -280,7 +284,7 @@ bool CTaskFileHelper::Load(const TCHAR* szFileName) {
 
     try {
 
-        zzip_stream file_stream(taskFileName, "rt");
+        zzip_file_stream file_stream(taskFileName, "rt");
         if (!file_stream) {
             return false;
         }
@@ -359,7 +363,7 @@ void CTaskFileHelper::LoadTimeGate(const xml_node* node) {
         else {
             TimeGates::GateType = TimeGates::fixed_gates;
             GetAttribute(node, "number", TimeGates::PGNumberOfGates);
-            TCHAR szTime[50];
+            char szTime[50];
             GetAttribute(node, "open-time", szTime);
             StrToTime(szTime, &TimeGates::PGOpenTimeH, &TimeGates::PGOpenTimeM);
             GetAttribute(node, "close-time", szTime);
@@ -620,8 +624,7 @@ bool CTaskFileHelper::LoadStartPoint(const xml_node* node) {
 }
 
 void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPname, const TCHAR *lastWPname) {
-    WAYPOINT newPoint;
-    memset(&newPoint, 0, sizeof (newPoint));
+    WAYPOINT newPoint = {};
 
     GetAttribute(node, "code", newPoint.Code);
     GetAttribute(node, "name", newPoint.Name);
@@ -660,16 +663,6 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
         return;
     }
     mWayPointLoaded[newPoint.Name] = ix;
-
-    if (newPoint.Details) {
-        free(newPoint.Details);
-        newPoint.Details = nullptr;
-    }
-
-    if (newPoint.Comment) {
-        free(newPoint.Comment);
-        newPoint.Comment = nullptr;
-    }
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
@@ -1040,10 +1033,10 @@ bool CTaskFileHelper::SaveWayPoint(xml_node* node, const WAYPOINT& WayPoint) {
     if (_tcslen(WayPoint.Code) > 0) {
         SetAttribute(node, "code", (LPCTSTR)(WayPoint.Code));
     }
-    if (WayPoint.Comment && _tcslen(WayPoint.Comment) > 0) {
+    if (!WayPoint.Comment.empty()) {
         SetAttribute(node, "comment", WayPoint.Comment);
     }
-    if (WayPoint.Details && _tcslen(WayPoint.Details) > 0) {
+    if (!WayPoint.Details.empty()) {
         SetAttribute(node, "details", WayPoint.Details);
     }
     SetAttribute(node, "format", WayPoint.Format);

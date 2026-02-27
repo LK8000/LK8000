@@ -40,6 +40,8 @@ KOBO_LIB_PATHS = \
 KOBO_LIB_PATHS += \
 	$(KOBO)/lib/libGeographic.so.19 \
 	$(KOBO)/lib/libGeographicLib.so.26 \
+	$(KOBO)/lib/libzzip.so.13 \
+	$(KOBO)/lib/libzzipmmapped.so.13 \
 
 ifeq ($(SNDFILE)$(ALSA),yy)
  KOBO_LIB_PATHS += \

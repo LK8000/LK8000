@@ -14,7 +14,7 @@ pushd $ARCHIVEDIR
 
         CFLAGS="${CFLAGS}" \
         LDFLAGS="${LDFLAGS}"  \
-        ./configure \
+        ../configure \
             --host=$CROSSTARGET \
             --prefix=$DEVICEROOT \
             PKG_CONFIG_LIBDIR=$DEVICEROOT/lib/pkgconfig

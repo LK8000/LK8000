@@ -382,7 +382,7 @@ void LKProfileResetDefault() {
   for (auto& file : szWaypointFile) {
     lk::strcpy(file, _T(""));
   }
-  lk::strcpy(szWaypointFile[0],_T("DEMO.cup"));
+  lk::strcpy(szWaypointFile[0],_T("DEMO.cupx"));
   szAdditionalWaypointFile[0] = TEXT('\0');
   lk::strcpy(szTerrainFile,_T("DEMO.DEM"));
   lk::strcpy(szAirfieldFile,_T("WAYNOTES.txt"));

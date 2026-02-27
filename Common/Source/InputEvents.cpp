@@ -27,7 +27,7 @@
 #include "Sideview.h"
 #include "CTaskFileHelper.h"
 #include "utils/stringext.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 #include "Asset.hpp"
 #include "Event/Event.h"
 #include "MapWindow.h"
@@ -43,6 +43,10 @@
 #include "Dialogs/dlgMultiSelectList.h"
 #include "Dialogs/Airspaces/dlgAirspaceDetails.h"
 #include "Calc/Task/TimeGates.h"
+#include "utils/charset_helper.h"
+
+using std::string_view_literals::operator""sv;
+
 // uncomment for show all menu button with id as Label.
 //#define TEST_MENU_LAYOUT
 
@@ -229,14 +233,14 @@ void InputEvents::readFile() {
   // Read in user defined configuration file
 
   TCHAR xcifilepath[MAX_PATH];
-  zzip_stream stream;
+  zzip_file_stream stream;
 
   //
   // ENGINEERING MODE: SELECTED XCI HAS PRIORITY
   //
   if (_tcslen(szInputFile)>0) {
     LocalPath(xcifilepath, _T(LKD_CONF), szInputFile);
-    stream.open(xcifilepath, "rb");
+    stream = zzip_file_stream(xcifilepath, "rb");
   }
 
   if (!stream) {
@@ -265,12 +269,12 @@ void InputEvents::readFile() {
     }
 
     SystemPath(xcifilepath,_T(LKD_SYSTEM), xcifile);
-    stream.open(xcifilepath, "rb");
+    stream = zzip_file_stream(xcifilepath, "rb");
   }
 
   if (!stream) {
     SystemPath(xcifilepath,_T(LKD_SYSTEM), _T("DEFAULT_MENU.TXT"));
-    stream.open(xcifilepath, "rb");
+    stream = zzip_file_stream(xcifilepath, "rb");
   }
 
   if (!stream) {
@@ -282,9 +286,8 @@ void InputEvents::readFile() {
   StartupStore(_T(". Loaded menu <%s>"), xcifilepath);
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
-  TCHAR buffer[2049];	// Buffer for all
-  TCHAR key[2049];	// key from scanf
-  TCHAR value[2049];	// value from scanf
+  char key[2049];	// key from scanf
+  char value[2049];	// value from scanf
   TCHAR *new_label = NULL;
   int found = 0;
 
@@ -296,8 +299,6 @@ void InputEvents::readFile() {
   int event_id = 0;
   TCHAR d_label[256] = TEXT("");
   int d_location = 0;
-  TCHAR d_event[256] = TEXT("");
-  TCHAR d_misc[256] = TEXT("");
 
   int line = 0;
 
@@ -306,13 +307,23 @@ void InputEvents::readFile() {
   //		Better way is to separate the check for # and the scanf
   // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
-  while (stream.read_line(buffer) && (buffer[0] == '\0' ||
-	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF))
-  ) {
+  std::string buffer;
+  std::istream in(&stream);
+
+  while (std::getline(in, buffer)) {
+    if (buffer.empty()) {
+      found = 0;
+    } else {
+      found = sscanf(buffer.c_str(), "%2048[^#=]=%2048[^\r\n][\r\n]", key, value);
+      if (found == EOF) {
+        continue;
+      }
+    }  
+
     line++;
 
     // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file
-    if ((line == 1) && (_tcsstr(buffer, TEXT("#CLEAR")))){
+    if ((line == 1) && (buffer.find("#CLEAR") != std::string::npos)) {
       for(auto Item : Key2Event) {
         Item.clear();
       }
@@ -395,7 +406,6 @@ void InputEvents::readFile() {
 
 	  token = tok.Next(TEXT(" "), true);
 	}
-
       }
 
       // Clear all data.
@@ -414,52 +424,58 @@ void InputEvents::readFile() {
       // NOTE: Do NOT display buffer to user as it may contain an invalid stirng !
 
     } else {
-      if (_tcscmp(key, TEXT("mode")) == 0) {
-	if (_tcslen(value) < 1024) {
-	  some_data = true;	// Success, we have a real entry
-	  lk::strcpy(d_mode, value);
-	}
-      } else if (_tcscmp(key, TEXT("type")) == 0) {
-	if (_tcslen(value) < 256)
-	  lk::strcpy(d_type, value);
-      } else if (_tcscmp(key, TEXT("data")) == 0) {
-	if (_tcslen(value) < 256)
-	  lk::strcpy(d_data, value);
-      } else if (_tcscmp(key, TEXT("event")) == 0) {
-	if (_tcslen(value) < 256) {
-	  lk::strcpy(d_event, TEXT(""));
-	  lk::strcpy(d_misc, TEXT(""));
-	  int ef = _stscanf(value, TEXT("%[^ ] %[^\r\n]"), d_event, d_misc);
+      if (key == "mode"sv) {
+        if (strlen(value) < 1024) {
+          some_data = true;  // Success, we have a real entry
+          from_unknown_charset(value, d_mode);
+      	}
+      }
+      else if (key == "type"sv) {
+        if (strlen(value) < 256) {
+          from_unknown_charset(value, d_type);
+        }
+      }
+      else if (key == "data"sv) {
+        if (strlen(value) < 256) {
+          from_unknown_charset(value, d_data);
+        }
+      }
+      else if (key == "event"sv) {
+        if (strlen(value) < 256) {
+          char event[256] = "";
+          char misc[256] = "";
+          int ef = sscanf(value, "%[^ ] %[^\r\n]", event, misc);
 
-	  // TODO code: Can't use token here - breaks
-	  // other token - damn C - how about
-	  // C++ String class ?
+          // TODO code: Can't use t*oken here - breaks
+          // other token - damn C - how about
+          // C++ String class ?
 
-	  // TCHAR *eventtoken;
-	  // eventtoken = _tcstok(value, TEXT(" "));
-	  // d_event = token;
-	  // eventtoken = _tcstok(value, TEXT(" "));
+          // TCHAR *eventtoken;
+          // eventtoken = _tcstok(value, TEXT(" "));
+          // d_event = token;
+          // eventtoken = _tcstok(value, TEXT(" "));
 
-	  if ((ef == 1) || (ef == 2)) {
+          if ((ef == 1) || (ef == 2)) {
+            // TODO code: Consider reusing existing identical events
 
-	    // TODO code: Consider reusing existing identical events
-
-	    pt2Event event = findEvent(d_event);
-	    if (event) {
-		  TCHAR* szString = StringMallocParse(d_misc);
-		  LabelGarbage.push_back(szString);
-	      event_id = makeEvent(event, szString, event_id);
-	    }
-	  }
-	}
-      } else if (_tcscmp(key, TEXT("label")) == 0) {
-        lk::strcpy(d_label, value);
-      } else if (_tcscmp(key, TEXT("location")) == 0) {
-        _stscanf(value, TEXT("%d"), &d_location);
-
+            tstring d_event = from_unknown_charset(event);
+            pt2Event event = findEvent(d_event.c_str());
+            if (event) {
+              tstring d_misc = from_unknown_charset(misc);
+              TCHAR* szString = StringMallocParse(d_misc.c_str());
+              LabelGarbage.push_back(szString);
+              event_id = makeEvent(event, szString, event_id);
+            }
+          }
+        }
+      }
+      else if (key == "label"sv) {
+        from_unknown_charset(value, d_label);
+      }
+      else if (key == "location"sv) {
+        sscanf(value, "%d", &d_location);
       }
     }
-
   } // end while
 #ifdef TESTBENCH
   StartupStore(_T("... Loaded %u Menu Events\n"), (unsigned)Events.size());
@@ -2847,14 +2863,12 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   edit_waypoint.Latitude = GPS_INFO.Latitude;
   edit_waypoint.Longitude = GPS_INFO.Longitude;
   edit_waypoint.Altitude = CALCULATED_INFO.TerrainAlt;
-  edit_waypoint.FileNum = 2; // don't put into file
+  edit_waypoint.FileNum = -1; // don't put into file
   edit_waypoint.Flags = 0;
   if (_tcscmp(misc, TEXT("landable")) == 0) {
     edit_waypoint.Flags += LANDPOINT;
   }
-  edit_waypoint.Comment = NULL;
   lk::snprintf(edit_waypoint.Name,TEXT("_%u"), (unsigned)tmpWaypointNum);
-  edit_waypoint.Details = 0;
   edit_waypoint.Number = WayPointList.size();
 
   AddWaypoint(edit_waypoint);

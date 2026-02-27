@@ -20,6 +20,8 @@ public:
 	LKBitmap(LKBitmap&& orig) = default;
 	LKBitmap(const LKBitmap& orig) = delete;
 
+	LKBitmap(const void* data, size_t size);
+
 	~LKBitmap();
 
 	LKBitmap& operator=(LKBitmap&& ) = default;
@@ -29,6 +31,7 @@ public:
 
 	bool LoadFromFile(const TCHAR* FilePath);
 	bool LoadFromResource(const TCHAR* ResourceName);
+	bool LoadFromMemory(const void* data, size_t size);
 
     operator bool() const { return IsDefined(); }
 

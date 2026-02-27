@@ -13,7 +13,7 @@
 #include "Waypointparser.h"
 #include "Util/tstring.hpp"
 #include "NavFunctions.h"
-#include "utils/zzip_stream.h"
+#include "utils/zzip_file_stream.h"
 
 #include "WindowControls.h"
 #include "Dialogs.h"
@@ -23,6 +23,7 @@
 #include "Util/UTF8.hpp"
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
+#include "utils/charset_helper.h"
 #include "Util/Clamp.hpp"
 #include "Calc/Task/TimeGates.h"
 
@@ -255,7 +256,7 @@ public:
 
 namespace {
 
-using field_iterator = std::vector<tstring>::const_iterator;
+using field_iterator = std::vector<std::string>::const_iterator;
 
 bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypoint_t &mapWaypoint) {
     size_t idxTP = 0;
@@ -264,7 +265,7 @@ bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypo
         if (idxTP >= MAXTASKPOINTS) {
             return;
         }
-        mapCode2Waypoint_t::iterator It = mapWaypoint.find(code);
+        mapCode2Waypoint_t::iterator It = mapWaypoint.find(from_unknown_charset(code.c_str()));
         if (It != mapWaypoint.end()) {
             int ix = FindOrAddWaypoint(&(It->second), true);  // first try to find airfield
             if (ix < 0) {
@@ -284,31 +285,20 @@ bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypo
     return (idxTP > 0);
 }
 
-} // namespace
-
-bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskIndex) {
+template<size_t size>
+bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int SelectedTaskIndex) {
 
 
   mapCode2Waypoint_t mapWaypoint;
 
   bool TaskFound = false;
   bool bLoadComplet = true;
-  bool bLastInvalid=true;
-  std::vector<tstring> Entries;
-  TCHAR szString[READLINE_LENGTH + 1];
-
-
-  szString[READLINE_LENGTH] = _T('\0');
-
-
-  memset(szString, 0, sizeof (szString)); // clear Temp Buffer
+  std::vector<std::string> Entries;
   WAYPOINT newPoint = {};
 
+  enum { none, Waypoint, TaskTp, Option } FileSection = none;
 
-  enum {
-    none, Waypoint, TaskTp, Option
-  } FileSection = none;
-  zzip_stream stream(szFileName, "rt");
+  zzip_file_stream stream(szFileName, "rt");
 
 
   LockTaskData();
@@ -320,224 +310,243 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, LPTSTR TaskLine, int SelectedTaskInde
   FileSection = none;
   int i=0;
   if (stream) {
-      while (stream.read_line(szString)) {
+    std::istream in(&stream);
+    std::string src_line;
 
-          if ((FileSection == none) && ((_tcsncmp(_T("name,code,country"), szString, 17) == 0) ||
-              (_tcsncmp(_T("Title,Code,Country"), szString, 18) == 0))) {
-              FileSection = Waypoint;
-              cup_header = CupStringToHeader(szString);
-              continue;
-          } else if ((FileSection == Waypoint) && (_tcscmp(szString, _T("-----Related Tasks-----")) == 0)) {
-              FileSection = TaskTp;
-
-              continue;
-          }
-          if( FileSection == TaskTp)
-            if(_tcsstr(szString, _T("\",\""))== NULL)   // really a task? (not an option)
-              FileSection = Option;
-          if( FileSection == Option)
-            if(_tcsstr(szString, _T("\",\""))!= NULL)   // really a task! (not an option)
-              FileSection = TaskTp;
-
-          const TCHAR *pToken = NULL;
-
-          int hh,mm,ss;
-
-          if(FileSection !=Waypoint)
-          {
-            Entries = CupStringToFieldArray(szString);
-            pToken = Entries[0].c_str() ;
-#if TESTBENCH
-     //       for(size_t idx=0; idx < Entries.size(); idx ++)
-     //         StartupStore(_T(". Task  %i %s %s"), idx, Entries[idx].c_str()  ,NEWLINE);
-#endif
-          }
-
-          switch (FileSection) {
-
-          case Waypoint:
-            memset(&newPoint, 0, sizeof(newPoint));
-            if (ParseCUPWayPointString(cup_header, szString, &newPoint)) {
-                mapWaypoint[newPoint.Name] = newPoint;
-            }
-            break;
-          case TaskTp:
-            // 1. Description
-            //       First column is the description of the task. If filled it should be double quoted.
-            //       If left empty, then SeeYou will determine the task type on runtime.
-            // 2. and all successive columns, separated by commas
-            //       Each column represents one waypoint name double quoted. The waypoint name must be exactly the
-            //       same as the Long name of a waypoint listed above the Related tasks.
-
-
-            if (i++ != (SelectedTaskIndex))  // load selected task
-            {
-              TaskValid = false;
-            }
-            else
-            {
-                TaskValid = true;
-                TaskFound = true;
-                SectorType = sector_type_t::SECTOR; // normal sector by default if no other ObsZone parameter
-                gTaskType = task_type_t::DEFAULT; // racing task by default, if AAT will overwrite this
-
-                if(Entries[0].size() == 0)
-                {
-                  StartupStore(_T(". no Task name, named it %s%i %s"), MsgToken<699>(),i, NEWLINE);// _@M699_ "Task"
-                  if(TaskLine != NULL)
-                    lk::snprintf(TaskLine, READLINE_LENGTH,_T("%s%i%s"),MsgToken<699>(),i,szString);  // _@M699_ "Task"
-                }
-                else
-                {
-                  StartupStore(_T(". read Task %s %s"), Entries[0].c_str()  ,NEWLINE);
-                  if(TaskLine != NULL)
-		              _tcscpy(TaskLine, szString );
-                }
-
-                bLoadComplet = ConvertStringToTask( std::next(Entries.begin()), Entries.end(), mapWaypoint);
-                FileSection = Option;
-              }
-            break;
-          case Option:
-            if (TaskValid)  // load option for selected task only
-            {
-	      if (_tcsstr(pToken, _T("Options")) == pToken)
-	      {
-		  size_t ParIdx=1;
-		  while ( ParIdx <  Entries.size() )
-		  {
-		    pToken = Entries[ParIdx++].c_str() ;
-
-		    if (_tcsstr(pToken, _T("NoStart=")) == pToken) {
-			TimeGates::GateType = TimeGates::fixed_gates;
-
-			// Opening of start line
-			TimeGates::PGNumberOfGates = 1;
-			StrToTime(pToken + 8, &TimeGates::PGOpenTimeH, &TimeGates::PGOpenTimeM);
-		    } else if (_tcsstr(pToken, _T("TaskTime=")) == pToken) {
-			// Designated Time for the task
-			StrToTime(pToken + 9, &hh, &mm, &ss);
-//			StartupStore(_T("..Cup Task Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
-			AATTaskLength =  hh*60+mm+ss/60;
-
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("WpDis=")) == pToken) {
-			// Task distance calculation. False = use fixes, True = use waypoints
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("NearDis=")) == pToken) {
-			// Distance tolerance
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("NearAlt=")) == pToken) {
-			// Altitude tolerance
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("MinDis=")) == pToken) {
-			// Uncompleted leg.
-			// False = calculate maximum distance from last observation zone.
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("RandomOrder=")) == pToken) {
-			// if true, then Random order of waypoints is checked
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("MaxPts=")) == pToken) {
-			// Maximum number of points
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("BeforePts=")) == pToken) {
-			// Number of mandatory waypoints at the beginning. 1 means start line only, two means
-			//      start line plus first point in task sequence (Task line).
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("AfterPts=")) == pToken) {
-			// Number of mandatory waypoints at the end. 1 means finish line only, two means finish line
-			//      and one point before finish in task sequence (Task line).
-			// TODO :
-		    } else if (_tcsstr(pToken, _T("Bonus=")) == pToken) {
-			// Bonus for crossing the finish line
-			// TODO :
-		    }
-		}
-                } else if (_tcsstr(pToken, _T("ObsZone=")) == pToken) {
-                    TCHAR *sz = NULL;
-                    CupObsZoneUpdater TmpZone;
-                    TmpZone.mIdx = _tcstol(pToken + 8, NULL, 10);
-                    if (TmpZone.mIdx < MAXTASKPOINTS) {
-                          size_t ParIdx=1;
-                          while ( ParIdx <  Entries.size() )
-                          {
-                            pToken = Entries[ParIdx++].c_str() ;
-
-                            if (_tcsstr(pToken, _T("Style=")) == pToken) {
-                                // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next point, 3 - To previous point, 4 - To start point
-                                TmpZone.mType = _tcstol(pToken + 6, &sz, 10);
-                            } else if (_tcsstr(pToken, _T("R1=")) == pToken) {
-                                // Radius 1
-                                TmpZone.mR1 = ReadLength(pToken + 3);
-                            } else if (_tcsstr(pToken, _T("A1=")) == pToken) {
-                                // Angle 1 in degrees
-                                TmpZone.mA1 = _tcstod(pToken + 3, &sz);
-                                if( TmpZone.mA1 > 179.5)  //  180° = Circle sector
-                                  if( TmpZone.mA1 < 180.5)
-                                    SectorType = sector_type_t::CIRCLE;
-                            } else if (_tcsstr(pToken, _T("R2=")) == pToken) {
-                                // Radius 2
-                                TmpZone.mR2 = ReadLength(pToken + 3);
-                            } else if (_tcsstr(pToken, _T("A2=")) == pToken) {
-                                // Angle 2 in degrees
-                                TmpZone.mA2 = _tcstod(pToken + 3, &sz);
-                            } else if (_tcsstr(pToken, _T("A12=")) == pToken) {
-                                // Angle 12
-                                TmpZone.mA12 = _tcstod(pToken + 4, &sz);
-                            } else if (_tcsstr(pToken, _T("AAT=")) == pToken) {
-                                // AAT
-                        	      gTaskType = task_type_t::AAT;
-                                if( _tcstod(pToken + 4, &sz) > 0) // AAT = 1?
-                                  SectorType = sector_type_t::CIRCLE;
-                            } else if (_tcsstr(pToken, _T("Line=")) == pToken) {
-                                // true For Line Turmpoint type
-                                // Exist only for start an Goalin LK
-                                TmpZone.mLine = (_tcstol(pToken + 5, &sz, 10) == 1);
-                            }
-                        }
-                        if(  TmpZone.mR1 >0)   // if both radius defined
-                          if(  TmpZone.mR2 >0) // must be keyhole definition
-                            SectorType = sector_type_t::DAe;    // the only similar sectortype in LK
-
-                        if( TmpZone.mLine) // line has priority (Start & Finish) if multiple definitions
-                        {
-                          TmpZone.mA1 = 90;
-                          TmpZone.mA2 = 0;
-                          TmpZone.mA12 =0;
-                        }
-                        TmpZone.UpdateTask();
-                    }
-                }
-              }
-            break;
-          case none:
-          default:
-            break;
-          }
-          memset(szString, 0, sizeof (szString)); // clear Temp Buffer
+    while (std::getline(in, src_line)) {
+      if ((FileSection == none) &&
+          (src_line.starts_with("name,code,country") ||
+           src_line.starts_with("Title,Code,Country"))) {
+        FileSection = Waypoint;
+        cup_header = CupStringToHeader(src_line);
+        continue;
       }
+      else if ((FileSection == Waypoint) &&
+               (src_line == "-----Related Tasks-----")) {
+        FileSection = TaskTp;
+
+        continue;
+      }
+      if (FileSection == TaskTp) {
+        if (src_line.find("\",\"") == std::string::npos) {  // really a task? (not an option)
+          FileSection = Option;
+        }
+      }
+      if (FileSection == Option) {
+        if (src_line.find("\",\"") != std::string::npos) {  // really a task? (not an option)
+          FileSection = TaskTp;
+        }
+      }
+      std::vector<std::string>::const_iterator pToken;
+
+      int hh, mm, ss;
+
+      if (FileSection != Waypoint) {
+        Entries = CupStringToFieldArray(src_line);
+        pToken = Entries.begin();
+      }
+
+      switch (FileSection) {
+        case Waypoint:
+          newPoint = {};
+          if (ParseCUPWayPointString(cup_header, src_line, &newPoint)) {
+            mapWaypoint[newPoint.Name] = newPoint;
+          }
+          break;
+        case TaskTp:
+          // 1. Description
+          //       First column is the description of the task. If filled it
+          //       should be double quoted. If left empty, then SeeYou will
+          //       determine the task type on runtime.
+          // 2. and all successive columns, separated by commas
+          //       Each column represents one waypoint name double quoted. The
+          //       waypoint name must be exactly the same as the Long name of a
+          //       waypoint listed above the Related tasks.
+
+          if (i++ != (SelectedTaskIndex)) {
+            TaskValid = false; // load selected task
+          }
+          else {
+            TaskValid = true;
+            TaskFound = true;
+            SectorType = sector_type_t::SECTOR;  // normal sector by default if
+                                                 // no other ObsZone parameter
+            gTaskType = task_type_t::DEFAULT;  // racing task by default, if AAT
+                                               // will overwrite this
+
+            if (Entries.empty()) {
+              TaskValid = false;
+              break;
+            }
+            if (Entries[0].size() == 0) {
+              StartupStore(_T(". no Task name, named it %s%i"), MsgToken<699>(),
+                           i);  // _@M699_ "Task"
+              tstring string = from_unknown_charset(src_line.c_str());
+              lk::snprintf(TaskLine, _T("%s%i%s"),
+                           MsgToken<699>(), i,
+                           string.c_str());  // _@M699_ "Task"
+            }
+            else {
+              tstring string = from_unknown_charset(src_line.c_str());
+              lk::strcpy(TaskLine, string.c_str());
+            }
+
+            bLoadComplet = ConvertStringToTask(std::next(Entries.begin()),
+                                               Entries.end(), mapWaypoint);
+            FileSection = Option;
+          }
+          break;
+        case Option:
+          if (TaskValid)  // load option for selected task only
+          {
+            if (pToken->starts_with("Options")) {
+              while (++pToken != Entries.end()) {
+                if (pToken->starts_with("NoStart=")) {
+                  TimeGates::GateType = TimeGates::fixed_gates;
+
+                  // Opening of start line
+                  TimeGates::PGNumberOfGates = 1;
+                  StrToTime(pToken->c_str() + 8, &TimeGates::PGOpenTimeH,
+                            &TimeGates::PGOpenTimeM);
+                }
+                else if (pToken->starts_with("NoFinish=")) {
+                  // Designated Time for the task
+                  StrToTime(pToken->c_str() + 9, &hh, &mm, &ss);
+                  //			StartupStore(_T("..Cup Task
+                  //Time:(%02i:%02i) %imin  %s"),hh,mm,(hh*60+mm), NEWLINE);
+                  AATTaskLength = hh * 60 + mm + ss / 60;
+
+                  // TODO :
+                }
+                else if (pToken->starts_with("WpDis=")) {
+                  // Task distance calculation. False = use fixes, True = use
+                  // waypoints
+                  // TODO :
+                }
+                else if (pToken->starts_with("NearDis=")) {
+                  // Distance tolerance
+                  // TODO :
+                }
+                else if (pToken->starts_with("NearAlt=")) {
+                  // Altitude tolerance
+                  // TODO :
+                }
+                else if (pToken->starts_with("MinDis=")) {
+                  // Uncompleted leg.
+                  // False = calculate maximum distance from last observation
+                  // zone.
+                  // TODO :
+                }
+                else if (pToken->starts_with("RandomOrder=")) {
+                  // if true, then Random order of waypoints is checked
+                  // TODO :
+                }
+                else if (pToken->starts_with("MaxPts=")) {
+                  // Maximum number of points
+                  // TODO :
+                }
+                else if (pToken->starts_with("BeforePts=")) {
+                  // Number of mandatory waypoints at the beginning. 1 means
+                  // start line only, two means
+                  //      start line plus first point in task sequence (Task
+                  //      line).
+                  // TODO :
+                }
+                else if (pToken->starts_with("AfterPts=")) {
+                  // Number of mandatory waypoints at the end. 1 means finish
+                  // line only, two means finish line
+                  //      and one point before finish in task sequence (Task
+                  //      line).
+                  // TODO :
+                }
+                else if (pToken->starts_with("Bonus=")) {
+                  // Bonus for crossing the finish line
+                  // TODO :
+                }
+              }
+            }
+            else if (pToken->starts_with("ObsZone=")) {
+              CupObsZoneUpdater TmpZone;
+              TmpZone.mIdx = strtol(pToken->c_str() + 8, NULL, 10);
+              if (TmpZone.mIdx < MAXTASKPOINTS) {
+                while (++pToken != Entries.end()) {
+                  if (pToken->starts_with("Style=")) {
+                    // Direction. 0 - Fixed value, 1 - Symmetrical, 2 - To next
+                    // point, 3 - To previous point, 4 - To start point
+                    TmpZone.mType = strtol(pToken->c_str() + 6, nullptr, 10);
+                  }
+                  else if (pToken->starts_with("R1=")) {
+                    // Radius 1
+                    TmpZone.mR1 = ReadLength(pToken->c_str() + 3);
+                  }
+                  else if (pToken->starts_with("A1=")) {
+                    // Angle 1 in degrees
+                    TmpZone.mA1 = strtod(pToken->c_str() + 3, nullptr);
+                    if (TmpZone.mA1 > 179.5)  //  180° = Circle sector
+                      if (TmpZone.mA1 < 180.5)
+                        SectorType = sector_type_t::CIRCLE;
+                  }
+                  else if (pToken->starts_with("R2=")) {
+                    // Radius 2
+                    TmpZone.mR2 = ReadLength(pToken->c_str() + 3);
+                  }
+                  else if (pToken->starts_with("A2=")) {
+                    // Angle 2 in degrees
+                    TmpZone.mA2 = strtod(pToken->c_str() + 3, nullptr);
+                  }
+                  else if (pToken->starts_with("A12=")) {
+                    // Angle 12
+                    TmpZone.mA12 = strtod(pToken->c_str() + 4, nullptr);
+                  }
+                  else if (pToken->starts_with("AAT=")) {
+                    // AAT
+                    gTaskType = task_type_t::AAT;
+                    if (strtod(pToken->c_str() + 4, nullptr) > 0)  // AAT = 1?
+                      SectorType = sector_type_t::CIRCLE;
+                  }
+                  else if (pToken->starts_with("Line=")) {
+                    // true For Line Turmpoint type
+                    // Exist only for start an Goalin LK
+                    TmpZone.mLine = (strtol(pToken->c_str() + 5, nullptr, 10) == 1);
+                  }
+                }
+                if (TmpZone.mR1 > 0)    // if both radius defined
+                  if (TmpZone.mR2 > 0)  // must be keyhole definition
+                    SectorType = sector_type_t::DAe;  // the only similar
+                                                      // sectortype in LK
+
+                if (TmpZone.mLine)  // line has priority (Start & Finish) if
+                                    // multiple definitions
+                {
+                  TmpZone.mA1 = 90;
+                  TmpZone.mA2 = 0;
+                  TmpZone.mA12 = 0;
+                }
+                TmpZone.UpdateTask();
+              }
+            }
+          }
+          break;
+        case none:
+        default:
+          break;
+      }
+          src_line.clear(); // clear Temp Buffer
+    }
   }
   if(!ISGAAIRCRAFT) {
       // Landing don't exist in LK Task Systems, so Remove It;
-      if ( bLoadComplet && !bLastInvalid ) {
+      if ( bLoadComplet ) {
           RemoveTaskPoint(getFinalWaypoint());
       }
   }
   UnlockTaskData();
-  for (mapCode2Waypoint_t::iterator It = mapWaypoint.begin(); It != mapWaypoint.end(); ++It) {
-      if (It->second.Comment) {
-          free(It->second.Comment);
-      }
-      if (It->second.Details) {
-          free(It->second.Details);
-      }
-  }
   mapWaypoint.clear();
 
   return TaskFound;
 }
 
-static const TCHAR* TaskTypeLabel(size_t count) {
+const TCHAR* TaskTypeLabel(size_t count) {
   static const MsgToken_t label_array[] = {
           &MsgToken<2430>,
           &MsgToken<2431>,
@@ -552,6 +561,8 @@ static const TCHAR* TaskTypeLabel(size_t count) {
   size_t label_index = Clamp<size_t>(count, 1U, std::size(label_array)) - 1;
   return label_array[label_index]();
 }
+
+} // namespace
 
 bool LoadCupTask(LPCTSTR szFileName) {
 TCHAR szString[READLINE_LENGTH + 1];

@@ -1,7 +1,12 @@
 #ifndef MEMORY_MAPPED_FILE_HPP
 #define MEMORY_MAPPED_FILE_HPP
 #include <cstddef> // for size_t
+
+#if defined(_WIN32)
 #include "tchar.h"
+#elif !defined(TCHAR)
+using TCHAR = char;
+#endif
 
 namespace memory_mapped_file
 {

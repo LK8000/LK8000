@@ -28,7 +28,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TAKEOFF].AltArivalAGL=0.0;
 	WayPointList[RESWP_TAKEOFF].Visible=FALSE;
 	WayPointList[RESWP_TAKEOFF].InTask=false;
-	WayPointList[RESWP_TAKEOFF].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_TAKEOFF].Details.clear();
 
 	WayPointList[RESWP_TAKEOFF].FarVisible=false;
 	WayPointList[RESWP_TAKEOFF].FileNum=-1;  // 100219  so it cannot be saved
@@ -46,7 +46,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].AltArivalAGL=0.0;
 	WayPointList[RESWP_LASTTHERMAL].Visible=TRUE; // careful! 100929
 	WayPointList[RESWP_LASTTHERMAL].InTask=false;
-	WayPointList[RESWP_LASTTHERMAL].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_LASTTHERMAL].Details.clear();
 	WayPointList[RESWP_LASTTHERMAL].FarVisible=TRUE; // careful! 100929
 	WayPointList[RESWP_LASTTHERMAL].FileNum=-1;
 
@@ -69,7 +69,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TEAMMATE].AltArivalAGL=0.0;
 	WayPointList[RESWP_TEAMMATE].Visible=FALSE;
 	WayPointList[RESWP_TEAMMATE].InTask=false;
-	WayPointList[RESWP_TEAMMATE].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_TEAMMATE].Details.clear();
 	WayPointList[RESWP_TEAMMATE].FarVisible=false;
 	WayPointList[RESWP_TEAMMATE].FileNum=-1;
 
@@ -91,7 +91,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FLARMTARGET].AltArivalAGL=0.0;
 	WayPointList[RESWP_FLARMTARGET].Visible=FALSE;
 	WayPointList[RESWP_FLARMTARGET].InTask=false;
-	WayPointList[RESWP_FLARMTARGET].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_FLARMTARGET].Details.clear();
 	WayPointList[RESWP_FLARMTARGET].FarVisible=false;
 	WayPointList[RESWP_FLARMTARGET].FileNum=-1;
 
@@ -113,7 +113,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_OPTIMIZED].AltArivalAGL=0.0;
 	WayPointList[RESWP_OPTIMIZED].Visible=FALSE;
 	WayPointList[RESWP_OPTIMIZED].InTask=false;
-	WayPointList[RESWP_OPTIMIZED].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_OPTIMIZED].Details.clear();
 	WayPointList[RESWP_OPTIMIZED].FarVisible=false;
 	WayPointList[RESWP_OPTIMIZED].FileNum=-1;
 
@@ -137,7 +137,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FAIOPTIMIZED].AltArivalAGL=0.0;
 	WayPointList[RESWP_FAIOPTIMIZED].Visible=FALSE;
 	WayPointList[RESWP_FAIOPTIMIZED].InTask=false;
-	WayPointList[RESWP_FAIOPTIMIZED].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_FAIOPTIMIZED].Details.clear();
 
 	WayPointList[RESWP_FAIOPTIMIZED].FarVisible=false;
 	WayPointList[RESWP_FAIOPTIMIZED].FileNum=-1;
@@ -148,12 +148,13 @@ void AddReservedWaypoints()
 	//
 	
 	WayPointList[RESWP_EXT_TARGET].Number=RESWP_EXT_TARGET+1;
-	lk::strcpy(WayPointList[RESWP_FREEFLY].Name, _T("") );
+	lk::strcpy(WayPointList[RESWP_EXT_TARGET].Name, _T("") );
 	WayPointList[RESWP_EXT_TARGET].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_EXT_TARGET].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_EXT_TARGET].Altitude=RESWP_INVALIDNUMBER;
 
 	WayPointList[RESWP_EXT_TARGET].Flags=TURNPOINT;
+	WayPointList[RESWP_EXT_TARGET].Comment.clear();
 	WayPointList[RESWP_EXT_TARGET].FarVisible=false;
 	WayPointList[RESWP_EXT_TARGET].FileNum=-1;
 	WayPointList[RESWP_EXT_TARGET].Format= LKW_VIRTUAL;
@@ -162,7 +163,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_EXT_TARGET].AltArivalAGL=0.0;
 	WayPointList[RESWP_EXT_TARGET].Visible=FALSE;
 	WayPointList[RESWP_EXT_TARGET].InTask=false;
-	WayPointList[RESWP_EXT_TARGET].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_EXT_TARGET].Details.clear();
 
 	WayPointList[RESWP_EXT_TARGET].FarVisible=false;
 	WayPointList[RESWP_EXT_TARGET].FileNum=-1;
@@ -182,7 +183,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FREEFLY].AltArivalAGL=0.0;
 	WayPointList[RESWP_FREEFLY].Visible=FALSE;
 	WayPointList[RESWP_FREEFLY].InTask=false;
-	WayPointList[RESWP_FREEFLY].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_FREEFLY].Details.clear();
 
 	WayPointList[RESWP_FREEFLY].FarVisible=false;
 	WayPointList[RESWP_FREEFLY].FileNum=-1;
@@ -203,7 +204,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_PANPOS].AltArivalAGL=0.0;
 	WayPointList[RESWP_PANPOS].Visible=FALSE;
 	WayPointList[RESWP_PANPOS].InTask=false;
-	WayPointList[RESWP_PANPOS].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_PANPOS].Details.clear();
 
 	WayPointList[RESWP_PANPOS].FarVisible=false;
 	WayPointList[RESWP_PANPOS].FileNum=-1;
@@ -223,7 +224,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_UNUSED].AltArivalAGL=0.0;
 	WayPointList[RESWP_UNUSED].Visible=FALSE;
 	WayPointList[RESWP_UNUSED].InTask=false;
-	WayPointList[RESWP_UNUSED].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_UNUSED].Details.clear();
 
 	WayPointList[RESWP_UNUSED].FarVisible=false;
 	WayPointList[RESWP_UNUSED].FileNum=-1;
@@ -241,7 +242,7 @@ void AddReservedWaypoints()
 	WayPointList[i].AltArivalAGL=0.0;
 	WayPointList[i].Visible=FALSE;
 	WayPointList[i].InTask=false;
-	WayPointList[i].Details=(TCHAR *)NULL;
+	WayPointList[i].Details.clear();
 	WayPointList[i].FarVisible=FALSE;
 	WayPointList[i].FileNum=-1;
 	WayPointList[i].Style = STYLE_MARKER;
