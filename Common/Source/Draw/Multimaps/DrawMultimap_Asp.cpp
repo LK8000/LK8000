@@ -24,6 +24,7 @@ extern bool IsMultimapConfigShown;
 
 void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 {
+  using std::string_view_literals::operator""sv;
 
 
   RECT rci = rc;
@@ -42,7 +43,7 @@ void MapWindow::LKDrawMultimap_Asp(LKSurface& Surface, const RECT& rc)
 
 	case LKEVENT_TOPLEFT:
 		IsMultimapConfigShown=true;
-		InputEvents::setMode(_T("MMCONF"));
+		InputEvents::setMode("MMCONF"sv);
 		break;
 
 	case LKEVENT_TOPRIGHT:

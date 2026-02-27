@@ -892,6 +892,7 @@ bool isNearestPage() {
 }
 
 void MapWindow::_OnKeyDown(unsigned KeyCode) {
+    using std::string_view_literals::operator""sv;
 
     if(HasKeyboard()) {
 
@@ -901,7 +902,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             PlayResource(TEXT("IDR_WAV_CLICK"));
             // Toggle Menu
             if (ButtonLabel::IsVisible()) {
-                InputEvents::setMode(_T("default")); 
+                InputEvents::setMode("default"sv); 
             } else {
                 ShowMenu();
             }
@@ -911,7 +912,7 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
             if (ButtonLabel::IsVisible()) {
                 PlayResource(TEXT("IDR_WAV_CLICK"));
                 // Close Menu
-                InputEvents::setMode(_T("default"));
+                InputEvents::setMode("default"sv);
                 return;
             }
             // TODO : return to default moving map ?
@@ -1158,11 +1159,11 @@ void MapWindow::_OnKeyDown(unsigned KeyCode) {
         PlayResource(TEXT("IDR_WAV_CLICK"));
         // Toggle Menu
         if (ButtonLabel::IsVisible()) {
-          InputEvents::setMode(_T("default"));
+          InputEvents::setMode("default"sv);
           return;
         }
         if (!ScreenKeyHandler(ScreenKey::CKI_BOTTOMLEFT)) {
-          InputEvents::setMode(_T("Menu"));
+          InputEvents::setMode("Menu"sv);
           return;
         }
         break;

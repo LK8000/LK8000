@@ -39,7 +39,7 @@
 #include "utils/stream_helper.h"
 #include <string_view>
 
-using namespace std::string_view_literals;
+using std::string_view_literals::operator""sv;
 
 using xml_document = rapidxml::xml_document<char>;
 using xml_attribute = rapidxml::xml_attribute<char>;

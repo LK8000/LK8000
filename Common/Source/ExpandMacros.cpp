@@ -37,7 +37,7 @@ static void ReplaceInString(TCHAR* String, const TCHAR* ToReplace, const TCHAR* 
 
 #ifndef DOCTEST_CONFIG_DISABLE
 #include <doctest/doctest.h>
-using namespace std::string_view_literals;
+using std::string_view_literals::operator""sv;
 
 TEST_CASE("ReplaceInString") {
 

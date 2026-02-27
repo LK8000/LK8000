@@ -43,7 +43,10 @@
 #include "Dialogs/dlgMultiSelectList.h"
 #include "Dialogs/Airspaces/dlgAirspaceDetails.h"
 #include "Calc/Task/TimeGates.h"
-#include "utils/charset_helper.h"
+#include "utils/stream_helper.h"
+#include <regex>
+#include <vector>
+#include <charconv>
 
 using std::string_view_literals::operator""sv;
 
@@ -60,10 +63,9 @@ using std::string_view_literals::operator""sv;
 extern bool ForceRenderMap;
 
 // Current modes - map mode to integer (primitive hash)
-static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");	// Current mode
-static TCHAR mode_map[MAX_MODE][MAX_MODE_STRING];		// Map mode to location
+static std::string mode_current = "default";	// Current mode
+static std::string mode_map[MAX_MODE];		// Map mode to location
 static int mode_map_count = 0;
-
 // Key to Event - Keys (per mode) mapped to events
 static std::map<unsigned,unsigned> Key2Event[MAX_MODE];
 
@@ -89,9 +91,10 @@ struct ModeLabelSTRUCT {
 } ;
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
-std::list<TCHAR*> LabelGarbage;
 
 namespace {
+
+std::list<TCHAR*> label_pool;
 
 // popup object details event queue data.
 struct object_detail {
@@ -199,24 +202,116 @@ struct processPopupDetails_visitor {
   }
 };
 
-}  // namespace
+PeriodClock myPeriodClock;
 
-// -----------------------------------------------------------------------
-// Initialisation and Defaults
-// -----------------------------------------------------------------------
+struct event_t {
+  event_t() = default;
+
+  void clear() {
+    d_modes.clear();
+    d_type.clear();
+    d_data.clear();
+    d_label.clear();
+    event_id = 0;
+    d_location = 0;
+  }
+
+  std::string d_modes;
+  std::string d_type;
+  std::string d_data;
+  std::string d_label;
+  int d_location = 0;
+  int event_id = 0;
+};
+
+const TCHAR* CreateEventLabel(const std::string& string) {
+  TCHAR* label = StringMallocParse(from_utf8(string.c_str()).c_str());
+  label_pool.push_back(label);
+  return label;
+}
+
+void CreateEvent(event_t& ev) {
+  // General errors - these should be true
+  assert(ev.d_location >= 0 && ev.d_location <= MAX_LABEL);
+  assert(ev.event_id >= 0);
+
+  const TCHAR* event_label = nullptr;
+
+  // For each mode
+  lk::tokenizer<char> tok(ev.d_modes.data());
+  const char* token = tok.Next(" ", true);
+  while (token) {
+    // All modes are valid at this point
+    int mode_id = InputEvents::mode2int(token, true);
+    LKASSERT(mode_id >= 0);
+    LKASSERT(mode_id < static_cast<int>(std::size(Key2Event)));
+
+    // Make label event
+    // TODO code: Consider Reuse existing entries...
+    if (ev.d_location > 0) {
+      // Only copy this once per object - save string space
+      if (!event_label) {
+        event_label = CreateEventLabel(ev.d_label);
+      }
+      InputEvents::makeLabel(mode_id, event_label, ev.d_location, ev.event_id);
+    }
+
+    if (ev.d_type == "key") {  // key - Hardware key or keyboard
+      // Make key (Keyboard input)
+      unsigned ikey =
+          InputEvents::findKey(ev.d_data);  // Get the int key (eg: APP1 vs 'a')
+      if (ikey > 0) {
+        if (ev.event_id > 0) {
+          Key2Event[mode_id][ikey] = ev.event_id;
+        }
+        else {
+          Key2Event[mode_id].erase(ikey);
+        }
+      }
+    }
+    else if (ev.d_type == "gce"sv) {  // GCE - Glide Computer Event
+      // Make gce (Glide Computer Event)
+      gc_event iikey =
+          InputEvents::findGCE(ev.d_data);  // Get the int key (eg: APP1 vs 'a')
+      if (iikey < GCE_COUNT) {
+        GC2Event[mode_id][iikey] = ev.event_id;
+      }
+    }
+    else if (ev.d_type == "ne"sv) {  // NE - NMEA Event
+      // Make ne (NMEA Event)
+      nmea_event iiikey =
+          InputEvents::findNE(ev.d_data);  // Get the int key (eg: APP1 vs 'a')
+      if (iiikey < NE_COUNT) {
+        N2Event[mode_id][iiikey] = ev.event_id;
+      }
+    }
+    else if (ev.d_type == "label"sv) {
+      // label only - no key associated (label can still be touch
+      // screen) Nothing to do here...
+    }
+
+    token = tok.Next(" ", true);
+  }
+  // Clear all data.
+  ev.clear();
+}
 
 bool InitONCE = false;
+
 unsigned SelectedButtonId=0;
 
 #ifdef LXMINIMAP
 PeriodClock LastActiveSelectMode;
 #endif
 
+}  // namespace
+
 // This is set when multimaps are calling MMCONF menu.
 bool IsMultimapConfigShown=false;
 
-static PeriodClock myPeriodClock;
-
+// -----------------------------------------------------------------------
+// Initialisation and Defaults
+// -----------------------------------------------------------------------
 
 // Read the data files
 void InputEvents::readFile() {
@@ -285,209 +380,99 @@ void InputEvents::readFile() {
 
   StartupStore(_T(". Loaded menu <%s>"), xcifilepath);
 
-  // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
-  char key[2049];	// key from scanf
-  char value[2049];	// value from scanf
-  TCHAR *new_label = NULL;
-  int found = 0;
-
-  // Init first entry
-  bool some_data = false;		// Did we fin some in the last loop...
-  TCHAR d_mode[1024] = TEXT("");			// Multiple modes (so large string)
-  TCHAR d_type[256] = TEXT("");
-  TCHAR d_data[256] = TEXT("");
-  int event_id = 0;
-  TCHAR d_label[256] = TEXT("");
-  int d_location = 0;
-
   int line = 0;
 
   /* Read from the file */
-  // TODO code: Note that ^# does not allow # in key - might be required (probably not)
-  //		Better way is to separate the check for # and the scanf
-  // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
   std::string buffer;
   std::istream in(&stream);
 
-  while (std::getline(in, buffer)) {
-    if (buffer.empty()) {
-      found = 0;
-    } else {
-      found = sscanf(buffer.c_str(), "%2048[^#=]=%2048[^\r\n][\r\n]", key, value);
-      if (found == EOF) {
-        continue;
-      }
-    }  
+  const std::regex re_kv(R"(^\s*([^#\s][^=]*?)\s*=\s*(.*?)\s*$)");
+  const std::regex re_event(R"(^\s*([^\s]*)\s*(.*?)\s*$)");
 
+  event_t ev;
+
+  while (lk::getline_unknown_charset(in, buffer)) {
     line++;
 
-    // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file
+    // if the first line is "#CLEAR" then the whole default config is cleared
+    // and can be overwritten by file
     if ((line == 1) && (buffer.find("#CLEAR") != std::string::npos)) {
-      for(auto Item : Key2Event) {
+      for (auto& Item : Key2Event) {
         Item.clear();
       }
-      clearEvents(); 
+      clearEvents();
 
       memset(&GC2Event, 0, sizeof(GC2Event));
       memset(&ModeLabel, 0, sizeof(ModeLabel));
+      continue;
     }
 
-    // Check valid line? If not valid, assume next record (primative, but works ok!)
-    if ((buffer[0] == '\r') || (buffer[0] == '\n') || (buffer[0] == '\0')) {
-      // General checks before continue...
-      if (
-	  some_data
-	  && (_tcscmp(d_mode, TEXT("")) != 0)		//
-	  ) {
-
-
-	// General errors - these should be true
-	LKASSERT(d_location >= 0);
-	LKASSERT(d_location <= MAX_LABEL);
-	LKASSERT(event_id >= 0);
-	LKASSERT(d_mode != NULL);
-	LKASSERT(d_type != NULL);
-	LKASSERT(d_label != NULL);
-
-	// These could indicate bad data - thus not an ASSERT (debug only)
-	// ASSERT(_tcslen(d_mode) < 1024);
-	// ASSERT(_tcslen(d_type) < 1024);
-	// ASSERT(_tcslen(d_label) < 1024);
-
-	// For each mode
-	lk::tokenizer<TCHAR> tok(d_mode);
-	const TCHAR* token = tok.Next(TEXT(" "), true);
-	while( token ) {
-
-	  // All modes are valid at this point
-	  int mode_id = mode2int(token, true);
-	  LKASSERT(mode_id >= 0);
-	  LKASSERT(mode_id < (int)std::size(Key2Event));
-
-	  // Make label event
-	  // TODO code: Consider Reuse existing entries...
-	  if (d_location > 0) {
-	    // Only copy this once per object - save string space
-	    if (!new_label) {
-	      new_label = StringMallocParse(d_label);
-		  LabelGarbage.push_back(new_label);
-	    }
-	    LKASSERT(new_label!=NULL);
-	    makeLabel(mode_id, new_label, d_location, event_id);
-	  }
-
-	  // Make key (Keyboard input)
-	  if (_tcscmp(d_type, TEXT("key")) == 0)	{	// key - Hardware key or keyboard
-	    unsigned ikey = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (ikey > 0) {
-	      if(event_id > 0) {
-          Key2Event[mode_id][ikey] = event_id;
-	      } else {
-          Key2Event[mode_id].erase(ikey);
-	      }
-	    }
-	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
-	    // Make gce (Glide Computer Event)
-	    gc_event iikey = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
-	    if (iikey < GCE_COUNT) {
-	      GC2Event[mode_id][iikey] = event_id;
-	    }
-	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
-	    // Make ne (NMEA Event)
-	    nmea_event iiikey = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
-	    if (iiikey < NE_COUNT) {
-	      N2Event[mode_id][iiikey] = event_id;
-	    }
-	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
-	    // Nothing to do here...
-
-	  }
-
-	  token = tok.Next(TEXT(" "), true);
-	}
+    if (buffer.empty()) {
+      if (!ev.d_modes.empty()) {
+        CreateEvent(ev);
       }
+      continue;
+    }
 
-      // Clear all data.
-      some_data = false;
-      lk::strcpy(d_mode, TEXT(""));
-      lk::strcpy(d_type, TEXT(""));
-      lk::strcpy(d_data, TEXT(""));
-      event_id = 0;
-      lk::strcpy(d_label, TEXT(""));
-      d_location = 0;
-      new_label = NULL;
+    std::smatch match_kv;
+    if (std::regex_match(buffer, match_kv, re_kv)) {
+      std::string_view key = { match_kv[1].first, match_kv[1].second };
+      std::string_view value = { match_kv[2].first, match_kv[2].second };
 
-    } else if ((found != 2) || key[0] == '\0' || value[0] == '\0') {
-      // Do nothing - we probably just have a comment line
-      // JG removed "void;" - causes warning (void is declaration and needs variable)
-      // NOTE: Do NOT display buffer to user as it may contain an invalid stirng !
-
-    } else {
       if (key == "mode"sv) {
-        if (strlen(value) < 1024) {
-          some_data = true;  // Success, we have a real entry
-          from_unknown_charset(value, d_mode);
-      	}
+        ev.d_modes = value;
       }
       else if (key == "type"sv) {
-        if (strlen(value) < 256) {
-          from_unknown_charset(value, d_type);
-        }
+        ev.d_type = value;
       }
       else if (key == "data"sv) {
-        if (strlen(value) < 256) {
-          from_unknown_charset(value, d_data);
+        ev.d_data = value;
+      }
+      else if (key == "label"sv) {
+        ev.d_label = value;
+      }
+      else if (key == "location"sv) {
+        auto res = std::from_chars(value.begin(), value.end(), ev.d_location);
+        if (res.ec != std::errc()) {
+          ev.d_location = 0;
         }
       }
       else if (key == "event"sv) {
-        if (strlen(value) < 256) {
-          char event[256] = "";
-          char misc[256] = "";
-          int ef = sscanf(value, "%[^ ] %[^\r\n]", event, misc);
-
-          // TODO code: Can't use t*oken here - breaks
-          // other token - damn C - how about
-          // C++ String class ?
-
-          // TCHAR *eventtoken;
-          // eventtoken = _tcstok(value, TEXT(" "));
-          // d_event = token;
-          // eventtoken = _tcstok(value, TEXT(" "));
-
-          if ((ef == 1) || (ef == 2)) {
-            // TODO code: Consider reusing existing identical events
-
-            tstring d_event = from_unknown_charset(event);
-            pt2Event event = findEvent(d_event.c_str());
-            if (event) {
-              tstring d_misc = from_unknown_charset(misc);
-              TCHAR* szString = StringMallocParse(d_misc.c_str());
-              LabelGarbage.push_back(szString);
-              event_id = makeEvent(event, szString, event_id);
-            }
+        std::cmatch match_event;
+        if (std::regex_match(value.begin(), value.end(),
+                             match_event, re_event)) {
+          pt2Event pEvent =
+              findEvent({match_event[1].first, match_event[1].second});
+          if (pEvent) {
+            auto d_misc = [&]() -> const TCHAR* {
+              if (match_event[2].matched) {
+                return CreateEventLabel(match_event[2].str());
+              }
+              else {
+                return _T("");
+              }
+            };
+            ev.event_id = makeEvent(pEvent, d_misc(), ev.event_id);
           }
         }
       }
-      else if (key == "label"sv) {
-        from_unknown_charset(value, d_label);
-      }
-      else if (key == "location"sv) {
-        sscanf(value, "%d", &d_location);
-      }
     }
-  } // end while
-#ifdef TESTBENCH
-  StartupStore(_T("... Loaded %u Menu Events\n"), (unsigned)Events.size());
-#endif
+  }  // end while
+
+  if (!ev.d_modes.empty()) {
+    CreateEvent(ev);
+  }
+
+  TestLog(_T("... Loaded %u Menu Events\n"), (unsigned)Events.size());
 #endif
 }
 
-void InputEvents::UnloadString(){
-	memset(&ModeLabel, 0, sizeof(ModeLabel));
+void InputEvents::UnloadString() {
+  memset(&ModeLabel, 0, sizeof(ModeLabel));
 
-	std::for_each(LabelGarbage.begin(),LabelGarbage.end(), safe_free());
-	LabelGarbage.clear();
+  std::for_each(label_pool.begin(), label_pool.end(), safe_free());
+  label_pool.clear();
 }
 
 // Create EVENT Entry
@@ -532,37 +517,31 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, unsigned MenuId, un
 }
 
 // Return 0 for anything else - should probably return -1 !
-int InputEvents::mode2int(const TCHAR *mode, bool create) {
+int InputEvents::mode2int(std::string_view mode, bool create) {
   int i = 0;
 
-  // Better checks !
-  if (mode == NULL)
-    return -1;
-
   for (i = 0; i < mode_map_count; i++) {
-    if (_tcscmp(mode, mode_map[i]) == 0)
+    if (mode == mode_map[i])
       return i;
   }
 
   if (create) {
     // Keep a copy
-    LK_tcsncpy(mode_map[mode_map_count], mode, MAX_MODE_STRING-1);
+    mode_map[mode_map_count] = mode;
     mode_map_count++;
     return mode_map_count - 1;
   }
   return -1;
 }
 
-void InputEvents::setMode(const TCHAR *mode) {
+void InputEvents::setMode(std::string_view mode) {
   static int lastmode = -1;
 
   if (HasKeyboard()) {
-    if (_tcscmp(mode, TEXT("default")) == 0) {
+    if (mode == "default"sv) {
       SelectedButtonId = 1;
     }
   }
-
-  LK_tcsncpy(mode_current, mode, MAX_MODE_STRING - 1);
 
   // Mode must already exist to use it here...
   int thismode = mode2int(mode, false);
@@ -571,17 +550,18 @@ void InputEvents::setMode(const TCHAR *mode) {
     return;         // TODO enhancement: Add debugging here
   }
 
+  mode_current = mode;
+
   if (thismode == lastmode) {
     //
     // Clicking again would switch menu off for these cases
     //
-    if ((_tcscmp(mode, TEXT("MMCONF")) == 0) ||
-        (_tcscmp(mode, TEXT("MTarget")) == 0))
-    {
+    if (mode == "MMCONF"sv || mode == "MTarget"sv) {
       IsMultimapConfigShown = false;
-      lk::strcpy(mode_current, _T("default"));
-      thismode = mode2int(_T("default"), false);
-    } else {
+      mode_current = "default";
+      thismode = mode2int("default", false);
+    }
+    else {
       //
       // For all other cases, simply do nothing
       //
@@ -590,7 +570,7 @@ void InputEvents::setMode(const TCHAR *mode) {
   }
 
   // Special flags cleanup..
-  if (_tcscmp(mode, TEXT("MMCONF")) != 0) {
+  if (mode == "MMCONF"sv) {
     IsMultimapConfigShown = false;
   }
 
@@ -612,7 +592,7 @@ void InputEvents::drawButtons(int Mode) {
 
 }
 
-TCHAR* InputEvents::getMode() {
+const std::string& InputEvents::getMode() {
   return mode_current;
 }
 
@@ -1213,7 +1193,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
 //  This is used to activate menus/submenus of buttons
 void InputEvents::eventMode(const TCHAR *misc) {
   LKASSERT(misc != NULL);
-  setMode(misc);
+  setMode(to_utf8(misc));
 
 #ifdef USE_GDI
   // trigger redraw of screen to reduce blank area under windows
@@ -1466,7 +1446,7 @@ void InputEvents::eventChangeMultitarget(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("ROTATE")) == 0) {
 	RotateOvertarget();
   } else if (_tcscmp(misc, TEXT("MENU")) == 0) {
-	setMode(_T("MTarget"));
+	setMode("MTarget"sv);
   }
   MapWindow::RefreshMap();
 }
@@ -2959,9 +2939,9 @@ void HideMenu() {
 void ShowMenu() {
   PlayResource(TEXT("IDR_WAV_CLICK"));
   if (MapWindow::mode.AnyPan()) {
-    InputEvents::setMode(_T("pan"));
+    InputEvents::setMode("pan"sv);
   } else {
-    InputEvents::setMode(_T("Menu"));
+    InputEvents::setMode("Menu"sv);
   }
   MenuTimeOut = 0;
 }
@@ -3383,10 +3363,10 @@ void InputEvents::eventPilotEvent(const TCHAR*) {
 
 namespace {
 
-  #define DELARE_EVENT(Name) { _T(#Name), &InputEvents::event ## Name }
+  #define DELARE_EVENT(Name) { #Name, &InputEvents::event ## Name }
   // Mapping text names of events to the real thing
 
-  constexpr auto Text2Event = lookup_table<tstring_view, pt2Event>({
+  constexpr auto Text2Event = lookup_table<std::string_view, pt2Event>({
     DELARE_EVENT(AbortTask),
     DELARE_EVENT(AdjustForecastTemperature),
     DELARE_EVENT(AdjustWaypoint),
@@ -3458,25 +3438,25 @@ namespace {
     DELARE_EVENT(ChangeNettoVario),
     DELARE_EVENT(Wifi),
 
-    { _T("SendNMEAPort1"), &InputEvents::eventSendNMEAPort<0> },
-    { _T("SendNMEAPort2"), &InputEvents::eventSendNMEAPort<1> },
-    { _T("SendNMEAPort3"), &InputEvents::eventSendNMEAPort<2> },
-    { _T("SendNMEAPort4"), &InputEvents::eventSendNMEAPort<3> },
-    { _T("SendNMEAPort5"), &InputEvents::eventSendNMEAPort<4> },
-    { _T("SendNMEAPort6"), &InputEvents::eventSendNMEAPort<5> },
+    { "SendNMEAPort1", &InputEvents::eventSendNMEAPort<0> },
+    { "SendNMEAPort2", &InputEvents::eventSendNMEAPort<1> },
+    { "SendNMEAPort3", &InputEvents::eventSendNMEAPort<2> },
+    { "SendNMEAPort4", &InputEvents::eventSendNMEAPort<3> },
+    { "SendNMEAPort5", &InputEvents::eventSendNMEAPort<4> },
+    { "SendNMEAPort6", &InputEvents::eventSendNMEAPort<5> },
 
-    { _T("SendDataPort1"), &InputEvents::eventSendDataPort<0> },
-    { _T("SendDataPort2"), &InputEvents::eventSendDataPort<1> },
-    { _T("SendDataPort3"), &InputEvents::eventSendDataPort<2> },
-    { _T("SendDataPort4"), &InputEvents::eventSendDataPort<3> },
-    { _T("SendDataPort5"), &InputEvents::eventSendDataPort<4> },
-    { _T("SendDataPort6"), &InputEvents::eventSendDataPort<5> },
+    { "SendDataPort1", &InputEvents::eventSendDataPort<0> },
+    { "SendDataPort2", &InputEvents::eventSendDataPort<1> },
+    { "SendDataPort3", &InputEvents::eventSendDataPort<2> },
+    { "SendDataPort4", &InputEvents::eventSendDataPort<3> },
+    { "SendDataPort5", &InputEvents::eventSendDataPort<4> },
+    { "SendDataPort6", &InputEvents::eventSendDataPort<5> },
     DELARE_EVENT(PilotEvent),
   });
 
-  #define DELARE_GCE(Name) { _T(#Name), GCE_ ## Name }
+  #define DELARE_GCE(Name) { #Name, GCE_ ## Name }
 
-  constexpr auto Text2GCE = lookup_table<tstring_view, gc_event>({
+  constexpr auto Text2GCE = lookup_table<std::string_view, gc_event>({
     DELARE_GCE(COMMPORT_RESTART),
     DELARE_GCE(FLARM_NOTRAFFIC),
     DELARE_GCE(FLARM_TRAFFIC),
@@ -3500,95 +3480,95 @@ namespace {
     DELARE_GCE(WAYPOINT_DETAILS_SCREEN)
   });
 
-  #define DELARE_NE(Name) { _T(#Name), NE_ ## Name }
+  #define DELARE_NE(Name) { #Name, NE_ ## Name }
 
-  constexpr auto Text2NE = lookup_table<tstring_view, nmea_event>({
+  constexpr auto Text2NE = lookup_table<std::string_view, nmea_event>({
     DELARE_NE(DUMMY) // to avoid empty initializer list error.
   });
 
-  constexpr auto Text2Key = lookup_table<tstring_view, unsigned, ci_equal<tstring_view>>({
-    { _T("APP1"), KEY_APP1 },
-    { _T("APP2"), KEY_APP2 },
-    { _T("APP3"), KEY_APP3 },
-    { _T("APP4"), KEY_APP4 },
-    { _T("APP5"), KEY_APP5 },
-    { _T("APP6"), KEY_APP6 },
+  constexpr auto Text2Key = lookup_table<std::string_view, unsigned, ci_equal<std::string_view>>({
+    { "APP1", KEY_APP1 },
+    { "APP2", KEY_APP2 },
+    { "APP3", KEY_APP3 },
+    { "APP4", KEY_APP4 },
+    { "APP5", KEY_APP5 },
+    { "APP6", KEY_APP6 },
 
-    { _T("F1"), KEY_F1 },
-    { _T("F2"), KEY_F2 },
-    { _T("F3"), KEY_F3 },
-    { _T("F4"), KEY_F4 },
-    { _T("F5"), KEY_F5 },
-    { _T("F6"), KEY_F6 },
-    { _T("F7"), KEY_F7 },
-    { _T("F8"), KEY_F8 },
-    { _T("F9"), KEY_F9 },
-    { _T("F10"), KEY_F10 },
-    { _T("F11"), KEY_F11 },
-    { _T("F12"), KEY_F12 },
+    { "F1", KEY_F1 },
+    { "F2", KEY_F2 },
+    { "F3", KEY_F3 },
+    { "F4", KEY_F4 },
+    { "F5", KEY_F5 },
+    { "F6", KEY_F6 },
+    { "F7", KEY_F7 },
+    { "F8", KEY_F8 },
+    { "F9", KEY_F9 },
+    { "F10", KEY_F10 },
+    { "F11", KEY_F11 },
+    { "F12", KEY_F12 },
 
-    { _T("LEFT"), KEY_LEFT },
-    { _T("RIGHT"), KEY_RIGHT },
-    { _T("UP"), KEY_UP },
-    { _T("DOWN"), KEY_DOWN },
+    { "LEFT", KEY_LEFT },
+    { "RIGHT", KEY_RIGHT },
+    { "UP", KEY_UP },
+    { "DOWN", KEY_DOWN },
 
-    { _T("RETURN"), KEY_RETURN },
-    { _T("ESCAPE"), KEY_ESCAPE },
-    { _T("SPACE"), KEY_SPACE },
+    { "RETURN", KEY_RETURN },
+    { "ESCAPE", KEY_ESCAPE },
+    { "SPACE", KEY_SPACE },
 
-    { _T("0"), KEY_0 },
-    { _T("1"), KEY_1 },
-    { _T("2"), KEY_2 },
-    { _T("3"), KEY_3 },
-    { _T("4"), KEY_4 },
-    { _T("5"), KEY_5 },
-    { _T("6"), KEY_6 },
-    { _T("7"), KEY_7 },
-    { _T("8"), KEY_8 },
-    { _T("9"), KEY_9 },
+    { "0", KEY_0 },
+    { "1", KEY_1 },
+    { "2", KEY_2 },
+    { "3", KEY_3 },
+    { "4", KEY_4 },
+    { "5", KEY_5 },
+    { "6", KEY_6 },
+    { "7", KEY_7 },
+    { "8", KEY_8 },
+    { "9", KEY_9 },
 
-    { _T("A"), KEY_A },
-    { _T("B"), KEY_B },
-    { _T("C"), KEY_C },
-    { _T("D"), KEY_D },
-    { _T("E"), KEY_E },
-    { _T("F"), KEY_F },
-    { _T("G"), KEY_G },
-    { _T("H"), KEY_H },
-    { _T("I"), KEY_I },
-    { _T("J"), KEY_J },
-    { _T("K"), KEY_K },
-    { _T("L"), KEY_L },
-    { _T("M"), KEY_M },
-    { _T("N"), KEY_N },
-    { _T("O"), KEY_O },
-    { _T("P"), KEY_P },
-    { _T("Q"), KEY_Q },
-    { _T("R"), KEY_R },
-    { _T("S"), KEY_S },
-    { _T("T"), KEY_T },
-    { _T("U"), KEY_U },
-    { _T("V"), KEY_V },
-    { _T("W"), KEY_W },
-    { _T("X"), KEY_X },
-    { _T("Y"), KEY_Y },
-    { _T("Z"), KEY_Z },
+    { "A", KEY_A },
+    { "B", KEY_B },
+    { "C", KEY_C },
+    { "D", KEY_D },
+    { "E", KEY_E },
+    { "F", KEY_F },
+    { "G", KEY_G },
+    { "H", KEY_H },
+    { "I", KEY_I },
+    { "J", KEY_J },
+    { "K", KEY_K },
+    { "L", KEY_L },
+    { "M", KEY_M },
+    { "N", KEY_N },
+    { "O", KEY_O },
+    { "P", KEY_P },
+    { "Q", KEY_Q },
+    { "R", KEY_R },
+    { "S", KEY_S },
+    { "T", KEY_T },
+    { "U", KEY_U },
+    { "V", KEY_V },
+    { "W", KEY_W },
+    { "X", KEY_X },
+    { "Y", KEY_Y },
+    { "Z", KEY_Z },
   });
 
 }
 
-pt2Event InputEvents::findEvent(const TCHAR *data) {
+pt2Event InputEvents::findEvent(std::string_view data) {
   return Text2Event.get(data, &eventNull);
 }
 
-gc_event InputEvents::findGCE(const TCHAR *data) {
+gc_event InputEvents::findGCE(std::string_view data) {
   return Text2GCE.get(data, GCE_COUNT);
 }
 
-nmea_event InputEvents::findNE(const TCHAR *data) {
+nmea_event InputEvents::findNE(std::string_view data) {
   return Text2NE.get(data, NE_COUNT);
 }
 
-unsigned InputEvents::findKey(const TCHAR *data) {
+unsigned InputEvents::findKey(std::string_view data) {
   return Text2Key.get(data, 0U);
 }

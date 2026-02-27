@@ -77,7 +77,7 @@ class scope_backup_input_event_mode {
   }
 
  private:
-  const tstring mode = InputEvents::getMode();
+  const std::string mode = InputEvents::getMode();
 };
 
 }  // namespace
@@ -89,11 +89,11 @@ class scope_backup_input_event_mode {
 // In this case, enable a testbench development option.
 //
 void ReinitScreen(void) {
-
+  using std::string_view_literals::operator""sv;
   scope_backup_input_event_mode backup; // to restore menu state on scope exist
 
   // This is needed to hide any menu currently on, as first thing.
-  InputEvents::setMode(TEXT("default"));
+  InputEvents::setMode("default"sv);
 
   TestLog(_T("... ChangeScreen suspending Draw Thread\n"));
 

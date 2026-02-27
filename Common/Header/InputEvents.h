@@ -10,7 +10,9 @@
 #define INPUTEVENTS_H
 
 #include "types.h"
-#include "stdint.h"
+#include <cstdint>
+#include <string>
+#include <string_view>
 #include "Event/object_identifier.h"
 
 /**
@@ -71,15 +73,15 @@ public:
   static void readFile();
   static void UnloadString();
 
-  static int mode2int(const TCHAR *mode, bool create);
-  static void setMode(const TCHAR *mode);
-  static TCHAR* getMode();
+  static int mode2int(std::string_view mode, bool create);
+  static void setMode(std::string_view mode);
+  static const std::string& getMode();
   static int getModeID();
-  static unsigned findKey(const TCHAR *data);
+  static unsigned findKey(std::string_view data);
 
-  static gc_event findGCE(const TCHAR *data);
-  static nmea_event findNE(const TCHAR *data);
-  static pt2Event findEvent(const TCHAR *data);
+  static gc_event findGCE(std::string_view data);
+  static nmea_event findNE(std::string_view data);
+  static pt2Event findEvent(std::string_view data);
 
   static bool processKey(unsigned key_code);
   static bool processNmea(nmea_event ne_id);

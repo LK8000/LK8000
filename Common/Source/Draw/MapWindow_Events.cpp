@@ -187,6 +187,7 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
  *    0 : off
  */
 void MapWindow::Event_Pan(int vswitch) {
+  using std::string_view_literals::operator""sv;
   bool oldPan = mode.AnyPan();
 
   if (vswitch != 1) {
@@ -213,9 +214,9 @@ void MapWindow::Event_Pan(int vswitch) {
     if (mode.AnyPan()) {
       PanLongitude = DrawInfo.Longitude;
       PanLatitude = DrawInfo.Latitude;
-      InputEvents::setMode(TEXT("pan"));
+      InputEvents::setMode("pan"sv);
     } else {
-      InputEvents::setMode(TEXT("default"));
+      InputEvents::setMode("default"sv);
       MapWindow::ForceVisibilityScan=true;
     }
   }

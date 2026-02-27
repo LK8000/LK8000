@@ -230,6 +230,7 @@ void UnselectMapSpace(short i) {
 
 
 void SelectMapSpace(short i) {
+	using std::string_view_literals::operator""sv;
 
 	LKForceDoNearest=false;
 	LKForceDoCommon=false;
@@ -282,7 +283,7 @@ void SelectMapSpace(short i) {
 		MapSpaceMode!=MSM_MAPWPT &&
 		MapSpaceMode!=MSM_MAPASP &&
 		MapSpaceMode!=MSM_VISUALGLIDE) {
-		InputEvents::setMode(TEXT("default"));
+		InputEvents::setMode("default"sv);
 	}
     main_window->UnGhost();
 }

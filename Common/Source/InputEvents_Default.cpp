@@ -47,7 +47,7 @@
 
 void InputEvents::InitDefaultMode() {
   /* default Mode : No Menu */
-  unsigned mode_id_default = mode2int(_T("default"), true);
+  unsigned mode_id_default = mode2int("default", true);
   unsigned event_id_null = makeEvent(&eventNull, _T(""), 0);
   makeLabel(mode_id_default,_T(""),1,event_id_null);
   makeLabel(mode_id_default,_T(""),2,event_id_null);
@@ -69,7 +69,7 @@ void InputEvents::InitDefaultMode() {
 #ifndef TEST_MENU_LAYOUT
   /* Menu Mode : ( default Menu : used only if '_System/DEFAULT_MENU.TXT' is empty ) */
 
-  int mode_id = mode2int(_T("Menu"), true);
+  int mode_id = mode2int("Menu", true);
   int default_event_id = makeEvent(&eventMode, _T("default"), 0);
 
   int event_id = makeEvent(&eventExit, _T(""), default_event_id);
@@ -92,7 +92,7 @@ void InputEvents::InitDefaultMode() {
 #else
   // test code for show all menu with menu id
 
-  int mode_id = mode2int(_T("Menu"), true);
+  int mode_id = mode2int("Menu", true);
   int event_id = makeEvent(&eventExit, _T("Exit"), 0);
   event_id = makeEvent(&eventMode, _T("default"), event_id);
   makeLabel(mode_id,_T("1"),1,event_id);

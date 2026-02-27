@@ -73,6 +73,7 @@ void SIMProcessTimer() {
 // Dialogs will be processed in the background, without halting CPT
 //
 void CommonProcessTimer() {
+  using std::string_view_literals::operator""sv;
   static unsigned short cp_twohzcounter = 0;  // good up to 256 on all platforms
   cp_twohzcounter++;
 
@@ -89,7 +90,7 @@ void CommonProcessTimer() {
   // Note that MenuTimeout_Config is necessarily 2x the users choice, because we are at 2hz here
   if (MenuTimeOut == MenuTimeout_Config) {
     if (!MapWindow::mode.AnyPan()) {
-      InputEvents::setMode(TEXT("default"));
+      InputEvents::setMode("default"sv);
     }
   }
   // setMode in InputEvents is checking that current mode is different from wanted mode.

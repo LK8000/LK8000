@@ -94,7 +94,7 @@ bool ReplayLogger::ScanBuffer(TCHAR *buffer, double *Time, double *Latitude,
 		   TEXT("LPLT event=%[^ ] %[A-Za-z0-9 \\/().,]"),
 		   event,misc);
   if (found>0) {
-    pt2Event fevent = InputEvents::findEvent(event);
+    pt2Event fevent = InputEvents::findEvent(to_utf8(event));
     if (fevent) {
       if (found==2) {
 	TCHAR *mmisc = StringMallocParse(misc);

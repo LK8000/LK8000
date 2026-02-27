@@ -215,7 +215,7 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
 } // LXWP0()
 
 BOOL XCTracerParseNMEA(DeviceDescriptor_t* d, const char *String, NMEA_INFO *pGPS) {
-    using namespace std::string_view_literals;
+    using std::string_view_literals::operator""sv;
 
     char ctemp[MAX_NMEA_LEN];
     char * params[MAX_NMEA_PARAMS];

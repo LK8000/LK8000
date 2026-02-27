@@ -17,6 +17,9 @@
 #include "WindowControls.h"
 #include "Dialogs/dlgMacCready.h"
 
+#include <string_view>
+using std::string_view_literals::operator""sv;
+
 extern void ShowMenu();
 
 // handle custom keys. Input: key pressed (center, left etc.)
@@ -93,7 +96,7 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 
 	case CustomKeyMode_t::ckTrueWind:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		InputEvents::setMode(_T("TrueWind"));
+		InputEvents::setMode("TrueWind"sv);
 		return true;
 
 	case CustomKeyMode_t::ckTeamCode:
@@ -196,7 +199,7 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 
 	case CustomKeyMode_t::ckMultitargetMenu:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		InputEvents::setMode(_T("MTarget"));
+		InputEvents::setMode("MTarget"sv);
 		return true;
 	case CustomKeyMode_t::ckBaroToggle:
 		ToggleBaroAltitude();
@@ -207,7 +210,7 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 		return true;
 	case CustomKeyMode_t::ckSimMenu:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		InputEvents::setMode(_T("SIMMENU"));
+		InputEvents::setMode("SIMMENU"sv);
 		return true;
 	case CustomKeyMode_t::ckToggleMapAirspace:
 		if (ModeIndex==LKMODE_MAP)
@@ -425,7 +428,7 @@ bool CustomKeyHandler(CustomKeyMode_t key) {
 
     case CustomKeyMode_t::ckDspMode:
 		PlayResource(TEXT("IDR_WAV_CLICK"));
-		InputEvents::setMode(_T("Display3"));
+		InputEvents::setMode("Display3"sv);
 		return true;
 
     case CustomKeyMode_t::ckAirspaceLookup:
