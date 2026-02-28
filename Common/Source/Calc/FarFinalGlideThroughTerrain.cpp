@@ -64,7 +64,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
   double Xrounding = fabs(lon-start_lon)/2;
   double Yrounding = fabs(lat-start_lat)/2;
 
-  ScopeLock lock(RasterTerrain::mutex);
+  const std::lock_guard<Mutex> lock(RasterTerrain::mutex);
 
   RasterTerrain::SetTerrainRounding(Xrounding, Yrounding);
 

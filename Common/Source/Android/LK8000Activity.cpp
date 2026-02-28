@@ -52,13 +52,13 @@ void LK8000Activity::Deinitialise(JNIEnv *env, jobject obj) {
 }
 
 void LK8000Activity::PermissionDenied() {
-  const ScopeLock lock(permission_status_mutex);
+  const std::lock_guard<Mutex> lock(permission_status_mutex);
   permission_status = denied;
   event_queue->Push(Event(Event::NOP));
 }
 
 void LK8000Activity::PermissionGranted() {
-  const ScopeLock lock(permission_status_mutex);
+  const std::lock_guard<Mutex> lock(permission_status_mutex);
   permission_status = granted;
   event_queue->Push(Event(Event::NOP));
 }
@@ -69,7 +69,7 @@ LK8000Activity::permission_t LK8000Activity::WaitPermission() {
     Event event;
     while (main_window->IsDefined() && loop.Get(event)) {
       loop.Dispatch(event);
-      const ScopeLock lock(permission_status_mutex);
+      const std::lock_guard<Mutex> lock(permission_status_mutex);
       if(permission_status != unknown) {
           return permission_status;
       }
@@ -79,12 +79,12 @@ LK8000Activity::permission_t LK8000Activity::WaitPermission() {
 }
 
 LK8000Activity::permission_t LK8000Activity::GetPermission() {
-  const ScopeLock lock(permission_status_mutex);
+  const std::lock_guard<Mutex> lock(permission_status_mutex);
   return permission_status;
 }
 
 void LK8000Activity::RequestPermission() {
-  const ScopeLock lock(permission_status_mutex);
+  const std::lock_guard<Mutex> lock(permission_status_mutex);
   permission_status = unknown;
   Java::GetEnv()->CallVoidMethod(obj, check_permissions_method);
 }

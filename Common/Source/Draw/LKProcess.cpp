@@ -3508,7 +3508,7 @@ static int GetValidWayPointIndex(int wpindex) {
 // simple format distance value for a given index. BufferTitle always NULLed
 // wpindex is a WayPointList index
 void MapWindow::LKFormatDist(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
@@ -3535,7 +3535,7 @@ void MapWindow::LKFormatDist(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFE
 
 // DO NOT use this for AAT values! 
 void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
@@ -3567,7 +3567,7 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBU
 
 
 void MapWindow::LKFormatGR(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
@@ -3591,7 +3591,7 @@ void MapWindow::LKFormatGR(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERV
 }
 
 void MapWindow::LKFormatAltDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 

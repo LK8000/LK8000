@@ -132,7 +132,7 @@ DeviceDescriptor_t& get_active_gps() {
 }
 
 void reset_nmea_info_availability(std::optional<unsigned> idx = {}) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   GPS_INFO.reset_availability(idx);
   EnableExternalTriggerCruise = false;
 }
@@ -190,7 +190,7 @@ bool UpdateMonitor() {
   static bool lastvalidBaro = false;
   static bool wasSilent[std::size(DeviceList)] = {false};
 
-  ScopeLock Lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
 
   // save current active port.
   auto last_active = find_device(port_active());

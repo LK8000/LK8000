@@ -376,7 +376,7 @@ BOOL NMEAParser::GLL(const char* String, char** params, size_t nparams, NMEA_INF
 
   if (!activeGPS) return TRUE;
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   pGPS->NAVWarning = !gpsValid;
   
@@ -431,7 +431,7 @@ BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INF
   if (gpsValid) {
     double speed = StrToDouble(params[4], NULL);
 
-    ScopeLock lock(CritSec_FlightData);
+    const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
     pGPS->Speed = Units::From(unKnots, speed);
 
@@ -481,7 +481,7 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
     speed = StrToDouble(params[6], NULL);
   }
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   pGPS->NAVWarning = !gpsValid;
 
@@ -646,7 +646,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
     nSatellites = -1;  // unknown count but valid fix !
   }
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   pGPS->SatellitesUsed = nSatellites;  // 091208
   pGPS->NAVWarning = !gpsValid;        // 091208
@@ -748,7 +748,7 @@ BOOL NMEAParser::PLKAS(DeviceDescriptor_t& d, const char* String, char** params,
   
   double vias=StrToDouble(params[0],NULL)/10.0;
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   if (vias > 1) {
     double qne_altitude = QNHAltitudeToQNEAltitude(pGPS->Altitude);
     pGPS->TrueAirSpeed.update(d, TrueAirSpeed(vias, qne_altitude));
@@ -777,7 +777,7 @@ BOOL NMEAParser::RMZ(DeviceDescriptor_t& d, const char* String, char **params, s
 
   double Altitude = ParseAltitude(params[0], params[1]);
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   UpdateBaroSource(pGPS, &d, QNEAltitudeToQNHAltitude(Altitude));
 
   return FALSE;
@@ -793,7 +793,7 @@ BOOL NMEAParser::PTAS1(DeviceDescriptor_t& d, const char* String, char **params,
     return FALSE;
   }
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   if(*params[0] != _T('\0')) {
     const double wnet = Units::From(unKnots, (StrToDouble(params[0],NULL) - 200.0) / 10);
@@ -825,7 +825,7 @@ BOOL NMEAParser::HCHDG(DeviceDescriptor_t& d, const char* String, char** params,
   
   double mag = StrToDouble(params[0],NULL);
   if (mag>=0 && mag<=360) {
-      ScopeLock lock(CritSec_FlightData);
+      const std::lock_guard<Mutex> lock(CritSec_FlightData);
       pGPS->MagneticHeading.update(d, mag);
   }
   return TRUE;

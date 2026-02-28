@@ -27,7 +27,7 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     int rw_dir = 0;
     bool approach_valid = false;
     {
-      ScopeLock lock(CritSec_TaskData);
+      const std::lock_guard<Mutex> lock(CritSec_TaskData);
       const int wp_index = MapApproachWaypoint;
       if (ValidWayPointFast(wp_index) && WayPointCalc[wp_index].IsLandable) {
         const WAYPOINT& wp = WayPointList[wp_index];

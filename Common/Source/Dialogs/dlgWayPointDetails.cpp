@@ -406,7 +406,7 @@ void dlgWayPointDetailsShowModal(int page) {
   WAYPOINT WPLSEL = {};
 
   {
-    ScopeLock lock(CritSec_TaskData);
+    const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
     if (!ValidWayPointFast(SelectedWaypoint)) {
       return;

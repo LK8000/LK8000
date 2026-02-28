@@ -29,7 +29,7 @@ void MapWindow::Mode::Fly(TModeFly flyMode) {
     flyMode = _userForcedFlyMode;
   }
 
-  ScopeLock lock(MapWindow::zoom._zoomMutex);
+  const std::lock_guard<Mutex> lock(MapWindow::zoom._zoomMutex);
   unsigned previousMode = _mode;
   _mode = flyMode | (_mode & SPECIAL_MASK);
   if (_mode != previousMode) {
@@ -47,7 +47,7 @@ void MapWindow::Mode::Fly(TModeFly flyMode) {
  * @param enable Specifies if the mode should be enabled or disabled
  */
 void MapWindow::Mode::Special(TModeSpecial specialMode, bool enable) {
-  ScopeLock lock(MapWindow::zoom._zoomMutex);
+  const std::lock_guard<Mutex> lock(MapWindow::zoom._zoomMutex);
   _lastMode = _mode;
   if (enable) {
     _mode |= specialMode;

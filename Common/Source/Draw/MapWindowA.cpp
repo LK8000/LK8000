@@ -46,7 +46,7 @@ std::map<MapWindow::ColorIndex, LKPen> MapWindow::AirspaceBigPens;
 
 void MapWindow::SetAirspaceColor(Airspace::Type type,
                                  std::optional<RGB8Color> color) {
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   aAirspaceMode.Color(type, std::move(color));
   AirspaceBrushes.clear();
   AirspacePens.clear();
@@ -62,13 +62,13 @@ std::unordered_map<size_t, LKBrush> MapWindow::AirspacePatternBrushes;
 
 void MapWindow::SetAirspaceModePattern(Airspace::Type type,
                                        std::optional<int> pattern) {
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   aAirspaceMode.Pattern(type, std::move(pattern));
   AirspacePatternBrushes.clear();
 }
 
 BrushReference MapWindow::AirspaceBrush(size_t idx) {
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   auto [it, inserted] = AirspacePatternBrushes.try_emplace(idx);
   if (inserted) {
     it->second.Create(hAirspaceBitmap[idx % std::size(hAirspaceBitmap)]);
@@ -79,7 +79,7 @@ BrushReference MapWindow::AirspaceBrush(size_t idx) {
 #endif
 
 void MapWindow::AirspaceClear() {
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   AirspaceBrushes.clear();
   AirspaceBigPens.clear();
   AirspacePens.clear();
@@ -94,7 +94,7 @@ BrushReference MapWindow::AirspaceBrush(LKColor color) {
   const uint8_t alpha = 0xFF * AirspaceOpacity / 100;
   color = color.WithAlpha(alpha);
 #endif
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   auto [it, inserted] = AirspaceBrushes.try_emplace({color});
   if (inserted) {
     it->second.Create(color);
@@ -103,7 +103,7 @@ BrushReference MapWindow::AirspaceBrush(LKColor color) {
 }
 
 PenReference MapWindow::AirspaceBigPen(LKColor color) {
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   auto [it, inserted] = AirspaceBigPens.try_emplace(color);
   if (inserted) {
     it->second.Create(PEN_SOLID, NIBLSCALE(3), color.ChangeBrightness(0.75));
@@ -113,7 +113,7 @@ PenReference MapWindow::AirspaceBigPen(LKColor color) {
 }
 
 PenReference MapWindow::AirspacePen(LKColor color) {
-  ScopeLock lock(AirspaceMutex);
+  const std::lock_guard<Mutex> lock(AirspaceMutex);
   auto [it, inserted] = AirspacePens.try_emplace(color);
   if (inserted) {
     it->second.Create(PEN_SOLID, NIBLSCALE(1), color);
@@ -272,7 +272,7 @@ static void SetupStencilWrite(GLint stencilValue) {
 }
 
 void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
-  ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+  const std::lock_guard<Mutex> lock(CAirspaceManager::Instance().MutexRef());
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
   const bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);

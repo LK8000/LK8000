@@ -100,7 +100,7 @@ void ReinitScreen(void) {
   MapWindow::SuspendDrawingThread();
 
 #ifndef ENABLE_OPENGL
-  ScopeLock Lock(MapWindow::Surface_Mutex);
+  const std::lock_guard<Mutex> lock(MapWindow::Surface_Mutex);
 #endif
 
   // MapWndProc will get a WM_SIZE

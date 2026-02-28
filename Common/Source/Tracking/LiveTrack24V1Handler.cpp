@@ -334,7 +334,7 @@ void LiveTrack24V1Handler::Run() {
         }
 
         if (sendpoint_processed) {
-          ScopeLock guard(m_mutex);
+          const std::unique_lock<Mutex> guard(m_mutex);
           m_points.pop_front();
         }
         else if (!InterruptibleSleep(2500)) {

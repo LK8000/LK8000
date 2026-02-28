@@ -24,7 +24,7 @@ void DebugStore(const char* fmt, ...) {
 #ifndef NDEBUG
 
   static Mutex mutex;
-  ScopeLock Lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   static TCHAR szFileName[MAX_PATH];
   static bool initialised = false;
@@ -46,7 +46,7 @@ void DebugStore(const char* fmt, ...) {
 void StartupStoreV(const TCHAR* fmt, va_list args)
 {
   static Mutex mutex;
-  ScopeLock Lock(mutex);
+  const std::lock_guard<Mutex> lock(mutex);
 
   TCHAR buf[1024]; // 2 kByte for unicode, 1kByte for utf-8
 

@@ -19,43 +19,43 @@ using namespace std::chrono_literals;
 namespace  {
 
 BOOL OnHeartRate(DeviceDescriptor_t& d, NMEA_INFO& info, unsigned bpm) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.HeartRate.update(d, bpm);
   return TRUE;
 }
 
 BOOL OnBarometricPressure(DeviceDescriptor_t& d, NMEA_INFO& info, double Pa) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   UpdateBaroSource(&info, &d, StaticPressureToQNHAltitude(Pa));
   return TRUE;
 }
 
 BOOL OnOutsideTemperature(DeviceDescriptor_t& d, NMEA_INFO& info, double temp) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.OutsideAirTemperature.update(d, temp);
   return TRUE;
 }
 
 BOOL OnRelativeHumidity(DeviceDescriptor_t& d, NMEA_INFO& info, double hr) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   info.RelativeHumidity.update(d, hr);
   return TRUE;
 }
 
 BOOL OnWindOriginDirection(DeviceDescriptor_t& d, NMEA_INFO& info, double direction) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   UpdateExternalWind(info, d, info.ExternalWind.value().Speed, direction);
   return TRUE;
 }
 
 BOOL OnWindSpeed(DeviceDescriptor_t& d, NMEA_INFO& info, double speed) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   UpdateExternalWind(info, d, speed, info.ExternalWind.value().Direction);
   return TRUE;
 }
 
 BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
   switch (d.PortNumber) {
     case 0:
       info.ExtBatt1_Voltage = level + 1000;

@@ -28,7 +28,7 @@ void simpleETE(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int i) {
 
 // This is also called by DoNearest and it is overwriting AltitudeRequired
 double CalculateWaypointArrivalAltitude(NMEA_INFO* Basic, DERIVED_INFO* Calculated, int i) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   double wDistance, wBearing;
   DistanceBearing(Basic->Latitude, Basic->Longitude,

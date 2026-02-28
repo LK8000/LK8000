@@ -235,7 +235,7 @@ struct for_task_type_t {
 template<typename _Fn, typename ..._Args, typename _Return = typename _Fn::result_type>
 _Return invoke_for_task_point(int tp_index, _Args&& ...args) {
 
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
   if (!ValidTaskPointFast(tp_index)) {
     return _Return(); // invalid task point
   }

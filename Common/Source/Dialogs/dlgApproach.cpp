@@ -212,7 +212,7 @@ static void OnApproveClicked(WndButton* pWnd) {
   lk::snprintf(if_wp.Name, NAME_SIZE, _T("DIRECT %02d"), rw_dir / 10);
 
   {
-    ScopeLock lock(CritSec_TaskData);
+    const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
     if (!AddWaypoint(if_wp)) return;
     const int if_index = (int)WayPointList.size() - 1;
@@ -226,7 +226,7 @@ static void OnApproveClicked(WndButton* pWnd) {
     ActiveTaskPoint = 0;
     RefreshTask();
   }
-  
+
   if (pWnd) {
     WndForm* pForm = pWnd->GetParentWndForm();
     if (pForm) pForm->SetModalResult(mrOK);

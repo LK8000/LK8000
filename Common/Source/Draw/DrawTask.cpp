@@ -181,7 +181,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 
   short size_tasklines = TasklineSize();
 
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   if (WayPointList.empty()) {
     return;
@@ -423,7 +423,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
 }
 
 void MapWindow::DrawTaskSectors(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
-  ScopeLock lock(CritSec_TaskData);
+  const std::lock_guard<Mutex> lock(CritSec_TaskData);
 
   int Active = ActiveTaskPoint;
   if (ValidTaskPoint(PanTaskEdit)) {

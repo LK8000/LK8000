@@ -255,7 +255,7 @@ BOOL NMEAParser::PFLAV(const char *String, char **params, size_t nparams, NMEA_I
 
 */
 	if(nparams > 3) {
-		ScopeLock lock(CritSec_FlightData);
+		const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
 		pGPS->FLARM_HW_Version = strtod(params[1], nullptr);
 		pGPS->FLARM_SW_Version = strtod(params[2], nullptr);
@@ -371,7 +371,7 @@ BOOL NMEAParser::PFLAU(const char *String, char **params, size_t nparams, NMEA_I
 		return FALSE;
 	}
 
-	ScopeLock lock(CritSec_FlightData);
+	const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
 	setFlarmAvailable(pGPS);
 
@@ -592,7 +592,7 @@ BOOL NMEAParser::PFLAA(const char *String, char **params, size_t nparams, NMEA_I
 		return FALSE;
 	}
 
-	ScopeLock lock(CritSec_FlightData);
+	const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
 	setFlarmAvailable(pGPS);
 
@@ -700,7 +700,7 @@ void CheckBackTarget(NMEA_INFO &Info, int slot) {
 }
 
 void UpdateFlarmTarget(NMEA_INFO &Info) {
-	ScopeLock Lock(CritSec_TaskData);
+	const std::lock_guard<Mutex> lock(CritSec_TaskData);
 	
 	assert(RESWP_FLARMTARGET < WayPointList.size()); // Bug in Waypoint Loading ?
 
@@ -731,7 +731,7 @@ void UpdateFlarmTarget(NMEA_INFO &Info) {
 void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_in,
                   const AGeoPoint& position, double sog, int lastTM) {
 
-  ScopeLock lock(CritSec_FlightData);
+  const std::lock_guard<Mutex> lock(CritSec_FlightData);
 
   time_t t_of_day = to_time_t(info);
 

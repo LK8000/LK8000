@@ -87,7 +87,7 @@ void LKSound(const TCHAR *lpName) {
         return;
     }
     
-    ScopeLock Lock(mutex_sound);
+    const std::lock_guard<Mutex> lock(mutex_sound);
     
     // Check if AudioChunk is already loaded.
     auto ib = audioChunkCache.insert(std::make_pair(lpName, nullptr));
@@ -113,7 +113,7 @@ void PlayResource (const TCHAR* lpName) {
         return;
     }
 
-    ScopeLock Lock(mutex_sound);
+    const std::lock_guard<Mutex> lock(mutex_sound);
 
     // Check if AudioChunk is already loaded.
     auto ib = audioChunkCache.insert(std::make_pair(lpName, nullptr));

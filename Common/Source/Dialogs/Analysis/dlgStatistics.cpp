@@ -160,7 +160,7 @@ static void NextPage(WndForm* pForm, int Step){
 
   if (analysis_page == ANALYSIS_PAGE_TEMPTRACE) {
     auto temp_available = []() {
-      ScopeLock lock(CritSec_FlightData);
+      const std::lock_guard<Mutex> lock(CritSec_FlightData);
       return GPS_INFO.OutsideAirTemperature.available();
     };
 

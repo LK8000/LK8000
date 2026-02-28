@@ -110,18 +110,18 @@ public:
     }
 
     void SignalNewData() {
-        ScopeLock lock(mtx);
+        const std::lock_guard<Mutex> lock(mtx);
         new_data = true;
         cond.Signal();
     }
 
     bool CheckLastRun(unsigned duration) {
-      ScopeLock lock(mtx);
+      const std::lock_guard<Mutex> lock(mtx);
       return last_run.Check(duration);
     }
 
     void RequestStop() {
-        ScopeLock lock(mtx);
+        const std::lock_guard<Mutex> lock(mtx);
         run = false;
         cond.Signal();
     }
@@ -129,7 +129,7 @@ public:
 private:
 
     void UpdateLocalFlightData() {
-        ScopeLock lock(CritSec_FlightData);
+        const std::lock_guard<Mutex> lock(CritSec_FlightData);
         FLARM_RefreshSlots(&GPS_INFO);
         Fanet_RefreshSlots(&GPS_INFO); //refresh slots of FANET
         Local_NMEA = GPS_INFO;
@@ -137,12 +137,12 @@ private:
     }
 
     void UpdateCalculatedFlightData() {
-        ScopeLock lock(CritSec_FlightData);
+        const std::lock_guard<Mutex> lock(CritSec_FlightData);
         CALCULATED_INFO = Local_DERIVED;
     }
 
     bool Wait() {
-        ScopeLock lock(mtx);
+        const std::lock_guard<Mutex> lock(mtx);
 
         /*
          * updated here to avoid useless locking overhead :

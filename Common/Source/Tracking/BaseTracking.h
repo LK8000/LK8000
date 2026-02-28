@@ -16,6 +16,7 @@
 #include <utility>
 #include <cassert>
 #include "Thread/Thread.hpp"
+#include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
 #include "http_session.h"
 #include "ITrackingHandler.h"
@@ -65,7 +66,7 @@ class BaseTracking : public Thread, public ITrackingHandler {
 
  private:
   bool Wait() {
-    ScopeLock lock(queue_mtx);
+    const std::lock_guard<Mutex> lock(queue_mtx);
     while (!thread_stop && !queue.has_value()) {
       queue_cv.Wait(queue_mtx);
     }

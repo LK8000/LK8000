@@ -569,7 +569,7 @@ bool LiveTrack24V2Handler::SendGPSPointPacket2(http_session& http,
   std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
   {
-    ScopeLock guard(m_tracker_mutex);
+    const std::lock_guard<Mutex> guard(m_tracker_mutex);
 
     if (m_points.empty()) {
       return false;
@@ -660,7 +660,7 @@ void LiveTrack24V2Handler::TrackerThread::Run() {
 
 bool LiveTrack24V2Handler::TrackerThread::WaitForPoint(
     livetracker_point_t& sendpoint) {
-  ScopeLock lock(m_handler.m_tracker_mutex);
+  const std::lock_guard<Mutex> lock(m_handler.m_tracker_mutex);
   while (m_handler.m_run_tracker && m_handler.m_points.empty()) {
     m_handler.m_tracker_cond.Wait(m_handler.m_tracker_mutex, 5000);
   }
@@ -674,7 +674,7 @@ bool LiveTrack24V2Handler::TrackerThread::WaitForPoint(
 }
 
 bool LiveTrack24V2Handler::TrackerThread::WaitForRetry(unsigned timeout_ms) const {
-  ScopeLock lock(m_handler.m_tracker_mutex);
+  const std::lock_guard<Mutex> lock(m_handler.m_tracker_mutex);
   if (!m_handler.m_run_tracker) {
     return false;
   }
@@ -747,7 +747,7 @@ void LiveTrack24V2Handler::RadarThread::Run() {
   http_session http;
 
   auto WaitForRadarStop = [&]() {
-    ScopeLock lock(m_handler.m_radar_mutex);
+    const std::lock_guard<Mutex> lock(m_handler.m_radar_mutex);
     while (m_handler.m_run_radar) {
       if (!m_handler.m_radar_cond.Wait(m_handler.m_radar_mutex, 5000)) {
         return true;  // timeout

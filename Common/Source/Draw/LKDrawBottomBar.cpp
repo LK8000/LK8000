@@ -36,7 +36,7 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc) {
     DoInit[MDI_DRAWBOTTOMBAR] = false;
   }  // end doinit
 
-  ScopeLock lock(bottom_bar_mutex);
+  const std::lock_guard<Mutex> lock(bottom_bar_mutex);
   if (!bottom_bar_ptr) {
     bottom_bar_ptr = std::make_unique<bottom_bar>();
   }
@@ -47,13 +47,13 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc) {
 }
 
 void MapWindow::ResetBottomBarDrawer() {
-  ScopeLock lock(bottom_bar_mutex);
+  const std::lock_guard<Mutex> lock(bottom_bar_mutex);
   bottom_bar_ptr = nullptr;
   last_bottom_bar_size = 0;
 }
 
 unsigned MapWindow::GetBottomBarSize() {
-  ScopeLock lock(bottom_bar_mutex);
+  const std::lock_guard<Mutex> lock(bottom_bar_mutex);
   if (!bottom_bar_ptr) {
     return 0;
   }

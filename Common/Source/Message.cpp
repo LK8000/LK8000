@@ -224,7 +224,7 @@ void Message::Render() {
 }
 
 void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
-    ScopeLock lock(CritSec_Messages);
+    const std::lock_guard<Mutex> lock(CritSec_Messages);
     if (!startTime.IsDefined()) {
         // too early ...
         return;

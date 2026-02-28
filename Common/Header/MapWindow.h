@@ -488,46 +488,46 @@ class MapWindow {
   static void AirspaceClear();
  
   static airspace_config AirspaceMode() {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return aAirspaceMode;
   }
 
   template<typename... Args>
   static bool AirspaceModeDisplay(Args&&... args) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return aAirspaceMode.Display(std::forward<Args>(args)...);
   }
   
   template<typename... Args>
   static bool AirspaceModeWarning(Args&&... args) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return aAirspaceMode.Warning(std::forward<Args>(args)...);
   }
 
   static void AirspaceModeRotateSet(Airspace::Type type) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     aAirspaceMode.RotateSet(type);
   }
 
   static bool AirspaceModeLoadSettings(const std::string_view& key,
                                        const char* value) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return aAirspaceMode.LoadSettings(key, value);
   }
 
   static void AirspaceModeSaveSettings(settings::writer& write_settings) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     aAirspaceMode.SaveSettings(write_settings);
   }
 
   static void AirspaceModeReset() {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     aAirspaceMode.Reset();
   }
 
   template<typename... Args>
   static std::optional<LKColor> AirspaceModeColor(Args&&... args) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return aAirspaceMode.Color(std::forward<Args>(args)...);
   }
 
@@ -547,7 +547,7 @@ class MapWindow {
 
   template<typename... Args>
   static std::optional<size_t> AirspaceModePattern(Args&&... args) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return aAirspaceMode.Pattern(std::forward<Args>(args)...);
   }
 
@@ -1058,18 +1058,18 @@ protected:
 
   // set airspace drawing type
   static void SetAirSpaceFillType(EAirspaceFillType fillType) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     AirspaceFillType = fillType;
   }
 
   // get airspace drawing type
   static EAirspaceFillType GetAirSpaceFillType(void) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return AirspaceFillType;
   }
 
   static void SetAirSpaceOpacity(int opacity) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     opacity = std::clamp(opacity, 0, 100);
     if(AirspaceOpacity != opacity) {
       AirspaceOpacity = opacity;
@@ -1079,7 +1079,7 @@ protected:
 
   // get alpha blended airspace opacity
   static int GetAirSpaceOpacity(void) {
-    ScopeLock lock(AirspaceMutex);
+    const std::lock_guard<Mutex> lock(AirspaceMutex);
     return AirspaceOpacity;
   }
 

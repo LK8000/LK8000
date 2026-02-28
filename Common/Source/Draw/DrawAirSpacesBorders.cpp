@@ -14,7 +14,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc) {
   asp_selected_flash = !asp_selected_flash;
   const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
 
-  ScopeLock guard(CAirspaceManager::Instance().MutexRef());
+  const std::lock_guard<Mutex> lock(CAirspaceManager::Instance().MutexRef());
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
   /***********************************************************************

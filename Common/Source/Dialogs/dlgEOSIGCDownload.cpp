@@ -632,7 +632,7 @@ static void UpdateList(void) {
 }
 
 void EOS_StopIGCRead(void) {
-  ScopeLock lock(DLmutex);
+  const std::lock_guard<Mutex> lock(DLmutex);
   EOS_ThreadState = ABORT_STATE;
 }
 
@@ -652,7 +652,7 @@ void StopEOS_IGCReadThread() {
 
 
 int ReadEOS_IGCFile(DeviceDescriptor_t* d, uint8_t IGC_FileIndex) {
- ScopeLock lock(DLmutex);
+  const std::lock_guard<Mutex> lock(DLmutex);
 static uint16_t BlockNo=1; 
 static uint8_t ErrCnt = 0;
 static uint32_t FileSize = 0;

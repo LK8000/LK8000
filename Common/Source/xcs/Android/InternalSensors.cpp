@@ -202,7 +202,7 @@ JNIEXPORT void JNICALL
 Java_org_LK8000_InternalGPS_setConnected(JNIEnv *env, jobject obj, jboolean connected)
 {
   unsigned index = getDeviceIndex(env, obj);
-  ScopeLock Lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
 
   DeviceDescriptor_t* pdev = devGetDeviceOnPort(index);
   if(pdev) {
@@ -241,7 +241,7 @@ Java_org_LK8000_NonGPSSensors_setRotation(
   // TODO
   /*
   const unsigned int index = getDeviceIndex(env, obj);
-  ScopeLock protect(device_blackboard->mutex);
+  const std::lock_guard<Mutex> lock(device_blackboard->mutex);
   NMEAInfo &basic = device_blackboard->SetRealState(index);
   */
 }
@@ -255,7 +255,7 @@ Java_org_LK8000_NonGPSSensors_setMagneticField(
   // TODO
   /*
   const unsigned int index = getDeviceIndex(env, obj);
-  ScopeLock protect(device_blackboard->mutex);
+  const std::lock_guard<Mutex> lock(device_blackboard->mutex);
   NMEAInfo &basic = device_blackboard->SetRealState(index);
   */
 }
@@ -356,7 +356,7 @@ Java_org_LK8000_InternalGPS_parseNMEA(JNIEnv *env, jobject instance, jstring jnm
   };
 
   int index = getDeviceIndex(env, instance);
-  ScopeLock Lock(CritSec_Comm);
+  const std::lock_guard<Mutex> lock(CritSec_Comm);
 
   if (ComCheck_ActivePort >= 0 && index == ComCheck_ActivePort) {
     for( auto it = c_nmea; (*it); ++it) {

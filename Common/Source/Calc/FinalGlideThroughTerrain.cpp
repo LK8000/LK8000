@@ -70,7 +70,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
   double Yrounding = fabs(lat-start_lat)/2;
 
   // Warning: leave this part locked, RasterTerrain need no changes on the map position while working
-  ScopeLock lock(RasterTerrain::mutex);
+  const std::lock_guard<Mutex> lock(RasterTerrain::mutex);
 
   RasterTerrain::SetTerrainRounding(Xrounding, Yrounding);
 
