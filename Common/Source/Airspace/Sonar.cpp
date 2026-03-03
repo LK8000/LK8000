@@ -9,6 +9,8 @@
 #include "Sound/Sound.h"
 #include "OS/Sleep.h"
 
+namespace {
+
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
 #define GC_VERTICAL_THRESHOLD        250
@@ -17,8 +19,6 @@
 #define GC_VERTICAL_DELAY_FACT      25.0f
 
 //#define DEBUG_SONAR	1
-
-
 
 const AirSpaceSonarLevelStruct sSonarLevel[] = {
     /* horizontal sonar levels */
@@ -36,15 +36,11 @@ const AirSpaceSonarLevelStruct sSonarLevel[] = {
     {  110,     7,         false, TEXT("LK_SONAR_H5.WAV")}
    };
 
-
-
-
 //
 // calc the sonar delay time
 // This function can manage more than 1 airspace as Input.
 // However currently we only use one, the closest.
 //
-static
 int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAltitudeAGL, int iAltitude)
 {
   int iAS_HorDist;
@@ -147,13 +143,11 @@ int CalcSonarDelay (const int iNoAs, const CAirspaceBase* asAirspaces[], int iAl
   return iTreadLevel;
 }
 
-
-
 //
 // We do Sonar from draw thread, because it is reasonable to think that without a visual aid on map,
 // the simple sonar sound alone is an halved solution.
 //
-void DoSonar(void) {
+void DoSonar() {
 
   static unsigned long lSonarCnt = 0;
 
@@ -209,41 +203,61 @@ void DoSonar(void) {
 
 }
 
-class SonarThread : public Thread
-{
+class SonarThread final : public Thread {
 public:
-	SonarThread() : Thread("SonarThread") { }
 
-    bool Start() override {
-		bStop = false;
-        return Thread::Start();
-    }
-		
-    void Stop() {
-		bStop = true;
+	SonarThread() : Thread("SonarThread") {
+		Start();
+	}
+
+	~SonarThread() {
+		WithLock(mutexRun, [&](){
+			stop = true;
+		});
+		condClose.Signal();
 		Join();
 	}
 
 protected:
-    void Run() override {
-		PeriodClock Timer;
-		while (!bStop) {
-			DoSonar();
+
+	// return false every second
+	// return true if stop is signaled
+	bool WaitForStop() {
+		while (Timer.Elapsed() < 1000) {
+			ScopeLock lock(mutexRun);
 			unsigned elapsed = Timer.ElapsedUpdate();
-			Sleep((elapsed >= 1000U) ? 0U : (1000U - elapsed));
-			Timer.Update();
+			while(stop || condClose.Wait(mutexRun, (elapsed >= 1000U) ? 0U : (1000U - elapsed))) {
+				if(stop) { // check for spurious wakeup
+					return true;
+				}
+			}
+		}
+		Timer.Update();
+		return false;
+	}
+
+	void Run() override {
+		Timer.Update();
+		while(!WaitForStop()) {
+			DoSonar();
 		}
 	}
 
-	bool bStop = false;
+	PeriodClock Timer;
+
+	bool stop = false;
+	Mutex mutexRun;
+	Cond condClose;
 };
 
-SonarThread SonarThreadInstance;
+std::unique_ptr<SonarThread> SonarThreadInstance;
+
+} // namespace
 
 void InitAirspaceSonar() {
-	SonarThreadInstance.Start();
+	SonarThreadInstance = std::make_unique<SonarThread>();
 }
 
 void DeinitAirspaceSonar() {
-	SonarThreadInstance.Stop();
+	SonarThreadInstance = nullptr;
 }
