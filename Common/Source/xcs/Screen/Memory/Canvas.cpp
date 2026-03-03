@@ -101,6 +101,17 @@ Canvas::DrawFilledRectangle(int left, int top, int right, int bottom,
                          AlphaPixelOperations<ActivePixelTraits>(color.Alpha()));
 }
 
+void Canvas::FillTriangle(const FloatPoint& v1, const FloatPoint& v2, const FloatPoint& v3) {
+  SDLRasterCanvas canvas(buffer);
+  const auto color = brush.GetColor();
+  const auto raster_color = canvas.Import(color);
+  if (color.IsOpaque())
+    canvas.FillTriangle(v1, v2, v3, raster_color);
+  else
+    canvas.FillTriangle(v1, v2, v3, raster_color, 
+                         AlphaPixelOperations<ActivePixelTraits>(color.Alpha()));
+}
+
 void
 Canvas::InvertRectangle(int left, int top, int right, int bottom)
 {

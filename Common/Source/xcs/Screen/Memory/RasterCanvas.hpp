@@ -294,6 +294,65 @@ public:
     FillRectangle<PixelTraits>(x1, y1, x2, y2, c, GetPixelTraits());
   }
 
+  template <typename PixelOperations>
+  void FillTriangle(FloatPoint v1, FloatPoint v2, FloatPoint v3, color_type c,
+                    PixelOperations operations) {
+    // Sort by Y
+    if (v1.y > v2.y) {
+      std::swap(v1, v2);
+    }
+    if (v2.y > v3.y) {
+      std::swap(v2, v3);
+    }
+    if (v1.y > v2.y) {
+      std::swap(v1, v2);
+    }
+
+    int yStart = std::max<int>(0, std::lround(v1.y));
+    int yEnd = std::min<int>(buffer.height, std::lround(v3.y));
+    if (yStart >= yEnd) {
+      return;
+    }
+
+    int y2 = std::lround(v2.y);
+
+    auto slope = [](FloatPoint a, FloatPoint b) -> float {
+      float dy = b.y - a.y;
+      return (dy > 0.001f) ? (b.x - a.x) / dy : 0.0f;
+    };
+
+    float s13 = slope(v1, v3);
+    float s12 = slope(v1, v2);
+    float s23 = slope(v2, v3);
+
+    auto fillLine = [&](int y, float x1, float x2) {
+      if (x1 > x2) {
+        std::swap(x1, x2);
+      }
+      int xs = std::max<int>(0, std::lround(x1));
+      int xe = std::min<int>(buffer.width, std::lround(x2) + 1);
+      if (xs < xe) {
+        operations.FillPixels(At(xs, y), xe - xs, c);
+      }
+    };
+
+    // Top half
+    for (int y = yStart; y < std::min(y2, yEnd); y++) {
+      float t = y - v1.y;
+      fillLine(y, v1.x + s13 * t, v1.x + s12 * t);
+    }
+
+    // Bottom half
+    for (int y = std::max(yStart, y2); y < yEnd; y++) {
+      fillLine(y, v1.x + s13 * (y - v1.y), v2.x + s23 * (y - v2.y));
+    }
+  }
+
+  void FillTriangle(FloatPoint v1, FloatPoint v2, FloatPoint v3,
+                    color_type c) {
+    FillTriangle(v1, v2, v3, c, GetPixelTraits());
+  }
+
   template<typename PixelOperations>
   void DrawHLine(int x1, int x2, int y, color_type c,
                  PixelOperations operations) {
