@@ -228,7 +228,7 @@ void FillDataOptions() {
 	// LKTOKEN  _@M2472_ = "MultiTarget QNH Arrival", _@M2473_ = "MTgtArr"
 	SetDataOption<LK_MTG_QNH_ARRIV, 2472, 2473>();
 	// LKTOKEN  _@M2478_ = "Alternate 1 QNH Arrival", _@M2479_ = "Alt1QNH"
-	SetDataOption<LK_ALTERN1_QNH_ARRIV, 2474, 2475>();
+	SetDataOption<LK_ALTERN1_QNH_ARRIV, 2478, 2479>();
 
 	// Distance OLC
 	SetDataOption<LK_OLC_CLASSIC_DIST, 1455, 1456>();
