@@ -36,6 +36,8 @@
 class LKBitmapSurface;
 #endif
 
+struct FloatPoint;
+
 class LKSurface {
 protected:
 #ifndef USE_GDI
@@ -153,6 +155,7 @@ public:
         Polygon(array.data(), array.size());
     }
 
+    void FillTriangle(const FloatPoint& p1, const FloatPoint& p2, const FloatPoint& p3);
 
     void Polyline(const POINT *apt, int cpt);
     void Polyline(const POINT *apt, int cpt, const RECT& ClipRect);
