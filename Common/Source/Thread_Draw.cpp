@@ -81,13 +81,13 @@ void MapWindow::Initialize() {
     BackBufferSurface.Blackness(MapRect.left, MapRect.top,MapRect.right-MapRect.left, MapRect.bottom-MapRect.top);
 #endif
 
+    FillScaleListForEngineeringUnits();
+    zoom.RequestedScale(zoom.Scale());
+
     // This is just here to give fully rendered start screen
     UpdateInfo(GPS_INFO, CALCULATED_INFO);
     MapDirty = true;
 
-    FillScaleListForEngineeringUnits();
-    zoom.RequestedScale(zoom.Scale());
-    zoom.ModifyMapScale();
 
     LKUnloadFixedBitmaps();
     LKUnloadProfileBitmaps();
@@ -159,6 +159,9 @@ void MapWindow::DrawThread ()
 	if (OnFastPanning) {
 		MapDirty=false;
 	}
+
+    MapWindow::UpdateInfo(GPS_INFO, CALCULATED_INFO);
+
 
 	// We must check if we are on FastPanning, because we may be in pan mode even while
 	// the menu buttons are active and we are using them, accessing other functions.
@@ -269,7 +272,6 @@ _dontbitblt:
 	} // MapDirty
 
 	lastdrawwasbitblitted=false;
-	MapWindow::UpdateInfo(GPS_INFO, CALCULATED_INFO);
 	RenderMapWindow(DrawSurface, MapRect);
 
     {

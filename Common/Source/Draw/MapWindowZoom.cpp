@@ -93,8 +93,6 @@ void MapWindow::Zoom::Reset()
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
 
   _requestedScale = &_modeScale[SCALE_CRUISE];
-  _scale = *_requestedScale;
-  _realscale = Units::FromDistance(*_requestedScale)/1000;
 
   _inited = true;
   SwitchMode_Locked();

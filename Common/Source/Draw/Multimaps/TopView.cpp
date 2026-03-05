@@ -113,12 +113,11 @@ int MapWindow::SharedTopView(LKSurface& Surface, DiagrammStruct* psDia, double f
                                    /*******/
 
   zoom.RequestedScale(Units::ToDistance(m_Dia.fXMax - m_Dia.fXMin) * fFact / 10.0f);
+  zoom.UpdateMapScale();
 
   POINT Orig = {CalcDistanceCoordinat(0.0, (DiagrammStruct*)&m_Dia), (rct.bottom - rct.top) / 2};
   POINT Orig_Aircraft = {0, 0};
 
-  zoom.ModifyMapScale();
-  zoom.UpdateMapScale();
 
   const ScreenProjection _Proj = CalculateScreenPositions(Orig, rct, &Orig_Aircraft);
 
