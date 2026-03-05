@@ -53,6 +53,41 @@ void MapWindow::CalculateOrientationNormal() {
       SetOrientation(trackbearing, trackbearing, Center);
       break;
   }
+
+  DisplayAngle = AngleLimit360(DisplayAngle);
+  DisplayAircraftAngle = AngleLimit360(DisplayAircraftAngle);
+}
+
+void MapWindow::CalculateOrientationTargetPan() {
+  // Target pan mode: respect user DisplayOrientation setting.
+
+  if (MapWindow::mode.autoNorthUP()) {
+    // North up (auto)
+    SetOrientation(0.0, DrawInfo.TrackBearing, true);
+    return;
+  }
+
+  switch (DisplayOrientation) {
+    case NORTHUP:
+    case NORTHSMART:
+    case NORTHCIRCLE:
+    case NORTHTRACK:
+      SetOrientation(0.0, DrawInfo.TrackBearing, true);
+      break;
+    case TRACKUP:
+      SetOrientation(DrawInfo.TrackBearing, DrawInfo.TrackBearing, true);
+      break;
+    case TARGETUP:
+    case TARGETCIRCLE:
+    default:
+      // Target-up only when looking at current task point, otherwise North up
+      if (ActiveTaskPoint == TargetPanIndex) {
+        SetOrientation(DerivedDrawInfo.WaypointBearing, DrawInfo.TrackBearing, true);
+      } else {
+        SetOrientation(0.0, DrawInfo.TrackBearing, true);
+      }
+      break;
+  }
 }
 
 RasterPoint MapWindow::GetOrigCenter(const RECT& rc) {
