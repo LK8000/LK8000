@@ -12,8 +12,8 @@ bool MapWindow::GliderCenter = false;
 
 void MapWindow::SetOrientation(double Display, double Aircraft, bool Center) {
   GliderCenter = Center;
-  DisplayAngle = Display;
-  DisplayAircraftAngle = Aircraft - Display;
+  DisplayAngle = AngleLimit360(Display);
+  DisplayAircraftAngle = AngleLimit360(Aircraft - Display);
 }
 
 void MapWindow::CalculateOrientationNormal() {
@@ -52,9 +52,6 @@ void MapWindow::CalculateOrientationNormal() {
       SetOrientation(trackbearing, trackbearing, Center);
       break;
   }
-
-  DisplayAngle = AngleLimit360(DisplayAngle);
-  DisplayAircraftAngle = AngleLimit360(DisplayAircraftAngle);
 }
 
 void MapWindow::CalculateOrientationTargetPan() {
@@ -125,7 +122,7 @@ RasterPoint MapWindow::GetOrigAutoOrient(const RECT& rc, double scale, double au
 RasterPoint MapWindow::CalculateOrigin(const RECT& rc) {
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
     CalculateOrientationTargetPan();
-    return GetOrigCenter(rc);
+    return GetOrigTargetPan(rc, targetPanSize, ScreenLandscape);
   }
 
   if (mode.Is(Mode::MODE_PAN)) {

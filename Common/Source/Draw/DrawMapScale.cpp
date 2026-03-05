@@ -30,14 +30,23 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
     PixelScalar mapscale_bottom_margin = (rc.bottom - NIBLSCALE(4));
 
     if (inpanmode) {
-        if(ScreenLandscape) {
-            /* in Landscape mode, we need to draw Scale upper for avoid menu overlap
-             * TODO : find right way for have menu size and visibility.
-             */
-            mapscale_bottom_margin -= std::min<PixelScalar>(((rc.bottom-rc.top)-4)/5, NIBLSCALE(40));
-        }
-    } else {
+      if (ScreenLandscape) {
+        /* in Landscape mode, we need to draw Scale upper for avoid menu overlap
+         * TODO : find right way for have menu size and visibility.
+         */
+        mapscale_bottom_margin -= std::min<PixelScalar>(
+            ((rc.bottom - rc.top) - 4) / 5, NIBLSCALE<PixelScalar>(40));
+      }
+    }
+    else {
+      if (!mode.Is(Mode::MODE_TARGET_PAN)) {
         mapscale_bottom_margin -= BottomSize;
+      }
+      else {
+        if (ScreenLandscape) {
+          mapscale_right_margin -= targetPanSize;
+        }
+      }
     }
 
     const RasterPoint ScaleLine[] = {
