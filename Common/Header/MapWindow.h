@@ -319,7 +319,7 @@ class MapWindow {
     void SwitchMode_Locked();  // Internal version called with lock held
 
     void CalculateTargetPanZoom();
-    void CalculateAutoZoom();
+    void CalculateAutoZoom_Locked();
 
     double ResScaleOverDistanceModify() const;
     double DrawScale() const;
@@ -355,7 +355,7 @@ class MapWindow {
     void EventAutoZoom(int vswitch);
     void EventSetZoom(double value);
     void EventScaleZoom(int vswitch);
-    // use thread-safe version above
+
     void UpdateMapScale();
     void ModifyMapScale();
 
