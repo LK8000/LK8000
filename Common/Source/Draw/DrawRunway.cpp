@@ -261,6 +261,39 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   }
   Surface.Polygon(Runway ,5 );
 
+  //
+  // Draw runway headings as horizontal boxes at both ends of runway (picto only)
+  //
+  if (wp->RunwayDir >= 0 && !picto && mode.Is(Mode::MODE_TARGET_PAN)) {
+    TCHAR szHead1[4], szHead2[4];
+    int h1 = (int)(wp->RunwayDir / 10.0 + 0.5);
+    int h2 = (int)(((int)(wp->RunwayDir + 180.0)) % 360 / 10.0 + 0.5);
+    if (h1 == 0) h1 = 36;
+    if (h2 == 0) h2 = 36;
+    lk::snprintf(szHead1, _T("%02d"), h1);
+    lk::snprintf(szHead2, _T("%02d"), h2);
+
+    const auto hfOldPicto = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
+                                                     ? LK8PanelUnitFont : LK8GenericVar02Font);
+
+    // measure box half-height to align near edge with runway tip
+    SIZE tsize;
+    Surface.GetTextSize(szHead1, &tsize);
+    int half_box = (tsize.cy / 2) + NIBLSCALE(1) + 1;
+    int rw_end = IBLSCALE(irw_len);
+    int offset = rw_end + half_box + NIBLSCALE(1);
+
+    double drawAngle = picto ? wp->RunwayDir : (wp->RunwayDir - MapWindow::GetDisplayAngle());
+    int x1 = Center.x + (int)(fastsine(drawAngle)  * offset);
+    int y1 = Center.y - (int)(fastcosine(drawAngle) * offset);
+    int x2 = Center.x - (int)(fastsine(drawAngle)  * offset);
+    int y2 = Center.y + (int)(fastcosine(drawAngle) * offset);
+
+    LKWriteBoxedText(Surface, rc, szHead2, x1, y1, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+    LKWriteBoxedText(Surface, rc, szHead1, x2, y2, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+    Surface.SelectObject(hfOldPicto);
+  }
+
 
   //
   // Print waypoint information on screen, not for Pictos
