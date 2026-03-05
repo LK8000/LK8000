@@ -58,20 +58,34 @@ void MapWindow::CalculateOrientationNormal() {
 }
 
 void MapWindow::CalculateOrientationTargetPan() {
-  // Target pan mode, show target up when looking at current task point,
-  // otherwise north up.
+  // Target pan mode: respect user DisplayOrientation setting.
 
   if (MapWindow::mode.autoNorthUP()) {
-    // North up
+    // North up (auto)
     SetOrientation(0.0, DrawInfo.TrackBearing, true);
+    return;
   }
-  else if (ActiveTaskPoint == TargetPanIndex) {
-    // Target-up
-    SetOrientation(DerivedDrawInfo.WaypointBearing, DrawInfo.TrackBearing, true);
-  }
-  else {
-    // North up
-    SetOrientation(0.0, DrawInfo.TrackBearing, true);
+
+  switch (DisplayOrientation) {
+    case NORTHUP:
+    case NORTHSMART:
+    case NORTHCIRCLE:
+    case NORTHTRACK:
+      SetOrientation(0.0, DrawInfo.TrackBearing, true);
+      break;
+    case TRACKUP:
+      SetOrientation(DrawInfo.TrackBearing, DrawInfo.TrackBearing, true);
+      break;
+    case TARGETUP:
+    case TARGETCIRCLE:
+    default:
+      // Target-up only when looking at current task point, otherwise North up
+      if (ActiveTaskPoint == TargetPanIndex) {
+        SetOrientation(DerivedDrawInfo.WaypointBearing, DrawInfo.TrackBearing, true);
+      } else {
+        SetOrientation(0.0, DrawInfo.TrackBearing, true);
+      }
+      break;
   }
 }
 
