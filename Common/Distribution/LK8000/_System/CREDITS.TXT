@@ -10,6 +10,16 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.5.2]
+* Fix : 
+ - Map layout in task target dialog
+ - Race Condition in Map mode and zoom level change #1678
+ - KOBO : High CPU load at high zoom level #1678
+ - Possible Segfault due to string buffer overflow
+ - Remove Invalid Discus 2c polar
+ - Invalid Battery 2 level in Status dialog
+ - wrong label for "Alternate 1 QNH Arrival" infobox
+
 [version 7.5.1]
  - Android edge-to-edge rendering support
 
