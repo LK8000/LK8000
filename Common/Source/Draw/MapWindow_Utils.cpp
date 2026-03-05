@@ -213,18 +213,18 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   if (do_pan && !mode.Is(Mode::MODE_TARGET_PAN)) {
     old_latitude = PanLatitude;
     old_longitude = PanLongitude;
-    mode.Special(do_pan ? Mode::MODE_SPECIAL_TARGET_PAN : Mode::MODE_SPECIAL_PAN, true);
-    zoom.SwitchMode();
   }
+  
   if (do_pan) {
-    LockTaskData();
-    if (ValidTaskPoint(target_point)) {
+    ScopeLock lock(CritSec_TaskData);
+    if (ValidTaskPointFast(target_point)) {
       PanLongitude = WayPointList[Task[target_point].Index].Longitude;
       PanLatitude = WayPointList[Task[target_point].Index].Latitude;
-      if (target_point==0) {
-        TargetZoomDistance = max(2e3, (double)StartRadius*2);
-      } else if (!ValidTaskPoint(target_point+1)) {
-        TargetZoomDistance = max(2e3, (double)FinishRadius*2);
+      
+      if (target_point == 0) {
+        TargetZoomDistance = max(2e3, (double)StartRadius * 2);
+      } else if (!ValidTaskPointFast(target_point + 1)) {
+        TargetZoomDistance = max(2e3, (double)FinishRadius * 2);
       } else if (UseAATTarget()) {
         if (Task[target_point].AATType == sector_type_t::SECTOR) {
           const double start = Task[target_point].AATStartRadial;
@@ -234,41 +234,36 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
           const double xf = fastsine(finish);
           const double yf = fastcosine(finish);
 
-          // calculate rectangle area taken by the sector
           const double top    = AngleInRange(start, finish, 0,   true) ?  1 : max(max(ys, yf), 0.0);
           const double right  = AngleInRange(start, finish, 90,  true) ?  1 : max(max(xs, xf), 0.0);
           const double bottom = AngleInRange(start, finish, 180, true) ? -1 : min(min(ys, yf), 0.0);
           const double left   = AngleInRange(start, finish, 270, true) ? -1 : min(min(xs, xf), 0.0);
 
-          // get area center
           const double radius = Task[target_point].AATSectorRadius;
           const double x = (left + right) / 2;
           const double y = (top + bottom) / 2;
           double bearing, range;
           xXY_Brg_Rng(0, 0, x, y, &bearing, &range);
 
-          // find area center geographic data
           FindLatitudeLongitude(WayPointList[Task[target_point].Index].Latitude,
                                 WayPointList[Task[target_point].Index].Longitude,
                                 bearing, range * radius, &PanLatitude, &PanLongitude);
           TargetZoomDistance = max(2e3, max(right - left, top - bottom) * radius);
         } else {
-          TargetZoomDistance = max(2e3, Task[target_point].AATCircleRadius*2);
+          TargetZoomDistance = max(2e3, Task[target_point].AATCircleRadius * 2);
         }
       } else {
-        TargetZoomDistance = max(2e3, (double)SectorRadius*2);
+        TargetZoomDistance = max(2e3, (double)SectorRadius * 2);
       }
     }
-    UnlockTaskData();
   }
   else if (mode.Is(Mode::MODE_TARGET_PAN)) {
     PanLongitude = old_longitude;
     PanLatitude = old_latitude;
-    mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
-    zoom.SwitchMode();
-    }
-  mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
   }
+  
+  mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+}
 
 
 void MapWindow::SetPanTaskEdit(unsigned TskPoint) {
