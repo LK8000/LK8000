@@ -24,11 +24,9 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
 /**
  * @brief Sets requested zoom scale for AUTO_ZOOM mode
  */
-void MapWindow::Zoom::CalculateAutoZoom() {
+void MapWindow::Zoom::CalculateAutoZoom_Locked() {
 
   // Do not AutoZoom if we have CircleZoom enabled  and we are Circling
-  ScopeLock Lock(_zoomMutex);  // Protect concurrent access to _modeScale
-
   if (CircleZoom_Locked() && mode.Is(Mode::MODE_CIRCLING)) {
     return;
   }
@@ -312,7 +310,7 @@ void MapWindow::Zoom::UpdateMapScale() {
   if (_autoZoom && mode.Special() == Mode::MODE_SPECIAL_NONE &&
       !(_circleZoom && mode.Is(Mode::MODE_CIRCLING))) {
     // Calculate Auto Zoom only if not in Special or Circling Zoom
-    CalculateAutoZoom();
+    CalculateAutoZoom_Locked();
   }
 
   // if there is user intervention in the scale
