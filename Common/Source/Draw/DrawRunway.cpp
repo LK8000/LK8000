@@ -262,7 +262,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   Surface.Polygon(Runway ,5 );
 
   //
-  // Draw runway headings as horizontal boxes at both ends of runway (picto only)
+  // Draw runway headings as horizontal boxes at both ends of runway (Target Pan view only)
   //
   if (wp->RunwayDir >= 0 && !picto && mode.Is(Mode::MODE_TARGET_PAN)) {
     TCHAR szHead1[4], szHead2[4];
