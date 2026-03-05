@@ -11,17 +11,6 @@
 #include "Multimap.h"
 
 
-MapWindow::Zoom::Zoom():
-  _bMapScale (true),
-  _inited(false),
-  _autoZoom(false), _circleZoom(true),
-  _scale(0), _realscale(0), _modeScale(),
-  _requestedScale(&_modeScale[SCALE_CRUISE]),
-  _resScaleOverDistanceModify(0)
-{
-}
-
-
 /**
  * @brief Sets requested zoom scale for TARGET_PAN mode
  */
@@ -38,8 +27,11 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
 void MapWindow::Zoom::CalculateAutoZoom() {
 
   // Do not AutoZoom if we have CircleZoom enabled  and we are Circling
-  if ( CircleZoom() && mode.Is(Mode::MODE_CIRCLING) )
+  ScopeLock Lock(_zoomMutex);  // Protect concurrent access to _modeScale
+
+  if (CircleZoom_Locked() && mode.Is(Mode::MODE_CIRCLING)) {
     return;
+  }
 
   double wpd = DerivedDrawInfo.ZoomDistance;
   if ((wpd > 0) && wpd < AutoZoomThreshold) {
@@ -55,6 +47,21 @@ void MapWindow::Zoom::CalculateAutoZoom() {
     _modeScale[SCALE_CRUISE] = GetZoomInitValue(CruiseZoom);
   }
 
+}
+
+double MapWindow::Zoom::ResScaleOverDistanceModify() const {
+  ScopeLock Lock(_zoomMutex);
+  return _resScaleOverDistanceModify;
+}
+
+double MapWindow::Zoom::DrawScale() const {
+  ScopeLock Lock(_zoomMutex);
+  return _drawScale;
+}
+
+double MapWindow::Zoom::InvDrawScale() const {
+  ScopeLock Lock(_zoomMutex);
+  return _invDrawScale;
 }
 
 double MapWindow::Zoom::GetZoomInitValue(int parameter_number) const {
@@ -78,9 +85,11 @@ void MapWindow::Zoom::Reset()
 {
   constexpr double SCALE_PANORAMA_INIT    = 10.0;
 
+  ScopeLock Lock(_zoomMutex);  // Protect initialization of zoom state
   _modeScale[SCALE_CRUISE]   = GetZoomInitValue(CruiseZoom);
   _modeScale[SCALE_CIRCLING] = GetZoomInitValue(ClimbZoom);
   _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
+  _modeScale[SCALE_TARGET_PAN] = _modeScale[SCALE_CRUISE];  // Initialize TARGET_PAN
 
   if(_autoZoom)
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
@@ -90,61 +99,104 @@ void MapWindow::Zoom::Reset()
   _realscale = Units::FromDistance(*_requestedScale)/1000;
 
   _inited = true;
-  SwitchMode();
+  SwitchMode_Locked();
 }
 
+double MapWindow::Zoom::RequestedScale() const {
+  ScopeLock Lock(_zoomMutex);
+  return *_requestedScale;
+}
+
+void MapWindow::Zoom::RequestedScale(double value) {
+  ScopeLock Lock(_zoomMutex);
+  *_requestedScale = value;
+}
 
 /**
- * @brief Assigns proper zoom ratio for new Display Mode
+ * @brief Assigns proper zoom ratio for new Display Mode (internal, called with lock held)
  */
-void MapWindow::Zoom::SwitchMode()
-{
-  if(!_inited)
+void MapWindow::Zoom::SwitchMode_Locked() {
+  if (!_inited) {
     return;
+  }
 
-  if((mode._mode & Mode::MODE_TARGET_PAN) && !(mode._lastMode & Mode::MODE_TARGET_PAN)) {
-    // TARGET_PAN enabled
+  if (mode._mode & Mode::MODE_TARGET_PAN) {
     _requestedScale = &_modeScale[SCALE_TARGET_PAN];
-    CalculateTargetPanZoom();
   }
-  else if(mode._mode & Mode::MODE_TARGET_PAN) {
-    // do not change zoom for other mode changes while in TARGET_PAN mode
-    return;
-  }
-  else if(mode._mode & Mode::MODE_PAN) {
-    if(!(mode._lastMode & Mode::MODE_PAN))
+  else if (mode._mode & Mode::MODE_PAN) {
+    if (!(mode._lastMode & Mode::MODE_PAN)) {
       // PAN enabled - use current map scale if PAN enabled
       _modeScale[SCALE_PAN] = *_requestedScale;
-
+    }
     _requestedScale = &_modeScale[SCALE_PAN];
-
-    // do not change zoom for other mode changes while in PAN mode
-    return;
   }
-  else if((mode._mode & Mode::MODE_PANORAMA) && !(mode._lastMode & Mode::MODE_PANORAMA)) {
+  else if (mode._mode & Mode::MODE_PANORAMA) {
     // PANORAMA enabled
     _requestedScale = &_modeScale[SCALE_PANORAMA];
   }
-  else if(mode._mode & Mode::MODE_PANORAMA) {
-    // do not change zoom for mode changes while in PANORAMA mode
-    return;
+  else if ((mode._mode & Mode::MODE_CIRCLING) && _circleZoom) {
+    _requestedScale = &_modeScale[SCALE_CIRCLING];
   }
   else {
-    if((mode._mode & Mode::MODE_CIRCLING) && _circleZoom) {
-      _requestedScale = &_modeScale[SCALE_CIRCLING];
-    }
-    else {
-      _requestedScale = &_modeScale[SCALE_CRUISE];
-
-      if(_autoZoom)
-        CalculateAutoZoom();
-    }
+    _requestedScale = &_modeScale[SCALE_CRUISE];
   }
-  *_requestedScale = LimitMapScale(*_requestedScale);
-
   RefreshMap();
 }
 
+void MapWindow::Zoom::AutoZoom(bool enable) {
+  ScopeLock Lock(_zoomMutex);
+  _autoZoom = enable;
+  SwitchMode_Locked();
+}
+
+bool MapWindow::Zoom::AutoZoom() const {
+  ScopeLock Lock(_zoomMutex);
+  return _autoZoom;
+}
+
+void MapWindow::Zoom::CircleZoom(bool enable) {
+  ScopeLock Lock(_zoomMutex);
+  _circleZoom = enable;
+  SwitchMode_Locked();
+}
+
+bool MapWindow::Zoom::CircleZoom() const {
+  ScopeLock Lock(_zoomMutex);
+  return CircleZoom_Locked();
+}
+
+void MapWindow::Zoom::BigZoom(bool enable) {
+  ScopeLock Lock(_zoomMutex);
+  _bigZoom = enable;
+}
+
+bool MapWindow::Zoom::BigZoom() const {
+  ScopeLock Lock(_zoomMutex);
+  return _bigZoom;
+}
+
+void MapWindow::Zoom::SetLimitMapScale(BOOL bOnOff) {
+  ScopeLock Lock(_zoomMutex);
+  _bMapScale = bOnOff;
+}
+
+/**
+ * @brief Assigns proper zoom ratio for new Display Mode (thread-safe wrapper)
+ */
+void MapWindow::Zoom::SwitchMode() {
+  ScopeLock Lock(_zoomMutex);  // Protect pointer and array access
+  SwitchMode_Locked();
+}
+
+double MapWindow::Zoom::Scale() const {
+  ScopeLock Lock(_zoomMutex);
+  return _scale;
+}
+
+double MapWindow::Zoom::RealScale() const {
+  ScopeLock Lock(_zoomMutex);
+  return _realscale;
+}
 
 /**
  * @brief Switches AutoZoom state
@@ -156,35 +208,38 @@ void MapWindow::Zoom::SwitchMode()
  */
 void MapWindow::Zoom::EventAutoZoom(int vswitch)
 {
+  ScopeLock Lock(_zoomMutex);  // Protect _autoZoom and _modeScale access
   bool lastAutoZoom = _autoZoom;
-  if(vswitch== -1)
+  if (vswitch == -1) {
     _autoZoom = !_autoZoom;
-  else
+  }
+  else {
     _autoZoom = vswitch;
+  }
 
-  if(_autoZoom)
+  if (_autoZoom) {
     // backup current zoom
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
+  }
 
-  if(_autoZoom != lastAutoZoom)
-    SwitchMode();
+  if (_autoZoom != lastAutoZoom) {
+    SwitchMode_Locked();
+  }
 }
-
 
 /**
  * @brief Sets provided value as current zoom
  *
  * @param value zoom ratio to set
  */
-void MapWindow::Zoom::EventSetZoom(double value)
-{
+void MapWindow::Zoom::EventSetZoom(double value) {
+  ScopeLock Lock(_zoomMutex);  // Protect _requestedScale access
   double _lastRequestedScale = *_requestedScale;
   *_requestedScale = LimitMapScale(value);
-  if(*_requestedScale != _lastRequestedScale) {
+  if (*_requestedScale != _lastRequestedScale) {
     RefreshMap();
   }
 }
-
 
 /**
  * @brief Modifies current zoom ratio
@@ -199,6 +254,7 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
     return;
   }
 
+  ScopeLock Lock(_zoomMutex);  // Protect _autoZoom, _circleZoom, and _requestedScale access
   // disable AutoZoom if possible
   if(_autoZoom &&
      mode.Special() == Mode::MODE_SPECIAL_NONE &&
@@ -245,42 +301,32 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
 /**
  * @brief Updates current map scale
  */
-void MapWindow::Zoom::UpdateMapScale()
-{
+void MapWindow::Zoom::UpdateMapScale() {
+  ScopeLock Lock(_zoomMutex);  // Protect _requestedScale and _scale access
 
-  if(mode.Is(Mode::MODE_TARGET_PAN)) {
+  if (mode.Is(Mode::MODE_TARGET_PAN)) {
     // update TARGET_PAN
     CalculateTargetPanZoom();
-    if(_scale != *_requestedScale)
-      ModifyMapScale();
-    return;
   }
 
-
-  if(_autoZoom &&
-     mode.Special() == Mode::MODE_SPECIAL_NONE &&
-     !(_circleZoom && mode.Is(Mode::MODE_CIRCLING))) {
+  if (_autoZoom && mode.Special() == Mode::MODE_SPECIAL_NONE &&
+      !(_circleZoom && mode.Is(Mode::MODE_CIRCLING))) {
     // Calculate Auto Zoom only if not in Special or Circling Zoom
     CalculateAutoZoom();
-    if(_scale != *_requestedScale)
-      ModifyMapScale();
-    return;
   }
 
   // if there is user intervention in the scale
-  if(_scale != *_requestedScale)
+  if (_scale != *_requestedScale) {
     ModifyMapScale();
+  }
 }
-
 
 /**
  * @brief Recalculates zoom parameters
  */
-
-
-
 void MapWindow::Zoom::ModifyMapScale()
 {
+  ScopeLock Lock(_zoomMutex);  // Protect _requestedScale access
   // limit zoomed in so doesn't reach silly levels
   if(_bMapScale) {
     *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
