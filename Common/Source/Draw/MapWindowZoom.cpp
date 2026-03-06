@@ -322,7 +322,6 @@ void MapWindow::Zoom::UpdateMapScale() {
  */
 void MapWindow::Zoom::ModifyMapScale()
 {
-  ScopeLock Lock(_zoomMutex);  // Protect _requestedScale access
   // limit zoomed in so doesn't reach silly levels
   if(_bMapScale) {
     *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit

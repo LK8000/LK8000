@@ -316,6 +316,8 @@ class MapWindow {
     double RequestedScale() const;
     void RequestedScale(double value);
 
+    void ModifyMapScale();
+
     void SwitchMode_Locked();  // Internal version called with lock held
 
     void CalculateTargetPanZoom();
@@ -357,7 +359,6 @@ class MapWindow {
     void EventScaleZoom(int vswitch);
 
     void UpdateMapScale();
-    void ModifyMapScale();
 
     void GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
 
