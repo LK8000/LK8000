@@ -308,13 +308,13 @@ public:
       std::swap(v1, v2);
     }
 
-    int yStart = std::max<int>(0, std::lround(v1.y));
-    int yEnd = std::min<int>(buffer.height, std::lround(v3.y));
+    int yStart = std::max<int>(0, std::floor(v1.y));
+    int yEnd = std::min<int>(buffer.height, std::ceil(v3.y));
     if (yStart >= yEnd) {
       return;
     }
 
-    int y2 = std::lround(v2.y);
+    int y2 = std::ceil(v2.y);
 
     auto slope = [](FloatPoint a, FloatPoint b) -> float {
       float dy = b.y - a.y;
@@ -329,8 +329,8 @@ public:
       if (x1 > x2) {
         std::swap(x1, x2);
       }
-      int xs = std::max<int>(0, std::lround(x1));
-      int xe = std::min<int>(buffer.width, std::lround(x2) + 1);
+      int xs = std::max<int>(0, std::floor(x1));
+      int xe = std::min<int>(buffer.width, std::ceil(x2) + 1);
       if (xs < xe) {
         operations.FillPixels(At(xs, y), xe - xs, c);
       }
