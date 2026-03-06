@@ -315,7 +315,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
         Surface.SelectObject(LKBrush_White);
     }
 
-     unsigned int offset = irw_radius + NIBLSCALE(1);
+     unsigned int offset = mode.Is(Mode::MODE_TARGET_PAN)
+                            ? (unsigned int)(IBLSCALE(irw_len) + NIBLSCALE(10))
+                            : irw_radius + NIBLSCALE(1);
 
      if ( _tcslen(wp->Freq)>0 ) {
         MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center.x- offset, Center.y -offset, 

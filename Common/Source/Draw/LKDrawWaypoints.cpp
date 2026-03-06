@@ -164,7 +164,7 @@ namespace {
 		if(Pict) {
 			LKColor NewCol = get_turnpoint_utf8_color(wp->Style);
 
-			const auto OldFont =  Surface.SelectObject(LK8PanelBigFont);
+			const auto OldFont =  Surface.SelectObject(LK8TitleFont);
 			const auto OldCol = Surface.SetTextColor(NewCol);
 
 			PixelSize textSize = Surface.GetTextSize(Pict);
@@ -589,8 +589,20 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 
 	for (MapWaypointLabel_t *E : sorted_array) {
 
-		RasterPoint TextPos = RasterPoint(E->Pos) + RasterPoint(IBLSCALE(5), IBLSCALE(1));
-		if (!TextInBox(Surface, &rc, E->Name, TextPos.x, TextPos.y, &(E->Mode), true)) {
+		RasterPoint TextPos;
+		if (mode.Is(Mode::MODE_TARGET_PAN) && E->isLandable) {
+			// In Target Pan view: place waypoint name centered above the runway symbol
+			TextPos = RasterPoint(IsDithered() ? (rc.left + rc.right - (ScreenLandscape ? (int)MapWindow::targetPanSize : 0)) / 2 : E->Pos.x, rc.top + NIBLSCALE(10));
+			E->Mode.AlligneCenter = true;
+			if (IsDithered()) {
+				E->Mode.NoSetFont = true;
+				Surface.SelectObject(LK8TitleFont);
+			}
+		} else {
+			TextPos = RasterPoint(E->Pos) + RasterPoint(IBLSCALE(5), IBLSCALE(1));
+		}
+		const bool overlap = !(mode.Is(Mode::MODE_TARGET_PAN) && E->isLandable);
+		if (!TextInBox(Surface, &rc, E->Name, TextPos.x, TextPos.y, &(E->Mode), overlap)) {
 			continue;
 		}
 		if(E->isLandable) {
