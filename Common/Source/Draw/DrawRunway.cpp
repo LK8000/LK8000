@@ -289,8 +289,9 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     int x2 = Center.x - (int)(fastsine(drawAngle)  * offset);
     int y2 = Center.y + (int)(fastcosine(drawAngle) * offset);
 
-    LKWriteBoxedText(Surface, rc, szHead2, x1, y1, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
-    LKWriteBoxedText(Surface, rc, szHead1, x2, y2, WTALIGN_CENTER, RGB_WHITE, RGB_BLACK);
+    const bool invertColors = IsDithered() && solid;
+    LKWriteBoxedText(Surface, rc, szHead2, x1, y1, WTALIGN_CENTER, invertColors ? RGB_BLACK : RGB_WHITE, invertColors ? RGB_WHITE : RGB_BLACK);
+    LKWriteBoxedText(Surface, rc, szHead1, x2, y2, WTALIGN_CENTER, invertColors ? RGB_BLACK : RGB_WHITE, invertColors ? RGB_WHITE : RGB_BLACK);
     Surface.SelectObject(hfOldPicto);
   }
 
