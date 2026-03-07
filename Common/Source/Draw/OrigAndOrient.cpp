@@ -138,14 +138,11 @@ RasterPoint MapWindow::GetOrigAutoOrient(const RECT& rc, double scale, double au
 }
 
 RasterPoint MapWindow::CalculateOrigin(const RECT& rc) {
-<<<<<<< HEAD
-=======
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
     CalculateOrientationTargetPan();
     return GetOrigTargetPan(rc, targetPanSize, ScreenLandscape);
   }
 
->>>>>>> bb00fb4a1 (DrawRunway: fix heading box colors on monochrome Kobo display)
   if (mode.Is(Mode::MODE_PAN)) {
     SetOrientation(0.0, DrawInfo.TrackBearing, true); // North up
     return GetOrigCenter(rc);

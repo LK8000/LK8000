@@ -948,6 +948,7 @@ protected:
 
   static void SetOrientation(double Display, double Aircraft, bool Center);
   static void CalculateOrientationNormal();
+  static void CalculateOrientationTargetPan();
 
 #ifdef ENABLE_OPENGL
   static std::array<FloatPoint, NUMTERRAINSWEEPS+2> Groundline;
