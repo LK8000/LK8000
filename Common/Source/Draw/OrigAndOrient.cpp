@@ -37,7 +37,8 @@ void MapWindow::CalculateOrientationNormal() {
     return DisplayOrientation;
   };
 
-  bool Center = mode.Is(Mode::MODE_CIRCLING);  // always center when circling
+  // always center when circling or in Target dialog
+  bool Center = mode.Is(Mode::MODE_CIRCLING) || mode.Is(Mode::MODE_TARGET_PAN);
 
   switch (Orientation()) {
     case NORTHUP:
@@ -51,24 +52,6 @@ void MapWindow::CalculateOrientationNormal() {
       // TRACKUP : Normal, glider forward
       SetOrientation(trackbearing, trackbearing, Center);
       break;
-  }
-}
-
-void MapWindow::CalculateOrientationTargetPan() {
-  // Target pan mode, show target up when looking at current task point,
-  // otherwise north up.
-
-  if (MapWindow::mode.autoNorthUP()) {
-    // North up
-    SetOrientation(0.0, DrawInfo.TrackBearing, true);
-  }
-  else if (ActiveTaskPoint == TargetPanIndex) {
-    // Target-up
-    SetOrientation(DerivedDrawInfo.WaypointBearing, DrawInfo.TrackBearing, true);
-  }
-  else {
-    // North up
-    SetOrientation(0.0, DrawInfo.TrackBearing, true);
   }
 }
 
@@ -120,17 +103,16 @@ RasterPoint MapWindow::GetOrigAutoOrient(const RECT& rc, double scale, double au
 }
 
 RasterPoint MapWindow::CalculateOrigin(const RECT& rc) {
-  if (mode.Is(Mode::MODE_TARGET_PAN)) {
-    CalculateOrientationTargetPan();
-    return GetOrigTargetPan(rc, targetPanSize, ScreenLandscape);
-  }
-
   if (mode.Is(Mode::MODE_PAN)) {
     SetOrientation(0.0, DrawInfo.TrackBearing, true); // North up
     return GetOrigCenter(rc);
   }
 
   CalculateOrientationNormal();
+
+  if (mode.Is(Mode::MODE_TARGET_PAN)) {
+    return GetOrigTargetPan(rc, targetPanSize, ScreenLandscape);
+  }
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
     return GetOrigCenter(rc);

@@ -947,7 +947,6 @@ protected:
   static DERIVED_INFO DerivedDrawInfo;
 
   static void SetOrientation(double Display, double Aircraft, bool Center);
-  static void CalculateOrientationTargetPan();
   static void CalculateOrientationNormal();
 
 #ifdef ENABLE_OPENGL
