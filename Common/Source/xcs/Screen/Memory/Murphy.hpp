@@ -53,7 +53,40 @@ struct MurphyIterator {
   int first1x, first1y, first2x, first2y;
   int tempx, tempy;
 
-public:
+  static inline int fast_lrint(double x) {
+    // Fast lrint() implementation using inline assembly.
+    // Avoids expensive libm calls that occur with -O2 optimization.
+#if defined(__aarch64__) || defined(__ARM_ARCH_8__)
+    // ARMv8 AArch64: Use native fcvtas instruction (1-2 cycles)
+    int result;
+    __asm__ __volatile__("fcvtas %w0, %d1" : "=r"(result) : "w"(x));
+    return result;
+
+#elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7__) || defined(__ARM_NEON__)    
+    // ARMv7: Use VFP vcvtr instruction (4-6 cycles)
+    // VFP is faster than NEON for scalar double-to-int conversion
+    int result;
+    __asm__ __volatile__(
+        "vcvtr.s32.f64 s0, %1\n\t"
+        "vmov %0, s0"
+        : "=r"(result)
+        : "w"(x)
+        : "s0"
+    );
+    return result;
+
+#else
+    // Portable fallback for other architectures
+    #if defined(__GNUC__) || defined(__clang__)
+        // Let the compiler optimize builtin (may still call libm with -O2)
+        return __builtin_lrint(x);
+    #else
+        return std::lrint(x);
+    #endif
+#endif
+  }
+
+ public:
   MurphyIterator(Canvas &_canvas, typename Canvas::color_type _color,
                  unsigned _line_mask)
     :canvas(_canvas), color(_color), line_mask(_line_mask) {}
@@ -187,7 +220,7 @@ public:
   void Wideline(int x1, int y1, int x2, int y2, uint8_t width, uint8_t miter) {
     assert(x1 != x2 || y1 != y2);
 
-    float offset = (float)width / 2.f;
+    double offset = width / 2.;
 
     /* Initialisation */
     u = x2 - x1; /* delta x */
@@ -229,29 +262,41 @@ public:
     int dd = 0;
 
     /* angle for initial point calculation */
-    const double ang = atan((double) v / (double) u);
-    const double sang = sin(ang);
-    const double cang = cos(ang);
+    const double len =
+        (u > 46340 || v > 46340)
+            ? hypot(u, v)  // Rare case: prevent int32 overflow in u*u+v*v
+            : sqrt((double)u * u + (double)v * v);  // Common case: faster
+
+    double sang, cang;
+    if (len < 1e-10) {
+      // Guard against division by zero for degenerate lines
+      sang = 0.0;
+      cang = 1.0;
+    } else {
+      // Direct calculation: sin(angle) = opposite/hypotenuse
+      sang = v / len; // Equivalent to sin(atan(v/u))
+      cang = u / len; // Equivalent to cos(atan(v/u))
+    }
 
     int ptx, pty;
     if (oct2 == 0) {
-      ptx = x1 + (int)lrint(offset * sang);
+      ptx = x1 + fast_lrint(offset * sang);
       if (!quad4) {
-        pty = y1 - (int)lrint(offset * cang);
+        pty = y1 - fast_lrint(offset * cang);
       } else {
-        pty = y1 + (int)lrint(offset * cang);
+        pty = y1 + fast_lrint(offset * cang);
       }
     } else {
-      ptx = x1 - (int)lrint(offset * cang);
+      ptx = x1 - fast_lrint(offset * cang);
       if (!quad4) {
-        pty = y1 + (int)lrint(offset * sang);
+        pty = y1 + fast_lrint(offset * sang);
       } else {
-        pty = y1 - (int)lrint(offset * sang);
+        pty = y1 - fast_lrint(offset * sang);
       }
     }
 
     /* thickness threshold: used here for constant thickness line */
-    const int tk = int(2. * width * hypot(u, v));
+    const int tk = int(2. * width * len);
 
     if (miter == 0) {
       first1x = -32768;
