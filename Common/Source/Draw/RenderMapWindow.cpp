@@ -91,8 +91,7 @@ void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
   }
 
   // Logger indicator, flight indicator, battery indicator
-  // Not while panning
-  if (!INPAN) DrawFlightMode(Surface, rc);
+  DrawFlightMode(Surface, rc);
 
   //
   // When fast zoom requested, do not loose time with frills

@@ -4382,7 +4382,7 @@ int ival;
   // ! important ! need to be done after #Units::NotifyUnitChanged()
   if(notify_reset_zoom) {
       MapWindow::zoom.Reset();
-      MapWindow::zoom.ModifyMapScale();
+      MapWindow::zoom.UpdateMapScale();
       MapWindow::FillScaleListForEngineeringUnits();
       MapWindow::RefreshMap();
   }

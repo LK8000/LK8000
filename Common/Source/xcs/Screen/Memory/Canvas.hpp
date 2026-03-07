@@ -212,6 +212,8 @@ public:
     InvertRectangle(rc.left, rc.top, rc.right, rc.bottom);
   }
 
+  void FillTriangle(const FloatPoint& v1, const FloatPoint& v2, const FloatPoint& v3);
+
   void Clear() {
     Rectangle(0, 0, GetWidth(), GetHeight());
   }

@@ -272,7 +272,7 @@ class MapWindow {
    *  - provide Zoom related calculations
    */
   class Zoom {
-  private:
+   private:
 
     enum TMapScaleType {
       SCALE_CRUISE,             /**< @brief Basic zoom for flight mode used for:
@@ -290,55 +290,74 @@ class MapWindow {
     };
 
     friend class MapWindow;
-    bool  _bMapScale;
-    bool _inited;                                 /**< @brief Object inited flag */
-    bool _autoZoom;                               /**< @brief Stores information if AutoZoom is enabled */
-    bool _circleZoom;                             /**< @brief Stores information if CirclingZoom is enabled */
-    bool _bigZoom;                                /**< @brief Stores information if BigZoom was done and special refresh is needed */
-    double _scale;                                /**< @brief Current map scale */
-    double _realscale;                            /**< @brief Current map scale /1000 / DISTANCEMODIFY */
-    double _modeScale[SCALE_NUM];                 /**< @brief Requested scale for each of scale types */
-    double *_requestedScale;                      /**< @brief Requested scale for current scale type */
-    // performance related members
-    double _resScaleOverDistanceModify;
-    double _drawScale;
-    double _invDrawScale;
 
-    double RequestedScale() const        { return *_requestedScale; }
-    void RequestedScale(double value)    { *_requestedScale = value; }
+    // Thread synchronization for zoom state (CRITICAL: prevents data races with
+    // DrawThread)
+    mutable Mutex _zoomMutex;
+
+    bool _bMapScale = true;
+    bool _inited = false;    /**< @brief Object inited flag */
+    bool _autoZoom = false;  /**< @brief Stores information if AutoZoom is enabled */
+    bool _circleZoom = true; /**< @brief Stores information if CirclingZoom is enabled */
+    bool _bigZoom = false;   /**< @brief Stores information if BigZoom was done and special refresh is needed */
+    double _scale = 0.;      /**< @brief Current map scale */
+    double _realscale = 0.;  /**< @brief Current map scale /1000 / DISTANCEMODIFY */
+    /**< @brief Requested scale for each of scale types */
+    double _modeScale[SCALE_NUM] = {};
+    /**< @brief Requested scale for current scale type */
+    double* _requestedScale = &_modeScale[SCALE_CRUISE];
+
+    // performance related members
+    double _resScaleOverDistanceModify = 0;
+    double _drawScale = 0.;
+    double _invDrawScale = 0.;
+
+    double RequestedScale() const;
+    void RequestedScale(double value);
+
+    void ModifyMapScale();
+
+    void SwitchMode_Locked();  // Internal version called with lock held
+
     void CalculateTargetPanZoom();
-    void CalculateAutoZoom();
-    double ResScaleOverDistanceModify() const { return _resScaleOverDistanceModify; }
-    double DrawScale() const             { return _drawScale; }
-    double InvDrawScale() const          { return _invDrawScale; }
+    void CalculateAutoZoom_Locked();
+
+    double ResScaleOverDistanceModify() const;
+    double DrawScale() const;
+    double InvDrawScale() const;
 
     double GetZoomInitValue(int parameter_number) const;
 
-  public:
+    bool CircleZoom_Locked() const {
+      return _circleZoom;
+    }
 
-    Zoom();
+   public:
+
+    Zoom() = default;
     void Reset();
 
-    void AutoZoom(bool enable)      { _autoZoom = enable; SwitchMode(); }
-    bool AutoZoom() const           { return _autoZoom; }
+    void AutoZoom(bool enable);
+    bool AutoZoom() const;
 
-    void CircleZoom(bool enable)    { _circleZoom = enable; SwitchMode(); }
-    bool CircleZoom() const         { return _circleZoom; }
+    void CircleZoom(bool enable);
+    bool CircleZoom() const;
 
-    void BigZoom(bool enable)       { _bigZoom = enable; }
-    bool BigZoom() const            { return _bigZoom; }
+    void BigZoom(bool enable);
+    bool BigZoom() const;
+
+    void SetLimitMapScale(BOOL bOnOff);
 
     void SwitchMode();
 
-    double Scale() const { return _scale; }
-    double RealScale() const { return _realscale; }
+    double Scale() const;
+    double RealScale() const;
 
     void EventAutoZoom(int vswitch);
     void EventSetZoom(double value);
     void EventScaleZoom(int vswitch);
-    void SetLimitMapScale(BOOL bOnOff)    {  	_bMapScale =	bOnOff; };
+
     void UpdateMapScale();
-    void ModifyMapScale();
 
     void GetInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
 

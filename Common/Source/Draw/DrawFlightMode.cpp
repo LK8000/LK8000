@@ -115,6 +115,13 @@ static int rescale(int n) {
 //
 void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
 {
+  if (mode.Is(Mode::MODE_TARGET_PAN)) {
+    return;
+  }
+  if (mode.Is(Mode::MODE_PAN)) {
+    return;
+  }
+
   static bool flip= true;
   static PixelSize loggerIconSize,mmIconSize, batteryIconSize;
   static RasterPoint loggerPoint, mmPoint, batteryPoint;

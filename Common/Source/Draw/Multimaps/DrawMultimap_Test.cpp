@@ -60,9 +60,6 @@ void MapWindow::LKDrawMultimap_Test(LKSurface& Surface, const RECT& rc)
   POINT Orig = { (rct.right-rct.left)/2,(rct.bottom-rct.top)/2};
   POINT Orig_Aircraft= {0,0};
 
-  //zoom.ModifyMapScale();
-  //zoom.UpdateMapScale();
-
   const ScreenProjection _Proj = CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
   CalculateScreenPositionsAirspace(rct, _Proj);
 

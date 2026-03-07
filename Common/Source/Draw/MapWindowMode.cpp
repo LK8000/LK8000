@@ -24,18 +24,19 @@ MapWindow::Mode::Mode():
  *
  * @param flyMode FLY mode to set
  */
-void MapWindow::Mode::Fly(TModeFly flyMode)
-{
-  if(_userForcedFlyMode != MODE_FLY_NONE)
+void MapWindow::Mode::Fly(TModeFly flyMode) {
+  if (_userForcedFlyMode != MODE_FLY_NONE) {
     flyMode = _userForcedFlyMode;
+  }
 
-  _lastMode = _mode;
+  ScopeLock lock(MapWindow::zoom._zoomMutex);
+  unsigned previousMode = _mode;
   _mode = flyMode | (_mode & SPECIAL_MASK);
-
-  if(_mode != _lastMode)
-    MapWindow::zoom.SwitchMode();
+  if (_mode != previousMode) {
+    _lastMode = previousMode;
+    MapWindow::zoom.SwitchMode_Locked();  // Call locked variant directly
+  }
 }
-
 
 /**
  * @brief Sets given special mode
@@ -45,14 +46,16 @@ void MapWindow::Mode::Fly(TModeFly flyMode)
  * @param specialMode Special mode to change
  * @param enable Specifies if the mode should be enabled or disabled
  */
-void MapWindow::Mode::Special(TModeSpecial specialMode, bool enable)
-{
+void MapWindow::Mode::Special(TModeSpecial specialMode, bool enable) {
+  ScopeLock lock(MapWindow::zoom._zoomMutex);
   _lastMode = _mode;
-  if(enable)
+  if (enable) {
     _mode |= specialMode;
-  else
+  }
+  else {
     _mode &= ~specialMode;
-
-  if(_mode != _lastMode)
-    MapWindow::zoom.SwitchMode();
+  }
+  if (_mode != _lastMode) {
+    MapWindow::zoom.SwitchMode_Locked();  // Call locked variant directly
+  }
 }

@@ -17,11 +17,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
+#include <array>
 #include "LKSurface.h"
 #include "MathFunctions.h"
 #include "utils/2dpclip.h"
 #include "utils/array_adaptor.h"
 #include "utils/stl_utils.h"
+#include "Math/Point2D.hpp"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Texture.hpp"
@@ -122,6 +124,30 @@ Canvas* LKSurface::Detach() {
 
 
 #endif
+
+
+namespace {
+
+inline
+RasterPoint ToRasterPoint(FloatPoint p) {
+  return {
+    static_cast<RasterPoint::scalar_type>(p.x), 
+    static_cast<RasterPoint::scalar_type>(p.y)
+  };
+}
+
+inline
+std::array<RasterPoint, 4> ToTriangle(const FloatPoint& p1, const FloatPoint& p2, const FloatPoint& p3) {
+  return {
+    ToRasterPoint(p1),
+    ToRasterPoint(p2),
+    ToRasterPoint(p3),
+    ToRasterPoint(p1)
+  };
+}
+
+} // namespace
+
 
 LKSurface::~LKSurface() {
     Release();
@@ -261,6 +287,15 @@ void LKSurface::Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect) {
 #endif
 }
 
+void LKSurface::FillTriangle(const FloatPoint& p1, const FloatPoint& p2, const FloatPoint& p3) {
+#ifdef USE_MEMORY_CANVAS
+    if (_pCanvas) {
+    _pCanvas->FillTriangle(p1, p2, p3);
+    }
+#else
+    Polygon(ToTriangle(p1, p2, p3));
+#endif
+}
 
 void LKSurface::Polyline(const POINT *apt, int cpt) {
 #ifdef USE_GDI
