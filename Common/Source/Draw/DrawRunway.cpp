@@ -261,90 +261,90 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
   }
   Surface.Polygon(Runway ,5 );
 
-  //
-  // Draw runway headings as horizontal boxes at both ends of runway (Target Pan view only)
-  //
-  if (wp->RunwayDir >= 0 && !picto && mode.Is(Mode::MODE_TARGET_PAN)) {
-    TCHAR szHead1[4], szHead2[4];
-    int h1 = (int)(wp->RunwayDir / 10.0 + 0.5);
-    int h2 = (int)(((int)(wp->RunwayDir + 180.0)) % 360 / 10.0 + 0.5);
-    if (h1 == 0) h1 = 36;
-    if (h2 == 0) h2 = 36;
-    lk::snprintf(szHead1, _T("%02d"), h1);
-    lk::snprintf(szHead2, _T("%02d"), h2);
-
-    const auto hfOldPicto = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
-                                                     ? LK8PanelUnitFont : LK8GenericVar02Font);
-
-    // measure box half-height to align near edge with runway tip
-    SIZE tsize;
-    Surface.GetTextSize(szHead1, &tsize);
-    int half_box = (tsize.cy / 2) + NIBLSCALE(1) + 1;
-    int rw_end = IBLSCALE(irw_len);
-    int offset = rw_end + half_box + NIBLSCALE(1);
-
-    double drawAngle = picto ? wp->RunwayDir : (wp->RunwayDir - MapWindow::GetDisplayAngle());
-    int x1 = Center.x + (int)(fastsine(drawAngle)  * offset);
-    int y1 = Center.y - (int)(fastcosine(drawAngle) * offset);
-    int x2 = Center.x - (int)(fastsine(drawAngle)  * offset);
-    int y2 = Center.y + (int)(fastcosine(drawAngle) * offset);
-
-    const bool invertColors = IsDithered() && solid;
-    LKWriteBoxedText(Surface, rc, szHead2, x1, y1, WTALIGN_CENTER, invertColors ? RGB_BLACK : RGB_WHITE, invertColors ? RGB_WHITE : RGB_BLACK);
-    LKWriteBoxedText(Surface, rc, szHead1, x2, y2, WTALIGN_CENTER, invertColors ? RGB_BLACK : RGB_WHITE, invertColors ? RGB_WHITE : RGB_BLACK);
-    Surface.SelectObject(hfOldPicto);
-  }
-
-
-  //
-  // Print waypoint information on screen, not for Pictos
-  // 
-  if( !picto && (MapWindow::zoom.RealScale() <= scale_drawradio)) {
-
-     const auto hfOld = Surface.SelectObject(MapWindow::zoom.RealScale() <= scale_bigfont
-                                             ? LK8PanelUnitFont : LK8GenericVar02Font);
+  if (!picto) {
     if (!IsDithered()) {
-      if (INVERTCOLORS)
-        Surface.SelectObject(LKBrush_Petrol);
-      else
-        Surface.SelectObject(LKBrush_LightCyan);
-    } else {
-      if (INVERTCOLORS)
-        Surface.SelectObject(LKBrush_Black);
-      else
-        Surface.SelectObject(LKBrush_White);
+      Surface.SelectObject(INVERTCOLORS ? LKBrush_Petrol : LKBrush_LightCyan);
+    }
+    else {
+      Surface.SelectObject(INVERTCOLORS ? LKBrush_Black : LKBrush_White);
+    }
+    const auto hfOld = Surface.SelectObject(
+        MapWindow::zoom.RealScale() <= scale_bigfont ? LK8PanelUnitFont
+                                                     : LK8GenericVar02Font);
+
+    // Draw runway headings as horizontal boxes at both ends of runway (Target
+    // Pan view only)
+    if (wp->RunwayDir >= 0 && mode.Is(Mode::MODE_TARGET_PAN)) {
+      TCHAR szHead1[4], szHead2[4];
+      int h1 = std::lrint(wp->RunwayDir / 10.0);
+      if (h1 <= 0) {
+        h1 = 36;
+      }
+      int h2 = (h1 > 18) ? h1 - 18 : h1 + 18;
+      lk::snprintf(szHead1, _T("%02d"), h1);
+      lk::snprintf(szHead2, _T("%02d"), h2);
+
+      // measure box half-height to align near edge with runway tip
+      SIZE tsize;
+      Surface.GetTextSize(_T("00"), &tsize);
+      int half_box = (tsize.cy / 2) + NIBLSCALE(1) + 1;
+      int rw_end = IBLSCALE(irw_len);
+      int offset = rw_end + half_box + NIBLSCALE(1);
+
+      double drawAngle = wp->RunwayDir - MapWindow::GetDisplayAngle();
+      auto sc = sin_cos(drawAngle * DEG_TO_RAD);
+
+      sc.first *= offset;
+      sc.second *= offset;
+
+      int x1 = Center.x + sc.first;
+      int y1 = Center.y - sc.second;
+      int x2 = Center.x - sc.first;
+      int y2 = Center.y + sc.second;
+
+      const bool invertColors = IsDithered() && solid;
+      LKWriteBoxedText(Surface, rc, szHead2, x1, y1, WTALIGN_CENTER,
+                       invertColors ? RGB_BLACK : RGB_WHITE,
+                       invertColors ? RGB_WHITE : RGB_BLACK);
+      LKWriteBoxedText(Surface, rc, szHead1, x2, y2, WTALIGN_CENTER,
+                       invertColors ? RGB_BLACK : RGB_WHITE,
+                       invertColors ? RGB_WHITE : RGB_BLACK);
     }
 
-     unsigned int offset = mode.Is(Mode::MODE_TARGET_PAN)
-                            ? (unsigned int)(IBLSCALE(irw_len) + NIBLSCALE(10))
-                            : irw_radius + NIBLSCALE(1);
+    //
+    // Print waypoint information on screen
+    if (MapWindow::zoom.RealScale() <= scale_drawradio) {
+      unsigned int offset =
+          mode.Is(Mode::MODE_TARGET_PAN)
+              ? (unsigned int)(IBLSCALE(irw_len) + NIBLSCALE(10))
+              : irw_radius + NIBLSCALE(1);
 
-     if ( _tcslen(wp->Freq)>0 ) {
-        MapWindow::LKWriteBoxedText(Surface,rc,wp->Freq, Center.x- offset, Center.y -offset, 
-                                    WTALIGN_RIGHT, RGB_WHITE, RGB_BLACK);
-     }
+      if (_tcslen(wp->Freq) > 0) {
+        MapWindow::LKWriteBoxedText(Surface, rc, wp->Freq, Center.x - offset,
+                                    Center.y - offset, WTALIGN_RIGHT, RGB_WHITE,
+                                    RGB_BLACK);
+      }
 
-     //
-     // Full infos! 1.5km scale
-     //
-     if (MapWindow::zoom.RealScale() <=scale_fullinfos) {
-        if ( _tcslen(wp->Code)==4 ) {
-           MapWindow::LKWriteBoxedText(Surface,rc,wp->Code,Center.x + offset, Center.y - offset, 
-                                       WTALIGN_LEFT, RGB_WHITE,RGB_BLACK);
+      // Full infos! 1.5km scale
+      if (MapWindow::zoom.RealScale() <= scale_fullinfos) {
+        if (_tcslen(wp->Code) == 4) {
+          MapWindow::LKWriteBoxedText(Surface, rc, wp->Code, Center.x + offset,
+                                      Center.y - offset, WTALIGN_LEFT,
+                                      RGB_WHITE, RGB_BLACK);
         }
 
-        if (wp->Altitude >0) {
-           TCHAR tAlt[20];
-           lk::snprintf(tAlt,_T("%.0f %s"),Units::ToAltitude(wp->Altitude),Units::GetAltitudeName());
-           MapWindow::LKWriteBoxedText(Surface,rc,tAlt, Center.x + offset, Center.y + offset, 
-                                       WTALIGN_LEFT, RGB_WHITE, RGB_BLACK);
+        if (wp->Altitude > 0) {
+          TCHAR tAlt[20];
+          lk::snprintf(tAlt, _T("%.0f %s"), Units::ToAltitude(wp->Altitude),
+                       Units::GetAltitudeName());
+          MapWindow::LKWriteBoxedText(Surface, rc, tAlt, Center.x + offset,
+                                      Center.y + offset, WTALIGN_LEFT,
+                                      RGB_WHITE, RGB_BLACK);
         }
-     }
-     Surface.SelectObject(hfOld);
+      }
+    }
+    Surface.SelectObject(hfOld);
   }
-
   Surface.SelectObject(oldPen);
   Surface.SelectObject(oldBrush);
-
 }
-
