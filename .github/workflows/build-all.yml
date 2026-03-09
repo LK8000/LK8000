@@ -25,6 +25,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install missing deps (libjpeg in container)
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends libjpeg-dev
+
       - name: Debug env (workspace e make)
         working-directory: ${{ github.workspace }}
         run: |
