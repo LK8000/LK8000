@@ -1,0 +1,59 @@
+# Build LK8000 for all platforms (Linux, PC/Windows, Kobo)
+# Uses the same Docker image as CircleCI: lk8000/lk8000:build
+# https://hub.docker.com/r/lk8000/lk8000/tags
+
+name: Build all platforms
+
+on:
+  push:
+    branches: [ master, feature/approach ]
+  pull_request:
+    branches: [ master, feature/approach ]
+  workflow_dispatch:  # Esecuzione manuale da GitHub Actions tab
+
+jobs:
+  build:
+    name: Linux + PC + Kobo
+    runs-on: ubuntu-24.04
+    container:
+      image: lk8000/lk8000:build
+      options: --user root  # alcuni step potrebbero richiedere permessi
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build LINUX
+        run: make -j$(nproc) TARGET=LINUX distrib
+
+      - name: Upload LINUX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LINUX-install
+          path: LINUX-install.zip
+
+      - name: Build PC (Windows)
+        run: make -j$(nproc) TARGET=PC distrib
+
+      - name: Upload PC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PC-install
+          path: PC-install.zip
+
+      - name: Build KOBO
+        run: make -j$(nproc) TARGET=KOBO
+
+      - name: Upload Kobo-install artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kobo-install
+          path: Kobo-install.zip
+
+      - name: Upload Kobo-install-otg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kobo-install-otg
+          path: Kobo-install-otg.zip
