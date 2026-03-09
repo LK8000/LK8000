@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_language_code">in</string>
+    <string name="loading">Memuat LK8000…</string>
+    <string name="quit">Mematikan LK8000…</string>
+    <string name="error_external_storage">Penyimpanan eksternal tidak tersedia, harap matikan penyimpanan USB.</string>
+    <string name="error_native_library">Gagal memuat pustaka LK8000 native.\nLaporkan masalah ini kepada kami, dan sertakan informasi berikut:\n</string>
+    <string name="upgrade_storage">LK8000 sedang memindahkan data Anda (%1$d MB) dari direktori LK8000/ ke Android/data/%2$s/files/. \nIni diwajibkan oleh Google sebagai bagian dari upaya untuk meningkatkan privasi Anda. \nHarap tunggu, migrasi dapat memerlukan beberapa menit.</string>
+    <string name="close">Tutup</string>
+    <string name="warning">Peringatan !</string>
+    <string name="overwrite_download">Berkas sudah ada. Apakah Anda ingin mengunduhnya lagi ?</string>
+    <string name="download_title">Unduhan LK8000</string>
+</resources>
