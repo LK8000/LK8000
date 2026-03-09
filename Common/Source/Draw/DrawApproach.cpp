@@ -15,11 +15,14 @@
 
 namespace {
 
-// Approach path lengths in meters
-constexpr double FINAL_EXTEND_M = 5000.0;
-constexpr double DOWNWIND_LEN_M = 2000.0;
-constexpr double BASE_LEN_M = 1500.0;
-constexpr double PATTERN_OFFSET_M = 500.0;
+// Direct: start point at 5 km from runway center on extended centerline
+constexpr double DIRECT_5KM_M = 5000.0;
+
+// VFR circuit: downwind at 30 s flight from runway center (~800 m at 50 kt)
+constexpr double DOWNWIND_OFFSET_M = 800.0;   // ~30 s at 50 kt
+// Turn from downwind to base at 45° radial from threshold: along downwind = offset
+constexpr double DOWNWIND_TO_45_M = 800.0;    // same as offset in standard pattern
+constexpr double BASE_LEN_M = 1500.0;         // base leg to final
 
 } // namespace
 
@@ -66,33 +69,39 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
 
   const auto oldPen = Surface.SelectObject(LKPen_Blue_N1);
 
-  if (MapApproachMode == 0 || MapApproachMode == 2) {
-    // Direct: extended centerline (from far point toward runway)
-    double far_lat, far_lon;
-    FindLatitudeLongitude(clat, clon, rw_recip, FINAL_EXTEND_M, &far_lat, &far_lon);
-    drawSegment(far_lat, far_lon, clat, clon);
+  // Draw only when all required choices are made: Direct + runway, or Circuit + runway + left/right
+  const bool runway_selected = (MapApproachRunwayDir >= 0 || wp.RunwayDir >= 0);
+
+  // Direct: only when Diretto is selected (MapApproachMode == 0) and runway is selected.
+  if (runway_selected && MapApproachMode == 0) {
+    double start_lat, start_lon;
+    FindLatitudeLongitude(clat, clon, rw_recip, DIRECT_5KM_M, &start_lat, &start_lon);
+    drawSegment(start_lat, start_lon, clat, clon);
   }
 
-  if (MapApproachMode == 1 || MapApproachMode == 2) {
-    // Circuit: downwind (opposite to final) -> base -> final
-    // Offset side: left circuit = pattern to the left of approach direction (offset 90° left from rw_recip)
+  // Circuit: runway and circuit side (left/right) selected.
+  if (runway_selected && MapApproachMode == 1 && MapApproachCircuitSide >= 0) {
+    // Left = 0, Right = 1. Circuit side: offset 90° from approach direction.
     const double side = (MapApproachCircuitSide == 0) ? -90.0 : 90.0;
     const double downwind_brg = rw_recip;
     const double base_brg = AngleLimit360(rw_brg + side);
 
+    // Downwind leg at 30 s from center (~800 m); perpendicular to runway on circuit side
     double dw_lat, dw_lon;
-    FindLatitudeLongitude(clat, clon, downwind_brg, PATTERN_OFFSET_M, &dw_lat, &dw_lon);
+    const double perp_brg = AngleLimit360(rw_brg + side);
+    FindLatitudeLongitude(clat, clon, perp_brg, DOWNWIND_OFFSET_M, &dw_lat, &dw_lon);
 
-    double dw_end_lat, dw_end_lon;
-    FindLatitudeLongitude(dw_lat, dw_lon, downwind_brg, DOWNWIND_LEN_M, &dw_end_lat, &dw_end_lon);
+    // Turn to base at 45° radial from threshold (in standard pattern, distance along downwind = offset)
+    double turn45_lat, turn45_lon;
+    FindLatitudeLongitude(dw_lat, dw_lon, downwind_brg, DOWNWIND_TO_45_M, &turn45_lat, &turn45_lon);
 
     double base_end_lat, base_end_lon;
-    FindLatitudeLongitude(dw_end_lat, dw_end_lon, base_brg, BASE_LEN_M, &base_end_lat, &base_end_lon);
+    FindLatitudeLongitude(turn45_lat, turn45_lon, base_brg, BASE_LEN_M, &base_end_lat, &base_end_lon);
 
-    // Downwind leg
-    drawSegment(dw_lat, dw_lon, dw_end_lat, dw_end_lon);
+    // Downwind: from entry to 45° turn point
+    drawSegment(dw_lat, dw_lon, turn45_lat, turn45_lon);
     // Base leg
-    drawSegment(dw_end_lat, dw_end_lon, base_end_lat, base_end_lon);
+    drawSegment(turn45_lat, turn45_lon, base_end_lat, base_end_lon);
     // Final: from end of base to runway centre
     drawSegment(base_end_lat, base_end_lon, clat, clon);
   }

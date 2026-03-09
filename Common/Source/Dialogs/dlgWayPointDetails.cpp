@@ -232,18 +232,6 @@ void OnTeamCodeClicked(WndButton* pWnd){
   }
 }
 
-void OnApproachClicked(WndButton* pWnd) {
-  MapApproachEnabled = true;
-  MapApproachWaypoint = SelectedWaypoint;
-  MapApproachRunwayDir = -1;  // use waypoint runway direction
-  if (pWnd) {
-    WndForm* pForm = pWnd->GetParentWndForm();
-    if (pForm) {
-      pForm->SetModalResult(mrOK);
-    }
-  }
-}
-
 void OnInserInTaskClicked(WndButton* pWnd){
   LockTaskData();
   InsertWaypoint(SelectedWaypoint);
@@ -416,7 +404,6 @@ void dlgWayPointDetailsShowModal(int page) {
   int file_type = {};
   tstring file_name = {};
   WAYPOINT WPLSEL = {};
-  bool is_landable = false;
 
   {
     ScopeLock lock(CritSec_TaskData);
@@ -425,7 +412,6 @@ void dlgWayPointDetailsShowModal(int page) {
       return;
     }
     WPLSEL = WayPointList[SelectedWaypoint];
-    is_landable = WayPointCalc[SelectedWaypoint].IsLandable;
 
     static_assert(std::size(WpFileType) == std::size(szWaypointFile));
 
@@ -480,7 +466,6 @@ void dlgWayPointDetailsShowModal(int page) {
                      }),
       CallbackEntry(OnPaintWaypointPicto),
       CallbackEntry(OnTeamCodeClicked),
-      CallbackEntry(OnApproachClicked),
       CallbackEntry(OnNewHomeClicked),
       CallbackEntry(OnRemoveFromTaskClicked),
       CallbackEntry(OnAppendInTask2Clicked),
@@ -768,15 +753,6 @@ void dlgWayPointDetailsShowModal(int page) {
       lk::snprintf(captmp, _T("( %s )"), MsgToken<555>());
     }
     wb->SetCaption(captmp);
-  }
-
-  wb = wf->FindByName<WndButton>(TEXT("cmdApproach"));
-  if (wb) {
-    wb->SetVisible(is_landable);
-  }
-  wb = wf->FindByName<WndButton>(TEXT("cmdApproachInfo"));
-  if (wb) {
-    wb->SetVisible(is_landable);
   }
 
   if (WPLSEL.Format == LKW_VIRTUAL) {

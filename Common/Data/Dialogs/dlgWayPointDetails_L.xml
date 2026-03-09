@@ -5,7 +5,6 @@
     <WndButton Name="cmdPrev"  Caption="_@M6_"   X="3" Y="78"  Width="65"  Height="70" Font="2" Tag="0" OnClickNotify="OnPrevClicked"/>
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="152" Width="65"  Height="70" Font="2" Tag="3" OnClickNotify="OnCloseClicked"/>
     <WndFrame Name="frmInfos"       X="70" Y="1" Width="-1" Height="-1" Font="2">
-      <WndButton Name="cmdApproachInfo" Caption="Approach" X="4" Y="2" Width="-2" Height="32" Font="2" OnClickNotify="OnApproachClicked"/>
       <WndProperty Name="prpCoordinate"  Caption="_@M918_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
       <WndProperty Name="prpAltitude"  Caption="_@M255_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpSunset"    Caption="_@M671_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
@@ -33,7 +32,6 @@
     </WndFrame>
     <WndFrame Name="frmSpecial"     X="70" Y="1" Width="-1" Height="-1" Font="2" Visible="0">
       <WndButton Name="cmdNewHome" Caption="_@M605_" X="4" Y="4" Width="-2" Height="51" Font="2" OnClickNotify="OnNewHomeClicked"/>
-      <WndButton Name="cmdApproach" Caption="Approach" X="4" Y="-997" Width="-2" Height="51" Font="2" OnClickNotify="OnApproachClicked"/>
       <WndButton Name="cmdTeamCode" Caption="_@M604_" X="4" Y="-997" Width="-2" Height="51" Font="2" OnClickNotify="OnTeamCodeClicked"/>
     </WndFrame>
   </WndForm>

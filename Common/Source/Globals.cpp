@@ -649,7 +649,7 @@ void Globals_Init(void) {
   MapApproachEnabled = false;
   MapApproachWaypoint = -1;
   MapApproachRunwayDir = -1;
-  MapApproachMode = 2;   // 0=Direct, 1=Circuit, 2=Both
+  MapApproachMode = 0;   // 0=Direct, 1=Circuit
   MapApproachCircuitSide = 0;  // 0=Left, 1=Right
 
   // ^ ADD NEW GLOBALS up here ^

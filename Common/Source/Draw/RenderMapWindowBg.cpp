@@ -287,7 +287,7 @@ _skip_stuff:
     // draw wind vector at aircraft
     if (NOTANYPAN) {
         DrawWindAtAircraft2(Surface, Orig_Aircraft, DrawRect);
-    } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
+    } else if (mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN)) {
         DrawWindAtAircraft2(Surface, Orig, rc);
     }
 

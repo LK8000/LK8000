@@ -359,6 +359,10 @@ static void RefreshCalculator(void) {
     wp->RefreshDisplay();
   }
 
+  WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
+  if (btnApproach) {
+    btnApproach->SetVisible(true);
+  }
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -384,6 +388,12 @@ static void OnMoveClicked(WndButton* pWnd) {
   RefreshCalculator();
 }
 
+static void OnTargetApproachClicked(WndButton* pWnd) {
+  if (!ValidTaskPoint(target_point)) return;
+  const int wp_index = Task[target_point].Index;
+  if (!ValidWayPointFast(wp_index) || !WayPointCalc[wp_index].IsLandable) return;
+  dlgApproach(wp_index);
+}
 
 static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
   double RangeNew;
@@ -538,6 +548,7 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnLockedData),
   CallbackEntry(OnOKClicked),
   CallbackEntry(OnMoveClicked),
+  CallbackEntry(OnTargetApproachClicked),
   EndCallbackEntry()
 };
 

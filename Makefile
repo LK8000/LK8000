@@ -1187,6 +1187,7 @@ DLGS	:=\
 	$(DLG)/dlgStartup.cpp \
 	$(DLG)/dlgStatus.cpp \
 	$(DLG)/dlgTarget.cpp \
+	$(DLG)/dlgApproach.cpp \
 	$(DLG)/dlgTaskCalculator.cpp \
 	$(DLG)/dlgTaskOverview.cpp \
 	$(DLG)/dlgTaskRules.cpp \

@@ -37,8 +37,8 @@ void MapWindow::CalculateOrientationNormal() {
     return DisplayOrientation;
   };
 
-  // always center when circling or in Target dialog
-  bool Center = mode.Is(Mode::MODE_CIRCLING) || mode.Is(Mode::MODE_TARGET_PAN);
+  // always center when circling or in Target/Approach dialog
+  bool Center = mode.Is(Mode::MODE_CIRCLING) || mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN);
 
   switch (Orientation()) {
     case NORTHUP:
@@ -110,7 +110,7 @@ RasterPoint MapWindow::CalculateOrigin(const RECT& rc) {
 
   CalculateOrientationNormal();
 
-  if (mode.Is(Mode::MODE_TARGET_PAN)) {
+  if (mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN)) {
     return GetOrigTargetPan(rc, targetPanSize, ScreenLandscape);
   }
 

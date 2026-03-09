@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmApproach" Type="Dialog" X="200" Y="0" Width="119" Height="240" Caption="Approach" Font="2" Popup="1" Modal="0">
+    <WndButton Name="btnOK" Caption="OK" X="2" Y="2" Width="50" Height="22" Font="2" OnClickNotify="OnApproachOKClicked" Tag="1"/>
+    <WndButton Name="btnDirect" Caption="Diretto" X="2" Y="26" Width="55" Height="22" Font="2" OnClickNotify="OnDirectClicked" Tag="1"/>
+    <WndButton Name="btnCircuit" Caption="Circuito" X="61" Y="26" Width="55" Height="22" Font="2" OnClickNotify="OnCircuitClicked" Tag="1"/>
+    <WndButton Name="btnRunway1" Caption="09" X="2" Y="50" Width="55" Height="22" Font="2" OnClickNotify="OnRunway1Clicked" Tag="1"/>
+    <WndButton Name="btnRunway2" Caption="27" X="61" Y="50" Width="55" Height="22" Font="2" OnClickNotify="OnRunway2Clicked" Tag="1"/>
+    <WndButton Name="btnCircuitLeft" Caption="Sinistro" X="2" Y="74" Width="55" Height="22" Font="2" OnClickNotify="OnCircuitLeftClicked" Tag="1"/>
+    <WndButton Name="btnCircuitRight" Caption="Destro" X="61" Y="74" Width="55" Height="22" Font="2" OnClickNotify="OnCircuitRightClicked" Tag="1"/>
+  </WndForm>
+</PMML>

@@ -1983,6 +1983,7 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
       WindowControl(Parent, Name, X, Y, Width, Height), mOnClickNotify(std::move(Function))
 {
   mDown = false;
+  mSelected = false;
   mDefault = false;
   mCanFocus = true;
 
@@ -2015,6 +2016,14 @@ void WndButton::LedSetColor(unsigned short ledcolor) {
    mLedColor=ledcolor;
 }
 
+void WndButton::SetSelected(bool selected) {
+  if (mSelected != selected) {
+    mSelected = selected;
+    if (IsVisible()) {
+      Redraw();
+    }
+  }
+}
 
 bool WndButton::OnKeyDown(unsigned KeyCode) {
     switch (KeyCode) {
@@ -2080,7 +2089,8 @@ bool WndButton::OnLButtonDblClick(const POINT& Pos) {
 void WndButton::DrawPushButton(LKSurface& Surface){
   PixelRect rc(GetClientRect());
   rc.Grow(-2); // todo border width
-  Surface.DrawPushButton(rc, mDown);
+  // mSelected = highlighted (raised) to mark choice; mDown = physically pushed
+  Surface.DrawPushButton(rc, mDown && !mSelected);
 }
 
 void WndButton::Paint(LKSurface& Surface){
@@ -2136,13 +2146,15 @@ void WndButton::Paint(LKSurface& Surface){
   const size_t nSize = _tcslen(szCaption);
   if (nSize > 0) {
 
+    const bool pushed = mDown && !mSelected;  // only offset when physically pushed
+    const bool highlighted = mSelected;      // selected = inverse colours for emphasis
     Surface.SetTextColor(IsDithered()?
-            (mDown ? RGB_WHITE : RGB_BLACK) : 
+            (pushed ? RGB_WHITE : (highlighted ? RGB_BLACK : RGB_BLACK)) : 
             GetForeColor());
 
     Surface.SetBkColor(IsDithered()?
-            (mDown ? RGB_BLACK : RGB_WHITE) : 
-            GetBackColor());
+            (pushed ? RGB_BLACK : (highlighted ? RGB_WHITE : RGB_WHITE)) : 
+            (highlighted ? RGB_LIGHTYELLOW : GetBackColor()));
     
     Surface.SetBackgroundTransparent();
 
@@ -2150,7 +2162,7 @@ void WndButton::Paint(LKSurface& Surface){
     PixelRect rc = rcClient;
     InflateRect(&rc, -2, -2); // todo border width
 
-    if (mDown)
+    if (pushed)
       OffsetRect(&rc, 2, 2);
 
     if (mLastDrawTextHeight < 0){
@@ -2171,11 +2183,16 @@ void WndButton::Paint(LKSurface& Surface){
       // DoTo optimize
       rc = rcClient;
       InflateRect(&rc, -2, -2); // todo border width
-      if (mDown)
+      if (pushed)
         OffsetRect(&rc, 2, 2);
 
     }
 
+    if (mSelected && !mDown) {
+      const auto oldPen = Surface.SelectObject(LKPen_Black_N2);
+      Surface.Rectangle(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
+      Surface.SelectObject(oldPen);
+    }
 
     unsigned height = GetHeight();
     unsigned offset = ((GetHeight()-4-mLastDrawTextHeight)/2);

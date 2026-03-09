@@ -16,10 +16,13 @@
  */
 void MapWindow::Zoom::CalculateTargetPanZoom()
 {
-  // set scale exactly so that waypoint distance is the zoom factor across the screen
   *_requestedScale = LimitMapScale(Units::ToDistance(TargetZoomDistance / 6.0));
 }
 
+void MapWindow::Zoom::CalculateApproachPanZoom()
+{
+  *_requestedScale = LimitMapScale(Units::ToDistance(ApproachZoomDistance / 6.0));
+}
 
 /**
  * @brief Sets requested zoom scale for AUTO_ZOOM mode
@@ -117,6 +120,9 @@ void MapWindow::Zoom::SwitchMode_Locked() {
   }
 
   if (mode._mode & Mode::MODE_TARGET_PAN) {
+    _requestedScale = &_modeScale[SCALE_TARGET_PAN];
+  }
+  else if (mode._mode & Mode::MODE_APPROACH_PAN) {
     _requestedScale = &_modeScale[SCALE_TARGET_PAN];
   }
   else if (mode._mode & Mode::MODE_PAN) {
@@ -301,8 +307,10 @@ void MapWindow::Zoom::UpdateMapScale() {
   ScopeLock Lock(_zoomMutex);  // Protect _requestedScale and _scale access
 
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-    // update TARGET_PAN
     CalculateTargetPanZoom();
+  }
+  if (mode.Is(Mode::MODE_APPROACH_PAN)) {
+    CalculateApproachPanZoom();
   }
 
   if (_autoZoom && mode.Special() == Mode::MODE_SPECIAL_NONE &&
