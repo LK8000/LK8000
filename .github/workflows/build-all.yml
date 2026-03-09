@@ -25,8 +25,16 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Debug env (workspace e make)
+        working-directory: ${{ github.workspace }}
+        run: |
+          pwd
+          ls -la
+          make --version || true
+
       - name: Build LINUX
-        run: make -j$(nproc) TARGET=LINUX distrib
+        working-directory: ${{ github.workspace }}
+        run: make -j2 TARGET=LINUX distrib
 
       - name: Upload LINUX artifact
         uses: actions/upload-artifact@v4
@@ -35,7 +43,8 @@ jobs:
           path: LINUX-install.zip
 
       - name: Build PC (Windows)
-        run: make -j$(nproc) TARGET=PC distrib
+        working-directory: ${{ github.workspace }}
+        run: make -j2 TARGET=PC distrib
 
       - name: Upload PC artifact
         uses: actions/upload-artifact@v4
@@ -44,7 +53,8 @@ jobs:
           path: PC-install.zip
 
       - name: Build KOBO
-        run: make -j$(nproc) TARGET=KOBO
+        working-directory: ${{ github.workspace }}
+        run: make -j2 TARGET=KOBO
 
       - name: Upload Kobo-install artifact
         uses: actions/upload-artifact@v4
