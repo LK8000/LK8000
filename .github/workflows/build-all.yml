@@ -1,23 +1,35 @@
-# Build LK8000 for all platforms (Linux, PC/Windows, Kobo)
-# Uses the same Docker image as CircleCI: lk8000/lk8000:build
-# https://hub.docker.com/r/lk8000/lk8000/tags
+# Build LK8000 solo per Linux
+# Ricompila solo i file modificati (cache Bin/ per build incrementale)
+# Parte solo quando cambiano sorgenti/build
 
-name: Build all platforms
+name: Build Linux
 
 on:
   push:
     branches: [ master, feature/approach ]
+    paths:
+      - 'Common/**'
+      - 'Makefile'
+      - 'build/**'
+      - 'lib/**'
+      - '.github/workflows/build-all.yml'
   pull_request:
     branches: [ master, feature/approach ]
-  workflow_dispatch:  # Esecuzione manuale da GitHub Actions tab
+    paths:
+      - 'Common/**'
+      - 'Makefile'
+      - 'build/**'
+      - 'lib/**'
+      - '.github/workflows/build-all.yml'
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Linux + PC + Kobo
+    name: Linux
     runs-on: ubuntu-24.04
     container:
       image: lk8000/lk8000:build
-      options: --user root  # alcuni step potrebbero richiedere permessi
+      options: --user root
 
     steps:
       - name: Checkout
@@ -25,19 +37,20 @@ jobs:
         with:
           submodules: recursive
 
+      # Cache per build incrementale: riusa Bin/ del run precedente,
+      # make ricompila solo i file modificati
+      - name: Restore build cache
+        uses: actions/cache@v4
+        with:
+          path: Bin
+          key: build-linux-${{ github.ref }}
+
       - name: Install missing deps (libjpeg in container)
         run: |
           apt-get update -qq
           apt-get install -y -qq --no-install-recommends libjpeg-dev
 
-      - name: Debug env (workspace e make)
-        working-directory: ${{ github.workspace }}
-        run: |
-          pwd
-          ls -la
-          make --version || true
-
-      - name: Build LINUX
+      - name: Build LINUX (incrementale)
         working-directory: ${{ github.workspace }}
         run: make -j2 TARGET=LINUX distrib
 
@@ -46,29 +59,3 @@ jobs:
         with:
           name: LINUX-install
           path: LINUX-install.zip
-
-      - name: Build PC (Windows)
-        working-directory: ${{ github.workspace }}
-        run: make -j2 TARGET=PC distrib
-
-      - name: Upload PC artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: PC-install
-          path: PC-install.zip
-
-      - name: Build KOBO
-        working-directory: ${{ github.workspace }}
-        run: make -j2 TARGET=KOBO
-
-      - name: Upload Kobo-install artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Kobo-install
-          path: Kobo-install.zip
-
-      - name: Upload Kobo-install-otg artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Kobo-install-otg
-          path: Kobo-install-otg.zip
