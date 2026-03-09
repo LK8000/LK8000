@@ -78,7 +78,6 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
     // Offset side: left circuit = pattern to the left of approach direction (offset 90° left from rw_recip)
     const double side = (MapApproachCircuitSide == 0) ? -90.0 : 90.0;
     const double downwind_brg = rw_recip;
-    const double base_turn_brg = AngleLimit360(downwind_brg + side);
     const double base_brg = AngleLimit360(rw_brg + side);
 
     double dw_lat, dw_lon;

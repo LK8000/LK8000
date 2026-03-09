@@ -7,6 +7,7 @@
       <WndButton Name="cmdNext"  Caption="_@M460_" X="120" Y="-999" Width="-1"  Height="50" Font="2" OnClickNotify="OnNextClicked" Tag="1"/>
     </WndFrame>
     <WndFrame Name="frmInfos"       X="1" Y="-997" Width="-1" Height="-3"  Font="2">
+      <WndButton Name="cmdApproachInfo" Caption="Approach" X="1" Y="2" Width="-1" Height="36" Font="2" OnClickNotify="OnApproachClicked"/>
       <WndListFrame Name="frmWpComment" X="1" Y="2" Width="-1" Height="80" Font="2" OnListInfo="OnWpCommentListInfo">
         <WndOwnerDrawFrame Name="frmWpCommentEntry" X="1" Y="2" Width="-1" Height="18" Font="2"  OnPaint="OnPaintWpCommentListItem"/>
       </WndListFrame>

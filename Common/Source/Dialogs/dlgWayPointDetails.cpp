@@ -774,6 +774,10 @@ void dlgWayPointDetailsShowModal(int page) {
   if (wb) {
     wb->SetVisible(is_landable);
   }
+  wb = wf->FindByName<WndButton>(TEXT("cmdApproachInfo"));
+  if (wb) {
+    wb->SetVisible(is_landable);
+  }
 
   if (WPLSEL.Format == LKW_VIRTUAL) {
     WindowControl* pWnd = wf->FindByName(TEXT("cmdNext"));
