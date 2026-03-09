@@ -43,9 +43,7 @@ using ScopeUnlock = Poco::ScopedUnlock<Mutex>;
  */
 template<typename _Mutex, typename _Callable, typename ..._Args>
 std::invoke_result_t<_Callable, _Args...> 
-WithLock(_Mutex& m, _Callable&& fn, _Args&& ...args) 
-noexcept(std::is_nothrow_invocable_v<_Callable, _Args...>)
-{
+WithLock(_Mutex& m, _Callable&& fn, _Args&& ...args) {
     Poco::ScopedLock<_Mutex> lock(m);
     return std::invoke(std::forward<_Callable>(fn), std::forward<_Args>(args)...);
 }
