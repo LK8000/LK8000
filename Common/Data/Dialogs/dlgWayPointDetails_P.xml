@@ -34,6 +34,7 @@
     </WndFrame>
     <WndFrame Name="frmSpecial"     X="1" Y="-999" Width="-1" Height="-3"  Font="2" Visible="0">
       <WndButton Name="cmdNewHome" Caption="_@M605_"  X="1" Y="2"    Width="-1" Height="44" Font="2" OnClickNotify="OnNewHomeClicked"/>
+      <WndButton Name="cmdApproach" Caption="Approach" X="1" Y="-998" Width="-1" Height="44" Font="2" OnClickNotify="OnApproachClicked"/>
       <WndButton Name="cmdTeamCode" Caption="_@M604_" X="1" Y="-998" Width="-1" Height="44" Font="2" OnClickNotify="OnTeamCodeClicked"/>
     </WndFrame>
   </WndForm>

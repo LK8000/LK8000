@@ -270,6 +270,7 @@ _skip_stuff:
     // In QUICKDRAW do not paint other useless stuff
     if (QUICKDRAW) {
         if (extGPSCONNECT) DrawBearing(Surface, DrawRect, _Proj);
+        DrawApproach(Surface, DrawRect, _Proj);
         goto _skip_2;
     }
 
@@ -281,6 +282,7 @@ _skip_stuff:
         DrawBestCruiseTrack(Surface, Orig_Aircraft);
         DrawBearing(Surface, DrawRect, _Proj);
     }
+    DrawApproach(Surface, DrawRect, _Proj);
 
     // draw wind vector at aircraft
     if (NOTANYPAN) {

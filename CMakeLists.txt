@@ -379,6 +379,7 @@ add_library( LK8000 SHARED
     Common/Source/Draw/DrawFuturePos.cpp
     Common/Source/Draw/DrawGlideThroughTerrain.cpp
     Common/Source/Draw/DrawGPSStatus.cpp
+    Common/Source/Draw/DrawApproach.cpp
     Common/Source/Draw/DrawGreatCircle.cpp
     Common/Source/Draw/DrawHeading.cpp
     Common/Source/Draw/DrawHSI.cpp

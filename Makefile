@@ -848,6 +848,7 @@ DRAW	:=\
 	$(DRW)/DrawFuturePos.cpp \
 	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
+	$(DRW)/DrawApproach.cpp \
 	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawHSI.cpp \

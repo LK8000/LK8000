@@ -700,6 +700,7 @@ class MapWindow {
   static void DrawGreatCircle(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
                               double lon_start, double lat_start,
                               double lon_end, double lat_end);
+  static void DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
 protected:
   static void DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
