@@ -1,49 +1,49 @@
-# Approach (Avvicinamento) – Documentazione feature
+# Approach – Feature documentation
 
-Feature per la pianificazione e visualizzazione dell’avvicinamento a un waypoint landable (campo/aviosuperficie) con scelta tra approccio **diretto** e **circuito di traffico**.
+Feature for planning and displaying the approach to a landable waypoint (airfield/airport) with a choice between **direct** approach and **traffic circuit**.
 
-## Accesso
+## Access
 
-- **Schermata Target**: bottone **Approach** accanto a **OK** (stessa riga). Visibile quando il dialog Target è aperto; il waypoint di riferimento è il task point corrente.
-- Il bottone Approach è stato rimosso dal dialog Dettaglio waypoint.
+- **Target screen**: **Approach** button next to **OK** (same row). Visible when the Target dialog is open; the reference waypoint is the current task point.
+- The Approach button has been removed from the Waypoint details dialog.
 
-## Dialog Approach
+## Approach dialog
 
-All’apertura si usa lo stesso rendering della mappa Target (centrato sul waypoint, stessa vista).
+On opening, the same map rendering as Target is used (centred on the waypoint, same view).
 
-### Tipo di approccio (due bottoni)
+### Approach type (two buttons)
 
-- **Diretto**: avvicinamento in linea retta dal punto a 5 km sul prolungamento asse pista fino al centro pista.
-- **Circuito**: circuito di traffico VFR (sottovento, base, finale).
+- **Direct**: straight-in approach from the 5 km point on the runway extended centreline to runway centre.
+- **Circuit**: VFR traffic circuit (downwind, base, final).
 
-Il bottone della scelta attiva è evidenziato (bordo nero, sfondo chiaro) per indicare la modalità in uso.
+The active choice is highlighted (black border, light background) to show the current mode.
 
-### Pista assegnata
+### Assigned runway
 
-Due bottoni con le direzioni della pista (es. 09 / 27). La pista selezionata è evidenziata. Obbligatoria per disegnare sia il diretto sia il circuito.
+Two buttons with runway directions (e.g. 09 / 27). The selected runway is highlighted. Required to draw both direct and circuit.
 
-### Circuito: lato
+### Circuit: side
 
-Se è selezionato **Circuito**, compaiono **Sinistro** e **Destro** per il lato del circuito. Anche qui la scelta attiva è evidenziata.
+When **Circuit** is selected, **Left** and **Right** appear for the circuit side. The active choice is highlighted here too.
 
-## Disegno sulla mappa
+## Map drawing
 
-- **Diretto** (solo se è selezionato il bottone Diretto e una pista): segmento da **5 km** sul prolungamento asse pista (direzione di avvicinamento) fino al **centro pista**.
-- **Circuito** (solo se è selezionato Circuito, una pista e un lato):  
-  - Sottovento a ~800 m dal centro (≈ 30 s a 50 kt).  
-  - Punto di virata base sull’intersezione con la radiale 45° dalla soglia.  
-  - Base e finale fino al centro pista.
+- **Direct** (only when the Direct button and a runway are selected): segment from **5 km** on the runway extended centreline (approach direction) to **runway centre**.
+- **Circuit** (only when Circuit, a runway and a side are selected):  
+  - Downwind at ~800 m from centre (≈ 30 s at 50 kt).  
+  - Base turn at the intersection with the 45° radial from threshold.  
+  - Base and final to runway centre.
 
-Il disegno viene eseguito solo quando le scelte necessarie sono complete (Diretto + pista, oppure Circuito + pista + lato).
+Drawing is performed only when the required choices are complete (Direct + runway, or Circuit + runway + side).
 
-## Track / Bearing
+## Track / bearing
 
-- In modalità **Diretto**, la **track** (linea di bearing dall’aereo) termina al **punto a 5 km** (inizio del braccio diretto), non al centro del waypoint.
-- In modalità **Circuito**, la track termina al centro del waypoint.
+- In **Direct** mode, the **track** (bearing line from the aircraft) ends at the **5 km point** (start of the direct leg), not at waypoint centre.
+- In **Circuit** mode, the track ends at waypoint centre.
 
-## Dettagli tecnici
+## Technical details
 
-- **Waypoint**: rappresentazione grafica come in Target (runway + etichetta), anche in Approach Pan.
-- **WndButton**: stato `SetSelected(bool)` per evidenziare la scelta (aspetto “reverse”: rialzato, bordo nero, sfondo evidenziato).
-- **Costanti**: Direct = 5 km (`DIRECT_5KM_M`); circuito: offset sottovento 800 m, virata base a 800 m lungo il sottovento.
-- **File principali**: `DrawApproach.cpp`, `DrawBearing.cpp`, `dlgApproach.cpp`, `dlgTarget.cpp`, `WindowControls.cpp` (SetSelected), dialoghi XML `dlgApproach_P.xml` / `dlgApproach_L.xml`.
+- **Waypoint**: same graphic representation as in Target (runway + label), also in Approach Pan.
+- **WndButton**: `SetSelected(bool)` state to highlight the choice (“reverse” look: raised, black border, highlighted background).
+- **Constants**: Direct = 5 km (`DIRECT_5KM_M`); circuit: downwind offset 800 m, base turn 800 m along downwind.
+- **Main files**: `DrawApproach.cpp`, `DrawBearing.cpp`, `dlgApproach.cpp`, `dlgTarget.cpp`, `WindowControls.cpp` (SetSelected), XML dialogs `dlgApproach_P.xml` / `dlgApproach_L.xml`.

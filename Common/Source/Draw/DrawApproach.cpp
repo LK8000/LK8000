@@ -72,7 +72,7 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
   // Draw only when all required choices are made: Direct + runway, or Circuit + runway + left/right
   const bool runway_selected = (MapApproachRunwayDir >= 0 || wp.RunwayDir >= 0);
 
-  // Direct: only when Diretto is selected (MapApproachMode == 0) and runway is selected.
+  // Direct: only when Direct is selected (MapApproachMode == 0) and runway is selected.
   if (runway_selected && MapApproachMode == 0) {
     double start_lat, start_lon;
     FindLatitudeLongitude(clat, clon, rw_recip, DIRECT_5KM_M, &start_lat, &start_lon);

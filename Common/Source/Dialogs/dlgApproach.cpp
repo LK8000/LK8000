@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
-   Approach dialog: type (Diretto/Circuito), runway, circuit side (left/right).
+   Approach dialog: type (Direct/Circuit), runway, circuit side (left/right).
    Selected button = inverted (dark) style. Draw only when all choices are set.
 */
 

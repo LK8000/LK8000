@@ -996,7 +996,7 @@ class WndButton:public WindowControl{
 
     void Paint(LKSurface& Surface) override;
     bool mDown;
-    bool mSelected;  // persistent "pushed" look for selected state (e.g. approach Diretto/Circuito)
+    bool mSelected;  // persistent "pushed" look for selected state (e.g. approach Direct/Circuit)
     bool mDefault;
     unsigned short mLedMode;   // 0=no led  1=OnOff mode  2=manual (choose colors)
     bool mLedOnOff;            // if mLedUse=1  this is used to toggle false=orange/true=green
