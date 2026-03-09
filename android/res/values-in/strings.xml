@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_language_code">id</string>
+    <string name="default_language_code">in</string>
     <string name="loading">Memuat LK8000…</string>
     <string name="quit">Mematikan LK8000…</string>
     <string name="error_external_storage">Penyimpanan eksternal tidak tersedia, harap matikan penyimpanan USB.</string>
