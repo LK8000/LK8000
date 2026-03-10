@@ -60,6 +60,7 @@ protected:
     // use vector to reduce swap overhead
     //  -> only swap few internal pointer instead of all contents
     std::vector<char> buffer;
+    unsigned state_generation = 0;
 
 public:
     /* override Datahandler */
