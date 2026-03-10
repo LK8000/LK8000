@@ -73,6 +73,7 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
   };
 
   std::vector<sensor_data> data_queue;
+  unsigned state_generation = 0;
   std::string device_name;
 
   void ProcessSensorData(const sensor_data& data);
