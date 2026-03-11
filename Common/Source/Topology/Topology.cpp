@@ -111,10 +111,9 @@ Topology::Topology(const TCHAR* shpname, int field1) {
   shapefileopen = false;
   triggerUpdateCache = false;
   scaleThreshold = 0;
-  shpCache= NULL;
-
-  shpBounds = NULL;
-  shps = NULL;
+  shpCache= nullptr;
+  shpBounds = nullptr;
+  shps = nullptr;
   cache_mode = 0;
   lastBounds.minx = lastBounds.miny = lastBounds.maxx = lastBounds.maxy = 0;
 
@@ -142,24 +141,22 @@ bool Topology::initCache_1() {
   cache_mode = 1;
 
   StartupStore(_T(". <%s> Topology cache using mode 1"), from_utf8(filename).c_str());
-  
-  shpBounds = (rectObj*) malloc(sizeof (rectObj) * shpfile.numshapes);
-  if (shpBounds == NULL) {
+  try {
+    shpBounds = std::make_unique<rectObj[]>(shpfile.numshapes);
+  }
+  catch (std::exception&) {
     //Fallback to mode 0
     StartupStore(_T("------ WARN Topology,  malloc failed shpBounds, fallback to mode0%s"), NEWLINE);
     return initCache_0();
   }
   // Get bounds for each shape from shapefile
-  rectObj *prect;
-  int retval;
   for (int i = 0; i < shpfile.numshapes; i++) {
-    prect = &shpBounds[i];
-    retval = msSHPReadBounds(shpfile.hSHP, i, prect);
+    rectObj *prect = &shpBounds[i];
+    int retval = msSHPReadBounds(shpfile.hSHP, i, prect);
     if (retval) {
       StartupStore(_T("------ WARN Topology, shape bounds reading failed, fallback to mode0%s"), NEWLINE);
       // Cleanup
-      free(shpBounds);
-      shpBounds = NULL;
+      shpBounds = nullptr;
       return initCache_0();
     }
   }//for  
@@ -173,12 +170,15 @@ bool Topology::initCache_2() {
   cache_mode = 2;
 
   StartupStore(_T(". <%s> Topology cache using mode 2"), from_utf8(filename).c_str());
-  
+
   shpBounds = nullptr;
-  shps = (XShape**) malloc(sizeof (XShape*) * shpfile.numshapes);
-  if (!shps) {
-    //Fallback to mode 0
-    StartupStore(_T("------ WARN Topology,  malloc failed shps, fallback to mode 0"));
+  try {
+    shps = std::make_unique<XShapePtr[]>(shpfile.numshapes);
+  }
+  catch (std::exception&) {
+    // Fallback to mode 0
+    StartupStore(
+        _T("------ WARN Topology,  malloc failed shps, fallback to mode 0"));
     return initCache_0();
   }
   // Load all shapes to shps
@@ -186,10 +186,6 @@ bool Topology::initCache_2() {
     if (!(shps[i] = addShape(i))) {
       StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode 1"), i);
       // Cleanup
-      while (--i) {
-        delete(shps[i]);
-      }
-      free(shps);
       shps = nullptr;
       return initCache_1();
     }
@@ -223,12 +219,12 @@ void Topology::initCache() {
   }
 #endif
 
-  shpBounds = NULL;
-  shps = NULL;
+  shpBounds = nullptr;
+  shps = nullptr;
   in_scale_last = false;
 
   for (int i = 0; i < shpfile.numshapes; i++) {
-    shpCache[i] = NULL;
+    shpCache[i] = nullptr;
   }
 
   //StartupStore(_T("... Topology InitCache mode: %d  (free_size=%ld  bounds_size=%ld)\n"),cache_mode,free_size,bounds_size);
@@ -259,36 +255,26 @@ void Topology::Open() {
   }
 
   scaleThreshold = 1000.0;
-  shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
-  if (shpCache) {
+  try {
+    shpCache = std::make_unique<XShapePtr[]>(shpfile.numshapes);
     initCache();
     shapefileopen = true;
-  } else {
+  }
+  catch (std::exception&) {
+    msShapefileClose(&shpfile);
     StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
   }
 }
 
-
 void Topology::Close() {
   if (shapefileopen) {
-    if (shpCache) {
-      flushCache();
-      free(shpCache); shpCache = NULL;
-    }
-    if (shpBounds) {
-      free(shpBounds); shpBounds = NULL;
-    }
-    if (shps) {
-      for (int i=0; i<shpfile.numshapes; i++) {
-        delete shps[i];
-      }
-      free(shps); shps = NULL;
-    }
+    shpCache = nullptr;
+    shpBounds = nullptr;
+    shps = nullptr;
     msShapefileClose(&shpfile);
     shapefileopen = false;  // added sgi
   }
 }
-
 
 Topology::~Topology() {
   Close();
@@ -324,7 +310,7 @@ void Topology::flushCache() {
 		break;
 	case 2:  // Shapes in memory
 		for (int i=0; i<shpfile.numshapes; i++) {
-			shpCache[i] = NULL;
+			shpCache[i] = nullptr;
 		}
 		break;
   }//sw
@@ -396,7 +382,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
         shapes_visible_count = 0;
         for (int i=0; i<shpfile.numshapes; i++) {
           if (msGetBit(shpfile.status, i)) {
-            if (shpCache[i]==NULL) {
+            if (!shpCache[i]) {
               // shape is now in range, and wasn't before
               shpCache[i] = addShape(i);
               shapes_loaded++;
@@ -425,7 +411,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
       } else
       if (smaller) { //Search inside, we don't need to load additional shapes, just remove
         for (int i=0; i<shpfile.numshapes; i++) {
-          if (shpCache[i]==NULL) continue;
+          if (!shpCache[i]) continue;
           if(msRectOverlap(&shpBounds[i], &thebounds) != MS_TRUE) {
             removeShape(i);
           } else shapes_visible_count++;
@@ -434,7 +420,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
         //Otherwise we have to search the all array
         for (int i=0; i<shpfile.numshapes; i++) {
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
-            if (shpCache[i]==NULL) {
+            if (!shpCache[i]) {
               // shape is now in range, and wasn't before
               shpCache[i] = addShape(i);
               shapes_loaded++;
@@ -448,15 +434,15 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
       break;
 
     case 2: // All shapes in memory
-      XShape *pshp;
       shapes_visible_count = 0;
       for (int i=0; i<shpfile.numshapes; i++) {
-        pshp = shps[i];
+        XShapePtr pshp = shps[i];
         if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
           shpCache[i] = pshp;
           shapes_visible_count++;
-        } else {
-          shpCache[i] = NULL;
+        }
+        else {
+          shpCache[i] = nullptr;
         }
       }//for
       break;
@@ -470,33 +456,29 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 #endif
 }
 
-
-XShape* Topology::addShape(const int i) {
-  if(field < 0) {
-    XShape* theshape = new(std::nothrow) XShape();
-    if(theshape) {
-      theshape->load(&shpfile,i);
+std::unique_ptr<XShape> Topology::addShape(const int i) {
+  try {
+    if (field < 0) {
+      auto theshape = std::make_unique<XShape>();
+      theshape->load(&shpfile, i);
+      return theshape;
     }
-    return theshape;
-  } else {  
-    XShapeLabel* theshape = new(std::nothrow) XShapeLabel();
-    if(theshape) {
-      theshape->load(&shpfile,i);
-      theshape->setLabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
+    else {
+      auto theshape = std::make_unique<XShapeLabel>();
+      theshape->load(&shpfile, i);
+      theshape->setLabel(msDBFReadStringAttribute(shpfile.hDBF, i, field));
+      return theshape;
     }
-    return theshape;
   }
+  catch (std::exception&) {
+  }
+  return nullptr;
 }
-
 
 // Be sure shpCache is not NULL before calling removeShape
-void Topology::removeShape(const int i) {
-  if (shpCache[i]) {
-    delete shpCache[i];
-    shpCache[i]= nullptr;
-  }
+void Topology::removeShape(int i) {
+  shpCache[i] = nullptr;
 }
-
 
 // This is checking boundaries based on lat/lon values.
 // It is not enough for screen overlapping verification.
@@ -591,7 +573,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 
   static std::vector<ScreenPoint> points;
 
-  for (const XShape* cshape : make_array(shpCache, shpfile.numshapes)) {
+  for (const auto& cshape : make_array(shpCache.get(), shpfile.numshapes)) {
     if (!cshape || cshape->hide)
         continue;
 
@@ -652,15 +634,13 @@ void Topology::SearchNearest(const rectObj& bounds) {
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
 
-    std::unique_ptr<XShape> shape_tmp;
-    XShape *cshape = shpCache[ixshp];
+    XShapePtr cshape = shpCache[ixshp];
     if(!cshape) {
       if((cache_mode == 1) && (msRectOverlap(&shpBounds[ixshp], &bounds) != MS_TRUE)) {
           // if bounds is in cache and does not overlap no need to load shape;
           continue;
       }
-      shape_tmp.reset(addShape(ixshp));
-      cshape = shape_tmp.get();
+      cshape = addShape(ixshp);
     }
 
 	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;

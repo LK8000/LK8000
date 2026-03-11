@@ -14,6 +14,7 @@
 #include "Screen/LKPen.h"
 #include "Screen/LKIcon.h"
 #include "types.h"
+#include <memory>
 
 class ShapeSpecialRenderer;
 class ScreenProjection;
@@ -51,15 +52,16 @@ class Topology final {
   bool triggerUpdateCache;
   int shapes_visible_count;
 
-  XShape** shpCache;
+  using XShapePtr = std::shared_ptr<XShape>;
+  std::unique_ptr<XShapePtr[]> shpCache;
 
   static bool checkVisible(const shapeObj& shape, const rectObj& screenRect);
 
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
 
-  void removeShape(const int i);
-  XShape* addShape(const int i);
+  void removeShape(int i);
+  std::unique_ptr<XShape> addShape(int i);
 
  protected:
   void flushCache();
@@ -79,8 +81,8 @@ class Topology final {
   void initCache();
 
   int cache_mode;
-  XShape** shps;
-  rectObj* shpBounds;
+  std::unique_ptr<XShapePtr[]> shps;
+  std::unique_ptr<rectObj[]> shpBounds;
   rectObj lastBounds;
   bool in_scale_last;
 
