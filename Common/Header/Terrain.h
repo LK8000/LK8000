@@ -1,7 +1,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 #include "externs.h"
-#include "Topology.h"
+#include "Topology/Topology.h"
 
 
 void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj,  const bool force=false);

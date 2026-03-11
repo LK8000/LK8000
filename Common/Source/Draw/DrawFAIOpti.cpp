@@ -11,7 +11,6 @@
 #include "RGB.h"
 #include "ContestMgr.h"
 #include "Defines.h"
-#include "Topology.h"
 #include "LKObjects.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"

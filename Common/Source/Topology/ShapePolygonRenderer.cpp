@@ -17,6 +17,7 @@
 #include "externs.h"
 #include "Topology.h"
 #include "../Draw/ScreenProjection.h"
+#include "XShape.h"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Scope.hpp"

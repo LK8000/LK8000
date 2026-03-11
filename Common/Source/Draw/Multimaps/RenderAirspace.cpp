@@ -16,7 +16,6 @@
 #include "Sideview.h"
 #include "LKObjects.h"
 #include "Multimap.h"
-#include "Topology.h"
 #include "InputEvents.h"
 #include "utils/2dpclip.h"
 #include "NavFunctions.h"

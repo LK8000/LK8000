@@ -1032,6 +1032,8 @@ TOPOL	:=\
 	$(TOP)/Topology.cpp		\
 	$(TOP)/ShapeSpecialRenderer.cpp	\
 	$(TOP)/ShapePolygonRenderer.cpp  \
+	$(TOP)/XShape.cpp  \
+	$(TOP)/XShapeLabel.cpp  \
 
 MAPDRAW	:=\
 	$(MAP)/DrawTerrain.cpp		\
