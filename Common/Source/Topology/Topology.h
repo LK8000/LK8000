@@ -42,15 +42,14 @@ class Topology final {
 
   void SearchNearest(const rectObj& bounds);
 
-  double scaleThreshold;
-  double scaleDefaultThreshold;
-  int scaleCategory;
+  double scaleThreshold = 0;
+  double scaleDefaultThreshold = 0;
+  int scaleCategory = 0;
 
   bool CheckScale();
   void TriggerIfScaleNowVisible();
 
-  bool triggerUpdateCache;
-  int shapes_visible_count;
+  bool triggerUpdateCache = false;
 
   using XShapePtr = std::shared_ptr<XShape>;
   std::unique_ptr<XShapePtr[]> shpCache;
@@ -60,18 +59,17 @@ class Topology final {
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
 
-  void removeShape(int i);
   std::unique_ptr<XShape> loadShape(int i);
 
  protected:
   void flushCache();
 
-  bool in_scale;
+  bool in_scale = false;
   LKPen hPen;
   LKBrush hbBrush;
   LKIcon hBitmap;
-  shapefileObj shpfile;
-  bool shapefileopen;
+  shapefileObj shpfile = {};
+  bool shapefileopen = false;
 
   bool initCache_0();
   bool initCache_1();
@@ -80,11 +78,11 @@ class Topology final {
 #endif
   void initCache();
 
-  int cache_mode;
+  int cache_mode = 0;
   std::unique_ptr<XShapePtr[]> shps;
   std::unique_ptr<rectObj[]> shpBounds;
-  rectObj lastBounds;
-  bool in_scale_last;
+  rectObj lastBounds = {};
+  bool in_scale_last = false;
 
   // utf8 filename, converted from platform encoding in ctor
   char filename[MAX_PATH];

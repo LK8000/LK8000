@@ -26,8 +26,6 @@
 #include "shapelib/mapshape.h"
 #include "XShape.h"
 
-//#define DEBUG_TFC
-
 void Topology::loadBitmap(const int xx) {
   hBitmap.LoadFromResource(MAKEINTRESOURCE(xx));
 }
@@ -106,24 +104,9 @@ void Topology::loadPenBrush(const LKColor thecolor) {
 
 }
 
-Topology::Topology(const TCHAR* shpname, int field1) {
-  memset((void*)&shpfile, 0 ,sizeof(shpfile));
-  shapefileopen = false;
-  triggerUpdateCache = false;
-  scaleThreshold = 0;
-  shpCache= nullptr;
-  shpBounds = nullptr;
-  shps = nullptr;
-  cache_mode = 0;
-  lastBounds.minx = lastBounds.miny = lastBounds.maxx = lastBounds.maxy = 0;
-
-  in_scale = false;
-
-  field = field1;
-
+Topology::Topology(const TCHAR* shpname, int field1) : field(field1) {
   // filename already points to _MAPS subdirectory!
   to_utf8(shpname, filename);
-
   Open();
 }
 
@@ -192,8 +175,8 @@ bool Topology::initCache_2() {
   }
   return true;
 }
-#endif
 
+#endif
 
 void Topology::initCache() {
   //Selecting caching scenarios based on available memory and topo size
@@ -227,8 +210,6 @@ void Topology::initCache() {
     shpCache[i] = nullptr;
   }
 
-  //StartupStore(_T("... Topology InitCache mode: %d  (free_size=%ld  bounds_size=%ld)\n"),cache_mode,free_size,bounds_size);
-
   switch (cache_mode) {
     default:
     case 0:
@@ -244,7 +225,6 @@ void Topology::initCache() {
 #endif
   } //sw
 }
-
 
 void Topology::Open() {
   shapefileopen = false;
@@ -262,7 +242,7 @@ void Topology::Open() {
   }
   catch (std::exception&) {
     msShapefileClose(&shpfile);
-    StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
+    StartupStore(_T("------ ERR Topology,  malloc failed shpCache"));
   }
 }
 
@@ -280,15 +260,16 @@ Topology::~Topology() {
   Close();
 }
 
-
-bool Topology::CheckScale(void) {
-  if (scaleCategory==10||scaleCategory==5)
-	return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
-  else
-	return (MapWindow::zoom.RealScale() <= scaleThreshold);
+bool Topology::CheckScale() {
+  if (scaleCategory == 10 || scaleCategory == 5) {
+    return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
+  }
+  else {
+    return (MapWindow::zoom.RealScale() <= scaleThreshold);
+  }
 }
 
-void Topology::TriggerIfScaleNowVisible(void) {
+void Topology::TriggerIfScaleNowVisible() {
   triggerUpdateCache |= (CheckScale() != in_scale);
 }
 
@@ -296,28 +277,9 @@ void Topology::TriggerIfScaleNowVisible(void) {
 // Always check shpCache is not NULL before calling flushCache!
 //
 void Topology::flushCache() {
-#ifdef DEBUG_TFC
-  StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
-  PeriodClock starttick;
-  starttick.Update();
-#endif
-  switch (cache_mode) {
-	case 0:  // Original
-	case 1:  // Bounds array in memory
-		for (int i=0; i<shpfile.numshapes; i++) {
-			removeShape(i);
-		}
-		break;
-	case 2:  // Shapes in memory
-		for (int i=0; i<shpfile.numshapes; i++) {
-			shpCache[i] = nullptr;
-		}
-		break;
-  }//sw
-  shapes_visible_count = 0;
-#ifdef DEBUG_TFC
-  StartupStore(TEXT("   flushCache() ends (%dms)%s"),starttick.Elapsed(),NEWLINE);
-#endif
+  if (shpCache) {
+    std::fill_n(shpCache.get(), shpfile.numshapes, nullptr);
+  }
 }
 
 void Topology::updateCache(rectObj thebounds, bool purgeonly) {
@@ -343,13 +305,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
   triggerUpdateCache = false;
 
-#ifdef DEBUG_TFC
-  StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
-  PeriodClock starttick;
-  starttick.Update();
-#endif
-
-  if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
+  if (msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
     // this happens if entire shape is out of range
     // so clear buffer.
     flushCache();
@@ -360,36 +316,31 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   bool smaller = false;
   bool bigger = false;
   bool in_scale_again = in_scale && !in_scale_last;
-  int shapes_loaded = 0;
-  shapes_visible_count = 0;
   in_scale_last = in_scale;
 
   switch (cache_mode) {
     case 0: // Original code plus one special case
       smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
       if (smaller) { //Special case, search inside, we don't need to load additional shapes, just remove
-        shapes_visible_count = 0;
         for (int i=0; i<shpfile.numshapes; i++) {
           if (shpCache[i]) {
             if(msRectOverlap(&(shpCache[i]->shape.bounds), &thebounds) != MS_TRUE) {
-              removeShape(i);
-            } else shapes_visible_count++;
+              shpCache[i] = nullptr;
+            }
           }
         }//for
-      } else {
-        //In this case we have to run the original algoritm
+      }
+      else { //In this case we have to run the original algoritm
         msShapefileWhichShapes(&shpfile, thebounds, 0);
-        shapes_visible_count = 0;
         for (int i=0; i<shpfile.numshapes; i++) {
           if (msGetBit(shpfile.status, i)) {
             if (!shpCache[i]) {
               // shape is now in range, and wasn't before
               shpCache[i] = loadShape(i);
-              shapes_loaded++;
             }
-            shapes_visible_count++;
-          } else {
-            removeShape(i);
+          }
+          else {
+            shpCache[i] = nullptr;
           }
         }//for
       }
@@ -404,42 +355,38 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
             // shape is now in range, and wasn't before
             shpCache[i] = loadShape(i);
-            shapes_loaded++;
           }
         }//for
-        shapes_visible_count+=shapes_loaded;
-      } else
-      if (smaller) { //Search inside, we don't need to load additional shapes, just remove
+      }
+      else if (smaller) { //Search inside, we don't need to load additional shapes, just remove
         for (int i=0; i<shpfile.numshapes; i++) {
           if (!shpCache[i]) continue;
           if(msRectOverlap(&shpBounds[i], &thebounds) != MS_TRUE) {
-            removeShape(i);
-          } else shapes_visible_count++;
+            shpCache[i] = nullptr;
+          }
         }//for
-      } else {
+      }
+      else {
         //Otherwise we have to search the all array
         for (int i=0; i<shpfile.numshapes; i++) {
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
             if (!shpCache[i]) {
               // shape is now in range, and wasn't before
               shpCache[i] = loadShape(i);
-              shapes_loaded++;
             }
-            shapes_visible_count++;
-          } else {
-            removeShape(i);
+          }
+          else {
+            shpCache[i] = nullptr;
           }
         }//for
       }
       break;
 
     case 2: // All shapes in memory
-      shapes_visible_count = 0;
       for (int i=0; i<shpfile.numshapes; i++) {
         XShapePtr pshp = shps[i];
         if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
           shpCache[i] = pshp;
-          shapes_visible_count++;
         }
         else {
           shpCache[i] = nullptr;
@@ -449,11 +396,6 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
     }//sw
 
     lastBounds = thebounds;
-
-#ifdef DEBUG_TFC
-  long free_size = CheckFreeRam();
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%luM (%dms)%s"),shapes_visible_count, free_size/(1024*1024), starttick.Elapsed(),NEWLINE);
-#endif
 }
 
 std::unique_ptr<XShape> Topology::loadShape(const int i) {
@@ -465,11 +407,6 @@ std::unique_ptr<XShape> Topology::loadShape(const int i) {
   return nullptr;
 }
 
-// Be sure shpCache is not NULL before calling removeShape
-void Topology::removeShape(int i) {
-  shpCache[i] = nullptr;
-}
-
 // This is checking boundaries based on lat/lon values.
 // It is not enough for screen overlapping verification.
 bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
@@ -479,38 +416,36 @@ bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
 template <typename T>
 static T shape2Screen(const lineObj& line, const ScreenProjection& _Proj, std::vector<T>& points) {
 
-  typedef typename T::scalar_type scalar_type;
+  using scalar_type = typename T::scalar_type ;
   using std::placeholders::_1;
 
-  T leftPoint = {
-    std::numeric_limits<scalar_type>::max(),
-    std::numeric_limits<scalar_type>::max()
-  };
-  const int last = line.numpoints-1;
+  if (line.numpoints < 1) {
+    return {
+      std::numeric_limits<scalar_type>::max(),
+      std::numeric_limits<scalar_type>::max()
+    };
+  }
+
+  const int last = line.numpoints - 1;
   points.clear();
   points.reserve(line.numpoints + 1);
 
-
   const GeoToScreen<T> ToScreen(_Proj);
 
-  // first point is inserted before loop for avoid to check "if(first)" inside loop
-  points.push_back(ToScreen(line.point[0]));
+  // Process the first point outside the loop
+  T leftPoint = ToScreen(line.point[0]);
+  points.push_back(leftPoint);
 
-  for(int i = 1; i < last; ++i) {
-    const T pt = ToScreen(line.point[i]);
-    if (pt.x<=leftPoint.x) {
+  for (int i = 1; i <= last; ++i) {
+    T pt = ToScreen(line.point[i]);
+    if (pt.x <= leftPoint.x) {
       leftPoint = pt;
     }
-    const T& prev_pt = points.back();
-    if(lround(std::abs((prev_pt.x - pt.x) + std::abs(prev_pt.y - pt.y))) > 2) {
-        points.push_back(std::move(pt));
+    const T& prev_pt = points.back(); // Use reference to avoid copying
+    if(lround(std::abs(prev_pt.x - pt.x) + std::abs(prev_pt.y - pt.y)) > 2) {
+      points.push_back(std::move(pt));
     }
   }
-  const T pt = ToScreen(line.point[last]);
-  if (pt.x<=leftPoint.x) {
-    leftPoint = pt;
-  }
-  points.push_back(std::move(pt));
 
   return leftPoint;
 }
@@ -525,13 +460,14 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   if (scaleCategory == 10 || scaleCategory == 5) {
     // for water areas, use scaleDefault
     if (MapWindow::zoom.RealScale() > scaleDefaultThreshold) {
-        return;
+      return;
     }
     // since we just checked category 10, if we are over scale we set nolabels
     if (MapWindow::zoom.RealScale() > scaleThreshold) {
-        nolabels = true;
+      nolabels = true;
     }
-  } else if (MapWindow::zoom.RealScale() > scaleThreshold) {
+  }
+  else if (MapWindow::zoom.RealScale() > scaleThreshold) {
     return;
   }
 
@@ -564,8 +500,9 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   static std::vector<ScreenPoint> points;
 
   for (const auto& cshape : make_array(shpCache.get(), shpfile.numshapes)) {
-    if (!cshape || cshape->hide)
-        continue;
+    if (!cshape || cshape->hide) {
+      continue;
+    }
 
     const shapeObj& shape = cshape->shape;
 
@@ -623,57 +560,49 @@ void Topology::SearchNearest(const rectObj& bounds) {
   }
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
-
     XShapePtr cshape = shpCache[ixshp];
-    if(!cshape) {
-      if((cache_mode == 1) && (msRectOverlap(&shpBounds[ixshp], &bounds) != MS_TRUE)) {
-          // if bounds is in cache and does not overlap no need to load shape;
-          continue;
+    if (!cshape) {
+      if ((cache_mode == 1) &&
+          (msRectOverlap(&shpBounds[ixshp], &bounds) != MS_TRUE)) {
+        // if bounds is in cache and does not overlap no need to load shape;
+        continue;
       }
       cshape = loadShape(ixshp);
     }
 
-	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;
-	const shapeObj& shape = cshape->shape;
+    if (!cshape || cshape->hide || !cshape->HasLabel()) {
+      continue;
+    }
+    const shapeObj& shape = cshape->shape;
 
-    if(msRectOverlap(&(cshape->shape.bounds), &bounds) != MS_TRUE) {
-        continue;
+    if (msRectOverlap(&(cshape->shape.bounds), &bounds) != MS_TRUE) {
+      continue;
     }
 
-	switch(shape.type) {
-
-	   case(MS_SHAPE_POINT):
-
-			for (int tt = 0; tt < shape.numlines; tt++) {
-				for (int jj=0; jj< shape.line[tt].numpoints; jj++) {
-					cshape->nearestItem(scaleCategory, shape.line[tt].point[jj].x, shape.line[tt].point[jj].y);
-				}
-			}
-		break;
-
-	   case(MS_SHAPE_LINE):
-/*
-			for (int tt = 0; tt < shape->numlines; tt ++) {
-				//  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
-				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
-			}
-*/
-		break;
-
-	   case(MS_SHAPE_POLYGON):
-
-			for (int tt = 0; tt < shape.numlines; tt ++) {
-                // TODO : check if that is good
-                //  it's surprising distance to Polygon are not distance to first point but
-                //  distance to nearest vertex.
-                //  right implementation is in #msDistancePointToShape, but this don't use great circle ditance.
-				cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x, shape.line[tt].point[0].y);
-			}
+    switch (shape.type) {
+      case (MS_SHAPE_POINT):
+        for (int tt = 0; tt < shape.numlines; tt++) {
+          for (int jj = 0; jj < shape.line[tt].numpoints; jj++) {
+            cshape->nearestItem(scaleCategory, shape.line[tt].point[jj].x,
+                                shape.line[tt].point[jj].y);
+          }
+        }
         break;
 
-	   default:
-		break;
+      case (MS_SHAPE_POLYGON):
+        for (int tt = 0; tt < shape.numlines; tt++) {
+          // TODO : check if that is good
+          //  it's surprising distance to Polygon are not distance to first
+          //  point but distance to nearest vertex. right implementation is in
+          //  #msDistancePointToShape, but this don't use great circle ditance.
+          cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x,
+                              shape.line[tt].point[0].y);
+        }
+        break;
 
-    } // switch type of shape
-  } // for all shapes in this category
-} // Topology SearchNearest
+      default:
+        break;
+
+    }  // switch type of shape
+  }  // for all shapes in this category
+}  // Topology SearchNearest
