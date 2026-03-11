@@ -10,7 +10,7 @@
  */
 
 #ifndef SHAPESPECIALRENDERER_H
-#define	SHAPESPECIALRENDERER_H
+#define SHAPESPECIALRENDERER_H
 
 #include "tchar.h"
 #include <list>
@@ -19,7 +19,7 @@
 class LKSurface;
 
 class ShapeSpecialRenderer final {
-public:
+ public:
   ShapeSpecialRenderer() = default;
 
   void Add(RasterPoint&& pt, const TCHAR* szLabel) {
@@ -27,15 +27,15 @@ public:
   }
 
   void Render(LKSurface& Surface) const;
-  
-  void Clear() { 
+
+  void Clear() {
     lstLabel.clear();
   }
 
-private:
+ private:
   struct Label_t {
-    Label_t(RasterPoint&& p, const TCHAR* sz) 
-        : point(std::forward<RasterPoint>(p)), szLabel(sz) { }
+    Label_t(RasterPoint&& p, const TCHAR* sz)
+        : point(std::forward<RasterPoint>(p)), szLabel(sz) {}
 
     const RasterPoint point;
     const TCHAR* szLabel;
@@ -46,4 +46,4 @@ private:
   lstLabel_t lstLabel;
 };
 
-#endif	/* SHAPESPECIALRENDERER_H */
+#endif /* SHAPESPECIALRENDERER_H */

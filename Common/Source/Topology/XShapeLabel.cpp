@@ -42,19 +42,8 @@ static bool HiddenLabel(const char* src) {
 
 }  // namespace
 
-XShapeLabel::~XShapeLabel() {
-  clearLabel();
-}
-
-void XShapeLabel::clearLabel() {
-  if (label) {
-    free(label);
-    label = nullptr;
-  }
-}
-
 void XShapeLabel::setLabel(const char* src) {
-  clearLabel();
+  label.clear();
 
   // Case1 : NULL or not informative label, we show the shape without label
   if (!ValidLabel(src)) {
@@ -70,26 +59,21 @@ void XShapeLabel::setLabel(const char* src) {
   }
 
   // Any other case : we display shape and its label as well
-  size_t size = from_unknown_charset(src, label, 0) + 1;
-  label = (TCHAR*)malloc(size * sizeof(TCHAR));
-  if (label) {
-    from_unknown_charset(src, label, size);
-  }
-
+  label = from_unknown_charset(src);
   hide = false;
 }
 
 void XShapeLabel::clear() {
   XShape::clear();
-  clearLabel();
+  label.clear();
 }
 
 bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
-  NearestTopoItem* item;
-  if (!label || _tcslen(label) == 0) {
+  if (label.empty()) {
     return false;
   }
 
+  NearestTopoItem* item;
   switch (category) {
     case 10:
       item = &NearestWaterArea;
@@ -106,9 +90,8 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
       item = &NearestSmallCity;
       break;
     default:
-      TestLog(_T("...... Cannot use nearestItem cat=%d <%s>"), category, label);
+      TestLog(_T("...... Cannot use nearestItem cat=%d <%s>"), category, label.c_str());
       return false;
-      break;
   }
 
   double distance, bearing;
@@ -126,7 +109,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
   if (!item->Valid || (item->Distance > distance)) {
     item->Latitude = lat;
     item->Longitude = lon;
-    lk::strcpy(item->Name, label);
+    lk::strcpy(item->Name, label.c_str());
     item->Distance = distance;
     item->Bearing = bearing;
     item->Valid = true;
@@ -145,7 +128,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) const {
 bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer,
                                 LKSurface& Surface, int x, int y,
                                 const RECT& ClipRect) const {
-  if (!label || !label[0]) {
+  if (label.empty()) {
     return false;
   }
 
@@ -162,14 +145,15 @@ bool XShapeLabel::renderSpecial(ShapeSpecialRenderer& renderer,
     return false;
   }
 
-  PixelSize tsize;
-  Surface.GetTextSize(label, &tsize);
+  PixelSize tsize = Surface.GetTextSize(label.c_str());
 
-  const PixelRect brect = {{x - NIBLSCALE(3), y - NIBLSCALE(3)},
-                           {tsize.cx + NIBLSCALE(3), tsize.cy + NIBLSCALE(3)}};
+  const PixelRect brect = {
+    {x - NIBLSCALE(3), y - NIBLSCALE(3)},
+    {tsize.cx + NIBLSCALE(3), tsize.cy + NIBLSCALE(3)}
+  };
 
   if (MapWindow::checkLabelBlock(brect, ClipRect)) {
-    renderer.Add({x, y}, label);
+    renderer.Add({x, y}, label.c_str());
     return true;  // 101016
   }
   return false;  // 101016

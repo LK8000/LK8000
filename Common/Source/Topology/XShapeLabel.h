@@ -10,26 +10,17 @@
 #define _Terrain_XShapeLabel_h_
 
 #include "XShape.h"
-#include "tchar.h"
+#include "Util/tstring.hpp"
 
 class XShapeLabel : public XShape {
  public:
   XShapeLabel() = default;
-  ~XShapeLabel();
-
-  // Prevent copying/moving due to raw pointer ownership
-  XShapeLabel(const XShapeLabel&) = delete;
-  XShapeLabel& operator=(const XShapeLabel&) = delete;
-  XShapeLabel(XShapeLabel&&) = delete;
-  XShapeLabel& operator=(XShapeLabel&&) = delete;
 
   bool HasLabel() const override {
-    return (label && (label[0] != TEXT('\0')));
+    return !label.empty();
   }
 
   void clear() override;
-
-  void clearLabel();
 
   void setLabel(const char* src);
 
@@ -38,7 +29,7 @@ class XShapeLabel : public XShape {
   bool nearestItem(int category, double lon, double lat) const override;
 
  protected:
-  TCHAR* label = nullptr;
+  tstring label;
 };
 
 #endif  // _Terrain_XShapeLabel_h_
