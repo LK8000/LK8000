@@ -62,6 +62,7 @@ class Topology final {
 
  protected:
   void flushCache();
+  void flushOutOfBounds(const rectObj& thebounds);
 
   bool in_scale = false;
   LKPen hPen;

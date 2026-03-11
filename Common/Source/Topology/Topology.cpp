@@ -287,6 +287,15 @@ void Topology::flushCache() {
   std::fill(shpCache.begin(), shpCache.end(), nullptr);
 }
 
+void Topology::flushOutOfBounds(const rectObj& thebounds) {
+  std::replace_if(
+      shpCache.begin(), shpCache.end(),
+      [&](const auto& p) {
+        return p && (msRectOverlap(&(p->shape.bounds), &thebounds) != MS_TRUE);
+      },
+      nullptr);
+}
+
 void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   if (!triggerUpdateCache) return;
 
@@ -329,11 +338,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
     case 0: // Original code plus one special case
       smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
       if (smaller) { //Special case, search inside, we don't need to load additional shapes, just remove
-        std::for_each(shpCache.begin(), shpCache.end(), [&](auto& p) {
-          if (p && (msRectOverlap(&(p->shape.bounds), &thebounds) != MS_TRUE)) {
-            p = nullptr;
-          }
-        });
+        flushOutOfBounds(thebounds);
       }
       else { //In this case we have to run the original algoritm
         msShapefileWhichShapes(&shpfile, thebounds, 0);
@@ -364,11 +369,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
         }  // for
       }
       else if (smaller) { //Search inside, we don't need to load additional shapes, just remove
-        std::for_each(shpCache.begin(), shpCache.end(), [&](auto& p) {
-          if (p && (msRectOverlap(&(p->shape.bounds), &thebounds) != MS_TRUE)) {
-            p = nullptr;
-          }
-        });
+        flushOutOfBounds(thebounds);
       }
       else {
         // Otherwise we have to search the all array
