@@ -54,8 +54,6 @@ class Topology final {
   using XShapePtr = std::shared_ptr<XShape>;
   std::unique_ptr<XShapePtr[]> shpCache;
 
-  static bool checkVisible(const shapeObj& shape, const rectObj& screenRect);
-
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
 

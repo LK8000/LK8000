@@ -37,6 +37,8 @@ class XShape final {
     return !label.empty();
   }
 
+  bool Overlap(const rectObj& bounds) const;
+
   void clear();
 
   bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface,

@@ -73,6 +73,10 @@ XShape::~XShape() {
   clear();
 }
 
+bool XShape::Overlap(const rectObj& bounds) const {
+  return (msRectOverlap(&(shape.bounds), &bounds) == MS_TRUE);
+}
+
 void XShape::clear() {
   msFreeShape(&shape);
   label.clear();

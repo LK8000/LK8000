@@ -407,12 +407,6 @@ std::unique_ptr<XShape> Topology::loadShape(const int i) {
   return nullptr;
 }
 
-// This is checking boundaries based on lat/lon values.
-// It is not enough for screen overlapping verification.
-bool Topology::checkVisible(const shapeObj& shape, const rectObj &screenRect) {
-  return (msRectOverlap(&shape.bounds, &screenRect) == MS_TRUE);
-}
-
 template <typename T>
 static T shape2Screen(const lineObj& line, const ScreenProjection& _Proj, std::vector<T>& points) {
 
@@ -480,11 +474,6 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   shape_renderer.setClipRect(PixelRect(rc));
   shape_renderer.setNoLabel(nolabels);
 
-  // TODO code: only draw inside screen!
-  // this will save time with rendering pixmaps especially
-  // checkVisible does only check lat lon , not screen pixels..
-  // We need to check also screen.
-
   const auto hpOld = Surface.SelectObject(hPen);
 
   LKSurface::OldBrush hbOld{};
@@ -503,19 +492,20 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
     if (!cshape || cshape->hide) {
       continue;
     }
+    if (!cshape->Overlap(screenRect)) {
+      continue;
+    }
 
     const shapeObj& shape = cshape->shape;
 
     switch (shape.type) {
       case MS_SHAPE_POINT:
-        if (checkVisible(shape, screenRect)) {
-          for (const lineObj& line : make_array(shape.line, shape.numlines)) {
-            for (const pointObj& point : make_array(line.point, line.numpoints)) {
-              if (msPointInRect(&point, &screenRect)) {
-                const POINT sc = _Proj.ToRasterPoint(point.y, point.x);
-                if (cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
-                  MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
-                }
+        for (const lineObj& line : make_array(shape.line, shape.numlines)) {
+          for (const pointObj& point : make_array(line.point, line.numpoints)) {
+            if (msPointInRect(&point, &screenRect)) {
+              const POINT sc = _Proj.ToRasterPoint(point.y, point.x);
+              if (cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
+                MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
               }
             }
           }
@@ -523,21 +513,17 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
         break;
 
       case MS_SHAPE_LINE:
-        if (checkVisible(shape, screenRect)) {
-          for (const lineObj& line : make_array(shape.line, shape.numlines)) {
-            const ScreenPoint ptLabel = shape2Screen<ScreenPoint>(line, _Proj, points);
-            Surface.Polyline(points.data(), points.size(), rc);
-            cshape->renderSpecial(renderer, Surface, ptLabel.x, ptLabel.y, rc);
-          }
+        for (const lineObj& line : make_array(shape.line, shape.numlines)) {
+          const ScreenPoint ptLabel = shape2Screen<ScreenPoint>(line, _Proj, points);
+          Surface.Polyline(points.data(), points.size(), rc);
+          cshape->renderSpecial(renderer, Surface, ptLabel.x, ptLabel.y, rc);
         }
         break;
 
       case MS_SHAPE_POLYGON:
         // if it's a water area (nolabels), print shape up to defaultShape, but print
         // labels only up to custom label levels
-        if (checkVisible(shape, screenRect)) {
-          shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
-        }
+        shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
         break;
 
       default:
@@ -573,11 +559,11 @@ void Topology::SearchNearest(const rectObj& bounds) {
     if (!cshape || cshape->hide || !cshape->HasLabel()) {
       continue;
     }
-    const shapeObj& shape = cshape->shape;
-
-    if (msRectOverlap(&(cshape->shape.bounds), &bounds) != MS_TRUE) {
+    if (!cshape->Overlap(bounds)) {
       continue;
     }
+
+    const shapeObj& shape = cshape->shape;
 
     switch (shape.type) {
       case (MS_SHAPE_POINT):
