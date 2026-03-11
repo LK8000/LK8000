@@ -22,7 +22,6 @@
 #include <functional>
 #include "Utils.h"
 
-#include "ShapePolygonRenderer.h"
 #include "shapelib/mapshape.h"
 #include "XShape.h"
 
@@ -407,44 +406,7 @@ std::unique_ptr<XShape> Topology::loadShape(const int i) {
   return nullptr;
 }
 
-template <typename T>
-static T shape2Screen(const lineObj& line, const ScreenProjection& _Proj, std::vector<T>& points) {
-
-  using scalar_type = typename T::scalar_type ;
-  using std::placeholders::_1;
-
-  if (line.numpoints < 1) {
-    return {
-      std::numeric_limits<scalar_type>::max(),
-      std::numeric_limits<scalar_type>::max()
-    };
-  }
-
-  const int last = line.numpoints - 1;
-  points.clear();
-  points.reserve(line.numpoints + 1);
-
-  const GeoToScreen<T> ToScreen(_Proj);
-
-  // Process the first point outside the loop
-  T leftPoint = ToScreen(line.point[0]);
-  points.push_back(leftPoint);
-
-  for (int i = 1; i <= last; ++i) {
-    T pt = ToScreen(line.point[i]);
-    if (pt.x <= leftPoint.x) {
-      leftPoint = pt;
-    }
-    const T& prev_pt = points.back(); // Use reference to avoid copying
-    if(lround(std::abs(prev_pt.x - pt.x) + std::abs(prev_pt.y - pt.y)) > 2) {
-      points.push_back(std::move(pt));
-    }
-  }
-
-  return leftPoint;
-}
 // Paint a single topology element
-
 void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) const {
   if (!shapefileopen) {
     return;
@@ -465,75 +427,23 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
     return;
   }
 
-#ifdef HAVE_GLES  
-  using ScreenPoint = FloatPoint;
-#else
-  using ScreenPoint = RasterPoint;
-#endif
-  ShapePolygonRenderer shape_renderer(PolygonDrawCallback{Surface});
-  shape_renderer.setClipRect(PixelRect(rc));
-  shape_renderer.setNoLabel(nolabels);
-
-  const auto hpOld = Surface.SelectObject(hPen);
-
-  LKSurface::OldBrush hbOld{};
-  if (hbBrush) {
-    hbOld = Surface.SelectObject(hbBrush);
-  }
-
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
 
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
-  const rectObj screenRect = MapWindow::screenbounds_latlon;
-
-  static std::vector<ScreenPoint> points;
+  const rectObj screenBounds = MapWindow::screenbounds_latlon;
+  const PixelRect screenRect(rc);
 
   for (const auto& cshape : make_array(shpCache.get(), shpfile.numshapes)) {
     if (!cshape || cshape->hide) {
       continue;
     }
-    if (!cshape->Overlap(screenRect)) {
+    if (!cshape->Overlap(screenBounds)) {
       continue;
     }
 
-    const shapeObj& shape = cshape->shape;
-
-    switch (shape.type) {
-      case MS_SHAPE_POINT:
-        for (const lineObj& line : make_array(shape.line, shape.numlines)) {
-          for (const pointObj& point : make_array(line.point, line.numpoints)) {
-            if (msPointInRect(&point, &screenRect)) {
-              const POINT sc = _Proj.ToRasterPoint(point.y, point.x);
-              if (cshape->renderSpecial(renderer, Surface, sc.x, sc.y, rc)) {
-                MapWindow::DrawBitmapIn(Surface, sc, hBitmap);
-              }
-            }
-          }
-        }
-        break;
-
-      case MS_SHAPE_LINE:
-        for (const lineObj& line : make_array(shape.line, shape.numlines)) {
-          const ScreenPoint ptLabel = shape2Screen<ScreenPoint>(line, _Proj, points);
-          Surface.Polyline(points.data(), points.size(), rc);
-          cshape->renderSpecial(renderer, Surface, ptLabel.x, ptLabel.y, rc);
-        }
-        break;
-
-      case MS_SHAPE_POLYGON:
-        // if it's a water area (nolabels), print shape up to defaultShape, but print
-        // labels only up to custom label levels
-        shape_renderer.renderPolygon(renderer, Surface, *cshape, hbBrush, _Proj);
-        break;
-
-      default:
-        break;
-    }
+    cshape->Draw(renderer, Surface, screenRect, _Proj, hbBrush, hPen, hBitmap, !nolabels);
   }
-  if (hbOld) {
-    Surface.SelectObject(hbOld);
-  }
-  Surface.SelectObject(hpOld);
+
   Surface.SelectObject(hfOld);
 }
 

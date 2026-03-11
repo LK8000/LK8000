@@ -15,6 +15,7 @@
 #include "Screen/Point.hpp"
 #include "Math/Point2D.hpp"
 #include "Geographic/GeoPoint.h"
+#include <cstdint>
 #ifdef USE_GLSL
 #include <glm/fwd.hpp>
 #endif

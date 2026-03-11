@@ -12,6 +12,9 @@
 #include "Screen/Point.hpp"
 #include "Multimap.h"
 #include "ShapeSpecialRenderer.h"
+#include "ShapePolygonRenderer.h"
+#include "ShapeLineRenderer.h"
+#include "ShapePointRenderer.h"
 #include <string_view>
 
 using std::string_view_literals::operator""sv;
@@ -115,7 +118,7 @@ bool XShape::nearestItem(int category, double lon, double lat) const {
 #if DEBUG_NEARESTTOPO
   StartupStore(
       _T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f distance=%.2f\n"),
-      category, Temp, lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
+      category, label.c_str(), lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
       distance / 1000);
 #endif
 
@@ -140,8 +143,8 @@ bool XShape::nearestItem(int category, double lon, double lat) const {
 
 // Print topology labels
 bool XShape::renderSpecial(ShapeSpecialRenderer& renderer,
-                                LKSurface& Surface, int x, int y,
-                                const RECT& ClipRect) const {
+                                LKSurface& Surface, RasterPoint position,
+                                const PixelRect& ClipRect) const {
   if (label.empty()) {
     return false;
   }
@@ -151,24 +154,61 @@ bool XShape::renderSpecial(ShapeSpecialRenderer& renderer,
     return false;
   }
 
-  // shift label from center point of shape
-  x += NIBLSCALE(2);
-  y += NIBLSCALE(2);
+  PixelSize tsize = Surface.GetTextSize(label.c_str());
 
-  if (x > ClipRect.right || y > ClipRect.bottom) {
+  if (shape.type == MS_SHAPE_POLYGON) {
+    // polygon label is draw centered
+    position = position - (tsize / 2);
+  }
+  else {
+    // shift label from center point of shape
+    auto offset = NIBLSCALE<PixelScalar>(2);
+    position += {offset, offset};
+  }
+
+  auto margin = NIBLSCALE<PixelScalar>(3);
+  PixelRect brect = {position, tsize};
+  brect.Grow(margin);
+
+  if (!ClipRect.IsInside(brect.GetTopLeft()) ||
+      !ClipRect.IsInside(brect.GetBottomRight())) {
     return false;
   }
 
-  PixelSize tsize = Surface.GetTextSize(label.c_str());
-
-  const PixelRect brect = {
-    {x - NIBLSCALE(3), y - NIBLSCALE(3)},
-    {tsize.cx + NIBLSCALE(3), tsize.cy + NIBLSCALE(3)}
-  };
-
   if (MapWindow::checkLabelBlock(brect, ClipRect)) {
-    renderer.Add({x, y}, label.c_str());
+    renderer.Add(std::move(position), label.c_str());
     return true;  // 101016
   }
   return false;  // 101016
+}
+
+void XShape::Draw(ShapeSpecialRenderer& special_renderer, LKSurface& Surface,
+                  const PixelRect& ClipRect, const ScreenProjection& _Proj,
+                  const LKBrush& Brush, const LKPen& Pen, const LKIcon& Bitmap,
+                  bool DisplayLabel) {
+  if (!renderer) {
+    switch (shape.type) {
+      case MS_SHAPE_POINT:
+        renderer = std::make_unique<ShapePointRenderer>(shape, Bitmap);
+        break;
+      case MS_SHAPE_LINE:
+        renderer = std::make_unique<ShapeLineRenderer>(shape, Pen);
+        break;
+      case MS_SHAPE_POLYGON:
+        renderer = std::make_unique<ShapePolygonRenderer>(shape, Brush);
+        break;
+    }
+
+  }
+
+  if (renderer) {
+    auto callback = [&](RasterPoint position) {
+      if (!DisplayLabel || !HasLabel()) {
+        return true;
+      }
+      return renderSpecial(special_renderer, Surface, position, ClipRect);
+    };
+
+    renderer->Draw(Surface, _Proj, ClipRect, callback);
+  }
 }

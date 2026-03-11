@@ -10,68 +10,87 @@
  */
 
 #include "ShapePolygonRenderer.h"
-
-#include <memory>
+#include "Screen/PolygonRenderer.h"
+#include "Screen/LKSurface.h"
 #include "utils/array_adaptor.h"
-
-#include "externs.h"
-#include "Topology.h"
-#include "../Draw/ScreenProjection.h"
-#include "XShape.h"
+#include "Draw/ScreenProjection.h"
+#include "PolyLabel.h"
+#include <optional>
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Scope.hpp"
-
 #ifdef USE_GLSL
 #include "Screen/OpenGL/Program.hpp"
+#include <glm/gtc/type_ptr.hpp>
+#endif
 #endif
 
+/*
+ OpenGL cannot draw complex polygons so we need to use a Tessallator to draw the
+ polygon using a GL_TRIANGLE_FAN
+ */
+
+ShapePolygonRenderer::ShapePolygonRenderer(const shapeObj& shape,
+                                           const LKBrush& brush)
+    : _brush(brush) {
+  _label_position = PolyLabel(shape);
+
+  PolygonSaveCallback callback(_tess_polygon);
+  PolygonRenderer renderer(callback);
+
+  renderer.BeginPolygon();
+  for (const lineObj& line : make_array(shape.line, shape.numlines)) {
+    renderer.BeginContour();
+    for (const pointObj& point : make_array(line.point, line.numpoints)) {
+      renderer.AddVertex(point.x, point.y);
+    }
+    renderer.EndContour();
+  }
+  renderer.EndPolygon();
+}
+
+void ShapePolygonRenderer::Draw(LKSurface& Surface,
+                                const ScreenProjection& _Proj,
+                                [[maybe_unused]] const PixelRect& ClipRect,
+                                callback_ref_t callback) {
+  if (!_brush) {
+    return;
+  }
+
+#ifndef USE_GDI
+  if (_brush.IsHollow()) {
+    return;
+  }
 #endif
 
-void ShapePolygonRenderer::renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj) {
-  /*
-   OpenGL cannot draw complex polygons so we need to use a Tessallator to draw the polygon using a GL_TRIANGLE_FAN
-   */
+  auto oldPen = Surface.SelectObject(LK_NULL_PEN);
+  auto oldBrush = Surface.SelectObject(_brush);
+
 #ifdef USE_GLSL
   OpenGL::solid_shader->Use();
-#endif
+  const auto& _tess_polygon_screen = _tess_polygon;
+  glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(_Proj.ToGLM()));
 
-#ifdef ENABLE_OPENGL
-  brush.Bind();
+  _brush.Bind();
 
-  std::unique_ptr<const ScopeAlphaBlend> blend;
-  if(!brush.IsOpaque()) {
-    blend = std::make_unique<const ScopeAlphaBlend>();
+  std::optional<ScopeAlphaBlend> blend;
+  if (!_brush.IsOpaque()) {
+    blend.emplace();
   }
-#endif
-
-#ifdef HAVE_GLES  
-  using ScreenPoint = FloatPoint;
 #else
-  using ScreenPoint = RasterPoint;
+  TessPolygonsT<FloatPoint> _tess_polygon_screen;
+  TransformPolygon(_tess_polygon_screen, _tess_polygon, GeoToScreen<FloatPoint>(_Proj));
 #endif
 
-  curr_LabelPos =  { clipRect.right, clipRect.bottom };
+  std::for_each(_tess_polygon_screen.begin(), _tess_polygon_screen.end(),
+                PolygonDrawCallback(Surface));
 
-  const shapeObj& shp = shape.shape;
+#ifdef USE_GLSL
+  glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
+#endif
 
-  const GeoToScreen<ScreenPoint> ToScreen(_Proj);
+  Surface.SelectObject(oldPen);
+  Surface.SelectObject(oldBrush);
 
-  BeginPolygon();
-  for( const lineObj& line : make_array(shp.line , shp.numlines)) {
-    BeginContour();
-    for( const pointObj &point : make_array(line.point, line.numpoints)) {
-      const auto pt = ToScreen(point);
-      if (!noLabel &&  (pt.x<=curr_LabelPos.x)) {
-        curr_LabelPos = { pt.x, pt.y };
-      }
-      AddVertex((GLdouble) pt.x, (GLdouble) pt.y);
-    }
-    EndContour();
-  }
-  EndPolygon();
-
-  if(shape.HasLabel() && clipRect.IsInside(curr_LabelPos)) {
-    shape.renderSpecial(renderer, Surface, curr_LabelPos.x, curr_LabelPos.y, clipRect);
-  }
+  callback(GeoToScreen<RasterPoint>{_Proj}(_label_position));
 }
