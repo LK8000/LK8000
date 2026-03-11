@@ -18,9 +18,11 @@ class LKSurface;
 
 class XShape final {
  public:
-  XShape();
+  XShape(shapefileObj* shpfile, int i, int field);
   ~XShape();
 
+  // no default ctor
+  XShape() = delete;
   // no copy
   XShape(const XShape&) = delete;
   XShape& operator=(const XShape&) = delete;
@@ -29,15 +31,12 @@ class XShape final {
   XShape& operator=(XShape&&) = delete;
 
   /**
-   * return true if shape have label ( XShapeLabel object without empty label )
+   * return true if shape have label
    */
   bool HasLabel() const {
     return !label.empty();
   }
 
-  void setLabel(const char* src);
-
-  void load(shapefileObj* shpfile, int i);
   void clear();
 
   bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface,

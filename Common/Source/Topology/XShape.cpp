@@ -45,29 +45,16 @@ static bool HiddenLabel(const char* src) {
 
 }  // namespace
 
-XShape::XShape() : hide(false) {
-  msInitShape(&shape);
-}
-
-XShape::~XShape() {
-  clear();
-}
-
-void XShape::clear() {
-  msFreeShape(&shape);
-  label.clear();
-}
-
-void XShape::load(shapefileObj* shpfile, int i) {
+XShape::XShape(shapefileObj* shpfile, int i, int field) {
   msSHPReadShape(shpfile->hSHP, i, &shape);
-}
 
-void XShape::setLabel(const char* src) {
-  label.clear();
+  const char* src = nullptr;
+  if (field >= 0) {
+    src = msDBFReadStringAttribute(shpfile->hDBF, i, field);
+  }
 
   // Case1 : NULL or not informative label, we show the shape without label
   if (!ValidLabel(src)) {
-    hide = false;
     return;
   }
 
@@ -80,7 +67,15 @@ void XShape::setLabel(const char* src) {
 
   // Any other case : we display shape and its label as well
   label = from_unknown_charset(src);
-  hide = false;
+}
+
+XShape::~XShape() {
+  clear();
+}
+
+void XShape::clear() {
+  msFreeShape(&shape);
+  label.clear();
 }
 
 bool XShape::nearestItem(int category, double lon, double lat) const {

@@ -183,8 +183,8 @@ bool Topology::initCache_2() {
   }
   // Load all shapes to shps
   for (int i = 0; i < shpfile.numshapes; i++) {
-    if (!(shps[i] = addShape(i))) {
-      StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode 1"), i);
+    if (!(shps[i] = loadShape(i))) {
+      StartupStore(_T("------ WARN Topology,  loadShape failed for shps[%d], fallback to mode 1"), i);
       // Cleanup
       shps = nullptr;
       return initCache_1();
@@ -212,7 +212,7 @@ void Topology::initCache() {
   }
 
 #ifdef USE_TOPOLOGY_CACHE_LEVEL2
-  bounds_size = sizeof(rectObj) + sizeof(XShape) * shpfile.numshapes;
+  bounds_size = (sizeof(XShapePtr) + sizeof(XShape)) * shpfile.numshapes;
   free_size -= 40 * 1024 * 1024; // Safe: if we more than have 50MB of free memory we can try mode 2
   if (free_size > bounds_size) {
     cache_mode = 2;
@@ -384,7 +384,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
           if (msGetBit(shpfile.status, i)) {
             if (!shpCache[i]) {
               // shape is now in range, and wasn't before
-              shpCache[i] = addShape(i);
+              shpCache[i] = loadShape(i);
               shapes_loaded++;
             }
             shapes_visible_count++;
@@ -403,7 +403,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
           if (shpCache[i]) continue;
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
             // shape is now in range, and wasn't before
-            shpCache[i] = addShape(i);
+            shpCache[i] = loadShape(i);
             shapes_loaded++;
           }
         }//for
@@ -422,7 +422,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
             if (!shpCache[i]) {
               // shape is now in range, and wasn't before
-              shpCache[i] = addShape(i);
+              shpCache[i] = loadShape(i);
               shapes_loaded++;
             }
             shapes_visible_count++;
@@ -456,14 +456,9 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 #endif
 }
 
-std::unique_ptr<XShape> Topology::addShape(const int i) {
+std::unique_ptr<XShape> Topology::loadShape(const int i) {
   try {
-    auto theshape = std::make_unique<XShape>();
-    theshape->load(&shpfile, i);
-    if (field < 0) {
-      theshape->setLabel(msDBFReadStringAttribute(shpfile.hDBF, i, field));
-    }
-    return theshape;
+    return std::make_unique<XShape>(&shpfile, i, field);
   }
   catch (std::exception&) {
   }
@@ -635,7 +630,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
           // if bounds is in cache and does not overlap no need to load shape;
           continue;
       }
-      cshape = addShape(ixshp);
+      cshape = loadShape(ixshp);
     }
 
 	if (!cshape || cshape->hide || !cshape->HasLabel()) continue;

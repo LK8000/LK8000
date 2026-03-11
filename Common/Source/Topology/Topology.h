@@ -61,7 +61,7 @@ class Topology final {
   void loadPenBrush(const LKColor thecolor);
 
   void removeShape(int i);
-  std::unique_ptr<XShape> addShape(int i);
+  std::unique_ptr<XShape> loadShape(int i);
 
  protected:
   void flushCache();
