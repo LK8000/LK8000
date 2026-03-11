@@ -565,7 +565,6 @@ add_library( LK8000 SHARED
     Common/Source/Topology/ShapeSpecialRenderer.cpp
     Common/Source/Topology/ShapePolygonRenderer.cpp
     Common/Source/Topology/XShape.cpp
-    Common/Source/Topology/XShapeLabel.cpp
 
     Common/Source/MapDraw/DrawTerrain.cpp
     Common/Source/MapDraw/DrawTopology.cpp

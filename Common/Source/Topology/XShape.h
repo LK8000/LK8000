@@ -11,14 +11,15 @@
 
 #include "Topology/shapelib/mapserver.h"
 #include "types.h"
+#include "Util/tstring.hpp"
 
 class ShapeSpecialRenderer;
 class LKSurface;
 
-class XShape {
+class XShape final {
  public:
   XShape();
-  virtual ~XShape();
+  ~XShape();
 
   // no copy
   XShape(const XShape&) = delete;
@@ -30,24 +31,25 @@ class XShape {
   /**
    * return true if shape have label ( XShapeLabel object without empty label )
    */
-  virtual bool HasLabel() const {
-    return false;
+  bool HasLabel() const {
+    return !label.empty();
   }
 
-  virtual void load(shapefileObj* shpfile, int i);
-  virtual void clear();
+  void setLabel(const char* src);
 
-  virtual bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface,
-                             int x, int y, const RECT& ClipRect) const {
-    return false;
-  }
+  void load(shapefileObj* shpfile, int i);
+  void clear();
 
-  virtual bool nearestItem(int category, double lon, double lat) const {
-    return true;
-  }
+  bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface,
+                             int x, int y, const RECT& ClipRect) const;
+
+  bool nearestItem(int category, double lon, double lat) const;
 
   bool hide = false;
   shapeObj shape;
+
+ private:
+  tstring label;
 };
 
 #endif  // _Terrain_XShape_h_

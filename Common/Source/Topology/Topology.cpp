@@ -24,7 +24,7 @@
 
 #include "ShapePolygonRenderer.h"
 #include "shapelib/mapshape.h"
-#include "XShapeLabel.h"
+#include "XShape.h"
 
 //#define DEBUG_TFC
 
@@ -212,7 +212,7 @@ void Topology::initCache() {
   }
 
 #ifdef USE_TOPOLOGY_CACHE_LEVEL2
-  bounds_size = sizeof(rectObj) + sizeof(XShapeLabel) * shpfile.numshapes;
+  bounds_size = sizeof(rectObj) + sizeof(XShape) * shpfile.numshapes;
   free_size -= 40 * 1024 * 1024; // Safe: if we more than have 50MB of free memory we can try mode 2
   if (free_size > bounds_size) {
     cache_mode = 2;
@@ -458,17 +458,12 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 std::unique_ptr<XShape> Topology::addShape(const int i) {
   try {
+    auto theshape = std::make_unique<XShape>();
+    theshape->load(&shpfile, i);
     if (field < 0) {
-      auto theshape = std::make_unique<XShape>();
-      theshape->load(&shpfile, i);
-      return theshape;
-    }
-    else {
-      auto theshape = std::make_unique<XShapeLabel>();
-      theshape->load(&shpfile, i);
       theshape->setLabel(msDBFReadStringAttribute(shpfile.hDBF, i, field));
-      return theshape;
     }
+    return theshape;
   }
   catch (std::exception&) {
   }
