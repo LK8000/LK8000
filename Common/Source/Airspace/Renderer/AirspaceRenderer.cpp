@@ -52,7 +52,7 @@ void AirspaceRenderer::Update(CPoint2DArray& geopoints, bool need_clipping, cons
 #ifndef USE_GDI  
   if (_tess_polygon.empty()) {
 #ifdef USE_GLSL
-    TessPolygonT<FloatPoint> tess_polygon;
+    TessPolygonsT<FloatPoint> tess_polygon;
 #else
     auto& tess_polygon = _tess_polygon;
 #endif
@@ -77,25 +77,11 @@ void AirspaceRenderer::Update(CPoint2DArray& geopoints, bool need_clipping, cons
 #endif
   }
 
-#ifdef USE_GLSL
-  _proj_mat = _Proj.ToGLM();
+#ifndef USE_GLSL
+  TransformPolygon<FloatPoint>(_tess_polygon_screen, _tess_polygon,
+                               GeoToScreen<FloatPoint>(_Proj));
 #else
-  _tess_polygon_screen.clear();
-
-  for(const auto& item : _tess_polygon) {
-
-    std::vector<FloatPoint> screenpoints;
-    screenpoints.reserve(item.vertex.size());
-    std::transform(std::begin(item.vertex), std::end(item.vertex),
-                   std::back_inserter(screenpoints),
-                   GeoToScreen<FloatPoint>(_Proj));
-
-    TessPolygon<FloatPoint> screenpolygon = {
-        item.type,
-        std::move(screenpoints),
-    };
-    _tess_polygon_screen.push_back(std::move(screenpolygon));
-  }
+  _proj_mat = _Proj.ToGLM();
 #endif
 #endif
 }
@@ -141,10 +127,8 @@ void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) con
 
 #else
 
-  PolygonDrawCallback renderer(Surface);
-  std::for_each(_tess_polygon_screen.begin(), _tess_polygon_screen.end(), [&](const auto& item) {
-    renderer(item.type, item.vertex);
-  });
+  std::for_each(_tess_polygon_screen.begin(), _tess_polygon_screen.end(),
+                PolygonDrawCallback(Surface));
 
 #endif
 #endif

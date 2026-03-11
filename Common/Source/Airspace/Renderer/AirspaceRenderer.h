@@ -44,8 +44,8 @@ class AirspaceRenderer final {
 
 #ifndef USE_GDI
 #ifndef HAVE_GLES
-  TessPolygonT<FloatPoint> _tess_polygon;  // triangulated polygon in geographic coordinates
-  TessPolygonT<FloatPoint> _tess_polygon_screen;
+  TessPolygonsT<FloatPoint> _tess_polygon;  // triangulated polygon in geographic coordinates
+  TessPolygonsT<FloatPoint> _tess_polygon_screen;
 #else
   struct polygon {
     unsigned type;

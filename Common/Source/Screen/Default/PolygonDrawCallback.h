@@ -12,8 +12,7 @@
 #ifndef SCREEN_DEFAULT_POLYGONDRAWCALLBACK_H
 #define SCREEN_DEFAULT_POLYGONDRAWCALLBACK_H
 
-#include "Library/glutess/glutess.h"
-#include "Math/Point2D.hpp"
+#include "Screen/PolygonSaveCallback.h"
 #include <vector>
 
 class LKSurface;
@@ -25,6 +24,10 @@ class PolygonDrawCallback {
 public:
     explicit PolygonDrawCallback(LKSurface& s) : Surface(s) {
 
+    }
+
+    void operator()(const TessPolygonT<FloatPoint>& polygon) {
+      (*this)(polygon.type, polygon.vertex);
     }
 
     void operator()(unsigned type, const std::vector<FloatPoint>& vertex);

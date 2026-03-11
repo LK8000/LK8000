@@ -12,8 +12,9 @@
 #ifndef SCREEN_OPENGL_POLYGONDRAWCALLBACK_H
 #define SCREEN_OPENGL_POLYGONDRAWCALLBACK_H
 
+#include "Screen/PolygonSaveCallback.h"
 #include "Screen/OpenGL/VertexPointer.hpp"
-#include "vector"
+#include <vector>
 
 class LKSurface;
 
@@ -22,6 +23,10 @@ struct PolygonDrawCallback {
 
     explicit PolygonDrawCallback(LKSurface&) {
        
+    }
+
+    void operator()(const TessPolygonT<FloatPoint>& polygon) {
+        (*this)(polygon.type, polygon.vertex);
     }
 
     void operator()(unsigned type, const std::vector<FloatPoint>& vertex) {
