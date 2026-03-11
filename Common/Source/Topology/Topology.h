@@ -53,7 +53,7 @@ class Topology final {
   bool triggerUpdateCache = false;
 
   using XShapePtr = std::shared_ptr<XShape>;
-  std::vector<XShapePtr> shpCache;
+  std::vector<XShapePtr> visibleShapes;
 
   void loadBitmap(const int);
   void loadPenBrush(const LKColor thecolor);
@@ -79,8 +79,8 @@ class Topology final {
   void initCache();
 
   int cache_mode = 0;
-  std::vector<XShapePtr> shps;
-  std::vector<rectObj> shpBounds;
+  std::vector<XShapePtr> allShapes; // only used in cache mode 2
+  std::vector<rectObj> shpBounds; // only used in cache mode 1, to avoid calling msSHPReadBounds multiple times
   rectObj lastBounds = {};
   bool in_scale_last = false;
 

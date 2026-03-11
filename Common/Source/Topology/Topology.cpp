@@ -167,21 +167,20 @@ bool Topology::initCache_2() {
 
   DeallocateVector(shpBounds);
   try {
-    shps.resize(shpfile.numshapes);
+    allShapes.resize(shpfile.numshapes);
   }
   catch (std::exception&) {
     // Fallback to mode 0
     StartupStore(
-        _T("------ WARN Topology,  malloc failed shps, fallback to mode 0"));
+        _T("------ WARN Topology,  malloc failed allShapes, fallback to mode 0"));
     return initCache_0();
   }
-  // Load all shapes to shps
+  // Load all shapes to allShapes 
   for (int i = 0; i < shpfile.numshapes; i++) {
-    if (!(shps[i] = loadShape(i))) {
-      StartupStore(_T("------ WARN Topology,  loadShape failed for shps[%d], fallback to mode 1"), i);
-      // Cleanup
-      DeallocateVector(shps);
-      return initCache_1();
+    if (!(allShapes[i] = loadShape(i))) {
+      StartupStore(_T("------ WARN Topology,  loadShape failed for allShapes[%d], fallback to mode 1"), i);
+      DeallocateVector(allShapes); // Cleanup
+      return initCache_1(); // fallback to mode 1 
     }
   }
   return true;
@@ -215,10 +214,10 @@ void Topology::initCache() {
 
 
   DeallocateVector(shpBounds);
-  DeallocateVector(shps);
+  DeallocateVector(allShapes);
   in_scale_last = false;
 
-  std::fill(shpCache.begin(), shpCache.end(), nullptr);
+  std::fill(visibleShapes.begin(), visibleShapes.end(), nullptr);
 
   switch (cache_mode) {
     default:
@@ -246,21 +245,21 @@ void Topology::Open() {
 
   scaleThreshold = 1000.0;
   try {
-    shpCache.resize(shpfile.numshapes);
+    visibleShapes.resize(shpfile.numshapes);
     initCache();
     shapefileopen = true;
   }
   catch (std::exception&) {
     msShapefileClose(&shpfile);
-    StartupStore(_T("------ ERR Topology,  malloc failed shpCache"));
+    StartupStore(_T("------ ERR Topology,  malloc failed visibleShapes, close shapefile <%s>"), from_utf8(filename).c_str());
   }
 }
 
 void Topology::Close() {
   if (shapefileopen) {
-    DeallocateVector(shpCache);
+    DeallocateVector(visibleShapes);
     DeallocateVector(shpBounds);
-    DeallocateVector(shps);
+    DeallocateVector(allShapes);
     msShapefileClose(&shpfile);
     shapefileopen = false;
   }
@@ -284,12 +283,12 @@ void Topology::TriggerIfScaleNowVisible() {
 }
 
 void Topology::flushCache() {
-  std::fill(shpCache.begin(), shpCache.end(), nullptr);
+  std::fill(visibleShapes.begin(), visibleShapes.end(), nullptr);
 }
 
 void Topology::flushOutOfBounds(const rectObj& thebounds) {
   std::replace_if(
-      shpCache.begin(), shpCache.end(),
+      visibleShapes.begin(), visibleShapes.end(),
       [&](const auto& p) {
         return p && (msRectOverlap(&(p->shape.bounds), &thebounds) != MS_TRUE);
       },
@@ -299,7 +298,7 @@ void Topology::flushOutOfBounds(const rectObj& thebounds) {
 void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   if (!triggerUpdateCache) return;
 
-  if (!shapefileopen || shpCache.empty()) {
+  if (!shapefileopen || visibleShapes.empty()) {
     return;
   }
 
@@ -344,13 +343,13 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
         msShapefileWhichShapes(&shpfile, thebounds, 0);
         for (int i=0; i<shpfile.numshapes; i++) {
           if (msGetBit(shpfile.status, i)) {
-            if (!shpCache[i]) {
+            if (!visibleShapes[i]) {
               // shape is now in range, and wasn't before
-              shpCache[i] = loadShape(i);
+              visibleShapes[i] = loadShape(i);
             }
           }
           else {
-            shpCache[i] = nullptr;
+            visibleShapes[i] = nullptr;
           }
         }  // for
       }
@@ -361,10 +360,10 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
       smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
       if (bigger || in_scale_again) { //We don't need to remove shapes, just load, so skip loaded ones
         for (int i=0; i<shpfile.numshapes; i++) {
-          if (shpCache[i]) continue;
+          if (visibleShapes[i]) continue;
           if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
             // shape is now in range, and wasn't before
-            shpCache[i] = loadShape(i);
+            visibleShapes[i] = loadShape(i);
           }
         }  // for
       }
@@ -375,13 +374,13 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
         // Otherwise we have to search the all array
         for (int i = 0; i < shpfile.numshapes; i++) {
           if (msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
-            if (!shpCache[i]) {
+            if (!visibleShapes[i]) {
               // shape is now in range, and wasn't before
-              shpCache[i] = loadShape(i);
+              visibleShapes[i] = loadShape(i);
             }
           }
           else {
-            shpCache[i] = nullptr;
+            visibleShapes[i] = nullptr;
           }
         }  // for
       }
@@ -389,12 +388,12 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
     case 2: // All shapes in memory
       for (int i=0; i<shpfile.numshapes; i++) {
-        const auto& pshp = shps[i];
+        const auto& pshp = allShapes[i];
         if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
-          shpCache[i] = pshp;
+          visibleShapes[i] = pshp;
         }
         else {
-          shpCache[i] = nullptr;
+          visibleShapes[i] = nullptr;
         }
       }//for
       break;
@@ -439,7 +438,7 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
   const rectObj screenBounds = MapWindow::screenbounds_latlon;
   const PixelRect screenRect(rc);
 
-  for (const auto& cshape : shpCache) {
+  for (const auto& cshape : visibleShapes) {
     if (!cshape || cshape->hide) {
       continue;
     }
@@ -462,7 +461,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
   }
 
   for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
-    XShapePtr cshape = shpCache[ixshp];
+    XShapePtr cshape = visibleShapes[ixshp];
     if (!cshape) {
       if ((cache_mode == 1) &&
           (msRectOverlap(&shpBounds[ixshp], &bounds) != MS_TRUE)) {
@@ -470,6 +469,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
         continue;
       }
       cshape = loadShape(ixshp);
+      visibleShapes[ixshp] = cshape;
     }
 
     if (!cshape || cshape->hide || !cshape->HasLabel()) {
