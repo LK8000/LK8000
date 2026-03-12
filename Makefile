@@ -1716,6 +1716,8 @@ else
 	$(Q)convert $^ PNG24:$@	
 endif
 
+.PRECIOUS: $(BIN)/lk8000.min.rc
+
 ####### include depends files
 
 src_to_dep = $(patsubst $(SRC)%.c,$(DEPDIR)%.d,\
