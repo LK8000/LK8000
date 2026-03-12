@@ -10,7 +10,7 @@
 #include "Waypointparser.h"
 #include "Dialogs/dlgProgress.h"
 #include "resource.h"
-#include "utils/charset_helper.h"
+#include "utils/stream_helper.h"
 #include <format>
 
 extern int globalFileNum;
@@ -28,7 +28,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
 
   // check file format
   bool fempty = true;
-  while (std::getline(stream, src_line)) {
+  while (lk::getline_unknown_charset(stream, src_line)) {
     trim_inplace(src_line);
     if (src_line.empty()) {
       continue;  // Skip empty line
@@ -39,7 +39,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
 
     if (src_line.starts_with("G  WGS 84") || src_line.starts_with("G WGS 84") ||
         src_line.starts_with("\xEF\xBB\xBFG  WGS 84")) {
-      if (!std::getline(stream, src_line)) {
+      if (!lk::getline_unknown_charset(stream, src_line)) {
         StartupStore(
             _T(". Waypoint file %d format: CompeGPS truncated, rejected"),
             globalFileNum);
@@ -131,7 +131,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
     goto goto_inloop;
   }
 
-  while (std::getline(stream, src_line)) {
+  while (lk::getline_unknown_charset(stream, src_line)) {
   goto_inloop:
     nLineNumber++;
     trim_inplace(src_line);
