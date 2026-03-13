@@ -18,7 +18,7 @@
 #include "NavFunctions.h"
 #include "ScreenGeometry.h"
 #include "utils/charset_helper.h"
-#include "utils/array_adaptor.h"
+#include <span>
 #include <functional>
 #include "Utils.h"
 

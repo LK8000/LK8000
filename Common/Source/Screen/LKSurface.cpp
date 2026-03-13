@@ -21,7 +21,7 @@
 #include "LKSurface.h"
 #include "MathFunctions.h"
 #include "utils/2dpclip.h"
-#include "utils/array_adaptor.h"
+#include <span>
 #include "utils/stl_utils.h"
 #include "Math/Point2D.hpp"
 
@@ -280,7 +280,7 @@ void LKSurface::Polygon(const RasterPoint *apt, int cpt, const RECT& ClipRect) {
 #else
     std::vector<RasterPoint> Clipped;
     Clipped.reserve(cpt);
-    LKGeom::ClipPolygon(ClipRect, make_array(apt, cpt), Clipped);
+    LKGeom::ClipPolygon(ClipRect, std::span(apt, cpt), Clipped);
     if(Clipped.size() >= 3) {
         Polygon(Clipped.data(), Clipped.size());
     }

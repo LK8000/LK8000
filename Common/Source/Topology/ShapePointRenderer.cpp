@@ -1,5 +1,5 @@
 #include "ShapePointRenderer.h"
-#include "utils/array_adaptor.h"
+#include <span>
 #include "Draw/ScreenProjection.h"
 #include "MapWindow.h"
 
@@ -14,8 +14,8 @@ void ShapePointRenderer::Draw(LKSurface& Surface, const ScreenProjection& _Proj,
     return;
   }
 
-  for (const lineObj& line : make_array(_shape.line, _shape.numlines)) {
-    for (const pointObj& point : make_array(line.point, line.numpoints)) {
+  for (const lineObj& line : std::span(_shape.line, _shape.numlines)) {
+    for (const pointObj& point : std::span(line.point, line.numpoints)) {
       const RasterPoint sc = _Proj.ToRasterPoint(point.y, point.x);
       if (callback({sc.x, sc.y})) {
         MapWindow::DrawBitmapIn(Surface, sc, _bitmap);

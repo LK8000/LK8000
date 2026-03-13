@@ -12,7 +12,7 @@
 #include "ShapePolygonRenderer.h"
 #include "Screen/PolygonRenderer.h"
 #include "Screen/LKSurface.h"
-#include "utils/array_adaptor.h"
+#include <span>
 #include "Draw/ScreenProjection.h"
 #include "PolyLabel.h"
 #include <optional>
@@ -39,9 +39,9 @@ ShapePolygonRenderer::ShapePolygonRenderer(const shapeObj& shape,
   PolygonRenderer renderer(callback);
 
   renderer.BeginPolygon();
-  for (const lineObj& line : make_array(shape.line, shape.numlines)) {
+  for (const lineObj& line : std::span(shape.line, shape.numlines)) {
     renderer.BeginContour();
-    for (const pointObj& point : make_array(line.point, line.numpoints)) {
+    for (const pointObj& point : std::span(line.point, line.numpoints)) {
       renderer.AddVertex(point.x, point.y);
     }
     renderer.EndContour();

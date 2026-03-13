@@ -34,7 +34,7 @@ SOFTWARE.
 #define _Topology_Polylabel_h_
 
 #include "shapelib/mapprimitive.h"
-#include "utils/array_adaptor.h"
+#include <span>
 #include <algorithm>
 #include <limits>
 #include <queue>
@@ -73,7 +73,7 @@ inline double pointToPolygonDist(const pointObj& point, const shapeObj& polygon)
   bool inside = false;
   auto minDistSq = std::numeric_limits<double>::infinity();
 
-  for (const auto& ring : make_array(polygon.line, polygon.numlines)) {
+  for (const auto& ring : std::span(polygon.line, polygon.numlines)) {
     for (std::size_t i = 0, len = ring.numpoints, j = len - 1; i < len;
          j = i++) {
       const auto& a = ring.point[i];

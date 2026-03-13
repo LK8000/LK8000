@@ -1,7 +1,7 @@
 #include "ShapeLineRenderer.h"
 #include "Screen/LKSurface.h"
 #include "Draw/ScreenProjection.h"
-#include "utils/array_adaptor.h"
+#include <span>
 
 namespace {
 
@@ -53,7 +53,7 @@ void ShapeLineRenderer::Draw(LKSurface& Surface, const ScreenProjection& _Proj,
 
   auto old = Surface.SelectObject(_pen);
 
-  for (const lineObj& line : make_array(_shape.line, _shape.numlines)) {
+  for (const lineObj& line : std::span(_shape.line, _shape.numlines)) {
     const ScreenPoint pt = shape2Screen(line, _Proj, _points);
     Surface.Polyline(_points.data(), _points.size(), ClipRect);
     callback({pt.x, pt.y});

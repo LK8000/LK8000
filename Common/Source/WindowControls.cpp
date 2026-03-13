@@ -28,7 +28,7 @@
 #include "Asset.hpp"
 #include "ScreenGeometry.h"
 #include "Util/Clamp.hpp"
-#include "utils/array_adaptor.h"
+#include <span>
 #include "utils/stringext.h"
 #include "LocalPath.h"
 
@@ -161,7 +161,7 @@ static
 bool checkFilter(const TCHAR* filename,  const TCHAR **suffix_filters, size_t filter_count) {
   size_t filename_size = _tcslen(filename);
   
-  for (const TCHAR* suffix : make_array(suffix_filters, filter_count)) {
+  for (const TCHAR* suffix : std::span(suffix_filters, filter_count)) {
 
     if(!suffix || !suffix[0]) {
       return true;

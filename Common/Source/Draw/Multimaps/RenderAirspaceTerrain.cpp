@@ -14,7 +14,7 @@
 #include "Multimap.h"
 #include "LKObjects.h"
 #include "Asset.hpp"
-#include "utils/array_adaptor.h"
+#include <span>
 
 using std::min;
 using std::max;
