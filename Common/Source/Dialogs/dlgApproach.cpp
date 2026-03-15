@@ -243,11 +243,19 @@ void dlgApproach(int waypoint_index) {
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_APPROACH_L : IDR_XML_APPROACH_P);
   if (!wf) return;
 
+  const unsigned form_height = main_window->GetHeight();
+  wf->SetHeight(form_height);
+  dlgSize = ScreenLandscape ? wf->GetWidth() : form_height;
   if (ScreenLandscape) {
-    dlgSize = wf->GetWidth();
     wf->SetLeft(main_window->GetRight() - dlgSize);
-  } else {
-    dlgSize = wf->GetHeight();
+  }
+
+  // Position Approve button with margin from bottom (form height is now the window height)
+  constexpr int APPROVE_BUTTON_HEIGHT = 28;
+  constexpr int APPROVE_MARGIN_BOTTOM = 61;  // same visual margin as runway button from left edge
+  WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
+  if (btnApprove) {
+    btnApprove->SetTop(static_cast<int>(form_height) - APPROVE_BUTTON_HEIGHT - APPROVE_MARGIN_BOTTOM - 10);
   }
 
   TCHAR cap1[8], cap2[8];

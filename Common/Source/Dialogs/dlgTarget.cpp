@@ -361,7 +361,10 @@ static void RefreshCalculator(void) {
 
   WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
   if (btnApproach) {
-    btnApproach->SetVisible(true);
+    const bool landable = ValidTaskPoint(target_point) &&
+        ValidWayPointFast(Task[target_point].Index) &&
+        WayPointCalc[Task[target_point].Index].IsLandable;
+    btnApproach->SetVisible(landable);
   }
 }
 
