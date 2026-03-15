@@ -26,6 +26,7 @@ constexpr double BASE_LEN_M = 1500.0;         // base leg to final
 
 } // namespace
 
+/// Draw approach path overlay on map: extended runway centerline from 5 km to runway centre.
 void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
   if (!MapApproachEnabled) {

@@ -26,13 +26,14 @@ static unsigned dlgSize = 0;
 static int runway_heading_1 = 90;
 static int runway_heading_2 = 270;
 
+/// Request map redraw when in Approach pan mode.
 static void RefreshMapApproach() {
   if (MapWindow::mode.Is(MapWindow::Mode::MODE_APPROACH_PAN)) {
     MapWindow::RefreshMap();
   }
 }
 
-// Re-apply selected (highlighted) state: button stays "pushed" to show active choice
+/// Re-apply selected (highlighted) state for Direct, runway and circuit buttons.
 static void RefreshApproachButtonStyles() {
   if (!wf) return;
 
@@ -63,11 +64,13 @@ static void RefreshApproachButtonStyles() {
   // }
 }
 
+/// Timer callback: refresh approach button selection state.
 static bool OnApproachTimerNotify(WndForm* pWnd) {
   RefreshApproachButtonStyles();
   return true;  // keep timer active
 }
 
+/// Close Approach dialog with OK.
 static void OnApproachOKClicked(WndButton* pWnd) {
   if (pWnd) {
     WndForm* pForm = pWnd->GetParentWndForm();
@@ -77,6 +80,7 @@ static void OnApproachOKClicked(WndButton* pWnd) {
   }
 }
 
+/// Set approach mode to Direct.
 static void OnDirectClicked(WndButton* pWnd) {
   MapApproachMode = 0;
   RefreshApproachButtonStyles();
@@ -90,12 +94,14 @@ static void OnDirectClicked(WndButton* pWnd) {
 //   RefreshMapApproach();
 // }
 
+/// Set selected runway to first heading (e.g. 16).
 static void OnRunway1Clicked(WndButton* pWnd) {
   MapApproachRunwayDir = runway_heading_1;
   RefreshApproachButtonStyles();
   RefreshMapApproach();
 }
 
+/// Set selected runway to second heading (e.g. 34).
 static void OnRunway2Clicked(WndButton* pWnd) {
   MapApproachRunwayDir = runway_heading_2;
   RefreshApproachButtonStyles();
@@ -114,7 +120,7 @@ static void OnRunway2Clicked(WndButton* pWnd) {
 //   RefreshMapApproach();
 // }
 
-// Approve popup: confirm or ignore creating the approach task
+/// Approve popup: confirm creating the approach task and close with OK.
 static void OnApproachApproveConfirmClicked(WndButton* pWnd) {
   if (pWnd) {
     WndForm* pForm = pWnd->GetParentWndForm();
@@ -122,6 +128,7 @@ static void OnApproachApproveConfirmClicked(WndButton* pWnd) {
   }
 }
 
+/// Approve popup: cancel (ignore) and close without creating task.
 static void OnApproachApproveIgnoreClicked(WndButton* pWnd) {
   if (pWnd) {
     WndForm* pForm = pWnd->GetParentWndForm();
@@ -135,7 +142,7 @@ static CallBackTableEntry_t ApproveCallBackTable[] = {
   EndCallbackEntry()
 };
 
-// Returns true if user clicked Approve, false if IGNORE!!
+/// Show approval warning popup; returns true if user clicked Approve, false if IGNORE!!
 static bool ShowApproachApproveDialog() {
   std::unique_ptr<WndForm> pf(dlgLoadFromXML(ApproveCallBackTable,
       ScreenLandscape ? IDR_XML_APPROACH_APPROVE_L : IDR_XML_APPROACH_APPROVE_P));
@@ -161,6 +168,7 @@ static bool ShowApproachApproveDialog() {
 // Distance from runway centre to "punto di intersezione" (far end of direct approach line), metres
 static constexpr double APPROACH_IF_DISTANCE_M = 5000.0;
 
+/// Create two-point approach task (DIRECT nn + airfield) after user confirms in popup.
 static void OnApproveClicked(WndButton* pWnd) {
   if (!ShowApproachApproveDialog()) return;  // user chose IGNORE!!
   if (!CheckDeclaration()) return;
@@ -216,6 +224,7 @@ static CallBackTableEntry_t CallBackTable[] = {
   EndCallbackEntry()
 };
 
+/// Open Approach dialog for the given waypoint; enables map overlay and runway/task setup.
 void dlgApproach(int waypoint_index) {
   if (waypoint_index < 0 || !ValidWayPointFast(waypoint_index)) {
     return;

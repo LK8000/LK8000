@@ -242,6 +242,7 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
 
 
 
+/// Refresh Target dialog fields and show/hide Approach button for landable waypoints.
 static void RefreshCalculator(void) {
   WndProperty* wp;
 
@@ -391,6 +392,7 @@ static void OnMoveClicked(WndButton* pWnd) {
   RefreshCalculator();
 }
 
+/// Open Approach dialog for current target waypoint if it is landable.
 static void OnTargetApproachClicked(WndButton* pWnd) {
   if (!ValidTaskPoint(target_point)) return;
   const int wp_index = Task[target_point].Index;
