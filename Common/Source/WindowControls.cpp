@@ -2561,6 +2561,7 @@ void WndProperty::Paint(LKSurface& Surface){
 
 void WndProperty::RefreshDisplay() {
     if (!mDataField) return;
+    mDataField->GetData();
     if (HasFocus()) {
         SetText(mDataField->GetAsString());
     } else {
