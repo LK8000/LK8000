@@ -25,7 +25,7 @@ Tap **Approach** (when visible). The Approach dialog opens and the map remains c
 
 When you open Approach from the Target screen, the **first screen** shows:
 
-- **Map** — centred on the landable waypoint (airfield), with the same style as in Target view. Once **Diretto** and a runway are selected, a **blue segment** is drawn on the map from the 5 km point on the extended centreline to the runway centre. The bottom of the map may show distance and “PAN” (e.g. “DIRECT 34 1.5km PAN”).
+- **Map** — centred on the landable waypoint (airfield), with the same style as in Target view. Once **Direct** and a runway are selected, a **blue segment** is drawn on the map from the 5 km point on the extended centreline to the runway centre. The bottom of the map may show distance and “PAN” (e.g. “DIRECT 34 1.5km PAN”).
 - **Approach panel** — on the right in landscape (or at the bottom in portrait): dark blue bar with title “Approach” and a green line underneath; below it the buttons and runway selectors described in 2.1.
 
 This is the main Approach view before you tap **Approve**. From here you choose direct approach, select the runway (e.g. 16 / 34), check the blue segment on the map, then tap **Approve** to create the approach task (see 2.3).
@@ -33,7 +33,7 @@ This is the main Approach view before you tap **Approve**. From here you choose 
 ### 2.1 Panel layout
 
 - **OK** — closes the Approach dialog and returns to the map (approach overlay is cleared).
-- **Diretto** (Direct) — selects direct approach. The active option is highlighted.
+- **Direct** — selects direct approach. The active option is highlighted.
 - Two runway heading buttons (e.g. **06** / **34**) — select the approach runway. The selected runway is highlighted.
 - **Approve** — at the bottom of the panel. Opens the approval dialog to create the approach task (see below).
 
@@ -43,7 +43,7 @@ When **Direct** is selected and a runway is chosen, the map shows a **blue segme
 
 ### 2.3 Creating an approach task (Approve)
 
-1. Select **Diretto** and the desired runway (e.g. 34).
+1. Select **Direct** and the desired runway (e.g. 34).
 2. Tap **Approve**.
 3. A **popup** appears with the warning:  
    *"LK8000 creates approach task ignoring traffic and terrain. Pilot situational awareness must be at maximum."*

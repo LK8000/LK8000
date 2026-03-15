@@ -575,12 +575,20 @@ void dlgTarget(int TaskPoint) {
   TargetMoveMode = false;
 
   if (ScreenLandscape) {
-    // make flush right in landscape mode (at top in portrait mode)
+    // make flush right in landscape mode; ensure form fits screen height (e.g. on KOBO)
     dlgSize = wf->GetWidth();
-    wf->SetLeft(main_window->GetRight() - dlgSize);
+    wf->SetLeft(ScreenSizeX - dlgSize);
+    wf->SetTop(0);
+    const unsigned form_h = wf->GetHeight();
+    if (form_h > (unsigned)ScreenSizeY) {
+      wf->SetHeight(ScreenSizeY);
+    }
   }
   else {
+    // portrait: place form at bottom where map reserves space for the panel
     dlgSize = wf->GetHeight();
+    wf->SetTop(ScreenSizeY - wf->GetHeight());
+    wf->SetLeft(0);
   }
 
   btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));
