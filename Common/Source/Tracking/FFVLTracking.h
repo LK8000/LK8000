@@ -19,18 +19,19 @@
 #include "Thread/Cond.hpp"
 #include "Geographic/GeoPoint.h"
 #include "http_session.h"
+#include "ITrackingHandler.h"
 
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
-class FFVLTracking final : public Thread {
+class FFVLTracking final : public Thread, public ITrackingHandler {
 public:
   FFVLTracking() = delete;
   explicit FFVLTracking(std::string user_key);
 
   ~FFVLTracking() override;
 
-  void Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated);
+  void Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) override;
 
 private:
 

@@ -143,6 +143,8 @@ BIN_DATA(IDR_XML_NMEAREPLAY)
 BIN_DATA(IDR_XML_RADIOPRISECSEL)
 BIN_DATA(IDR_XML_MACCREADY)
 
+BIN_DATA(IDR_XML_TRACKING)
+
 #endif
 
 #if !defined(WIN32) && !defined(ANDROID)
@@ -308,6 +310,7 @@ static const named_ressource_t named_resources[] = {
     NAMED_RESOURCE(IDR_XML_NMEAREPLAY),
     NAMED_RESOURCE(IDR_XML_RADIOPRISECSEL),
     NAMED_RESOURCE(IDR_XML_MACCREADY),
+    NAMED_RESOURCE(IDR_XML_TRACKING),
     
 #if !defined(WIN32) && !defined(ANDROID)
     // on win32 platform, Bitmap can't be in unix style resource.

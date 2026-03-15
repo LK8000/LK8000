@@ -1,6 +1,7 @@
 #if !defined(AFX_PARSER_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_PARSER_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
+#include <string>
 #include "types.h"
 #include "Flarm.h"
 #include "Devices/Fanet/Fanet.h"
@@ -124,6 +125,10 @@ void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO);
 void FLARM_EmptySlot(NMEA_INFO *GPS_INFO,int i);
 void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
 int FLARM_FindSlot(NMEA_INFO *GPS_INFO, uint32_t RadioId);
+
+void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username,
+                  double lat, double lon, double alt_m, double sog_kmh,
+                  int category, int lastTM, int isLiveDB);
 
 extern bool EnableLogNMEA;
 void LogNMEA(const char* text, unsigned PortNum);

@@ -24,6 +24,18 @@
 #endif
 #endif
 
+LKIcon::LKIcon(LKBitmap&& orig) : _bitmap(std::move(orig)) {
+    if (_bitmap.IsDefined()) {
+        _size = _bitmap.GetSize();
+#ifndef ENABLE_OPENGL
+        _size.cx /= 2;
+#endif
+    }
+    else {
+        _size = {};
+    }
+}
+
 LKIcon& LKIcon::operator=(LKBitmap&& orig) { 
     _bitmap = std::forward<LKBitmap>(orig);
     if (_bitmap.IsDefined()) {
@@ -31,6 +43,9 @@ LKIcon& LKIcon::operator=(LKBitmap&& orig) {
 #ifndef ENABLE_OPENGL
         _size.cx /= 2;
 #endif
+    }
+    else {
+        _size = {};
     }
     return (*this); 
 }

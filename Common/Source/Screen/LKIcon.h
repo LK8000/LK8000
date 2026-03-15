@@ -23,6 +23,7 @@ public:
     LKIcon() : _size() {}
     ~LKIcon() {}
 
+    explicit LKIcon(LKBitmap&& orig);
 	LKIcon& operator=(LKBitmap&& orig);
 
     LKIcon(LKIcon&& orig) = delete;

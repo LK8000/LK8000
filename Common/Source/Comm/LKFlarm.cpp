@@ -7,10 +7,14 @@
  */
 
 #include "externs.h"
+#include <string>
+#include <algorithm>
 #include "FlarmRadar.h"
 #include "Sound/Sound.h"
 #include "FlarmCalculations.h"
 #include "NavFunctions.h"
+#include "TimeFunctions.h"
+#include "utils/stringext.h"
 
 FlarmCalculations flarmCalculations;
 
@@ -722,4 +726,111 @@ void UpdateFlarmTarget(NMEA_INFO &Info) {
 			wpt.Name[0] = '\0';
 		}
 	}
+}
+
+void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_in,
+                  double lat, double lon, double alt_m, double sog_kmh,
+                  int category, int lastTM, int isLiveDB) {
+  std::string username = username_in;
+  std::transform(username.begin(), username.end(), username.begin(), ::toupper);
+
+  time_t t_of_day = to_time_t(info);
+
+  double Distance;
+  DistanceBearing(lat, lon, info.Latitude, info.Longitude, &Distance, nullptr);
+
+  if (Distance > 30000) {
+    return;
+  }
+
+  double delay = t_of_day - lastTM;
+
+  if (delay > 300 || isLiveDB == 0 ||
+      (category != 1 && category != 2 && category != 4 && category != 8)) {
+    return;
+  }
+
+  static bool flarmwasinit = false;
+  if (!flarmwasinit) {
+    DoStatusMessage(MsgToken<279>(),
+                    TEXT("LiveTrack24"));  // FLARM DETECTED from LiveTrack24
+    flarmwasinit = true;
+  }
+
+  ScopeLock lock(CritSec_FlightData);
+
+  int flarm_slot = FLARM_FindSlot(&info, userID);
+
+  if (flarm_slot < 0) {
+    return;
+  }
+
+  auto& traffic = info.FLARM_Traffic[flarm_slot];
+
+  bool newtraffic = false;
+  if (traffic.Status == LKT_EMPTY) {
+    newtraffic = true;
+  }
+
+  CheckBackTarget(info, flarm_slot);
+
+  if (newtraffic) {
+    traffic.RadioId = userID;
+    traffic.AlarmLevel = 0;
+    traffic.TurnRate = 0;
+
+    traffic.UpdateNameFlag = false;  // clear flag first
+    const TCHAR* fname = LookupFLARMDetails(userID);
+    if (fname) {
+      LK_tcsncpy(traffic.Name, fname, MAXFLARMNAME);
+      const TCHAR* cname = LookupFLARMCn(userID);
+      if (cname) {
+        int cnamelen = _tcslen(cname);
+        if (cnamelen <= MAXFLARMCN) {
+          lk::strcpy(traffic.Cn, cname);
+        }
+        else {
+          traffic.Cn[0] = cname[0];
+          traffic.Cn[1] = cname[cnamelen - 2];
+          traffic.Cn[2] = cname[cnamelen - 1];
+          traffic.Cn[3] = _T('\0');
+        }
+      }
+      else {
+        lk::strcpy(traffic.Cn, _T("Err"));
+      }
+    }
+    else {
+      from_utf8(username.c_str(), traffic.Name);
+      from_utf8(username.c_str(), traffic.Cn);
+    }
+  }
+
+  double TrackBearing = 0;
+
+  time_t rawtime = lastTM;
+  struct tm tm_temp = {};
+  struct tm* ptm = gmtime_r(&rawtime, &tm_temp);
+  int Time_Fix = (ptm->tm_hour * 3600 + ptm->tm_min * 60 + ptm->tm_sec);
+  if (Time_Fix > info.Time) {
+    Time_Fix = info.Time;
+  }
+
+  if (traffic.Status != LKT_EMPTY) {
+    double deltaT = (double)Time_Fix - traffic.Time_Fix;
+    if (deltaT > 0) {
+      double old_lat = traffic.Latitude;
+      double old_lon = traffic.Longitude;
+      DistanceBearing(old_lat, old_lon, lat, lon, nullptr, &TrackBearing);
+    }
+  }
+
+  traffic.Status = LKT_REAL;
+  traffic.Time_Fix = (double)Time_Fix;
+  traffic.Latitude = lat;
+  traffic.Longitude = lon;
+  traffic.Altitude = alt_m;
+  traffic.Speed = sog_kmh / 3.6;  // store in m/s
+  traffic.TrackBearing = TrackBearing;
+  traffic.Average30s = flarmCalculations.Average30s(traffic.RadioId, info.Time, alt_m);
 }

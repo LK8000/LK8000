@@ -10,9 +10,14 @@
 #ifndef _TRACKING_SKYLINESGLUE_H_
 #define _TRACKING_SKYLINESGLUE_H_
 
+#include "ITrackingHandler.h"
 #include "Tracking/TrackingGlue.hpp"
 
-class SkylinesGlue final : public TrackingGlue {
+namespace tracking {
+struct Profile;
+}  // namespace tracking
+
+class SkylinesGlue final : public TrackingGlue, public ITrackingHandler {
 
 #ifdef HAVE_SKYLINES_TRACKING_HANDLER
 protected:
@@ -24,7 +29,12 @@ protected:
   void OnWave(unsigned time_of_day_ms,
               const GeoPoint &a, const GeoPoint &b) override {}
 #endif
+public:
+  explicit SkylinesGlue(const tracking::Profile& profile);
+  void Update(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) override;
 
+private:
+  const bool m_always_on;
 };
 
 #endif //  _TRACKING_SKYLINESGLUE_H_

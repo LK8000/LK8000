@@ -110,6 +110,11 @@ std::string to_utf8(const char* sz) {
   return sz;
 }
 
+inline
+std::string to_utf8(std::string sz) {
+  return sz;
+}
+
 #endif
 
 std::string& trim_inplace(std::string &s);

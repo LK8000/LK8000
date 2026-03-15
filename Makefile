@@ -1238,10 +1238,13 @@ DLGS	:=\
 	$(DLG)/dlgRadioPriSecSel.cpp \
 	$(DLG)/dlgSelectItem.cpp \
 	$(DLG)/dlgMacCready.cpp \
+	$(DLG)/dlgTracking.cpp \
 
 TRACKING := \
-	$(SRC_TRACKING)/LiveTrack24.cpp \
 	$(SRC_TRACKING)/Tracking.cpp \
+	$(SRC_TRACKING)/TrackingSettings.cpp \
+	$(SRC_TRACKING)/LiveTrack24V1Handler.cpp \
+	$(SRC_TRACKING)/LiveTrack24V2Handler.cpp \
 	$(SRC_TRACKING)/SkylinesGlue.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Client.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Glue.cpp \
@@ -1260,15 +1263,12 @@ TRACKING := \
 
 ifeq ($(USE_CURL),y)
  TRACKING += \
-   $(SRC_TRACKING)/Curl/http_session.cpp
+   $(SRC_TRACKING)/Curl/http_session.cpp\
+   $(SRC_TRACKING)/FFVLTracking.cpp
 else
  TRACKING += \
    $(SRC_TRACKING)/Default/http_session.cpp
 endif
-
-TRACKING += \
-	$(SRC_TRACKING)/FFVLTracking.cpp
-
 
 SRC_FILES :=\
 	$(WINDOW) \

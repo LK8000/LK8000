@@ -77,10 +77,10 @@ void PreloadInitialisation(bool ask) {
 
     if (retstartup<0) return;
 
+    LKProfileResetDefault();
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
         StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
         DoStatusMessage(MsgToken<1757>()); // LK8000 PROFILES RESET
-        LKProfileResetDefault();
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
         if (!LKProfileLoad(startPilotFile)) {
@@ -92,11 +92,11 @@ void PreloadInitialisation(bool ask) {
         if (!LKProfileLoad(startAircraftFile)) {
             TestLog(_T(". AircraftFile RESET to defaults%s"),NEWLINE);
         }
-    	if(!LKProfileLoad(startProfileFile)) {
+        if(!LKProfileLoad(startProfileFile)) {
             TestLog(_T(". SystemFile RESET to defaults%s"),NEWLINE);
         }
     }
-	LKProfileInitRuntime();
+    LKProfileInitRuntime();
 
     InitLKFonts();
     // We are sure that buttons have been created already
