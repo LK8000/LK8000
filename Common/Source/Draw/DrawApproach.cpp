@@ -79,32 +79,22 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
     drawSegment(start_lat, start_lon, clat, clon);
   }
 
-  // Circuit: runway and circuit side (left/right) selected.
-  if (runway_selected && MapApproachMode == 1 && MapApproachCircuitSide >= 0) {
-    // Left = 0, Right = 1. Circuit side: offset 90° from approach direction.
-    const double side = (MapApproachCircuitSide == 0) ? -90.0 : 90.0;
-    const double downwind_brg = rw_recip;
-    const double base_brg = AngleLimit360(rw_brg + side);
-
-    // Downwind leg at 30 s from center (~800 m); perpendicular to runway on circuit side
-    double dw_lat, dw_lon;
-    const double perp_brg = AngleLimit360(rw_brg + side);
-    FindLatitudeLongitude(clat, clon, perp_brg, DOWNWIND_OFFSET_M, &dw_lat, &dw_lon);
-
-    // Turn to base at 45° radial from threshold (in standard pattern, distance along downwind = offset)
-    double turn45_lat, turn45_lon;
-    FindLatitudeLongitude(dw_lat, dw_lon, downwind_brg, DOWNWIND_TO_45_M, &turn45_lat, &turn45_lon);
-
-    double base_end_lat, base_end_lon;
-    FindLatitudeLongitude(turn45_lat, turn45_lon, base_brg, BASE_LEN_M, &base_end_lat, &base_end_lon);
-
-    // Downwind: from entry to 45° turn point
-    drawSegment(dw_lat, dw_lon, turn45_lat, turn45_lon);
-    // Base leg
-    drawSegment(turn45_lat, turn45_lon, base_end_lat, base_end_lon);
-    // Final: from end of base to runway centre
-    drawSegment(base_end_lat, base_end_lon, clat, clon);
-  }
+  // Circuit not implemented yet
+  // if (runway_selected && MapApproachMode == 1 && MapApproachCircuitSide >= 0) {
+  //   const double side = (MapApproachCircuitSide == 0) ? -90.0 : 90.0;
+  //   const double downwind_brg = rw_recip;
+  //   const double base_brg = AngleLimit360(rw_brg + side);
+  //   double dw_lat, dw_lon;
+  //   const double perp_brg = AngleLimit360(rw_brg + side);
+  //   FindLatitudeLongitude(clat, clon, perp_brg, DOWNWIND_OFFSET_M, &dw_lat, &dw_lon);
+  //   double turn45_lat, turn45_lon;
+  //   FindLatitudeLongitude(dw_lat, dw_lon, downwind_brg, DOWNWIND_TO_45_M, &turn45_lat, &turn45_lon);
+  //   double base_end_lat, base_end_lon;
+  //   FindLatitudeLongitude(turn45_lat, turn45_lon, base_brg, BASE_LEN_M, &base_end_lat, &base_end_lon);
+  //   drawSegment(dw_lat, dw_lon, turn45_lat, turn45_lon);
+  //   drawSegment(turn45_lat, turn45_lon, base_end_lat, base_end_lon);
+  //   drawSegment(base_end_lat, base_end_lon, clat, clon);
+  // }
 
   Surface.SelectObject(oldPen);
 }

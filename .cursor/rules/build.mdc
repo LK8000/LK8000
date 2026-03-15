@@ -1,0 +1,10 @@
+---
+description: Build target: solo Linux fino a richiesta diversa
+globs: Makefile, **/CMakeLists.txt
+---
+
+# Build LK8000
+
+- **Target**: compilare **solo per Linux** (`TARGET=LINUX` o default del Makefile).
+- Fino a nuova richiesta esplicita dell'utente, non usare altri target (PC, KOBO, PI, Android, ecc.).
+- **Comando da usare**: lanciare **lo script** `./build-linux.sh` (dalla root del repo), **non** `make` diretto: lo script compila e copia l'eseguibile in `Common/Distribution/LK8000/`; con il make diretto l'eseguibile non viene copiato.

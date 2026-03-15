@@ -111,3 +111,5 @@
 #define IDR_XML_MACCREADY           705
 #define IDR_XML_APPROACH_P          706
 #define IDR_XML_APPROACH_L          707
+#define IDR_XML_APPROACH_APPROVE_P  708
+#define IDR_XML_APPROACH_APPROVE_L  709
