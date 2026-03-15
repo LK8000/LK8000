@@ -191,6 +191,18 @@ GEXTERN short BottomMode; // Stripe number
 GEXTERN short BottomSize; // Height of bottom stripe
 GEXTERN short TopSize;
 
+// Map: Approach overlay (visual approach to an airfield)
+// Enabled: draw approach overlay on map
+// Waypoint: -1 = use current overtarget (task/alt/home/etc.), otherwise explicit waypoint index
+// RunwayDir: -1 = auto (use waypoint runway direction), otherwise selected final heading (deg true 0..359)
+// Mode: 0=Direct, 1=Circuit, 2=Both
+// CircuitSide: 0=Left, 1=Right
+GEXTERN bool  MapApproachEnabled;
+GEXTERN int   MapApproachWaypoint;
+GEXTERN int   MapApproachRunwayDir;
+GEXTERN short MapApproachMode;
+GEXTERN short MapApproachCircuitSide;
+
 // Overlay config
 GEXTERN short Overlay_TopLeft;
 GEXTERN short Overlay_TopMid;

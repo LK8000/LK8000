@@ -86,6 +86,7 @@ double MapWindow::targetMovedLon = 0;
 
 int MapWindow::TargetPanIndex = 0;
 double MapWindow::TargetZoomDistance = 500.0;
+double MapWindow::ApproachZoomDistance = 8e3;
 bool MapWindow::EnableTrailDrift=false; // initialized again in Globals. This is only the runtime, not the config.
 int MapWindow::GliderScreenPosition = 40; // 20% from bottom
 int MapWindow::GliderScreenPositionX = 50;  // 100216
@@ -522,8 +523,10 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
                 targetMovedLon = Xlat;
                 UnlockTaskData();
             }
-            // else we are in simple TARGET dialog, and we must NOT process anything
             return;
+        }
+        if (mode.Is(Mode::MODE_APPROACH_PAN)) {
+            return;  // do not process gestures in approach dialog
         }
 
         short topicon;
@@ -802,7 +805,7 @@ void MapWindow::_OnLButtonUp(const POINT& Pos) {
             return;
         }
 
-        if (!mode.Is(Mode::MODE_TARGET_PAN)) {
+        if (!mode.Is(Mode::MODE_TARGET_PAN) && !mode.Is(Mode::MODE_APPROACH_PAN)) {
 
             //
             // Finally process normally a click on the moving map.

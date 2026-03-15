@@ -5,7 +5,7 @@
     <WndButton Name="cmdPrev"  Caption="_@M6_"   X="3" Y="78"  Width="65"  Height="70" Font="2" Tag="0" OnClickNotify="OnPrevClicked"/>
     <WndButton Name="cmdClose" Caption="_@M186_" X="3" Y="152" Width="65"  Height="70" Font="2" Tag="3" OnClickNotify="OnCloseClicked"/>
     <WndFrame Name="frmInfos"       X="70" Y="1" Width="-1" Height="-1" Font="2">
-      <WndProperty Name="prpCoordinate"  Caption="_@M918_" X="2" Y="2" Width="-1" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
+      <WndProperty Name="prpCoordinate"  Caption="_@M918_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="60" Font="2" ReadOnly="1" />
       <WndProperty Name="prpAltitude"  Caption="_@M255_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpSunset"    Caption="_@M671_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />
       <WndProperty Name="prpDistance"  Caption="_@M245_" X="2" Y="-1" Width="-1" Height="22" CaptionWidth="150" Font="2" ReadOnly="1" />

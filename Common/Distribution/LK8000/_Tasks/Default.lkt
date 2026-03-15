@@ -1,24 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <lk-task type="Default">
 	<options auto-advance="Auto">
-		<start type="circle" radius="2000"/>
-		<finish type="line" Radius="2000"/>
-		<sector type="sector" Radius="5000"/>
-		<rules>
-			<finish fai-height="true" min-height="0"/>
-			<start max-height="0" max-height-margin="0" max-speed="69444" max-speed-margin="13889" height-ref="AGL"/>
-		</rules>
+		<start type="circle" radius="2000.000000"/>
+		<finish type="line" radius="2000.000000"/>
+		<sector type="sector" radius="5000.000000"/>
 	</options>
+	<rules>
+		<finish fai-height="false" min-height="0"/>
+		<start max-height="0" max-height-margin="0" max-speed="0" max-speed-margin="0" height-ref="AGL"/>
+	</rules>
 	<taskpoints>
-		<point idx="0" name="Ubione"/>
-		<point idx="1" name="Brunate"/>
-		<point idx="2" name="Legnone"/>
-		<point idx="3" name="Ubione"/>
+		<point idx="0" name="DOVERA"/>
 	</taskpoints>
 	<waypoints>
-		<point name="Brunate" latitude="45.825000" longitude="9.115283" altitude="906.000000" flags="2" code="BRUNAT" format="2" country="IT" style="1"/>
-		<point name="Ubione" latitude="45.775933" longitude="9.593383" altitude="895.000000" flags="2" code="Ubione" comment="895" format="2" country="IT" style="7"/>
-		<point name="Legnone" latitude="46.094050" longitude="9.414100" altitude="2609.000000" flags="2" code="Legnone" comment="1400 m" format="2" style="7"/>
+		<point name="DOVERA" latitude="45.380417" longitude="9.534983" altitude="79.000000" flags="5" code="CR01" comment="DOVERA" format="2" freq="119.300" runwayLen="400" runwayDir="160" country="IT" style="2"/>
 	</waypoints>
 </lk-task>
 

@@ -242,6 +242,7 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
 
 
 
+/// Refresh Target dialog fields and show/hide Approach button for landable waypoints.
 static void RefreshCalculator(void) {
   WndProperty* wp;
 
@@ -359,6 +360,13 @@ static void RefreshCalculator(void) {
     wp->RefreshDisplay();
   }
 
+  WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
+  if (btnApproach) {
+    const bool landable = ValidTaskPoint(target_point) &&
+        ValidWayPointFast(Task[target_point].Index) &&
+        WayPointCalc[Task[target_point].Index].IsLandable;
+    btnApproach->SetVisible(landable);
+  }
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -384,6 +392,13 @@ static void OnMoveClicked(WndButton* pWnd) {
   RefreshCalculator();
 }
 
+/// Open Approach dialog for current target waypoint if it is landable.
+static void OnTargetApproachClicked(WndButton* pWnd) {
+  if (!ValidTaskPoint(target_point)) return;
+  const int wp_index = Task[target_point].Index;
+  if (!ValidWayPointFast(wp_index) || !WayPointCalc[wp_index].IsLandable) return;
+  dlgApproach(wp_index);
+}
 
 static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
   double RangeNew;
@@ -538,6 +553,7 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnLockedData),
   CallbackEntry(OnOKClicked),
   CallbackEntry(OnMoveClicked),
+  CallbackEntry(OnTargetApproachClicked),
   EndCallbackEntry()
 };
 
@@ -559,12 +575,20 @@ void dlgTarget(int TaskPoint) {
   TargetMoveMode = false;
 
   if (ScreenLandscape) {
-    // make flush right in landscape mode (at top in portrait mode)
+    // make flush right in landscape mode; ensure form fits screen height (e.g. on KOBO)
     dlgSize = wf->GetWidth();
-    wf->SetLeft(main_window->GetRight() - dlgSize);
+    wf->SetLeft(ScreenSizeX - dlgSize);
+    wf->SetTop(0);
+    const unsigned form_h = wf->GetHeight();
+    if (form_h > (unsigned)ScreenSizeY) {
+      wf->SetHeight(ScreenSizeY);
+    }
   }
   else {
+    // portrait: place form at bottom where map reserves space for the panel
     dlgSize = wf->GetHeight();
+    wf->SetTop(ScreenSizeY - wf->GetHeight());
+    wf->SetLeft(0);
   }
 
   btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));

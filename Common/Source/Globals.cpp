@@ -645,6 +645,13 @@ void Globals_Init(void) {
 
   EnableAudioVario = false;
 
+  // Map approach overlay (visual approach path to airfield)
+  MapApproachEnabled = false;
+  MapApproachWaypoint = -1;
+  MapApproachRunwayDir = -1;
+  MapApproachMode = 0;   // 0=Direct, 1=Circuit
+  MapApproachCircuitSide = 0;  // 0=Left, 1=Right
+
   // ^ ADD NEW GLOBALS up here ^
   // ---------------------------
 

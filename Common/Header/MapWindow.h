@@ -320,6 +320,7 @@ class MapWindow {
     void SwitchMode_Locked();  // Internal version called with lock held
 
     void CalculateTargetPanZoom();
+    void CalculateApproachPanZoom();
     void CalculateAutoZoom_Locked();
 
     double ResScaleOverDistanceModify() const;
@@ -400,7 +401,8 @@ class MapWindow {
       MODE_SPECIAL_NONE        = 0x0000,
       MODE_SPECIAL_PAN         = 0x0100,
       MODE_SPECIAL_TARGET_PAN  = 0x0200,
-      MODE_SPECIAL_PANORAMA    = 0x0400
+      MODE_SPECIAL_PANORAMA    = 0x0400,
+      MODE_SPECIAL_APPROACH_PAN = 0x0800
     };
     static const unsigned SPECIAL_MASK = 0xFF00;
 
@@ -416,7 +418,8 @@ class MapWindow {
 
       MODE_PAN         = MODE_SPECIAL_PAN,
       MODE_TARGET_PAN  = MODE_SPECIAL_TARGET_PAN,
-      MODE_PANORAMA    = MODE_SPECIAL_PANORAMA
+      MODE_PANORAMA    = MODE_SPECIAL_PANORAMA,
+      MODE_APPROACH_PAN = MODE_SPECIAL_APPROACH_PAN
     };
 
   private:
@@ -442,7 +445,7 @@ class MapWindow {
     void Special(TModeSpecial specialMode, bool enable);
     TModeSpecial Special() const { return static_cast<TModeSpecial>(_mode & SPECIAL_MASK); }
 
-    bool AnyPan() const { return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN); }
+    bool AnyPan() const { return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN | MODE_SPECIAL_APPROACH_PAN); }
   };
 
 
@@ -700,6 +703,7 @@ class MapWindow {
   static void DrawGreatCircle(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
                               double lon_start, double lat_start,
                               double lon_end, double lat_end);
+  static void DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
 protected:
   static void DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj);
   static void DrawCrossHairs(LKSurface& Surface, const POINT& Orig, const RECT& rc);
@@ -786,6 +790,7 @@ private:
   static double LimitMapScale(double value);
 
   static void SetTargetPan(bool dopan, int task_index, unsigned dlgSize = 0);
+  static void SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize = 0);
 
   static void SetPanTaskEdit(unsigned TskPoint);
 
@@ -859,6 +864,7 @@ private:
  private:
   static POINT Orig_Screen;
   static double TargetZoomDistance;
+  static double ApproachZoomDistance;
   static int TargetPanIndex;
   static void ClearAirSpace(bool fill, const RECT& rc);
 

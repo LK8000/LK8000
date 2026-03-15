@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+  <WndForm Name="frmApproachApprove" Type="Dialog" X="0" Y="0" Width="280" Height="148" Caption="Approach task" Font="2" Popup="1" Modal="1">
+    <WndProperty Name="prpMessage" Caption="" X="4" Y="4" Width="-8" Height="80" CaptionWidth="8" Font="2" ReadOnly="1" MultiLine="1"/>
+    <WndButton Name="btnApproveConfirm" Caption="Approve" X="4" Y="88" Width="132" Height="32" Font="2" OnClickNotify="OnApproachApproveConfirmClicked" Tag="1"/>
+    <WndButton Name="btnIgnore" Caption="IGNORE!!" X="140" Y="88" Width="136" Height="32" Font="2" OnClickNotify="OnApproachApproveIgnoreClicked" Tag="1"/>
+  </WndForm>
+</PMML>
