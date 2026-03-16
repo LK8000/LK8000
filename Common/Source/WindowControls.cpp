@@ -138,11 +138,21 @@ int DataFieldFileReader::SetAsInteger(int Value){
   return mValue;
 }
 
+bool DataFieldFileReader::OnScanFile(const TCHAR* name, const TCHAR* relative_path) {
+  if (GetLabelIndex(name) < 0) {
+    addFile(name, relative_path);
+  }
+  return true;
+}
+
 
 void DataFieldFileReader::ScanDirectoryTop(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count, size_t sort_start_index) { // 091101
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   LocalPath(buffer, subdir);
-  ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
+  lk::filesystem::ScanDirectories(buffer, _T(""), suffix_filters, filter_count,
+                                  [this](const TCHAR* name, const TCHAR* relative_path) {
+                                    return OnScanFile(name, relative_path);
+                                  });
   Sort(sort_start_index);
 }
 
@@ -150,118 +160,17 @@ void DataFieldFileReader::ScanSystemDirectoryTop(const TCHAR* subdir, const TCHA
 #ifndef ANDROID
   TCHAR buffer[MAX_PATH] = TEXT("\0");
   SystemPath(buffer, subdir);
-  ScanDirectories(buffer,_T(""), suffix_filters, filter_count);
+  lk::filesystem::ScanDirectories(buffer, _T(""), suffix_filters, filter_count,
+                                  [this](const TCHAR* name, const TCHAR* relative_path) {
+                                    return OnScanFile(name, relative_path);
+                                  });
 #else
-  ScanZipDirectory(subdir, suffix_filters, filter_count);
+  lk::filesystem::ScanZipDirectory(subdir, suffix_filters, filter_count,
+                                   [this](const TCHAR* name, const TCHAR* relative_path) {
+                                     return OnScanFile(name, relative_path);
+                                   });
 #endif
   Sort(sort_start_index);
-}
-
-static
-bool checkFilter(const TCHAR* filename,  const TCHAR **suffix_filters, size_t filter_count) {
-  size_t filename_size = _tcslen(filename);
-  
-  for (const TCHAR* suffix : std::span(suffix_filters, filter_count)) {
-
-    if(!suffix || !suffix[0]) {
-      return true;
-    }
-
-    size_t suffix_size = _tcslen(suffix);
-    if(filename_size < suffix_size) {
-      continue;
-    }
-
-    const TCHAR* filename_suffix = &filename[filename_size - suffix_size];
-    if (_tcsicmp(filename_suffix, suffix) == 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
-#ifdef ANDROID
-void DataFieldFileReader::ScanZipDirectory(const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) { // 091101
-
-  const zzip_strings_t ext [] = {".zip", ".ZIP", "", 0};
-  zzip_error_t zzipError;
-
-  tstring sRootPath = LKGetSystemPath();
-  if(sRootPath.empty()) {
-    return;
-  }
-  sRootPath.pop_back(); // remove trailing directory separator
-
-  size_t subdir_size = _tcslen(subdir);
-  // Open the archive root directory.
-  ZZIP_DIR* dir = zzip_dir_open_ext_io(sRootPath.c_str(), &zzipError, ext, nullptr);
-  if (dir) {
-    ZZIP_DIRENT dirent;
-    // Loop through the files in the archive.
-    while(zzip_dir_read(dir, &dirent)) {
-
-      if( _tcsnicmp(subdir, dirent.d_name, subdir_size) == 0) {
-        if(checkFilter(dirent.d_name, suffix_filters, filter_count)) {
-
-          TCHAR* szFileName = _tcsrchr(dirent.d_name, _T('/'))+1;
-          if(GetLabelIndex(szFileName) <= 0) {
-            TCHAR * szFilePath = dirent.d_name + _tcslen(subdir);
-            while( (*szFilePath) == _T('/') || (*szFilePath) == _T('\\') ) {
-                ++szFilePath;
-            }
-            addFile(szFileName, szFilePath);
-          }
-        }
-      }
-    }
-    zzip_dir_close(dir);
-  }
-}
-#endif
-
-
-BOOL DataFieldFileReader::ScanDirectories(const TCHAR* sPath, const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count) {
-
-    assert(sPath);
-    assert(subdir);
-    assert(suffix_filters);
-
-    TCHAR FileName[MAX_PATH];
-
-    lk::strcpy(FileName, sPath);
-    _tcscat(FileName, TEXT(DIRSEP));
-    if(_tcslen(subdir) > 0) {
-        _tcscat(FileName, subdir);
-        _tcscat(FileName, TEXT(DIRSEP));
-    }
-
-    _tcscat(FileName, TEXT("*"));
-    lk::filesystem::fixPath(FileName);
-
-    for (lk::filesystem::directory_iterator It(FileName); It; ++It) {
-        if (It.isDirectory()) {
-
-            lk::strcpy(FileName, subdir);
-            if(_tcslen(FileName) > 0) {
-                _tcscat(FileName, TEXT(DIRSEP));
-            }
-            _tcscat(FileName, It.getName());
-
-            ScanDirectories(sPath, FileName, suffix_filters, filter_count);
-        } else if(checkFilter(It.getName(), suffix_filters, filter_count)) {
-
-            lk::strcpy(FileName, subdir);
-            if(_tcslen(FileName) > 0) {
-              _tcscat(FileName, TEXT(DIRSEP));
-            }
-            _tcscat(FileName, It.getName());
-            if(GetLabelIndex(FileName) <= 0) { // do not add same file twice...
-              addFile(It.getName(), FileName);
-            }
-        }
-    }
-
-    return TRUE;
 }
 
 int DataFieldFileReader::GetLabelIndex(const TCHAR* label) {
