@@ -130,11 +130,7 @@ static void OnSplashPaint(WndOwnerDrawFrame * Sender, LKSurface& Surface) {
                 if (ScreenSizeX == 854)
                     pos = 14;
                 else
-#ifdef __linux__
-                    pos = 12;
-#else
                     pos = 11;
-#endif
                 break;
                 // --------- portrait -------------
             case ss240x320:
