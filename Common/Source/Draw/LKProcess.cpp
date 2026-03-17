@@ -1102,7 +1102,7 @@ goto_bearing:
                     lk::strcpy(BufferValue, TEXT("---"));
                   }
                   else {
-                    lk::snprintf(BufferValue, TEXT("%.0lf"), value);
+                    lk::snprintf(BufferValue, TEXT("%.1lf"), value);
                     lk::snprintf(BufferUnit,  TEXT("%s"), MsgToken<2179>());
                     valid = true;
                   }
@@ -1113,7 +1113,7 @@ goto_bearing:
                   lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
                   if(DrawInfo.RelativeHumidity.available()) {
                     value = DrawInfo.RelativeHumidity.value();
-                    lk::snprintf(BufferValue, TEXT("%.0lf"), value);
+                    lk::snprintf(BufferValue, TEXT("%.1lf"), value);
                     lk::strcpy(BufferUnit, TEXT("%%"));
                     valid = true;
                   }
