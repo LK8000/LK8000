@@ -90,21 +90,21 @@ void DoMigration() {
 
   }
 
-#ifdef USE_CURL
-  // --- Migration of FFVL to profile 1 ---
-  if (!migration::ffvl_user_key.empty()) {
-    profiles.push_back({
-      .protocol = platform::ffvl,
-      .interval = 60,
-      .radar = false,
-      .always_on = true,
-      .server = {},
-      .port = 0,
-      .user = migration::ffvl_user_key,
-      .password = {}
-    });
+  if (http_session::ssl_available()) {
+    // --- Migration of FFVL to profile 1 ---
+    if (!migration::ffvl_user_key.empty()) {
+      profiles.push_back({
+        .protocol = platform::ffvl,
+        .interval = 60,
+        .radar = false,
+        .always_on = true,
+        .server = {},
+        .port = 0,
+        .user = migration::ffvl_user_key,
+        .password = {}
+      });
+    }
   }
-#endif
 }
 
 }  // anonymous namespace
@@ -143,15 +143,13 @@ void Initialize() {
           active_handlers.emplace_back(std::move(skylines_glue));
         }
         break;
-#ifdef USE_CURL
       case platform::ffvl:
-        if (!profile.user.empty()) {
+        if (http_session::ssl_available() && !profile.user.empty()) {
           auto ffvl_handler = std::make_unique<FFVLTracking>(profile.user);
           ffvl_handler->Start();
           active_handlers.emplace_back(std::move(ffvl_handler));
         }
         break;
-#endif
       case platform::none:
       default:
         break;

@@ -648,7 +648,8 @@ ifeq ($(CONFIG_WIN32),y)
   LDLIBS := -static -Wl,-Bstatic \
             -lmingw32 -lcomctl32 -lkernel32 -luser32 \
             -lgdi32 -ladvapi32 -lwinmm -lmsimg32 \
-            -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
+            -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid \
+			-lwinhttp
 endif
 
 LDLIBS += $(subst @lib_postfix@,,$(GEOGRAPHICLIB_LDLIBS)) \
@@ -1261,7 +1262,12 @@ TRACKING := \
 	$(SRC)/xcs/Net/State.cpp \
 	$(SRC)/xcs/Net/StaticSocketAddress.cxx \
 
-ifeq ($(USE_CURL),y)
+ifeq ($(CONFIG_WIN32),y)
+ TRACKING += \
+   $(SRC_TRACKING)/WinHttp/http_session.cpp \
+   $(SRC_TRACKING)/FFVLTracking.cpp
+
+else ifeq ($(USE_CURL),y)
  TRACKING += \
    $(SRC_TRACKING)/Curl/http_session.cpp\
    $(SRC_TRACKING)/FFVLTracking.cpp

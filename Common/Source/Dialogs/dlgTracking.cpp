@@ -3,6 +3,7 @@
 #include "dlgTools.h"
 #include "resource.h"
 #include "LKLanguage.h" 
+#include "Tracking/http_session.h"
 
 namespace {
 
@@ -22,10 +23,14 @@ void dlgTracking::OnTrackingType(DataField* Sender,
         PlatformLabel(tracking::platform::none),
         PlatformLabel(tracking::platform::livetrack24),
         PlatformLabel(tracking::platform::skylines_aero),
-#ifdef USE_CURL
-        PlatformLabel(tracking::platform::ffvl)
-#endif
     });
+
+    if (http_session::ssl_available()) {
+      Sender->addEnumList({
+          PlatformLabel(tracking::platform::ffvl)
+      });
+    }
+
   }
 
   auto& wp = Sender->GetOwner();

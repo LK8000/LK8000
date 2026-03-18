@@ -40,6 +40,7 @@
 #include "Bitmaps.h"
 #include "Screen/LKIcon.h"
 #include "Dialogs/dlgTracking.h"
+#include "Tracking/http_session.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -619,16 +620,19 @@ static void DrawTrackingSkylinesAero(tracking::Profile& profile, LKSurface& Surf
   //    profile.radar
 }
 
-#ifdef USE_CURL
 static void DrawTrackingFFVL(tracking::Profile& profile, LKSurface& Surface,
                              PixelRect& rcClient) {
+  if (!http_session::ssl_available()) {
+    DrawTrackingNone(profile, Surface, rcClient);
+    return;
+  }
+
   auto label = PlatformLabel(profile.protocol);
   Surface.SetTextColor(clBlack);
   Surface.DrawText(rcClient.GetTopLeft(), label);
   // TODO: add usefull info
   //    profile.user
 }
-#endif
 
 static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
                          const PixelRect& rcClient) {
@@ -644,15 +648,9 @@ static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
     case tracking::platform::skylines_aero:
       DrawTrackingSkylinesAero(profile, Surface, rcText);
       break;
-#ifdef USE_CURL
     case tracking::platform::ffvl:
       DrawTrackingFFVL(profile, Surface, rcText);
       break;
-#else
-    case tracking::platform::ffvl:
-      DrawTrackingNone(profile, Surface, rcText);
-      break;      
-#endif
   }
 }
 
