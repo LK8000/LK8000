@@ -18,7 +18,6 @@
 #include "utils/stringext.h"
 #include "Poco/Event.h"
 #include "Poco/ThreadTarget.h"
-#include "picojson.h"
 #include "utils/hmac_sha2.h"
 #include "FlarmCalculations.h"
 #include "md5.h"
@@ -26,6 +25,9 @@
 #include "utils/base64.h"
 #include "Library/TimeFunctions.h"
 #include "OS/Sleep.h"
+
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 #ifdef KOBO
 #include "Kobo/System.hpp"
@@ -677,9 +679,7 @@ static std::string downloadJSON(http_session& http, const std::string& url) {
 	return response;
 }
 
-static picojson::value callLiveTrack24(http_session& http, std::string subURL, bool calledSelf = false) {
-	picojson::value res;
-
+static json callLiveTrack24(http_session& http, std::string subURL, bool calledSelf = false) {
 	std::string url = "/api/v2/op/" + subURL;
 	url += "/ak/" + std::string(appKey) + "/vc/" + otpReply(g_otpQuestion);
 	if (calledSelf)
@@ -689,35 +689,30 @@ static picojson::value callLiveTrack24(http_session& http, std::string subURL, b
 
 	if (reply.empty()) {
 		DebugLog(_T(".LiveRadar callLiveTrack24 : Empty response from server"));
-		return res;
+		return nullptr;
+	}
+	json res = json::parse(reply, nullptr, false);
+	if (!res.is_object()) {
+		return nullptr;
 	}
 
-	std::string err = picojson::parse(res, reply);
-	if(!res.is<picojson::object>()) {
-		return res;
-	}
-
-	if (res.get("qwe").is<std::string>()) {
-		g_otpQuestion = res.get("qwe").get<std::string>();
-	}
-	if (res.get("ut").is<std::string>()) {
-		g_ut = res.get("ut").get<std::string>();
-	}
-
-	if (res.get("sync").is<double>()) {
-		g_sync = res.get("sync").get<double>();
-	}
+	g_otpQuestion = res.value("qwe", g_otpQuestion);
+	g_ut = res.value("ut", g_ut);
+	g_sync = res.value("sync", g_sync);
 
 	if (!calledSelf) {
-		if (res.get("newqwe") == picojson::value(1.)) {
+		int newqwe = res.value("newqwe", 0);
+		if (newqwe == 1) {
 			res = callLiveTrack24(http, subURL, true);
 		}
-		if (res.get("reLogin") == picojson::value(1.)) {
-			res = callLiveTrack24(http,
-					"login/username/" + std::string(_username) + "/pass/"
-							+ std::string(_password), true);
 
-			if (res.get("ut").is<std::string>()) {
+		int reLogin = res.value("reLogin", 0);
+		if (reLogin == 1) {
+			res = callLiveTrack24(http,
+							"login/username/" + std::string(_username) + "/pass/"
+							+ std::string(_password), true);
+			const auto ut_it = res.find("ut");
+			if (ut_it != res.end() && ut_it.value().is_string()) {
 				res = callLiveTrack24(http, subURL, true);
 			}
 		}
@@ -738,155 +733,144 @@ static bool LiveTrack24_Radar(http_session& http) {
 	strsCommand << "/gzip/1";
 
 
-	picojson::value json = callLiveTrack24(http, strsCommand.str());
-
-	if (json.is<picojson::null>()) {
-		DebugLog(_T(".LiveRadar json null"));
-		return false;
-	}
-
-	std::string err = picojson::get_last_error();
-	if (!err.empty()) {
+	const json res_json = callLiveTrack24(http, strsCommand.str());
+	if (!res_json.is_object()) {
 		DebugLog(_T(".LiveRadar json error"));
 		return false;
 	}
-	if (!json.is<picojson::object>()) {
-		DebugLog(_T(".LiveRadar json error not object"));
+
+	const auto userlist_it = res_json.find("userlist");
+	if(userlist_it == res_json.end() || !userlist_it.value().is_array()) {
 		return false;
 	}
+	DebugLog(_T(". LiveRadar list.size =%u"), static_cast<unsigned>(userlist_it.value().size()));
 
-	picojson::array list = json.get("userlist").get<picojson::array>();
+	for (const auto &item  : userlist_it.value()) {
+		try {
+			double lat = item["lat"];
+			double lon = item["lon"];
+			double alt = Units::From(Units_t::unMeter, item["alt"].get<double>());
+			double sog = Units::From(Units_t::unKiloMeterPerHour, item["sog"].get<double>());
+			int lastTM = item["lastTM"];
+			int userID = item["userID"];
+			std::string username = item["username"];
+			int category = item["category"];
+			int isLiveDB = item["isLiveDB"];
+			std::transform(username.begin(), username.end(), username.begin(), ::toupper);
 
-	DebugLog(_T(". LiveRadar list.size =%u"), static_cast<unsigned>(list.size()));
+			double Distance, Bearing;
+			DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude, &Distance, &Bearing);
 
-	for (const auto& elmt : list) {
+			// Do not track beyond 30km
+			if (Distance > 30000) {
+				continue;
+			}
 
-		double lat = elmt.get("lat").get<double>();
-		double lon = elmt.get("lon").get<double>();
-		double alt = Units::From(Units_t::unMeter, elmt.get("alt").get<double>());
-		double sog = Units::From(Units_t::unKiloMeterPerHour, elmt.get("sog").get<double>());
-		int lastTM = elmt.get("lastTM").get<double>();
-		uint32_t userID = elmt.get("userID").get<double>();
-		//		double agl = elmt.get("sog").get<double>();
-		//		int isFlight = elmt.get("isFlight").get<double>();
-		std::string username = elmt.get("username").get<std::string>();
-		int category = elmt.get("category").get<double>();
-		int isLiveDB = elmt.get("isLiveDB").get<double>();
-		transform(username.begin(), username.end(), username.begin(), ::toupper);
+			double delay = t_of_day - lastTM;
 
-		double Distance, Bearing;
-		DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
-				&Distance, &Bearing);
+		    DebugLog(_T(".LiveRadar USER: %d category %d isLiveDB %d  compare %d delay %.0f Distance %.0f"),
+				    userID, category, isLiveDB, username.compare(_username) == 0, delay, Distance);
 
-		// Do not track beyond 30km
-		if (Distance > 30000)
-			continue;
-
-		double delay = t_of_day - lastTM;
-
-		DebugLog(_T(".LiveRadar USER: %d category %d isLiveDB %d  compare %d delay %.0f Distance %.0f"),
-				userID, category, isLiveDB, username.compare(_username) == 0, delay, Distance);
-
-		if (delay > 300 || isLiveDB == 0
-				|| (category != 1 && category != 2 && category != 4
+			if (delay > 300 || isLiveDB == 0
+					|| (category != 1 && category != 2 && category != 4
 						&& category != 8) || username.compare(_username) == 0
-				|| username.compare(_pilotname) == 0)
-			continue;
+					|| username.compare(_pilotname) == 0)
+			{
+				continue;
+			}
 
-		DebugLog(_T(".LiveRadar USERPASSED: %d category %d isLiveDB %d  compare %d delay %.0f"),
-				userID, category, isLiveDB, username.compare(_username) == 0, delay);
+		    DebugLog(_T(".LiveRadar USERPASSED: %d category %d isLiveDB %d  compare %d delay %.0f"),
+				    userID, category, isLiveDB, username.compare(_username) == 0, delay);
 
-		time_t rawtime = lastTM;
-		struct tm * ptm;
-        struct tm tm_temp = {};
-        ptm = gmtime_r(&rawtime, &tm_temp);
-		int Time_Fix = (ptm->tm_hour * 3600 + ptm->tm_min * 60 + ptm->tm_sec);
-		if (Time_Fix > GPS_INFO.Time)
-			Time_Fix = GPS_INFO.Time;
+			time_t rawtime = lastTM;
+			struct tm * ptm;
+			struct tm tm_temp = {};
+			ptm = gmtime_r(&rawtime, &tm_temp);
+			int Time_Fix = (ptm->tm_hour * 3600 + ptm->tm_min * 60 + ptm->tm_sec);
+			if (Time_Fix > GPS_INFO.Time)
+				Time_Fix = GPS_INFO.Time;
 
-		if (!flarmwasinit) {
-			DoStatusMessage(MsgToken<279>(), TEXT("LiveTrack24")); // FLARM DETECTED from LiveTrack24
-			flarmwasinit = true;
-		}
+			if (!flarmwasinit) {
+				DoStatusMessage(MsgToken<279>(), TEXT("LiveTrack24")); // FLARM DETECTED from LiveTrack24
+				flarmwasinit = true;
+			}
 
-		int flarm_slot = 0;
-		bool newtraffic = false;
-		GPS_INFO.FLARM_Available = true;
-		LastFlarmCommandTime = GPS_INFO.Time; // useless really, we dont call UpdateMonitor from SIM
-		flarm_slot = FLARM_FindSlot(&GPS_INFO, userID);
+			int flarm_slot = 0;
+			bool newtraffic = false;
+			GPS_INFO.FLARM_Available = true;
+			LastFlarmCommandTime = GPS_INFO.Time; // useless really, we dont call UpdateMonitor from SIM
+			flarm_slot = FLARM_FindSlot(&GPS_INFO, userID);
 
-		if (flarm_slot < 0)
-			return true;
+			if (flarm_slot < 0)
+				return true;
 
-		if (GPS_INFO.FLARM_Traffic[flarm_slot].Status == LKT_EMPTY) {
-			newtraffic = true;
-		}
-		// before changing timefix, see if it was an old target back locked in!
-		CheckBackTarget(GPS_INFO, flarm_slot);
+			if (GPS_INFO.FLARM_Traffic[flarm_slot].Status == LKT_EMPTY) {
+				newtraffic = true;
+			}
+			// before changing timefix, see if it was an old target back locked in!
+			CheckBackTarget(GPS_INFO, flarm_slot);
 
-		if (newtraffic) {
-			GPS_INFO.FLARM_Traffic[flarm_slot].RadioId = userID;
-			GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel = 0;
-			GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate = 0;
-			auto& name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
-			auto& cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
+			if (newtraffic) {
+				GPS_INFO.FLARM_Traffic[flarm_slot].RadioId = userID;
+				GPS_INFO.FLARM_Traffic[flarm_slot].AlarmLevel = 0;
+				GPS_INFO.FLARM_Traffic[flarm_slot].TurnRate = 0;
+				auto& name = GPS_INFO.FLARM_Traffic[flarm_slot].Name;
+				auto& cn = GPS_INFO.FLARM_Traffic[flarm_slot].Cn;
 
-			GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
-			const TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
-			if (fname) {
-				LK_tcsncpy(name,fname,MAXFLARMNAME);
-				//  Now we have the name, so lookup also for the Cn
-				// This will return either real Cn or Name, again
-				const TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
-				if (cname) {
-					int cnamelen=_tcslen(cname);
-					if (cnamelen<=MAXFLARMCN) {
-						lk::strcpy(cn, cname);
+				GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag = false; // clear flag first
+				const TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
+				if (fname) {
+					LK_tcsncpy(name, fname, MAXFLARMNAME);
+					//  Now we have the name, so lookup also for the Cn
+					// This will return either real Cn or Name, again
+					const TCHAR *cname = LookupFLARMCn(GPS_INFO.FLARM_Traffic[flarm_slot].RadioId);
+					if (cname) {
+						int cnamelen = _tcslen(cname);
+						if (cnamelen <= MAXFLARMCN) {
+							lk::strcpy(cn, cname);
+						} else {
+							// else probably it is the Name again, and we create a fake Cn
+							from_utf8(username.c_str(), cn);
+						}
 					} else {
-						// else probably it is the Name again, and we create a fake Cn
-						from_utf8(username.c_str(), cn);
+						lk::strcpy(GPS_INFO.FLARM_Traffic[flarm_slot].Cn, _T("Err"));
 					}
 				} else {
-					lk::strcpy( GPS_INFO.FLARM_Traffic[flarm_slot].Cn, _T("Err"));
+					// Else we NEED to set a name, otherwise it will constantly search for it over and over..
+					from_utf8(username.c_str(), name);
+					from_utf8(username.c_str(), cn);
 				}
-
-			} else {
-				// Else we NEED to set a name, otherwise it will constantly search for it over and over..
-				from_utf8(username.c_str(), name);
-				from_utf8(username.c_str(), cn);
 			}
 
-
-		}
-
-		double Average30s = 0;
-		double TrackBearing = 0;
-		double deltaH = 0;
-		double deltaT = 0;
-		if (GPS_INFO.FLARM_Traffic[flarm_slot].Status != LKT_EMPTY) {
-			deltaT = (double) Time_Fix
-					- GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix;
-			if (deltaT > 0) {
-				DistanceBearing(GPS_INFO.FLARM_Traffic[flarm_slot].Latitude,
-						GPS_INFO.FLARM_Traffic[flarm_slot].Longitude, lat, lon,
-						&Distance, &Bearing);
-				deltaH = alt - GPS_INFO.FLARM_Traffic[flarm_slot].Altitude;
-				TrackBearing = Bearing;
-				Average30s = deltaH / deltaT;
+			double Average30s = 0;
+			double TrackBearing = 0;
+			double deltaH = 0;
+			double deltaT = 0;
+			if (GPS_INFO.FLARM_Traffic[flarm_slot].Status != LKT_EMPTY) {
+				deltaT = (double)Time_Fix - GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix;
+				if (deltaT > 0) {
+					DistanceBearing(GPS_INFO.FLARM_Traffic[flarm_slot].Latitude,
+							GPS_INFO.FLARM_Traffic[flarm_slot].Longitude, lat, lon,
+							&Distance, &Bearing);
+					deltaH = alt - GPS_INFO.FLARM_Traffic[flarm_slot].Altitude;
+					TrackBearing = Bearing;
+					Average30s = deltaH / deltaT;
+				}
 			}
 
+			GPS_INFO.FLARM_Traffic[flarm_slot].Status = LKT_REAL;
+			GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix = (double) Time_Fix; //GPS_INFO.Time;
+			GPS_INFO.FLARM_Traffic[flarm_slot].Latitude = lat;
+			GPS_INFO.FLARM_Traffic[flarm_slot].Longitude = lon;
+			GPS_INFO.FLARM_Traffic[flarm_slot].Altitude = alt;
+			GPS_INFO.FLARM_Traffic[flarm_slot].Speed = sog;
+			GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing = TrackBearing; // to be replaced by Livetrack24 cog
+			GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = Average30s;
 		}
+		catch (json::exception& ignore) {
 
-		GPS_INFO.FLARM_Traffic[flarm_slot].Status = LKT_REAL;
-		GPS_INFO.FLARM_Traffic[flarm_slot].Time_Fix = (double) Time_Fix; //GPS_INFO.Time;
-		GPS_INFO.FLARM_Traffic[flarm_slot].Latitude = lat;
-		GPS_INFO.FLARM_Traffic[flarm_slot].Longitude = lon;
-		GPS_INFO.FLARM_Traffic[flarm_slot].Altitude = alt;
-		GPS_INFO.FLARM_Traffic[flarm_slot].Speed = sog;
-		GPS_INFO.FLARM_Traffic[flarm_slot].TrackBearing = TrackBearing; // to be replaced by Livetrack24 cog
-		GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = Average30s;
+		}
 	}
-
 	return true;
 }
 
