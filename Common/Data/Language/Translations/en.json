@@ -2652,6 +2652,16 @@
 
     "_@M002515_": "Invalid Image",
 
+    "_@M002282_": "Interval",
+    "_@M002283_": "Server",
+    "_@M002284_": "Port",
+    "_@M002285_": "Radar",
+    "_@M002286_": "ID",
+    "_@M002287_": "Tracking key",
+    "_@M002288_": "Server URL",
+    "_@M002289_": "Device ID",
+    "_@M002290_": "Tracking type",
+
     "_@M002281_": "Tracking Profile",
     "_@M002379_": "Delete Profile?"
 }
