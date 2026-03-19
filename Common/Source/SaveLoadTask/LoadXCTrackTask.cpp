@@ -13,17 +13,16 @@
 #include "Util/Clamp.hpp"
 #include "utils/zzip_file_stream.h"
 #include "utils/charset_helper.h"
-#include "picojson.h"
 #include <string>
 #include <cassert>
 #include "Waypointparser.h"
 #include "Waypoints/SetHome.h"
 #include "Calc/Task/TimeGates.h"
+#include "nlohmann/json.hpp"
 
 namespace {
 
-namespace json = picojson;
-
+using json = nlohmann::json;
 using polyline_t = std::vector<int32_t>;
 
 /**
@@ -66,16 +65,15 @@ struct waypoint_helper : public WAYPOINT {
 
   waypoint_helper() : WAYPOINT{} { }
 
-  explicit waypoint_helper(const json::value& waypoint) : WAYPOINT{} {
-      set_name(waypoint.get("name").get<std::string>().c_str());
+  explicit waypoint_helper(const json& waypoint) : WAYPOINT{} {
+      set_name(waypoint.value("name", "").c_str());
 
-      Longitude = waypoint.get("lon").get<double>();
-      Latitude = waypoint.get("lat").get<double>();
-      Altitude = waypoint.get("altSmoothed").get<double>();
+      Longitude = waypoint.value("lon", 0.0);
+      Latitude = waypoint.value("lat", 0.0);
+      Altitude = waypoint.value("altSmoothed", 0.0);
 
-      const json::value& description = waypoint.get("description");
-      if (description.is<std::string>()) {
-        const std::string& desc_str = description.get<std::string>();
+      std::string desc_str = waypoint.value("description", "");
+      if (!desc_str.empty()) {
         set_description(desc_str.c_str());
       }
   }
@@ -114,46 +112,44 @@ void StrToLocalTime(const char* string, int& Hour, int& Min) {
   }
 }
 
-void ParseTimeGates(const json::value &timegates) {
-  if (timegates.is<json::array>()) {
-    const auto& gates_array = timegates.get<json::array>();
-    if (!gates_array.empty()) {
-      const std::string& first_str_time = gates_array[0].get<std::string>();
-      // Time of first gate in local timezone
-      StrToLocalTime(first_str_time.c_str(), TimeGates::PGOpenTimeH, TimeGates::PGOpenTimeM);
-      // How many gates, 1-x
-      TimeGates::PGNumberOfGates = gates_array.size();
-      if (TimeGates::PGNumberOfGates > 1) {
-        // Interval, in minutes
-        const std::string& second_str_time = gates_array[1].get<std::string>();
-        int H, M;
-        StrToLocalTime(second_str_time.c_str(), H, M);
-        TimeGates::PGGateIntervalTime = (H * 60 + M) - (TimeGates::PGOpenTimeH * 60 + TimeGates::PGOpenTimeM);
-      }
-      TimeGates::GateType = TimeGates::fixed_gates;
-    }
+void ParseTimeGates(const json &timegates) {
+  if (!timegates.is_array()) {
+    return;
+  }
+  if (timegates.empty()) {
+    return;
+  }
+  if (!timegates[0].is_string()) {
+    return;
+  }
+  std::string first_str_time = timegates[0];
+  // Time of first gate in local timezone
+  StrToLocalTime(first_str_time.c_str(), TimeGates::PGOpenTimeH, TimeGates::PGOpenTimeM);
+  // How many gates, 1-x
+  TimeGates::PGNumberOfGates = timegates.size();
+  if (TimeGates::PGNumberOfGates > 1 && timegates[1].is_string()) {
+    // Interval, in minutes
+    const std::string& second_str_time = timegates[1];
+    int H, M;
+    StrToLocalTime(second_str_time.c_str(), H, M);
+    TimeGates::PGGateIntervalTime = (H * 60 + M) - (TimeGates::PGOpenTimeH * 60 + TimeGates::PGOpenTimeM);
   }
 }
 
 /**
  *  https://xctrack.org/Competition_Interfaces.html#task-definition-format
  */
-bool LoadXctrackTask_V1(const json::value& task_json) {
-
-  const json::value& turnpoints = task_json.get("turnpoints");
-  if (!turnpoints.is<json::array>()) {
-    return false;
-  }
-
+bool LoadXctrackTask_V1(const json& task_json) {
   auto task_it = std::begin(Task);
 
-  for (const auto& tp : turnpoints.get<picojson::array>()) {
+  const json& turnpoints = task_json.value("turnpoints", json::array());
+  for (const auto& tp : turnpoints) {
 
-    waypoint_helper newPoint(tp.get("waypoint"));
+    waypoint_helper newPoint(tp.value("waypoint", json::object()));
 
-    const json::value& type = tp.get("type"); // TAKEOFF / SSS / ESS
-    if (type.is<std::string>()) {
-      const std::string& type_str = type.get<std::string>();
+    const json& type = tp.value("type", json());
+    if (type.is_string()) {
+      const std::string& type_str = type;
       if (type_str == "TAKEOFF") {
         // TODO : set as HOME
       }
@@ -166,7 +162,7 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
         }
 
         StartLine = sector_type_t::CIRCLE;
-        StartRadius = tp.get("radius").get<double>();
+        StartRadius = tp.value("radius", 0.0);
 
         task_it = std::begin(Task); // always start task with Start of Speed Turnpoint
         task_it->AATType = sector_type_t::CIRCLE;
@@ -182,7 +178,7 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
     }
   
     task_it->Index = FindOrAddWaypoint(&newPoint, false);
-    task_it->AATCircleRadius = tp.get("radius").get<double>();
+    task_it->AATCircleRadius = tp.value("radius", 0.0);
 
     ++task_it;
   }
@@ -196,12 +192,12 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
   }
 #endif
 
-  const json::value& sss = task_json.get("sss");
-  if (sss.is<json::object>()) {
-    const json::value& type = sss.get("type"); // string - one of "RACE" / "ELAPSED-TIME", required
-    bool elapsed_time = (type.is<std::string>() && type.get<std::string>() == "ELAPSED-TIME");
+  const json& sss = task_json.value("sss", json());
+  if (sss.is_object()) {
+    const std::string type = sss.value("type", ""); // string - one of "RACE" / "ELAPSED-TIME", required
+    bool elapsed_time = (type == "ELAPSED-TIME");
     if(!elapsed_time) { // ignore timesgates in case of ELAPSED-TIME ( not managed in LK8000)
-      ParseTimeGates(sss.get("timeGates")); // array of times, required
+      ParseTimeGates(sss.value("timeGates", json())); // array of times, required
     }
   }
 
@@ -211,24 +207,22 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
     FinishRadius = goal_tp->AATCircleRadius;
     FinishLine = sector_type_t::CIRCLE;
 
-    const json::value& goal = task_json.get("goal");
-    if (goal.is<json::object>()) {
-      const json::value& type = goal.get("type"); // string - one of "CYLINDER"/"LINE", optional (default CYLINDER)
-      if(type.is<std::string>()) {
-        if(type.get<std::string>() == "LINE") {
-          FinishLine = sector_type_t::LINE; // LINE
-        }
+    json goal = task_json.value("goal", json());
+    if (goal.is_object()) {
+      std::string type = goal.value("type", ""); // string - one of "CYLINDER"/"LINE", optional (default CYLINDER)
+      if (type == "LINE") {
+        FinishLine = sector_type_t::LINE; // LINE
       }
     }
 
 #if __TODO__
-    const json::value& deadline = goal.get("time"); // time, optional (default 23:00 local UTC equivalent)
+    json deadline = goal.value("time", json()); // time, optional (default 23:00 local UTC equivalent)
 #endif
   }
 
 #ifdef _WGS84
-  const json::value& earthModel = task_json.get("earthModel"); // string, optional - one of "WGS84"(default) / "FAI_SPHERE"
-  earth_model_wgs84 = !(earthModel.is<std::string>() && earthModel.get<std::string>() == "FAI_SPHERE");
+  std::string earthModel = task_json.value("earthModel", ""); // string, optional - one of "WGS84"(default) / "FAI_SPHERE"
+  earth_model_wgs84 = !(earthModel == "FAI_SPHERE");
 #endif
 
   return true;
@@ -237,31 +231,30 @@ bool LoadXctrackTask_V1(const json::value& task_json) {
 /**
  * https://xctrack.org/Competition_Interfaces.html#task-definition-format-2---for-qr-codes
  */
-bool LoadXctrackTask_V2(const json::value& task_json) {
-  const json::value& turnpoints = task_json.get("t");
-  if (!turnpoints.is<json::array>()) {
+bool LoadXctrackTask_V2(const json& task_json) {
+  const json& turnpoints = task_json.value("t", json());
+  if (!turnpoints.is_array()) {
     return false;
   }
 
   auto task_it = std::begin(Task);
 
-  for (const auto& tp : turnpoints.get<picojson::array>()) {
+  for (const auto& tp : turnpoints) {
 
-    const std::string& name = tp.get("n").get<std::string>();
-
-    const std::string& polyline_str = tp.get("z").get<std::string>();
+    std::string name = tp.value("n", "");
+    std::string polyline_str = tp.value("z", "");
     polyline_t polyline = polyline_decode(polyline_str);
 
     waypoint_helper newPoint(name, polyline);
 
-    const json::value& description = tp.get("d");
-    if (description.is<std::string>()) {
-      newPoint.set_description(description.get<std::string>().c_str());
+    std::string description = tp.value("d", "");
+    if (!description.empty()) {
+      newPoint.set_description(description.c_str());
     }
 
-    const json::value& type = tp.get("t");
-    if (type.is<double>()) {
-      switch (static_cast<int>(type.get<double>())) {
+    json type = tp.value("t", json());
+    if (type.is_number()) {
+      switch (static_cast<int>(type)) {
       case 2: // SSS
 
         // !! warning if not the first after takeoff ( unmanaged by LK8000 )
@@ -292,12 +285,12 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
     ++task_it;
   }
 
-  const json::value& sss = task_json.get("s");
-  if (sss.is<json::object>()) {
-    const json::value& type = sss.get("t"); // number, required, one of 1 (RACE), 2 (ELAPSED-TIME)
-    bool elapsed_time = (type.is<double>() && static_cast<int>(type.get<double>()) == 2);
+  const json& sss = task_json.value("s", json());
+  if (sss.is_object()) {
+    unsigned type = sss.value("t", 1); // number, required, one of 1 (RACE), 2 (ELAPSED-TIME)
+    bool elapsed_time = (type == 2);
     if(!elapsed_time) { // ignore timesgates in case of ELAPSED-TIME ( unmanaged in )
-      ParseTimeGates(sss.get("g")); // array of times, required - Time gates, start open time
+      ParseTimeGates(sss.value("g", json())); // array of times, required - Time gates, start open time
     }
   }
 
@@ -306,33 +299,31 @@ bool LoadXctrackTask_V2(const json::value& task_json) {
     FinishRadius = goal_tp->AATCircleRadius;
     FinishLine = sector_type_t::CIRCLE;
 
-    const json::value& goal = task_json.get("g");
-    if (goal.is<json::object>()) {
+    json goal = task_json.value("g", json());
+    if (goal.is_object()) {
       
-      const json::value& type = goal.get("t"); // number, optional one of 1 (LINE), 2 (CYLINDER) (default 2)
-      if(type.is<double>()) {
-        if (static_cast<int>(type.get<double>()) == 1) {
-          FinishLine = sector_type_t::LINE;
-        }
+      int type = goal.value("t", 0); // number, optional one of 1 (LINE), 2 (CYLINDER) (default 2)
+      if (type == 1) {
+        FinishLine = sector_type_t::LINE;
       }
 
 #if __TODO__
       // TODO : deadline is not managed in LK8000
-      const json::value& deadline = goal.get("d"); // time, optional - Deadline (default 23:00 local time UTC equivalent 
+      json deadline = goal.value("d", json()); // time, optional - Deadline (default 23:00 local time UTC equivalent 
 #endif
     }
   }
 
 #ifdef _WGS84
-  const json::value& earthModel = task_json.get("e"); // number, optional, 0 (wgs84, default), 1(fai sphere)
-  earth_model_wgs84 = !(earthModel.is<double>() && static_cast<int>(earthModel.get<double>()) == 1);
+  int earthModel = task_json.value("e", 0); // number, optional, 0 (wgs84, default), 1(fai sphere)
+  earth_model_wgs84 = !(earthModel == 1);
 #endif
 
   return true;
 }
 
-bool LoadXctrackTask(const json::value& task_json) {
-  if(!task_json.is<json::object>()) {
+bool LoadXctrackTask(const json& task_json) {
+  if(!task_json.is_object()) {
     return false;
   }
 
@@ -343,8 +334,8 @@ bool LoadXctrackTask(const json::value& task_json) {
   gTaskType = task_type_t::GP;
   TskOptimizeRoute=true;
 
-  if (task_json.get("taskType").get<std::string>() == "CLASSIC") {
-    switch(static_cast<int>(task_json.get("version").get<double>())) {
+  if (task_json.value("taskType", "") == "CLASSIC") {
+    switch (task_json.value("version", 0)) {
       case 1: // application/xctsk
         return LoadXctrackTask_V1(task_json);
       case 2: // from QR codes
@@ -352,16 +343,6 @@ bool LoadXctrackTask(const json::value& task_json) {
     }
   }
   return false;
-}
-
-template<typename ..._Args>
-json::value parse_json(_Args&& ...args) {
-  json::value task_json;
-  std::string error = json::parse(task_json, args...);
-  if (!error.empty()) {
-    throw std::runtime_error(error);
-  }
-  return task_json;
 }
 
 void LogError(std::exception& e) {
@@ -386,8 +367,9 @@ bool LoadXctrackTask(const TCHAR* szFilePath) {
 
 bool LoadXctrackTask(std::istream& stream) {
   try {
-    return LoadXctrackTask(parse_json(stream));
-  } catch (std::exception& e) {
+    return LoadXctrackTask(json::parse(stream));
+  }
+  catch (std::exception& e) {
     LogError(e);
   }
   return false;
@@ -395,8 +377,10 @@ bool LoadXctrackTask(std::istream& stream) {
 
 bool LoadXctrackTask(const char* begin, const char* end) {
   try {
-    return LoadXctrackTask(parse_json(begin, end));
-  } catch (std::exception& e) {
+    std::string_view task_string(begin, std::distance(begin, end));
+    return LoadXctrackTask(json::parse(task_string));
+  }
+  catch (std::exception& e) {
     LogError(e);
   }
   return false;
