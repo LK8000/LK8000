@@ -15,7 +15,6 @@
 #include "Fanet/frame.h"
 #include "utils/lookup_table.h"
 #include <random>
-#include "DeviceSettings.h"
 #include "Comm/Bluetooth/gatt_utils.h"
 #include "Comm/Bluetooth/characteristic_value.h"
 

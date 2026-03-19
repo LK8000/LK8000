@@ -1142,7 +1142,6 @@ DEVS	:=\
 	$(DEV)/devFlyBeeper.cpp \
 	$(DEV)/devVectorVario.cpp \
 	$(DEV)/DeviceRegister.cpp \
-	$(DEV)/DeviceSettings.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
