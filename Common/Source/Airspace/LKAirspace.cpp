@@ -26,7 +26,6 @@
 
 #include "Topology/shapelib/mapserver.h"
 #include "utils/zzip_file_stream.h"
-#include "picojson.h"
 #include "Radio.h"
 #include "Library/rapidxml/rapidxml.hpp"
 #include "utils/tokenizer.h"
@@ -49,6 +48,9 @@ using xml_attribute = rapidxml::xml_attribute<char>;
 
 using GeographicLib::GeodesicLine;
 #endif
+
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 #define MIN_AS_SIZE 3  // minimum number of point for a valid airspace
 
@@ -1521,27 +1523,38 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                 }
                 p += _tcslen(_T("AMhz "));
 
-                
-                picojson::value value;
-                std::string err = picojson::parse(value, to_utf8(p));
-                if (err.empty() && value.is<picojson::object>()) {
-                    std::string str_radio;
-                    const picojson::value::object& object = value.get<picojson::object>();
-                    for(const auto& pair : object) {
-                        str_radio += pair.first + " : ";
-                        if(pair.second.is<picojson::array>()) {
-                            for(const auto& value : pair.second.get<picojson::array>()) {
-                                str_radio += value.get<std::string>();
-                                str_radio += "\n";
-                            }
-                        } else if(pair.second.is<std::string>()) {
-                            str_radio += pair.second.get<std::string>();
-                        } else {
-                            str_radio += pair.second.serialize();
-                        }
+                try {
+                  auto to_tstring = [](const json& value) -> tstring {
+                    if (value.is_string()) {
+                      return utf8_to_tstring(value.get<std::string>());
                     }
-                    AppendComment(ASComment, utf8_to_tstring(str_radio.c_str()).c_str());
-                } else {
+                    else {
+                      return utf8_to_tstring(value.dump());
+                    }
+                  };
+
+                  const json json_object = json::parse(to_utf8(p), nullptr, false);
+                  if (json_object.is_object()) {
+                    tstring str_radio;
+                    for (const auto& obj : json_object.items()) {
+                      str_radio += utf8_to_tstring(obj.key()) + _T(" : ");
+                      if (obj.value().is_array()) {
+                        for (const auto& value : obj.value()) {
+                          str_radio += to_tstring(value);
+                          str_radio += _T("\n");
+                        }
+                      }
+                      else {
+                        str_radio += to_tstring(obj.value());
+                      }
+                    }
+                    AppendComment(ASComment, str_radio.c_str());
+                  }
+                  else {
+                    throw std::invalid_argument("json is not an object");
+                  }
+                }
+                catch (std::exception& e) {
                     // data is not a valid json, put it "as is" in Comment.
                     AppendComment(ASComment, p);
                 }
