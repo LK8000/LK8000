@@ -6,11 +6,11 @@
       <WndProperty Caption="_@M525_" X="2" Y="-1" Width="-2" Height="44" Keyboard="1" Font="2" CaptionWidth="0">
         <DataField DataType="string" OnDataAccess="OnPilotName" />
       </WndProperty>
-      <WndFrame  Caption="_@M2281_" X="2" Y="45" Width="100" Height="22" />
+      <WndFrame  Caption="_@M2281_" X="2" Y="45" Width="252" Height="22" />
 
-      <WndButton Name="cmdAdd" Caption="_@M459_" X="134" Y="45" Width="62" Height="22" Font="2" OnClickNotify="OnTrackingAddClicked" Tag="3" />
-      <WndButton Name="cmdEdit" Caption="_@M252_" X="196" Y="45" Width="62" Height="22" Font="2" OnClickNotify="OnTrackingEditClicked" Tag="3" />
-      <WndButton Name="cmdDelete" Caption="_@M230_" X="258" Y="45" Width="62" Height="22" Font="2" OnClickNotify="OnTrackingDeleteClicked" Tag="3" />
+      <WndButtonImage Name="cmdAdd" Caption="ADD" X="252" Y="45" Width="22" Height="22" Font="2" OnClickNotify="OnTrackingAddClicked" Tag="3" />
+      <WndButtonImage Name="cmdEdit" Caption="EDIT" X="274" Y="45" Width="22" Height="22" Font="2" OnClickNotify="OnTrackingEditClicked" Tag="3" />
+      <WndButtonImage Name="cmdDelete" Caption="BIN" X="296" Y="45" Width="22" Height="22" Font="2" OnClickNotify="OnTrackingDeleteClicked" Tag="3" />
 
       <WndListFrame Name="lstTracking" X="2" Y="67" Width="-2" Height="-2" Font="2" OnListInfo="OnTrackingListInfo" >
         <WndOwnerDrawFrame Name="lstTrackingItem" X="2" Y="2" Width="-2" Height="18" Font="2" OnPaint="OnTrackingPaintListItem" />
