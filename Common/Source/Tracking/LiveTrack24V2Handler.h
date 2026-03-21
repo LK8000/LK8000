@@ -10,7 +10,7 @@
 #include "LiveTrack24Common.h"
 #include "Thread/Thread.hpp"
 #include "Thread/Mutex.hpp"
-#include "Poco/Event.h"
+#include "Thread/Cond.hpp"
 #include <deque>
 #include <string>
 #include <memory>
@@ -40,17 +40,22 @@ class LiveTrack24V2Handler final : public ITrackingHandler {
                        const std::string& subURL,
                        bool calledSelf = false);
   bool LiveTrack24_Radar(class http_session& http);
+
   int GetUserIDFromServer2(class http_session& http);
   bool SendEndOfTrackPacket2(class http_session& http, unsigned int* packet_id);
   bool SendGPSPointPacket2(class http_session& http, unsigned int* packet_id);
+  void PopSentPoints(time_t last_unix_timestamp);
 
   const tracking::Profile m_profile;
   int m_logtime = 0;
 
   // Shared state
-  Mutex m_mutex;
-  Poco::Event m_newDataEvent;
+  Mutex m_tracker_mutex;
+  Cond m_tracker_cond;
   bool m_run_tracker = false;
+
+  Mutex m_radar_mutex;
+  Cond m_radar_cond;
   bool m_run_radar = false;
   std::deque<livetracker_point_t> m_points;
 

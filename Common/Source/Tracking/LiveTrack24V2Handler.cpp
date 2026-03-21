@@ -34,6 +34,27 @@ class LiveTrack24V2Handler::TrackerThread final : public Thread {
   void Run() override;
 
  private:
+  enum class TrackerState {
+    WaitForFlying,
+    GetUserId,
+    SendPoint,
+    EndTrack,
+  };
+
+  enum class ProcessResult {
+    Continue,
+    AwaitPoint,
+    WaitRetry,
+  };
+
+  bool WaitForPoint(livetracker_point_t& sendpoint);
+  bool WaitForRetry(unsigned timeout_ms) const;
+  bool IsRunning() const;
+  ProcessResult ProcessPoint(const livetracker_point_t& sendpoint,
+                             http_session& http,
+                             TrackerState& tracker_state,
+                             unsigned int& packet_id);
+
   LiveTrack24V2Handler& m_handler;
 };
 
@@ -301,18 +322,20 @@ LiveTrack24V2Handler::LiveTrack24V2Handler(const tracking::Profile& profile)
 }
 
 LiveTrack24V2Handler::~LiveTrack24V2Handler() {
-  if (m_run_tracker) {
-    m_run_tracker = false;
-    m_newDataEvent.set();
-    if (m_trackerThread->IsDefined()) {
-      m_trackerThread->Join();
-    }
+  if (m_trackerThread && m_trackerThread->IsDefined()) {
+    WithLock(m_tracker_mutex, [&]() {
+      m_run_tracker = false;
+    });
+    m_tracker_cond.Signal();
+    m_trackerThread->Join();
   }
-  if (m_run_radar) {
-    m_run_radar = false;
-    if (m_radarThread && m_radarThread->IsDefined()) {
-      m_radarThread->Join();
-    }
+
+  if (m_radarThread && m_radarThread->IsDefined()) {
+    WithLock(m_radar_mutex, [&]() {
+      m_run_radar = false;
+    });
+    m_radar_cond.Signal();
+    m_radarThread->Join();
   }
   StartupStore(_T(". LiveTracker V2 closed."));
 }
@@ -339,22 +362,22 @@ void LiveTrack24V2Handler::Update(const NMEA_INFO& Basic,
       .longitude = Basic.Longitude,
       .alt = Basic.Altitude,
       .ground_speed = Basic.Speed,
-      .course_over_ground = Calculated.Heading,
+      .course_over_ground = Basic.TrackBearing,
   };
 
-  WithLock(m_mutex, [&]() {
+  // Keep at most 30 minutes of queued points to bound backlog growth.
+  WithLock(m_tracker_mutex, [&]() {
     if (m_points.size() > static_cast<size_t>(1800 / m_profile.interval)) {
       m_points.pop_front();
     }
     m_points.push_back(newpoint);
   });
-  m_newDataEvent.set();
+  m_tracker_cond.Signal();
 }
 
 json LiveTrack24V2Handler::callLiveTrack24(http_session& http,
                                            const std::string& subURL,
                                            bool calledSelf) {
-
   std::string url = "/api/v2/op/" + subURL;
   url += "/ak/" + std::string(appKey) + "/vc/" + otpReply(m_otpQuestion);
   if (calledSelf) {
@@ -547,7 +570,7 @@ bool LiveTrack24V2Handler::SendGPSPointPacket2(http_session& http,
   std::vector<int> TimeList, LatList, LonList, AltList, SOGlist, COGlist;
 
   {
-    ScopeLock guard(m_mutex);
+    ScopeLock guard(m_tracker_mutex);
 
     if (m_points.empty()) {
       return false;
@@ -589,110 +612,152 @@ bool LiveTrack24V2Handler::SendGPSPointPacket2(http_session& http,
   if (response != "0;OK") {
     return false;
   }
-  WithLock(m_mutex, [&]() {
-    while (!m_points.empty() &&
-           m_points.front().unix_timestamp <= _last_unix_timestamp) {
-      m_points.pop_front();
-    }
-  });
+  PopSentPoints(_last_unix_timestamp);
   (*packet_id)++;
   DebugLog(_T(".Livetrack24 TRACKER sent %u points"),
            static_cast<unsigned>(TimeList.size()));
   return true;
 }
 
-void LiveTrack24V2Handler::TrackerThread::Run() {
-  int tracker_fsm = 0;
-  livetracker_point_t sendpoint = {};
-  bool sendpoint_processed = false;
-  bool packet_processed = false;
-  bool sendpoint_valid = false;
-  unsigned int packet_id = 0;
+void LiveTrack24V2Handler::PopSentPoints(time_t last_unix_timestamp) {
+  WithLock(m_tracker_mutex, [&]() {
+    while (!m_points.empty() &&
+           m_points.front().unix_timestamp <= last_unix_timestamp) {
+      m_points.pop_front();
+    }
+  });
+}
 
+void LiveTrack24V2Handler::TrackerThread::Run() {
+  TrackerState tracker_state = TrackerState::WaitForFlying;
+  unsigned int packet_id = 0;
   http_session http;
 
-  do {
-    if (m_handler.m_newDataEvent.tryWait(5000)) {
-      m_handler.m_newDataEvent.reset();
+  while (IsRunning()) {
+    livetracker_point_t sendpoint = {};
+    if (!WaitForPoint(sendpoint)) {
+      return; // stopping, exit thread
     }
-    if (!m_handler.m_run_tracker) {
+
+    while (true) {
+      switch (ProcessPoint(sendpoint, http, tracker_state, packet_id)) {
+        case ProcessResult::Continue:
+          continue;
+
+        case ProcessResult::AwaitPoint:
+          break;
+
+        case ProcessResult::WaitRetry:
+          if (!WaitForRetry(2500)) {
+            return;  // stopping, exit thread
+          }
+          break;
+      }
+
       break;
     }
+  }
+}
 
-    sendpoint_processed = false;
+bool LiveTrack24V2Handler::TrackerThread::WaitForPoint(
+    livetracker_point_t& sendpoint) {
+  ScopeLock lock(m_handler.m_tracker_mutex);
+  while (m_handler.m_run_tracker && m_handler.m_points.empty()) {
+    m_handler.m_tracker_cond.Wait(m_handler.m_tracker_mutex, 5000);
+  }
 
-    sendpoint_valid = WithLock(m_handler.m_mutex, [&]() {
-      if (!m_handler.m_points.empty()) {
-        sendpoint = m_handler.m_points.front();
-        return true;
-      }
-      return false;
-    });
+  if (!m_handler.m_run_tracker) {
+    return false;
+  }
 
-    if (sendpoint_valid) {
-      DebugLog(
-          _T(". Livetracker TRACKER sendpoint.flying: %d - tracker_fsm: %d"),
-          sendpoint.flying, tracker_fsm);
+  sendpoint = m_handler.m_points.front();
+  return true;
+}
 
-      switch (tracker_fsm) {
-        default:
-        case 0:  // Wait for flying
-          if (!sendpoint.flying) {
-            ScopeLock guard(m_handler.m_mutex);
+bool LiveTrack24V2Handler::TrackerThread::WaitForRetry(unsigned timeout_ms) const {
+  ScopeLock lock(m_handler.m_tracker_mutex);
+  if (!m_handler.m_run_tracker) {
+    return false;
+  }
+  m_handler.m_tracker_cond.Wait(m_handler.m_tracker_mutex, timeout_ms);
+  return m_handler.m_run_tracker;
+}
+
+bool LiveTrack24V2Handler::TrackerThread::IsRunning() const {
+  return WithLock(m_handler.m_tracker_mutex, [&]() {
+    return m_handler.m_run_tracker;
+  });
+}
+
+LiveTrack24V2Handler::TrackerThread::ProcessResult
+LiveTrack24V2Handler::TrackerThread::ProcessPoint(
+    const livetracker_point_t& sendpoint, http_session& http,
+    TrackerState& tracker_state, unsigned int& packet_id) {
+
+  DebugLog(_T(". Livetracker TRACKER sendpoint.flying: %d - tracker_state: %d"),
+           sendpoint.flying, static_cast<int>(tracker_state));
+
+  switch (tracker_state) {
+    default:
+    case TrackerState::WaitForFlying:
+      if (!sendpoint.flying) {
+        WithLock(m_handler.m_tracker_mutex, [&]() {
+          if (!m_handler.m_points.empty()) {
             m_handler.m_points.pop_front();
-            sendpoint_processed = true;
-            break;
           }
-          tracker_fsm++;
-          break;
-        case 1:  // Get User ID
-          m_handler.m_v2_userid = m_handler.GetUserIDFromServer2(http);
-          sendpoint_processed = false;
-          if (m_handler.m_v2_userid >= 0) {
-            tracker_fsm++;
-          }
-          break;
-        case 2:  // Start of track packet (implicit in V2)
-          sendpoint_processed = false;
-          tracker_fsm++;
-          break;
-        case 3:  // Gps point packet
-          packet_processed = m_handler.SendGPSPointPacket2(http, &packet_id);
-          if (!sendpoint.flying) {
-            tracker_fsm++;
-          }
-          break;
-        case 4:  // End of track packet
-          sendpoint_processed = m_handler.SendEndOfTrackPacket2(http, &packet_id);
-          StartupStore(
-              _T(". Livetracker TRACKER SendEndOfTrackPacket2 .%d ..."),
-              sendpoint_processed);
-
-          if (sendpoint_processed) {
-            tracker_fsm = 0;
-          }
-          break;
+        });
+        return ProcessResult::AwaitPoint;
       }
+      tracker_state = TrackerState::GetUserId;
+      return ProcessResult::Continue;
+
+    case TrackerState::GetUserId: {
+      const int user_id = m_handler.GetUserIDFromServer2(http);
+      if (user_id >= 0) {
+        m_handler.m_v2_userid = user_id;
+        tracker_state = TrackerState::SendPoint;
+        return ProcessResult::Continue;
+      }
+      return ProcessResult::WaitRetry;
     }
-    if (packet_processed) {
-      Sleep(m_handler.m_profile.interval * 1000);
+
+    case TrackerState::SendPoint:
+      if (m_handler.SendGPSPointPacket2(http, &packet_id)) {
+        if (!sendpoint.flying) {
+          tracker_state = TrackerState::EndTrack;
+          return ProcessResult::Continue;
+        }
+        return ProcessResult::AwaitPoint;
+      }
+      return ProcessResult::WaitRetry;
+
+    case TrackerState::EndTrack: {
+      const bool sent_end = m_handler.SendEndOfTrackPacket2(http, &packet_id);
+      StartupStore(_T(". Livetracker TRACKER SendEndOfTrackPacket2 .%d ..."),
+                   sent_end);
+      if (sent_end) {
+        tracker_state = TrackerState::WaitForFlying;
+        return ProcessResult::AwaitPoint;
+      }
+      return ProcessResult::WaitRetry;
     }
-  } while (m_handler.m_run_tracker);
+  }
 }
 
 void LiveTrack24V2Handler::RadarThread::Run() {
   http_session http;
-  Sleep(5000);
-  do {
-    if (!m_handler.m_run_radar) {
-      break;
-    }
 
-    if (!m_handler.LiveTrack24_Radar(http)) {
-      Sleep(5000);
+  auto WaitForRadarStop = [&]() {
+    ScopeLock lock(m_handler.m_radar_mutex);
+    while (m_handler.m_run_radar) {
+      if (!m_handler.m_radar_cond.Wait(m_handler.m_radar_mutex, 5000)) {
+        return true;  // timeout
+      }
     }
-    else {
-      Sleep(5000);
-    }
-  } while (m_handler.m_run_radar);
+    return false;  // stop was requested
+  };
+
+  while (WaitForRadarStop()) {
+    m_handler.LiveTrack24_Radar(http);
+  }
 }
