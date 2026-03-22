@@ -32,6 +32,9 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
   if (!MapApproachEnabled) {
     return;
   }
+  if (!MapWindow::mode.Is(MapWindow::Mode::MODE_APPROACH_PAN)) {
+    return;
+  }
 
   int wp_index = MapApproachWaypoint >= 0 ? MapApproachWaypoint : GetOvertargetIndex();
   if (wp_index < 0) {

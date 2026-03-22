@@ -2207,9 +2207,11 @@ void WndButton::Paint(LKSurface& Surface){
     }
 
     if (mSelected && !mDown) {
+      const auto oldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
       const auto oldPen = Surface.SelectObject(LKPen_Black_N2);
       Surface.Rectangle(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
       Surface.SelectObject(oldPen);
+      Surface.SelectObject(oldBrush);
     }
 
     unsigned height = GetHeight();

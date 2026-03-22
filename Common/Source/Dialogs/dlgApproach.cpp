@@ -230,9 +230,6 @@ void dlgApproach(int waypoint_index) {
     return;
   }
 
-  MapApproachEnabled = true;
-  MapApproachWaypoint = waypoint_index;
-
   const WAYPOINT& wp = WayPointList[waypoint_index];
   if (wp.RunwayDir >= 0) {
     int h1 = std::lrint(wp.RunwayDir / 10.0);
@@ -250,7 +247,12 @@ void dlgApproach(int waypoint_index) {
   }
 
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_APPROACH_L : IDR_XML_APPROACH_P);
-  if (!wf) return;
+  if (!wf) {
+    return;
+  }
+
+  MapApproachEnabled = true;
+  MapApproachWaypoint = waypoint_index;
 
   if (ScreenLandscape) {
     /* Vertical strip: same geometry as Target landscape — full client height, top aligned to map

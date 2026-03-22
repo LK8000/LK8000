@@ -51,7 +51,7 @@ When **Direct** is selected and a runway is chosen, the map shows a **blue segme
    - **Approve** — confirms. The current task is **replaced** by a two-point approach task:
      - **Point 1**: “DIRECT nn” (e.g. DIRECT 34) — the 5 km point on the extended centreline.
      - **Point 2**: the airfield (runway centre).
-   The Approach dialog closes and the map returns to normal navigation with the new task active; the pilot may use the autopilot to follow the approach track.
+   The Approach dialog closes and the map returns to normal navigation with the new task active. The two-point task is **navigation guidance only**; traffic and terrain are still ignored as in the warning above. Any autopilot or external guidance use remains **entirely the pilot’s responsibility**.
    - **IGNORE!!** — cancels. The popup closes and no task change is made.
 
 ---

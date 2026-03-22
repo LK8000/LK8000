@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <lk-task type="Default">
 	<options auto-advance="Auto">
-		<start type="circle" radius="2000.000000"/>
-		<finish type="line" radius="2000.000000"/>
-		<sector type="sector" radius="5000.000000"/>
+		<start type="circle" radius="1000.000000"/>
+		<finish type="circle" radius="500.000000"/>
+		<sector type="circle" radius="1000.000000"/>
+		<rules>
+			<finish fai-height="false" min-height="0"/>
+			<start max-height="0" max-height-margin="0" max-speed="0" max-speed-margin="0" height-ref="AGL"/>
+		</rules>
 	</options>
-	<rules>
-		<finish fai-height="false" min-height="0"/>
-		<start max-height="0" max-height-margin="0" max-speed="0" max-speed-margin="0" height-ref="AGL"/>
-	</rules>
 	<taskpoints>
 		<point idx="0" name="DOVERA"/>
 	</taskpoints>

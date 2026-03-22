@@ -342,6 +342,15 @@ static void CompactTargetPortraitLayout(void) {
   }
 }
 
+/// True if Approach can open for task point tp (landable); optional waypoint index out.
+static bool CanOpenApproachForTargetPoint(int tp, int* wp_index_out) {
+  if (!ValidTaskPoint(tp)) return false;
+  const int wp_index = Task[tp].Index;
+  if (!ValidWayPointFast(wp_index) || !WayPointCalc[wp_index].IsLandable) return false;
+  if (wp_index_out) *wp_index_out = wp_index;
+  return true;
+}
+
 /// After compact or field visibility changes, sync map pan strip size (width in landscape).
 static void ApplyTargetPanIfNeeded(void) {
   if (!wf || !TargetDialogOpen || !ValidTaskPoint(target_point)) return;
@@ -510,9 +519,8 @@ static void OnMoveClicked(WndButton* pWnd) {
 
 /// Open Approach dialog for current target waypoint if it is landable.
 static void OnTargetApproachClicked(WndButton* pWnd) {
-  if (!ValidTaskPoint(target_point)) return;
-  const int wp_index = Task[target_point].Index;
-  if (!ValidWayPointFast(wp_index) || !WayPointCalc[wp_index].IsLandable) return;
+  int wp_index = -1;
+  if (!CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
   dlgApproach(wp_index);
 }
 

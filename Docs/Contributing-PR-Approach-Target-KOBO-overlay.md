@@ -109,4 +109,18 @@ Attach **before/after** photos or QEMU captures showing:
 
 ---
 
+## Aligning [PR #1687](https://github.com/LK8000/LK8000/pull/1687) (draft → ready for review)
+
+Use this when **marking the PR “Ready for review”** after KOBO validation:
+
+1. **Edit the PR description** so the top says the feature is verified on **KOBO** (landscape + portrait), not only Linux; point to `Docs/Approach.md` and `Approach_Manual_Addendum.md`.
+2. **Resolve or reply** to CodeRabbit threads: `Default.lkt` **rules inside `<options>`** (parser requirement), `dlgApproach` **globals only after successful XML load**, `DrawApproach` gated on **`MODE_APPROACH_PAN`**, **Direct** label (already English in XML), manual **autopilot** wording (revised in addendum).
+3. **Clear draft** on GitHub once CI is green and you are happy with on-device tests.
+
+Short paragraph to paste under “Summary” on the PR:
+
+> **KOBO:** Overlays use the map window **client rect** (full-height strip in landscape, correct top alignment). Earlier drafts behaved on desktop Linux but mis-sized on Kobo; this is addressed in the latest commits on `feature/approach`. **Code review follow-ups:** task rules XML structure, approach globals on dialog load failure, draw only in approach-pan mode, selected-button outline uses hollow brush, shared landable check for Approach button.
+
+---
+
 *End of PR package.*
