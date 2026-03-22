@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "Topology.h"
 
 using std::min;
 

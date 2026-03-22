@@ -195,7 +195,6 @@ namespace LKGeom {
 
         template<typename polygon_in, typename polygon_out>
         void ClipPolygon(const polygon_in& inPoly, polygon_out& outPoly) {
-            typedef typename polygon_in::const_iterator const_iterator;
             typedef typename polygon_out::value_type out_value;
             
             Upoint *pt_Cp_start = &Cp_start;
@@ -225,7 +224,7 @@ namespace LKGeom {
             /*
              * Register First polygon point
              */
-            const_iterator in = inPoly.begin();
+            auto in = inPoly.begin();
             *pt_Cp_start = *in;
 
             /*

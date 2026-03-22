@@ -11,7 +11,7 @@
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "Sound/Sound.h"
-#include "Topology.h"
+#include "Oracle.h"
 #include "resource.h"
 #include "Asset.hpp"
 

@@ -679,7 +679,7 @@ uint16_t error= REC_NO_ERROR;
       szEOS_DL_StatusText[0] = '\0';
     
       GetEOSIGCFilename(PathIGCFilename, DownoadIGCFilename);
-      pf_IGCFile = _tfopen( PathIGCFilename, TEXT("w"));
+      pf_IGCFile = _tfopen( PathIGCFilename, TEXT("wb"));
       if(pf_IGCFile == NULL) 
       {  
         EOS_IGCReadDialog.DownloadError(FILE_OPEN_ERROR);  

@@ -29,8 +29,13 @@
 #endif
 
 CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPath), mOSFilePath(szPath)  {
+#ifdef WIN32
+    const TCHAR dirsep = static_cast<TCHAR>('\\');
+#else
+    const TCHAR dirsep = static_cast<TCHAR>('/');
+#endif
 
-    if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != L'\\') {
+    if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != dirsep) {
         mOSFilePath += _T(DIRSEP);
     }
     mOSFilePath += TEXT(LKD_CONF);
@@ -45,7 +50,7 @@ CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPat
     }
 
 
-    if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != L'\\') {
+    if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != dirsep) {
         mLKFilePath += _T(DIRSEP);
     }
     mLKFilePath += TEXT(LKD_CONF);

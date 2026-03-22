@@ -36,7 +36,7 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
   else
 	fclose(stream);
 
-  stream = _tfopen(fname,TEXT("a+"));
+  stream = _tfopen(fname,TEXT("ab+"));
   if (stream != NULL){
 	if (dopreambol) {
 		// file was created empty, we need to add preambol header for CUP

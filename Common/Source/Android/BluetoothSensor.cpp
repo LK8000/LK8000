@@ -162,49 +162,56 @@ bool BluetoothSensor::IsReady() {
 }
 
 unsigned BluetoothSensor::RxThread() {
-  int state = STATE_LIMBO;
+  unsigned observed_state_generation = WithLock(mutex, [&]() {
+    // Intentional unsigned wraparound when state_generation==0:
+    // this guarantees one initial state poll before the regular wait loop.
+    return state_generation - 1;
+  });
 
+  int state = STATE_LIMBO;
   bool connected = false;
 
   std::vector<sensor_data> rxthread_queue;
 
-  do {
-    bool stop = WithLock(mutex, [&]() {
-      if (running && bridge) {
-        state = bridge->getState(Java::GetEnv());
-        assert(rxthread_queue.empty());
-        std::swap(rxthread_queue, data_queue);
-        assert(data_queue.empty());
-        return false;
+  while (true) {
+    const bool stop = WithLock(mutex, [&]() {
+      while (running && bridge && data_queue.empty() &&
+             observed_state_generation == state_generation) {
+        // Wait until data is queued, state changes, or thread is stopped.
+        newdata.Wait(mutex);
       }
-      return true;  // Stop RxThread...
-    });
+      if (!running || !bridge) {
+        return true;
+      }
 
+      observed_state_generation = state_generation;
+      state = bridge->getState(Java::GetEnv());
+      std::swap(rxthread_queue, data_queue);
+      return false;
+    });
     if (stop) {
-      return 0;  // Stop RxThread...
+      return 0;
     }
 
     if (!connected && state == STATE_READY) {
       connected = true;
       devOpen(devGetDeviceOnPort(GetPortIndex()));
     }
-
-    if (connected && state != STATE_READY) {
+    else if (connected && state != STATE_READY) {
       connected = false;
       NotifyDisconnected();
     }
 
-    for (auto& data : rxthread_queue) {
+    for (const auto& data : rxthread_queue) {
       ProcessSensorData(data);
     }
     rxthread_queue.clear();
-
-    ScopeLock lock(mutex);
-    newdata.Wait(mutex);  // wait for data or state change
-  } while (true);
+  }
 }
 
 void BluetoothSensor::PortStateChanged() {
+  ScopeLock lock(mutex);
+  ++state_generation;
   newdata.Signal();
 }
 

@@ -12,32 +12,24 @@
 #ifndef SHAPEPOLYGONRENDERER_H
 #define	SHAPEPOLYGONRENDERER_H
 
-#include "Screen/PolygonRenderer.h"
-#include "ShapeSpecialRenderer.h"
+#include "Topology/XShape.h"
+#include "Screen/PolygonSaveCallback.h"
 
-class Brush;
-class XShape;
-class ScreenProjection;
+// if it's a water area (nolabels), print shape up to defaultShape, but print
+// labels only up to custom label levels
 
-class ShapePolygonRenderer final : protected PolygonRenderer {
-public:
-    using PolygonRenderer::PolygonRenderer;
+class ShapePolygonRenderer final : public ShapeRenderer {
+ public:
+  ShapePolygonRenderer(const shapeObj& shape, const LKBrush& brush);
 
-    void setClipRect(const PixelRect& rect) {
-        clipRect = rect;
-    }
-    
-    void setNoLabel(bool b) {
-        noLabel = b;
-    }
-    
-    void renderPolygon(ShapeSpecialRenderer& renderer, LKSurface& Surface, const XShape& shape, const Brush& brush, const ScreenProjection& _Proj);
-    
-private:
+  void Draw(LKSurface& Surface, const ScreenProjection& _Proj,
+            const PixelRect& ClipRect, callback_ref_t callback) override;
 
-    bool noLabel;
-    PixelRect clipRect;
-    RasterPoint curr_LabelPos;
+ private:
+  // triangulated polygon in geographic coordinates
+  TessPolygonsT<FloatPoint> _tess_polygon;
+  const LKBrush& _brush;
+  pointObj _label_position = {};
 };
 
-#endif	/* SHAPEPOLYGONRENDERER_H */
+#endif /* SHAPEPOLYGONRENDERER_H */

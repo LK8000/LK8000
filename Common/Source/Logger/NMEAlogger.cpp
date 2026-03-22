@@ -53,7 +53,7 @@ static bool wasWriting=false;
         LocalPath(buffer,TEXT(LKD_LOGS));
         lk::snprintf(fpname, _T("%s%sNMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP), GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
         GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-        logfpall = _tfopen(fpname, _T("a"));
+        logfpall = _tfopen(fpname, _T("ab"));
         if (logfpall == NULL) {
           DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE"));
           EnableLogNMEA=false;
@@ -74,7 +74,7 @@ static bool wasWriting=false;
           TCHAR buffer[LKSIZEBUFFERPATH];
           LocalPath(buffer,TEXT(LKD_LOGS));
           lk::snprintf(fpname, _T("%s%sNMEA_%c_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, _T(DIRSEP),_T('A')+PortNum, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-          logfsingle[PortNum] = _tfopen(fpname, _T("a"));
+          logfsingle[PortNum] = _tfopen(fpname, _T("ab"));
           if (logfsingle[PortNum] == NULL) {
             DoStatusMessage(_T("CANNOT SAVE TO NMEA LOGFILE PORT A:"));
             return; 

@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "Topology.h"
+#include "Topology/Topology.h"
 
 
 void MapWindow::DrawBitmapIn(LKSurface& Surface, const POINT &sc, const LKIcon& Icon) {

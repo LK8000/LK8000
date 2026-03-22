@@ -9,6 +9,7 @@
  * Created on August 28, 2023, 10:37 PM
  */
 
+#include "Library/glutess/glutess.h"
 #include "PolygonDrawCallback.h"
 #include "Screen/Point.hpp"
 #include "Screen/LKSurface.h"

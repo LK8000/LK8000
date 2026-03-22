@@ -19,7 +19,7 @@
 #include "Draw/ScreenProjection.h"
 #include "Util/TruncateString.hpp"
 #include "Asset.hpp"
-#include "utils/array_adaptor.h"
+#include <span>
 #include "Screen/Point.hpp"
 
 namespace {
@@ -593,7 +593,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		}
 	} // for all waypoints
 
-	auto sorted_array = make_array(SortedWaypointLabelList, MapWaypointLabelListCount);
+	auto sorted_array = std::span(SortedWaypointLabelList, MapWaypointLabelListCount);
 	std::sort(std::begin(sorted_array), std::end(sorted_array), MapWaypointLabelListCompare());
 
 	for (MapWaypointLabel_t *E : sorted_array) {

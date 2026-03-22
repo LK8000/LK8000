@@ -33,18 +33,11 @@
 #include "Compiler.h"
 
 #include <new>
-#include <utility>
-
-#if GCC_OLDER_THAN(4,8)
 #include <type_traits>
-#endif
+#include <memory>
+#include <utility>
+#include <cassert>
 
-#include <assert.h>
-
-#if CLANG_OR_GCC_VERSION(4,7)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
 
 /**
  * Container for an object that gets constructed and destructed
@@ -54,77 +47,84 @@
  */
 template<class T>
 class Manual {
-  gcc_alignas(T, 8)
-  char data[sizeof(T)];
+
+  alignas(T) std::byte data[sizeof(T)];
+
+  
+  T* addr() noexcept {
+    return std::launder(reinterpret_cast<T*>(&data));
+  }
+  const T* addr() const noexcept {
+    return std::launder(reinterpret_cast<const T*>(&data));
+  }
 
 #ifndef NDEBUG
-  bool initialized;
+  bool initialized = false;
 #endif
 
 public:
+
+  Manual() = default;
+
+  Manual(const Manual&) = delete;
+  Manual& operator=(const Manual&) = delete;
+  Manual(Manual&&) = delete;
+  Manual& operator=(Manual&&) = delete;
+
 #ifndef NDEBUG
-  Manual():initialized(false) {}
   ~Manual() {
     assert(!initialized);
   }
 #endif
 
   template<typename... Args>
-  void Construct(Args&&... args) {
+  void Construct(Args&&... args) noexcept(noexcept(T(std::forward<Args>(args)...))){
     assert(!initialized);
 
-    void *p = data;
-    new(p) T(std::forward<Args>(args)...);
+    std::construct_at(reinterpret_cast<T*>(&data), std::forward<Args>(args)...);
 
 #ifndef NDEBUG
     initialized = true;
 #endif
   }
 
-  void Destruct() {
+  void Destruct() noexcept {
     assert(initialized);
 
-    T &t = Get();
-    t.T::~T();
+    if constexpr (!std::is_trivially_destructible_v<T>) {
+      std::destroy_at(addr());
+    }
 
 #ifndef NDEBUG
     initialized = false;
 #endif
   }
 
-  T &Get() {
+  T &Get() noexcept {
     assert(initialized);
-
-    void *p = static_cast<void *>(data);
-    return *static_cast<T *>(p);
+    return *addr();
   }
 
-  const T &Get() const {
+  const T &Get() const noexcept {
     assert(initialized);
-
-    const void *p = static_cast<const void *>(data);
-    return *static_cast<const T *>(p);
+    return *addr();
   }
 
-  operator T &() {
+  operator T &() noexcept {
     return Get();
   }
 
-  operator const T &() const {
+  operator const T &() const noexcept {
     return Get();
   }
 
-  T *operator->() {
+  T *operator->() noexcept {
     return &Get();
   }
 
-  const T *operator->() const {
+  const T *operator->() const noexcept {
     return &Get();
   }
 };
-
-#if CLANG_OR_GCC_VERSION(4,7)
-#pragma GCC diagnostic pop
-#endif
 
 #endif

@@ -194,6 +194,8 @@ bool AndroidPort::IsReady() {
 }
 
 void AndroidPort::PortStateChanged() {
+    ScopeLock lock(mutex);
+    ++state_generation;
     newdata.Signal();
 }
 
@@ -202,47 +204,53 @@ void AndroidPort::PortError(const char *msg) {
 }
 
 unsigned AndroidPort::RxThread() {
+  unsigned observed_state_generation = WithLock(mutex, [&]() {
+    // Intentional unsigned wraparound when state_generation==0:
+    // this guarantees one initial state poll before the regular wait loop.
+    return state_generation - 1;
+  });
 
-    std::vector<char> rxthread_buffer;
-    int state = STATE_LIMBO;
+  std::vector<char> rxthread_buffer;
+  int state = STATE_LIMBO;
 
-    bool connected = false;
+  bool connected = false;
 
-    do {
-        bool stop = WithLock(mutex, [&]() {
-            if (running && bridge) {
-                state = bridge->getState(Java::GetEnv());
-                assert(rxthread_buffer.empty());
-                std::swap(rxthread_buffer, buffer);
-                assert(buffer.empty());
-                return false;
-            }
-            return true; // Stop RxThread...
-        });
+  while (true) {
+    const bool stop = WithLock(mutex, [&]() {
+      while (running && bridge && buffer.empty() &&
+             observed_state_generation == state_generation) {
+        // Wait until data is queued, state changes, or thread is stopped.
+        newdata.Wait(mutex);
+      }
+      if (!running || !bridge) {
+        return true;
+      }
 
-        if (stop) {
-            return 0; // Stop RxThread...
-        }
+      observed_state_generation = state_generation;
+      state = bridge->getState(Java::GetEnv());
+      std::swap(rxthread_buffer, buffer);
+      return false;
+    });
 
-        if (!rxthread_buffer.empty() ) {
-            WithLock(CritSec_Comm, [&]() {
-                ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
-            });
-            rxthread_buffer.clear();
-        }
-
-        if (!connected && state == STATE_READY) {
-            connected = true;
-            devOpen(devGetDeviceOnPort(GetPortIndex()));
-            NotifyConnected();
-        }
-        if (connected && state != STATE_READY) {
-          connected = false;
-          NotifyDisconnected();
-        }
-
-        ScopeLock lock(mutex);
-        newdata.Wait(mutex); // wait for data or state change
+    if (stop) {
+      return 0;
     }
-    while(true);
+
+    if (!rxthread_buffer.empty()) {
+      WithLock(CritSec_Comm, [&]() {
+        ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
+      });
+      rxthread_buffer.clear();
+    }
+
+    if (!connected && state == STATE_READY) {
+      connected = true;
+      devOpen(devGetDeviceOnPort(GetPortIndex()));
+      NotifyConnected();
+    }
+    else if (connected && state != STATE_READY) {
+      connected = false;
+      NotifyDisconnected();
+    }
+  }
 }

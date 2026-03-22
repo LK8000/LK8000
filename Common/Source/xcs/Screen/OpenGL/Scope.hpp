@@ -34,11 +34,11 @@ Copyright_License {
 template<GLenum cap>
 class GLEnable {
 public:
-  GLEnable() {
+  GLEnable() noexcept {
     ::glEnable(cap);
   }
 
-  ~GLEnable() {
+  ~GLEnable() noexcept {
     ::glDisable(cap);
   }
   
@@ -48,12 +48,12 @@ public:
 
 class GLBlend : public GLEnable<GL_BLEND> {
 public:
-  GLBlend(GLenum sfactor, GLenum dfactor) {
+  GLBlend(GLenum sfactor, GLenum dfactor) noexcept {
     ::glBlendFunc(sfactor, dfactor);
   }
 
 #ifndef HAVE_GLES
-  GLBlend(GLclampf alpha) {
+  GLBlend(GLclampf alpha) noexcept {
     ::glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     ::glBlendColor(0, 0, 0, alpha);
   }
@@ -66,12 +66,12 @@ public:
  */
 class ScopeAlphaBlend : GLBlend {
 public:
-  ScopeAlphaBlend() noexcept:GLBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) {}
+  ScopeAlphaBlend() noexcept : GLBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) {}
 };
 
 class GLScissor : public GLEnable<GL_SCISSOR_TEST> {
 public:
-  GLScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
+  GLScissor(GLint x, GLint y, GLsizei width, GLsizei height) noexcept {
     assert(width > 0);
     assert(height > 0);
     ::glScissor(x, y, width, height);
@@ -96,7 +96,7 @@ public:
 template<GLbitfield mask>
 class GLPushAttrib {
 public:
-    GLPushAttrib() {
+    GLPushAttrib() noexcept {
         GLint depth;  
         ::glGetIntegerv(GL_ATTRIB_STACK_DEPTH, &depth);
         assert(depth < OpenGL::max_attrib_stack_depth); // Error GL_ATTRIB_STACK is full !!
@@ -109,7 +109,7 @@ public:
         }
     }
 
-    ~GLPushAttrib() {
+    ~GLPushAttrib() noexcept {
         if(stack) {
 #ifndef NDEBUG
             GLint depth; 
@@ -126,16 +126,17 @@ private:
 /**
  * Save and auto-restore an OpenGL scissor state 
  */
-typedef GLPushAttrib<GL_SCISSOR_BIT> GLPushScissor;
+using GLPushScissor = GLPushAttrib<GL_SCISSOR_BIT>;
+
 #else
 
 class GLPushScissor {
 public:
-    GLPushScissor() {
+    GLPushScissor() noexcept {
         ::glGetIntegerv(GL_SCISSOR_BOX, scissor_box);
         enabled = OpenGL::scissor_test;
     }
-    ~GLPushScissor() {
+    ~GLPushScissor() noexcept {
         if(enabled) {
             ::glEnable(GL_SCISSOR_TEST);
         } else {

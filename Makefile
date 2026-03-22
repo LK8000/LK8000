@@ -1033,6 +1033,9 @@ TOPOL	:=\
 	$(TOP)/Topology.cpp		\
 	$(TOP)/ShapeSpecialRenderer.cpp	\
 	$(TOP)/ShapePolygonRenderer.cpp  \
+	$(TOP)/ShapeLineRenderer.cpp \
+	$(TOP)/ShapePointRenderer.cpp \
+	$(TOP)/XShape.cpp  \
 
 MAPDRAW	:=\
 	$(MAP)/DrawTerrain.cpp		\
@@ -1714,6 +1717,8 @@ ifeq ($(OPENGL),y)
 else
 	$(Q)convert $^ PNG24:$@	
 endif
+
+.PRECIOUS: $(BIN)/lk8000.min.rc
 
 ####### include depends files
 

@@ -57,7 +57,7 @@ Copyright_License {
 #include <memory>
 #include <assert.h>
 #include "utils/stl_utils.h"
-#include "utils/array_adaptor.h"
+#include <span>
 #include "Screen/PolygonRenderer.h"
 
 
@@ -282,7 +282,7 @@ Canvas::DrawPolygon(const RasterPoint *points, unsigned num_points)
     renderer.BeginPolygon();
     renderer.BeginContour();
 
-    for(const auto& point : make_array(points, num_points)) {
+    for(const auto& point : std::span(points, num_points)) {
       renderer.AddVertex(point.x, point.y);
     }
 

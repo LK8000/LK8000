@@ -120,8 +120,8 @@ void SaveRecentList() {
       return;
    }
 
-   fprintf(fp,"### LK8000 History of Goto Waypoints - DO NOT MODIFY THIS FILE! ###\r\n");
-   fprintf(fp,"### WPRECENT FORMAT 01T \r\n");
+   fprintf(fp,"### LK8000 History of Goto Waypoints - DO NOT MODIFY THIS FILE! ###\n");
+   fprintf(fp,"### WPRECENT FORMAT 01T \n");
 
    int save_count = 0;
    for (int i=0; i<RecentNumber; i++)  {
