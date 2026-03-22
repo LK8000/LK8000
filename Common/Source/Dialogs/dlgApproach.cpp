@@ -252,28 +252,46 @@ void dlgApproach(int waypoint_index) {
   wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_APPROACH_L : IDR_XML_APPROACH_P);
   if (!wf) return;
 
-  const unsigned form_height = main_window->GetHeight();
-  wf->SetHeight(form_height);
-  dlgSize = ScreenLandscape ? wf->GetWidth() : form_height;
   if (ScreenLandscape) {
-    wf->SetLeft(main_window->GetRight() - dlgSize);
-  }
-
-  // Position Approve button with margin from bottom (form height is now the window height)
-  constexpr int APPROVE_BUTTON_HEIGHT = 28;
-  constexpr int APPROVE_MARGIN_BOTTOM = 61;  // base margin, tarato su schermi ~800x480
-  WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
-  if (btnApprove) {
-    // Su display con risoluzione alta (es. Kobo Glo HD 1448x1072) tenere un
-    // margine fisso dal fondo porta il bottone troppo vicino al bordo fisico /
-    // area non visibile. Se il lato maggiore dello schermo supera ~1000 px,
-    // alziamo il bottone di più rispetto al caso 800x480.
-    const int tall_side = (ScreenSizeX > ScreenSizeY) ? ScreenSizeX : ScreenSizeY;
-    int extra_margin = 10;  // offset aggiuntivo base
-    if (tall_side >= 1000) {
-      extra_margin += 90;   // sposta sensibilmente più in alto su Kobo / display alti
+    /* Vertical strip: same geometry as Target landscape — full client height, top aligned to map
+       client. Keep Approve at XML Y (do not anchor to bottom: that left a huge empty band). */
+    const PixelRect rc(main_window->GetClientRect());
+    const int client_h = rc.GetSize().cy;
+    /* Full client height to the bottom; width unchanged. */
+    const unsigned max_h = (unsigned)max(1, client_h);
+    wf->SetHeight(max_h);
+    dlgSize = wf->GetWidth();
+    wf->SetTop(rc.top);
+#ifdef KOBO
+    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize - NIBLSCALE(8));
+#else
+    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize);
+#endif
+    wf->SetCaption(wf->GetWndText());
+  } else {
+    /* Portrait: compact strip; ensure outer height covers title + client (Approve was clipped
+       when client area was shorter than scaled buttons). dlgSize for map pan. */
+    WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
+    int maxBottom = 0;
+    if (btnApprove) {
+      maxBottom = (int)btnApprove->GetTop() + (int)btnApprove->GetHeight();
     }
-    btnApprove->SetTop(static_cast<int>(form_height) - APPROVE_BUTTON_HEIGHT - APPROVE_MARGIN_BOTTOM - extra_margin);
+    if (maxBottom > 0) {
+      const unsigned needClient = (unsigned)maxBottom + (unsigned)NIBLSCALE(10);
+      WindowControl* const client = wf->GetClientArea();
+      const int delta = (int)needClient - (int)client->GetHeight();
+      if (delta > 0) {
+        wf->SetHeight(wf->GetHeight() + (unsigned)delta);
+      }
+    }
+    dlgSize = wf->GetHeight();
+#if defined(__linux__) && !defined(ANDROID)
+    dlgApplyPortraitOverlayGeometry(wf);
+    dlgSize = wf->GetHeight();
+#else
+    wf->SetLeft(0);
+    wf->SetTop(0);
+#endif
   }
 
   TCHAR cap1[8], cap2[8];
@@ -288,6 +306,9 @@ void dlgApproach(int waypoint_index) {
   RefreshApproachButtonStyles();
 
   MapWindow::SetApproachPan(true, waypoint_index, dlgSize);
+  /* Full map redraw: avoids a band of the previous Target dialog bitmap showing through
+     when targetPanSize / clip rects were out of sync with the real form height. */
+  MapWindow::RefreshMap();
 
   wf->SetTimerNotify(400, OnApproachTimerNotify);
   wf->ShowModal();

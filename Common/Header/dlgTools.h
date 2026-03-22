@@ -38,4 +38,9 @@ CallBackTableEntry_t callback_entry(const char* Name, Callback_t&& callback) {
 
 WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID);
 
+#if defined(__linux__) && !defined(ANDROID)
+/** Portrait top-strip dialogs (Target, Approach): cap height, align to map client, sync WndForm client. */
+void dlgApplyPortraitOverlayGeometry(WndForm* wf);
+#endif
+
 #endif // __DLGTOOLS_H

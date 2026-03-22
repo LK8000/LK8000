@@ -962,9 +962,12 @@ protected:
     }
 
     void OnDestroy() override {
-        mModalResult = mrCancel;
-        WndCtrlBase::OnDestroy();
+      mModalResult = mrCancel;
+      WndCtrlBase::OnDestroy();
     }
+
+    /// After outer resize, re-sync client area (title + borders); see SetCaption.
+    bool OnSize(int cx, int cy) override;
 };
 
 #define LEDMODE_DISABLED    0

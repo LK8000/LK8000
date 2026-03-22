@@ -16,6 +16,8 @@
 #include "NavFunctions.h"
 #include "CalcTask.h"
 
+#include <algorithm>
+
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
 static int ActiveWayPointOnEntry = 0;
@@ -242,6 +244,111 @@ static bool FormKeyDown(WndForm* pWnd, unsigned KeyCode) {
 
 
 
+/// Portrait: stack visible rows under Approach (or OK/Task) so hidden AAT fields do not leave white bands.
+static void CompactTargetPortraitLayout(void) {
+  if (!wf || ScreenLandscape) return;
+
+  WndButton* const btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
+  if (!btnApproach) return;
+
+  WindowControl* const btnOK = wf->FindByName<WindowControl>(TEXT("btnOK"));
+  WndProperty* const wTask = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
+  WndProperty* const pRange = wf->FindByName<WndProperty>(TEXT("prpRange"));
+  WndProperty* const pRadial = wf->FindByName<WndProperty>(TEXT("prpRadial"));
+  WndProperty* const pEst = wf->FindByName<WndProperty>(TEXT("prpAATEst"));
+  WndProperty* const pDelta = wf->FindByName<WndProperty>(TEXT("prpAATDelta"));
+  WndProperty* const pRem = wf->FindByName<WndProperty>(TEXT("prpSpeedRemaining"));
+  WndProperty* const pAch = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
+  WndButton* const btnMov = wf->FindByName<WndButton>(TEXT("btnMove"));
+  WndProperty* const pLock = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
+
+  const int gap = NIBLSCALE(2);
+
+  int y;
+  if (btnApproach->IsVisible()) {
+    y = (int)btnApproach->GetTop() + (int)btnApproach->GetHeight() + gap;
+  } else {
+    int yref = 0;
+    if (wTask && wTask->IsVisible()) {
+      yref = (int)wTask->GetTop() + (int)wTask->GetHeight();
+    } else if (btnOK && btnOK->IsVisible()) {
+      yref = (int)btnOK->GetTop() + (int)btnOK->GetHeight();
+    }
+    y = yref + gap;
+  }
+
+  auto rowPairHeight = [](WndProperty* a, WndProperty* b) -> int {
+    int h = 0;
+    if (a && a->IsVisible()) h = std::max(h, (int)a->GetHeight());
+    if (b && b->IsVisible()) h = std::max(h, (int)b->GetHeight());
+    return h;
+  };
+
+  if (pRange && pRange->IsVisible()) {
+    pRange->SetTop(y);
+    if (pRadial) pRadial->SetTop(y);
+    y += rowPairHeight(pRange, pRadial) + gap;
+  }
+
+  const int hEstDelta = rowPairHeight(pEst, pDelta);
+  if (pEst && pEst->IsVisible()) pEst->SetTop(y);
+  if (pDelta && pDelta->IsVisible()) pDelta->SetTop(y);
+  if (hEstDelta > 0) y += hEstDelta + gap;
+
+  const int hSpd = rowPairHeight(pRem, pAch);
+  if (pRem && pRem->IsVisible()) pRem->SetTop(y);
+  if (pAch && pAch->IsVisible()) pAch->SetTop(y);
+  if (hSpd > 0) y += hSpd + gap;
+
+  if (btnMov && btnMov->IsVisible()) {
+    btnMov->SetTop(y);
+    if (pLock && pLock->IsVisible()) pLock->SetTop(y);
+    y += (int)btnMov->GetHeight() + gap;
+  } else if (pLock && pLock->IsVisible()) {
+    pLock->SetTop(y);
+    y += (int)pLock->GetHeight() + gap;
+  }
+
+  int maxBottom = 0;
+  const auto acc = [&maxBottom](const WindowControl* w) {
+    if (w && w->IsVisible()) {
+      const int b = (int)w->GetTop() + (int)w->GetHeight();
+      maxBottom = std::max(maxBottom, b);
+    }
+  };
+  acc(btnOK);
+  acc(wTask);
+  acc(btnApproach);
+  acc(pRange);
+  acc(pRadial);
+  acc(pEst);
+  acc(pDelta);
+  acc(pRem);
+  acc(pAch);
+  acc(btnMov);
+  acc(pLock);
+
+  /* maxBottom is in client (content) coordinates; outer WndForm height must include title bar
+     and borders. Growing only when newH < GetHeight() never expanded when scaled widgets
+     exceeded the XML client area — clipped ETE / V rem rows. Resize by client-area delta. */
+  if (maxBottom > 0) {
+    const unsigned needClient = (unsigned)maxBottom + (unsigned)NIBLSCALE(10);
+    WindowControl* const client = wf->GetClientArea();
+    const unsigned curClient = client->GetHeight();
+    const int delta = (int)needClient - (int)curClient;
+    if (delta != 0) {
+      wf->SetHeight((unsigned)((int)wf->GetHeight() + delta));
+    }
+  }
+}
+
+/// After compact or field visibility changes, sync map pan strip size (width in landscape).
+static void ApplyTargetPanIfNeeded(void) {
+  if (!wf || !TargetDialogOpen || !ValidTaskPoint(target_point)) return;
+  dlgSize = ScreenLandscape ? wf->GetWidth() : wf->GetHeight();
+  MapWindow::SetTargetPan(true, target_point, dlgSize);
+}
+
 /// Refresh Target dialog fields and show/hide Approach button for landable waypoints.
 static void RefreshCalculator(void) {
   WndProperty* wp;
@@ -367,6 +474,13 @@ static void RefreshCalculator(void) {
         WayPointCalc[Task[target_point].Index].IsLandable;
     btnApproach->SetVisible(landable);
   }
+
+  if (!ScreenLandscape && wf) {
+    CompactTargetPortraitLayout();
+    dlgSize = wf->GetHeight();
+  } else if (ScreenLandscape && wf) {
+    dlgSize = wf->GetWidth();
+  }
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -378,6 +492,7 @@ static bool OnTimerNotify(WndForm* pWnd) {
     if (TargetModified) {
         RefreshCalculator();
         TargetModified = false;
+        ApplyTargetPanIfNeeded();
     }
     return true;
 }
@@ -390,6 +505,7 @@ static void OnMoveClicked(WndButton* pWnd) {
     btnMove->SetCaption(TEXT("Move"));
   }
   RefreshCalculator();
+  ApplyTargetPanIfNeeded();
 }
 
 /// Open Approach dialog for current target waypoint if it is landable.
@@ -487,7 +603,6 @@ static void RefreshTargetPoint(void) {
   LockTaskData();
   target_point = max(target_point, ActiveTaskPoint);
   if (ValidTaskPoint(target_point)) {
-    MapWindow::SetTargetPan(true, target_point, dlgSize);
     Range = Task[target_point].AATTargetOffsetRadius;
     Radial = Task[target_point].AATTargetOffsetRadial;
   } else {
@@ -575,41 +690,29 @@ void dlgTarget(int TaskPoint) {
   TargetMoveMode = false;
 
   if (ScreenLandscape) {
-    // make flush right in landscape mode; ensure form fits screen height (e.g. on KOBO)
+    /* Full-height strip aligned to main map client (same idea as Approach). Do not use SetTop(0):
+       on Kobo the map client is often offset — that caused the gap above the overlay. Portrait
+       layout is handled separately; do not shrink strip height to content here (regression). */
     dlgSize = wf->GetWidth();
-    wf->SetTop(0);
-    const unsigned form_h = wf->GetHeight();
+    const PixelRect rc(main_window->GetClientRect());
+    const int client_h = rc.GetSize().cy;
+    /* Full client height so the strip reaches the bottom (Approve etc. stay visible). Width unchanged. */
+    const unsigned max_h = (unsigned)max(1, client_h);
+    wf->SetHeight(max_h);
+    wf->SetTop(rc.top);
 #ifdef KOBO
-    /* Kobo landscape: strip is on the right. Without inset, taps on Approach (left of strip,
-       on the map/panel seam) often miss; the physical right edge also eats OK. Leave a gap from
-       the right bezel and do not let the form cover the full screen height over the bottom bar. */
-    const int bottom_safe = (int)BottomSize + NIBLSCALE(12);
-    const unsigned max_h = (unsigned)max(1, ScreenSizeY - bottom_safe);
-    if (form_h > max_h) {
-      wf->SetHeight(max_h);
-    }
-    wf->SetLeft(ScreenSizeX - dlgSize - NIBLSCALE(8));
+    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize - NIBLSCALE(8));
 #else
-    wf->SetLeft(ScreenSizeX - dlgSize);
-    if (form_h > (unsigned)ScreenSizeY) {
-      wf->SetHeight(ScreenSizeY);
-    }
+    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize);
 #endif
+    wf->SetCaption(wf->GetWndText());
   }
   else {
-    // portrait: place form at bottom where map reserves space for the panel
-    dlgSize = wf->GetHeight();
-    int top = ScreenSizeY - wf->GetHeight();
 #ifdef KOBO
-    // Bottom stripe (icons / look) overlaps the last rows; lifting keeps OK/Approach tappable.
-    const int kobo_target_lift = (int)BottomSize + NIBLSCALE(10);
-    top -= kobo_target_lift;
-    if (top < 0) {
-      top = 0;
-    }
-#endif
-    wf->SetTop(top);
+    wf->SetLeft(main_window->GetClientRect().left);
+#else
     wf->SetLeft(0);
+#endif
   }
 
   btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));
@@ -642,6 +745,21 @@ void dlgTarget(int TaskPoint) {
   wp->RefreshDisplay();
 
   RefreshTargetPoint();
+
+  if (!ScreenLandscape) {
+#if defined(__linux__) && !defined(ANDROID)
+    dlgApplyPortraitOverlayGeometry(wf);
+#else
+    dlgSize = wf->GetHeight();
+    wf->SetTop(ScreenSizeY - dlgSize);
+    wf->SetLeft(0);
+#endif
+    dlgSize = wf->GetHeight();
+  }
+
+  ApplyTargetPanIfNeeded();
+  /* Map refresh: also done inside SetTargetPan(do_pan=true); keep for edge cases. */
+  MapWindow::RefreshMap();
 
   wf->SetTimerNotify(500, OnTimerNotify);
 

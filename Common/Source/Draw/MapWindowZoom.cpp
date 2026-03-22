@@ -16,11 +16,25 @@
  */
 void MapWindow::Zoom::CalculateTargetPanZoom()
 {
+#ifdef KOBO
+  /* Portrait: divisor 6 often snaps scale bar to ~350 m; use ~4.2 so bar is closer to 500 m. */
+  if (!ScreenLandscape) {
+    *_requestedScale = LimitMapScale(Units::ToDistance(TargetZoomDistance / 4.2));
+    return;
+  }
+#endif
   *_requestedScale = LimitMapScale(Units::ToDistance(TargetZoomDistance / 6.0));
 }
 
 void MapWindow::Zoom::CalculateApproachPanZoom()
 {
+#ifdef KOBO
+  /* Match Target portrait pan zoom (~500 m scale bar); keep landscape Approach on /6. */
+  if (!ScreenLandscape) {
+    *_requestedScale = LimitMapScale(Units::ToDistance(ApproachZoomDistance / 4.2));
+    return;
+  }
+#endif
   *_requestedScale = LimitMapScale(Units::ToDistance(ApproachZoomDistance / 6.0));
 }
 

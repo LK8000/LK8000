@@ -63,6 +63,8 @@ RasterPoint MapWindow::GetOrigCenter(const RECT& rc) {
 }
 
 RasterPoint MapWindow::GetOrigTargetPan(const RECT& rc, int targetPanSize, bool isLandscape) {
+  /* Portrait: (rc.top+rc.bottom+h)/2 centers the pan origin for a top overlay (Target strip);
+     same formula applies when the dialog was historically at the bottom — LK convention. */
   return {
     (rc.left + rc.right - (isLandscape ? targetPanSize : 0)) / 2,
     (rc.bottom + rc.top + (isLandscape ? 0 : targetPanSize)) / 2

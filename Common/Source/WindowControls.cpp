@@ -1889,6 +1889,19 @@ void WndForm::SetCaption(const TCHAR *Value) {
         rcClient.top = (mBorderKind & BORDERTOP) ? DLGSCALE(1) : 0;
     }
 
+    /* Outer size can change via SetHeight without caption text changing; rcClient was only
+       updating top from the title bar, so bottom/right stayed at initial XML size and
+       mClientWindow stayed short — children (e.g. Approve) clipped, targetPanSize mismatch. */
+    {
+      const int leftInset = (mBorderKind & BORDERLEFT) ? DLGSCALE(1) : 0;
+      const int rightInset = (mBorderKind & BORDERRIGHT) ? DLGSCALE(1) : 0;
+      const int bottomInset = (mBorderKind & BORDERBOTTOM) ? DLGSCALE(1) : 0;
+      rcClient.left = leftInset;
+      rcClient.right = (LONG)GetWidth() - rightInset;
+      rcClient.bottom = (LONG)GetHeight() - bottomInset;
+      mTitleRect.right = (LONG)GetWidth();
+    }
+
     if (!EqualRect(&mClientRect, &rcClient)){
         mClientRect = rcClient;
         if(mClientWindow) {
@@ -1900,6 +1913,11 @@ void WndForm::SetCaption(const TCHAR *Value) {
     if(bRedraw) {
         Redraw();
     }
+}
+
+bool WndForm::OnSize(int cx, int cy) {
+  SetCaption(GetWndText());
+  return false;
 }
 
 int  WndForm::SetBorderKind(int Value) {

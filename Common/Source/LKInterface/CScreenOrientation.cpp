@@ -23,6 +23,11 @@
 #include "OS/Process.hpp"
 #endif
 
+#ifdef KOBO
+#include "Event/Globals.hpp"
+#include "Event/Queue.hpp"
+#endif
+
 CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPath), mOSFilePath(szPath)  {
 
     if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != L'\\') {
@@ -133,5 +138,26 @@ unsigned short CScreenOrientation::GetScreenSetting() {
 }
 
 bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {
+#ifdef KOBO
+    /* Restore() reads .LKScreen (written on exit via Save() from sysfs). After we stopped
+       writing sysfs on Rotate(DEFAULT), cold boot often leaves rotate=0; applying the saved
+       value restores the user's last Screen modes rotation. */
+    if (NewO == invalid ||
+        NewO > static_cast<unsigned short>(DisplayOrientation_t::REVERSE_LANDSCAPE)) {
+        return false;
+    }
+
+    DisplayOrientation_t o = static_cast<DisplayOrientation_t>(NewO);
+    o = TranslateDefaultDisplayOrientation(o);
+
+    if (!Display::Rotate(o)) {
+        return false;
+    }
+    if (event_queue != nullptr) {
+        event_queue->SetDisplayOrientation(o);
+    }
+    return true;
+#else
     return false;
+#endif
 }

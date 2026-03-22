@@ -263,6 +263,9 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   }
   
   mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+  if (do_pan) {
+    MapWindow::RefreshMap();
+  }
 }
 
 void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize)
@@ -292,6 +295,9 @@ void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize
   }
 
   mode.Special(Mode::MODE_SPECIAL_APPROACH_PAN, do_pan);
+  if (do_pan) {
+    MapWindow::RefreshMap();
+  }
 }
 
 void MapWindow::SetPanTaskEdit(unsigned TskPoint) {

@@ -604,3 +604,21 @@ WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID)
 
   return theForm;
 }
+
+#if defined(__linux__) && !defined(ANDROID)
+void dlgApplyPortraitOverlayGeometry(WndForm* wf) {
+  if (!wf || ScreenLandscape) return;
+
+  const PixelRect rc(main_window->GetClientRect());
+  const int client_h = rc.GetSize().cy;
+  const int strip_lift = (int)BottomSize + NIBLSCALE(12);
+  const unsigned max_h = (unsigned)max(1, client_h - strip_lift - (int)NIBLSCALE(8));
+  if ((unsigned)wf->GetHeight() > max_h) {
+    wf->SetHeight(max_h);
+  }
+  wf->SetTop(rc.top);
+  wf->SetLeft(rc.left);
+  /* Re-sync client rect after outer resize (WndForm::SetCaption updates mClientWindow). */
+  wf->SetCaption(wf->GetWndText());
+}
+#endif

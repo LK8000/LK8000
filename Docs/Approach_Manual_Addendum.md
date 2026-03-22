@@ -6,7 +6,7 @@
 
 ## 1. Task (Target) screen
 
-When viewing a task waypoint in **Target** mode, the map centres on the selected task point and a panel appears (on the right in landscape, at the bottom in portrait).
+When viewing a task waypoint in **Target** mode, the map centres on the selected task point and a panel appears (on the right in landscape, at the bottom in portrait). In **landscape**, the panel is a **narrow strip on the right** whose **height matches the full map area** (from the top to the bottom of the map), so controls are not cut off at the bottom.
 
 ### 1.1 Panel contents
 
@@ -26,16 +26,16 @@ Tap **Approach** (when visible). The Approach dialog opens and the map remains c
 When you open Approach from the Target screen, the **first screen** shows:
 
 - **Map** — centred on the landable waypoint (airfield), with the same style as in Target view. Once **Direct** and a runway are selected, a **blue segment** is drawn on the map from the 5 km point on the extended centreline to the runway centre. The bottom of the map may show distance and “PAN” (e.g. “DIRECT 34 1.5km PAN”).
-- **Approach panel** — on the right in landscape (or at the bottom in portrait): dark blue bar with title “Approach” and a green line underneath; below it the buttons and runway selectors described in 2.1.
+- **Approach panel** — on the right in landscape (or at the bottom in portrait): title bar with “Approach”; below it the buttons and runway selectors described in 2.1. In **landscape**, the panel runs the **full height of the map area** (same vertical extent as the map), with a fixed **width** for the strip, so **Approve** remains visible above the bottom of the screen.
 
 This is the main Approach view before you tap **Approve**. From here you choose direct approach, select the runway (e.g. 16 / 34), check the blue segment on the map, then tap **Approve** to create the approach task (see 2.3).
 
 ### 2.1 Panel layout
 
 - **OK** — closes the Approach dialog and returns to the map (approach overlay is cleared).
-- **Direct** — selects direct approach. The active option is highlighted.
+- **Direct** — selects direct approach. The active option is highlighted. (A “Circuit” mode is not offered in the current dialog.)
 - Two runway heading buttons (e.g. **06** / **34**) — select the approach runway. The selected runway is highlighted.
-- **Approve** — at the bottom of the panel. Opens the approval dialog to create the approach task (see below).
+- **Approve** — lower part of the panel (layout from the dialog). Opens the approval dialog to create the approach task (see below).
 
 ### 2.2 Map drawing
 
