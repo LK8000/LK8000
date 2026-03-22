@@ -577,17 +577,38 @@ void dlgTarget(int TaskPoint) {
   if (ScreenLandscape) {
     // make flush right in landscape mode; ensure form fits screen height (e.g. on KOBO)
     dlgSize = wf->GetWidth();
-    wf->SetLeft(ScreenSizeX - dlgSize);
     wf->SetTop(0);
     const unsigned form_h = wf->GetHeight();
+#ifdef KOBO
+    /* Kobo landscape: strip is on the right. Without inset, taps on Approach (left of strip,
+       on the map/panel seam) often miss; the physical right edge also eats OK. Leave a gap from
+       the right bezel and do not let the form cover the full screen height over the bottom bar. */
+    const int bottom_safe = (int)BottomSize + NIBLSCALE(12);
+    const unsigned max_h = (unsigned)max(1, ScreenSizeY - bottom_safe);
+    if (form_h > max_h) {
+      wf->SetHeight(max_h);
+    }
+    wf->SetLeft(ScreenSizeX - dlgSize - NIBLSCALE(8));
+#else
+    wf->SetLeft(ScreenSizeX - dlgSize);
     if (form_h > (unsigned)ScreenSizeY) {
       wf->SetHeight(ScreenSizeY);
     }
+#endif
   }
   else {
     // portrait: place form at bottom where map reserves space for the panel
     dlgSize = wf->GetHeight();
-    wf->SetTop(ScreenSizeY - wf->GetHeight());
+    int top = ScreenSizeY - wf->GetHeight();
+#ifdef KOBO
+    // Bottom stripe (icons / look) overlaps the last rows; lifting keeps OK/Approach tappable.
+    const int kobo_target_lift = (int)BottomSize + NIBLSCALE(10);
+    top -= kobo_target_lift;
+    if (top < 0) {
+      top = 0;
+    }
+#endif
+    wf->SetTop(top);
     wf->SetLeft(0);
   }
 

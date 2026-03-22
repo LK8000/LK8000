@@ -48,8 +48,9 @@ ScreenGlobalInit::ScreenGlobalInit()
   event_queue = new EventQueue();
 
 #ifdef KOBO
+  /* DEFAULT = do not force fb rotation (see RotateDisplay KOBO). Sync touch queue with sysfs. */
   Display::Rotate(DisplayOrientation_t::DEFAULT);
-  event_queue->SetDisplayOrientation(DisplayOrientation_t::DEFAULT);
+  event_queue->SetDisplayOrientation(Display::GetFramebufferOrientationForKobo());
 #endif
 
   ScreenInitialized();

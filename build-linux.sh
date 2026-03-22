@@ -18,3 +18,8 @@ fi
 mkdir -p "$DESTDIR"
 cp -f "$EXE" "$DEST"
 echo "Copiato $EXE -> $DEST"
+
+# Avvia LK8000-LINUX simulando il Kobo Glo HD in landscape (1448x1072).
+# Usa i parametri -x/-y della riga di comando per forzare la risoluzione.
+echo "Avvio LK8000-LINUX in landscape (Kobo Glo HD 1448x1072)..."
+"$EXE" -x=1448 -y=1072 || echo "Esecuzione LK8000-LINUX terminata con codice $?"

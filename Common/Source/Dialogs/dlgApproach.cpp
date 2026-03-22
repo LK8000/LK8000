@@ -261,10 +261,19 @@ void dlgApproach(int waypoint_index) {
 
   // Position Approve button with margin from bottom (form height is now the window height)
   constexpr int APPROVE_BUTTON_HEIGHT = 28;
-  constexpr int APPROVE_MARGIN_BOTTOM = 61;  // same visual margin as runway button from left edge
+  constexpr int APPROVE_MARGIN_BOTTOM = 61;  // base margin, tarato su schermi ~800x480
   WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
   if (btnApprove) {
-    btnApprove->SetTop(static_cast<int>(form_height) - APPROVE_BUTTON_HEIGHT - APPROVE_MARGIN_BOTTOM - 10);
+    // Su display con risoluzione alta (es. Kobo Glo HD 1448x1072) tenere un
+    // margine fisso dal fondo porta il bottone troppo vicino al bordo fisico /
+    // area non visibile. Se il lato maggiore dello schermo supera ~1000 px,
+    // alziamo il bottone di più rispetto al caso 800x480.
+    const int tall_side = (ScreenSizeX > ScreenSizeY) ? ScreenSizeX : ScreenSizeY;
+    int extra_margin = 10;  // offset aggiuntivo base
+    if (tall_side >= 1000) {
+      extra_margin += 90;   // sposta sensibilmente più in alto su Kobo / display alti
+    }
+    btnApprove->SetTop(static_cast<int>(form_height) - APPROVE_BUTTON_HEIGHT - APPROVE_MARGIN_BOTTOM - extra_margin);
   }
 
   TCHAR cap1[8], cap2[8];
