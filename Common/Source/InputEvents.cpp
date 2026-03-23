@@ -1565,17 +1565,24 @@ void InputEvents::eventAdjustWaypoint(const TCHAR *misc) {
 
 // There is no more Suspend task 091216, eventAbortTask changed
 void InputEvents::eventAbortTask(const TCHAR *misc) {
-
   if (ValidTaskPoint(ActiveTaskPoint)) {
     if (MessageBoxX(MsgToken<179>(), MsgToken<178>(), mbYesNo) == IdYes) {
       // LKTOKEN  _@M179_ = "Clear the task?"
       // LKTOKEN  _@M178_ = "Clear task"
-    
+
       // clear task is locking taskdata already
       ClearTask();
-      SetHome(true);  // force home reload
+      bool reset_home = WithLock(CritSec_FlightData, []() {
+        // do not reset Home when flying, but reset it when not flying,
+        // so that we have a chance to get a new Home after landing
+        return !CALCULATED_INFO.Flying;
+      });
+      if (reset_home) {
+        SetHome(true);  // force home reload
+      }
     }
-  } else { 
+  }
+  else {
     MessageBoxX(MsgToken<468>(), MsgToken<178>(), mbOk);
     // LKTOKEN  _@M468_ = "No Task"
     // LKTOKEN  _@M178_ = "Clear task"
