@@ -55,11 +55,13 @@ LiveTrack24V1Handler::LiveTrack24V1Handler(const tracking::Profile& profile)
 
 LiveTrack24V1Handler::~LiveTrack24V1Handler() {
   if (IsDefined()) {
-    m_run = false;
-    m_newDataEvent.set();
+    WithLock(m_mutex, [&]() {
+      m_run = false;
+    });
+    m_cond.Broadcast();
     Join();
-    StartupStore(_T(". LiveTracker V1 closed."));
   }
+  StartupStore(_T(". LiveTracker V1 closed."));
 }
 
 void LiveTrack24V1Handler::Update(const NMEA_INFO& Basic,
@@ -93,13 +95,18 @@ void LiveTrack24V1Handler::Update(const NMEA_INFO& Basic,
     }
     m_points.emplace_back(newpoint);
   });
-  m_newDataEvent.set();
+  m_cond.Signal();
 }
 
-void LiveTrack24V1Handler::InterruptibleSleep(int msecs) {
-  if (m_newDataEvent.tryWait(msecs)) {
-    m_newDataEvent.reset();
-  }
+bool LiveTrack24V1Handler::InterruptibleSleep(int msecs) {
+  return WithLock(m_mutex, [&]() {
+    if (!m_run) {
+      return false;
+    }
+
+    m_cond.Wait(m_mutex, msecs);
+    return m_run;
+  });
 }
 
 int LiveTrack24V1Handler::GetUserIDFromServer(http_session& http) {
@@ -242,13 +249,16 @@ void LiveTrack24V1Handler::Run() {
   srand(MonotonicClockMS());
   http_session http;
 
-  do {
-    InterruptibleSleep(5000);
-    if (!m_run) {
-      break;
-    }
+  auto IsRunning = [&]() {
+    return WithLock(m_mutex, [&]() {
+      return m_run;
+    });
+  };
 
-    do {
+  while (InterruptibleSleep(5000)) {
+    bool keep_processing = true;
+
+    while (keep_processing && IsRunning()) {
       sendpoint_valid = WithLock(m_mutex, [&]() {
         if (!m_points.empty()) {
           sendpoint = m_points.front();
@@ -257,81 +267,80 @@ void LiveTrack24V1Handler::Run() {
         return false;
       });
 
-      if (sendpoint_valid) {
-        sendpoint_processed = false;
-        do {
-          switch (tracker_fsm) {
-            default:
-            case 0:  // Wait for flying
-              if (!sendpoint.flying) {
-                sendpoint_processed = true;
-                break;
-              }
-              tracker_fsm++;
-              break;
+      if (!sendpoint_valid) {
+        keep_processing = false;
+        continue;
+      }
 
-            case 1:  // Get User ID
-              userid = GetUserIDFromServer(http);
-              if (userid >= 0) {
-                tracker_fsm++;
-              }
-              break;
-
-            case 2:  // Start of track packet
-              sendpoint_processed =
-                  SendStartOfTrackPacket(http, &packet_id, &session_id, userid);
-              if (sendpoint_processed) {
-                StartupStore(_T(". Livetracker new track started."));
-                sendpoint_processed_old = true;
-                tracker_fsm++;
-              }
-              break;
-
-            case 3:  // Gps point packet
-              sendpoint_processed =
-                  SendGPSPointPacket(http, &packet_id, &session_id, sendpoint);
-              if (sendpoint_processed_old && !sendpoint_processed) {
-                StartupStore(_T(". Livetracker connection to server lost."));
-              }
-              if (!sendpoint_processed_old && sendpoint_processed) {
-                int queue_size = WithLock(m_mutex, [&]() {
-                  return m_points.size();
-                });
-                StartupStore(
-                    _T(". Livetracker connection to server established, start ")
-                    _T("sending %d queued packets."),
-                    queue_size);
-              }
-              sendpoint_processed_old = sendpoint_processed;
-              if (!sendpoint.flying) {
-                tracker_fsm++;
-              }
-              break;
-
-            case 4:  // End of track packet
-              sendpoint_processed =
-                  SendEndOfTrackPacket(http, &packet_id, &session_id);
-              if (sendpoint_processed) {
-                StartupStore(
-                    _T(". Livetracker track finished, sent %d points."),
-                    packet_id);
-                tracker_fsm = 0;
-              }
-              break;
-          }
-
-          if (sendpoint_processed) {
-            ScopeLock guard(m_mutex);
-            m_points.pop_front();
-          }
-          else {
-            InterruptibleSleep(2500);
-            if (!m_run) {
+      sendpoint_processed = false;
+      while (!sendpoint_processed && IsRunning()) {
+        switch (tracker_fsm) {
+          default:
+          case 0:  // Wait for flying
+            if (!sendpoint.flying) {
+              sendpoint_processed = true;
               break;
             }
-          }
-        } while (!sendpoint_processed && m_run);
+            tracker_fsm++;
+            break;
+
+          case 1:  // Get User ID
+            userid = GetUserIDFromServer(http);
+            if (userid >= 0) {
+              tracker_fsm++;
+            }
+            break;
+
+          case 2:  // Start of track packet
+            sendpoint_processed =
+                SendStartOfTrackPacket(http, &packet_id, &session_id, userid);
+            if (sendpoint_processed) {
+              StartupStore(_T(". Livetracker new track started."));
+              sendpoint_processed_old = true;
+              tracker_fsm++;
+            }
+            break;
+
+          case 3:  // Gps point packet
+            sendpoint_processed =
+                SendGPSPointPacket(http, &packet_id, &session_id, sendpoint);
+            if (sendpoint_processed_old && !sendpoint_processed) {
+              StartupStore(_T(". Livetracker connection to server lost."));
+            }
+            if (!sendpoint_processed_old && sendpoint_processed) {
+              int queue_size = WithLock(m_mutex, [&]() {
+                return m_points.size();
+              });
+              StartupStore(
+                  _T(". Livetracker connection to server established, start ")
+                  _T("sending %d queued packets."),
+                  queue_size);
+            }
+            sendpoint_processed_old = sendpoint_processed;
+            if (!sendpoint.flying) {
+              tracker_fsm++;
+            }
+            break;
+
+          case 4:  // End of track packet
+            sendpoint_processed =
+                SendEndOfTrackPacket(http, &packet_id, &session_id);
+            if (sendpoint_processed) {
+              StartupStore(_T(". Livetracker track finished, sent %d points."),
+                           packet_id);
+              tracker_fsm = 0;
+            }
+            break;
+        }
+
+        if (sendpoint_processed) {
+          ScopeLock guard(m_mutex);
+          m_points.pop_front();
+        }
+        else if (!InterruptibleSleep(2500)) {
+          break;
+        }
       }
-    } while (sendpoint_valid && m_run);
-  } while (m_run);
+    }
+  }
 }

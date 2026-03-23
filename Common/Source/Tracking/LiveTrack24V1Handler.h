@@ -11,7 +11,7 @@
 #include "LiveTrack24Common.h"
 #include "Thread/Thread.hpp"
 #include "Thread/Mutex.hpp"
-#include "Poco/Event.h"
+#include "Thread/Cond.hpp"
 #include <deque>
 
 class LiveTrack24V1Handler final : public ITrackingHandler, private Thread {
@@ -31,7 +31,7 @@ class LiveTrack24V1Handler final : public ITrackingHandler, private Thread {
 
  private:
   void Run() override;
-  void InterruptibleSleep(int msecs);
+  bool InterruptibleSleep(int msecs);
 
   int GetUserIDFromServer(class http_session& http);
   bool SendStartOfTrackPacket(class http_session& http, unsigned int* packet_id,
@@ -46,7 +46,7 @@ class LiveTrack24V1Handler final : public ITrackingHandler, private Thread {
   int m_logtime = 0;
 
   Mutex m_mutex;
-  Poco::Event m_newDataEvent;
+  Cond m_cond;
   bool m_run = false;
   std::deque<livetracker_point_t> m_points;
 };
