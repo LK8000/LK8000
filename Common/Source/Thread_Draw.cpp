@@ -194,7 +194,7 @@ void MapWindow::DrawThread ()
             }
 
             if (fromY<0) {
-                clipSourceArea.bottom += fromY; // negative fromX
+                clipSourceArea.bottom += fromY; // negative fromY
                 clipDestPoint.y -= fromY;
                 WhiteRectH.bottom = WhiteRectH.top - fromY;
             } else {
