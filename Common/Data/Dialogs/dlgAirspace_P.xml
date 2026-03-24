@@ -3,7 +3,10 @@
   <WndForm Name="frmAirspace" Type="Dialog" X="0" Y="0" Width="240" Height="320" Caption="_@M68_" Font="2" >
     <WndButton   Name="cmdClose" Caption="_@M186_"    X="1" Y="1" Width="118"  Height="28" Font="2" OnClickNotify="OnCloseClicked"/>
     <WndButton   Name="cmdLookup" Caption="_@M411_"    X="121" Y="1" Width="118"  Height="28" Font="2" OnClickNotify="OnLookupClicked"/>
-    <WndListFrame Name="frmAirspaceList" X="1" Y="31" Width="-1" Height="-1" Font="2" OnListInfo="OnAirspaceListInfo">
+    <WndProperty Name="prpUsedOnly" Caption="Used only" X="1" Y="31" Width="-1" Height="22" CaptionWidth="120" Font="2">
+      <DataField Name="" DataType="boolean" OnDataAccess="OnFilterUsedOnly"/>
+    </WndProperty>
+    <WndListFrame Name="frmAirspaceList" X="1" Y="55" Width="-1" Height="-1" Font="2" OnListInfo="OnAirspaceListInfo">
       <WndOwnerDrawFrame Name="frmAirspaceListEntry" X="2" Y="2" Width="-2" Height="18" Font="2"  OnPaint="OnAirspacePaintListItem"/>
     </WndListFrame>
   </WndForm>

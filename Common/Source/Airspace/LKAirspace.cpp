@@ -2528,6 +2528,45 @@ const CAirspaceList CAirspaceManager::GetAllAirspaces() const {
     return _airspaces;
 }
 
+std::vector<Airspace::Type> CAirspaceManager::GetUsedAirspaceTypes() const {
+    ScopeLock guard(_csairspaces);
+
+    std::array<bool, AIRSPACECLASSCOUNT> used_types = {};
+
+    auto mark_used = [&](Airspace::Type type) {
+        const auto index = Airspace::to_underlying(type);
+        if (type != Airspace::Type::NONE && index < std::size(used_types)) {
+            used_types[index] = true;
+        }
+    };
+
+    mark_used(Airspace::Type::OTHER); // always include OTHER type
+
+    for (const auto& airspace : _airspaces) {
+        if (!airspace) {
+            continue;
+        }
+
+        mark_used(airspace->Class());
+        mark_used(airspace->Type());
+    }
+
+    std::vector<Airspace::Type> result;
+    result.reserve(std::size(used_types));
+
+    for (auto type : Airspace::type_range()) {
+        const auto index = Airspace::to_underlying(type);
+        if (index >= std::size(used_types)) {
+            continue;
+        }
+        if (used_types[index]) {
+            result.push_back(type);
+        }
+    }
+
+    return result;
+}
+
 // Comparer to sort airspaces based on label priority for drawing labels
 struct airspace_label_priority_sorter {
   bool operator()(const CAirspacePtr& a, const CAirspacePtr& b) {

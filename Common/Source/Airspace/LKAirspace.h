@@ -504,6 +504,7 @@ public:
   CAirspaceList GetNearAirspacesAtPoint(const double &lon, const double &lat, long range) const;
 
   const CAirspaceList GetAllAirspaces() const;
+  std::vector<Airspace::Type> GetUsedAirspaceTypes() const;
   const CAirspaceList& GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
   CAirspaceBase GetAirspaceCopy(const CAirspacePtr& airspace) const;
