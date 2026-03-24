@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <string>
+#include <string_view>
 #include <algorithm>
 #include <iterator>
 #include "Util/CharUtil.hpp"
@@ -12,6 +13,12 @@ inline
 std::string to_string(const char* sz) {
   return sz;
 }
+
+inline
+std::string to_string(const std::string_view& sz) {
+  return std::string(sz);
+}
+
 
 #ifdef _UNICODE
 #include <tchar.h>
@@ -59,6 +66,10 @@ tstring to_tstring(const std::string& str) {
   return to_tstring(str.c_str());
 }
 
+inline
+tstring to_tstring(const std::string_view& str) {
+  return to_tstring(std::string(str));
+}
 
 tstring utf8_to_tstring(const char* sz);
 
