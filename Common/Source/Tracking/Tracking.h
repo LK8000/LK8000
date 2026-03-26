@@ -32,7 +32,9 @@ enum class platform : uint8_t {
   none,
   livetrack24,
   skylines_aero,
-  ffvl
+  ffvl,
+  osmand,
+  traccar
 };
 // clang-format on
 

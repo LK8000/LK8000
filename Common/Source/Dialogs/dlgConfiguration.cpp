@@ -634,6 +634,21 @@ static void DrawTrackingFFVL(tracking::Profile& profile, LKSurface& Surface,
   //    profile.user
 }
 
+static void DrawTrackingOsmAnd(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
+  if (!http_session::ssl_available()) {
+    DrawTrackingNone(profile, Surface, rcClient);
+    return;
+  }
+
+  auto label = PlatformLabel(profile.protocol);
+  Surface.SetTextColor(clBlack);
+  Surface.DrawText(rcClient.GetTopLeft(), label);
+  // TODO: add usefull info
+  //    profile.url
+  //    profile.user
+}
+
 static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
                          const PixelRect& rcClient) {
   auto rcText = DrawTrackingLogo(profile.protocol, Surface, rcClient);
@@ -650,6 +665,10 @@ static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
       break;
     case tracking::platform::ffvl:
       DrawTrackingFFVL(profile, Surface, rcText);
+      break;
+    case tracking::platform::osmand:
+    case tracking::platform::traccar:
+      DrawTrackingOsmAnd(profile, Surface, rcText);
       break;
   }
 }

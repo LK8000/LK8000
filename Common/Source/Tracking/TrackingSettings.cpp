@@ -33,6 +33,8 @@ bool is_valid_enum(std::underlying_type_t<T> value) noexcept {
       case platform::livetrack24:
       case platform::skylines_aero:
       case platform::ffvl:
+      case platform::osmand:
+      case platform::traccar:
         return true;
     }
     return false;

@@ -27,7 +27,9 @@ void dlgTracking::OnTrackingType(DataField* Sender,
 
     if (http_session::ssl_available()) {
       Sender->addEnumList({
-          PlatformLabel(tracking::platform::ffvl)
+          PlatformLabel(tracking::platform::ffvl),
+          PlatformLabel(tracking::platform::osmand),
+          PlatformLabel(tracking::platform::traccar)
       });
     }
 
@@ -173,11 +175,15 @@ void dlgTracking::OnRadar(DataField* Sender,
   }
 }
 
-void dlgTracking::ShowFrame(WndForm* pForm, const TCHAR* WndName, tracking::platform platform) {
+void dlgTracking::ShowFrame(
+    WndForm* pForm, const TCHAR* WndName,
+    std::initializer_list<tracking::platform> platform) {
   auto frm = pForm->FindByName(WndName);
   if (frm) {
-    frm->SetVisible(_profile.protocol == platform);
-    if (_profile.protocol == platform) {
+    bool visible = std::find(platform.begin(), platform.end(),
+                             _profile.protocol) != platform.end();
+    frm->SetVisible(visible);
+    if (visible) {
       frm->ForEachChild([](WindowControl* pChild) {
         auto wp = dynamic_cast<WndProperty*>(pChild);
         if (wp) {
@@ -190,9 +196,11 @@ void dlgTracking::ShowFrame(WndForm* pForm, const TCHAR* WndName, tracking::plat
 
 void dlgTracking::UpdateTypeUI(WndForm* pForm) {
   if (pForm) {
-    ShowFrame(pForm, _T("frmLT24"), tracking::platform::livetrack24);
-    ShowFrame(pForm, _T("frmSkylines"), tracking::platform::skylines_aero);
-    ShowFrame(pForm, _T("frmVLSafe"), tracking::platform::ffvl);
+    ShowFrame(pForm, _T("frmLT24"), {tracking::platform::livetrack24});
+    ShowFrame(pForm, _T("frmSkylines"), {tracking::platform::skylines_aero});
+    ShowFrame(pForm, _T("frmVLSafe"), {tracking::platform::ffvl});
+    ShowFrame(pForm, _T("frmOsmAnd"),
+              {tracking::platform::osmand, tracking::platform::traccar});
   }
 }
 

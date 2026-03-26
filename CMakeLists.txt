@@ -789,6 +789,7 @@ add_library( LK8000 SHARED
     Common/Source/Tracking/TrackingSettings.cpp
     Common/Source/Tracking/SkylinesGlue.cpp
     Common/Source/Tracking/FFVLTracking.cpp
+    Common/Source/Tracking/OsmAndTracking.cpp
 
     Common/Source/NMEA/Derived.h
     Common/Source/NMEA/Info.h

@@ -23,6 +23,7 @@
 #include "Settings/write.h"
 #include "TrackingSettings.h"
 #include "FFVLTracking.h"
+#include "OsmAndTracking.h"
 #include "utils/stringext.h"
 #include "utils/strcpy.h"
 #include "MessageLog.h"
@@ -150,6 +151,14 @@ void Initialize() {
           active_handlers.emplace_back(std::move(ffvl_handler));
         }
         break;
+      case platform::osmand:
+      case platform::traccar:
+        if (http_session::ssl_available() && profile.interval > 0) {
+          auto handler = std::make_unique<OsmAndTracking>(profile);
+          handler->Start();
+          active_handlers.emplace_back(std::move(handler));
+        }
+        break;
       case platform::none:
       default:
         break;
@@ -249,12 +258,12 @@ const TCHAR* PlatformLabel(platform platform) {
       return _T("livetrack24");
     case tracking::platform::skylines_aero:
       return _T("skylines.aero");
-#ifdef USE_CURL
     case tracking::platform::ffvl:
       return _T("VLSafe");
-#endif
-    default:
-      break;
+    case tracking::platform::osmand:
+      return _T("OsmAnd");
+    case tracking::platform::traccar:
+      return _T("Traccar");
   }
   return _T("");
 }
@@ -266,9 +275,11 @@ LKBitmap load_bitmap(platform platform) {
     case tracking::platform::skylines_aero:
       return LKLoadBitmap(_T("SKYLINES"), false);
     case tracking::platform::ffvl:
-#ifdef USE_CURL
       return LKLoadBitmap(_T("FFVL"), false);
-#endif
+    case tracking::platform::osmand:
+      return LKLoadBitmap(_T("OSMAND"), false);
+    case tracking::platform::traccar:
+      return LKLoadBitmap(_T("TRACCAR"), false);
     case tracking::platform::none:
       break;
   }

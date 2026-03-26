@@ -23,7 +23,7 @@ class dlgTracking final {
   void OnPassword(DataField* Sender, DataField::DataAccessKind_t Mode);
   void OnRadar(DataField* Sender, DataField::DataAccessKind_t Mode);
 
-  void ShowFrame(WndForm* pForm, const TCHAR* WndName, tracking::platform platform);
+  void ShowFrame(WndForm* pForm, const TCHAR* WndName, std::initializer_list<tracking::platform> platform);
 
   void UpdateTypeUI(WndForm* pForm);
 
