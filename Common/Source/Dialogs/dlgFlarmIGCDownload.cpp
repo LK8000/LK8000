@@ -12,7 +12,6 @@
 
 #include "dlgIGCProgress.h"
 #include "OS/Sleep.h"
-#include "Util/Clamp.hpp"
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "resource.h"

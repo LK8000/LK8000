@@ -10,7 +10,6 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "resource.h"
-#include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 #include "Devices/devLX_EOS_ERA.h"
 #include "dlgEOSIGCDownload.h"

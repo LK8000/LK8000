@@ -11,7 +11,6 @@
 #include "RGB.h"
 #include "Modeltype.h"
 #include "Dialogs.h"
-#include "Util/Clamp.hpp"
 #include "LocalPath.h"
 
 int GetUTCOffset() {
@@ -118,7 +117,7 @@ double GetMacCready(int wpindex, short wpmode) {
 // This is not used on startup by profiles
 //
 bool CheckSetMACCREADY(double value, DeviceDescriptor_t* Sender) {
-    double old_value = std::exchange(MACCREADY, Clamp(value, 0.0, 12.0));
+    double old_value = std::exchange(MACCREADY, std::clamp(value, 0.0, 12.0));
     if (fabs(old_value - MACCREADY) > 0.05) {
         TriggerGPSUpdate();
         devPutMacCready(MACCREADY, Sender);
@@ -302,7 +301,7 @@ bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
         DebugLog(_T("Invalid Ballast %f"), value);
     }
 
-    double old_value = std::exchange(BALLAST, Clamp(value, 0., 1.));
+    double old_value = std::exchange(BALLAST, std::clamp(value, 0., 1.));
     if (fabs(old_value - BALLAST) > 0.05) {
         GlidePolar::SetBallast();
         TriggerGPSUpdate();
@@ -315,7 +314,7 @@ bool CheckSetBallast(double value, DeviceDescriptor_t* Sender) {
 // BUGS is really EFFICIENCY. In the range 100% to 50%, i.e. 1 to 0.5 .
 // It cannot be 0.
 bool CheckSetBugs(double value, DeviceDescriptor_t* Sender) {
-    double old_value = std::exchange(BUGS, Clamp(value, 0.5, 1.0));
+    double old_value = std::exchange(BUGS, std::clamp(value, 0.5, 1.0));
     if (fabs(old_value - BUGS) > 0.05) {
         GlidePolar::SetBallast();
         TriggerGPSUpdate();

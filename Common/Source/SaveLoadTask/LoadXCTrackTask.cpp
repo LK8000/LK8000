@@ -10,7 +10,6 @@
 #include "Compiler.h"
 #include "externs.h"
 #include "Util/ScopeExit.hxx"
-#include "Util/Clamp.hpp"
 #include "utils/zzip_file_stream.h"
 #include "utils/charset_helper.h"
 #include <string>
@@ -101,9 +100,9 @@ struct waypoint_helper : public WAYPOINT {
 void StrToLocalTime(const char* string, int& Hour, int& Min) {
   char* sz = nullptr;
   if (string) {
-    Hour = Clamp<int>(strtol(string, &sz, 10), 0, 23);
+    Hour = std::clamp<int>(strtol(string, &sz, 10), 0, 23);
     if (*sz == _T(':')) {
-      Min = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
+      Min = std::clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
     }
 
     int Time = (((Hour * 60) + Min) * 60) + GetUTCOffset();

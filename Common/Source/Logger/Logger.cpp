@@ -16,7 +16,6 @@
 #include "utils/printf.h"
 #include "utils/array_back_insert_iterator.h"
 #include "OS/Memory.h"
-#include "Util/Clamp.hpp"
 #include <time.h>
 #include "igc_file_writer.h"
 #include <memory>
@@ -554,9 +553,9 @@ void LogPoint(const NMEA_INFO& info, const char* event) {
   LoggerBuffer_t point = {
     info.Latitude, 
     info.Longitude,
-    Clamp<int>(Units::To(unMeter, (GPSAltitudeOffset == 0) ? info.Altitude : 0), 0, 99999),
-    Clamp<int>(Units::To(unMeter, BaroAltitudeAvailable(info) ? QNHAltitudeToQNEAltitude(info.BaroAltitude.value()) : 0) , -9999, 99999),
-    Clamp<int>(Units::To(unKiloMeterPerHour, info.Speed) * 100, 0, 99999),
+    std::clamp<int>(Units::To(unMeter, (GPSAltitudeOffset == 0) ? info.Altitude : 0), 0, 99999),
+    std::clamp<int>(Units::To(unMeter, BaroAltitudeAvailable(info) ? QNHAltitudeToQNEAltitude(info.BaroAltitude.value()) : 0) , -9999, 99999),
+    std::clamp<int>(Units::To(unKiloMeterPerHour, info.Speed) * 100, 0, 99999),
     static_cast<int>(AngleLimit360(info.TrackBearing)),
     info.Year, info.Month, info.Day,
     info.Hour, info.Minute, info.Second

@@ -13,7 +13,6 @@
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
 #include "Bitmaps.h"
-#include "Util/Clamp.hpp"
 #include "Calc/Vario.h"
 
 #define BOXTHICK 1
@@ -269,7 +268,7 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;
 
                 // m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
-                vario_value = Clamp(DerivedDrawInfo.VOpt - ias, -20., 20.);
+                vario_value = std::clamp(DerivedDrawInfo.VOpt - ias, -20., 20.);
                 vario_value /= 3.3333; // 0-20  -> 0-6
                 vario_value *= -1; // if up, push down
                 break;

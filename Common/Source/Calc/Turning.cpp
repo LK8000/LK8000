@@ -12,7 +12,6 @@
 #include "ThermalLocator.h"
 #include "LDRotaryBuffer.h"
 #include "Calc/ThermalHistory.h"
-#include "Util/Clamp.hpp"
 
 void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -213,7 +212,7 @@ void Turning(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
 
   // JMW limit rate to 50 deg per second otherwise a big spike
   // will cause spurious lock on circling for a long time
-  double Rate = Clamp(Calculated->TurnRate, -50., 50.);
+  double Rate = std::clamp(Calculated->TurnRate, -50., 50.);
 
   if (MODE == FlightState::CLIMB || MODE == FlightState::WAITCRUISE) {
     Rate = LowPassFilter(LastRate, Rate, 0.9);

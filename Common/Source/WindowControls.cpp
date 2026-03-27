@@ -27,7 +27,6 @@
 #include "Event/Event.h"
 #include "Asset.hpp"
 #include "ScreenGeometry.h"
-#include "Util/Clamp.hpp"
 #include <span>
 #include "utils/stringext.h"
 #include "LocalPath.h"
@@ -901,7 +900,7 @@ const TCHAR *DataFieldFloat::GetAsDisplayString(void) {
 }
 
 void DataFieldFloat::Set(double Value){
-  mValue = Clamp(Value, mMin, mMax);
+  mValue = std::clamp(Value, mMin, mMax);
 }
 
 double DataFieldFloat::SetMin(double Value){
@@ -939,7 +938,7 @@ int DataFieldFloat::SetAsInteger(int Value){
 
 double DataFieldFloat::SetAsFloat(double Value){
   double res = mValue;
-  Value = Clamp(Value, mMin, mMax);
+  Value = std::clamp(Value, mMin, mMax);
   if (res != Value){
     mValue = Value;
     if (!GetDetachGUI()) {
@@ -2966,7 +2965,7 @@ bool WndListFrame::OnMouseMove(const POINT& Pos) {
     } else if (mListInfo.ItemCount > mListInfo.ItemInPageCount) {
       const int ScrollOffset =  Pos.y - mScrollStart.y;
       const int ScrollStep = GetHeight() / mListInfo.ItemInPageCount;
-      const int newIndex = Clamp(mListInfo.ScrollIndex - (ScrollOffset / ScrollStep), 0, mListInfo.ItemCount- mListInfo.ItemInPageCount) ;
+      const int newIndex = std::clamp(mListInfo.ScrollIndex - (ScrollOffset / ScrollStep), 0, mListInfo.ItemCount- mListInfo.ItemInPageCount) ;
       if(newIndex != mListInfo.ScrollIndex) {
         mListInfo.ScrollIndex = newIndex;
         mScrollStart = Pos;

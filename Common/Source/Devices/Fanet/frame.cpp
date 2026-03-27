@@ -7,7 +7,7 @@
 #include <cstring>
 #include <cmath>
 #include <stdexcept>
-#include "Util/Clamp.hpp"
+#include <algorithm>
 #include "frame.h"
 #include "macaddr.h"
 
@@ -19,7 +19,7 @@ uint16_t Frame::coord2payload_compressed(double deg) {
   double deg_round = std::round(deg);
   bool deg_odd = static_cast<int>(deg_round) & 1;
   const double decimal = deg - deg_round;
-  const int dec_int = Clamp<int>((decimal * 32767), -16383, 16383);
+  const int dec_int = std::clamp<int>((decimal * 32767), -16383, 16383);
 
   return ((dec_int & 0x7FFF) | (deg_odd << 15));
 }
