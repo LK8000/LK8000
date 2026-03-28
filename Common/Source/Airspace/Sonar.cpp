@@ -229,8 +229,8 @@ protected:
 		PeriodClock Timer;
 		while (!bStop) {
 			DoSonar();
-			unsigned n = std::clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
-			Sleep(n);
+			unsigned elapsed = Timer.ElapsedUpdate();
+			Sleep((elapsed >= 1000U) ? 0U : (1000U - elapsed));
 			Timer.Update();
 		}
 	}
