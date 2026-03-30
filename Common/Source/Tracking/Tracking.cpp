@@ -12,9 +12,9 @@
 #include <cstring>
 #include <cassert>
 #include <memory>
+#include "SkylinesGlue.h"
 #include "Tracking.h"
 #include "ITrackingHandler.h"
-#include "SkylinesGlue.h"
 #include "NMEA/Info.h"
 #include "LiveTrack24V1Handler.h"
 #include "LiveTrack24V2Handler.h"
