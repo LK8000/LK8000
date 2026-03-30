@@ -11,7 +11,9 @@
 #ifndef _TRACKING_HTTP_SESSION_H_
 #define _TRACKING_HTTP_SESSION_H_
 
-#ifdef USE_CURL
+#if defined(_WIN32) || defined(_WIN64)
+  #include "WinHttp/http_session.h"
+#elif defined(USE_CURL)
   #include "Curl/http_session.h"
 #else 
   #include "Default/http_session.h"

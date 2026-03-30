@@ -109,3 +109,4 @@
 #define IDR_XML_NMEAREPLAY          703
 #define IDR_XML_RADIOPRISECSEL      704
 #define IDR_XML_MACCREADY           705
+#define IDR_XML_TRACKING            706

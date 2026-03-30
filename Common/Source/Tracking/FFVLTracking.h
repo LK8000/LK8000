@@ -13,39 +13,27 @@
 #define _TRACKING_FFVLTRACKING_H_
 
 #include <string>
-#include <optional>
 #include <chrono>
-#include "Thread/Thread.hpp"
-#include "Thread/Cond.hpp"
+#include "BaseTracking.h"
 #include "Geographic/GeoPoint.h"
-#include "http_session.h"
 
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
-class FFVLTracking final : public Thread {
+class FFVLTracking final : public BaseTracking<AGeoPoint> {
 public:
   FFVLTracking() = delete;
   explicit FFVLTracking(std::string user_key);
 
   ~FFVLTracking() override;
 
-  void Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated);
+  void Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) override;
 
 private:
 
-  void Run() override;
-
-  void Send(http_session& http, const AGeoPoint& position) const;
-
-  bool Wait();
+  void Send(http_session& http, const AGeoPoint& position) override;
 
   const std::string _user_key;
-
-  bool thread_stop = false;
-  std::optional<AGeoPoint> queue;
-  Mutex queue_mtx;
-  Cond queue_cv;
 
   using gps_time = std::chrono::duration<double>;
 

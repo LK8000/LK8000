@@ -160,6 +160,7 @@ IDR_XML_WEATHERSTDETAILS XMLDIALOG               "../Data/Dialogs/dlgWeatherSt.x
 IDR_XML_NMEAREPLAY      XMLDIALOG                "../Data/Dialogs/dlgNMEAReplay.xml"
 IDR_XML_RADIOPRISECSEL  XMLDIALOG                "../Data/Dialogs/dlgRadioPriSecSel.xml"
 IDR_XML_MACCREADY       XMLDIALOG                "../Data/Dialogs/dlgMacCready.xml"
+IDR_XML_TRACKING        XMLDIALOG                "../Data/Dialogs/dlgTracking.xml"
 
 /////////////////////////////////////////////////////////////////////////////
 //
