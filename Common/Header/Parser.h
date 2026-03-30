@@ -127,8 +127,7 @@ void FLARM_DumpSlot(NMEA_INFO *GPS_INFO, int i);
 int FLARM_FindSlot(NMEA_INFO *GPS_INFO, uint32_t RadioId);
 
 void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username,
-                  double lat, double lon, double alt_m, double sog_kmh,
-                  int category, int lastTM, int isLiveDB);
+                  const AGeoPoint& position, double sog_kmh, int lastTM);
 
 extern bool EnableLogNMEA;
 void LogNMEA(const char* text, unsigned PortNum);

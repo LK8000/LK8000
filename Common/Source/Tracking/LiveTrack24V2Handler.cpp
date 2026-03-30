@@ -20,6 +20,7 @@
 #include <zlib.h>
 #include <random>
 #include <sstream>
+#include <format>
 
 extern NMEA_INFO GPS_INFO;
 extern Mutex CritSec_FlightData;
@@ -72,9 +73,7 @@ namespace {
 
 template <typename T>
 std::string toString(const T& value) {
-  std::ostringstream oss;
-  oss << value;
-  return oss.str();
+  return std::format("{}", value);
 }
 
 std::string random_string(size_t length) {
@@ -437,16 +436,10 @@ json LiveTrack24V2Handler::callLiveTrack24(http_session& http,
 bool LiveTrack24V2Handler::LiveTrack24_Radar(http_session& http) {
   DebugLog(_T(".LiveRadar RADAR"));
 
-  time_t t_of_day = to_time_t(GPS_INFO);
-
-  std::ostringstream strsCommand;
-  strsCommand << "liveList";
-  strsCommand << "/friends/1";
-  strsCommand << "/sync/" << m_sync;
-  strsCommand << "/gzip/1";
 
   try {
-    json payload = callLiveTrack24(http, strsCommand.str());
+    std::string cmd = std::format("liveList/friends/1/sync/{}/gzip/1", m_sync);
+    json payload = callLiveTrack24(http, cmd);
 
     if (payload.is_null() || !payload.is_object()) {
       DebugLog(_T(".LiveRadar json null or not an object"));
@@ -462,41 +455,44 @@ bool LiveTrack24V2Handler::LiveTrack24_Radar(http_session& http) {
     auto& userlist = *userlist_it;
     DebugLog(_T(". LiveRadar list.size =%u"), static_cast<unsigned>(userlist.size()));
 
+    std::string profile_user = m_profile.user;
+    std::transform(
+        profile_user.begin(), profile_user.end(), profile_user.begin(),
+        [](unsigned char c) {
+          return std::toupper(c);
+        });
+
+    std::string profile_pilot = to_utf8(PilotName_Config);
+    std::transform(
+        profile_pilot.begin(), profile_pilot.end(), profile_pilot.begin(),
+        [](unsigned char c) {
+          return std::toupper(c);
+        });
+
     for (const auto& elmt : userlist) {
       try {
-        double lat = elmt.at("lat");
-        double lon = elmt.at("lon");
-        double alt = Units::From(Units_t::unMeter, elmt.at("alt"));
+        auto category = static_cast<int>(elmt.at("category"));
+        if (category != 1 && category != 2 && category != 4 && category != 8) {
+          continue;
+        }
+
+        auto isLiveDB = static_cast<int>(elmt.at("isLiveDB"));
+        if (isLiveDB == 0) {
+          continue;
+        }
+        std::string username = elmt.at("username");
+        std::transform(username.begin(), username.end(), username.begin(), ::toupper);
+        if (username == profile_user || username == profile_pilot) {
+          continue;
+        }
+        AGeoPoint position = {
+          {elmt.at("lat"), elmt.at("lon")},
+          Units::From(Units_t::unMeter, elmt.at("alt"))
+        };
+
         double sog = Units::From(Units_t::unKiloMeterPerHour, elmt.at("sog"));
         auto lastTM = static_cast<int>(elmt.at("lastTM"));
         auto userID = static_cast<uint32_t>(elmt.at("userID"));
-        auto category = static_cast<int>(elmt.at("category"));
-        auto isLiveDB = static_cast<int>(elmt.at("isLiveDB"));
-        std::string username = elmt.at("username");
-        transform(username.begin(), username.end(), username.begin(), ::toupper);
-
-        double Distance, Bearing;
-        DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
-                        &Distance, &Bearing);
-
-        if (Distance > 30000) {
-          continue;
-        }
-
-        double delay = t_of_day - lastTM;
-        std::string profile_user = m_profile.user;
-        std::string profile_pilot = to_utf8(PilotName_Config);
-        transform(profile_user.begin(), profile_user.end(), profile_user.begin(),
-                  ::toupper);
-        transform(profile_pilot.begin(), profile_pilot.end(),
-                  profile_pilot.begin(), ::toupper);
-
-        if (delay > 300 || isLiveDB == 0 ||
-            (category != 1 && category != 2 && category != 4 && category != 8) ||
-            username.compare(profile_user) == 0 ||
-            username.compare(profile_pilot) == 0) {
-          continue;
-        }
 
         if (!m_flarmwasinit) {
           DoStatusMessage(
@@ -505,8 +501,7 @@ bool LiveTrack24V2Handler::LiveTrack24_Radar(http_session& http) {
           m_flarmwasinit = true;
         }
 
-        FLARM_Inject(GPS_INFO, userID, std::move(username), lat, lon, alt, sog, 0,
-                    lastTM, isLiveDB);
+        FLARM_Inject(GPS_INFO, userID, username, position, sog, lastTM);
       }
       catch (std::exception& e) {
         TestLog(_T(".LiveRadar exception processing user: %s"), e.what());

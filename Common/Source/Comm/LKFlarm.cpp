@@ -729,35 +729,21 @@ void UpdateFlarmTarget(NMEA_INFO &Info) {
 }
 
 void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_in,
-                  double lat, double lon, double alt_m, double sog_kmh,
-                  int category, int lastTM, int isLiveDB) {
-  std::string username = username_in;
-  std::transform(username.begin(), username.end(), username.begin(), ::toupper);
+                  const AGeoPoint& position, double sog, int lastTM) {
+
+  ScopeLock lock(CritSec_FlightData);
 
   time_t t_of_day = to_time_t(info);
 
-  double Distance;
-  DistanceBearing(lat, lon, info.Latitude, info.Longitude, &Distance, nullptr);
-
+  double Distance = position.Distance({info.Latitude, info.Longitude});
   if (Distance > 30000) {
     return;
   }
 
   double delay = t_of_day - lastTM;
-
-  if (delay > 300 || isLiveDB == 0 ||
-      (category != 1 && category != 2 && category != 4 && category != 8)) {
+  if (delay > 300) {
     return;
   }
-
-  static bool flarmwasinit = false;
-  if (!flarmwasinit) {
-    DoStatusMessage(MsgToken<279>(),
-                    TEXT("LiveTrack24"));  // FLARM DETECTED from LiveTrack24
-    flarmwasinit = true;
-  }
-
-  ScopeLock lock(CritSec_FlightData);
 
   int flarm_slot = FLARM_FindSlot(&info, userID);
 
@@ -767,10 +753,7 @@ void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_
 
   auto& traffic = info.FLARM_Traffic[flarm_slot];
 
-  bool newtraffic = false;
-  if (traffic.Status == LKT_EMPTY) {
-    newtraffic = true;
-  }
+  bool newtraffic = traffic.Status == LKT_EMPTY;
 
   CheckBackTarget(info, flarm_slot);
 
@@ -782,7 +765,7 @@ void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_
     traffic.UpdateNameFlag = false;  // clear flag first
     const TCHAR* fname = LookupFLARMDetails(userID);
     if (fname) {
-      LK_tcsncpy(traffic.Name, fname, MAXFLARMNAME);
+      lk::strcpy(traffic.Name, fname);
       const TCHAR* cname = LookupFLARMCn(userID);
       if (cname) {
         int cnamelen = _tcslen(cname);
@@ -801,8 +784,8 @@ void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_
       }
     }
     else {
-      from_utf8(username.c_str(), traffic.Name);
-      from_utf8(username.c_str(), traffic.Cn);
+      from_utf8(username_in.c_str(), traffic.Name);
+      from_utf8(username_in.c_str(), traffic.Cn);
     }
   }
 
@@ -811,26 +794,31 @@ void FLARM_Inject(NMEA_INFO& info, uint32_t userID, const std::string& username_
   time_t rawtime = lastTM;
   struct tm tm_temp = {};
   struct tm* ptm = gmtime_r(&rawtime, &tm_temp);
+  if (!ptm) {
+    return;
+  }
   int Time_Fix = (ptm->tm_hour * 3600 + ptm->tm_min * 60 + ptm->tm_sec);
   if (Time_Fix > info.Time) {
     Time_Fix = info.Time;
   }
 
   if (traffic.Status != LKT_EMPTY) {
-    double deltaT = (double)Time_Fix - traffic.Time_Fix;
+    double deltaT = Time_Fix - traffic.Time_Fix;
     if (deltaT > 0) {
-      double old_lat = traffic.Latitude;
-      double old_lon = traffic.Longitude;
-      DistanceBearing(old_lat, old_lon, lat, lon, nullptr, &TrackBearing);
+      const GeoPoint old_position = {
+        traffic.Latitude,
+        traffic.Longitude
+      };
+      TrackBearing = old_position.Bearing(position);
     }
   }
 
   traffic.Status = LKT_REAL;
-  traffic.Time_Fix = (double)Time_Fix;
-  traffic.Latitude = lat;
-  traffic.Longitude = lon;
-  traffic.Altitude = alt_m;
-  traffic.Speed = sog_kmh / 3.6;  // store in m/s
+  traffic.Time_Fix = Time_Fix;
+  traffic.Latitude = position.latitude;
+  traffic.Longitude = position.longitude;
+  traffic.Altitude = position.altitude;
+  traffic.Speed = sog;
   traffic.TrackBearing = TrackBearing;
-  traffic.Average30s = flarmCalculations.Average30s(traffic.RadioId, info.Time, alt_m);
+  traffic.Average30s = flarmCalculations.Average30s(traffic.RadioId, info.Time, position.altitude);
 }
