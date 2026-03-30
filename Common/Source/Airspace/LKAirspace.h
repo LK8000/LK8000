@@ -333,7 +333,7 @@ protected:
 public:
     virtual void DrawPicto(LKSurface& Surface, const RECT &rc) const;
 protected:
-    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList &screenpoints_picto) const;
+    virtual void CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList &screenpoints_picto) const = 0;
     ////////////////////////////////////////////////////////////////////////////////
 
     static CAirspaceWeakPtr _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations

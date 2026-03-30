@@ -2967,10 +2967,6 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
     }
 }
 
-void CAirspace::CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList& screenpoints_picto) const {
-    LKASSERT(FALSE); // never call this function on base class instance !
-}
-
 void CAirspace_Circle::CalculatePictPosition(const RECT& rcDraw, double zoom, RasterPointList& screenpoints_picto) const {
     const int cx = rcDraw.right - rcDraw.left;
     const int cy = rcDraw.bottom - rcDraw.top;
