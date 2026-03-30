@@ -556,7 +556,11 @@ bool LiveTrack24V2Handler::SendEndOfTrackPacket2(http_session& http,
   std::string command = stringStream.str();
   std::string response =
       http.request("t2.livetrack24.com", 80, command.c_str());
-  return (response == "0;OK");
+  if (response == "0;OK") {
+    ++(*packet_id);
+    return true;
+  }
+  return false;
 }
 
 bool LiveTrack24V2Handler::SendGPSPointPacket2(http_session& http,
