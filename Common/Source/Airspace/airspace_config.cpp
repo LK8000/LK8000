@@ -50,10 +50,18 @@ bool airspace_config::Warning(Airspace::Type type) const {
 }
 
 bool airspace_config::Display(Airspace::Type cls, Airspace::Type type) const {
+  if (type == Airspace::Type::OTHER || type == Airspace::Type::NONE) {
+    // OpenAir-V1 or OpenAip airspace source or OpenAir-V2 Airspace without type
+    return Display(cls);
+  }
   return Display(cls) || Display(type);
 }
 
 bool airspace_config::Warning(Airspace::Type cls, Airspace::Type type) const {
+  if (type == Airspace::Type::OTHER || type == Airspace::Type::NONE) {
+    // OpenAir-V1 or OpenAip airspace source or OpenAir-V2 Airspace without type
+    return Warning(cls);
+  }
   return Warning(cls) || Warning(type);
 }
 
