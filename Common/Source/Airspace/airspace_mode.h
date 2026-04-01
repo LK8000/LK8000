@@ -9,9 +9,7 @@
 #ifndef _AIRSPACE_AIRSPACEMODE_H_
 #define _AIRSPACE_AIRSPACEMODE_H_
 
-#include <array>
 #include <bitset>
-#include "Airspace.h"
 
 class airspace_mode {
  public:
@@ -56,6 +54,5 @@ class airspace_mode {
   constexpr static size_t _display = 0U;
 };
 
-using airspace_mode_array = std::array<airspace_mode, AIRSPACECLASSCOUNT>;
 
 #endif  // _AIRSPACE_AIRSPACEMODE_H_

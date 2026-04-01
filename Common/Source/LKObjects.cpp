@@ -119,29 +119,9 @@ void LKObjects_Create() {
   //
   // MapWindow objects
   //
-
-  for (unsigned i = 0; i < AIRSPACECLASSCOUNT; i++) {
-    LKASSERT(MapWindow::iAirspaceColour[i] < NUMAIRSPACECOLORS);
-
-    const LKColor& Color = MapWindow::Colours[MapWindow::iAirspaceColour[i]];
-
-    MapWindow::hAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(1), Color);
-    MapWindow::hBigAirspacePens[i].Create(PEN_SOLID, NIBLSCALE(3),
-                                          Color.ChangeBrightness(0.75));
-  }
   MapWindow::hAirspaceBorderPen.Create(PEN_SOLID, NIBLSCALE(10), RGB_WHITE);
 
   SnailTrail_Create();
-
-  for (unsigned i=0; i<std::size(MapWindow::hAirspaceBrushes); ++i) {
-#ifdef HAVE_HATCHED_BRUSH
-      static_assert(std::size(MapWindow::hAirspaceBrushes) == std::size(hAirspaceBitmap), "Array Size error");
-      MapWindow::hAirspaceBrushes[i].Create(hAirspaceBitmap[i]);
-#else
-      static_assert(std::size(MapWindow::hAirspaceBrushes) == std::size(MapWindow::Colours), "Array Size error");
-      MapWindow::hAirspaceBrushes[i].Create(MapWindow::Colours[i].WithAlpha(0xFF/2));
-#endif
-  }
 
 #ifdef ENABLE_OPENGL
   MapWindow::AboveTerrainColor = RGB_GREY.WithAlpha(0xFF/2);
@@ -151,12 +131,7 @@ void LKObjects_Create() {
 #else
   MapWindow::hAboveTerrainBrush.Create(RGB_GREY);
 #endif
-#endif
-  
-  if(LKSurface::AlphaBlendSupported()) {
-      MapWindow::InitAirSpaceSldBrushes(MapWindow::Colours);
-  }
-  
+#endif  
 
   MapWindow::hInvBackgroundBrush[0] = LKBrush_White;
   MapWindow::hInvBackgroundBrush[1] = LKBrush_LightGrey;
@@ -261,12 +236,14 @@ void LKObjects_Delete() {
 
   SnailTrail_Delete();
 
-  std::for_each(std::begin(MapWindow::hAirspacePens), std::end(MapWindow::hAirspacePens), std::bind(&LKPen::Release, _1) );
-  std::for_each(std::begin(MapWindow::hBigAirspacePens), std::end(MapWindow::hBigAirspacePens), std::bind(&LKPen::Release, _1) );
-  std::for_each(std::begin(MapWindow::hAirSpaceSldBrushes), std::end(MapWindow::hAirSpaceSldBrushes), std::bind(&LKBrush::Release, _1));
+  MapWindow::AirspaceBrushes.clear();
+  MapWindow::AirspaceBigPens.clear();
+  MapWindow::AirspacePens.clear();
 
-  std::for_each(std::begin(MapWindow::hAirspaceBrushes), std::end(MapWindow::hAirspaceBrushes), std::bind(&LKBrush::Release, _1) );
-  
+#ifdef HAVE_HATCHED_BRUSH
+  MapWindow::AirspacePatternBrushes.clear();
+#endif
+
 #ifndef ENABLE_OPENGL  
   MapWindow::hAboveTerrainBrush.Release();
 #endif

@@ -54,7 +54,8 @@ struct AirspaceInfo_t : public ObjectAdaptor_t {
       return !airspace->Enabled();
     } else {
       // only selected class
-      return airspace->Type() == static_cast<int>(type) - 1;  
+      auto aps_type = Airspace::from_underlying(type - 1);
+      return airspace->Type() == aps_type || airspace->Class() == aps_type;
     }
   }
 
@@ -69,19 +70,21 @@ public:
   }
 
   const TCHAR* GetTypeLabel(unsigned type) const override {
-    if( type == AIRSPACECLASSCOUNT + 1) {
+    auto aps_type = Airspace::from_underlying(type - 1);
+    if (aps_type == Airspace::Type::NONE) {
       return MsgToken<239>(); // "_@M00239_": "Disabled"
-    } else if (type > 0) {
-      return CAirspaceManager::GetAirspaceTypeText(type-1);
-    } 
+    }
+    else if (type > 0) {
+      return CAirspaceManager::GetAirspaceTypeShortText(aps_type);
+    }
     return _T("*");
   }
 
   int GetTypeWidth(LKSurface& Surface) override {
     if(TypeWidth < 0) {
       TypeWidth = 0;
-      for (unsigned i = 0 ; i < AIRSPACECLASSCOUNT; ++i) {
-        const TCHAR* szShortLabel = CAirspaceManager::GetAirspaceTypeShortText(i);
+      for (auto type : Airspace::type_range()) {
+        const TCHAR* szShortLabel = CAirspaceManager::GetAirspaceTypeShortText(type);
         TypeWidth = std::max(TypeWidth, Surface.GetTextWidth(szShortLabel));
       }
     }

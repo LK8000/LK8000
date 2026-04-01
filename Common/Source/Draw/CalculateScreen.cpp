@@ -117,20 +117,11 @@ void MapWindow::CalculateScreenPositionsThermalSources(const ScreenProjection& _
   }
 }
 
-
-
-void MapWindow::CalculateScreenPositionsAirspace(const RECT& rcDraw, const ScreenProjection& _Proj)
-{
-#ifndef HAVE_HATCHED_BRUSH
-  // iAirspaceBrush is not used and don't exist if we don't have Hatched Brush
-  // this is workarround for compatibility with #CalculateScreenPositionsAirspace
-  constexpr int iAirspaceBrush[AIRSPACECLASSCOUNT] = {}; 
-#endif
-  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, aAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
+void MapWindow::CalculateScreenPositionsAirspace(
+    const RECT& rcDraw, const ScreenProjection& _Proj) {
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(
+      screenbounds_latlon, aAirspaceMode, rcDraw, _Proj);
 }
-
-
-
 
 ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RECT& rc, POINT *Orig_Aircraft )
 {

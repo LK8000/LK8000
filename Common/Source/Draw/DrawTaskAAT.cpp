@@ -54,6 +54,9 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
     const int maxTp = MAXTASKPOINTS;
 #endif
 
+    auto color = MapWindow::AirspaceModeColor(Airspace::Type::TSKSEC)
+                     .value_or(RGB_YELLOW);
+
 #ifdef USE_GDI
     if (bDraw) { // Draw Only if one is Visible
         rcDraw.top = std::max(rc.top, rcDraw.top);
@@ -76,19 +79,18 @@ void MapWindow::DrawTaskAAT(LKSurface& Surface, const RECT& rc) {
 
         TempSurface.SelectObject(LK_NULL_PEN);
 #ifdef HAVE_HATCHED_BRUSH
-        TempSurface.SelectObject(hAirspaceBrushes[iAirspaceBrush[AATASK]]);
-#else
-        TempSurface.SelectObject(LKBrush_Yellow);
-#endif
+        TempSurface.SelectObject(MapWindow::AirspaceModeBrush(Airspace::Type::TSKSEC));
         // this color is used as the black bit
-        TempSurface.SetTextColor(Colours[iAirspaceColour[AATASK]]);
+        TempSurface.SetTextColor(color);
         // this color is the transparent bit
         TempSurface.SetBkColor(RGB_WHITE);
-
+#else
+        TempSurface.SelectObject(MapWindow::AirspaceBrush(color));
+#endif
         LKSurface & AliasSurface = TempSurface;
 #else
         LKSurface & AliasSurface = Surface;
-        Surface.SelectObject(LKBrush(LKColor(255U,255U,0U).WithAlpha(AlphaLevel)));
+        Surface.SelectObject(LKBrush(color.WithAlpha(AlphaLevel)));
 #endif
         for (int i = maxTp - 1; i > std::max(0, ActiveTaskPoint - 1); i--) {
 					if (ValidTaskPoint(i)) {

@@ -22,9 +22,6 @@
 // You are in fact ignoring that old profile token, which will disappear.
 //
 
-extern const char * const szRegistryAirspaceMode[];	// 18
-extern const char * const szRegistryBrush[];	// 18
-extern const char * const szRegistryColour[];	// 18
 extern const char * const szRegistryDisplayType[];	// MAXINFOWINDOWS
 extern const char szRegistryAcknowledgementTime[];
 extern const char szRegistryAdditionalAirspaceFile[];

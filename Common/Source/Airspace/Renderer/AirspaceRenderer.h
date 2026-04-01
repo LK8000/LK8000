@@ -8,6 +8,7 @@
 #include "types.h"
 #include "Screen/PolygonSaveCallback.h"
 #include "Screen/PenReference.h"
+#include "Screen/BrushReference.h"
 #ifdef USE_GLSL
 #include "Screen/OpenGL/Buffer.hpp"
 #include <glm/mat4x4.hpp>
@@ -34,7 +35,7 @@ class AirspaceRenderer final {
   void Update(CPoint2DArray& geopoints, bool need_clipping, const RECT& rcDraw, const ScreenProjection& _Proj);
 
   void DrawOutline(LKSurface& Surface, PenReference pen) const;
-  void FillPolygon(LKSurface& Surface, const LKBrush& brush) const;
+  void FillPolygon(LKSurface& Surface, BrushReference brush) const;
 
  protected:
   // this 2 array are modified by DrawThread, never use it in another thread !!

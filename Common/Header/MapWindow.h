@@ -9,7 +9,6 @@
 #if !defined(AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#include "Airspace/Airspace.h"
 #include "Sizes.h"
 #include "Defines.h"
 #include "Parser.h"
@@ -27,7 +26,8 @@
 #include "Enums.h"
 #include "ContestMgr.h"
 #include "utils/atomic_shared_flag.h"
-#include "Airspace/airspace_mode.h"
+#include "Airspace/airspace_config.h"
+#include "Airspace/Airspace.h"
 #include "Topology/shapelib/mapserver.h"
 
 
@@ -448,36 +448,53 @@ class MapWindow {
 
   static bool IsDisplayRunning();
 
-  static airspace_mode_array aAirspaceMode;
+  static airspace_config aAirspaceMode;
 
-#ifdef HAVE_HATCHED_BRUSH
-  static int iAirspaceBrush[AIRSPACECLASSCOUNT];
-#endif
-  static int iAirspaceColour[AIRSPACECLASSCOUNT];
+  static LKColor AirspaceModeColor(Airspace::Type cls, Airspace::Type type);
+
+  static BrushReference AirspaceBrush(LKColor color);
+  static PenReference AirspaceBigPen(LKColor color);
+  static PenReference AirspacePen(LKColor color);
+
+  class ColorIndex {
+   public:
+    ColorIndex() = delete;
+#ifdef GREYSCALE
+    ColorIndex(const LKColor& c) : value(c.GetLuminosity()) {}
+#else
+    ColorIndex(const LKColor& c) : value(c.Blue() << 16 | c.Green() << 8 | c.Red()) {}
+#endif    
+
+    bool operator<(const ColorIndex& other) const {
+      return value < other.value;
+    }
+
+   private:
+    uint32_t value;
+  };
+
+  static Mutex AirspaceMutex;
+  static std::map<ColorIndex, LKBrush> AirspaceBrushes;
+  static std::map<ColorIndex, LKPen> AirspacePens;
+  static std::map<ColorIndex, LKPen> AirspaceBigPens;
+
+  static void SetAirspaceColor(Airspace::Type type, std::optional<RGB8Color> color);
+
   static BOOL CLOSETHREAD;
 
-  static const LKColor& GetAirspaceColour(int i) {
-    return Colours[i];
+  static LKColor GetAirspaceColour(size_t idx) {
+    return LKColor(Colours[idx % std::size(Colours)]);
   }
 
-  static const LKBrush& GetAirspaceBrush(int i) {
-    return hAirspaceBrushes[i];
-  }
-  static const LKBrush& GetAirspaceBrushByClass(int i) {
 #ifdef HAVE_HATCHED_BRUSH
-    return GetAirspaceBrush(iAirspaceBrush[i]);
-#else
-    return GetAirspaceBrush(iAirspaceColour[i]);
+
+  static std::unordered_map<size_t, LKBrush> AirspacePatternBrushes;
+
+  static void  SetAirspacePattern(Airspace::Type type, std::optional<int> pattern);
+  static BrushReference AirspaceModeBrush(Airspace::Type cls, Airspace::Type type);
+  static BrushReference AirspaceBrush(size_t idx);
+
 #endif
-  }
-
-  static const LKColor& GetAirspaceColourByClass(int i) {
-    return Colours[iAirspaceColour[i]];
-  }
-
-
-  // initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
-  static void InitAirSpaceSldBrushes(const LKColor (&colours)[NUMAIRSPACECOLORS]);
 
   static ScreenProjection GetProjection();
 
@@ -491,36 +508,29 @@ class MapWindow {
  public:
 
   // 12 is number of airspace types
-  constexpr static LKColor Colours[NUMAIRSPACECOLORS] = {
-    LKColor(0xFF,0x00,0x00),
-    LKColor(0x00,0xFF,0x00),
-    LKColor(0x00,0x00,0xFF),
-    LKColor(0xFF,0xFF,0x00),
-    LKColor(0xFF,0x00,0xFF),
-    LKColor(0x00,0xFF,0xFF),
-    LKColor(0x7F,0x00,0x00),
-    LKColor(0x00,0x7F,0x00),
-    LKColor(0x00,0x00,0x7F),
-    LKColor(0x7F,0x7F,0x00),
-    LKColor(0x7F,0x00,0x7F),
-    LKColor(0x00,0x7F,0x7F),
-    LKColor(0xFF,0xFF,0xFF),
-    LKColor(0xC0,0xC0,0xC0),
-    LKColor(0x7F,0x7F,0x7F),
-    LKColor(0x00,0x00,0x00),
-    LKColor(0x7F,0x7F,0x7F)
+  constexpr static RGB8Color Colours[NUMAIRSPACECOLORS] = {
+    RGB8Color(0xFF,0x00,0x00),
+    RGB8Color(0x00,0xFF,0x00),
+    RGB8Color(0x00,0x00,0xFF),
+    RGB8Color(0xFF,0xFF,0x00),
+    RGB8Color(0xFF,0x00,0xFF),
+    RGB8Color(0x00,0xFF,0xFF),
+    RGB8Color(0x7F,0x00,0x00),
+    RGB8Color(0x00,0x7F,0x00),
+    RGB8Color(0x00,0x00,0x7F),
+    RGB8Color(0x7F,0x7F,0x00),
+    RGB8Color(0x7F,0x00,0x7F),
+    RGB8Color(0x00,0x7F,0x7F),
+    RGB8Color(0xFF,0xFF,0xFF),
+    RGB8Color(0xC0,0xC0,0xC0),
+    RGB8Color(0x7F,0x7F,0x7F),
+    RGB8Color(0x00,0x00,0x00),
+    RGB8Color(0x7F,0x7F,0x7F)
   };
 
-  static LKPen hAirspacePens[AIRSPACECLASSCOUNT];
-  static LKPen hBigAirspacePens[AIRSPACECLASSCOUNT];
   static LKPen hAirspaceBorderPen;
 
   static LKPen hSnailPens[NUMSNAILCOLORS+1];
-
-  static LKBrush hAirspaceBrushes[NUMAIRSPACEBRUSHES];
-
-  // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
-  static LKBrush hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
 
 #ifdef ENABLE_OPENGL
   static LKColor AboveTerrainColor;
@@ -961,8 +971,58 @@ protected:
   static double targetMovedLat;
   static double targetMovedLon;
 
-  // include declaration for alpha blended drawing
-  #include "MapWindowA.h"
+ // declaration of interface for alpha blended air space drawing
+ public:
+  enum EAirspaceFillType {
+    asp_fill_border_only = 0,  // airspace drawing using no filling
+#ifdef HAVE_HATCHED_BRUSH
+    asp_fill_patterns_full,     // airspace drawing using patterns
+    asp_fill_patterns_borders,  // airspace drawing using patterns, borders
+#endif
+    asp_fill_ablend_full,     // airspace drawing using alpha blend
+    asp_fill_ablend_borders,  // airspace drawing using alpha blend, borders
+  };
+
+  // set airspace drawing type
+  static void SetAirSpaceFillType(EAirspaceFillType fillType) {
+    ScopeLock lock(AirspaceMutex);
+    AirspaceFillType = fillType;
+  }
+
+  // get airspace drawing type
+  static EAirspaceFillType GetAirSpaceFillType(void) {
+    ScopeLock lock(AirspaceMutex);
+    return AirspaceFillType;
+  }
+
+  static void SetAirSpaceOpacity(int opacity) {
+    ScopeLock lock(AirspaceMutex);
+    opacity = std::clamp(opacity, 0, 100);
+    if(AirspaceOpacity != opacity) {
+      AirspaceOpacity = opacity;
+      AirspaceBrushes.clear();
+    }
+  }
+
+  // get alpha blended airspace opacity
+  static int GetAirSpaceOpacity(void) {
+    ScopeLock lock(AirspaceMutex);
+    return AirspaceOpacity;
+  }
+
+ private:
+
+  // airspace drawing type
+  static EAirspaceFillType AirspaceFillType;
+
+  // alpha blended airspace opacity (0..100)
+  static BYTE AirspaceOpacity;
+
+  // draw airspace using alpha blending
+  static void ClearTptAirSpace(LKSurface& Surface, const RECT& rc);
+
+  // draw airspace using alpha blending
+  static void DrawTptAirSpace(LKSurface& Surface, const RECT& rc);
 };
 
 void PolygonRotateShift(POINT* poly, int n, int x, int y,

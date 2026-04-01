@@ -92,9 +92,9 @@ void AirspaceRenderer::DrawOutline(LKSurface& Surface, PenReference pen) const {
   Surface.SelectObject(old);
 }
 
-void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) const {
+void AirspaceRenderer::FillPolygon(LKSurface& Surface, BrushReference brush) const {
 #ifndef USE_GDI
-  if (brush.IsHollow()) {
+  if (brush->IsHollow()) {
     return;
   }
 #endif
@@ -107,10 +107,10 @@ void AirspaceRenderer::FillPolygon(LKSurface& Surface, const LKBrush& brush) con
   OpenGL::solid_shader->Use();
   glUniformMatrix4fv(OpenGL::solid_modelview, 1, GL_FALSE, glm::value_ptr(_proj_mat));
 
-  brush.Bind();
+  brush->Bind();
 
   std::unique_ptr<const ScopeAlphaBlend> blend;
-  if (!brush.IsOpaque()) {
+  if (!brush->IsOpaque()) {
     blend = std::make_unique<const ScopeAlphaBlend>();
   }
 

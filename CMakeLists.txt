@@ -226,6 +226,8 @@ add_library( LK8000 SHARED
 
     Common/Source/Airspace/vertical_position.cpp
     Common/Source/Airspace/vertical_bound.cpp
+    Common/Source/Airspace/airspace_config.h
+    Common/Source/Airspace/airspace_config.cpp
     Common/Source/Airspace/LKAirspace.cpp
     Common/Source/Airspace/Sonar.cpp
     Common/Source/Airspace/Renderer/AirspaceRenderer.cpp

@@ -20,7 +20,7 @@
 #include "../Topology/shapelib/mapprimitive.h"
 
 #include "Renderer/AirspaceRenderer.h"
-#include "airspace_mode.h"
+#include "airspace_config.h"
 
 class ScreenProjection;
 class MD5;
@@ -127,12 +127,16 @@ class CAirspaceBase {
 
   // Attributes interface
   // Initialize instance attributes
-  void Init(const TCHAR *name, int type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment = NULL);
+  void Init(const TCHAR *name, Airspace::Type cls, Airspace::Type type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment = NULL);
 
   const TCHAR* TypeName() const;
   const TCHAR* TypeNameShort() const;
-  const LKColor& TypeColor() const;
-  const LKBrush& TypeBrush() const;
+
+  LKColor TypeColor() const;
+
+  BrushReference TypeBrush(bool pattern) const;
+  PenReference TypePen() const;
+  PenReference TypeBigPen() const;
 
   const TCHAR* Name() const { return _name; }
   const TCHAR* Comment() const {
@@ -155,8 +159,8 @@ class CAirspaceBase {
   AirspaceDrawStyle_t DrawStyle() const { return _drawstyle; }
   void DrawStyle(AirspaceDrawStyle_t drawstyle) { _drawstyle = drawstyle; }
 
-  int Type() const { return _type; }
-  void Type(int type) { _type = type; }
+  Airspace::Type Class() const { return _class; }
+  Airspace::Type Type() const { return _type; }
 
   int Enabled() const { return _enabled; }
   void Enabled(bool enabled) { _enabled = enabled; }
@@ -206,7 +210,8 @@ protected:
 
   tstring _comment;       // extended airspace informations e.g. for Notams
 
-  int _type = OTHER;                                    // type (class) of airspace
+  Airspace::Type _class = Airspace::Type::UNC;
+  Airspace::Type _type = Airspace::Type::NONE;
 
   vertical_bound _ceiling = {};                            // top altitude
   vertical_bound _floor = {};                            // base altitude
@@ -280,10 +285,10 @@ public:
     // Check if a point horizontally inside in this airspace
     virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
     // Calculate drawing coordinates on screen
-    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
+    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_config& aAirspaceMode, const RECT& rcDraw, const ScreenProjection& _Proj);
     // Draw airspace on map
     void DrawOutline(LKSurface& Surface, PenReference pen) const;
-    void FillPolygon(LKSurface& Surface, const LKBrush& brush) const;
+    void FillPolygon(LKSurface& Surface, bool pattern) const;
 
     // Calculate nearest horizontal distance and bearing to the airspace from a given point
     virtual double Range(const double &longitude, const double &latitude, double &bearing) const  = 0;
@@ -340,7 +345,6 @@ struct AirSpaceSideView_t {
 
   int iAreaSize;
   int aiLable;
-  int iType;
   PixelScalar iMaxBase;
   PixelScalar iMinTop;
   BOOL bRectAllowed;
@@ -463,9 +467,8 @@ public:
   }
 
   //HELPER FUNCTIONS
-  static const TCHAR* GetAirspaceTypeText(int type);
-  static const TCHAR* GetAirspaceTypeShortText(int type);
-
+  static const TCHAR* GetAirspaceTypeText(Airspace::Type type);
+  static const TCHAR* GetAirspaceTypeShortText(Airspace::Type type);
 
   // Upper level interfaces
   void ReadAirspaces();
@@ -509,7 +512,7 @@ public:
 
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
-  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj);
+  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_config& aAirspaceMode, const RECT& rcDraw, const ScreenProjection& _Proj);
   const CAirspaceList& GetNearAirspacesRef() const;
 
   //Nearest page 2.4
@@ -550,9 +553,13 @@ private:
 
   //Openair parsing functions, internal use
   bool FillAirspacesFromOpenAir(const TCHAR* szFile);
-  void CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center,
-                      int Type, vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment,
-                      bool flyzone, bool enabled, bool except_saturday, bool except_sunday, ActivationTimesT&& ActivationTimes);
+
+  void CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius,
+                      const GeoPoint& Center, Airspace::Type Class,
+                      Airspace::Type Type, vertical_bound&& Base,
+                      vertical_bound&& Top, const tstring& Comment,
+                      bool flyzone, bool enabled, bool except_saturday,
+                      bool except_sunday, ActivationTimesT&& ActivationTimes);
 
   static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
 

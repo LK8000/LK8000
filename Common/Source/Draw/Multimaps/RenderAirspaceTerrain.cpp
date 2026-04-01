@@ -113,8 +113,10 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
     const auto oldpen = Surface.SelectObject(LK_NULL_PEN);
 
     for (const auto& item : Sideview_pHandeled) {
+        if (!item.psAS) {
+            continue;
+        }
 
-        int type = item.iType;
         RECT rcd = item.rc;
         LKColor FrameColor;
         double fFrameColFact;
@@ -125,11 +127,11 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
                 Framewidth *=3;
             }
             else {
-                Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
+                Surface.SelectObject(item.psAS->TypeBrush(true));
             }
-            Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
+            FrameColor = item.psAS->TypeColor();
             fFrameColFact = 0.8;
-            FrameColor = MapWindow::GetAirspaceColourByClass(type);
+            Surface.SetTextColor(FrameColor);
         } else {
             Surface.SelectObject(LKBrush_Hollow);
             Surface.SetTextColor(RGB_GGREY);
@@ -186,7 +188,7 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
             blongtext = true;
         }
 
-        text = CAirspaceManager::GetAirspaceTypeShortText(item.iType);
+        text = item.psAS->TypeNameShort();
         Surface.GetTextSize(text, &textsize);
         if (textsize.cx < aispacesize.cx) {
             if (2 * textsize.cy < aispacesize.cy) {
@@ -205,20 +207,16 @@ void RenderAirspaceTerrain(LKSurface& Surface, double PosLat, double PosLon, dou
 #ifdef OUTLINE_2ND
     for (const auto& item : Sideview_pHandeled) {
         if (item.bEnabled) {
-            int type = item.iType;
+            auto pAS = item.psAS;
+            if (!pAS) {
+                continue;
+            }
             RECT rcd = item.rc;
-            LKColor FrameColor = MapWindow::GetAirspaceColourByClass(type);
+            LKColor FrameColor = pAS->TypeColor();
             double fFrameColFact;
             Surface.SelectObject(LKBrush_Hollow);
-            if (item.bEnabled) {
-                //		Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(type));
-                Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(type));
-                fFrameColFact = 0.8;
-            } else {
-                Surface.SetTextColor(RGB_GGREY);
-                FrameColor = RGB_GGREY;
-                fFrameColFact = 1.2;
-            }
+            fFrameColFact = 0.8;
+            Surface.SetTextColor(FrameColor);
 
             if (INVERTCOLORS)
                 fFrameColFact *= 0.8;

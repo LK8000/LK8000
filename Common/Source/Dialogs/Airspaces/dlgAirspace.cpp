@@ -33,8 +33,10 @@ void OnAirspacePaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
   if (DrawIndex < 0 || DrawIndex >= AIRSPACECLASSCOUNT) {
     return;
   }
+  
+  auto asp_type = static_cast<Airspace::Type>(DrawIndex);
 
-  const TCHAR* label = CAirspaceManager::GetAirspaceTypeText(DrawIndex);
+  const TCHAR* label = CAirspaceManager::GetAirspaceTypeText(asp_type);
 
   const PixelRect rcClient(Sender->GetClientRect());
   const int w0 = rcClient.GetSize().cx;
@@ -54,20 +56,32 @@ void OnAirspacePaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
                          rcClient.bottom - DLGSCALE(2)};
 
     Surface.SelectObject(LK_WHITE_PEN);
-    Surface.SelectObject(LKBrush_White);
-    Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
 
-    Surface.SetTextColor(MapWindow::GetAirspaceColourByClass(DrawIndex));
-    Surface.SetBkColor(RGB_WHITE);
-    Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(DrawIndex));
-    Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+    auto color = MapWindow::aAirspaceMode.Color(asp_type);
+    if (color) {
+      // draw Color Rectangle
+      Surface.SetTextColor(*color);
+      Surface.SetBkColor(RGB_WHITE);
+      Surface.SelectObject(MapWindow::AirspaceBrush(*color, true));
+      Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+    }
+    else {
+      Surface.SelectObject(LKBrush_White);
+      Surface.Rectangle(rcColor.left, rcColor.top, rcColor.right, rcColor.bottom);
+      Surface.SetTextColor(RGB_BLACK);
+      Surface.SetBackgroundTransparent();
+
+      // white rectangle with centered "Class Color"
+      RECT rc = rcColor;
+      Surface.DrawText(MsgToken<1921>(), &rc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+    }
   }
   else {
-    if (MapWindow::aAirspaceMode[DrawIndex].warning()) {
+    if (MapWindow::aAirspaceMode.Warning(asp_type)) {
       // LKTOKEN  _@M789_ = "Warn"
       Surface.DrawText(x0, DLGSCALE(2), MsgToken<789>());
     }
-    if (MapWindow::aAirspaceMode[DrawIndex].display()) {
+    if (MapWindow::aAirspaceMode.Display(asp_type)) {
       // LKTOKEN  _@M241_ = "Display"
       Surface.DrawText(w0 - w2, DLGSCALE(2), MsgToken<241>());
     }
@@ -81,21 +95,30 @@ void OnAirspaceListEnter(WindowControl* Sender,
   if (ItemIndex >= AIRSPACECLASSCOUNT) {
     ItemIndex = AIRSPACECLASSCOUNT - 1;
   }
+  
+  auto asp_type = static_cast<Airspace::Type>(ItemIndex);
+
   if (ItemIndex >= 0) {
     if constexpr (colormode) {
       int c = dlgAirspaceColoursShowModal();
-      if (c >= 0) {
-        MapWindow::iAirspaceColour[ItemIndex] = c;
+      if (c > 0) {
+        MapWindow::SetAirspaceColor(asp_type, {MapWindow::Colours[c - 1]});
+      }
+      else if (c == 0) {
+        MapWindow::SetAirspaceColor(asp_type, {});
       }
 #ifdef HAVE_HATCHED_BRUSH
       int p = dlgAirspacePatternsShowModal();
-      if (p >= 0) {
-        MapWindow::iAirspaceBrush[ItemIndex] = p;
+      if (p > 0) {
+        MapWindow::SetAirspacePattern(asp_type, {p - 1});
+      }
+      else if (p == 0) {
+        MapWindow::SetAirspacePattern(asp_type, {});
       }
 #endif
     }
     else {
-      MapWindow::aAirspaceMode[ItemIndex].rotate_set();
+      MapWindow::aAirspaceMode.RotateSet(asp_type);
     }
   }
 }
@@ -171,24 +194,12 @@ bool dlgAirspaceShowModal() {
   }
 
   const auto oldMode = MapWindow::aAirspaceMode;
-  const auto oldColor = snapshot(MapWindow::iAirspaceColour);
-#ifdef HAVE_HATCHED_BRUSH
-  const auto oldBrush = snapshot(MapWindow::iAirspaceBrush);
-#endif
 
   pForm->ShowModal();
 
   if (oldMode != MapWindow::aAirspaceMode) {
     return true;
   }
-  if (changed_snaphot(MapWindow::iAirspaceColour, oldColor)) {
-    return true;
-  }
-#ifdef HAVE_HATCHED_BRUSH
-  if (changed_snaphot(MapWindow::iAirspaceBrush, oldBrush)) {
-    return true;
-  }
-#endif
 
   return false;
 }

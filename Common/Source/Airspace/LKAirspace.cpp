@@ -64,41 +64,6 @@ struct start_with_predicate final {
     }
 };
 
-auto type_table = lookup_table<tstring_view, int, start_with_predicate>({
-    { _T("R"), RESTRICT },
-    { _T("Q"), DANGER },
-    { _T("P"), PROHIBITED },
-    { _T("A"), CLASSA },
-    { _T("B"), CLASSB },
-    { _T("C"), CLASSC },
-    { _T("D"), CLASSD },
-    { _T("W"), WAVE },
-    { _T("E"), CLASSE },
-    { _T("F"), CLASSF },
-    { _T("G"), CLASSG },
-    { _T("GP"), NOGLIDER },
-    { _T("CTR"), CTR },
-    { _T("TMZ"), CLASSTMZ },
-    { _T("RMZ"), CLASSRMZ },
-    { _T("NOTAM"), CLASSNOTAM },
-    { _T("GSEC"), GLIDERSECT },
-    { _T("TRA"), RESTRICT },
-    { _T("TSA"), RESTRICT },
-    { _T("ASRA"), GLIDERSECT },
-});
-
-/**
- * Update Airspace type from OpenAir Fields
- * @c type from AC Field
- * @y type from AY Field
- */
-int update_type( int c, int y) {
-    if (c == OTHER) {
-        return y;
-    }
-    return c;
-}
-
 } //namespace
 
 // CAirspace class attributes
@@ -121,23 +86,47 @@ CAirspaceWeakPtr CAirspace::_sideview_nearest_instance; // collect nearest airsp
 //
 
 const TCHAR* CAirspaceBase::TypeName() const {
-  return CAirspaceManager::GetAirspaceTypeText(_type);
+  auto type = Airspace::lookup(_class, _type, [](Airspace::Type t) {
+    return CAirspaceManager::GetAirspaceTypeText(t);
+  });
+  if (type) {
+    return type;
+  }
+  return _T("");
 }
 
 const TCHAR* CAirspaceBase::TypeNameShort() const {
-  return CAirspaceManager::GetAirspaceTypeShortText(_type);
+  auto type = Airspace::lookup(_class, _type, [](Airspace::Type t) {
+    return CAirspaceManager::GetAirspaceTypeShortText(t);
+  });
+  if (type) {
+    return type;
+  }
+  return _T("");
 }
 
-const LKColor& CAirspaceBase::TypeColor() const {
-  return MapWindow::GetAirspaceColourByClass(_type);
+LKColor CAirspaceBase::TypeColor() const {
+  return MapWindow::AirspaceModeColor(_class, _type);
 }
 
-const LKBrush& CAirspaceBase::TypeBrush() const {
+BrushReference CAirspaceBase::TypeBrush(bool pattern) const {
 #ifdef HAVE_HATCHED_BRUSH
-  return MapWindow::GetAirspaceBrushByClass(_type);
-#else
-  return MapWindow::GetAirSpaceSldBrushByClass(_type);
+  if (pattern) {
+    return MapWindow::AirspaceModeBrush(_class, _type);
+  }
+  else
 #endif
+  {
+    return MapWindow::AirspaceBrush(TypeColor());
+  }
+}
+
+PenReference CAirspaceBase::TypePen() const {
+  return MapWindow::AirspacePen(TypeColor());
+}
+
+PenReference CAirspaceBase::TypeBigPen() const {
+  return MapWindow::AirspaceBigPen(TypeColor());
 }
 
 void CAirspaceBase::AGLLookup(const GeoPoint& position, double *basealt_out, double *topalt_out) const {
@@ -725,7 +714,7 @@ void CAirspaceBase::ResetWarnings() {
 }
 
 // Initialize instance attributes
-void CAirspaceBase::Init(const TCHAR *name, int type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment) {
+void CAirspaceBase::Init(const TCHAR *name, Airspace::Type cls, Airspace::Type type, vertical_bound &&base, vertical_bound &&top, bool flyzone, const TCHAR *comment) {
     lk::strcpy(_name, name);
     if (_tcslen(_name) <  _tcslen(name)) {
         _comment = name;
@@ -742,6 +731,7 @@ void CAirspaceBase::Init(const TCHAR *name, int type, vertical_bound &&base, ver
         _comment += comment;
     }
 
+    _class = cls;
     _type = type;
     _flyzone = flyzone;
     _floor = base;
@@ -852,7 +842,7 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
 
 
 // Calculate screen coordinates for drawing
-void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
+void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_config& aAirspaceMode, const RECT& rcDraw, const ScreenProjection& _Proj) {
 
     /** TODO 
      *   check map projection change
@@ -878,7 +868,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     _drawstyle = adsHidden;        
 
     // Check Visibility : faster first
-    bool is_visible = aAirspaceMode[_type].display(); // airspace class disabled ?
+    bool is_visible = aAirspaceMode.Display(_class, _type); // airspace class disabled ?
     if(is_visible) {
       is_visible = !_ceiling.below_msl();
     }
@@ -902,16 +892,17 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
         rendrer = nullptr;
     }
 
-    if ( (((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES - 1)) && (_warninglevel == awNone) && (_warningacklevel ==  awNone))|| (_warninglevel > _warningacklevel)/*(_warningacklevel == awNone)*/)) {
-        _drawstyle = adsFilled;
-    } else {
-        _drawstyle = adsOutline;
-        //    _drawstyle = adsFilled;
+    if ((((_warninglevel == awNone) && (_warningacklevel == awNone)) ||
+         (_warninglevel > _warningacklevel) /*(_warningacklevel == awNone)*/)) {
+      _drawstyle = adsFilled;
+    }
+    else {
+      _drawstyle = adsOutline;
+      //    _drawstyle = adsFilled;
     }
     if (!_enabled) {
       _drawstyle = adsDisabled;
     }
-
 }
 
 void CAirspace::DrawOutline(LKSurface& Surface, PenReference pen) const {
@@ -920,15 +911,16 @@ void CAirspace::DrawOutline(LKSurface& Surface, PenReference pen) const {
     }
 }
 
-void CAirspace::FillPolygon(LKSurface& Surface, const LKBrush& brush) const {
+void CAirspace::FillPolygon(LKSurface& Surface, bool pattern) const {
     if (rendrer) {
-        rendrer->FillPolygon(Surface, brush);
+        rendrer->FillPolygon(Surface, TypeBrush(pattern));
     }
 }
 
 
 void CAirspace::Hash(MD5& md5) const {
-    md5.Update(_type);
+    md5.Update(Airspace::to_underlying(_class));
+    md5.Update(Airspace::to_underlying(_type));
     md5.Update(to_utf8(_name));
     _floor.hash(md5);
     _ceiling.hash(md5);
@@ -1460,7 +1452,9 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     CPoint2DArray points;
     double Radius = 0;
     GeoPoint Center;
-    int Type = 0;
+    Airspace::Type Type = Airspace::Type::OTHER;
+    Airspace::Type Cls = Airspace::Type::OTHER;
+
     unsigned int skiped_cnt =0;
     unsigned int accept_cnt =0;
 
@@ -1606,7 +1600,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         p++; // skip C
                         if (parsing_state == 10) { // New airspace begin, store the old one, reset parser
                             if (InsideMap) {
-                              CreateAirspace(Name.c_str(), points, Radius, Center, Type,
+                              CreateAirspace(Name.c_str(), points, Radius, Center, Cls, Type,
                                             {Base, Base2}, {Top, Top2}, ASComment,
                                             flyzone, enabled, except_saturday, except_sunday, std::move(ActivationTimes));
                             }
@@ -1616,7 +1610,8 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                             Radius = 0;
                             Center = {0, 0};
                             points.clear();
-                            Type = OTHER;
+                            Cls = Airspace::Type::OTHER;
+                            Type = Airspace::Type::OTHER;                            
                             Base = {};
                             Base2 = {};
                             Top = {};
@@ -1631,9 +1626,10 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         }
                         // New AC
                         p++; //Skip space
-                        Type = type_table.get(p, OTHER);
 
-                        if (Type == CLASSNOTAM) {
+                        Cls = Airspace::from_string(p);
+
+                        if (Cls == Airspace::Type::N) {
                             // notam class disabled by default
                             enabled = false;
                         }
@@ -1704,7 +1700,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
                         if (*(++p) == ' ') {
                             ++p; //Skip Space ?
                         }
-                        Type = update_type(Type, type_table.get(p, OTHER));
+                        Type = Airspace::from_string(p);
                         continue;
 
                     case _T('I'): // AI
@@ -1870,7 +1866,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
 
     // Push last one to the list
     if (parsing_state == 10 && InsideMap) {
-      CreateAirspace(Name.c_str(), points, Radius, Center, Type,
+      CreateAirspace(Name.c_str(), points, Radius, Center, Cls, Type,
                      {Base, Base2}, {Top, Top2}, ASComment,
                      flyzone, enabled, except_saturday, except_sunday, std::move(ActivationTimes));
     }
@@ -1887,52 +1883,59 @@ bool CAirspaceManager::FillAirspacesFromOpenAir(const TCHAR* szFile) {
     return true;
 }
 
-void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius, const GeoPoint& Center, int Type,
-                           vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment, 
-                           bool flyzone, bool enabled, bool except_saturday, bool except_sunday, ActivationTimesT&& ActivationTimes) {
-    try {
-        std::unique_ptr<CAirspace> airspace;
-        if (Radius > 0) {
-            // Was a circle
-            airspace = std::make_unique<CAirspace_Circle>(Center, Radius);
-        } else if (CorrectGeoPoints(Polygon)) {
-            // Was an area
-            // Skip it if we dont have minimum 3 points
-            airspace = std::make_unique<CAirspace_Area>(std::move(Polygon));
-        }
-        Polygon.clear(); // required, otherwise vector state is undefined;
+void CAirspaceManager::CreateAirspace(const TCHAR* Name, CPoint2DArray& Polygon, double Radius,
+                                const GeoPoint& Center, Airspace::Type Class, Airspace::Type Type,
+                                vertical_bound&& Base, vertical_bound&& Top, const tstring& Comment,
+                                bool flyzone, bool enabled, bool except_saturday, bool except_sunday,
+                                ActivationTimesT&& ActivationTimes) {
 
-        if (airspace) {
-
-            const std::basic_regex<TCHAR> re(_T(R"(.*((?:Lower)|(?:Upper))\((.*?)-(.*?)\).*)"));
-            std::match_results<const TCHAR*> match;
-            if (std::regex_match(Name, match, re)) {
-                vertical_position Alt1 = vertical_position::parse_open_air(match[2].str().c_str());
-                vertical_position Alt2 = vertical_position::parse_open_air(match[3].str().c_str());
-                if (match[1].str() == _T("Lower")) {
-                    Base.update(Alt1, Alt2);
-                }
-                else if (match[1].str() == _T("Upper")) {
-                    Top.update(Alt1, Alt2);
-                }
-            }
-
-            airspace->Init(Name, Type, std::move(Base), std::move(Top), flyzone , Comment.c_str());
-            airspace->Enabled(enabled);
-            airspace->ExceptSaturday(except_saturday);
-            airspace->ExceptSunday(except_sunday);
-            airspace->ActivationTimes(std::move(ActivationTimes));
-
-            WithLock(_csairspaces, [&] {
-                _airspaces.push_back(std::move(airspace));
-            });
-        }
+  try {
+    std::unique_ptr<CAirspace> airspace;
+    if (Radius > 0) {
+      // Was a circle
+      airspace = std::make_unique<CAirspace_Circle>(Center, Radius);
     }
-    catch(std::exception& e) {
-        StartupStore(_T("failed to create airspace : %s"), to_tstring(e.what()).c_str());
+    else if (CorrectGeoPoints(Polygon)) {
+      // Was an area
+      // Skip it if we dont have minimum 3 points
+      airspace = std::make_unique<CAirspace_Area>(std::move(Polygon));
     }
+    Polygon.clear();  // required, otherwise vector state is undefined;
+
+    if (airspace) {
+      const std::basic_regex<TCHAR> re(
+          _T(R"(.*((?:Lower)|(?:Upper))\((.*?)-(.*?)\).*)"));
+      std::match_results<const TCHAR*> match;
+      if (std::regex_match(Name, match, re)) {
+        vertical_position Alt1 =
+            vertical_position::parse_open_air(match[2].str().c_str());
+        vertical_position Alt2 =
+            vertical_position::parse_open_air(match[3].str().c_str());
+        if (match[1].str() == _T("Lower")) {
+          Base.update(Alt1, Alt2);
+        }
+        else if (match[1].str() == _T("Upper")) {
+          Top.update(Alt1, Alt2);
+        }
+      }
+
+      airspace->Init(Name, Class, Type, std::move(Base), std::move(Top), flyzone,
+                     Comment.c_str());
+      airspace->Enabled(enabled);
+      airspace->ExceptSaturday(except_saturday);
+      airspace->ExceptSunday(except_sunday);
+      airspace->ActivationTimes(std::move(ActivationTimes));
+
+      WithLock(_csairspaces, [&] {
+        _airspaces.push_back(std::move(airspace));
+      });
+    }
+  }
+  catch (std::exception& e) {
+    StartupStore(_T("failed to create airspace : %s"),
+                 to_tstring(e.what()).c_str());
+  }
 }
-
 
 // Reads airspaces from an OpenAIP file
 bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
@@ -1987,66 +1990,13 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             continue;
         }
         const char* dataStr = category->value();
-        size_t len = strlen(dataStr);
-        int Type = OTHER;
-        if(len>0) switch(dataStr[0]) {
-        case 'A':
-            if(len==1) Type=CLASSA; // A class airspace
-            break;
-        case 'B':
-            if(len==1) Type=CLASSB; // B class airspace
-            break;
-        case 'C':
-            if(len==1) Type=CLASSC; // C class airspace
-            else if (strcasecmp(dataStr,"CTR")==0) Type=CTR; // CTR airspace
-            break;
-        case 'D':
-            if(len==1) Type=CLASSD; // D class airspace
-            else if (strcasecmp(dataStr,"DANGER")==0) Type=DANGER; // Dangerous area
-            break;
-        case 'E':
-            if(len==1) Type=CLASSE; // E class airspace
-            break;
-        case 'F':
-            if(len==1) Type=CLASSF; // F class airspace
-            //else if (_tcsicmp(dataStr,_T("FIR"))==0) continue; //TODO: FIR missing in LK8000
-            break;
-        case 'G':
-            if(len==1) Type=CLASSG; // G class airspace
-            else if (strcasecmp(dataStr, "GLIDING")==0) Type=GLIDERSECT;
-            break;
-        //case 'O':
-            //if (_tcsicmp(dataStr,_T("OTH"))==0) continue; //TODO: OTH missing in LK8000
-            //break;
-        case 'P':
-            if (strcasecmp(dataStr,"PROHIBITED")==0) Type=PROHIBITED; // Prohibited area
-            break;
-        case 'R':
-            if (strcasecmp(dataStr,"RESTRICTED")==0) Type=RESTRICT; // Restricted area
-            else if (strcasecmp(dataStr,"RMZ")==0) Type=CLASSRMZ; //RMZ
-            break;
-        case 'T':
-            if(len==3 && dataStr[1]=='M') {
-                //if(dataStr[2]=='A') continue; //TODO: TMA missing in LK8000
-                /*else*/ if(dataStr[2]=='Z') Type=CLASSTMZ; //TMZ
-            }
-            break;
-        case 'W':
-            if (strcasecmp(dataStr,"WAVE")==0) Type=WAVE; //WAVE
-            break;
-        case 'U':
-            if (strcasecmp(dataStr,"UIR")==0)
-                Type = OTHER; //TODO: UIR missing in LK8000
-            break;
-        default:
-            break;
-        } else {
-            StartupStore(TEXT(".. ASP with CATEGORY attribute empty.%s"), NEWLINE);
-            if(dataStr == nullptr) continue;
-            Type = OTHER;
+        if (!dataStr) {
+            continue;
         }
-        if(Type < 0) {
-            Type = OTHER;
+
+        Airspace::Type Cls = Airspace::from_string(dataStr);
+        if(Cls == Airspace::Type::OTHER){
+            StartupStore(TEXT(".. ASP with unknown CATEGORY: <%s>"), dataStr);
         }
 
         // Airspace country
@@ -2155,7 +2105,7 @@ bool CAirspaceManager::FillAirspacesFromOpenAIP(const TCHAR* szFile) {
             return false;
         }
         bool flyzone=false; //by default all airspaces are no-fly zones!!!
-        newairspace->Init(Name, Type, {Base, {}}, {Top, {}}, flyzone);
+        newairspace->Init(Name, Cls, Airspace::Type::OTHER, {Base, {}}, {Top, {}}, flyzone);
 
         // Add the new airspace
         WithLock(_csairspaces, [&] {
@@ -2281,10 +2231,8 @@ AspSideViewList_t CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AI
   ScopeLock guard(_csairspaces);
 
   for (const auto& pAsp : _airspaces_near) {
-    LKASSERT(pAsp->Type() < AIRSPACECLASSCOUNT);
-    LKASSERT(pAsp->Type() >= 0);
 
-    if (!MapWindow::aAirspaceMode[pAsp->Type()].display()) {
+    if (!MapWindow::aAirspaceMode.Display(pAsp->Class(), pAsp->Type())) {
       continue;
     }
     if (!pAsp->CheckVisible()) {
@@ -2302,7 +2250,6 @@ AspSideViewList_t CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AI
         if (!bPrevIn) {
           auto& SelAS = list.emplace_back();
           SelAS.psAS = pAsp;
-          SelAS.iType = pAsp->Type();
 
           lk::strcpy(SelAS.szAS_Name, pAsp->Name());
 
@@ -2467,7 +2414,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _airspaces_of_interest.clear();
             for (const auto& pAsp : _airspaces_near) {
                 // Check for warnings enabled for this class
-                if (!MapWindow::aAirspaceMode[pAsp->Type()].warning()) {
+                if (!MapWindow::aAirspaceMode.Warning(pAsp->Class(), pAsp->Type())) {
                     pAsp->ResetWarnings();
                     continue;
                 }
@@ -2565,10 +2512,10 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) {
     }
 }
 
-void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_mode_array& aAirspaceMode, const int iAirspaceBrush[], const RECT& rcDraw, const ScreenProjection& _Proj) {
+void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_config& aAirspaceMode, const RECT& rcDraw, const ScreenProjection& _Proj) {
     ScopeLock guard(_csairspaces);
     for (auto asp : _airspaces_near) {
-        asp->CalculateScreenPosition(screenbounds_latlon, aAirspaceMode, iAirspaceBrush, rcDraw, _Proj);
+        asp->CalculateScreenPosition(screenbounds_latlon, aAirspaceMode, rcDraw, _Proj);
     }
 }
 
@@ -2708,98 +2655,14 @@ void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace) {
 
 // Centralized function to get airspace type texts
 
-const TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) {
-    switch (type) {
-        case RESTRICT:
-            // LKTOKEN  _@M565_ = "Restricted"
-            return MsgToken<565>();
-        case PROHIBITED:
-            // LKTOKEN  _@M537_ = "Prohibited"
-            return MsgToken<537>();
-        case DANGER:
-            // LKTOKEN  _@M213_ = "Danger Area"
-            return MsgToken<213>();
-        case CLASSA:
-            return TEXT("Class A");
-        case CLASSB:
-            return TEXT("Class B");
-        case CLASSC:
-            return TEXT("Class C");
-        case CLASSD:
-            return TEXT("Class D");
-        case CLASSE:
-            return TEXT("Class E");
-        case CLASSF:
-            return TEXT("Class F");
-        case CLASSG:
-            return TEXT("Class G");
-        case NOGLIDER:
-            // LKTOKEN  _@M464_ = "No Glider"
-            return MsgToken<464>();
-        case CTR:
-            return TEXT("CTR");
-        case WAVE:
-            // LKTOKEN  _@M794_ = "Wave"
-            return MsgToken<794>();
-        case AATASK:
-            return TEXT("AAT");
-        case CLASSTMZ:
-            return TEXT("TMZ");
-        case CLASSRMZ:
-            return TEXT("RMZ");
-        case CLASSNOTAM:
-            return TEXT("NOTAM");
-        case GLIDERSECT:
-            return TEXT("GldSect");
-        case OTHER:
-            // LKTOKEN  _@M765_ = "Unknown"
-            return MsgToken<765>();
-        default:
-            return TEXT("");
-    }
+const TCHAR* CAirspaceManager::GetAirspaceTypeText(Airspace::Type type) {
+    return Airspace::to_long_name(type);
 }
 
 // Centralized function to get airspace type texts in short form
 
-const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) {
-    switch (type) {
-        case RESTRICT:
-            return TEXT("Res");
-        case PROHIBITED:
-            return TEXT("Prb");
-        case DANGER:
-            return TEXT("Dgr");
-        case CLASSA:
-            return TEXT("A");
-        case CLASSB:
-            return TEXT("B");
-        case CLASSC:
-            return TEXT("C");
-        case CLASSD:
-            return TEXT("D");
-        case CLASSE:
-            return TEXT("E");
-        case CLASSF:
-            return TEXT("F");
-        case CLASSG:
-            return TEXT("G");
-        case NOGLIDER:
-            return TEXT("NoGld");
-        case CTR:
-            return TEXT("CTR");
-        case WAVE:
-            return TEXT("Wav");
-        case CLASSTMZ:
-            return TEXT("TMZ");
-        case CLASSRMZ:
-            return TEXT("RMZ");
-        case CLASSNOTAM:
-            return TEXT("Notam");
-        case GLIDERSECT:
-            return TEXT("GldSec");
-        default:
-            return TEXT("?");
-    }
+const TCHAR* CAirspaceManager::GetAirspaceTypeShortText(Airspace::Type type) {
+    return Airspace::to_short_name(type);
 }
 
 // Operations for nearest page 2.4
@@ -3046,17 +2909,16 @@ void CAirspace::DrawPicto(LKSurface& Surface, const RECT &rc) const {
 
         const RasterPoint * ptOut = &(*screenpoints_picto.begin());
 
-        LKPen FramePen(PEN_SOLID, IBLSCALE(1), TypeColor());
-
-        const auto oldColor = Surface.SetTextColor(TypeColor());
-
+        auto color = TypeColor();
+        LKPen FramePen(PEN_SOLID, IBLSCALE(1), color);
+        const auto oldColor = Surface.SetTextColor(color);
         const auto oldPen = Surface.SelectObject(FramePen);
         bool Fill = Enabled();
         if(Acknowledged()) {
           Fill = false;
         };
 
-        const auto oldBrush = Surface.SelectObject(Fill ? TypeBrush() : LKBrush_Hollow);
+        const auto oldBrush = Surface.SelectObject(Fill ? TypeBrush(true) : LKBrush_Hollow);
 
         Surface.Polygon(ptOut, Length);
 
