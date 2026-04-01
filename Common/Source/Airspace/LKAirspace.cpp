@@ -56,15 +56,6 @@ using json = nlohmann::json;
 
 unsigned int OutsideAirspaceCnt =0;
 
-namespace {
-
-struct start_with_predicate final {
-    bool operator()(tstring_view text, tstring_view prefix) {
-        return text.substr(0, prefix.size()) == prefix;
-    }
-};
-
-} //namespace
 
 // CAirspace class attributes
 bool CAirspaceBase::_pos_in_flyzone = false; // for refine warnings in flyzones
