@@ -269,7 +269,7 @@ void LKProfileSave(const TCHAR *szFile) {
 
   write_settings(szRegistryUseWindRose, UseWindRose);
 
-  MapWindow::aAirspaceMode.SaveSettings(write_settings);
+  MapWindow::AirspaceModeSaveSettings(write_settings);
 
   //
   // Multimaps added 121003

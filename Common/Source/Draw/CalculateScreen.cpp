@@ -120,7 +120,7 @@ void MapWindow::CalculateScreenPositionsThermalSources(const ScreenProjection& _
 void MapWindow::CalculateScreenPositionsAirspace(
     const RECT& rcDraw, const ScreenProjection& _Proj) {
   CAirspaceManager::Instance().CalculateScreenPositionsAirspace(
-      screenbounds_latlon, aAirspaceMode, rcDraw, _Proj);
+      screenbounds_latlon, rcDraw, _Proj);
 }
 
 ScreenProjection MapWindow::CalculateScreenPositions(const POINT& Orig, const RECT& rc, POINT *Orig_Aircraft )

@@ -27,7 +27,7 @@ protected:
       Surface.DrawText(MsgToken<1921>(), &rc, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
     }
     else {
-      auto color = MapWindow::GetAirspaceColour(ItemIndex -1);
+      auto color = MapWindow::AirspaceColor(ItemIndex -1);
       auto brush = MapWindow::AirspaceBrush(color);
       Surface.SelectObject(brush);
       Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);

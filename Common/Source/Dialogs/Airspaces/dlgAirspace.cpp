@@ -68,11 +68,11 @@ class dlgAirspace final {
       UpdateList(_airspace_list);
     }
 
-    const auto oldMode = MapWindow::aAirspaceMode;
+    const auto oldMode = MapWindow::AirspaceMode();
 
     pForm->ShowModal();
 
-    bool changed = oldMode != MapWindow::aAirspaceMode;
+    bool changed = oldMode != MapWindow::AirspaceMode();
 
     return changed;
   }
@@ -168,13 +168,13 @@ class dlgAirspace final {
 
       Surface.SelectObject(LK_WHITE_PEN);
 
-      auto color = MapWindow::aAirspaceMode.Color(asp_type);
+      auto color = MapWindow::AirspaceModeColor(asp_type);
       if (color) {
         // draw Color Rectangle
         Surface.SetTextColor(*color);
         Surface.SetBkColor(RGB_WHITE);
 #ifdef HAVE_HATCHED_BRUSH
-        auto pattern = MapWindow::aAirspaceMode.Pattern(asp_type);
+        auto pattern = MapWindow::AirspaceModePattern(asp_type);
         auto brush = MapWindow::AirspaceBrush(pattern.value_or(0));
 #else
         auto brush = MapWindow::AirspaceBrush(*color);
@@ -197,11 +197,11 @@ class dlgAirspace final {
       }
     }
     else {
-      if (MapWindow::aAirspaceMode.Warning(asp_type)) {
+      if (MapWindow::AirspaceModeWarning(asp_type)) {
         // LKTOKEN  _@M789_ = "Warn"
         Surface.DrawText(x0, DLGSCALE(2), MsgToken<789>());
       }
-      if (MapWindow::aAirspaceMode.Display(asp_type)) {
+      if (MapWindow::AirspaceModeDisplay(asp_type)) {
         // LKTOKEN  _@M241_ = "Display"
         Surface.DrawText(w0 - w2, DLGSCALE(2), MsgToken<241>());
       }
@@ -224,15 +224,15 @@ class dlgAirspace final {
 #ifdef HAVE_HATCHED_BRUSH
         int p = dlgAirspacePatternsShowModal();
         if (p > 0) {
-          MapWindow::SetAirspacePattern(asp_type, {p - 1});
+          MapWindow::SetAirspaceModePattern(asp_type, {p - 1});
         }
         else if (p == 0) {
-          MapWindow::SetAirspacePattern(asp_type, {});
+          MapWindow::SetAirspaceModePattern(asp_type, std::nullopt);
         }
 #endif
       }
       else {
-        MapWindow::aAirspaceMode.RotateSet(asp_type);
+        MapWindow::AirspaceModeRotateSet(asp_type);
       }
     }
   }

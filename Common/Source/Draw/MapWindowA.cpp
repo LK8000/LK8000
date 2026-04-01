@@ -53,25 +53,18 @@ void MapWindow::SetAirspaceColor(Airspace::Type type,
   AirspaceBigPens.clear();
 #ifdef HAVE_HATCHED_BRUSH
   AirspacePatternBrushes.clear();
-#endif  
+#endif
 }
 
 #ifdef HAVE_HATCHED_BRUSH
 
 std::unordered_map<size_t, LKBrush> MapWindow::AirspacePatternBrushes;
 
-
-void  MapWindow::SetAirspacePattern(Airspace::Type type, std::optional<int> pattern) {
+void MapWindow::SetAirspaceModePattern(Airspace::Type type,
+                                       std::optional<int> pattern) {
   ScopeLock lock(AirspaceMutex);
   aAirspaceMode.Pattern(type, std::move(pattern));
   AirspacePatternBrushes.clear();
-}
-
-BrushReference MapWindow::AirspaceModeBrush(Airspace::Type cls, Airspace::Type type) {
-  auto pattern = WithLock(AirspaceMutex, [&] {
-    return aAirspaceMode.Pattern(cls, type);
-  });
-  return AirspaceBrush(pattern.value_or(0U));
 }
 
 BrushReference MapWindow::AirspaceBrush(size_t idx) {
@@ -85,11 +78,15 @@ BrushReference MapWindow::AirspaceBrush(size_t idx) {
 
 #endif
 
-LKColor MapWindow::AirspaceModeColor(Airspace::Type cls, Airspace::Type type) {
-  auto color = WithLock(AirspaceMutex, [&] {
-    return aAirspaceMode.Color(cls, type);
-  });
-  return color.value_or(RGB_LIGHTCYAN);
+void MapWindow::AirspaceClear() {
+  ScopeLock lock(AirspaceMutex);
+  AirspaceBrushes.clear();
+  AirspaceBigPens.clear();
+  AirspacePens.clear();
+
+#ifdef HAVE_HATCHED_BRUSH
+  AirspacePatternBrushes.clear();
+#endif
 }
 
 BrushReference MapWindow::AirspaceBrush(LKColor color) {

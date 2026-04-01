@@ -236,13 +236,7 @@ void LKObjects_Delete() {
 
   SnailTrail_Delete();
 
-  MapWindow::AirspaceBrushes.clear();
-  MapWindow::AirspaceBigPens.clear();
-  MapWindow::AirspacePens.clear();
-
-#ifdef HAVE_HATCHED_BRUSH
-  MapWindow::AirspacePatternBrushes.clear();
-#endif
+  MapWindow::AirspaceClear();
 
 #ifndef ENABLE_OPENGL  
   MapWindow::hAboveTerrainBrush.Release();

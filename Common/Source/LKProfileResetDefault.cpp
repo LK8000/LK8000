@@ -101,7 +101,7 @@ void LKProfileResetDefault() {
   SectorType = sector_type_t::SECTOR;
   SectorRadius = 3000;
 
-  MapWindow::aAirspaceMode.Reset(); // Display + Warning
+  MapWindow::AirspaceModeReset(); // Display + Warning
 
 #ifdef HAVE_HATCHED_BRUSH
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);

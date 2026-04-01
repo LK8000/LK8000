@@ -285,7 +285,7 @@ public:
     // Check if a point horizontally inside in this airspace
     virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const = 0;
     // Calculate drawing coordinates on screen
-    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const airspace_config& aAirspaceMode, const RECT& rcDraw, const ScreenProjection& _Proj);
+    virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const RECT& rcDraw, const ScreenProjection& _Proj);
     // Draw airspace on map
     void DrawOutline(LKSurface& Surface, PenReference pen) const;
     void FillPolygon(LKSurface& Surface, bool pattern) const;
@@ -513,7 +513,7 @@ public:
 
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
-  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const airspace_config& aAirspaceMode, const RECT& rcDraw, const ScreenProjection& _Proj);
+  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const RECT& rcDraw, const ScreenProjection& _Proj);
   const CAirspaceList& GetNearAirspacesRef() const;
 
   //Nearest page 2.4

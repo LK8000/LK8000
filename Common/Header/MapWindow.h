@@ -448,13 +448,10 @@ class MapWindow {
 
   static bool IsDisplayRunning();
 
+ private:  
+  static Mutex AirspaceMutex;
   static airspace_config aAirspaceMode;
 
-  static LKColor AirspaceModeColor(Airspace::Type cls, Airspace::Type type);
-
-  static BrushReference AirspaceBrush(LKColor color);
-  static PenReference AirspaceBigPen(LKColor color);
-  static PenReference AirspacePen(LKColor color);
 
   class ColorIndex {
    public:
@@ -473,26 +470,91 @@ class MapWindow {
     uint32_t value;
   };
 
-  static Mutex AirspaceMutex;
   static std::map<ColorIndex, LKBrush> AirspaceBrushes;
   static std::map<ColorIndex, LKPen> AirspacePens;
   static std::map<ColorIndex, LKPen> AirspaceBigPens;
+
+#ifdef HAVE_HATCHED_BRUSH
+  static std::unordered_map<size_t, LKBrush> AirspacePatternBrushes;
+#endif
+
+ public:
+
+  static void AirspaceClear();
+ 
+  static airspace_config AirspaceMode() {
+    ScopeLock lock(AirspaceMutex);
+    return aAirspaceMode;
+  }
+
+  template<typename... Args>
+  static bool AirspaceModeDisplay(Args&&... args) {
+    ScopeLock lock(AirspaceMutex);
+    return aAirspaceMode.Display(std::forward<Args>(args)...);
+  }
+  
+  template<typename... Args>
+  static bool AirspaceModeWarning(Args&&... args) {
+    ScopeLock lock(AirspaceMutex);
+    return aAirspaceMode.Warning(std::forward<Args>(args)...);
+  }
+
+  static void AirspaceModeRotateSet(Airspace::Type type) {
+    ScopeLock lock(AirspaceMutex);
+    aAirspaceMode.RotateSet(type);
+  }
+
+  static bool AirspaceModeLoadSettings(const std::string_view& key,
+                                       const char* value) {
+    ScopeLock lock(AirspaceMutex);
+    return aAirspaceMode.LoadSettings(key, value);
+  }
+
+  static void AirspaceModeSaveSettings(settings::writer& write_settings) {
+    ScopeLock lock(AirspaceMutex);
+    aAirspaceMode.SaveSettings(write_settings);
+  }
+
+  static void AirspaceModeReset() {
+    ScopeLock lock(AirspaceMutex);
+    aAirspaceMode.Reset();
+  }
+
+  template<typename... Args>
+  static std::optional<LKColor> AirspaceModeColor(Args&&... args) {
+    ScopeLock lock(AirspaceMutex);
+    return aAirspaceMode.Color(std::forward<Args>(args)...);
+  }
+
+  static BrushReference AirspaceBrush(LKColor color);
+  static PenReference AirspaceBigPen(LKColor color);
+  static PenReference AirspacePen(LKColor color);
 
   static void SetAirspaceColor(Airspace::Type type, std::optional<RGB8Color> color);
 
   static BOOL CLOSETHREAD;
 
-  static LKColor GetAirspaceColour(size_t idx) {
+  static LKColor AirspaceColor(size_t idx) {
     return LKColor(Colours[idx % std::size(Colours)]);
   }
 
 #ifdef HAVE_HATCHED_BRUSH
 
-  static std::unordered_map<size_t, LKBrush> AirspacePatternBrushes;
+  static void SetAirspaceModePattern(Airspace::Type type, std::optional<int> pattern);
 
-  static void  SetAirspacePattern(Airspace::Type type, std::optional<int> pattern);
-  static BrushReference AirspaceModeBrush(Airspace::Type cls, Airspace::Type type);
+  template<typename... Args>
+  static std::optional<size_t> AirspaceModePattern(Args&&... args) {
+    ScopeLock lock(AirspaceMutex);
+    return aAirspaceMode.Pattern(std::forward<Args>(args)...);
+  }
+
   static BrushReference AirspaceBrush(size_t idx);
+
+  template <typename... Args>
+  static BrushReference AirspaceModeBrush(Args&&... args) {
+    auto pattern = AirspaceModePattern<Args...>(std::forward<Args>(args)...);
+    return AirspaceBrush(pattern.value_or(0U));
+  }
 
 #endif
 
@@ -971,7 +1033,7 @@ protected:
   static double targetMovedLat;
   static double targetMovedLon;
 
- // declaration of interface for alpha blended air space drawing
+ // declaration of interface for alpha blended airspace drawing
  public:
   enum EAirspaceFillType {
     asp_fill_border_only = 0,  // airspace drawing using no filling

@@ -629,7 +629,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
   if (settings::read(sname, svalue, szRegistryWindCalcTime, WindCalcTime)) return;
 
-  if(MapWindow::aAirspaceMode.LoadSettings(sname,svalue)) return;
+  if(MapWindow::AirspaceModeLoadSettings(sname,svalue)) return;
 
   if (settings::read(sname, svalue, szRegistryUseWindRose, UseWindRose)) return;
 
