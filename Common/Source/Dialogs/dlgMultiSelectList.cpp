@@ -378,12 +378,12 @@ struct PaintListItemVisitor {
        ***********************************************************************/
 
       // airspace type already in name?
-      if (_tcsnicmp(pAS->Name(), pAS->TypeName(), _tcslen(pAS->TypeName())) == 0) {
+      if (_tcsnicmp(pAS->Name(), pAS->TypeNameShort(), _tcslen(pAS->TypeNameShort())) == 0) {
         lk::strcpy(text1, pAS->Name());  // yes, take name only
       }
       else {
         // fixed strings max. 20 NAME_SIZE 30 => max. 30 char
-        lk::snprintf(text1, _T("%s %s"), pAS->TypeName(), pAS->Name());
+        lk::snprintf(text1, _T("%s %s"), pAS->TypeNameShort(), pAS->Name());
       }
 
       int HorDist, Bearing, VertDist;

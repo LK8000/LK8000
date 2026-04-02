@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <utility>
 #include <regex>
+#include <format>
 
 #include <Point2D.h>
 #include "md5.h"
@@ -94,6 +95,18 @@ const TCHAR* CAirspaceBase::TypeNameShort() const {
     return type;
   }
   return _T("");
+}
+
+tstring CAirspaceBase::TypeClassName() const {
+  if (_type == Airspace::Type::OTHER || _type == Airspace::Type::NONE) {
+    // OpenAir-V1 or OpenAip airspace source (OTHER)
+    // OpenAir-V2 Airspace without type (NONE)
+    auto class_name = Airspace::to_short_name(_class);
+    return class_name ? class_name : tstring();
+  }
+  auto class_name = Airspace::to_short_name(_class);
+  auto type_name = Airspace::to_short_name(_type);
+  return std::format(_T("{} ({})"), type_name, class_name);
 }
 
 LKColor CAirspaceBase::TypeColor() const {

@@ -131,6 +131,7 @@ class CAirspaceBase {
 
   const TCHAR* TypeName() const;
   const TCHAR* TypeNameShort() const;
+  tstring TypeClassName() const;
 
   LKColor TypeColor() const;
 
