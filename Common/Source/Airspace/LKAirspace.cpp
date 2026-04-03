@@ -106,6 +106,9 @@ tstring CAirspaceBase::TypeClassName() const {
   }
   auto class_name = Airspace::to_short_name(_class);
   auto type_name = Airspace::to_short_name(_type);
+  if (!class_name || !type_name) {
+    return class_name ? class_name : (type_name ? type_name : tstring());
+  }
   return std::format(_T("{} ({})"), type_name, class_name);
 }
 
