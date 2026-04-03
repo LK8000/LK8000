@@ -2420,7 +2420,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             _airspaces_of_interest.clear();
             for (const auto& pAsp : _airspaces_near) {
                 // Check for warnings enabled for this class
-                if (!MapWindow::AirspaceModeWarning(pAsp->Type())) {
+                if (!MapWindow::AirspaceModeWarning(pAsp->Class(), pAsp->Type())) {
                     pAsp->ResetWarnings();
                     continue;
                 }
