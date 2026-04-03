@@ -2238,11 +2238,10 @@ AspSideViewList_t CAirspaceManager::ScanAirspaceLineList(const double (&lats)[AI
   ScopeLock guard(_csairspaces);
 
   for (const auto& pAsp : _airspaces_near) {
-
-    if (!MapWindow::AirspaceModeDisplay(pAsp->Type())) {
+    if (!pAsp->CheckVisible()) {
       continue;
     }
-    if (!pAsp->CheckVisible()) {
+    if (!MapWindow::AirspaceModeDisplay(pAsp->Class(), pAsp->Type())) {
       continue;
     }
 
