@@ -34,7 +34,15 @@ bool airspace_config::operator!=(const airspace_config& other) const {
 }
 
 void airspace_config::RotateSet(Airspace::Type type) {
-  modes[type].rotate_set();
+  // A newly inserted entry starts from the logical default state:
+  // display + warning enabled.
+  auto& mode = modes[type];
+  mode.rotate_set();
+
+  if (mode.display() && mode.warning()) {
+    // Keep the configuration sparse by dropping explicit default entries.
+    modes.erase(type);
+  }
 }
 
 bool airspace_config::Display(Airspace::Type type) const {
@@ -199,11 +207,22 @@ void airspace_config::SaveSettings(settings::writer& writer_settings) const {
 bool airspace_config::LoadSettings(const std::string_view& key,
                                    const char* value) {
   try {
-    // New format keys: airspace_mode_<Type>, airspace_color_<Type>, airspace_pattern_<Type>
+    // New format keys:
+    //      airspace_mode_<Type>,
+    //      airspace_color_<Type>,
+    //      airspace_pattern_<Type> (if supported)
+    // where <Type> is the Airspace::Type enum value as string (e.g. "R", "CTR",
+    // "A", etc.)
     if (key.starts_with(mode_prefix)) {
       std::string_view sv_type = key.substr(mode_prefix.size());
       auto type = Airspace::from_string(sv_type);
-      modes[type] = value;
+      airspace_mode mode = value;
+      if (mode.warning() && mode.display()) {
+        // Keep the configuration sparse by dropping explicit default entries.
+        modes.erase(type);
+        return true;
+      }
+      modes[type] = std::move(mode);
       return true;
     }
 
@@ -228,7 +247,13 @@ bool airspace_config::LoadSettings(const std::string_view& key,
     }
 #endif
 
-    // Legacy format migration: AirspaceModeN, ColourN, BrushN
+    // Legacy format keys (for backward compatibility, will be migrated to new
+    // format on save):
+    //      AirspaceModeN,
+    //      ColourN,
+    //      BrushN
+    // where N is an index corresponding to a specific Airspace::Type (see
+    // legacy_index_to_type mapping)
     if (key.starts_with(legacy_mode_prefix)) {
       auto sv_idx = key.substr(legacy_mode_prefix.size());
       unsigned idx = 0;
@@ -236,7 +261,13 @@ bool airspace_config::LoadSettings(const std::string_view& key,
       if (ec == std::errc() && idx < std::size(legacy_index_to_type)) {
         auto type = legacy_index_to_type[idx];
         if (type != Airspace::Type::NONE) {
-          modes[type] = value;
+          airspace_mode mode = value;
+          if (mode.warning() && mode.display()) {
+            // Keep the configuration sparse by dropping explicit default entries.
+            modes.erase(type);
+          } else {
+            modes[type] = std::move(mode);
+          }
         }
         return true;
       }

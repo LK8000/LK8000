@@ -13,6 +13,8 @@
 
 class airspace_mode {
  public:
+  airspace_mode() = default;
+  airspace_mode(const char* v) : _value(strtoul(v, nullptr, 10)) {}
 
   bool warning() const {
     return _value.test(_warning);
@@ -23,11 +25,12 @@ class airspace_mode {
   }
 
   void reset() {
+    // Default airspace state: display + warning enabled.
     _value.set();
   }
 
   void operator=(const char* v) {
-    _value = strtoul(v, nullptr, 10);
+    (*this) = airspace_mode(v);
   }
 
   uint32_t to_unsigned() const {
@@ -48,7 +51,8 @@ class airspace_mode {
   }
 
  private:
-  std::bitset<2> _value;
+  using value_type = std::bitset<2>;
+  value_type _value = ~value_type(0);  // default state: display + warning enabled
 
   constexpr static size_t _warning = 1U;
   constexpr static size_t _display = 0U;
