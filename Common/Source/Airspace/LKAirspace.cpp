@@ -593,11 +593,11 @@ bool CAirspaceBase::GetWarningPoint(double &longitude, double &latitude, Airspac
 }
 
 /******************************************************
- * compare name and type for gruping airspaces
+ * compare name, type, and class for grouping airspaces
  ******************************************************/
 bool CAirspaceBase::IsSame(CAirspaceBase &as2) const {
     bool ret = false;
-    if (_type == as2.Type()) {
+    if (_type == as2.Type() && _class == as2.Class()) {
         if (_tcscmp((_name), (as2.Name())) == 0) {
             ret = true;
         }
