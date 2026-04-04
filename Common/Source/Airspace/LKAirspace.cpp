@@ -897,6 +897,7 @@ void CAirspace::CalculateScreenPosition(const rectObj &screenbounds_latlon, cons
     }
     else {
         rendrer = nullptr;
+        return;
     }
 
     if ((((_warninglevel == awNone) && (_warningacklevel == awNone)) ||
