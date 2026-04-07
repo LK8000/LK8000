@@ -42,11 +42,27 @@ bool http_session::ssl_available() {
   return ssl;
 }
 
-std::string http_session::request(const std::string& url) const {
+std::string http_session::request_impl(const std::string& url, const std::string* post_data, const char* content_type) const {
   static constexpr char protocols[] = "http,https";
   try {
     curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl.get(), CURLOPT_IPRESOLVE, CURL_IPRESOLVE_WHATEVER);
+
+    struct curl_slist* headers = nullptr;
+    if (post_data) {
+        curl_easy_setopt(curl.get(), CURLOPT_POST, 1L);
+        curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDS, post_data->c_str());
+        curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDSIZE, static_cast<long>(post_data->size()));
+        if (content_type) {
+            std::string ct = "Content-Type: ";
+            ct += content_type;
+            headers = curl_slist_append(headers, ct.c_str());
+        }
+    } else {
+        curl_easy_setopt(curl.get(), CURLOPT_HTTPGET, 1L);
+    }
+    curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, headers);
+    
     curl_easy_setopt(curl.get(), CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl.get(), CURLOPT_PROTOCOLS_STR, protocols);
     curl_easy_setopt(curl.get(), CURLOPT_REDIR_PROTOCOLS_STR, protocols);
@@ -69,6 +85,10 @@ std::string http_session::request(const std::string& url) const {
     curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response);
 
     CURLcode res = curl_easy_perform(curl.get());
+    if (headers) {
+        curl_slist_free_all(headers);
+        curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, nullptr);
+    }
     if (res == CURLE_OK) {
       return response;
     }
@@ -77,6 +97,14 @@ std::string http_session::request(const std::string& url) const {
     fprintf(stderr, "http_session : %s\n", e.what());
   }
   return {};
+}
+
+std::string http_session::get(const std::string& url) const {
+  return request_impl(url, nullptr, nullptr);
+}
+
+std::string http_session::post(const std::string& url, const std::string& data, const char* content_type) const {
+  return request_impl(url, &data, content_type);
 }
 
 std::string http_session::request(const char* server_name, int server_port, const char* query_string) const {

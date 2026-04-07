@@ -11,7 +11,6 @@
 #include "Bitmaps.h"
 #include "Multimap.h"
 #include "Asset.hpp"
-#include "Util/Clamp.hpp"
 #include "BatteryManager.h"
 
 extern bool FastZoom; // QUICKDRAW
@@ -56,7 +55,7 @@ static constexpr LKColor mmUTF8Color[] = {
 static_assert(std::size(mmUTF8Color) == std::size(mmUTF8Symbol), "invalide array size");
 
 static std::pair<const LKColor, const TCHAR*> GetUTF8MultimapSymbol(unsigned Number) {
-    size_t symbol_idx = Clamp<size_t>(Number, 0U, std::size(mmUTF8Symbol) - 1);
+    size_t symbol_idx = std::clamp<size_t>(Number, 0U, std::size(mmUTF8Symbol) - 1);
     const TCHAR* symbol = mmUTF8Symbol[symbol_idx]();
 
     LKColor color = mmUTF8Color[symbol_idx];

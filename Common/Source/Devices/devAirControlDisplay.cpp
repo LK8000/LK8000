@@ -14,9 +14,9 @@
 #include "devNmeaOut.h"
 #include <regex>
 #include <string>
+#include <algorithm>
 #include "utils/printf.h"
 #include "Radio.h"
-#include "Util/Clamp.hpp"
 #include "Comm/UpdateQNH.h"
 #include "Baro.h"
 #include "utils/stringext.h"
@@ -299,7 +299,7 @@ BOOL PutFreqStandby(DeviceDescriptor_t* d, unsigned khz, const TCHAR* StationNam
 }
 
 BOOL PutVolume(DeviceDescriptor_t* d, int Volume) {
-  return SendConfiguration(d, 'S', "COM", "RXVOL1", Clamp<unsigned>(Volume * 5, 0, 100));
+  return SendConfiguration(d, 'S', "COM", "RXVOL1", std::clamp<unsigned>(Volume * 5, 0, 100));
 }
 
 BOOL PutRadioMode(DeviceDescriptor_t* d, int mode) {
@@ -307,7 +307,7 @@ BOOL PutRadioMode(DeviceDescriptor_t* d, int mode) {
 }
 
 BOOL PutSquelch(DeviceDescriptor_t* d, int Squelch) {
-  return SendConfiguration(d, 'S', "COM", "SQL", Clamp<unsigned>(Squelch * 10, 0, 100));
+  return SendConfiguration(d, 'S', "COM", "SQL", std::clamp<unsigned>(Squelch * 10, 0, 100));
 }
 
 BOOL StationSwap(DeviceDescriptor_t* d) {

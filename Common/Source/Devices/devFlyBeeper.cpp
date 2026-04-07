@@ -11,11 +11,9 @@
 #include "Comm/device.h"
 #include "devGeneric.h"
 #include "Utils.h"
-#include "Util/Clamp.hpp"
 #include "Fanet/frame.h"
 #include "utils/lookup_table.h"
 #include <random>
-#include "DeviceSettings.h"
 #include "Comm/Bluetooth/gatt_utils.h"
 #include "Comm/Bluetooth/characteristic_value.h"
 
@@ -58,7 +56,7 @@ payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calcula
   Frame::coord2payload_absolut(Basic.Latitude, Basic.Longitude, out_it);
 
   /* altitude set the lower 12bit */
-  int alt = Clamp<int>(Basic.Altitude, 0, 8190);
+  int alt = std::clamp<int>(Basic.Altitude, 0, 8190);
   if (alt > 2047) {
     alt = ((alt + 2) / 4) | (1 << 11);  // set scale factor
   }
@@ -73,21 +71,21 @@ payload_t serialize_tracking(const NMEA_INFO& Basic, const DERIVED_INFO& Calcula
   out_it = ((uint8_t*)&data)[1];
 
   /* Speed */
-  int speed2 = Clamp<int>(std::round(Basic.Speed * 2.0), 0, 635);
+  int speed2 = std::clamp<int>(std::round(Basic.Speed * 2.0), 0, 635);
   if (speed2 > 127) {
     speed2 = ((speed2 + 2) / 5) | (1 << 7);  // set scale factor
   }
   out_it = speed2;
 
   /* Climb */
-  int climb10 = Clamp<int>(std::round(Basic.Vario.value() * 10.0), -315, 315);
+  int climb10 = std::clamp<int>(std::round(Basic.Vario.value() * 10.0), -315, 315);
   if (std::abs(climb10) > 63) {
     climb10 = ((climb10 + (climb10 >= 0 ? 2 : -2)) / 5) | (1 << 7);  // set scale factor
   }
   out_it = climb10 & 0x7F;
 
   /* Heading */
-  out_it = Clamp<int>(std::round(Basic.TrackBearing * 256.0 / 360.0), 0, 255);
+  out_it = std::clamp<int>(std::round(Basic.TrackBearing * 256.0 / 360.0), 0, 255);
 
   return buffer;
 }
@@ -171,7 +169,7 @@ constexpr uuid_t tx_power_uuid = "8EF0C42E-ADB6-4897-B9C9-6FE93143FAF4";
 class tx_power {
   public:
     constexpr tx_power() = default;
-    constexpr tx_power(int8_t dbm) : value(Clamp<int8_t>(dbm, -9, 22)) { }
+    constexpr tx_power(int8_t dbm) : value(std::clamp<int8_t>(dbm, -9, 22)) { }
 
     operator int8_t () const {
       return value;

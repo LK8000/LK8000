@@ -393,7 +393,7 @@ bool Startup(const TCHAR* szCmdLine) {
   devInit();
 
   InitialiseIOThread();
-  tracking::Initialize(tracking::GetPlatform());
+  tracking::Initialize();
 
   InitFlightDataRecorder();
 

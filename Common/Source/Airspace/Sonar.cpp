@@ -7,7 +7,6 @@
 */
 #include "externs.h"
 #include "Sound/Sound.h"
-#include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 
 #define GC_HORIZONTAL_TOLERANCE      100
@@ -230,8 +229,8 @@ protected:
 		PeriodClock Timer;
 		while (!bStop) {
 			DoSonar();
-			unsigned n = Clamp<unsigned>(1000U - Timer.ElapsedUpdate(), 0U, 1000U);
-			Sleep(n);
+			unsigned elapsed = Timer.ElapsedUpdate();
+			Sleep((elapsed >= 1000U) ? 0U : (1000U - elapsed));
 			Timer.Update();
 		}
 	}

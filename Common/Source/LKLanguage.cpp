@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "utils/stl_utils.h"
 #include "utils/zzip_file_stream.h"
-#include "picojson.h"
+#include <nlohmann/json.hpp>
 #include <istream>
 #include "LocalPath.h"
 #ifdef ANDROID
@@ -17,7 +17,7 @@
   #include "Android/NativeView.hpp"
 #endif
 
-namespace json = picojson;
+using json = nlohmann::json;
 
 extern void FillDataOptions();
 
@@ -46,29 +46,31 @@ namespace {
   }
 
   unsigned GetTextIndex(const TCHAR *key, char type) {
-    return key ? GetTextIndex(key, _tcslen(key), type) : InvalidTextIndex;
+    return key
+        ? GetTextIndex(key, _tcslen(key), type)
+        : InvalidTextIndex;
   }
 
   unsigned GetTextIndex(const std::string &key, char type) {
     return GetTextIndex(key.c_str(), key.size(), type);
   }
 
-  void LKLoadMessages(const json::value &lang_json) {
-    if(lang_json.is<json::object>()) {
-      for (const auto &obj : lang_json.get<json::object>()) {
-        // get the item index number
-        const unsigned index = GetTextIndex(obj.first, 'M');
-        if (index < std::size(LKMessages)) {
-          if (!LKMessages[index]) {
-            if (obj.second.is<std::string>()) {
-              const tstring value = utf8_to_tstring(obj.second.get<std::string>().c_str());
-              LKMessages[index] = _tcsdup(value.c_str());
-            }
-          }
-        } else {
-          // invalid token or LKMessages array too small.
-          assert(index == InvalidTextIndex);
+  void LKLoadMessages(const json& lang_json) {
+    if (!lang_json.is_object()) {
+      return;
+    }
+    for (const auto& obj : lang_json.items()) {
+      // get the item index number
+      const unsigned index = GetTextIndex(obj.key(), 'M');
+      if (index < std::size(LKMessages)) {
+        if (!LKMessages[index] && obj.value().is_string()) {
+          const tstring value = utf8_to_tstring(obj.value());
+          LKMessages[index] = _tcsdup(value.c_str());
         }
+      }
+      else {
+        // invalid token or LKMessages array too small.
+        assert(index == InvalidTextIndex);
       }
     }
   }
@@ -76,51 +78,45 @@ namespace {
   void LoadLanguageList(const TCHAR* szFilePath, std::map<tstring, tstring>& language) {
     zzip_file_stream file(szFilePath, "rb");
     if (file) {
-      std::istream stream(&file);
-      json::value lang_json;
-      std::string error = json::parse(lang_json, stream);
-      if (error.empty()) {
-        if (lang_json.is<json::object>()) {
-          for (const auto &obj : lang_json.get<json::object>()) {
-            if (obj.second.is<std::string>()) {
-              const tstring code = utf8_to_tstring(obj.first);
-              const tstring name = utf8_to_tstring(obj.second.get<std::string>());
-
-              language.emplace(std::piecewise_construct,
-                               std::forward_as_tuple(code),
-                               std::forward_as_tuple(name));
-            }
+      try {
+        std::istream stream(&file);
+        json lang_json = json::parse(stream);
+        for (const auto& obj : lang_json.items()) {
+          if (obj.value().is_string()) {
+            language.emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(utf8_to_tstring(obj.key())),
+                std::forward_as_tuple(utf8_to_tstring(obj.value())));
           }
-        } else {
-          StartupStore(_T("language : %s <%s>"), szFilePath , to_tstring(lang_json.get<std::string>()).c_str());
         }
-      } else {
-        StartupStore(_T("language : %s <%s>"), szFilePath, to_tstring(error).c_str());
+      }
+      catch (std::exception& e) {
+        StartupStore(_T("language : %s <%s>"), szFilePath, to_tstring(e.what()).c_str());
       }
     }
   }
 
-  json::value GetLanguageJson(const TCHAR* code) {
-    json::value json_lang;
+  json GetLanguageJson(const TCHAR* code) {
+    json json_lang;
+    try {
+      TCHAR szFileName[MAX_PATH] = {};
+      TCHAR szFilePath[MAX_PATH] = {};
+      lk::snprintf(szFileName, _T("%s.json"), code);
+      LocalPath(szFilePath, _T(LKD_LANGUAGE), szFileName);
 
-    TCHAR szFileName[MAX_PATH] = {};
-    TCHAR szFilePath[MAX_PATH] = {};
-    lk::snprintf(szFileName, _T("%s.json"), code);
-    LocalPath(szFilePath, _T(LKD_LANGUAGE), szFileName);
-
-    zzip_file_stream file(szFilePath, "rb");
-    if (!file) {
-      SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFileName);
-      file = zzip_file_stream(szFilePath, "rb");
-    }
-    if(file) {
-      std::istream stream(&file);
-      std::string error = json::parse(json_lang, stream);
-      if(!error.empty()) {
-        StartupStore(_T("language : %s"), to_tstring(error).c_str());
+      zzip_file_stream file(szFilePath, "rb");
+      if (!file) {
+        SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), szFileName);
+        file = zzip_file_stream(szFilePath, "rb");
       }
-    } else {
-      StartupStore(_T("... Missing Language FILE <%s>"), szFilePath);
+      if(file) {
+        std::istream stream(&file);
+        json_lang = json::parse(stream);
+      } else {
+        StartupStore(_T("... Missing Language FILE <%s>"), szFilePath);
+      }
+    } catch(json::parse_error& error) {
+      StartupStore(_T("language : %s"), to_tstring(error.what()).c_str());
     }
     return json_lang;
   }
@@ -140,21 +136,29 @@ tstring LKgethelptext(const TCHAR *TextIn) {
   sprintf(sToken, "_@H%06u_", index);
 
   tstring sHelpString;
-
-  json::value lang_json = GetLanguageJson(szLanguageCode);
-  auto string = lang_json.get(sToken);
-  if(string.is<json::null>()) {
-    // token not found in user language, try system language
-    lang_json = GetLanguageJson(_T(LKD_DEFAULT_LANGUAGE));
-    string = lang_json.get(sToken);
-  }
-  if (string.is<std::string>()) {
-    sHelpString = utf8_to_tstring(string.get<std::string>());
-  } else {
-    StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
+  try {
+    json lang_json = GetLanguageJson(szLanguageCode);
+    auto string = lang_json.find(sToken);
+    if(string == lang_json.end()) {
+      // token not found in user language, try system language
+      lang_json = GetLanguageJson(_T(LKD_DEFAULT_LANGUAGE));
+      string = lang_json.find(sToken);
+    }
+    if (string != lang_json.end()) {
+      const json& value = string.value();
+      if (value.is_string()) {
+        sHelpString = utf8_to_tstring(value);
+      } else {
+        sHelpString = TextIn;
+      }
+    } else {
+      StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
+      sHelpString = TextIn;
+    }
+  } catch (json::exception& error) {
+    StartupStore(_T("language : %s"), to_tstring(error.what()).c_str());
     sHelpString = TextIn;
   }
-
   return sHelpString;
 }
 
@@ -212,9 +216,11 @@ std::map<tstring, tstring> LoadLanguageList() {
   LocalPath(szFilePath, _T(LKD_LANGUAGE), _T("language.json"));
   LoadLanguageList(szFilePath, language);
 
-  // fill up with system language
-  SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), _T("language.json"));
-  LoadLanguageList(szFilePath, language);
-
+  if constexpr (std::string_view(LKD_LANGUAGE) !=
+                std::string_view(LKD_SYS_LANGUAGE)) {
+    // fill up with system language
+    SystemPath(szFilePath, _T(LKD_SYS_LANGUAGE), _T("language.json"));
+    LoadLanguageList(szFilePath, language);
+  }
   return language;
 }

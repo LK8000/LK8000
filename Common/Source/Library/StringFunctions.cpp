@@ -9,8 +9,6 @@
 #include <ctype.h>
 #include <string_view>
 #include <type_traits>
-#include "Util/Clamp.hpp"
-
 #include <charconv>
 
 
@@ -519,12 +517,12 @@ void StrToTime(const char* szString, int *Hour, int *Min, int *Sec) {
     LKASSERT(Hour && Min);
     char* sz = nullptr;
     if (szString && szString[0]) {
-        *Hour = Clamp<int>(strtol(szString, &sz, 10), 0, 23);
+        *Hour = std::clamp<int>(strtol(szString, &sz, 10), 0, 23);
         if (*sz == ':') {
-            *Min = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
+            *Min = std::clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
 
             if (Sec && (*sz == ':')) {
-                *Sec = Clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
+                *Sec = std::clamp<int>(strtol(sz + 1, &sz, 10), 0, 59);
             }
         }
     }

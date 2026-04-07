@@ -12,22 +12,18 @@
 #ifndef LKCOLOR_H
 #define	LKCOLOR_H
 
+#include <utility>
 #include "Screen/Color.hpp"
 
 class LKColor : public Color {
 public:
-    LKColor() = default;
+    using Color::Color;
 
-    LKColor ContrastTextColor() const;
-    LKColor ChangeBrightness(double fBrightFact) const;
-    LKColor MixColors(const LKColor& Color2, double fFact1) const;
+    constexpr LKColor(Color other) noexcept : Color(std::move(other)) {}
 
-    constexpr LKColor(uint8_t r, uint8_t g, uint8_t b) : Color(r,g,b) {}
-    constexpr LKColor(Color _color) : Color(_color) {}
-
-#ifdef USE_GDI
-    constexpr explicit LKColor(COLORREF _color) : Color(_color) {}
-#endif
+    LKColor ContrastTextColor() const noexcept;
+    LKColor ChangeBrightness(double fBrightFact) const noexcept;
+    LKColor MixColors(const LKColor& Color2, double fFact1) const noexcept;
 };
 
 

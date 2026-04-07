@@ -7,10 +7,10 @@
  */
 
 #include "externs.h"
+#include <algorithm>
 #include "LKInterface.h"
 #include "DoInits.h"
 #include "ScreenGeometry.h"
-#include "Util/Clamp.hpp"
 #ifdef ANDROID
 #include "Android/Main.hpp"
 #include "Android/NativeView.hpp"
@@ -445,7 +445,7 @@ unsigned int TerrainQuantization(void) {
   #endif
 
   // GENERAL PURPOSE APPROACH
-  dtquant = Clamp(IBLSCALE(2U), 2U, 3U);
+  dtquant = std::clamp(IBLSCALE(2U), 2U, 3U);
 
   // .. And the values above are the used as defaults. Then we must dynamically check
   // if we can adjust to better values by checking drawing times.

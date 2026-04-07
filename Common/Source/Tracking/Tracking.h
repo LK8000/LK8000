@@ -7,48 +7,61 @@
  * Author: Bruno de Lacheisserie
  */
 
-#ifndef _TRACKING_TRACKING_H
-#define _TRACKING_TRACKING_H
+#ifndef TRACKING_TRACKING_H
+#define TRACKING_TRACKING_H
 
+#include <vector>
 #include <cstdint>
 #include <cstdio>
+#include <string>
 #include "tchar.h"
+#include "Util/tstring.hpp"
+#include "Screen/LKBitmap.h"
 
 namespace settings {
-    class writer;
-}
+class writer;
+}  // namespace settings
 
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
 namespace tracking {
 
-    enum class platform : uint8_t {
-        none,
-        livetrack24,
-        skylines_aero
-    };
+// clang-format off
+enum class platform : uint8_t {
+  none,
+  livetrack24,
+  skylines_aero,
+  ffvl,
+  osmand,
+  traccar
+};
+// clang-format on
 
-    extern int  interval; // sending position interval (sec)
-    extern bool radar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
-    extern bool always_config;  // Livetracking only in flight or always
+const TCHAR* PlatformLabel(platform p);
+LKBitmap load_bitmap(platform p);
 
-    extern TCHAR    server_config[100]; // server name or ip address
-    extern uint16_t port_config; // tcp port
-    extern TCHAR    usr_config[100]; // user name ( token for skylines )
-    extern TCHAR    pwd_config[100]; // user pwd
+struct Profile {
+  platform protocol = platform::none;
+  int interval = 0;        // sending position interval (sec)
+  bool radar = false;      // feed FLARM with livedata
+  bool always_on = false;  // Livetracking only in flight or always
+  std::string server;      // server name or ip address
+  uint16_t port = 0;       // tcp port
+  std::string user;        // user name ( token for skylines/VLSafe )
+  std::string password;    // user pwd
+};
 
-    extern std::string ffvl_user_key; // https://federation.ffvl.fr/pages/tracking-ffvl-et-retrouvabilit-des-lienci-s
+extern std::vector<Profile> profiles;
 
-    void ResetSettings();
-    bool LoadSettings(const char *key, const char *value);
-    void SaveSettings(settings::writer& writer_settings);
+void ResetSettings();
+bool LoadSettings(const char* key, const char* value);
+void SaveSettings(settings::writer& writer_settings);
 
-    platform GetPlatform();
-    
-    void Initialize(platform id);
-    void Update(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated);
-    void DeInitialize();
-} // namespace tracking
+void Initialize();
+void Update(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
+void DeInitialize();
 
-#endif //_TRACKING_TRACKING_H
+}  // namespace tracking
+
+#endif  // TRACKING_TRACKING_H

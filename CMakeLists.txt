@@ -670,8 +670,6 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devFlyBeeper.cpp
     Common/Source/Devices/devVectorVario.cpp
     Common/Source/Devices/DeviceRegister.cpp
-    Common/Source/Devices/DeviceSettings.h
-    Common/Source/Devices/DeviceSettings.cpp
 
     Common/Source/Dialogs/Airspaces/dlgAirspace.cpp
     Common/Source/Dialogs/Airspaces/dlgAirspaceColours.cpp
@@ -735,6 +733,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgEOSIGCDownload.cpp
     Common/Source/Dialogs/dlgRadioPriSecSel.cpp
     Common/Source/Dialogs/dlgMacCready.cpp
+    Common/Source/Dialogs/dlgTracking.cpp
 
     Common/Source/Dialogs/Analysis/DrawOtherFunctions.cpp
     Common/Source/Dialogs/Analysis/DrawXYGrid.cpp
@@ -786,10 +785,13 @@ add_library( LK8000 SHARED
     Common/Source/Resource/resource_data.S
     Common/Source/Resource/resource_xml.S
 
-	Common/Source/Tracking/LiveTrack24.cpp
+	Common/Source/Tracking/LiveTrack24V1Handler.cpp
+	Common/Source/Tracking/LiveTrack24V2Handler.cpp
 	Common/Source/Tracking/Tracking.cpp
+    Common/Source/Tracking/TrackingSettings.cpp
     Common/Source/Tracking/SkylinesGlue.cpp
     Common/Source/Tracking/FFVLTracking.cpp
+    Common/Source/Tracking/OsmAndTracking.cpp
 
     Common/Source/NMEA/Derived.h
     Common/Source/NMEA/Info.h
@@ -895,6 +897,7 @@ target_include_directories( LK8000 PRIVATE
     ./
     lib/doctest
     lib/glm
+    lib/json/include
 )
 
 target_link_libraries(LK8000 PRIVATE

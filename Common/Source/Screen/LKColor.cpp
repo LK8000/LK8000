@@ -13,7 +13,7 @@
 #include "LKColor.h"
 #include "RGB.h"
 
-LKColor LKColor::ContrastTextColor() const {
+LKColor LKColor::ContrastTextColor() const noexcept {
 #ifdef GREYSCALE
     return (GetLuminosity() >  127 ? RGB_BLACK : RGB_WHITE);
 #else
@@ -23,7 +23,7 @@ LKColor LKColor::ContrastTextColor() const {
 #endif
 }
 
-LKColor LKColor::ChangeBrightness(double fBrightFact) const {
+LKColor LKColor::ChangeBrightness(double fBrightFact) const noexcept {
 #ifdef GREYSCALE
     int Luminosity = GetLuminosity()*fBrightFact;
     if (Luminosity > 255) Luminosity = 255;
@@ -40,7 +40,7 @@ LKColor LKColor::ChangeBrightness(double fBrightFact) const {
 #endif
 }
 
-LKColor LKColor::MixColors(const LKColor& Color2, double fFact1) const {
+LKColor LKColor::MixColors(const LKColor& Color2, double fFact1) const noexcept {
 
     double fFact2 = 1.0f - fFact1;
 #ifdef GREYSCALE

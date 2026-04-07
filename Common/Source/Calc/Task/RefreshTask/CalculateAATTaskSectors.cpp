@@ -10,7 +10,6 @@
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 #include "CalcTask.h"
-#include "Util/Clamp.hpp"
 
 extern bool TargetDialogOpen;
 
@@ -48,8 +47,8 @@ void CalculateAATTaskSectors() {
         continue;
       }
 
-      Task[i].AATTargetOffsetRadius = Clamp(Task[i].AATTargetOffsetRadius, -1.0, 1.0);
-      Task[i].AATTargetOffsetRadial = Clamp(Task[i].AATTargetOffsetRadial, -90.0, 90.0);
+      Task[i].AATTargetOffsetRadius = std::clamp(Task[i].AATTargetOffsetRadius, -1.0, 1.0);
+      Task[i].AATTargetOffsetRadial = std::clamp(Task[i].AATTargetOffsetRadial, -90.0, 90.0);
 
       double targetrange;
 

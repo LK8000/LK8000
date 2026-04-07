@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
+<WndForm Type="Dialog" Caption="_@M2281_" X="0" Y="0" Width="240" Height="240">
+    <WndFrame X="1" Y="1" Width="-1" Height="55">
+        <WndButton   Caption="_@M186_"    X="1" Y="0" Width="-1"  Height="33" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
+        <WndProperty Caption="_@M002290_" X="1" Y="-1" Width="-1" Height="22" Font="2" CaptionWidth="100">
+            <DataField DataType="enum" OnDataAccess="OnTrackingType"/>
+        </WndProperty>
+    </WndFrame>
+    <WndFrame Name="frmLT24" X="1" Y="55" Width="-1" Height="-1">
+        <WndProperty Caption="_@M002282_" X="1" Y="0" Width="-1" Height="22" Font="2" CaptionWidth="100" Help="_@H1258_">
+            <DataField DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0.0" Max="60.0" Step="1.0" OnDataAccess="OnInterval" />
+        </WndProperty>
+        <WndProperty Caption="_@M2333_" X="1" Y="-1" Width="-1" Height="22" Font="2" CaptionWidth="100" Help="_@H1298_">
+          <DataField DataType="enum"  Min="0" Max="2" Step="1" OnDataAccess="OnStartConfig"/>
+        </WndProperty>
+        <WndProperty Caption="_@M002283_" X="1" Y="-1" Width="-1" Height="22" Keyboard="1" Font="2" CaptionWidth="100">
+            <DataField DataType="string" OnDataAccess="OnServer"/>
+        </WndProperty>
+        <WndProperty Caption="_@M002284_" X="1" Y="-1" Width="-1" Height="22" Keyboard="1" Font="2" CaptionWidth="100">
+            <DataField DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min="0.0" Max="65535.0" Step="1.0" OnDataAccess="OnPort"/>
+        </WndProperty>
+        <WndProperty Caption="_@M001780_" X="1" Y="-1" Width="-1" Height="22" Keyboard="1" Font="2" CaptionWidth="100">
+            <DataField DataType="string" OnDataAccess="OnUser" />
+        </WndProperty>
+        <WndProperty Caption="_@M001781_" X="1" Y="-1" Width="-1" Height="22" Keyboard="1" Font="2" CaptionWidth="100">
+            <DataField DataType="string" OnDataAccess="OnPassword" />
+        </WndProperty>
+        <WndProperty Caption="_@M002285_" X="1" Y="-1" Width="-1" Height="22" Font="2" CaptionWidth="100">
+            <DataField DataType="boolean" OnDataAccess="OnRadar" />
+        </WndProperty>
+    </WndFrame>
+    <WndFrame Name="frmSkylines" X="1" Y="55" Width="-1" Height="-1">
+        <WndProperty Caption="_@M002282_" X="1" Y="0" Width="-1" Height="22" Font="2" CaptionWidth="100" Help="_@H1258_">
+            <DataField DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0.0" Max="60.0" Step="1.0"  OnDataAccess="OnInterval"/>
+        </WndProperty>
+        <WndProperty Caption="_@M002286_" X="1" Y="-1" Width="-1" Height="22" Font="2" Keyboard="1" CaptionWidth="100">
+            <DataField DataType="string" OnDataAccess="OnUser"/>
+        </WndProperty>
+        <WndProperty Caption="_@M002285_" X="1" Y="-1" Width="-1" Height="22" Font="2" CaptionWidth="100">
+            <DataField DataType="boolean" OnDataAccess="OnRadar" />
+        </WndProperty>
+    </WndFrame>
+    <WndFrame Name="frmVLSafe" X="1" Y="55" Width="-1" Height="-1">
+        <WndProperty Caption="_@M002287_" X="1" Y="0" Width="-1" Height="22" Font="2" CaptionWidth="100" Keyboard="1" Help="_@H1310_">
+            <DataField DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnUser" />
+        </WndProperty>
+    </WndFrame>
+    <WndFrame Name="frmOsmAnd" X="1" Y="55" Width="-1" Height="-1">
+        <WndProperty Caption="_@M002282_" X="1" Y="0" Width="-1" Height="22" Font="2" CaptionWidth="100" Help="_@H1258_">
+            <DataField DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0.0" Max="60.0" Step="1.0" OnDataAccess="OnInterval" />
+        </WndProperty>
+        <WndProperty Caption="_@M002288_" X="1" Y="-1" Width="-1" Height="44" Font="2" CaptionWidth="0" Keyboard="1" Help="_@H1310_">
+            <DataField DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnServer" />
+        </WndProperty>
+        <WndProperty Caption="_@M002289_" X="1" Y="-1" Width="-1" Height="44" Font="2" CaptionWidth="0" Keyboard="1" Help="_@H1310_">
+            <DataField DataType="string" DisplayFormat="%s" EditFormat="%s" OnDataAccess="OnUser" />
+        </WndProperty>
+    </WndFrame>
+</WndForm>
+</PMML>

@@ -26,14 +26,12 @@ Copyright_License {
 #include "Event/Queue.hpp"
 #include "Event/Shared/Event.hpp"
 #include "Event/Poll/Linux/Translate.hpp"
-#include "Util/Clamp.hpp"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <termios.h>
-
+#include <algorithm>
 #include <libinput.h>
 
 bool
@@ -166,9 +164,9 @@ LibInputHandler::HandleEvent(struct libinput_event *li_event)
       if (-1.0 == y)
         y = 0.0;
       x += libinput_event_pointer_get_dx(ptr_li_event);
-      x = Clamp<double>(x, 0, width);
+      x = std::clamp<double>(x, 0, width);
       y += libinput_event_pointer_get_dy(ptr_li_event);
-      y = Clamp<double>(y, 0, height);
+      y = std::clamp<double>(y, 0, height);
       queue.Push(Event(Event::MOUSE_MOTION, (unsigned) x, (unsigned) y));
     }
     break;

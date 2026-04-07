@@ -11,7 +11,9 @@
 
 #ifndef FILESYSTEM_H
 #define	FILESYSTEM_H
+#include "Compiler.h"
 #include "tchar.h"
+#include <functional>
 #include <string.h>
 
 namespace lk {
@@ -66,7 +68,20 @@ namespace lk {
         // fix directory separator
         void fixPath(TCHAR* szPath);
 
+        using scan_file_callable_t = std::function<bool(const TCHAR* name, const TCHAR* relative_path)>;
 
+        gcc_nonnull_all
+        bool ScanDirectories(const TCHAR *sPath, const TCHAR* subdir,
+                 const TCHAR **suffix_filters, size_t filter_count,
+                 const scan_file_callable_t& on_file);
+
+#ifndef UNICODE
+
+        gcc_nonnull_all
+        void ScanZipDirectory(const TCHAR *subdir,
+                      const TCHAR **suffix_filters, size_t filter_count,
+                      const scan_file_callable_t& on_file);
+#endif  // !UNICODE
     }
 }
 

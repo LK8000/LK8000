@@ -6,194 +6,284 @@
  * File:   Tracking.cpp
  * Author: Bruno de Lacheisserie
  */
-
+#include <vector>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <cassert>
 #include <memory>
-#include "Tracking.h"
 #include "SkylinesGlue.h"
+#include "Tracking.h"
+#include "ITrackingHandler.h"
 #include "NMEA/Info.h"
-#include "NMEA/Derived.h"
-#include "LiveTrack24.h"
+#include "LiveTrack24V1Handler.h"
+#include "LiveTrack24V2Handler.h"
 #include "Defines.h"
 #include "Settings/read.h"
 #include "Settings/write.h"
+#include "TrackingSettings.h"
 #include "FFVLTracking.h"
+#include "OsmAndTracking.h"
+#include "utils/stringext.h"
 #include "utils/strcpy.h"
+#include "MessageLog.h"
+#include "Bitmaps.h"
+#include "Logger.h"
 
 extern int LKTime_Real;
 extern int LKTime_Ghost;
 extern int LKTime_Zombie;
+extern BYTE RUN_MODE;
 
-namespace tracking {
+namespace tracking {  
 
-    int  interval; // sending position interval (sec)
-    bool radar_config;  // feed FLARM with Livetrack24 livedata only in PG/HG mode
-    bool always_config;  // Livetracking only in flight or always
+std::vector<Profile> profiles;
 
-    TCHAR    server_config[100]; // server name or ip address
-    uint16_t port_config; // tcp port
-    TCHAR    usr_config[100]; // user name ( token for skylines )
-    TCHAR    pwd_config[100]; // user pwd
+namespace {
+// private global;
+std::vector<std::unique_ptr<ITrackingHandler>> active_handlers;
 
-    std::string ffvl_user_key;
+namespace migration {
+// --- Variables for migrating old settings ---
+bool new_settings_found = false;
+bool old_settings_found = false;
+int interval = 0;
+std::string server_config;
+uint16_t port_config = 0;
+std::string usr_config;
+std::string pwd_config;
+std::string ffvl_user_key;
+bool radar_config = false;
+bool always_config = false;
+}  // namespace migration
 
-    namespace {
-        // private global;
-        std::unique_ptr<FFVLTracking> ffvl_tracking;
-        std::unique_ptr<SkylinesGlue> skylines_glue;
-        platform tracking_platform = platform::none;
+void DoMigration() {
+  if (migration::new_settings_found || !migration::old_settings_found) {
+    // New settings are present, or no settings were found. No migration needed.
+    return;
+  }
 
-        // key used to save/load setting from pref files
-        constexpr char registry_interval[] = "LiveTrackerInterval";
-        constexpr char registry_radar_config[] = "LiveTrackerRadar_config";
-        constexpr char registry_start_config[] = "LiveTrackerStart_config";
-        constexpr char registry_srv[] =  "LiveTrackersrv";
-        constexpr char registry_port[] =  "LiveTrackerport";
-        constexpr char registry_usr[] =  "LiveTrackerusr";
-        constexpr char registry_pwd[] =  "LiveTrackerpwd";
-        constexpr char registry_ffvl_user_key[] =  "ffvl_user_key";
+  // --- Starting migration ---
+  StartupStore(_T(". Migrating old tracking settings to new format."));
 
-        uint64_t hex_to_uint64(const tstring& string) {
-            typedef std::is_same<uint64_t, unsigned long> is_long;
-            typedef std::is_same<uint64_t, unsigned long long> is_long_long;
-            static_assert(is_long::value || is_long_long::value, "invalid type");
+  // Clear existing profiles to start from a clean slate
+  profiles.clear();
 
-            try {
-                if (is_long::value) {
-                    return std::stoul(string, 0, 16);
-                }
-                if (is_long_long::value) {
-                    return std::stoull(string, 0, 16);
-                }
-            } catch(std::exception& e) {
-                return 0U;
-            }
-        }
+  // --- Migration of LiveTrack24/Skylines to profile 0 ---
+  if (migration::interval > 0) {
+    // Determine the protocol (LiveTrack24 vs Skylines)
+    std::string snu = migration::server_config;
+    std::transform(snu.begin(), snu.end(), snu.begin(), ::tolower);
+    auto protocol = (snu.compare("skylines.aero") == 0)
+                      ? platform::skylines_aero
+                      : platform::livetrack24;
 
+    profiles.push_back({
+      .protocol = protocol,
+      .interval = migration::interval,
+      .radar = migration::radar_config,
+      .always_on = migration::always_config,
+      .server = migration::server_config,
+      .port = migration::port_config,
+      .user = migration::usr_config,
+      .password = migration::pwd_config
+    });
+
+  }
+
+  if (http_session::ssl_available()) {
+    // --- Migration of FFVL to profile 1 ---
+    if (!migration::ffvl_user_key.empty()) {
+      profiles.push_back({
+        .protocol = platform::ffvl,
+        .interval = 60,
+        .radar = false,
+        .always_on = true,
+        .server = {},
+        .port = 0,
+        .user = migration::ffvl_user_key,
+        .password = {}
+      });
     }
+  }
+}
 
-    void Initialize(platform id) {
+}  // anonymous namespace
 
-        if (!ffvl_user_key.empty()) {
-            ffvl_tracking = std::make_unique<FFVLTracking>(ffvl_user_key);
-            ffvl_tracking->Start();
+void Initialize() {
+  active_handlers.clear();
+
+  DoMigration();
+
+  for (const auto& profile : profiles) {
+    switch (profile.protocol) {
+      case platform::livetrack24:
+        if (profile.interval > 0) {
+          std::string server_upper = profile.server;
+          std::transform(server_upper.begin(), server_upper.end(),
+                         server_upper.begin(), ::toupper);
+          if (server_upper.compare("WWW.LIVETRACK24.COM") == 0) {
+            active_handlers.emplace_back(
+                std::make_unique<LiveTrack24V2Handler>(profile));
+          }
+          else {
+            active_handlers.emplace_back(
+                std::make_unique<LiveTrack24V1Handler>(profile));
+          }
         }
+        break;
+      case platform::skylines_aero:
+        if (profile.interval > 0) {
+          auto skylines_glue = std::make_unique<SkylinesGlue>(profile);
 
-        tracking_platform = id;
-        switch (tracking_platform) {
-            case platform::none:
-                break; // tracking disabled
-            case platform::livetrack24:
-                LiveTrackerInit();
-                break;
-            case platform::skylines_aero:
-                skylines_glue = std::make_unique<SkylinesGlue>();
-
-                TrackingSettings tracking_settings;
-                tracking_settings.SetDefaults();
-
-                tracking_settings.skylines.interval = interval;
-                tracking_settings.skylines.enabled = (interval > 0);
-                tracking_settings.skylines.key = hex_to_uint64(usr_config);
-
-                tracking_settings.skylines.traffic_enabled = radar_config;
-                tracking_settings.skylines.near_traffic_enabled = radar_config;
-
-                skylines_glue->SetSettings(tracking_settings);
-                if (radar_config) {
-                    LKTime_Real = 90;
-                    LKTime_Ghost = 180;
-                    LKTime_Zombie = 360;
-                }
-
-
-                break;
-            default:
-                assert(false);
-                break;
+          if (profile.radar) {
+            LKTime_Real = 90;
+            LKTime_Ghost = 180;
+            LKTime_Zombie = 360;
+          }
+          active_handlers.emplace_back(std::move(skylines_glue));
         }
-    }
-
-    void Update(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
-
-        if (ffvl_tracking) {
-            ffvl_tracking->Update(Basic, Calculated);
+        break;
+      case platform::ffvl:
+        if (http_session::ssl_available() && !profile.user.empty()) {
+          auto ffvl_handler = std::make_unique<FFVLTracking>(profile.user);
+          ffvl_handler->Start();
+          active_handlers.emplace_back(std::move(ffvl_handler));
         }
-
-        switch (tracking_platform) {
-            case platform::none:
-                break; // tracking disabled
-            case platform::livetrack24:
-                LiveTrackerUpdate(Basic, Calculated);
-                break;
-            case platform::skylines_aero:
-                if (skylines_glue) {
-	                if(always_config || Calculated.Flying) {
-                        skylines_glue->OnTimer(Basic, Calculated);
-                    }
-                }
-                break;
-            default:
-                assert(false);
-                break;
+        break;
+      case platform::osmand:
+      case platform::traccar:
+        if (http_session::ssl_available() && profile.interval > 0) {
+          auto handler = std::make_unique<OsmAndTracking>(profile);
+          handler->Start();
+          active_handlers.emplace_back(std::move(handler));
         }
+        break;
+      case platform::none:
+      default:
+        break;
     }
+  }
+}
 
-    void DeInitialize() {
-        if (tracking_platform == platform::livetrack24) {
-            LiveTrackerShutdown();
-        }
-        skylines_glue = nullptr;
-        ffvl_tracking = nullptr;
+void Update(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
+#ifdef NDEBUG
+  if (RUN_MODE != RUN_FLY && !ReplayLogger::IsEnabled()) {
+    return;  // skip tracking in simulation mode or replay mode
+  }
+#endif
+
+  for (auto& handler : active_handlers) {
+    handler->Update(Basic, Calculated);
+  }
+}
+
+void DeInitialize() {
+  active_handlers.clear();
+}
+
+void ResetSettings() {
+  active_handlers.clear();
+  profiles.clear();
+  migration::new_settings_found = false;
+  migration::old_settings_found = false;
+  migration::interval = 0;
+  migration::server_config.clear();
+  migration::port_config = 0;
+  migration::usr_config.clear();
+  migration::pwd_config.clear();
+  migration::ffvl_user_key.clear();
+  migration::radar_config = false;
+  migration::always_config = false;
+}
+
+bool LoadSettings(const char* key, const char* value) {
+  if (settings_io::LoadProfileSettings(key, value, profiles)) {
+    migration::new_settings_found = true;
+    return true;
+  }
+
+  // Attempt to load old settings for migration
+  if (!migration::new_settings_found) {
+    if (settings::read(key, value, "LiveTrackerInterval",
+                       migration::interval)) {
+      migration::old_settings_found = true;
+      return true;
     }
-
-    void ResetSettings() {
-        interval = 0;
-        radar_config = false;
-        always_config = false;
-
-        lk::strcpy(server_config,_T("www.livetrack24.com"));
-        port_config = 80;
-
-        lk::strcpy(usr_config,_T("LK8000"));
-        lk::strcpy(pwd_config,_T(""));
-
-        ffvl_user_key.clear();
+    if (settings::read(key, value, "LiveTrackerRadar_config",
+                       migration::radar_config)) {
+      migration::old_settings_found = true;
+      return true;
     }
-
-    bool LoadSettings(const char *key, const char *value) {
-        return settings::read(key, value, registry_interval, interval)
-            || settings::read(key, value, registry_radar_config, radar_config)
-            || settings::read(key, value, registry_start_config, always_config)
-            || settings::read(key, value, registry_srv, server_config)
-            || settings::read(key, value, registry_port, port_config)
-            || settings::read(key, value, registry_usr, usr_config)
-            || settings::read(key, value, registry_pwd, pwd_config)
-            || settings::read(key, value, registry_ffvl_user_key, ffvl_user_key);
+    if (settings::read(key, value, "LiveTrackerStart_config",
+                       migration::always_config)) {
+      migration::old_settings_found = true;
+      return true;
     }
-
-    void SaveSettings(settings::writer& writer_settings) {
-        writer_settings(registry_interval, interval);
-        writer_settings(registry_radar_config, radar_config);
-        writer_settings(registry_start_config, always_config);
-        writer_settings(registry_srv, server_config);
-        writer_settings(registry_port, port_config);
-        writer_settings(registry_usr, usr_config);
-        writer_settings(registry_pwd, pwd_config);
-        writer_settings(registry_ffvl_user_key, ffvl_user_key);
+    if (settings::read(key, value, "LiveTrackersrv",
+                       migration::server_config)) {
+      migration::old_settings_found = true;
+      return true;
     }
-
-    platform GetPlatform() {
-        if(interval == 0) {
-            return platform::none;
-        }
-        tstring snu = server_config;
-        std::transform(snu.begin(), snu.end(), snu.begin(), _totlower);
-        if(snu.compare(_T("skylines.aero")) == 0) {
-            return platform::skylines_aero;
-        }
-        return platform::livetrack24;
+    if (settings::read(key, value, "LiveTrackerport", migration::port_config)) {
+      migration::old_settings_found = true;
+      return true;
     }
+    if (settings::read(key, value, "LiveTrackerusr", migration::usr_config)) {
+      migration::old_settings_found = true;
+      return true;
+    }
+    if (settings::read(key, value, "LiveTrackerpwd", migration::pwd_config)) {
+      migration::old_settings_found = true;
+      return true;
+    }
+    if (settings::read(key, value, "ffvl_user_key", migration::ffvl_user_key)) {
+      migration::old_settings_found = true;
+      return true;
+    }
+  }
 
-} // namespace tracking
+  return false;
+}
+
+void SaveSettings(settings::writer& writer_settings) {
+  settings_io::SaveProfileSettings(writer_settings, profiles);
+}
+
+const TCHAR* PlatformLabel(platform platform) {
+  switch (platform) {
+    case tracking::platform::none:
+      return _T("none");
+    case tracking::platform::livetrack24:
+      return _T("livetrack24");
+    case tracking::platform::skylines_aero:
+      return _T("skylines.aero");
+    case tracking::platform::ffvl:
+      return _T("VLSafe");
+    case tracking::platform::osmand:
+      return _T("OsmAnd");
+    case tracking::platform::traccar:
+      return _T("Traccar");
+  }
+  return _T("");
+}
+
+LKBitmap load_bitmap(platform platform) {
+  switch (platform) {
+    case tracking::platform::livetrack24:    
+      return LKLoadBitmap(_T("LT24"), false);
+    case tracking::platform::skylines_aero:
+      return LKLoadBitmap(_T("SKYLINES"), false);
+    case tracking::platform::ffvl:
+      return LKLoadBitmap(_T("FFVL"), false);
+    case tracking::platform::osmand:
+      return LKLoadBitmap(_T("OSMAND"), false);
+    case tracking::platform::traccar:
+      return LKLoadBitmap(_T("TRACCAR"), false);
+    case tracking::platform::none:
+      break;
+  }
+  return {};
+}
+
+}  // namespace tracking

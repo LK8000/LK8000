@@ -10,7 +10,6 @@
 #include "McReady.h"
 #include "DoInits.h"
 #include "utils/stl_utils.h"
-#include "Util/Clamp.hpp"
 
 
 double GlidePolar::polar_a;
@@ -90,7 +89,7 @@ void GlidePolar::SetBallast() {
   if ((SAFTEYSPEED<1)||(SAFTEYSPEED>=MAXSAFETYSPEED)) {
     SAFTEYSPEED=MAXSAFETYSPEED-1;
   }
-  iSAFETYSPEED=Clamp(iround(SAFTEYSPEED*2), 8, (MAXSPEED*2));
+  iSAFETYSPEED=std::clamp(iround(SAFTEYSPEED*2), 8, (MAXSPEED*2));
 
   // _sinkratecache is an array for 0.5 m/s values!! i = irount(speed * 2) speed in m/s
   for(int _i=8;_i<=(MAXSPEED*2);_i++) {
@@ -126,7 +125,7 @@ inline double GlidePolar::_SinkRateFast(const double &MC, const unsigned &v) {
     BUGSTOP_LKASSERT(iSAFETYSPEED > 8U);
     BUGSTOP_LKASSERT(v >= 8U && v <= iSAFETYSPEED);
 
-    return _sinkratecache[Clamp(v, 8U, iSAFETYSPEED)] - MC;
+    return _sinkratecache[std::clamp(v, 8U, iSAFETYSPEED)] - MC;
 }
 
 double GlidePolar::SinkRateFast(const double &MC, const double &v) {

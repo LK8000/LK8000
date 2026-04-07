@@ -522,6 +522,7 @@ INCLUDES	+= -I$(SRC)
 INCLUDES	+= -I$(SRC)/Library 
 INCLUDES	+= -I$(SRC)/xcs
 INCLUDES	+= -Ilib/doctest
+INCLUDES	+= -Ilib/json/include
 
 ifeq ($(GLES2),y)
  INCLUDES	+=  -Ilib/glm
@@ -647,7 +648,8 @@ ifeq ($(CONFIG_WIN32),y)
   LDLIBS := -static -Wl,-Bstatic \
             -lmingw32 -lcomctl32 -lkernel32 -luser32 \
             -lgdi32 -ladvapi32 -lwinmm -lmsimg32 \
-            -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid
+            -lwsock32 -lws2_32 -lole32 -loleaut32 -luuid \
+			-lwinhttp
 endif
 
 LDLIBS += $(subst @lib_postfix@,,$(GEOGRAPHICLIB_LDLIBS)) \
@@ -1142,7 +1144,6 @@ DEVS	:=\
 	$(DEV)/devFlyBeeper.cpp \
 	$(DEV)/devVectorVario.cpp \
 	$(DEV)/DeviceRegister.cpp \
-	$(DEV)/DeviceSettings.cpp \
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
@@ -1240,10 +1241,13 @@ DLGS	:=\
 	$(DLG)/dlgRadioPriSecSel.cpp \
 	$(DLG)/dlgSelectItem.cpp \
 	$(DLG)/dlgMacCready.cpp \
+	$(DLG)/dlgTracking.cpp \
 
 TRACKING := \
-	$(SRC_TRACKING)/LiveTrack24.cpp \
 	$(SRC_TRACKING)/Tracking.cpp \
+	$(SRC_TRACKING)/TrackingSettings.cpp \
+	$(SRC_TRACKING)/LiveTrack24V1Handler.cpp \
+	$(SRC_TRACKING)/LiveTrack24V2Handler.cpp \
 	$(SRC_TRACKING)/SkylinesGlue.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Client.cpp \
 	$(SRC)/xcs/Tracking/SkyLines/Glue.cpp \
@@ -1260,17 +1264,22 @@ TRACKING := \
 	$(SRC)/xcs/Net/State.cpp \
 	$(SRC)/xcs/Net/StaticSocketAddress.cxx \
 
-ifeq ($(USE_CURL),y)
+ifeq ($(CONFIG_WIN32),y)
  TRACKING += \
-   $(SRC_TRACKING)/Curl/http_session.cpp
+   $(SRC_TRACKING)/WinHttp/http_session.cpp \
+   $(SRC_TRACKING)/FFVLTracking.cpp \
+   $(SRC_TRACKING)/OsmAndTracking.cpp \
+
+else ifeq ($(USE_CURL),y)
+ TRACKING += \
+   $(SRC_TRACKING)/Curl/http_session.cpp\
+   $(SRC_TRACKING)/FFVLTracking.cpp \
+   $(SRC_TRACKING)/OsmAndTracking.cpp \
+
 else
  TRACKING += \
    $(SRC_TRACKING)/Default/http_session.cpp
 endif
-
-TRACKING += \
-	$(SRC_TRACKING)/FFVLTracking.cpp
-
 
 SRC_FILES :=\
 	$(WINDOW) \

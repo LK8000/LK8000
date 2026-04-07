@@ -9,9 +9,9 @@
  * Created on 30 may 2023
  */
 #include "externs.h"
+#include <algorithm>
 #include "Baro.h"
 #include "Calc/Vario.h"
-#include "Util/Clamp.hpp"
 #include "Comm/UpdateQNH.h"
 #include "devXCVario.h"
 #include "devGeneric.h"
@@ -74,7 +74,7 @@ BOOL PXCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA
   }
   if (ReadChecked(params[3], value)) {
     // Bugs degradation, 0 = clean to 30 %
-    d->RecvBugs(1 - Clamp(value, 0., 30.) / 100.);
+    d->RecvBugs(1 - std::clamp(value, 0., 30.) / 100.);
   }
 
   int ival;

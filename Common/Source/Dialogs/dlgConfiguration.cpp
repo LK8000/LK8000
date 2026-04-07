@@ -37,6 +37,10 @@
 #include "Devices/DeviceRegister.h"
 #include "Library/TimeFunctions.h"
 #include "Calc/Task/TimeGates.h"
+#include "Bitmaps.h"
+#include "Screen/LKIcon.h"
+#include "Dialogs/dlgTracking.h"
+#include "Tracking/http_session.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -153,18 +157,6 @@ static void UpdateButtons(WndForm* pForm) {
   TCHAR text[120];
   TCHAR val[100];
   if(!pForm) return;
-
-  auto buttonPilotName = (pForm->FindByName<WndButton>(TEXT("cmdPilotName")));
-  if (buttonPilotName) {
-    lk::strcpy(val,PilotName_Config);
-    if (_tcslen(val)<=0) {
-	// LKTOKEN  _@M7_ = "(blank)" 
-      lk::strcpy(val, MsgToken<7>());
-    }
-	// LKTOKEN  _@M524_ = "Pilot name" 
-    lk::snprintf(text,TEXT("%s: %s"), MsgToken<524>(), val);
-    buttonPilotName->SetCaption(text);
-  }
 
   auto buttonAircraftType = (pForm->FindByName<WndButton>(TEXT("cmdAircraftType")));
   if (buttonAircraftType) {
@@ -500,107 +492,197 @@ static void OnTerminalClicked(WndButton* pWnd) {
     UpdateDeviceEntries(pWnd->GetParentWndForm(), SelectedDevice);
 }
 
-extern bool SysOpMode;
-extern bool Sysop(TCHAR *command);
-
-static void OnPilotNameClicked(WndButton* pWnd) {
-  TCHAR Temp[100];
-  lk::strcpy(Temp, PilotName_Config);
-  dlgTextEntryShowModal(Temp, 100);
-
-  //
-  // ACCESS TO SYSOP MODE
-  //
-  if (!SysOpMode) {
-    if (!_tcscmp(Temp, _T("OPSYS"))) {
-      lk::strcpy(Temp, _T("SYSOP"));
-      Sysop(Temp);  // activate sysop mode and exit dialog
-      if (pWnd) {
-        WndForm* pForm = pWnd->GetParentWndForm();
-        if (pForm)
-          pForm->SetModalResult(mrOK);
-      }
-      return;
-    }
-  }
-
-  if (SysOpMode && _tcslen(Temp) >= 2) {
-    if (Sysop(Temp)) {
-      // if requested, close immediately the parent dialog and back to normal menu!
-      // This is needed for example when commanding resolution chang because
-      // dialogs are not changed until closed, and we risk not seeing the Close button anymore.
-      if (pWnd) {
-        WndForm* pForm = pWnd->GetParentWndForm();
-        if (pForm)
-          pForm->SetModalResult(mrOK);
-      }
-    }
-    return;  // in SysOp mode no change of pilot name
-  }
-
-  if (!SysOpMode)
-    lk::strcpy(PilotName_Config, Temp);
-
-  UpdateButtons(pWnd->GetParentWndForm());
-}
-
-static void OnLiveTrackerStartConfig(DataField *Sender, DataField::DataAccessKind_t Mode){
-  if (Sender) {
-
-    if(Sender->getCount() == 0) {
-      Sender->addEnumList({
-          MsgToken<2334>(),	// _@M2334_ "In flight only (default)"
-          MsgToken<2335>() 	// _@M2335_ "permanent (test purpose)"
-        });
-    }
-
-    switch (Mode) {
+static void OnPilotName(DataField* Sender,
+                        DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
     case DataField::daGet:
-      Sender->Set(tracking::always_config);
+      Sender->SetAsString(PilotName_Config);
       break;
     case DataField::daPut:
     case DataField::daChange:
-      tracking::always_config = Sender->GetAsBoolean();
+      lk::strcpy(PilotName_Config, Sender->GetAsString());
       break;
-    case DataField::daInc:
-    case DataField::daDec:
-    case DataField::daSpecial:
     default:
       break;
+  }
+}
+
+static void OnTrackingListEnter(WndListFrame* Sender,
+                                WndListFrame::ListInfo_t* ListInfo) {
+  size_t ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
+  if (ItemIndex < tracking::profiles.size()) {
+    auto& profile = tracking::profiles[ItemIndex];
+    dlgTracking dlg(profile);
+    dlg.DoModal();
+    Sender->ResetList();
+  }
+}
+
+static WndListFrame* FindTrackingList(WndButton* pWnd) {
+  auto pForm = pWnd->GetParentWndForm();
+  if (pForm) {
+    return pForm->FindByName<WndListFrame>(TEXT("lstTracking"));
+  }
+  return nullptr;
+}
+
+static void OnTrackingAddClicked(WndButton* pWnd) {
+  tracking::Profile profile;
+  dlgTracking dlg(profile);
+  dlg.DoModal();
+  if (profile.protocol != tracking::platform::none) {
+    tracking::profiles.push_back(profile);
+    auto list = FindTrackingList(pWnd);
+    if (list) {
+      list->ResetList();
+    }
+  } 
+}
+
+static void OnTrackingEditClicked(WndButton* pWnd) {
+  auto list = FindTrackingList(pWnd);
+  if (list) {
+    size_t ItemIndex = list->GetItemIndex();
+    if (ItemIndex < tracking::profiles.size()) {
+      auto& profile = tracking::profiles[ItemIndex];
+      dlgTracking dlg(profile);
+      dlg.DoModal();
+      list->ResetList();
     }
   }
 }
 
-static void OnLiveTrackersrvClicked(WndButton* pWnd) {
-  TCHAR Temp[100];
-  lk::strcpy(Temp, tracking::server_config);
-  dlgTextEntryShowModal(Temp, 100);
-  lk::strcpy(tracking::server_config, Temp);
-  UpdateButtons(pWnd->GetParentWndForm());
+static void OnTrackingDeleteClicked(WndButton* pWnd) {
+  auto list = FindTrackingList(pWnd);
+  if (list) {
+    size_t ItemIndex = list->GetItemIndex();
+    if (ItemIndex < tracking::profiles.size()) {
+      if (MessageBoxX(MsgToken<2379>(),  // "Delete Profile?"
+                      MsgToken<2281>(), mbYesNo) == IdYes) {
+        tracking::profiles.erase(
+            std::next(tracking::profiles.begin(), ItemIndex));
+        list->ResetList();
+      }
+    }
+  }
+}
+static void OnTrackingListInfo(WndListFrame* Sender,
+                               WndListFrame::ListInfo_t* ListInfo) {
+  if (ListInfo->DrawIndex == -1) {
+    ListInfo->ItemCount = tracking::profiles.size();
+  }
 }
 
-static void OnLiveTrackerportClicked(WndButton* pWnd) {
-  TCHAR Temp[100];
-  lk::snprintf(Temp, _T("%d"), tracking::port_config);
-  dlgNumEntryShowModal(Temp, 100);
-  tracking::port_config = _tcstol(Temp, nullptr, 10);
-  UpdateButtons(pWnd->GetParentWndForm());
+static PixelRect DrawTrackingLogo(tracking::platform platform, LKSurface& Surface,
+                             PixelRect rcClient) {
+  LKIcon icon(load_bitmap(platform));
+  if (icon) {
+    PixelSize Size = {NIBLSCALE(16), NIBLSCALE(16)};
+    icon.Draw(Surface,
+             rcClient.GetTopLeft() + PixelSize{NIBLSCALE(1), NIBLSCALE(1)},
+             Size);
+  }
+
+  rcClient.Offset(NIBLSCALE(19), 0);
+  return rcClient;
 }
 
-static void OnLiveTrackerusrClicked(WndButton* pWnd) {
-  TCHAR Temp[100];
-  lk::strcpy(Temp, tracking::usr_config);
-  dlgTextEntryShowModal(Temp, 100);
-  lk::strcpy(tracking::usr_config, Temp);
-  UpdateButtons(pWnd->GetParentWndForm());
+static void DrawTrackingNone(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
+  Surface.SetTextColor(clBlack);
+  Surface.DrawText(rcClient.GetTopLeft(), _T("None"));
+  // TODO: ????
 }
 
-static void OnLiveTrackerpwdClicked(WndButton* pWnd) {
-  TCHAR Temp[100];
-  lk::strcpy(Temp, tracking::pwd_config);
-  dlgTextEntryShowModal(Temp, 100);
-  lk::strcpy(tracking::pwd_config, Temp);
-  UpdateButtons(pWnd->GetParentWndForm());
+static void DrawTrackingLT24(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
+  Surface.SetTextColor(clBlack);
+  auto label = to_tstring(profile.server);
+  Surface.DrawText(rcClient.GetTopLeft(), label.c_str());
+  // TODO: add usefull info
+  //    profile.interval
+  //    profile.always_on
+  //    profile.port
+  //    profile.user
+  //    profile.password
+  // LT24 v2
+  //    profile.radar
+}
+
+static void DrawTrackingSkylinesAero(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
+  auto label = PlatformLabel(profile.protocol);
+  Surface.SetTextColor(clBlack);
+  Surface.DrawText(rcClient.GetTopLeft(), label);
+  // TODO: add usefull info
+  //    profile.interval
+  //    profile.user
+  //    profile.radar
+}
+
+static void DrawTrackingFFVL(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
+  if (!http_session::ssl_available()) {
+    DrawTrackingNone(profile, Surface, rcClient);
+    return;
+  }
+
+  auto label = PlatformLabel(profile.protocol);
+  Surface.SetTextColor(clBlack);
+  Surface.DrawText(rcClient.GetTopLeft(), label);
+  // TODO: add usefull info
+  //    profile.user
+}
+
+static void DrawTrackingOsmAnd(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
+  if (!http_session::ssl_available()) {
+    DrawTrackingNone(profile, Surface, rcClient);
+    return;
+  }
+
+  auto label = PlatformLabel(profile.protocol);
+  Surface.SetTextColor(clBlack);
+  Surface.DrawText(rcClient.GetTopLeft(), label);
+  // TODO: add usefull info
+  //    profile.url
+  //    profile.user
+}
+
+static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
+                         const PixelRect& rcClient) {
+  auto rcText = DrawTrackingLogo(profile.protocol, Surface, rcClient);
+
+  switch (profile.protocol) {
+    case tracking::platform::none:
+      DrawTrackingNone(profile, Surface, rcText);
+      break;
+    case tracking::platform::livetrack24:
+      DrawTrackingLT24(profile, Surface, rcText);
+      break;
+    case tracking::platform::skylines_aero:
+      DrawTrackingSkylinesAero(profile, Surface, rcText);
+      break;
+    case tracking::platform::ffvl:
+      DrawTrackingFFVL(profile, Surface, rcText);
+      break;
+    case tracking::platform::osmand:
+    case tracking::platform::traccar:
+      DrawTrackingOsmAnd(profile, Surface, rcText);
+      break;
+  }
+}
+
+static void OnTrackingPaintListItem(WndOwnerDrawFrame* Sender, LKSurface& Surface) {
+  auto pWndList = dynamic_cast<WndListFrame*>(Sender->GetParent());
+  if (pWndList) {
+    size_t DrawListIndex = pWndList->GetDrawIndex();    
+    if (DrawListIndex < tracking::profiles.size()) {
+      PixelRect rcClient(Sender->GetClientRect());
+      auto& profile = tracking::profiles[DrawListIndex];
+      DrawTracking(profile, Surface, rcClient);
+    }
+  }
 }
 
 static void OnCompetitionClassClicked(WndButton* pWnd) {
@@ -1235,25 +1317,6 @@ static void OnConfigDevReplayClicked(WndButton* pWnd){
 	dlgNMEAReplayShowModal();
 }
 
-static void OnFfvlKey(DataField *Sender, DataField::DataAccessKind_t Mode) {
-  switch (Mode) {
-    case DataField::daGet:
-      Sender->SetAsString(utf8_to_tstring(tracking::ffvl_user_key).c_str());
-      break;
-    case DataField::daPut:
-    case DataField::daChange:
-      tracking::ffvl_user_key = to_utf8(Sender->GetAsString());
-      break;
-    case DataField::daInc:
-    case DataField::daDec:
-    case DataField::daSpecial:
-      break;
-  }
-}
-
-
-
-
 static void OnComPort1Data(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
     case DataField::daGet:
@@ -1301,7 +1364,6 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnAirspaceDisplay),
   CallbackEntry(OnAspPermModified),
   CallbackEntry(OnGearWarningModeChange),
-  CallbackEntry(OnLiveTrackerStartConfig),
   CallbackEntry(OnAutoContrastChange),
 
   CallbackEntry(OnNextDevice),
@@ -1316,19 +1378,18 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnNextDevice),
   CallbackEntry(OnTerminalClicked),
 
-  CallbackEntry(OnFfvlKey),
-
   CallbackEntry(OnPaste),
   CallbackEntry(OnCopy),
   CallbackEntry(OnCloseClicked),
 
-  CallbackEntry(OnPilotNameClicked),
+  CallbackEntry(OnPilotName),
 
-  CallbackEntry(OnLiveTrackersrvClicked),
-  CallbackEntry(OnLiveTrackerportClicked),
-  CallbackEntry(OnLiveTrackerusrClicked),
-  CallbackEntry(OnLiveTrackerpwdClicked),
-
+  CallbackEntry(OnTrackingAddClicked),
+  CallbackEntry(OnTrackingEditClicked),
+  CallbackEntry(OnTrackingDeleteClicked),
+  CallbackEntry(OnTrackingListInfo),
+  CallbackEntry(OnTrackingPaintListItem),
+  
   CallbackEntry(OnAircraftTypeClicked),
   CallbackEntry(OnAircraftRegoClicked),
   CallbackEntry(OnCompetitionClassClicked),
@@ -2216,19 +2277,6 @@ DataField* dfe = wp->GetDataField();
   wp = pForm->FindByName<WndProperty>(TEXT("prpDisableAutoLogger"));
   if (wp) {
     wp->GetDataField()->Set(!DisableAutoLogger);
-    wp->RefreshDisplay();
-  }
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerInterval"));
-  if (wp) {
-    wp->GetDataField()->SetAsInteger(tracking::interval);
-    wp->GetDataField()->SetUnits(TEXT("sec"));
-    wp->RefreshDisplay();
-  }
-  
-  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerRadar_config"));
-  if (wp) {
-    wp->GetDataField()->Set(tracking::radar_config);
     wp->RefreshDisplay();
   }
 
@@ -3308,6 +3356,16 @@ void dlgConfigurationShowModal(short mode){
 #endif
   }
 
+  auto lstItem = pForm->FindByName<WndOwnerDrawFrame>(_T("lstTrackingItem"));
+  if (lstItem) {
+    lstItem->SetCanFocus(true);
+  }
+
+  auto lst = pForm->FindByName<WndListFrame>(_T("lstTracking"));
+  if (lst) {
+    lst->SetEnterCallback(OnTrackingListEnter);
+    lst->ResetList();
+  }
 
   NextPage(pForm.get(), 0);
 
@@ -3346,22 +3404,6 @@ void dlgConfigurationShowModal(short mode){
 	!= wp->GetDataField()->GetAsBoolean()) {
       DisableAutoLogger = 
 	!(wp->GetDataField()->GetAsBoolean());
-    }
-  }
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerInterval"));
-  if (wp) {
-    if (tracking::interval != wp->GetDataField()->GetAsInteger()) {
-        tracking::interval = (wp->GetDataField()->GetAsInteger());
-      requirerestart = true;
-    }
-  }
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpLiveTrackerRadar_config"));
-  if (wp) {
-    if (tracking::radar_config != wp->GetDataField()->GetAsBoolean()) {
-        tracking::radar_config = wp->GetDataField()->GetAsBoolean();
-      requirerestart = true;
     }
   }
   

@@ -23,7 +23,6 @@
 #include "WindowControls.h"
 #include "resource.h"
 #include "dlgIGCProgress.h"
-#include "Util/Clamp.hpp"
 #include "OS/Sleep.h"
 #include "devLX_EOS_ERA.h"
 #include "dlgEOSIGCDownload.h"

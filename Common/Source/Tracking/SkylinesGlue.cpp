@@ -8,15 +8,53 @@
  */
 
 #include "SkylinesGlue.h"
+#include "Tracking/Tracking.h"
 #include "Parser.h"
 #include "Defines.h"
 #include "NavFunctions.h"
 #include "Util/TruncateString.hpp"
 #include "NMEA/Info.h"
+#include "NMEA/Derived.h"
 
 extern NMEA_INFO GPS_INFO;
 extern Mutex CritSec_FlightData;
 extern double LastFlarmCommandTime;
+
+namespace {
+    uint64_t hex_to_uint64(const std::string& string) {
+        typedef std::is_same<uint64_t, unsigned long> is_long;
+        typedef std::is_same<uint64_t, unsigned long long> is_long_long;
+        static_assert(is_long::value || is_long_long::value, "invalid type");
+
+        try {
+            if constexpr (is_long::value) {
+                return std::stoul(string, 0, 16);
+            }
+            if constexpr (is_long_long::value) {
+                return std::stoull(string, 0, 16);
+            }
+        } catch(std::exception&) {
+            return 0U;
+        }
+    }
+}
+
+SkylinesGlue::SkylinesGlue(const tracking::Profile& profile) : m_always_on(profile.always_on) {
+    TrackingSettings settings;
+    settings.SetDefaults();
+    settings.skylines.interval = profile.interval;
+    settings.skylines.key = hex_to_uint64(profile.user);
+    settings.skylines.enabled = (profile.interval > 0) && (settings.skylines.key != 0);    
+    settings.skylines.traffic_enabled = profile.radar;
+    settings.skylines.near_traffic_enabled = profile.radar;
+    SetSettings(settings);
+}
+
+void SkylinesGlue::Update(const NMEA_INFO &Basic, const DERIVED_INFO &Calculated) {
+    if(m_always_on || Calculated.Flying) {
+        OnTimer(Basic, Calculated);
+    }
+}
 
 #ifdef HAVE_SKYLINES_TRACKING_HANDLER
 

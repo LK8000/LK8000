@@ -14,7 +14,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include "Poco/Event.h"
 #include "Time/PeriodClock.hpp"
 #include "Comm/PortConfig.h"
 

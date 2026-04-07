@@ -14,7 +14,6 @@
 #include "utils/stringext.h"
 #include "Asset.hpp"
 #include "Screen/Init.hpp"
-#include "Util/Clamp.hpp"
 #include "Settings/read.h"
 #include <Tracking/Tracking.h>
 #include "utils/printf.h"

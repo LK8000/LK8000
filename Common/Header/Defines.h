@@ -124,6 +124,7 @@
     #define LKD_SYSTEM	     "assets"
     #define LKD_SOUNDS	     "sounds" // bitmap are loaded from java ressouce
     #define LKD_BITMAPS      "bitmaps" // bitmap are loaded from java using AssetManager
+    #define LKD_SYS_BITMAPS  "assets/bitmaps" // bitmap loaded using zziplib
     #define LKD_SYS_LANGUAGE "assets/language"
     #define LKD_SYS_POLAR    "assets/polars"
 

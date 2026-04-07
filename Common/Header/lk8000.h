@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include "Thread/Mutex.hpp"
 #include "Modeltype.h"
+#include "Defines.h"
+#include "Enums.h"
 
 extern Mutex  CritSec_FlightData;
 extern void UnlockFlightData();

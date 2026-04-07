@@ -24,7 +24,6 @@
 #include "utils/tokenizer.h"
 #include "utils/printf.h"
 #include "utils/charset_helper.h"
-#include "Util/Clamp.hpp"
 #include "Calc/Task/TimeGates.h"
 
 int dlgTaskSelectListShowModal(void) ;
@@ -558,7 +557,7 @@ const TCHAR* TaskTypeLabel(size_t count) {
           &MsgToken<2437>,
   };
 
-  size_t label_index = Clamp<size_t>(count, 1U, std::size(label_array)) - 1;
+  size_t label_index = std::clamp<size_t>(count, 1U, std::size(label_array)) - 1;
   return label_array[label_index]();
 }
 

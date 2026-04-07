@@ -333,6 +333,8 @@ public:
  
  private:
 
+  bool OnScanFile(const TCHAR* name, const TCHAR* relative_path);
+
   typedef std::vector<Entry> file_list_t;
 
   file_list_t::size_type mValue = 0;
@@ -412,14 +414,6 @@ public:
 
 
 protected:
-
-#ifdef ANDROID
-  gcc_nonnull_all
-  void ScanZipDirectory(const TCHAR *subdir, const TCHAR **suffix_filters, size_t filter_count);
-#endif
-
-  gcc_nonnull_all
-  BOOL ScanDirectories(const TCHAR *sPath, const TCHAR* subdir, const TCHAR **suffix_filters, size_t filter_count);
 
 };
 

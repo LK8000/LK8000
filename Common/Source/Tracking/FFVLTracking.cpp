@@ -14,20 +14,13 @@
 #include "FFVLTracking.h"
 #include "NMEA/Info.h"
 #include "http_session.h"
-#include "../Thread/Thread.hpp"
 
 FFVLTracking::FFVLTracking(std::string user_key)
-            : Thread("ffvl_tracker"), _user_key(std::move(user_key)) {
+            : BaseTracking("ffvl_tracker"), _user_key(std::move(user_key)) {
 }
 
 FFVLTracking::~FFVLTracking() {
-  WithLock(queue_mtx, [&]() {
-    thread_stop = true;
-  });
-  queue_cv.Broadcast();
-  if (IsDefined()) {
-    Join();
-  }
+  StopAndJoin();
 }
 
 void FFVLTracking::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) {
@@ -42,14 +35,11 @@ void FFVLTracking::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated
   if (time_now > next_time) {
     next_time = time_now + 60s;
 
-    WithLock(queue_mtx, [&]() {
-      queue = {{basic.Latitude, basic.Longitude}, basic.Altitude};
-    });
-    queue_cv.Broadcast();
+    Push({{basic.Latitude, basic.Longitude}, basic.Altitude});
   }
 }
 
-void FFVLTracking::Send(http_session& http, const AGeoPoint& position) const {
+void FFVLTracking::Send(http_session& http, const AGeoPoint& position) {
 
   std::string url = R"(https://data.ffvl.fr/api/?device_type=LK8000)";
   url += R"(&key=a0ac0e7592a0c827cbc8a7b95737d044)";
@@ -59,30 +49,4 @@ void FFVLTracking::Send(http_session& http, const AGeoPoint& position) const {
   url += R"(&altitude=)" + std::to_string(position.altitude);
 
   http.request(url);
-}
-
-void FFVLTracking::Run() {
-
-  http_session http;
-
-  do {
-    // get copy of queue
-    auto position = WithLock(queue_mtx, [&]() {
-      return std::exchange(queue, std::nullopt);
-    });
-
-    if (position) {
-      Send(http, position.value());
-    }
-  }
-  while(Wait());
-}
-
-bool FFVLTracking::Wait() {
-  ScopeLock lock(queue_mtx);
-  // if no new position wait for stop or new position
-  while (!thread_stop && !queue.has_value()) {
-    queue_cv.Wait(queue_mtx);
-  }
-  return !thread_stop;
 }
