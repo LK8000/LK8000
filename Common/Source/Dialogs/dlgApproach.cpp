@@ -18,6 +18,7 @@
 #include "NavFunctions.h"
 #include "Waypointparser.h"
 #include "Logger.h"
+#include "Units.h"
 
 extern void ResetTaskWaypoint(int j);
 
@@ -108,6 +109,65 @@ static void OnRunway2Clicked(WndButton* pWnd) {
   RefreshMapApproach();
 }
 
+static void ResetApproachDirectDistanceToDefault() {
+  if (Units::GetDistanceUnit() == unNauticalMiles) {
+    MapApproachDirectDistance_m = Units::FromDistance(3.0);
+  } else {
+    MapApproachDirectDistance_m = 5000.0;
+  }
+}
+
+static void ClampApproachDirectDistanceFromUserUnits() {
+  double u = Units::ToDistance(MapApproachDirectDistance_m);
+  if (Units::GetDistanceUnit() == unNauticalMiles) {
+    u = max(0.5, min(50.0, u));
+  } else {
+    u = max(1.0, min(50.0, u));
+  }
+  MapApproachDirectDistance_m = Units::FromDistance(u);
+}
+
+/// Distance of direct leg outer point (same control as waypoint list: inc/dec arrows, no drag).
+static void OnApproachDistanceData(DataField* Sender, DataField::DataAccessKind_t Mode) {
+  const Units_t du = Units::GetDistanceUnit();
+  const double step_u = (du == unNauticalMiles) ? 0.5 : 1.0;
+
+  switch (Mode) {
+    case DataField::daGet:
+      Sender->SetAsFloat(Units::ToDistance(MapApproachDirectDistance_m));
+      break;
+    case DataField::daPut:
+    case DataField::daChange: {
+      MapApproachDirectDistance_m = Units::FromDistance(Sender->GetAsFloat());
+      ClampApproachDirectDistanceFromUserUnits();
+      MapWindow::SyncApproachZoomFromDirectLeg();
+      Sender->SetAsFloat(Units::ToDistance(MapApproachDirectDistance_m));
+      RefreshMapApproach();
+      break;
+    }
+    case DataField::daInc: {
+      double u = Units::ToDistance(MapApproachDirectDistance_m) + step_u;
+      MapApproachDirectDistance_m = Units::FromDistance(u);
+      ClampApproachDirectDistanceFromUserUnits();
+      MapWindow::SyncApproachZoomFromDirectLeg();
+      Sender->SetAsFloat(Units::ToDistance(MapApproachDirectDistance_m));
+      RefreshMapApproach();
+      break;
+    }
+    case DataField::daDec: {
+      double u = Units::ToDistance(MapApproachDirectDistance_m) - step_u;
+      MapApproachDirectDistance_m = Units::FromDistance(u);
+      ClampApproachDirectDistanceFromUserUnits();
+      MapWindow::SyncApproachZoomFromDirectLeg();
+      Sender->SetAsFloat(Units::ToDistance(MapApproachDirectDistance_m));
+      RefreshMapApproach();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 // Circuit not implemented yet
 // static void OnCircuitLeftClicked(WndButton* pWnd) {
 //   MapApproachCircuitSide = 0;
@@ -165,9 +225,6 @@ static bool ShowApproachApproveDialog() {
   return (res == mrOK);
 }
 
-// Distance from runway centre to "punto di intersezione" (far end of direct approach line), metres
-static constexpr double APPROACH_IF_DISTANCE_M = 5000.0;
-
 /// Create two-point approach task (DIRECT nn + airfield) after user confirms in popup.
 static void OnApproveClicked(WndButton* pWnd) {
   if (!ShowApproachApproveDialog()) return;  // user chose IGNORE!!
@@ -182,8 +239,8 @@ static void OnApproveClicked(WndButton* pWnd) {
   const double rw_recip = AngleLimit360(static_cast<double>(rw_dir) + 180.0);
 
   double if_lat, if_lon;
-  FindLatitudeLongitude(centre.Latitude, centre.Longitude, rw_recip,
-                        APPROACH_IF_DISTANCE_M, &if_lat, &if_lon);
+  const double leg_m = max(100.0, MapApproachDirectDistance_m);
+  FindLatitudeLongitude(centre.Latitude, centre.Longitude, rw_recip, leg_m, &if_lat, &if_lon);
 
   WAYPOINT if_wp = {};
   if_wp.Latitude = if_lat;
@@ -220,6 +277,7 @@ static CallBackTableEntry_t CallBackTable[] = {
   CallbackEntry(OnRunway2Clicked),
   // CallbackEntry(OnCircuitLeftClicked),
   // CallbackEntry(OnCircuitRightClicked),
+  CallbackEntry(OnApproachDistanceData),
   CallbackEntry(OnApproveClicked),
   EndCallbackEntry()
 };
@@ -253,6 +311,13 @@ void dlgApproach(int waypoint_index) {
 
   MapApproachEnabled = true;
   MapApproachWaypoint = waypoint_index;
+  ResetApproachDirectDistanceToDefault();
+  MapWindow::SyncApproachZoomFromDirectLeg();
+  WndProperty* prpDist = wf->FindByName<WndProperty>(TEXT("prpApproachDistance"));
+  if (prpDist && prpDist->GetDataField()) {
+    prpDist->GetDataField()->SetUnits(Units::GetDistanceName());
+    prpDist->RefreshDisplay();
+  }
 
   if (ScreenLandscape) {
     /* Vertical strip: same geometry as Target landscape — full client height, top aligned to map

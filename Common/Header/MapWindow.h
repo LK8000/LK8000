@@ -791,6 +791,8 @@ private:
 
   static void SetTargetPan(bool dopan, int task_index, unsigned dlgSize = 0);
   static void SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize = 0);
+  /// Set approach pan zoom span from MapApproachDirectDistance_m.
+  static void SyncApproachZoomFromDirectLeg();
 
   static void SetPanTaskEdit(unsigned TskPoint);
 

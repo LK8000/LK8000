@@ -287,7 +287,7 @@ void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize
     if (ValidWayPointFast(waypoint_index)) {
       PanLongitude = WayPointList[waypoint_index].Longitude;
       PanLatitude = WayPointList[waypoint_index].Latitude;
-      ApproachZoomDistance = 8e3;  // ~8 km to fit circuit
+      ApproachZoomDistance = max(8000.0, MapApproachDirectDistance_m * 1.5);
     }
   } else if (!do_pan && mode.Is(Mode::MODE_APPROACH_PAN)) {
     PanLongitude = old_longitude;
@@ -298,6 +298,10 @@ void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize
   if (do_pan) {
     MapWindow::RefreshMap();
   }
+}
+
+void MapWindow::SyncApproachZoomFromDirectLeg() {
+  ApproachZoomDistance = max(8000.0, MapApproachDirectDistance_m * 1.5);
 }
 
 void MapWindow::SetPanTaskEdit(unsigned TskPoint) {

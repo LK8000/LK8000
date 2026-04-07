@@ -202,6 +202,7 @@ GEXTERN int   MapApproachWaypoint;
 GEXTERN int   MapApproachRunwayDir;
 GEXTERN short MapApproachMode;
 GEXTERN short MapApproachCircuitSide;
+GEXTERN double MapApproachDirectDistance_m;
 
 // Overlay config
 GEXTERN short Overlay_TopLeft;

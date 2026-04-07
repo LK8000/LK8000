@@ -13,10 +13,6 @@
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
 
-namespace {
-constexpr double DIRECT_5KM_M = 5000.0;
-}
-
 void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
   double startLat = DrawInfo.Latitude;
@@ -24,7 +20,8 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
   double targetLat;
   double targetLon;
 
-  // Approach: track target depends on mode. Direct = 5 km point, Circuit = waypoint centre.
+  // Approach: track target depends on mode. Direct = outer point of direct leg (user distance),
+  // Circuit = waypoint centre.
   if (mode.Is(Mode::MODE_APPROACH_PAN) && MapApproachEnabled && MapApproachWaypoint >= 0 &&
       ValidWayPointFast(MapApproachWaypoint) && WayPointCalc[MapApproachWaypoint].IsLandable) {
     double wlat, wlon;
@@ -40,8 +37,9 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
     const double rw_recip = AngleLimit360(static_cast<double>(rw_dir) + 180.0);
 
     if (MapApproachMode == 0) {
-      // Direct: bearing line goes to the 5 km point (start of direct leg), not waypoint centre
-      FindLatitudeLongitude(wlat, wlon, rw_recip, DIRECT_5KM_M, &targetLat, &targetLon);
+      // Direct: bearing line goes to the outer direct point (start of direct leg), not waypoint centre
+      const double leg_m = max(100.0, MapApproachDirectDistance_m);
+      FindLatitudeLongitude(wlat, wlon, rw_recip, leg_m, &targetLat, &targetLon);
       DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
       return;
     }

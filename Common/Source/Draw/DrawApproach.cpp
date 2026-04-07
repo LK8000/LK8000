@@ -15,9 +15,6 @@
 
 namespace {
 
-// Direct: start point at 5 km from runway center on extended centerline
-constexpr double DIRECT_5KM_M = 5000.0;
-
 // VFR circuit: downwind at 30 s flight from runway center (~800 m at 50 kt)
 constexpr double DOWNWIND_OFFSET_M = 800.0;   // ~30 s at 50 kt
 // Turn from downwind to base at 45° radial from threshold: along downwind = offset
@@ -26,7 +23,8 @@ constexpr double BASE_LEN_M = 1500.0;         // base leg to final
 
 } // namespace
 
-/// Draw approach path overlay on map: extended runway centerline from 5 km to runway centre.
+/// Draw approach path overlay on map: extended runway centerline from the configured direct leg
+/// length (MapApproachDirectDistance_m) to runway centre.
 void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
   if (!MapApproachEnabled) {
@@ -79,7 +77,8 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
   // Direct: only when Direct is selected (MapApproachMode == 0) and runway is selected.
   if (runway_selected && MapApproachMode == 0) {
     double start_lat, start_lon;
-    FindLatitudeLongitude(clat, clon, rw_recip, DIRECT_5KM_M, &start_lat, &start_lon);
+    const double leg_m = max(100.0, MapApproachDirectDistance_m);
+    FindLatitudeLongitude(clat, clon, rw_recip, leg_m, &start_lat, &start_lon);
     drawSegment(start_lat, start_lon, clat, clon);
   }
 
