@@ -163,11 +163,7 @@ static  FAI_Sector TaskFAISector[2*MAXTASKPOINTS];
 		  x2 = (lon2-lon_c)*fastcosine(lat2);
 		  y2 = (lat2-lat_c);
 
-#ifdef HAVE_HATCHED_BRUSH
-		  Surface.SelectObject(MapWindow::GetAirspaceBrushByClass(AATASK));
-#else
-                  Surface.SelectObject(LKBrush_Yellow);
-#endif
+		  Surface.SelectObject(LKBrush_Yellow);
 		  Surface.SelectObject(LK_WHITE_PEN);
 		  if (Task[i].AATType == sector_type_t::SECTOR)
 		  {

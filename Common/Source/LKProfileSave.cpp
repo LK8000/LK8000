@@ -267,15 +267,9 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryWindCalcSpeed, WindCalcSpeed * 1000); // m/s x1000
   write_settings(szRegistryWindCalcTime, WindCalcTime);
 
-  for (int i = 0; i < AIRSPACECLASSCOUNT; i++) {
-    write_settings(szRegistryAirspaceMode[i], MapWindow::aAirspaceMode[i].to_unsigned());
-    write_settings(szRegistryColour[i], MapWindow::iAirspaceColour[i]);
-#ifdef HAVE_HATCHED_BRUSH
-    write_settings(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);
-#endif
-  }
-
   write_settings(szRegistryUseWindRose, UseWindRose);
+
+  MapWindow::AirspaceModeSaveSettings(write_settings);
 
   //
   // Multimaps added 121003

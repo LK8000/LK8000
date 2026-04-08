@@ -18,16 +18,24 @@ public:
 protected:
   void DrawItem(LKSurface& Surface, const PixelRect& DrawRect, size_t ItemIndex) const override {
     Surface.SelectObject(LK_BLACK_PEN);
-    Surface.SelectObject(MapWindow::GetAirspaceSldBrush(ItemIndex));  // this is the solid brush
-
-    Surface.SetBkColor(RGB_WHITE);
-    Surface.SetTextColor(MapWindow::GetAirspaceColour(ItemIndex));
-
-    Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
+    if (ItemIndex == 0) {
+      Surface.SetBackgroundTransparent();
+      Surface.SelectObject(LKBrush_White);
+      Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
+      Surface.SetTextColor(RGB_BLACK);
+      RECT rc = DrawRect;
+      Surface.DrawText(MsgToken<1921>(), &rc, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
+    }
+    else {
+      auto color = MapWindow::AirspaceColor(ItemIndex -1);
+      auto brush = MapWindow::AirspaceBrush(color);
+      Surface.SelectObject(brush);
+      Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
+    }
   }
 
   int GetItemCount() const override {
-    return NUMAIRSPACECOLORS;
+    return NUMAIRSPACECOLORS + 1;
   }
 
   const TCHAR* GetTitle() const override {

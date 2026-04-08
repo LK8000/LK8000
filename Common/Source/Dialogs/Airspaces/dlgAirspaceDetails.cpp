@@ -170,10 +170,10 @@ void dlgAirspaceDetails::SetValues() {
   wp = _pForm->FindByName<WndProperty>(TEXT("prpType"));
   if (wp) {
     if (_AirspaceCopy.Flyzone()) {
-      lk::snprintf(buffer, TEXT("%s %s"), _AirspaceCopy.TypeName(), TEXT("FLY"));
+      lk::snprintf(buffer, TEXT("%s %s"), _AirspaceCopy.TypeClassName().c_str(), TEXT("FLY"));
     }
     else {
-      lk::snprintf(buffer, TEXT("%s %s"), TEXT("NOFLY"), _AirspaceCopy.TypeName());
+      lk::snprintf(buffer, TEXT("%s %s"), TEXT("NOFLY"), _AirspaceCopy.TypeClassName().c_str());
     }
     wp->SetText(buffer);
     wp->RefreshDisplay();

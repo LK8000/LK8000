@@ -14,6 +14,10 @@
 #include <functional>
 #include <utils/stl_utils.h>
 
+#ifdef HAVE_HATCHED_BRUSH
+#include "Bitmaps.h"
+#endif
+
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Scope.hpp"
 #include <memory>
@@ -35,26 +39,87 @@ MapWindow::EAirspaceFillType MapWindow::AirspaceFillType = MapWindow::asp_fill_a
 //static
 BYTE MapWindow::AirspaceOpacity = 30;
 
-  // solid brushes for airspace drawing (initialized in InitAirSpaceSldBrushes())
-//static
-LKBrush MapWindow::hAirSpaceSldBrushes[NUMAIRSPACECOLORS];
+Mutex MapWindow::AirspaceMutex;
+std::map<MapWindow::ColorIndex, LKBrush> MapWindow::AirspaceBrushes;
+std::map<MapWindow::ColorIndex, LKPen> MapWindow::AirspacePens;
+std::map<MapWindow::ColorIndex, LKPen> MapWindow::AirspaceBigPens;
 
-// initialize solid color brushes for airspace drawing (initializes hAirSpaceSldBrushes[])
-//static
-void MapWindow::InitAirSpaceSldBrushes(const LKColor (&colours)[NUMAIRSPACECOLORS]) {
-#ifdef ENABLE_OPENGL
-    const int8_t alpha = 0xFF * AirspaceOpacity/100;
+void MapWindow::SetAirspaceColor(Airspace::Type type,
+                                 std::optional<RGB8Color> color) {
+  ScopeLock lock(AirspaceMutex);
+  aAirspaceMode.Color(type, std::move(color));
+  AirspaceBrushes.clear();
+  AirspacePens.clear();
+  AirspaceBigPens.clear();
+#ifdef HAVE_HATCHED_BRUSH
+  AirspacePatternBrushes.clear();
 #endif
-  // initialize solid color brushes for airspace drawing
-  for (int i = 0; i < NUMAIRSPACECOLORS; i++) {
-#ifdef ENABLE_OPENGL
-    hAirSpaceSldBrushes[i].Create(colours[i].WithAlpha(alpha));
-#else
-    hAirSpaceSldBrushes[i].Create(colours[i]);
-#endif
+}
+
+#ifdef HAVE_HATCHED_BRUSH
+
+std::unordered_map<size_t, LKBrush> MapWindow::AirspacePatternBrushes;
+
+void MapWindow::SetAirspaceModePattern(Airspace::Type type,
+                                       std::optional<int> pattern) {
+  ScopeLock lock(AirspaceMutex);
+  aAirspaceMode.Pattern(type, std::move(pattern));
+  AirspacePatternBrushes.clear();
+}
+
+BrushReference MapWindow::AirspaceBrush(size_t idx) {
+  ScopeLock lock(AirspaceMutex);
+  auto [it, inserted] = AirspacePatternBrushes.try_emplace(idx);
+  if (inserted) {
+    it->second.Create(hAirspaceBitmap[idx % std::size(hAirspaceBitmap)]);
   }
-} // InitAirSpaceSldBrushes()
+  return it->second;
+}
 
+#endif
+
+void MapWindow::AirspaceClear() {
+  ScopeLock lock(AirspaceMutex);
+  AirspaceBrushes.clear();
+  AirspaceBigPens.clear();
+  AirspacePens.clear();
+
+#ifdef HAVE_HATCHED_BRUSH
+  AirspacePatternBrushes.clear();
+#endif
+}
+
+BrushReference MapWindow::AirspaceBrush(LKColor color) {
+#ifndef USE_GDI
+  const uint8_t alpha = 0xFF * AirspaceOpacity / 100;
+  color = color.WithAlpha(alpha);
+#endif
+  ScopeLock lock(AirspaceMutex);
+  auto [it, inserted] = AirspaceBrushes.try_emplace({color});
+  if (inserted) {
+    it->second.Create(color);
+  }
+  return it->second;
+}
+
+PenReference MapWindow::AirspaceBigPen(LKColor color) {
+  ScopeLock lock(AirspaceMutex);
+  auto [it, inserted] = AirspaceBigPens.try_emplace(color);
+  if (inserted) {
+    it->second.Create(PEN_SOLID, NIBLSCALE(3), color.ChangeBrightness(0.75));
+  }
+
+  return it->second;
+}
+
+PenReference MapWindow::AirspacePen(LKColor color) {
+  ScopeLock lock(AirspaceMutex);
+  auto [it, inserted] = AirspacePens.try_emplace(color);
+  if (inserted) {
+    it->second.Create(PEN_SOLID, NIBLSCALE(1), color);
+  }
+  return it->second;
+}
 
 #ifndef ENABLE_OPENGL
 // draw airspace using alpha blending
@@ -89,7 +154,6 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
   // alpha blending of such areas results in the same pixels as origin pixels
   // in destination
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
-  int airspace_type;
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
   #if ASPOUTLINE
@@ -118,13 +182,12 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
       // not the color of the bigger airspace above this small one.
       for (auto itr = airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
         if ((*itr)->DrawStyle() == adsFilled) {
-          airspace_type = (*itr)->Type();
           if (!found) {
             found = true;
             ClearTptAirSpace(Surface, rc);
           }
           // set filling brush
-          (*itr)->FillPolygon(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
+          (*itr)->FillPolygon(hdcbuffer, false);
           (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
         }
       }  // for
@@ -133,14 +196,13 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
       // Draw in direct order!
       for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle() == adsFilled) {
-          airspace_type = (*it)->Type();
           if (!found) {
             found = true;
             ClearTptAirSpace(Surface, rc);
           }
           TempSurface.SelectObject(LK_NULL_PEN);
           // set filling brush
-          (*it)->FillPolygon(TempSurface, GetAirSpaceSldBrushByClass(airspace_type));
+          (*it)->FillPolygon(TempSurface, false);
         }
       }  // for
     }  // else borders_only
@@ -172,7 +234,6 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
     WithLock(CAirspaceManager::Instance().MutexRef(), [&] {
       for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
-          airspace_type = (*it)->Type();
 #if ASPOUTLINE
           if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected())) {
 #else
@@ -184,7 +245,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
             Surface.SelectObject(LKPen_Grey_N2);
           }
           else {
-            Surface.SelectObject(hAirspacePens[airspace_type]);
+            Surface.SelectObject((*it)->TypePen());
           }
 #ifndef AIRSPACE_BORDER
           (*it)->Draw(hdc, rc, false);
@@ -236,8 +297,6 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
       continue;
     }
 
-    const int airspace_type = pAsp->Type();
-
     if (pAsp->DrawStyle() == adsFilled) {
       std::unique_ptr<const GLEnable<GL_STENCIL_TEST>> stencil;
       if (borders_only) {
@@ -258,7 +317,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
       }
 
-      pAsp->FillPolygon(Surface, GetAirSpaceSldBrushByClass(airspace_type));
+      pAsp->FillPolygon(Surface, false);
 
       if (borders_only) {
         // PASS 3: Clear stencil on border area (set to 0)
@@ -289,7 +348,7 @@ void MapWindow::DrawTptAirSpace(LKSurface& Surface, const RECT& rc) {
       pAsp->DrawOutline(Surface, LKPen_Grey_N2);
     }
     else {
-      pAsp->DrawOutline(Surface, hAirspacePens[airspace_type]);
+      pAsp->DrawOutline(Surface, pAsp->TypePen());
     }
   }  // for
 

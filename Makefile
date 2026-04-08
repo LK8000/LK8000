@@ -1307,6 +1307,7 @@ SRC_FILES :=\
 	$(SRC)/lk8000.cpp\
 	$(SRC)/Airspace/vertical_position.cpp	\
 	$(SRC)/Airspace/vertical_bound.cpp	\
+	$(SRC)/Airspace/airspace_config.cpp	\
 	$(SRC)/Airspace/LKAirspace.cpp	\
 	$(SRC)/Airspace/Sonar.cpp	\
 	$(SRC)/Airspace/Renderer/AirspaceRenderer.cpp \

@@ -629,13 +629,7 @@ void LKParseProfileString(const char *sname, const char *svalue) {
   }
   if (settings::read(sname, svalue, szRegistryWindCalcTime, WindCalcTime)) return;
 
-  for (int i = 0; i < AIRSPACECLASSCOUNT; i++) {
-    if (settings::read(sname, svalue, szRegistryAirspaceMode[i], MapWindow::aAirspaceMode[i])) return;
-    if (settings::read(sname, svalue, szRegistryColour[i], MapWindow::iAirspaceColour[i])) return;
-#ifdef HAVE_HATCHED_BRUSH
-    if (settings::read(sname, svalue, szRegistryBrush[i], MapWindow::iAirspaceBrush[i])) return;
-#endif
-  }
+  if(MapWindow::AirspaceModeLoadSettings(sname,svalue)) return;
 
   if (settings::read(sname, svalue, szRegistryUseWindRose, UseWindRose)) return;
 

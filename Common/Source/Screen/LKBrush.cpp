@@ -33,6 +33,11 @@ LKBrush::LKBrush(LKBrush&& Brush) {
 const LKBrush  LK_WHITE_BRUSH(COLOR_WHITE);
 const LKBrush  LK_BLACK_BRUSH(COLOR_BLACK);
 const LKBrush  LK_HOLLOW_BRUSH;
+
+LKBrush::LKBrush(LKBrush&& Brush) {
+    color = std::exchange(Brush.color, {});
+}
+
 #endif
 
 

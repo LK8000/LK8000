@@ -108,20 +108,11 @@ std::array<RasterPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline;
 std::array<RasterPoint, NUMTERRAINSWEEPS+1> MapWindow::Groundline2;
 #endif
 
-// 17 is number of airspace types
-int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10,1,3};
-airspace_mode_array MapWindow::aAirspaceMode = {};
-#ifdef HAVE_HATCHED_BRUSH
-int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3,3,3};
-#endif
+airspace_config MapWindow::aAirspaceMode = {};
 
-LKPen MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
-LKPen MapWindow::hBigAirspacePens[AIRSPACECLASSCOUNT];
 LKPen MapWindow::hAirspaceBorderPen;
 
 BrushReference MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
-
-LKBrush  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
 
 PenReference MapWindow::hpAircraft;
 LKPen MapWindow::hpWindThick;

@@ -43,11 +43,11 @@ void MapWindow::ClearAirSpace(bool fill, const RECT& rc) {
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
-  int airspace_type;
   bool found = false;
-  const bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
+  const auto fill_type = GetAirSpaceFillType();
+  const bool borders_only = (fill_type == asp_fill_patterns_borders);
 
-  const bool outlined_only = (GetAirSpaceFillType() == asp_fill_border_only);
+  const bool outlined_only = (fill_type == asp_fill_border_only);
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
 
@@ -55,7 +55,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
   int nDC2 = hdcMask.SaveState();
   int nDC3 = TempSurface.SaveState();
 
-  if (GetAirSpaceFillType() != asp_fill_border_only) {
+  if (fill_type != asp_fill_border_only) {
     ScopeLock guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
       // Draw in reverse order!
@@ -64,7 +64,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
       // not the color of the bigger airspace above this small one.
       for (auto itr = airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
         if ((*itr)->DrawStyle() == adsFilled) {
-          airspace_type = (*itr)->Type();
           if (!found) {
             ClearAirSpace(true, rc);
             found = true;
@@ -72,7 +71,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
           // this color is used as the black bit
           hdcbuffer.SetTextColor((*itr)->TypeColor());
           // brush, can be solid or a 1bpp bitmap
-          (*itr)->FillPolygon(hdcbuffer, (*itr)->TypeBrush());
+          (*itr)->FillPolygon(hdcbuffer, true);
           (*itr)->DrawOutline(hdcMask, hAirspaceBorderPen);
         }
       }  // for
@@ -80,7 +79,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
     else {
       for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle() == adsFilled) {
-          airspace_type = (*it)->Type();
           if (!found) {
             ClearAirSpace(true, rc);
             found = true;
@@ -90,7 +88,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
           TempSurface.SetTextColor( (*it)->TypeColor());
           // get brush, can be solid or a 1bpp bitmap
           // brush, can be solid or a 1bpp bitmap
-          (*it)->FillPolygon(TempSurface, (*it)->TypeBrush());
+          (*it)->FillPolygon(TempSurface, true);
         }
       }  // for
     }
@@ -111,7 +109,6 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
   WithLock(CAirspaceManager::Instance().MutexRef(), [&] {
     for (auto it = airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
       if ((*it)->DrawStyle()) {
-        airspace_type = (*it)->Type();
         if (!found) {
           ClearAirSpace(true, rc);
           found = true;
@@ -124,7 +121,7 @@ void MapWindow::DrawAirSpacePattern(LKSurface& Surface, const RECT& rc) {
           (*it)->DrawOutline(TempSurface, LKPen_Grey_N1);
         }
         else {
-          (*it)->DrawOutline(TempSurface, hAirspacePens[airspace_type]);
+          (*it)->DrawOutline(TempSurface, (*it)->TypePen());
         }
       }
     }  // for
@@ -149,11 +146,13 @@ void MapWindow::DrawAirSpace(LKSurface& Surface, const RECT& rc, const ScreenPro
 
   CalculateScreenPositionsAirspace(rc, _Proj);
 
-  if ((GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders)) {
+  const auto fill_type = GetAirSpaceFillType();
+
+  if ((fill_type == asp_fill_ablend_full) || (fill_type == asp_fill_ablend_borders)) {
     DrawTptAirSpace(Surface, rc);
   }
   else {
-    if (GetAirSpaceFillType() == asp_fill_border_only) {
+    if (fill_type == asp_fill_border_only) {
       DrawAirSpaceBorders(Surface, rc);  // full screen, to hide clipping effect on low border
     }
     else {

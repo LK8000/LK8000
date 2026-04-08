@@ -390,7 +390,7 @@ bool dlgSelectObject::FormKeyDown(WndForm* pForm, unsigned KeyCode) {
     if (wp) {
       DataField* dfe = wp->GetDataField();
       if (dfe) {
-        dfe->Set(CAirspaceManager::GetAirspaceTypeText(idx));
+        dfe->Set(GetTypeLabel(idx));
       }
       wp->RefreshDisplay();
     }

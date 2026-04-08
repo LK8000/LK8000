@@ -21,11 +21,19 @@ protected:
   void DrawItem(LKSurface& Surface, const PixelRect& DrawRect, size_t ItemIndex) const override {
     Surface.SelectObject(LK_BLACK_PEN);
     Surface.SelectObject(LKBrush_White);
-    Surface.SetBkColor(RGB_WHITE);
     Surface.SetTextColor(RGB_BLACK);
-    Surface.SelectObject(MapWindow::GetAirspaceBrush(ItemIndex));
+    if (ItemIndex == 0) {
+      Surface.SetBackgroundTransparent();
+      Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
+      RECT rc = DrawRect;
+      Surface.DrawText(MsgToken<1921>(), &rc, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
+    }
+    else {
+      Surface.SetBkColor(RGB_WHITE);
+      Surface.SelectObject(MapWindow::AirspaceBrush(ItemIndex - 1));
 
-    Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
+      Surface.Rectangle(DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom);
+    }
   }
 
   int GetItemCount() const override {

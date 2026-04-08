@@ -29,7 +29,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc) {
         (*it)->DrawOutline(Surface, LKPen_Grey_N2);
       }
       else {
-        (*it)->DrawOutline(Surface, hBigAirspacePens[(*it)->Type()]);
+        (*it)->DrawOutline(Surface, (*it)->TypeBigPen());
       }
     }
   }  // for
@@ -46,7 +46,7 @@ void MapWindow::DrawAirSpaceBorders(LKSurface& Surface, const RECT& rc) {
           pAsp->DrawOutline(Surface, LK_BLACK_PEN);
         }
         else {
-          pAsp->DrawOutline(Surface, hAirspacePens[pAsp->Type()]);
+          pAsp->DrawOutline(Surface, pAsp->TypePen());
         }
       }
     }
