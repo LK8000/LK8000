@@ -156,7 +156,7 @@ public:
 
   void WaitUntilNotRunning() {
     while (running)
-      cond.Wait(mutex);
+      cond.wait(mutex);
   }
 
   void Wait(int timeout_ms=-1);

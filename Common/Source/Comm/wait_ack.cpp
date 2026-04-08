@@ -55,14 +55,14 @@ bool wait_ack::check(const char* str) {
   });
 
   if (signal) {
-    condition.Broadcast();
+    condition.notify_all();
   }
   return signal;
 }
 
 wait_ack_result wait_ack::wait(unsigned timeout_ms) {
   if (result == wait_ack_result::timeout) {
-    condition.Wait(mutex, timeout_ms);
+    condition.wait_for(mutex, std::chrono::milliseconds(timeout_ms));
   }
   return std::exchange(result, wait_ack_result::timeout);
 }

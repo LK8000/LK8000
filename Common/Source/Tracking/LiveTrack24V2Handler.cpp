@@ -21,6 +21,9 @@
 #include <random>
 #include <sstream>
 #include <format>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 extern NMEA_INFO GPS_INFO;
 extern Mutex CritSec_FlightData;
@@ -325,7 +328,7 @@ LiveTrack24V2Handler::~LiveTrack24V2Handler() {
     WithLock(m_tracker_mutex, [&]() {
       m_run_tracker = false;
     });
-    m_tracker_cond.Signal();
+    m_tracker_cond.notify_one();
     m_trackerThread->Join();
   }
 
@@ -333,7 +336,7 @@ LiveTrack24V2Handler::~LiveTrack24V2Handler() {
     WithLock(m_radar_mutex, [&]() {
       m_run_radar = false;
     });
-    m_radar_cond.Signal();
+    m_radar_cond.notify_one();
     m_radarThread->Join();
   }
   StartupStore(_T(". LiveTracker V2 closed."));
@@ -371,7 +374,7 @@ void LiveTrack24V2Handler::Update(const NMEA_INFO& Basic,
     }
     m_points.push_back(newpoint);
   });
-  m_tracker_cond.Signal();
+  m_tracker_cond.notify_one();
 }
 
 json LiveTrack24V2Handler::callLiveTrack24(http_session& http,
@@ -662,7 +665,7 @@ bool LiveTrack24V2Handler::TrackerThread::WaitForPoint(
     livetracker_point_t& sendpoint) {
   const std::lock_guard<Mutex> lock(m_handler.m_tracker_mutex);
   while (m_handler.m_run_tracker && m_handler.m_points.empty()) {
-    m_handler.m_tracker_cond.Wait(m_handler.m_tracker_mutex, 5000);
+    m_handler.m_tracker_cond.wait(m_handler.m_tracker_mutex);
   }
 
   if (!m_handler.m_run_tracker) {
@@ -678,7 +681,8 @@ bool LiveTrack24V2Handler::TrackerThread::WaitForRetry(unsigned timeout_ms) cons
   if (!m_handler.m_run_tracker) {
     return false;
   }
-  m_handler.m_tracker_cond.Wait(m_handler.m_tracker_mutex, timeout_ms);
+  std::chrono::milliseconds timeout(timeout_ms);
+  m_handler.m_tracker_cond.wait_for(m_handler.m_tracker_mutex, timeout);
   return m_handler.m_run_tracker;
 }
 
@@ -749,7 +753,8 @@ void LiveTrack24V2Handler::RadarThread::Run() {
   auto WaitForRadarStop = [&]() {
     const std::lock_guard<Mutex> lock(m_handler.m_radar_mutex);
     while (m_handler.m_run_radar) {
-      if (!m_handler.m_radar_cond.Wait(m_handler.m_radar_mutex, 5000)) {
+      auto result = m_handler.m_radar_cond.wait_for(m_handler.m_radar_mutex, 5s);
+      if (result == lk::cv_status::timeout) {
         return true;  // timeout
       }
     }

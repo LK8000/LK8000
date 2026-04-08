@@ -112,7 +112,7 @@ public:
     void SignalNewData() {
         const std::lock_guard<Mutex> lock(mtx);
         new_data = true;
-        cond.Signal();
+        cond.notify_one();
     }
 
     bool CheckLastRun(unsigned duration) {
@@ -123,7 +123,7 @@ public:
     void RequestStop() {
         const std::lock_guard<Mutex> lock(mtx);
         run = false;
-        cond.Signal();
+        cond.notify_one();
     }
 
 private:
@@ -142,7 +142,7 @@ private:
     }
 
     bool Wait() {
-        const std::lock_guard<Mutex> lock(mtx);
+        std::unique_lock<Mutex> lock(mtx);
 
         /*
          * updated here to avoid useless locking overhead :
@@ -153,7 +153,7 @@ private:
         last_run.Update();
 
         while (run && !new_data) {
-            cond.Wait(mtx);
+            cond.wait(lock);
         }
         new_data = false;
         return run;

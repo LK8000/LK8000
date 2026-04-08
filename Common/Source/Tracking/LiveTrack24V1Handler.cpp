@@ -58,7 +58,7 @@ LiveTrack24V1Handler::~LiveTrack24V1Handler() {
     WithLock(m_mutex, [&]() {
       m_run = false;
     });
-    m_cond.Broadcast();
+    m_cond.notify_all();
     Join();
   }
   StartupStore(_T(". LiveTracker V1 closed."));
@@ -95,7 +95,7 @@ void LiveTrack24V1Handler::Update(const NMEA_INFO& Basic,
     }
     m_points.emplace_back(newpoint);
   });
-  m_cond.Signal();
+  m_cond.notify_one();
 }
 
 bool LiveTrack24V1Handler::InterruptibleSleep(int msecs) {
@@ -104,7 +104,7 @@ bool LiveTrack24V1Handler::InterruptibleSleep(int msecs) {
       return false;
     }
 
-    m_cond.Wait(m_mutex, msecs);
+    m_cond.wait_for(m_mutex, std::chrono::milliseconds(msecs));
     return m_run;
   });
 }

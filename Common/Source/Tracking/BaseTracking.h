@@ -36,7 +36,7 @@ class BaseTracking : public Thread, public ITrackingHandler {
     WithLock(queue_mtx, [&]() {
       thread_stop = true;
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
     if (IsDefined()) {
       Join();
     }
@@ -61,14 +61,14 @@ class BaseTracking : public Thread, public ITrackingHandler {
     WithLock(queue_mtx, [&]() {
       queue = std::move(item);
     });
-    queue_cv.Broadcast();
+    queue_cv.notify_all();
   }
 
  private:
   bool Wait() {
     const std::lock_guard<Mutex> lock(queue_mtx);
     while (!thread_stop && !queue.has_value()) {
-      queue_cv.Wait(queue_mtx);
+      queue_cv.wait(queue_mtx);
     }
     return !thread_stop;
   }

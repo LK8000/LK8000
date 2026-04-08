@@ -142,7 +142,7 @@ BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_I
   for (int i = 0; i < len; i++) {
     buffered_data.push(String[i]);
   }
-  cond.Broadcast();
+  cond.notify_all();
 
   return  TRUE;
 }
@@ -172,10 +172,10 @@ bool SetBinaryModeFlag(bool bBinMode) {
 }
 
 uint8_t RecChar(DeviceDescriptor_t* d, uint8_t& Byte, uint16_t Timeout) {
-  const std::lock_guard<Mutex> lock(mutex);
-
-  while(buffered_data.empty()) {
-    if(!cond.Wait(mutex, Timeout)) {
+  std::unique_lock<Mutex> lock(mutex);
+  while (buffered_data.empty()) {
+    lk::cv_status status = cond.wait_for(lock, std::chrono::milliseconds(Timeout));
+    if (status == lk::cv_status::timeout) {
       return REC_TIMEOUT_ERROR;
     }
   }

@@ -141,9 +141,9 @@ TEST_CASE("Cond: wait_for times out when not signalled") {
   Cond cond;
   mtx.lock();
 
-  auto status = cond.Wait(mtx, 500U);
+  auto status = cond.wait_for(mtx, 50ms);
 
-  CHECK(status == false);
+  CHECK(status == lk::cv_status::timeout);
   mtx.unlock();
 }
 
@@ -156,18 +156,18 @@ TEST_CASE("Cond: wait_for returns no_timeout when notified via notify_one") {
     std::this_thread::sleep_for(20ms);
     mtx.lock();
     ready = true;
-    cond.Signal();
+    cond.notify_one();
     mtx.unlock();
   });
 
   mtx.lock();
-  auto status = cond.Wait(mtx, 500000U);
+  auto status = cond.wait_for(mtx, 500ms);
   bool was_ready = ready.load();
   mtx.unlock();
 
   t.join();
 
-  CHECK(status == true);
+  CHECK(status == lk::cv_status::no_timeout);
   CHECK(was_ready);
 }
 
@@ -179,7 +179,7 @@ TEST_CASE("Cond: wait_for returns no_timeout when notified via notify_all") {
 
   auto waiter = [&]() {
     mtx.lock();
-    cond.Wait(mtx, 500000U);
+    cond.wait_for(mtx, 500ms);
     ++woken;
     mtx.unlock();
   };
@@ -190,13 +190,50 @@ TEST_CASE("Cond: wait_for returns no_timeout when notified via notify_all") {
   }
 
   std::this_thread::sleep_for(30ms);  // let all waiters block
-  cond.Broadcast();
+  cond.notify_all();
 
   for (auto& t : threads) {
     t.join();
   }
 
   CHECK(woken == num_waiters);
+}
+
+TEST_CASE("Cond: wait_until times out when deadline is in the past") {
+  Mutex mtx;
+  Cond cond;
+  mtx.lock();
+
+  auto past = std::chrono::steady_clock::now() - 100ms;
+  auto status = cond.wait_until(mtx, past);
+
+  CHECK(status == lk::cv_status::timeout);
+  mtx.unlock();
+}
+
+TEST_CASE("Cond: wait_until returns no_timeout when notified before deadline") {
+  Mutex mtx;
+  Cond cond;
+  std::atomic<bool> signalled{false};
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    signalled = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  auto deadline = std::chrono::steady_clock::now() + 500ms;
+  auto status = cond.wait_until(mtx, deadline);
+  bool was_signalled = signalled.load();
+  mtx.unlock();
+
+  t.join();
+
+  CHECK(status == lk::cv_status::no_timeout);
+  CHECK(was_signalled);
 }
 
 TEST_CASE("Cond: producer-consumer basic synchronisation") {
@@ -209,7 +246,7 @@ TEST_CASE("Cond: producer-consumer basic synchronisation") {
     std::this_thread::sleep_for(20ms);
     mtx.lock();
     value = 42;
-    cond.Signal();
+    cond.notify_one();
     mtx.unlock();
   });
 
@@ -217,7 +254,7 @@ TEST_CASE("Cond: producer-consumer basic synchronisation") {
     mtx.lock();
     // predicate loop guards against spurious wakeups
     while (value == 0) {
-      if (cond.Wait(mtx, 500000U) == false) {
+      if (cond.wait_for(mtx, 500ms) == lk::cv_status::timeout) {
         break;
       }
     }
@@ -229,6 +266,105 @@ TEST_CASE("Cond: producer-consumer basic synchronisation") {
   consumer.join();
 
   CHECK(consumed);
+}
+
+TEST_CASE("Cond: wait with predicate") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    ready = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  cond.wait(mtx, [&]() {
+    return ready;
+  });
+  CHECK(ready);
+  mtx.unlock();
+
+  t.join();
+}
+
+TEST_CASE("Cond: wait_for with predicate returns true when condition met") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    ready = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  bool result = cond.wait_for(mtx, 500ms, [&]() {
+    return ready;
+  });
+  CHECK(result);
+  CHECK(ready);
+  mtx.unlock();
+
+  t.join();
+}
+
+TEST_CASE("Cond: wait_for with predicate returns false on timeout") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  mtx.lock();
+  bool result = cond.wait_for(mtx, 10ms, [&]() {
+    return ready;
+  });
+  CHECK_FALSE(result);
+  mtx.unlock();
+}
+
+TEST_CASE("Cond: wait_until with predicate returns true when condition met") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  std::thread t([&]() {
+    std::this_thread::sleep_for(20ms);
+    mtx.lock();
+    ready = true;
+    cond.notify_one();
+    mtx.unlock();
+  });
+
+  mtx.lock();
+  auto deadline = std::chrono::steady_clock::now() + 500ms;
+  bool result = cond.wait_until(mtx, deadline, [&]() {
+    return ready;
+  });
+  CHECK(result);
+  CHECK(ready);
+  mtx.unlock();
+
+  t.join();
+}
+
+TEST_CASE("Cond: wait_until with predicate returns false on timeout") {
+  Mutex mtx;
+  Cond cond;
+  bool ready = false;
+
+  mtx.lock();
+  auto deadline = std::chrono::steady_clock::now() + 10ms;
+  bool result = cond.wait_until(mtx, deadline, [&]() {
+    return ready;
+  });
+  CHECK_FALSE(result);
+  mtx.unlock();
 }
 
 #endif

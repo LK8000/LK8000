@@ -150,7 +150,7 @@ bool BluetoothSensor::StartRxThread() {
 }
 
 void BluetoothSensor::CancelWaitEvent() {
-  newdata.Broadcast();
+  newdata.notify_all();
 }
 
 bool BluetoothSensor::IsReady() {
@@ -178,7 +178,7 @@ unsigned BluetoothSensor::RxThread() {
       while (running && bridge && data_queue.empty() &&
              observed_state_generation == state_generation) {
         // Wait until data is queued, state changes, or thread is stopped.
-        newdata.Wait(mutex);
+        newdata.wait(mutex);
       }
       if (!running || !bridge) {
         return true;
@@ -212,7 +212,7 @@ unsigned BluetoothSensor::RxThread() {
 void BluetoothSensor::PortStateChanged() {
   const std::lock_guard<Mutex> lock(mutex);
   ++state_generation;
-  newdata.Signal();
+  newdata.notify_one();
 }
 
 void BluetoothSensor::PortError(const char* msg) {
@@ -222,7 +222,7 @@ void BluetoothSensor::PortError(const char* msg) {
 void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) {
   const std::lock_guard<Mutex> lock(mutex);
   data_queue.emplace_back(std::move(service), std::move(characteristic), std::move(data));
-  newdata.Signal();
+  newdata.notify_one();
 }
 
 bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {

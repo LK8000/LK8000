@@ -212,7 +212,7 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len,
   for (int i = 0; i < len; i++) {
     EOSbuffered_data.push((uint8_t)String[i]);
   }
-  EOScond.Broadcast();
+  EOScond.notify_all();
 
   return  true;
 }
@@ -221,13 +221,11 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len,
 
 
 uint8_t EOSRecChar(DeviceDescriptor_t* d, uint8_t *inchar, uint16_t Timeout) {
-  const std::lock_guard<Mutex> lock(EOSmutex);
+  std::unique_lock<Mutex> lock(EOSmutex);
 
   while(EOSbuffered_data.empty()) {
-    Sleep(1);
-
-    if(!EOScond.Wait(EOSmutex, Timeout)) 
-    {
+    lk::cv_status status = EOScond.wait_for(lock, std::chrono::milliseconds(Timeout));
+    if (status == lk::cv_status::timeout) {
       return REC_TIMEOUT_ERROR;
     }
   }
