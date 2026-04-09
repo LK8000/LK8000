@@ -3,8 +3,8 @@
    Released under GNU/GPL License v.2 or later
    See CREDITS.TXT file for authors and copyrights
 
-   Approach dialog: type (Direct/Circuit), runway, circuit side (left/right).
-   Selected button = inverted (dark) style. Draw only when all choices are set.
+   Approach dialog: runway choice (and direct leg length). Mode is always direct until circuit exists.
+   Selected button = inverted (dark) style. Timer keeps runway selection UI in sync if state changes.
 */
 
 #include "externs.h"
@@ -19,10 +19,10 @@
 #include "Waypointparser.h"
 #include "Logger.h"
 #include "Units.h"
+#include "LKLanguage.h"
 
 extern void ResetTaskWaypoint(int j);
 
-static WndForm* wf = nullptr;
 static unsigned dlgSize = 0;
 static int runway_heading_1 = 90;
 static int runway_heading_2 = 270;
@@ -34,41 +34,23 @@ static void RefreshMapApproach() {
   }
 }
 
-/// Re-apply selected (highlighted) state for Direct, runway and circuit buttons.
-static void RefreshApproachButtonStyles() {
-  if (!wf) return;
+/// Re-apply selected (highlighted) state for runway buttons.
+static void RefreshApproachButtonStyles(WndForm* form) {
+  if (!form) return;
 
-  WndButton* btnDirect = wf->FindByName<WndButton>(TEXT("btnDirect"));
-  // Circuit not implemented yet
-  // WndButton* btnCircuit = wf->FindByName<WndButton>(TEXT("btnCircuit"));
-  WndButton* btnRunway1 = wf->FindByName<WndButton>(TEXT("btnRunway1"));
-  WndButton* btnRunway2 = wf->FindByName<WndButton>(TEXT("btnRunway2"));
-  // WndButton* btnCircuitLeft = wf->FindByName<WndButton>(TEXT("btnCircuitLeft"));
-  // WndButton* btnCircuitRight = wf->FindByName<WndButton>(TEXT("btnCircuitRight"));
-
-  if (btnDirect) btnDirect->SetSelected(MapApproachMode == 0);
-  // if (btnCircuit) btnCircuit->SetSelected(MapApproachMode == 1);
+  WndButton* btnRunway1 = form->FindByName<WndButton>(TEXT("btnRunway1"));
+  WndButton* btnRunway2 = form->FindByName<WndButton>(TEXT("btnRunway2"));
 
   const bool rw1 = (MapApproachRunwayDir == runway_heading_1);
   const bool rw2 = (MapApproachRunwayDir == runway_heading_2);
   if (btnRunway1) btnRunway1->SetSelected(rw1);
   if (btnRunway2) btnRunway2->SetSelected(rw2);
-
-  // Circuit not implemented yet
-  // if (btnCircuitLeft) {
-  //   btnCircuitLeft->SetVisible(MapApproachMode == 1);
-  //   btnCircuitLeft->SetSelected(MapApproachCircuitSide == 0);
-  // }
-  // if (btnCircuitRight) {
-  //   btnCircuitRight->SetVisible(MapApproachMode == 1);
-  //   btnCircuitRight->SetSelected(MapApproachCircuitSide == 1);
-  // }
 }
 
-/// Timer callback: refresh approach button selection state.
+/// Timer: keep runway highlight in sync if shared state changes while the dialog is open.
 static bool OnApproachTimerNotify(WndForm* pWnd) {
-  RefreshApproachButtonStyles();
-  return true;  // keep timer active
+  RefreshApproachButtonStyles(pWnd);
+  return true;
 }
 
 /// Close Approach dialog with OK.
@@ -81,31 +63,17 @@ static void OnApproachOKClicked(WndButton* pWnd) {
   }
 }
 
-/// Set approach mode to Direct.
-static void OnDirectClicked(WndButton* pWnd) {
-  MapApproachMode = 0;
-  RefreshApproachButtonStyles();
-  RefreshMapApproach();
-}
-
-// Circuit not implemented yet
-// static void OnCircuitClicked(WndButton* pWnd) {
-//   MapApproachMode = 1;
-//   RefreshApproachButtonStyles();
-//   RefreshMapApproach();
-// }
-
 /// Set selected runway to first heading (e.g. 16).
 static void OnRunway1Clicked(WndButton* pWnd) {
   MapApproachRunwayDir = runway_heading_1;
-  RefreshApproachButtonStyles();
+  if (pWnd) RefreshApproachButtonStyles(pWnd->GetParentWndForm());
   RefreshMapApproach();
 }
 
 /// Set selected runway to second heading (e.g. 34).
 static void OnRunway2Clicked(WndButton* pWnd) {
   MapApproachRunwayDir = runway_heading_2;
-  RefreshApproachButtonStyles();
+  if (pWnd) RefreshApproachButtonStyles(pWnd->GetParentWndForm());
   RefreshMapApproach();
 }
 
@@ -168,18 +136,6 @@ static void OnApproachDistanceData(DataField* Sender, DataField::DataAccessKind_
   }
 }
 
-// Circuit not implemented yet
-// static void OnCircuitLeftClicked(WndButton* pWnd) {
-//   MapApproachCircuitSide = 0;
-//   RefreshApproachButtonStyles();
-//   RefreshMapApproach();
-// }
-// static void OnCircuitRightClicked(WndButton* pWnd) {
-//   MapApproachCircuitSide = 1;
-//   RefreshApproachButtonStyles();
-//   RefreshMapApproach();
-// }
-
 /// Approve popup: confirm creating the approach task and close with OK.
 static void OnApproachApproveConfirmClicked(WndButton* pWnd) {
   if (pWnd) {
@@ -215,11 +171,11 @@ static bool ShowApproachApproveDialog() {
 
   WndProperty* prpMessage = pf->FindByName<WndProperty>(TEXT("prpMessage"));
   if (prpMessage) {
-    prpMessage->SetText(_T("LK8000 creates approach task ignoring traffic and terrain. Pilot situational awareness must be at maximum."));
+    prpMessage->SetText(MsgToken<2520>());
   }
 
   WndButton* btnIgnore = pf->FindByName<WndButton>(TEXT("btnIgnore"));
-  if (btnIgnore) btnIgnore->SetSelected(true);  // highlighted
+  if (btnIgnore) btnIgnore->SetSelected(true);
 
   const int res = pf->ShowModal();
   return (res == mrOK);
@@ -227,13 +183,21 @@ static bool ShowApproachApproveDialog() {
 
 /// Create two-point approach task (DIRECT nn + airfield) after user confirms in popup.
 static void OnApproveClicked(WndButton* pWnd) {
-  if (!ShowApproachApproveDialog()) return;  // user chose IGNORE!!
+  if (!ShowApproachApproveDialog()) return;
   if (!CheckDeclaration()) return;
 
   const int approach_wp = MapApproachWaypoint;
-  if (approach_wp < 0 || !ValidWayPointFast(approach_wp)) return;
+  WAYPOINT centre = {};
+  {
+    LockTaskData();
+    if (approach_wp < 0 || !ValidWayPointFast(approach_wp)) {
+      UnlockTaskData();
+      return;
+    }
+    centre = WayPointList[approach_wp];
+    UnlockTaskData();
+  }
 
-  const WAYPOINT& centre = WayPointList[approach_wp];
   int rw_dir = MapApproachRunwayDir >= 0 ? MapApproachRunwayDir : centre.RunwayDir;
   if (rw_dir < 0) rw_dir = 0;
   const double rw_recip = AngleLimit360(static_cast<double>(rw_dir) + 180.0);
@@ -271,12 +235,8 @@ static void OnApproveClicked(WndButton* pWnd) {
 
 static CallBackTableEntry_t CallBackTable[] = {
   CallbackEntry(OnApproachOKClicked),
-  CallbackEntry(OnDirectClicked),
-  // CallbackEntry(OnCircuitClicked),
   CallbackEntry(OnRunway1Clicked),
   CallbackEntry(OnRunway2Clicked),
-  // CallbackEntry(OnCircuitLeftClicked),
-  // CallbackEntry(OnCircuitRightClicked),
   CallbackEntry(OnApproachDistanceData),
   CallbackEntry(OnApproveClicked),
   EndCallbackEntry()
@@ -304,11 +264,13 @@ void dlgApproach(int waypoint_index) {
     MapApproachRunwayDir = runway_heading_1;
   }
 
-  wf = dlgLoadFromXML(CallBackTable, ScreenLandscape ? IDR_XML_APPROACH_L : IDR_XML_APPROACH_P);
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable,
+      ScreenLandscape ? IDR_XML_APPROACH_L : IDR_XML_APPROACH_P));
   if (!wf) {
     return;
   }
 
+  MapApproachMode = 0;
   MapApproachEnabled = true;
   MapApproachWaypoint = waypoint_index;
   ResetApproachDirectDistanceToDefault();
@@ -320,11 +282,8 @@ void dlgApproach(int waypoint_index) {
   }
 
   if (ScreenLandscape) {
-    /* Vertical strip: same geometry as Target landscape — full client height, top aligned to map
-       client. Keep Approve at XML Y (do not anchor to bottom: that left a huge empty band). */
     const PixelRect rc(main_window->GetClientRect());
     const int client_h = rc.GetSize().cy;
-    /* Full client height to the bottom; width unchanged. */
     const unsigned max_h = (unsigned)max(1, client_h);
     wf->SetHeight(max_h);
     dlgSize = wf->GetWidth();
@@ -336,8 +295,6 @@ void dlgApproach(int waypoint_index) {
 #endif
     wf->SetCaption(wf->GetWndText());
   } else {
-    /* Portrait: compact strip; ensure outer height covers title + client (Approve was clipped
-       when client area was shorter than scaled buttons). dlgSize for map pan. */
     WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
     int maxBottom = 0;
     if (btnApprove) {
@@ -353,7 +310,7 @@ void dlgApproach(int waypoint_index) {
     }
     dlgSize = wf->GetHeight();
 #if defined(__linux__) && !defined(ANDROID)
-    dlgApplyPortraitOverlayGeometry(wf);
+    dlgApplyPortraitOverlayGeometry(wf.get());
     dlgSize = wf->GetHeight();
 #else
     wf->SetLeft(0);
@@ -370,11 +327,9 @@ void dlgApproach(int waypoint_index) {
   WndButton* btn2 = wf->FindByName<WndButton>(TEXT("btnRunway2"));
   if (btn2) btn2->SetCaption(cap2);
 
-  RefreshApproachButtonStyles();
+  RefreshApproachButtonStyles(wf.get());
 
   MapWindow::SetApproachPan(true, waypoint_index, dlgSize);
-  /* Full map redraw: avoids a band of the previous Target dialog bitmap showing through
-     when targetPanSize / clip rects were out of sync with the real form height. */
   MapWindow::RefreshMap();
 
   wf->SetTimerNotify(400, OnApproachTimerNotify);
@@ -385,7 +340,4 @@ void dlgApproach(int waypoint_index) {
   MapApproachEnabled = false;
   MapApproachWaypoint = -1;
   MapApproachRunwayDir = -1;
-
-  delete wf;
-  wf = nullptr;
 }

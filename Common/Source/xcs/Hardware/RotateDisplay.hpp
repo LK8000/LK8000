@@ -47,14 +47,6 @@ namespace Display {
    */
   bool
   RotateRestore();
-
-#ifdef KOBO
-  /**
-   * Read Kobo framebuffer rotation from sysfs (same mapping as LK CScreenOrientation).
-   */
-  DisplayOrientation_t
-  GetFramebufferOrientationForKobo();
-#endif
 }
 
 #endif

@@ -521,6 +521,10 @@ static void OnMoveClicked(WndButton* pWnd) {
 static void OnTargetApproachClicked(WndButton* pWnd) {
   int wp_index = -1;
   if (!CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
+  WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
+  if (targetForm) {
+    targetForm->SetModalResult(mrOK);
+  }
   dlgApproach(wp_index);
 }
 

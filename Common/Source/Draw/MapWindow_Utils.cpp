@@ -268,6 +268,13 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   }
 }
 
+namespace {
+/// Map zoom span (metres) so the direct leg and runway fit comfortably in approach pan mode.
+double ApproachZoomDistanceFromDirectLeg_m() {
+  return max(8000.0, MapApproachDirectDistance_m * 1.5);
+}
+}  // namespace
+
 void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize)
 {
   static double old_latitude;
@@ -287,7 +294,7 @@ void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize
     if (ValidWayPointFast(waypoint_index)) {
       PanLongitude = WayPointList[waypoint_index].Longitude;
       PanLatitude = WayPointList[waypoint_index].Latitude;
-      ApproachZoomDistance = max(8000.0, MapApproachDirectDistance_m * 1.5);
+      ApproachZoomDistance = ApproachZoomDistanceFromDirectLeg_m();
     }
   } else if (!do_pan && mode.Is(Mode::MODE_APPROACH_PAN)) {
     PanLongitude = old_longitude;
@@ -301,7 +308,7 @@ void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize
 }
 
 void MapWindow::SyncApproachZoomFromDirectLeg() {
-  ApproachZoomDistance = max(8000.0, MapApproachDirectDistance_m * 1.5);
+  ApproachZoomDistance = ApproachZoomDistanceFromDirectLeg_m();
 }
 
 void MapWindow::SetPanTaskEdit(unsigned TskPoint) {

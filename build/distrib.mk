@@ -47,3 +47,12 @@ define build_distrib_common
  $(Q)install -m 0644 $(WAYPOINT_FILES) $(1)/LK8000/_Waypoints
 
 endef
+
+# Source of truth for messages is Common/Data/Language/Translations/*.json.
+# Local runs from Common/Distribution/LK8000 load _Language/*.json next to the binary;
+# without this copy, new _@M00…_ tokens show literally until files are synced.
+DEV_LK_LANGUAGE_DIR := Common/Distribution/LK8000/_Language
+.PHONY: install-dev-language-files
+install-dev-language-files:
+	$(Q)install -m 0755 -d $(DEV_LK_LANGUAGE_DIR)
+	$(Q)install -m 0644 $(LANGUAGE_FILES) $(DEV_LK_LANGUAGE_DIR)

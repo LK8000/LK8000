@@ -32,7 +32,6 @@ Copyright_License {
 
 #ifdef KOBO
 #include "OS/FileUtil.hpp"
-#include <cstdlib>
 #endif
 
 #ifdef ENABLE_OPENGL
@@ -200,17 +199,11 @@ Display::Rotate(DisplayOrientation_t orientation)
 
   return native_view->setRequestedOrientation(android_orientation);
 #elif defined(KOBO)
-  /* fb0/rotate: 0=landscape, 1=reverse portrait, 2=reverse landscape, 3=portrait */
-  const char *rotate = nullptr;
+  const char *rotate = "3";
 
   switch (orientation) {
   case DisplayOrientation_t::DEFAULT:
-    /* Do not overwrite sysfs: startup / RotateRestore must keep current rotation
-       (e.g. landscape chosen in LK or left by the system). */
-    return true;
-
   case DisplayOrientation_t::PORTRAIT:
-    rotate = "3";
     break;
 
   case DisplayOrientation_t::REVERSE_PORTRAIT:
@@ -224,7 +217,7 @@ Display::Rotate(DisplayOrientation_t orientation)
   case DisplayOrientation_t::REVERSE_LANDSCAPE:
     rotate = "2";
     break;
-  }
+  };
 
   return File::WriteExisting("/sys/class/graphics/fb0/rotate", rotate);
 #elif defined(SOFTWARE_ROTATE_DISPLAY)
@@ -258,27 +251,3 @@ Display::RotateRestore()
   return false;
 #endif
 }
-
-#ifdef KOBO
-DisplayOrientation_t
-Display::GetFramebufferOrientationForKobo()
-{
-  char szLine[100] = {};
-  if (!File::ReadString("/sys/class/graphics/fb0/rotate", szLine, sizeof(szLine)))
-    return DisplayOrientation_t::DEFAULT;
-
-  const int tmp = static_cast<int>(std::strtol(szLine, nullptr, 10));
-  switch (tmp) {
-  case 0:
-    return DisplayOrientation_t::LANDSCAPE;
-  case 1:
-    return DisplayOrientation_t::REVERSE_PORTRAIT;
-  case 2:
-    return DisplayOrientation_t::REVERSE_LANDSCAPE;
-  case 3:
-    return DisplayOrientation_t::PORTRAIT;
-  default:
-    return DisplayOrientation_t::DEFAULT;
-  }
-}
-#endif

@@ -27,13 +27,6 @@
   #include "Util/Clamp.hpp"
 #endif
 
-/* NEON iso-line path uses GetNativeValue(); only 8-bit (GREYSCALE/Kobo) and 16-bit (HAVE_GLES) have it */
-#if defined(GREYSCALE) || defined(HAVE_GLES)
-#define TERRAIN_NEON_BGRCOLOR_OK 1
-#else
-#define TERRAIN_NEON_BGRCOLOR_OK 0
-#endif
-
 extern bool FastZoom;
 
 extern void rgb_lightness( uint8_t &r, uint8_t &g, uint8_t &b, float light);
@@ -814,9 +807,8 @@ public:
         // return (std::max<int16_t>(0, height)) >> 8; // 256m
     }
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0) && TERRAIN_NEON_BGRCOLOR_OK
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 private:
-    /* NEON helpers only for 8/16-bit color (Kobo, Android, OpenVario); 32-bit (SDL) uses scalar path */
 
     static
     int16x8_t IsoBand(int16x8_t height, int zoom) {
@@ -908,9 +900,9 @@ public:
 
             size_t x = 1;
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0) && TERRAIN_NEON_BGRCOLOR_OK
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
 
-            /* NEON path only for 8-bit (Kobo) or 16-bit (Android/OpenVario) color; 32-bit (e.g. SDL) uses scalar below */
+            // iso-band value of first column
             int16x8_t height =  vld1q_s16(height_row);
             vst1q_s16(&prev_iso_band[0], IsoBand(height, zoom));
 

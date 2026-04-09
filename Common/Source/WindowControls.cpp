@@ -2116,7 +2116,8 @@ void WndButton::Paint(LKSurface& Surface){
 
     if (mSelected && !mDown) {
       const auto oldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
-      const auto oldPen = Surface.SelectObject(LKPen_Black_N2);
+      const auto oldPen = Surface.SelectObject(
+          IsDithered() ? LKPen_Black_N2 : LKPen_Higlighted);
       Surface.Rectangle(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
       Surface.SelectObject(oldPen);
       Surface.SelectObject(oldBrush);
