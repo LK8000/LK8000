@@ -29,6 +29,7 @@ using std::string_view_literals::operator""sv;
 
 extern void RenameIfVirtual(const unsigned int i);
 extern bool FullResetAsked;
+extern void InitWayPointCalc(void);
 
 namespace {
 
@@ -246,6 +247,11 @@ bool CTaskFileHelper::Load(std::istream& stream) {
         } else {
             LoadWayPointList(rootNode->first_node("waypoints"), nullptr, nullptr);
         }
+
+        /* Task files can embed waypoints (e.g. landable with runway info). Those are added
+           via FindOrAddWaypoint(), which updates WayPointList but not WayPointCalc. Ensure
+           WayPointCalc is re-synced before we rely on IsLandable / WpType in dialogs. */
+        InitWayPointCalc();
 
         if (!LoadTaskPointList(rootNode->first_node("taskpoints"))) {
             return false;

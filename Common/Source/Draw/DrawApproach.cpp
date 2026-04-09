@@ -16,10 +16,10 @@
 namespace {
 
 // VFR circuit: downwind at 30 s flight from runway center (~800 m at 50 kt)
-constexpr double DOWNWIND_OFFSET_M = 800.0;   // ~30 s at 50 kt
+[[maybe_unused]] constexpr double DOWNWIND_OFFSET_M = 800.0;   // ~30 s at 50 kt
 // Turn from downwind to base at 45° radial from threshold: along downwind = offset
-constexpr double DOWNWIND_TO_45_M = 800.0;    // same as offset in standard pattern
-constexpr double BASE_LEN_M = 1500.0;         // base leg to final
+[[maybe_unused]] constexpr double DOWNWIND_TO_45_M = 800.0;    // same as offset in standard pattern
+[[maybe_unused]] constexpr double BASE_LEN_M = 1500.0;         // base leg to final
 
 } // namespace
 
