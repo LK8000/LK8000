@@ -313,8 +313,9 @@ void dlgApproach(int waypoint_index) {
     dlgApplyPortraitOverlayGeometry(wf.get());
     dlgSize = wf->GetHeight();
 #else
+    /* Non-Linux (e Android): keep classic portrait placement at the bottom. */
     wf->SetLeft(0);
-    wf->SetTop(0);
+    wf->SetTop(ScreenSizeY - (int)dlgSize);
 #endif
   }
 

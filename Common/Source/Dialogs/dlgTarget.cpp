@@ -763,7 +763,8 @@ void dlgTarget(int TaskPoint) {
     dlgApplyPortraitOverlayGeometry(wf);
 #else
     dlgSize = wf->GetHeight();
-    wf->SetTop(0);
+    /* Non-Linux (e Android): keep classic portrait placement at the bottom. */
+    wf->SetTop(ScreenSizeY - dlgSize);
     wf->SetLeft(0);
 #endif
     dlgSize = wf->GetHeight();
