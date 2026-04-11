@@ -105,7 +105,7 @@ protected:
 
 private:
     InvokeThread<decltype(&ComPort::RxThread), ComPort*> rx_thread = {
-        "ComPort", 
+        "ComPort::RxThread",
         &ComPort::RxThread, this 
     };
 

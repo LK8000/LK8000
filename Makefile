@@ -1289,6 +1289,7 @@ endif
 
 TEST = \
 	$(SRC)/Thread/test/MutexCondTest.cpp \
+	$(SRC)/Thread/test/ThreadTest.cpp \
 	
 
 SRC_FILES :=\

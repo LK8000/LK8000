@@ -54,7 +54,6 @@ bool ComPort::Write(const void *data, size_t size) {
 
         DebugLog(_T(R"(<%s><%s> ComPort::Write("%s"))"),
                     success ? _T("success"): _T("failed"),
-                    thread_name().c_str(),
                     data_string(data, size).c_str());
 
         return success;

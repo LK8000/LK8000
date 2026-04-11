@@ -10,20 +10,16 @@
  */
 
 #ifndef _THREAD_HANDLE_HPP_
-#define	_THREAD_HANDLE_HPP_
+#define _THREAD_HANDLE_HPP_
+#include "options.h"
 
-#include "Poco/Thread.h"
+#ifdef USE_STDCPP_THREADS
+#include "stdcpp/Handle.hpp"
+#elif defined(USE_POCO_THREADS)
+#include "Poco/Handle.hpp"
+#else
+#error multithreading library is not defined
+#endif
 
-class ThreadHandle {
-public:
-    ThreadHandle() = default;
-    
-    explicit ThreadHandle(Poco::Thread* thread) : _thread(thread) {}
-    bool IsInside() const { return _thread == Poco::Thread::current(); }
-    
-    static ThreadHandle GetCurrent() { return ThreadHandle(Poco::Thread::current()); }
-private:
-    Poco::Thread* _thread;
-};
+#endif /* _THREAD_HANDLE_HPP_ */
 
-#endif	/* _THREAD_HANDLE_HPP_ */

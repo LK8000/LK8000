@@ -9,50 +9,18 @@
 
 #ifndef _THREAD_THREAD_HPP_
 #define _THREAD_THREAD_HPP_
-
-#include "Poco/Thread.h"
-#include <tuple>
+#include "options.h"
+#include <functional>
 #include <utility>
 
-#ifdef __linux__
-#include <linux/prctl.h>  /* Definition of PR_* constants */
-#include <sys/prctl.h>
+
+#ifdef USE_STDCPP_THREADS
+#include "stdcpp/Thread.hpp"
+#elif defined(USE_POCO_THREADS)
+#include "Poco/Thread.hpp"
+#else
+#error multithreading library is not defined
 #endif
-
-class Thread : protected Poco::Runnable {
-public:
-    explicit Thread(const char* name) : _thread(name) {}
-
-    virtual bool Start() {
-        _thread.start(*this);
-        return _thread.isRunning();
-    }
-
-    void Join() {
-        _thread.join();
-    }
-
-    bool IsInside() const {
-        return (_thread.currentTid() == _thread.tid());
-    }
-
-    bool IsDefined() const {
-        return _thread.isRunning();
-    }
-
-protected:
-    virtual void Run() = 0;
-
-    void run() override {
-#ifdef __linux__
-        prctl(PR_SET_NAME, _thread.name().c_str());
-#endif
-        Run();
-    }
-
-private:
-    Poco::Thread _thread;
-};
 
 template <typename Callable, typename... Args>
 class InvokeThread : public Thread {
@@ -71,4 +39,4 @@ class InvokeThread : public Thread {
   std::tuple<std::decay_t<Args>...> args;
 };
 
-#endif //_THREAD_THREAD_HPP_
+#endif  //_THREAD_THREAD_HPP_

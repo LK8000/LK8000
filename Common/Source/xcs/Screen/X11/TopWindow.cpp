@@ -25,7 +25,8 @@ Copyright_License {
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Event/Globals.hpp"
 #include "Event/Poll/Queue.hpp"
-
+#include <cstdio>
+#include <cstdlib>
 #include <X11/Xatom.h>
 
 void

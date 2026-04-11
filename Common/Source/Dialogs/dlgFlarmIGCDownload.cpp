@@ -1024,7 +1024,6 @@ protected:
         ReadFlarmIGCFile(CDevFlarm::GetDevice(), IGC_DLIndex);
       }
       Sleep(GC_IDLETIME);
-      Poco::Thread::yield();
     }
     deb_Log(TEXT("IGC Thread Stopped !"));
 
