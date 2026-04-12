@@ -45,13 +45,6 @@ public:
     CalculationThread() : Thread("Calculation") { }
 
     void Run() override {
-        // wait for proper startup signal
-        while (!MapWindow::IsDisplayRunning()) {
-            Sleep(100);
-        }
-
-        Sleep(1000); // 091213  BUGFIX need to synchronize !!! TOFIX02 TODO
-
         while (Wait()) {
 
 #ifdef HAVE_CPU_FREQUENCY
