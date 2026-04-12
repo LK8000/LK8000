@@ -110,8 +110,9 @@ public:
     }
 
     void SignalNewData() {
-        const std::lock_guard<Mutex> lock(mtx);
-        new_data = true;
+        WithLock(mtx, [&]() {
+            new_data = true;
+        });
         cond.notify_one();
     }
 
@@ -121,8 +122,9 @@ public:
     }
 
     void RequestStop() {
-        const std::lock_guard<Mutex> lock(mtx);
-        run = false;
+        WithLock(mtx, [&]() {
+            run = false;
+        });
         cond.notify_one();
     }
 
@@ -152,9 +154,10 @@ private:
          */
         last_run.Update();
 
-        while (run && !new_data) {
-            cond.wait(lock);
-        }
+        cond.wait(lock, [&]() {
+            return new_data || !run;
+        });
+
         new_data = false;
         return run;
     }

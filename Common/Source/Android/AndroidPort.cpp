@@ -168,21 +168,20 @@ size_t AndroidPort::Read(void *szString, size_t size) {
 
 void AndroidPort::DataReceived(const void *data, size_t length) {
 
-    const std::lock_guard<Mutex> lock(mutex);
-    const auto *src_data = static_cast<const uint8_t *>(data);
-
-    // limit vector size to 16 KByte
-    const size_t available_size =  (16U * 1024U) - buffer.size();
-    const size_t insert_size = std::min(available_size, length);
-
-    buffer.insert(buffer.cend(), src_data,  std::next(src_data, insert_size));
+    size_t insert_size = WithLock(mutex, [&]() {
+        const auto *src_data = static_cast<const uint8_t *>(data);
+        // limit vector size to 16 KByte
+        const size_t available_size =  (16U * 1024U) - buffer.size();
+        const size_t size_to_insert = std::min(available_size, length);
+        buffer.insert(buffer.cend(), src_data,  std::next(src_data, size_to_insert));
+        return size_to_insert;
+    });
+    newdata.notify_all();
 
     AddStatRx(insert_size);
     if(insert_size < length) {
         AddStatErrRx(length - insert_size);
     }
-
-    newdata.notify_all();
 }
 
 bool AndroidPort::IsReady() {
@@ -194,8 +193,9 @@ bool AndroidPort::IsReady() {
 }
 
 void AndroidPort::PortStateChanged() {
-    const std::lock_guard<Mutex> lock(mutex);
-    ++state_generation;
+    WithLock(mutex, [&]() {
+        ++state_generation;
+    });
     newdata.notify_one();
 }
 

@@ -346,8 +346,8 @@ void MapWindow::CloseDrawingThread() {
   WithLock(Surface_Mutex, [&]() {
     TestLog(_T("... Thread_Draw : close request"));
     CLOSETHREAD = TRUE;
-    _draw_cv.notify_one();
   });
+  _draw_cv.notify_one();
 
   TestLog(_T("... Thread_Draw : wait end of thread"));
   MapWindowThread.Join();

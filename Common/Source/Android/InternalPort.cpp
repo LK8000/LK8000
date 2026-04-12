@@ -33,13 +33,11 @@ bool InternalPort::Initialize() {
 
 bool InternalPort::Close() {
     InternalSensors* p = WithLock(mutex_status, [&]() {
-        /* set "internal_sensors" to nullptr and notify "cv_status" to ask
-         * to stop "thread_status" before delete internal_sensors
-         */
-        auto p = std::exchange(internal_sensors, nullptr);
-        cv_status.notify_all();
-        return p;
+        /* set "internal_sensors" to nullptr to ask "thread_status" to stop */
+        return std::exchange(internal_sensors, nullptr);
     });
+
+    cv_status.notify_all();
 
     if(thread_status.joinable()) {
         thread_status.join();

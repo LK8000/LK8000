@@ -210,8 +210,9 @@ unsigned BluetoothSensor::RxThread() {
 }
 
 void BluetoothSensor::PortStateChanged() {
-  const std::lock_guard<Mutex> lock(mutex);
-  ++state_generation;
+  WithLock(mutex, [&]() {
+    ++state_generation;
+  });
   newdata.notify_one();
 }
 
@@ -219,9 +220,13 @@ void BluetoothSensor::PortError(const char* msg) {
   StartupStore("BluetoothSensor Error : %s", msg);
 }
 
-void BluetoothSensor::OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) {
-  const std::lock_guard<Mutex> lock(mutex);
-  data_queue.emplace_back(std::move(service), std::move(characteristic), std::move(data));
+void BluetoothSensor::OnCharacteristicChanged(uuid_t service,
+                                              uuid_t characteristic,
+                                              std::vector<uint8_t>&& data) {
+  WithLock(mutex, [&]() {
+    data_queue.emplace_back(std::move(service), std::move(characteristic),
+                            std::move(data));
+  });
   newdata.notify_one();
 }
 

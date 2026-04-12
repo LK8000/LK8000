@@ -31,8 +31,8 @@ bool ComPort::Close() {
     if (status_thread.IsDefined()) {
         WithLock(status_mutex, [&]() {
             status_thread_stop = true;
-            status_cv.notify_one();
         });
+        status_cv.notify_one();
         status_thread.Join();
     }
     StopRxThread();
@@ -209,13 +209,17 @@ tstring ComPort::GetDeviceName() {
 }
 
 void ComPort::NotifyConnected() {
-    const std::lock_guard<Mutex> lock(status_mutex);
-    status_connected = true;
-    if (status_disconnected_notify) {
+    bool notify = WithLock(status_mutex, [&]() {
+        status_connected = true;
+        // notify only if a disconnect notify is
+        // pending, otherwise we are already
+        // connected and user is already
+        // notified.
+        return status_disconnected_notify;
+    });
+    if (notify) {
         status_cv.notify_one();
-        return;
     }
-
     // notify user
     tstring name = GetDeviceName();
     StatusMessage(_T("%s connected"), name.c_str());
@@ -254,11 +258,12 @@ void ComPort::NotifyDisconnected() {
     tstring name = GetDeviceName();
     StartupStore(_T(". Device %c [%s] : disconnected"), devLetter(GetPortIndex()), name.c_str());
     // notify user in next 10 sec, notification canceled if reconnect happen...
-    const std::lock_guard<Mutex> lock(status_mutex);
-    status_connected = false;
-    if (!status_thread.IsDefined()) {
-        status_thread.Start();
-    }
-    status_disconnected_notify = true;
+    WithLock(status_mutex, [&]() {
+        status_connected = false;
+        status_disconnected_notify = true;
+        if (!status_thread.IsDefined()) {
+            status_thread.Start();
+        }
+    });
     status_cv.notify_one();
 }

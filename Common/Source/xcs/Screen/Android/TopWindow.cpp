@@ -113,9 +113,10 @@ TopWindow::OnPause()
 
   native_view->deinitSurface();
 
-  const std::lock_guard<Mutex> lock(paused_mutex);
-  paused = true;
-  resumed = false;
+  WithLock(paused_mutex, [&]() {
+    paused = true;
+    resumed = false;
+  });
   paused_cond.notify_one();
 }
 
@@ -241,9 +242,10 @@ TopWindow::OnStartEventLoop()
 void
 TopWindow::OnStopEventLoop()
 {
-  const std::lock_guard<Mutex> lock(paused_mutex);
-  assert(running);
-  --running;
+  WithLock(paused_mutex, [&]() {
+    assert(running);
+    --running;
+  });
   /* wake up the Android Activity thread, just in case it's waiting
      inside Pause() */
   paused_cond.notify_one();

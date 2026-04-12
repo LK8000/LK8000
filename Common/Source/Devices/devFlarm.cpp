@@ -133,18 +133,19 @@ BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_I
     return FALSE;
   }
 
-  const std::lock_guard<Mutex> lock(mutex);
+  bool in_binary_mode = WithLock(mutex, [&]() {
+    if (bFLARM_BinMode) {
+      for (int i = 0; i < len; i++) {
+        buffered_data.push((uint8_t)String[i]);
+      }
+    }
+    return bFLARM_BinMode;
+  });
 
-  if (!IsInBinaryMode()) {
-    return FALSE;
+  if (in_binary_mode) {
+    cond.notify_one();
   }
-
-  for (int i = 0; i < len; i++) {
-    buffered_data.push(String[i]);
-  }
-  cond.notify_all();
-
-  return  TRUE;
+  return in_binary_mode;
 }
 
 /**

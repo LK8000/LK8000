@@ -208,10 +208,12 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len,
      slowdown = true;
   }
 
-  const std::lock_guard<Mutex> lock(EOSmutex);
-  for (int i = 0; i < len; i++) {
-    EOSbuffered_data.push((uint8_t)String[i]);
-  }
+  WithLock(EOSmutex, [&]() {
+    for (int i = 0; i < len; i++) {
+      EOSbuffered_data.push((uint8_t)String[i]);
+    }
+  });
+
   EOScond.notify_all();
 
   return  true;

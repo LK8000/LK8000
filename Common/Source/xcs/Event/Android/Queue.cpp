@@ -28,15 +28,18 @@ EventQueue::EventQueue()
  :now_us(MonotonicClockUS()),
   quit(false) {}
 
-void
-EventQueue::Push(const Event &event)
-{
-  const std::lock_guard<Mutex> lock(mutex);
-  if (quit)
-    return;
+void EventQueue::Push(const Event& event) {
+  bool pushed = WithLock(mutex, [&]() {
+    if (quit) {
+      return false;
+    }
+    events.push(event);
+    return true;
+  });
 
-  events.push(event);
-  cond.notify_one();
+  if (pushed) {
+    cond.notify_one();
+  }
 }
 
 bool
@@ -151,9 +154,9 @@ EventQueue::Purge(Window &window)
 void
 EventQueue::AddTimer(Timer &timer, unsigned ms)
 {
-  const std::lock_guard<Mutex> lock(mutex);
-
-  timers.Add(timer, MonotonicClockUS() + ms * 1000);
+  WithLock(mutex, [&]() {
+    timers.Add(timer, MonotonicClockUS() + ms * 1000);
+  });
   cond.notify_one();
 }
 
