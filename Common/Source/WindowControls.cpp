@@ -2015,8 +2015,8 @@ bool WndButton::OnLButtonDblClick(const POINT& Pos) {
 void WndButton::DrawPushButton(LKSurface& Surface){
   PixelRect rc(GetClientRect());
   rc.Grow(-2); // todo border width
-  // mSelected = highlighted (raised) to mark choice; mDown = physically pushed
-  Surface.DrawPushButton(rc, mDown && !mSelected);
+  // mDown = physically pushed; mSelected = active choice (both render as pressed)
+  Surface.DrawPushButton(rc, mDown || mSelected);
 }
 
 void WndButton::Paint(LKSurface& Surface){
