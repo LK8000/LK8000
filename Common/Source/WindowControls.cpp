@@ -2015,8 +2015,8 @@ bool WndButton::OnLButtonDblClick(const POINT& Pos) {
 void WndButton::DrawPushButton(LKSurface& Surface){
   PixelRect rc(GetClientRect());
   rc.Grow(-2); // todo border width
-  // mDown = physically pushed; mSelected = active choice (both render as pressed)
-  Surface.DrawPushButton(rc, mDown || mSelected);
+  // only physical press changes button 3D state; selection is shown via border in Paint()
+  Surface.DrawPushButton(rc, mDown);
 }
 
 void WndButton::Paint(LKSurface& Surface){
@@ -2072,15 +2072,14 @@ void WndButton::Paint(LKSurface& Surface){
   const size_t nSize = _tcslen(szCaption);
   if (nSize > 0) {
 
-    const bool pushed = mDown && !mSelected;  // only offset when physically pushed
-    const bool highlighted = mSelected;      // selected = inverse colours for emphasis
+    const bool pushed = mDown;  // only physical press changes text colour
     Surface.SetTextColor(IsDithered()?
-            ((pushed || highlighted) ? RGB_WHITE : RGB_BLACK) :
+            (pushed ? RGB_WHITE : RGB_BLACK) :
             GetForeColor());
 
     Surface.SetBkColor(IsDithered()?
-            ((pushed || highlighted) ? RGB_BLACK : RGB_WHITE) :
-            (highlighted ? RGB_LIGHTYELLOW : GetBackColor()));
+            (pushed ? RGB_BLACK : RGB_WHITE) :
+            GetBackColor());
     
     Surface.SetBackgroundTransparent();
 
@@ -2088,7 +2087,7 @@ void WndButton::Paint(LKSurface& Surface){
     PixelRect rc = rcClient;
     InflateRect(&rc, -2, -2); // todo border width
 
-    if (pushed)
+    if (mDown)
       OffsetRect(&rc, 2, 2);
 
     if (mLastDrawTextHeight < 0){
@@ -2109,7 +2108,7 @@ void WndButton::Paint(LKSurface& Surface){
       // DoTo optimize
       rc = rcClient;
       InflateRect(&rc, -2, -2); // todo border width
-      if (pushed)
+      if (mDown)
         OffsetRect(&rc, 2, 2);
 
     }
