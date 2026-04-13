@@ -20,6 +20,11 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
   *_requestedScale = LimitMapScale(Units::ToDistance(TargetZoomDistance / 6.0));
 }
 
+/**
+ * @brief Sets requested zoom scale for APPROACH_PAN mode.
+ * Uses ApproachZoomDistance (the direct leg length) so the approach path
+ * fits across the screen at the same relative scale as TARGET_PAN.
+ */
 void MapWindow::Zoom::CalculateApproachPanZoom()
 {
   *_requestedScale = LimitMapScale(Units::ToDistance(ApproachZoomDistance / 6.0));
