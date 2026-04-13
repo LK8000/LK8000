@@ -23,9 +23,19 @@
 #include "OS/Process.hpp"
 #endif
 
-CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPath), mOSFilePath(szPath)  {
+#ifdef KOBO
+#include "Event/Globals.hpp"
+#include "Event/Queue.hpp"
+#endif
 
-    if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != L'\\') {
+CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPath), mOSFilePath(szPath)  {
+#ifdef WIN32
+    const TCHAR dirsep = static_cast<TCHAR>('\\');
+#else
+    const TCHAR dirsep = static_cast<TCHAR>('/');
+#endif
+
+    if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != dirsep) {
         mOSFilePath += _T(DIRSEP);
     }
     mOSFilePath += TEXT(LKD_CONF);
@@ -40,7 +50,7 @@ CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPat
     }
 
 
-    if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != L'\\') {
+    if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != dirsep) {
         mLKFilePath += _T(DIRSEP);
     }
     mLKFilePath += TEXT(LKD_CONF);
@@ -133,5 +143,23 @@ unsigned short CScreenOrientation::GetScreenSetting() {
 }
 
 bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {
+#ifdef KOBO
+    if (NewO == invalid ||
+        NewO > static_cast<unsigned short>(DisplayOrientation_t::REVERSE_LANDSCAPE)) {
+        return false;
+    }
+
+    DisplayOrientation_t o = static_cast<DisplayOrientation_t>(NewO);
+    o = TranslateDefaultDisplayOrientation(o);
+
+    if (!Display::Rotate(o)) {
+        return false;
+    }
+    if (event_queue != nullptr) {
+        event_queue->SetDisplayOrientation(o);
+    }
+    return true;
+#else
     return false;
+#endif
 }
