@@ -605,7 +605,6 @@ WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID)
   return theForm;
 }
 
-#if defined(__linux__) && !defined(ANDROID)
 void dlgApplyPortraitOverlayGeometry(WndForm* wf) {
   if (!wf || ScreenLandscape) return;
 
@@ -621,4 +620,3 @@ void dlgApplyPortraitOverlayGeometry(WndForm* wf) {
   /* Re-sync client rect after outer resize (WndForm::SetCaption updates mClientWindow). */
   wf->SetCaption(wf->GetWndText());
 }
-#endif

@@ -1622,11 +1622,7 @@ ifeq ($(REMOVE_NS),y)
 	$(RM) $(OUTPUTS_NS)
 endif
 
-ifeq ($(CONFIG_LINUX),y)
-$(OUTPUTS_NS): $(OBJS) | install-dev-language-files
-else
 $(OUTPUTS_NS): $(OBJS)
-endif
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CXX) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 

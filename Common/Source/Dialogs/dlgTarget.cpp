@@ -518,14 +518,15 @@ static void OnMoveClicked(WndButton* pWnd) {
 }
 
 /// Open Approach dialog for current target waypoint if it is landable.
+/// Closes Target only if a task was created (Approve clicked); on Ignore the user returns to Target.
 static void OnTargetApproachClicked(WndButton* pWnd) {
   int wp_index = -1;
   if (!CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
-  WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
-  if (targetForm) {
-    targetForm->SetModalResult(mrOK);
+  const bool task_created = dlgApproach(wp_index);
+  if (task_created) {
+    WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
+    if (targetForm) targetForm->SetModalResult(mrOK);
   }
-  dlgApproach(wp_index);
 }
 
 static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
@@ -712,19 +713,11 @@ void dlgTarget(int TaskPoint) {
     const unsigned max_h = (unsigned)max(1, client_h);
     wf->SetHeight(max_h);
     wf->SetTop(rc.top);
-#ifdef KOBO
-    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize - NIBLSCALE(8));
-#else
     wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize);
-#endif
     wf->SetCaption(wf->GetWndText());
   }
   else {
-#ifdef KOBO
-    wf->SetLeft(main_window->GetClientRect().left);
-#else
     wf->SetLeft(0);
-#endif
   }
 
   btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));
@@ -759,14 +752,7 @@ void dlgTarget(int TaskPoint) {
   RefreshTargetPoint();
 
   if (!ScreenLandscape) {
-#if defined(__linux__) && !defined(ANDROID)
     dlgApplyPortraitOverlayGeometry(wf);
-#else
-    dlgSize = wf->GetHeight();
-    /* Non-Linux (e Android): keep classic portrait placement at the bottom. */
-    wf->SetTop(ScreenSizeY - dlgSize);
-    wf->SetLeft(0);
-#endif
     dlgSize = wf->GetHeight();
   }
 

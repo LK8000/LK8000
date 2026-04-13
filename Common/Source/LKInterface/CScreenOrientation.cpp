@@ -24,13 +24,8 @@
 #endif
 
 CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPath), mOSFilePath(szPath)  {
-#ifdef WIN32
-    const TCHAR dirsep = static_cast<TCHAR>('\\');
-#else
-    const TCHAR dirsep = static_cast<TCHAR>('/');
-#endif
 
-    if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != dirsep) {
+    if(!mOSFilePath.empty() && (*mOSFilePath.rbegin()) != L'\\') {
         mOSFilePath += _T(DIRSEP);
     }
     mOSFilePath += TEXT(LKD_CONF);
@@ -45,7 +40,7 @@ CScreenOrientation::CScreenOrientation(const LPCTSTR szPath) : mLKFilePath(szPat
     }
 
 
-    if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != dirsep) {
+    if(!mLKFilePath.empty() && (*mLKFilePath.rbegin()) != L'\\') {
         mLKFilePath += _T(DIRSEP);
     }
     mLKFilePath += TEXT(LKD_CONF);
@@ -138,11 +133,5 @@ unsigned short CScreenOrientation::GetScreenSetting() {
 }
 
 bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {
-#if defined(KOBO)
-    if(Display::Rotate(static_cast<DisplayOrientation_t>(NewO))) {
-      event_queue->SetDisplayOrientation(static_cast<DisplayOrientation_t>(NewO));
-      return true;
-    }
-#endif    
     return false;
 }

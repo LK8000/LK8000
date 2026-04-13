@@ -58,7 +58,7 @@ void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
 void dlgTarget(int TaskPoint = -1);
-void dlgApproach(int waypoint_index = -1);
+bool dlgApproach(int waypoint_index = -1);
 bool dlgTaskRules(void);
 
 void dlgLKTrafficDetails(int indexid);

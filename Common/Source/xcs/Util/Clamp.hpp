@@ -30,30 +30,45 @@
 #ifndef CLAMP_HPP
 #define CLAMP_HPP
 
-#if (defined(__ARM_NEON) || defined(__ARM_NEON__))
-#include <arm_neon.h>
-namespace neon {
+#include "Compiler.h"
 
 /**
- * Clamps the specified value in a range using NEON intrinsics.
- * Returns min or max if the value is outside.
+ * Clamps the specified value in a range.  Returns #min or #max if the
+ * value is outside.
  */
+template<typename T>
+static inline constexpr const T &
+Clamp(const T &value, const T &min, const T &max)
+{
+  return gcc_unlikely(value < min)
+    ? min
+    : (gcc_unlikely(value > max)
+       ? max : value);
+}
+
+#if (defined(__ARM_NEON) || defined(__ARM_NEON__)) && !GCC_OLDER_THAN(5,0)
+
+/**
+ * don't work with gcc 4.8 and 4.9 ( kobo, openvario )
+ */
+
+#include <arm_neon.h>
+
 static inline
-int16x4_t clamp(int16x4_t value, int16x4_t min, int16x4_t max) noexcept {
+int16x4_t Clamp(int16x4_t value, int16x4_t min, int16x4_t max) {
   return vmin_s16(vmax_s16(value, min), max);
 }
 
 static inline
-int16x8_t clamp(int16x8_t value, int16x8_t min, int16x8_t max) noexcept {
+int16x8_t Clamp(int16x8_t value, int16x8_t min, int16x8_t max) {
     return vminq_s16(vmaxq_s16(value, min), max);
 }
 
 static inline
-int32x4_t clamp(int32x4_t value, int32x4_t min, int32x4_t max) noexcept {
+int32x4_t Clamp(int32x4_t value, int32x4_t min, int32x4_t max) {
     return vminq_s32(vmaxq_s32(value, min), max);
 }
 
-} // namespace neon
 #endif
 
 #endif

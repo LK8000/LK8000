@@ -853,6 +853,7 @@ extern WindowControl *LastFocusControl;
 
 #define mrOK             2
 #define mrCancel         3
+#define mrYES            4
 
 class WndForm:public WindowControl{
 

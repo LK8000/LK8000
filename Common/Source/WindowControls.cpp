@@ -2075,11 +2075,11 @@ void WndButton::Paint(LKSurface& Surface){
     const bool pushed = mDown && !mSelected;  // only offset when physically pushed
     const bool highlighted = mSelected;      // selected = inverse colours for emphasis
     Surface.SetTextColor(IsDithered()?
-            (pushed ? RGB_WHITE : (highlighted ? RGB_BLACK : RGB_BLACK)) : 
+            ((pushed || highlighted) ? RGB_WHITE : RGB_BLACK) :
             GetForeColor());
 
     Surface.SetBkColor(IsDithered()?
-            (pushed ? RGB_BLACK : (highlighted ? RGB_WHITE : RGB_WHITE)) : 
+            ((pushed || highlighted) ? RGB_BLACK : RGB_WHITE) :
             (highlighted ? RGB_LIGHTYELLOW : GetBackColor()));
     
     Surface.SetBackgroundTransparent();

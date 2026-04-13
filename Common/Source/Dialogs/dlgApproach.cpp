@@ -4,7 +4,7 @@
    See CREDITS.TXT file for authors and copyrights
 
    Approach dialog: runway choice (and direct leg length). Mode is always direct until circuit exists.
-   Selected button = inverted (dark) style. Timer keeps runway selection UI in sync if state changes.
+   Selected button = inverted (dark) style.
 */
 
 #include "externs.h"
@@ -35,22 +35,16 @@ static void RefreshMapApproach() {
 }
 
 /// Re-apply selected (highlighted) state for runway buttons.
-static void RefreshApproachButtonStyles(WndForm* form) {
+static void RefreshApproachButtonStyles(WndForm* form, int h1, int h2) {
   if (!form) return;
 
   WndButton* btnRunway1 = form->FindByName<WndButton>(TEXT("btnRunway1"));
   WndButton* btnRunway2 = form->FindByName<WndButton>(TEXT("btnRunway2"));
 
-  const bool rw1 = (MapApproachRunwayDir == runway_heading_1);
-  const bool rw2 = (MapApproachRunwayDir == runway_heading_2);
+  const bool rw1 = (MapApproachRunwayDir == h1);
+  const bool rw2 = (MapApproachRunwayDir == h2);
   if (btnRunway1) btnRunway1->SetSelected(rw1);
   if (btnRunway2) btnRunway2->SetSelected(rw2);
-}
-
-/// Timer: keep runway highlight in sync if shared state changes while the dialog is open.
-static bool OnApproachTimerNotify(WndForm* pWnd) {
-  RefreshApproachButtonStyles(pWnd);
-  return true;
 }
 
 /// Close Approach dialog with OK.
@@ -66,14 +60,14 @@ static void OnApproachOKClicked(WndButton* pWnd) {
 /// Set selected runway to first heading (e.g. 16).
 static void OnRunway1Clicked(WndButton* pWnd) {
   MapApproachRunwayDir = runway_heading_1;
-  if (pWnd) RefreshApproachButtonStyles(pWnd->GetParentWndForm());
+  if (pWnd) RefreshApproachButtonStyles(pWnd->GetParentWndForm(), runway_heading_1, runway_heading_2);
   RefreshMapApproach();
 }
 
 /// Set selected runway to second heading (e.g. 34).
 static void OnRunway2Clicked(WndButton* pWnd) {
   MapApproachRunwayDir = runway_heading_2;
-  if (pWnd) RefreshApproachButtonStyles(pWnd->GetParentWndForm());
+  if (pWnd) RefreshApproachButtonStyles(pWnd->GetParentWndForm(), runway_heading_1, runway_heading_2);
   RefreshMapApproach();
 }
 
@@ -229,7 +223,7 @@ static void OnApproveClicked(WndButton* pWnd) {
 
   if (pWnd) {
     WndForm* pForm = pWnd->GetParentWndForm();
-    if (pForm) pForm->SetModalResult(mrOK);
+    if (pForm) pForm->SetModalResult(mrYES);
   }
 }
 
@@ -243,9 +237,10 @@ static CallBackTableEntry_t CallBackTable[] = {
 };
 
 /// Open Approach dialog for the given waypoint; enables map overlay and runway/task setup.
-void dlgApproach(int waypoint_index) {
+/// Returns true if a task was created (Approve clicked), false otherwise.
+bool dlgApproach(int waypoint_index) {
   if (waypoint_index < 0 || !ValidWayPointFast(waypoint_index)) {
-    return;
+    return false;
   }
 
   const WAYPOINT& wp = WayPointList[waypoint_index];
@@ -267,7 +262,7 @@ void dlgApproach(int waypoint_index) {
   std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable,
       ScreenLandscape ? IDR_XML_APPROACH_L : IDR_XML_APPROACH_P));
   if (!wf) {
-    return;
+    return false;
   }
 
   MapApproachMode = 0;
@@ -288,11 +283,7 @@ void dlgApproach(int waypoint_index) {
     wf->SetHeight(max_h);
     dlgSize = wf->GetWidth();
     wf->SetTop(rc.top);
-#ifdef KOBO
-    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize - NIBLSCALE(8));
-#else
     wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize);
-#endif
     wf->SetCaption(wf->GetWndText());
   } else {
     WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
@@ -308,15 +299,8 @@ void dlgApproach(int waypoint_index) {
         wf->SetHeight(wf->GetHeight() + (unsigned)delta);
       }
     }
-    dlgSize = wf->GetHeight();
-#if defined(__linux__) && !defined(ANDROID)
     dlgApplyPortraitOverlayGeometry(wf.get());
     dlgSize = wf->GetHeight();
-#else
-    /* Non-Linux (e Android): keep classic portrait placement at the bottom. */
-    wf->SetLeft(0);
-    wf->SetTop(ScreenSizeY - (int)dlgSize);
-#endif
   }
 
   TCHAR cap1[8], cap2[8];
@@ -328,17 +312,17 @@ void dlgApproach(int waypoint_index) {
   WndButton* btn2 = wf->FindByName<WndButton>(TEXT("btnRunway2"));
   if (btn2) btn2->SetCaption(cap2);
 
-  RefreshApproachButtonStyles(wf.get());
+  RefreshApproachButtonStyles(wf.get(), runway_heading_1, runway_heading_2);
 
   MapWindow::SetApproachPan(true, waypoint_index, dlgSize);
   MapWindow::RefreshMap();
 
-  wf->SetTimerNotify(400, OnApproachTimerNotify);
-  wf->ShowModal();
-  wf->SetTimerNotify(0, nullptr);
+  const int result = wf->ShowModal();
 
   MapWindow::SetApproachPan(false, 0);
   MapApproachEnabled = false;
   MapApproachWaypoint = -1;
   MapApproachRunwayDir = -1;
+
+  return (result == mrYES);
 }
