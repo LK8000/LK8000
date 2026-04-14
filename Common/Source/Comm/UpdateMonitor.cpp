@@ -277,6 +277,11 @@ bool UpdateMonitor() {
     if (dev.Disabled) {
       continue;
     }
+    if (dev.HB == 0) {
+      // just openned port, no data yet, we wait for it to be alive.
+      // availability already reset at open, so nothing to do here. 
+      continue;
+    }
 
     LKASSERT(dev.PortNumber < std::size(wasSilent));
     if ((LKHearthBeats - dev.HB) > 10) {
