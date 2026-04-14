@@ -242,7 +242,6 @@ const char szRegistryTskOptimizeRoute[] = "TskOptimizeRoute";
 const char szRegistryGliderSymbol[] = "GliderSymbol";
 const char szRegistryPilotName[] = "PilotName1";
 const char szRegistryPolarFile[] = "PolarFile1";
-const char szRegistryPollingMode[] = "PollingMode";
 const char szRegistryPort1Index[] = "PortIndex";
 const char szRegistryPort2Index[] = "Port2Index";
 

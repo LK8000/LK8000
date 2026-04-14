@@ -403,8 +403,6 @@ void LKParseProfileString(const char *sname, const char *svalue) {
     return;
   }
 
-  if (settings::read(sname, svalue, szRegistryPollingMode, PollingMode)) return;
-
   /***************************************************/
   /* for compatibilty with old file                  */
   unsigned dwIdxPort;

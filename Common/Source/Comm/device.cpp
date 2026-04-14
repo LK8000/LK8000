@@ -455,7 +455,7 @@ namespace {
       return new FilePort(idx, Port.data());
     } 
     else {
-      return new SerialPort(idx, Port.data(), Config.GetBaudrate(), Config.dwBitIndex, PollingMode);
+      return new SerialPort(idx, Port.data(), Config.GetBaudrate(), Config.dwBitIndex);
     }
 
     return nullptr; // unknown port type...

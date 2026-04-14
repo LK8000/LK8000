@@ -2552,17 +2552,6 @@ DataField* dfe = wp->GetDataField();
 #endif
   }
 
-  wp = pForm->FindByName<WndProperty>(TEXT("prpPollingMode"));
-  if (wp) {
-    DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M480_ = "Normal" 
-    dfe->addEnumText(MsgToken<480>());
-	// LKTOKEN  _@M529_ = "Polling" 
-    dfe->addEnumText(MsgToken<529>());
-    dfe->Set(PollingMode);
-    wp->RefreshDisplay();
-  }
-
   wp = pForm->FindByName<WndProperty>(TEXT("prpLKVarioBar"));
   if (wp) {
     TCHAR newtoken[150];
@@ -4052,13 +4041,6 @@ int ival;
     }
   }
 #endif
-
-  wp = pForm->FindByName<WndProperty>(TEXT("prpPollingMode"));
-  if (wp) {
-    if (PollingMode != (PollingMode_t) (wp->GetDataField()->GetAsInteger())) {
-      PollingMode = (PollingMode_t) (wp->GetDataField()->GetAsInteger());
-    }
-  }
 
   wp = pForm->FindByName<WndProperty>(TEXT("prpLKVarioBar"));
   if (wp) {

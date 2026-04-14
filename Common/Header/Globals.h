@@ -275,8 +275,6 @@ GEXTERN double LastDoNearest;
 GEXTERN double LastDoCommon;
 GEXTERN double LastDoThermalH;
 
-GEXTERN bool PollingMode;
-
 GEXTERN bool BestWarning;
 GEXTERN unsigned int ThermalBar;
 GEXTERN bool TrackBar;

@@ -177,8 +177,6 @@ void LKProfileResetDefault() {
   IphoneGestures = (IphoneGestures_t)iphDisabled;
 #endif
 
-  PollingMode = (PollingMode_t)pollmodeDisabled;
-
   LKVarioBar = (LKVarioBar_t)vBarDisabled;
 
   LKVarioVal = (LKVarioVal_t)vValVarioVario;

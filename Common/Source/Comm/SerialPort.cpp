@@ -18,13 +18,12 @@
 
 using namespace std::placeholders;
 
-SerialPort::SerialPort(unsigned idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize, bool polling) :
+SerialPort::SerialPort(unsigned idx, const tstring& sName, DWORD dwSpeed, BitIndex_t BitSize) :
         ComPort(idx, sName),
         hPort(INVALID_HANDLE_VALUE),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize),
         valid_frames(0U),
-        _PollingMode(polling),
         _dwMask(0)
 {
 }

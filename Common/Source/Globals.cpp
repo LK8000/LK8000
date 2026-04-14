@@ -317,8 +317,6 @@ void Globals_Init(void) {
   // number of reporting messages from Portmonitor.
   PortMonitorMessages=0;
 
-  PollingMode=false;
-
   GlideBarOffset=0;
   EngineeringMenu=false; // never saved to registry
 

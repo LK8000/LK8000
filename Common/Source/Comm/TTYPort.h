@@ -18,7 +18,7 @@
 
 class TTYPort : public ComPort {
 public:
-    TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling);
+    TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize);
     ~TTYPort() override;
 
     bool Initialize() override;

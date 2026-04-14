@@ -27,7 +27,7 @@
 
 using namespace std::placeholders;
 
-TTYPort::TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize, bool polling) :
+TTYPort::TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_t BitSize) :
         ComPort(idx, sName),
         _dwPortSpeed(dwSpeed),
         _dwPortBit(BitSize)

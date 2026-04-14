@@ -494,7 +494,6 @@ void LKDeviceSave(const TCHAR *szFile) {
   }
 
   write_settings(szRegistryUseGeoidSeparation, UseGeoidSeparation);
-  write_settings(szRegistryPollingMode, PollingMode);
   write_settings(szRegistryCheckSum, CheckSum);
 
   ModelType::SaveSettings(write_settings);

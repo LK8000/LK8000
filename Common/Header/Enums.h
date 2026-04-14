@@ -86,10 +86,6 @@ typedef enum {
 	iphEnabled,
 } IphoneGestures_t;
 typedef enum {
-	pollmodeDisabled=0,
-	pollmodeEnabled,
-} PollingMode_t;
-typedef enum {
 	vBarDisabled=0,
 	vBarVarioColor,
 	vBarVarioMono,
