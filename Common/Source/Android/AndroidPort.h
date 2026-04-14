@@ -38,8 +38,6 @@ public:
 
     int SetRxTimeout(int TimeOut) override;
 
-    void UpdateStatus() override {}
-
     unsigned long SetBaudrate(unsigned long) override;
     unsigned long GetBaudrate() const  override;
 

@@ -169,10 +169,6 @@ void TTYPort::CancelWaitEvent() {
 
 }
 
-void TTYPort::UpdateStatus() {
-
-}
-
 bool TTYPort::IsReady() {
     return (_tty >= 0 && isatty(_tty));
 }
@@ -286,7 +282,6 @@ unsigned TTYPort::RxThread() {
         }
 
         ScopeLock Lock(CritSec_Comm);
-        UpdateStatus();
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {
             ProcessData(szString, nRecv);

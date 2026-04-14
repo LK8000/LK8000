@@ -37,8 +37,6 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   int SetRxTimeout(int TimeOut) override { return 0; }
 
-  void UpdateStatus() override {}
-
   unsigned long SetBaudrate(unsigned long) override { return 0; };
 
   unsigned long GetBaudrate() const override { return 0; }

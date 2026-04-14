@@ -191,7 +191,6 @@ unsigned SocketPort::RxThread() {
         }
 
         ScopeLock Lock(CritSec_Comm);
-        UpdateStatus();
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {
             ProcessData(szString, nRecv);

@@ -58,8 +58,6 @@ public:
     unsigned long SetBaudrate(unsigned long) override { return 0U; }
     unsigned long GetBaudrate() const override {  return 0U; }
 
-    void UpdateStatus() override {};
-
     size_t Read(void *data, size_t size) override;
 
 protected:
