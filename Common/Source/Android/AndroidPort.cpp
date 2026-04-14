@@ -237,9 +237,7 @@ unsigned AndroidPort::RxThread() {
     }
 
     if (!rxthread_buffer.empty()) {
-      WithLock(CritSec_Comm, [&]() {
-        ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
-      });
+      ProcessData(rxthread_buffer.data(), rxthread_buffer.size());
       rxthread_buffer.clear();
     }
 

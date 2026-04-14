@@ -322,7 +322,6 @@ bool SerialPort::Write_Impl(const void *data, size_t size) {
 }
 
 unsigned SerialPort::RxThread() {
-    DWORD dwBytesTransferred = 0; // 091117 initialized variables
     char szString[1024];
 
     Purge();
@@ -339,17 +338,17 @@ unsigned SerialPort::RxThread() {
         // PC version does BUSY WAIT
         Sleep(5); // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
         {
+            size_t dwBytesTransferred = 0U;
             // Loop to wait for the data.
             do {
-                WithLock(CritSec_Comm, [&](){
-                    // Read the data from the serial port.
-                    dwBytesTransferred = ComPort::Read(szString);
-                    if (dwBytesTransferred > 0) {
-                        ProcessData(szString, dwBytesTransferred);
-                    } else {
-                        dwBytesTransferred = 0;
-                    }
-                });
+                // Do not hold CritSec_Comm while waiting for port data: multiple
+                // receive threads must be able to block in Read() independently.
+                dwBytesTransferred = ComPort::Read(szString);
+                if (dwBytesTransferred > 0) {
+                    ProcessData(szString, dwBytesTransferred);
+                } else {
+                    dwBytesTransferred = 0;
+                }
                 Sleep(1); // JMW20070515: give port some time to
                 // fill... prevents ReadFile from causing the
                 // thread to take up too much CPU
