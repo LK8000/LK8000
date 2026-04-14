@@ -154,6 +154,7 @@ void ComPort::ProcessChar(char c) {
 }
 
 void ComPort::ProcessData(const char* string, size_t size) {
+  ScopeLock lock(CritSec_Comm);
   std::for_each_n(string, size, [this](auto c) {
     ProcessChar(c);
   });

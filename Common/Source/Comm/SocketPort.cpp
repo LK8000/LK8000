@@ -190,7 +190,6 @@ unsigned SocketPort::RxThread() {
             devOpen(devGetDeviceOnPort(GetPortIndex()));
         }
 
-        ScopeLock Lock(CritSec_Comm);
         int nRecv = ComPort::Read(szString);
         if (nRecv > 0) {
             ProcessData(szString, nRecv);
