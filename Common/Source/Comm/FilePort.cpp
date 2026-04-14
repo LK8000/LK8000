@@ -181,7 +181,6 @@ unsigned FilePort::RxThread()
         devParseNMEA(GetPortIndex(), szString, &GPS_INFO);
       }
       AddStatTx(nRecv);
-      UpdateStatus();
     }
   }
 

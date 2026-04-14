@@ -33,8 +33,6 @@ public:
     unsigned long SetBaudrate(unsigned long) override;
     unsigned long GetBaudrate() const override;
 
-    void UpdateStatus() override;
-
     size_t Read(void *szString, size_t size) override;
 
 protected:

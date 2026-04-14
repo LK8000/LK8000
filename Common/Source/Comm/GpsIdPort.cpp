@@ -51,10 +51,6 @@ bool GpsIdPort::Close() {
     return true;
 }
 
-void GpsIdPort::UpdateStatus() {
-
-}
-
 unsigned GpsIdPort::RxThread() {
     DWORD rc = 0;
     const int nh = 2;

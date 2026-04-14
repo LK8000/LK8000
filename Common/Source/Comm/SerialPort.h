@@ -33,7 +33,7 @@ public:
     unsigned long SetBaudrate(unsigned long) override;
     unsigned long GetBaudrate() const override;
 
-    void UpdateStatus() override;
+    void UpdateStatus();
 
     size_t Read(void *data, size_t size) override;
 
