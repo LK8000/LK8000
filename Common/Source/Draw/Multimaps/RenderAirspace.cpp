@@ -86,7 +86,6 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     //LKColor RED_COL       = RGB_LIGHTORANGE;
     LKColor BLUE_COL = RGB_BLUE;
     LKColor LIGHTBLUE_COL = RGB_LIGHTBLUE;
-    LKColor col = RGB_BLACK;
     double zoomfactor = 1;
 
     int *iSplit = &Multimap_SizeY[Get_Current_Multimap_Type()];
@@ -108,19 +107,6 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
     StartupStore(_T("...Type=%d  CURRENT=%d  Multimap_size=%d = isplit=%d\n"),
             Get_Current_Multimap_Type(), Current_Multimap_SizeY, Multimap_SizeY[Get_Current_Multimap_Type()], *iSplit);
 #endif
-
-    if (bInvCol)
-        col = RGB_WHITE;
-
-    LKPen hpHorizon(PEN_SOLID, IBLSCALE(1), col);
-    LKBrush hbHorizon(col);
-    const auto OldPen = Surface.SelectObject(hpHorizon);
-    const auto OldBrush = Surface.SelectObject(hbHorizon);
-
-
-    //bool bFound = false;
-    Surface.SelectObject(OldPen);
-    Surface.SelectObject(OldBrush);
 
     RECT rct = rc; /* rectangle for topview */
     rc.top = (long) ((double) (rci.bottom - rci.top) * fSplitFact)+rci.top;
@@ -460,7 +446,9 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
     if (fSplitFact > 0.0) {
         sDia.rc = rct;
-        sDia.rc.bottom -= 1;
+        if (fSplitFact < 1.0) {
+            sDia.rc.bottom -= 1;
+        }
         if (getsideviewpage == IM_HEADING)
             MapWindow::SharedTopView(Surface, &sDia, GPSbrg, 90.0);
 
@@ -471,6 +459,10 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
     }
 
+    if (rc.top == rc.bottom) {
+        zoom.SetLimitMapScale(true);
+        return;
+    }
 
     RECT rcc = rc;
     if ((Current_Multimap_SizeY < SIZE4) && (sDia.fYMin < GC_SEA_LEVEL_TOLERANCE))
