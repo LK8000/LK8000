@@ -21,6 +21,7 @@ Copyright_License {
 }
 */
 
+#include "options.h"
 #include "Util/UTF8.hpp"
 #include "Util/CharUtil.hpp"
 
@@ -82,27 +83,6 @@ IsLeading4(unsigned char ch)
   return (ch & 0xfc) == 0xf8;
 }
 
-static constexpr unsigned char
-MakeLeading4(unsigned char value)
-{
-  return 0xf8 | value;
-}
-
-/**
- * Is this a leading byte that is followed by 5 continuation byte?
- */
-static constexpr bool
-IsLeading5(unsigned char ch)
-{
-  return (ch & 0xfe) == 0xfc;
-}
-
-static constexpr unsigned char
-MakeLeading5(unsigned char value)
-{
-  return 0xfc | value;
-}
-
 static constexpr bool
 IsContinuation(unsigned char ch)
 {
@@ -118,69 +98,96 @@ MakeContinuation(unsigned char value)
   return 0x80 | (value & 0x3f);
 }
 
+static constexpr bool
+IsValidUnicodeScalar(unsigned ch)
+{
+  return ch <= 0x10ffff && (ch < 0xd800 || ch > 0xdfff);
+}
+
+static const char *
+FindNonASCIIOrZero(const char *p);
+
 bool
 ValidateUTF8(const char *p)
 {
-  for (; *p != 0; ++p) {
-    unsigned char ch = *p;
-    if (IsASCII(ch))
-      continue;
+  while (true) {
+    /* fast path for ASCII runs; compilers can auto-vectorize this */
+    p = FindNonASCIIOrZero(p);
 
-    if (IsContinuation(ch))
-      /* continuation without a prefix */
+    const unsigned char ch = *p;
+    if (ch == 0)
+      return true;
+
+    ++p;
+
+    if (gcc_unlikely(ch < 0xc2))
+      /* continuation without a prefix, overlong two-byte sequence or
+         some other illegal start byte */
       return false;
 
-    if (IsLeading1(ch)) {
+    if (ch < 0xe0) {
       /* 1 continuation */
-      if (!IsContinuation(*++p))
+      if (!IsContinuation(*p))
         return false;
-    } else if (IsLeading2(ch)) {
-      /* 2 continuations */
-      if (!IsContinuation(*++p) || !IsContinuation(*++p))
-        return false;
-    } else if (IsLeading3(ch)) {
-      /* 3 continuations */
-      if (!IsContinuation(*++p) || !IsContinuation(*++p) ||
-          !IsContinuation(*++p))
-        return false;
-    } else if (IsLeading4(ch)) {
-      /* 4 continuations */
-      if (!IsContinuation(*++p) || !IsContinuation(*++p) ||
-          !IsContinuation(*++p) || !IsContinuation(*++p))
-        return false;
-    } else if (IsLeading5(ch)) {
-      /* 5 continuations */
-      if (!IsContinuation(*++p) || !IsContinuation(*++p) ||
-          !IsContinuation(*++p) || !IsContinuation(*++p) ||
-          !IsContinuation(*++p))
-        return false;
-    } else
-      return false;
-  }
 
-  return true;
+      ++p;
+    } else if (ch < 0xf0) {
+      /* 2 continuations */
+      const unsigned char a = *p;
+      if (!IsContinuation(a))
+        return false;
+
+      ++p;
+
+      if ((ch == 0xe0 && a < 0xa0) ||
+          (ch == 0xed && a >= 0xa0))
+        /* overlong sequence or UTF-16 surrogate */
+        return false;
+
+      if (!IsContinuation(*p))
+        return false;
+
+      ++p;
+    } else if (ch < 0xf5) {
+      /* 3 continuations */
+      const unsigned char a = *p;
+      if (!IsContinuation(a))
+        return false;
+
+      ++p;
+
+      if ((ch == 0xf0 && a < 0x90) ||
+          (ch == 0xf4 && a >= 0x90))
+        /* overlong sequence or code point above U+10FFFF */
+        return false;
+
+      if (!IsContinuation(*p) || !IsContinuation(*(p + 1)))
+        return false;
+
+      p += 2;
+    } else {
+      /* RFC 3629 UTF-8 ends at four bytes */
+      return false;
+    }
+  }
 }
 
 size_t
 SequenceLengthUTF8(char ch)
 {
-  if (IsASCII(ch))
+  const unsigned char uch = ch;
+
+  if (IsASCII(uch))
     return 1;
-  else if (IsLeading1(ch))
+  else if (uch >= 0xc2 && uch < 0xe0)
     /* 1 continuation */
     return 2;
-  else if (IsLeading2(ch))
+  else if (uch >= 0xe0 && uch < 0xf0)
     /* 2 continuations */
     return 3;
-  else if (IsLeading3(ch))
+  else if (uch >= 0xf0 && uch < 0xf5)
     /* 3 continuations */
     return 4;
-  else if (IsLeading4(ch))
-    /* 4 continuations */
-    return 5;
-  else if (IsLeading5(ch))
-    /* 5 continuations */
-    return 6;
   else
     /* continuation without a prefix or some other illegal
        start byte */
@@ -219,24 +226,33 @@ SequenceLengthUTF8(const char *p)
 
   if (IsASCII(ch))
     return 1;
-  else if (IsLeading1(ch))
-    /* 1 continuation */
-    return InnerSequenceLengthUTF8<1>(p);
-  else if (IsLeading2(ch))
-    /* 2 continuations */
-    return InnerSequenceLengthUTF8<2>(p);
-  else if (IsLeading3(ch))
-    /* 3 continuations */
-    return InnerSequenceLengthUTF8<3>(p);
-  else if (IsLeading4(ch))
-    /* 4 continuations */
-    return InnerSequenceLengthUTF8<4>(p);
-  else if (IsLeading5(ch))
-    /* 5 continuations */
-    return InnerSequenceLengthUTF8<5>(p);
-  else
-    /* continuation without a prefix or some other illegal
-       start byte */
+  else if (ch < 0xc2)
+    return 0;
+  else if (ch < 0xe0)
+    return IsContinuation(*p) ? 2 : 0;
+  else if (ch < 0xf0) {
+    const unsigned char a = *p;
+    if (!IsContinuation(a) ||
+        (ch == 0xe0 && a < 0xa0) ||
+        (ch == 0xed && a >= 0xa0))
+      return 0;
+
+    ++p;
+    return IsContinuation(*p) ? 3 : 0;
+  } else if (ch < 0xf5) {
+    const unsigned char a = *p;
+    if (!IsContinuation(a) ||
+        (ch == 0xf0 && a < 0x90) ||
+        (ch == 0xf4 && a >= 0x90))
+      return 0;
+
+    ++p;
+    if (!IsContinuation(*p))
+      return 0;
+
+    ++p;
+    return IsContinuation(*p) ? 4 : 0;
+  } else
     return 0;
 }
 
@@ -303,6 +319,9 @@ Latin1ToUTF8(const char *gcc_restrict src, char *gcc_restrict buffer,
 char *
 UnicodeToUTF8(unsigned ch, char *q)
 {
+  if (gcc_unlikely(!IsValidUnicodeScalar(ch)))
+    ch = 0xfffdu;
+
   if (gcc_likely(ch < 0x80)) {
     *q++ = (char)ch;
   } else if (gcc_likely(ch < 0x800)) {
@@ -312,26 +331,11 @@ UnicodeToUTF8(unsigned ch, char *q)
     *q++ = MakeLeading2(ch >> 12);
     *q++ = MakeContinuation(ch >> 6);
     *q++ = MakeContinuation(ch);
-  } else if (ch < 0x200000) {
+  } else {
     *q++ = MakeLeading3(ch >> 18);
     *q++ = MakeContinuation(ch >> 12);
     *q++ = MakeContinuation(ch >> 6);
     *q++ = MakeContinuation(ch);
-  } else if (ch < 0x4000000) {
-    *q++ = MakeLeading4(ch >> 24);
-    *q++ = MakeContinuation(ch >> 18);
-    *q++ = MakeContinuation(ch >> 12);
-    *q++ = MakeContinuation(ch >> 6);
-    *q++ = MakeContinuation(ch);
-  } else if (ch < 0x80000000) {
-    *q++ = MakeLeading5(ch >> 30);
-    *q++ = MakeContinuation(ch >> 24);
-    *q++ = MakeContinuation(ch >> 18);
-    *q++ = MakeContinuation(ch >> 12);
-    *q++ = MakeContinuation(ch >> 6);
-    *q++ = MakeContinuation(ch);
-  } else {
-    // error
   }
 
   return q;
@@ -417,8 +421,6 @@ CropIncompleteUTF8(char *const p)
     expected_continuations = 3;
   else if (IsLeading4(ch))
     expected_continuations = 4;
-  else if (IsLeading5(ch))
-    expected_continuations = 5;
   else {
     assert(n_continuations == 0);
     gcc_unreachable();
@@ -451,8 +453,8 @@ TruncateStringUTF8(const char *p, size_t max_chars, size_t max_bytes)
 
   size_t result = 0;
   while (max_chars > 0 && *p != '\0') {
-    size_t sequence = SequenceLengthUTF8(*p);
-    if (sequence > max_bytes)
+    const size_t sequence = SequenceLengthUTF8(p);
+    if (sequence == 0 || sequence > max_bytes)
       break;
 
     result += sequence;
@@ -482,76 +484,108 @@ CopyTruncateStringUTF8(char *dest, size_t dest_size,
 std::pair<unsigned, const char *>
 NextUTF8(const char *p)
 {
-  unsigned char a = *p++;
+  const unsigned char a = *p++;
   if (a == 0)
     return std::make_pair(0u, nullptr);
 
   if (IsASCII(a))
     return std::make_pair(unsigned(a), p);
 
-  assert(!IsContinuation(a));
+  if (gcc_unlikely(a < 0xc2))
+    return std::make_pair(0xfffdu, p);
 
-  if (IsLeading1(a)) {
+  if (a < 0xe0) {
     /* 1 continuation */
-    unsigned char b = *p++;
-    assert(IsContinuation(b));
+    const unsigned char b = *p;
+    if (!IsContinuation(b))
+      return std::make_pair(0xfffdu, p);
 
+    ++p;
     return std::make_pair(((a & 0x1f) << 6) | (b & 0x3f), p);
-  } else if (IsLeading2(a)) {
+  } else if (a < 0xf0) {
     /* 2 continuations */
-    unsigned char b = *p++;
-    assert(IsContinuation(b));
-    unsigned char c = *p++;
-    assert(IsContinuation(c));
+    const unsigned char b = *p;
+    if (!IsContinuation(b) ||
+        (a == 0xe0 && b < 0xa0) ||
+        (a == 0xed && b >= 0xa0))
+      return std::make_pair(0xfffdu, p);
 
+    ++p;
+    const unsigned char c = *p;
+    if (!IsContinuation(c))
+      return std::make_pair(0xfffdu, p);
+
+    ++p;
     return std::make_pair(((a & 0xf) << 12) | ((b & 0x3f) << 6) | (c & 0x3f),
                           p);
-  } else if (IsLeading3(a)) {
+  } else if (a < 0xf5) {
     /* 3 continuations */
-    unsigned char b = *p++;
-    assert(IsContinuation(b));
-    unsigned char c = *p++;
-    assert(IsContinuation(c));
-    unsigned char d = *p++;
-    assert(IsContinuation(d));
+    const unsigned char b = *p;
+    if (!IsContinuation(b) ||
+        (a == 0xf0 && b < 0x90) ||
+        (a == 0xf4 && b >= 0x90))
+      return std::make_pair(0xfffdu, p);
 
-    return std::make_pair(((a & 0x7) << 18) | ((b & 0x3f) << 12)
-                          | ((c & 0x3f) << 6) | (d & 0x3f),
-                          p);
-  } else if (IsLeading4(a)) {
-    /* 4 continuations */
-    unsigned char b = *p++;
-    assert(IsContinuation(b));
-    unsigned char c = *p++;
-    assert(IsContinuation(c));
-    unsigned char d = *p++;
-    assert(IsContinuation(d));
-    unsigned char e = *p++;
-    assert(IsContinuation(e));
+    ++p;
+    const unsigned char c = *p;
+    if (!IsContinuation(c))
+      return std::make_pair(0xfffdu, p);
 
-    return std::make_pair(((a & 0x3) << 24) | ((b & 0x3f) << 18)
-                          | ((c & 0x3f) << 12) | ((d & 0x3f) << 6)
-                          | (e & 0x3f),
-                          p);
-  } else if (IsLeading5(a)) {
-    /* 5 continuations */
-    unsigned char b = *p++;
-    unsigned char c = *p++;
-    unsigned char d = *p++;
-    unsigned char e = *p++;
-    unsigned char f = *p++;
-    assert(IsContinuation(b));
-    assert(IsContinuation(c));
-    assert(IsContinuation(d));
-    assert(IsContinuation(e));
-    assert(IsContinuation(f));
+    ++p;
+    const unsigned char d = *p;
+    if (!IsContinuation(d))
+      return std::make_pair(0xfffdu, p);
 
-    return std::make_pair(((a & 0x1) << 30) | ((b & 0x3f) << 24)
-                          | ((c & 0x3f) << 18) | ((d & 0x3f) << 12)
-                          | ((e & 0x3f) << 6) | (f & 0x3f),
-                          p);
+    ++p;
+    const unsigned ch = ((a & 0x7) << 18) | ((b & 0x3f) << 12)
+      | ((c & 0x3f) << 6) | (d & 0x3f);
+    return std::make_pair(IsValidUnicodeScalar(ch) ? ch : 0xfffdu, p);
   } else {
-    assert(false);
-    gcc_unreachable();
+    return std::make_pair(0xfffdu, p);
   }
 }
+
+#ifndef DOCTEST_CONFIG_DISABLE
+#include <doctest/doctest.h>
+
+TEST_CASE("ValidateUTF8 rejects malformed sequences") {
+  CHECK(ValidateUTF8("ASCII only"));
+  CHECK(ValidateUTF8("κόσμε"));
+
+  CHECK_FALSE(ValidateUTF8("\x80"));
+  CHECK_FALSE(ValidateUTF8("\xc2"));
+  CHECK_FALSE(ValidateUTF8("\xe0\xa0"));
+  CHECK_FALSE(ValidateUTF8("\xf0\x90\x80"));
+  CHECK_FALSE(ValidateUTF8("\xc0\x80"));
+  CHECK_FALSE(ValidateUTF8("\xc1\xbf"));
+  CHECK_FALSE(ValidateUTF8("\xe0\x80\x80"));
+  CHECK_FALSE(ValidateUTF8("\xed\xa0\x80"));
+  CHECK_FALSE(ValidateUTF8("\xf0\x80\x80\x80"));
+  CHECK_FALSE(ValidateUTF8("\xf4\x90\x80\x80"));
+  CHECK_FALSE(ValidateUTF8("\xf8\x88\x80\x80\x80"));
+}
+
+TEST_CASE("UTF8 helpers stay strict and consistent") {
+  CHECK(SequenceLengthUTF8('A') == 1);
+  CHECK(SequenceLengthUTF8("κ") == 2);
+  CHECK(SequenceLengthUTF8("€") == 3);
+  CHECK(SequenceLengthUTF8("🚁") == 4);
+
+  CHECK(SequenceLengthUTF8('\xc0') == 0);
+  CHECK(SequenceLengthUTF8('\xf8') == 0);
+  CHECK(SequenceLengthUTF8("\xed\xa0\x80") == 0);
+  CHECK(SequenceLengthUTF8("\xf4\x90\x80\x80") == 0);
+
+  char surrogate_buffer[8] = {};
+  char *surrogate_end = UnicodeToUTF8(0xd800u, surrogate_buffer);
+  *surrogate_end = 0;
+  CHECK(ValidateUTF8(surrogate_buffer));
+  CHECK(NextUTF8(surrogate_buffer).first == 0xfffdu);
+
+  char range_buffer[8] = {};
+  char *range_end = UnicodeToUTF8(0x110000u, range_buffer);
+  *range_end = 0;
+  CHECK(ValidateUTF8(range_buffer));
+  CHECK(NextUTF8(range_buffer).first == 0xfffdu);
+}
+#endif

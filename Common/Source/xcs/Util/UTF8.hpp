@@ -75,10 +75,11 @@ char *
 Latin1ToUTF8(unsigned char ch, char *buffer);
 
 /**
- * Convert the specified Unicode character to UTF-8 and write it to
- * the buffer.  buffer must have a length of at least 6!
+ * Convert the specified Unicode scalar value to UTF-8 and write it to
+ * the buffer. Invalid values are replaced with U+FFFD. The buffer must
+ * have a length of at least 4.
  *
- * @return a pointer to the buffer plus the added bytes(s)
+ * @return a pointer to the buffer plus the added byte(s)
  */
 gcc_nonnull_all
 char *
