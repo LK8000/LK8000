@@ -672,6 +672,8 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devAirControlDisplay.cpp
     Common/Source/Devices/devFlyBeeper.cpp
     Common/Source/Devices/devVectorVario.cpp
+    Common/Source/Devices/devGDL90.cpp
+
     Common/Source/Devices/DeviceRegister.cpp
 
     Common/Source/Dialogs/Airspaces/dlgAirspace.cpp
@@ -776,6 +778,14 @@ add_library( LK8000 SHARED
     Common/Source/Devices/Fanet/frame.h
     Common/Source/Devices/Fanet/frame.cpp
     Common/Source/Devices/Fanet/macaddr.h
+
+    Common/Source/Devices/GDL90/tests/heartbeat.cpp
+    Common/Source/Devices/GDL90/tests/traffic.cpp
+    Common/Source/Devices/GDL90/tests/helpers.cpp
+    Common/Source/Devices/GDL90/tests/foreflight.cpp
+    Common/Source/Devices/GDL90/tests/stratux.cpp
+    Common/Source/Devices/GDL90/tests/frame_scanner.cpp
+
 
     Common/Source/Android/fdsan.h
     Common/Source/Android/fdsan.c

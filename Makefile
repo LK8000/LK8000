@@ -1097,6 +1097,13 @@ COMMS	:=\
 
 
 DEVS	:=\
+	$(DEV)/GDL90/tests/heartbeat.cpp \
+	$(DEV)/GDL90/tests/traffic.cpp \
+	$(DEV)/GDL90/tests/helpers.cpp \
+	$(DEV)/GDL90/tests/foreflight.cpp \
+	$(DEV)/GDL90/tests/stratux.cpp \
+	$(DEV)/GDL90/tests/frame_scanner.cpp \
+	$(DEV)/devGDL90.cpp \
 	$(DEV)/Fanet/Fanet.cpp \
 	$(DEV)/Fanet/frame.cpp \
 	$(DEV)/devBase.cpp \
