@@ -245,9 +245,15 @@ struct FanetSettings : public DriverData {
   std::string current_region;
 };
 
+enum driver_data_tag : unsigned {
+  // 0 is reserved for generic driver data
+  FanetSettingsTag = 1
+};
+
+
 BOOL SendData(DeviceDescriptor_t* d, const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
   try {
-    auto settings = d->get_data<FanetSettings>(0);
+    auto settings = d->get_data<FanetSettings>(FanetSettingsTag);
     if (settings) {
       // set region parameters on first run or if regions change
       const auto params =
@@ -317,7 +323,7 @@ void Fanet(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& d
 
 bool EnableFanet(DeviceDescriptor_t& d) {
 
-  auto settings = d.get_data<FanetSettings>(0);
+  auto settings = d.get_data<FanetSettings>(FanetSettingsTag);
   if (settings) {
     settings->current_region = "";  // reset regional settings, will be set by SendData
   }
