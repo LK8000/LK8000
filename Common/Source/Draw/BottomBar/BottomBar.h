@@ -31,6 +31,10 @@ class bottom_bar final {
 
   void draw(LKSurface& Surface, const PixelRect& rc);
 
+  unsigned get_size() const {
+    return _rect.GetSize().cy; ;
+  }
+
  private:
   static unsigned get_current_mode();
 

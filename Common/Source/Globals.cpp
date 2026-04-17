@@ -260,7 +260,6 @@ void Globals_Init(void) {
   AverEffTime=0;
   DrawBottom=false;
   BottomMode=BM_CRU;
-  BottomSize=1; // Init by LKInitScreen only
   TopSize=0;
   BottomGeom=0;
 

@@ -107,7 +107,7 @@ void MapWindow::DrawWelcome8000(LKSurface& Surface, const RECT& rc) {
   }
 
   lk::strcpy(Buffer,MsgToken<874>()); // Click on center screen to begin
-  y= rc.bottom-BottomSize-textSize.cy-NIBLSCALE(2);
+  y= rc.bottom-GetBottomBarSize()-textSize.cy-NIBLSCALE(2);
   LKWriteText(Surface, Buffer,(rc.right-rc.left)/2, y , WTMODE_NORMAL, WTALIGN_CENTER,RGB_WHITENOREV, false);
 
 

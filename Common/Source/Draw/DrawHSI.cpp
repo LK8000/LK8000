@@ -72,6 +72,13 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     approach = false;
     landing = false;
 
+    static unsigned BottomSize = GetBottomBarSize();
+    unsigned NewBottomSize = GetBottomBarSize();
+    if (BottomSize != NewBottomSize) {
+        BottomSize = NewBottomSize;
+        DoInit[MDI_DRAWHSI] = true; //Screen size has changed, all HSI dimensions must be recalculated
+    }
+
     if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
         centerX=(rc.right+rc.left)/2;
         centerY=(rc.bottom-BottomSize-InfoPageTopLineSeparator-TOPLIMITER)/2  +InfoPageTopLineSeparator+TOPLIMITER;
