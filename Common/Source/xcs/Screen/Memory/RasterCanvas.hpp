@@ -316,35 +316,37 @@ public:
 
     int y2 = std::ceil(v2.y);
 
-    auto slope = [](FloatPoint a, FloatPoint b) -> float {
+    // X-intercept of edge a→b at scanline y.
+    // Clamping t to [0,1] prevents extrapolation beyond edge endpoints,
+    // which eliminates horizontal artifacts on thin/degenerate triangles.
+    auto edgeX = [](FloatPoint a, FloatPoint b, float y) -> float {
       float dy = b.y - a.y;
-      return (dy > 0.001f) ? (b.x - a.x) / dy : 0.0f;
+      if (dy < 1e-6f) {
+        return (a.x + b.x) * 0.5f;
+      }
+      float t = std::clamp((y - a.y) / dy, 0.0f, 1.0f);
+      return a.x + t * (b.x - a.x);
     };
-
-    float s13 = slope(v1, v3);
-    float s12 = slope(v1, v2);
-    float s23 = slope(v2, v3);
 
     auto fillLine = [&](int y, float x1, float x2) {
       if (x1 > x2) {
         std::swap(x1, x2);
       }
       int xs = std::max<int>(0, std::floor(x1));
-      int xe = std::min<int>(buffer.width, std::ceil(x2) + 1);
+      int xe = std::min<int>(buffer.width, std::ceil(x2));
       if (xs < xe) {
         operations.FillPixels(At(xs, y), xe - xs, c);
       }
     };
 
-    // Top half
+    // Top half: edges v1->v3 and v1->v2
     for (int y = yStart; y < std::min(y2, yEnd); y++) {
-      float t = y - v1.y;
-      fillLine(y, v1.x + s13 * t, v1.x + s12 * t);
+      fillLine(y, edgeX(v1, v3, y), edgeX(v1, v2, y));
     }
 
-    // Bottom half
+    // Bottom half: edges v1->v3 and v2->v3
     for (int y = std::max(yStart, y2); y < yEnd; y++) {
-      fillLine(y, v1.x + s13 * (y - v1.y), v2.x + s23 * (y - v2.y));
+      fillLine(y, edgeX(v1, v3, y), edgeX(v2, v3, y));
     }
   }
 
