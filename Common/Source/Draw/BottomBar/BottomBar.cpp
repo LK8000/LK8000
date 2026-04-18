@@ -19,13 +19,16 @@
 #include "Util/UTF8.hpp"
 #endif
 
-void bottom_bar::draw(LKSurface& Surface, const PixelRect& rect) {
+bool bottom_bar::draw(LKSurface& Surface, const PixelRect& rect) {
+  bool update_needed = false;
   if (rect != _screen_rect) {
     // screen has changed => refresh layout
+    update_needed = true;
     refresh_layout(Surface, rect);
   }
   fill_background(Surface);
   draw_data(Surface);
+  return update_needed;
 }
 
 unsigned bottom_bar::get_current_mode() {

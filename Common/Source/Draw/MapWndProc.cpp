@@ -188,6 +188,7 @@ void MapWindow::_OnSize(int cx, int cy) {
 
 void MapWindow::UpdateActiveScreenZone(RECT rc) {
     TestLog(_T("... ** UpdateActiveScreenZone %d,%d,%d,%d"),rc.left,rc.top,rc.right,rc.bottom);
+    unsigned BottomSize = GetBottomBarSize();
 
     Y_BottomBar = rc.bottom - BottomSize;
     P_Doubleclick_bottomright.x = rc.right - BottomSize - NIBLSCALE(15);

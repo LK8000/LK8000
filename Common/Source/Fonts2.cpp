@@ -639,32 +639,4 @@ void Init_Fonts_2() {
   ApplyCustomResize(&logfontVisualBot,FontVisualGlide);
   InitializeOneFont(LK8VisualTopFont, logfontVisualTop);
   InitializeOneFont(LK8VisualBotFont, logfontVisualBot);
-
-
-  //
-  // CALCULATE BOTTOMSIZE HEIGHT
-  //
-  // This is relative to the code in LKDrawBottomBar.
-  // We need to calculate it here because it is used by other draw functions.
-  //
-
-  LKWindowSurface windowSurface(*main_window);
-  LKBitmapSurface tmpSurface(windowSurface, 1, 1);
-
-  const auto oldFont = tmpSurface.SelectObject(LK8BottomBarTitleFont);
-  const int syTitle = tmpSurface.GetTextHeight(_T("M"));;
-
-  tmpSurface.SelectObject(LK8BottomBarValueFont);
-  const int syValue = tmpSurface.GetTextHeight(_T("5"));;
-
-  if (ScreenLandscape)
-  	BottomSize = (syTitle + syValue) + 2 * NIBLSCALE(1);
-  else
-  	BottomSize = 2 * (syTitle + syValue) + 3 * NIBLSCALE(1);
-
-  BottomSize += NIBLSCALE(1);
-  tmpSurface.SelectObject(oldFont);
-  tmpSurface.Release();
-
-
 }

@@ -18,6 +18,8 @@
 
 void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
+    PixelScalar BottomSize = GetBottomBarSize();
+
     static short terrainwarning=0;
     bool inpanmode= (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN));
 

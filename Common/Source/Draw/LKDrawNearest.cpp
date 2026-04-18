@@ -72,6 +72,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
     LKColor rcolor;
     short curmapspace = MapSpaceMode;
 
+	PixelScalar BottomSize = GetBottomBarSize();
 
     if (DoInit[MDI_DRAWNEAREST]) {
 

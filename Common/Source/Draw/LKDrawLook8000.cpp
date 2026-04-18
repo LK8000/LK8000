@@ -154,6 +154,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         flipflopcount = 0;
     }
 
+	PixelScalar BottomSize = GetBottomBarSize();
 
     if (DoInit[MDI_DRAWLOOK8000]) {
 

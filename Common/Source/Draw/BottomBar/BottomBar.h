@@ -29,7 +29,16 @@ class bottom_bar final {
  public:
   bottom_bar() = default;
 
-  void draw(LKSurface& Surface, const PixelRect& rc);
+  /** @brief Draws the bottom bar.
+   * @param Surface The surface to draw on.
+   * @param rc The rectangle defining the area to draw.
+   * @return True if the layout was updated, false otherwise.
+   */
+  bool draw(LKSurface& Surface, const PixelRect& rc);
+
+  unsigned get_size() const {
+    return _rect.GetSize().cy;
+  }
 
  private:
   static unsigned get_current_mode();

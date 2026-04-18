@@ -72,6 +72,8 @@ void MapWindow::DrawHSI(LKSurface& Surface, const RECT& rc, bool& usingQFU, bool
     approach = false;
     landing = false;
 
+    PixelScalar BottomSize = GetBottomBarSize(); // can change DoInit[MDI_DRAWHSI], so it must be called before the check.
+
     if(DoInit[MDI_DRAWHSI]) { //All the dimensions must be recalculated in case of screen resolution change
         centerX=(rc.right+rc.left)/2;
         centerY=(rc.bottom-BottomSize-InfoPageTopLineSeparator-TOPLIMITER)/2  +InfoPageTopLineSeparator+TOPLIMITER;

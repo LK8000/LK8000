@@ -54,6 +54,8 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     static double max_positiveGload;
     static double max_negativeGload;
 
+	PixelScalar BottomSize = GetBottomBarSize();
+
     if (DoInit[MDI_DRAWVARIO]) {
 
         const int boxthick = IBLSCALE(BOXTHICK);

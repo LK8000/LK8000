@@ -12,7 +12,9 @@
 
 namespace {
 
+Mutex bottom_bar_mutex;
 std::unique_ptr<bottom_bar> bottom_bar_ptr;
+unsigned last_bottom_bar_size = 0;
 
 } // namespace
 
@@ -20,18 +22,43 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc) {
 
   if (DoInit[MDI_DRAWBOTTOMBAR]) {
 
-    bottom_bar_ptr = nullptr;
+    ResetBottomBarDrawer();
 
     DoInit[MDI_DRAWBOTTOMBAR] = false;
   }  // end doinit
 
+  ScopeLock lock(bottom_bar_mutex);
   if (!bottom_bar_ptr) {
     bottom_bar_ptr = std::make_unique<bottom_bar>();
   }
 
-  bottom_bar_ptr->draw(Surface, PixelRect(rc));
+  if (bottom_bar_ptr->draw(Surface, PixelRect(rc))) {
+    UpdateActiveScreenZone(rc);
+  }
 }
 
 void MapWindow::ResetBottomBarDrawer() {
+  ScopeLock lock(bottom_bar_mutex);
   bottom_bar_ptr = nullptr;
+  last_bottom_bar_size = 0;
+}
+
+unsigned MapWindow::GetBottomBarSize() {
+  ScopeLock lock(bottom_bar_mutex);
+  if (!bottom_bar_ptr) {
+    return 0;
+  }
+  unsigned new_size = bottom_bar_ptr->get_size();
+  if (last_bottom_bar_size != new_size) {
+    // Screen size has changed
+    DoInit[MDI_DRAWHSI] = true; 
+    DoInit[MDI_DRAWINFOPAGE] = true;
+    DoInit[MDI_DRAWLOOK8000] = true;
+    DoInit[MDI_DRAWNEAREST] = true;
+    DoInit[MDI_DRAWVARIO] = true;
+    DoInit[MDI_DRAWFLIGHTMODE] = true;
+
+    last_bottom_bar_size = new_size;
+  }
+  return new_size;
 }

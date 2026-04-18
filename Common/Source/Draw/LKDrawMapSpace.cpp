@@ -71,7 +71,7 @@ void MapWindow::DrawMapSpace(LKSurface& Surface,  const RECT& rc) {
     auto OldPen = Surface.SelectObject(BorderPen);
     auto OldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
 
-    Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom - BottomSize);
+    Surface.Rectangle(rc.left, rc.top, rc.right, rc.bottom - GetBottomBarSize());
 
     Surface.SelectObject(OldPen);
     Surface.SelectObject(OldBrush);
