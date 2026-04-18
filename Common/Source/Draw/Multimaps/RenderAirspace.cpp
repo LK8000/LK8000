@@ -426,7 +426,6 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
         // VisualGlide not full screen?
         if (fSplitFact > 0.0) {
             sDia.rc = rct;
-            sDia.rc.bottom -= 1;
             MapWindow::SharedTopView(Surface, &sDia, GPSbrg, 90.0);
             sDia.rc = rct;
         }
@@ -446,9 +445,6 @@ void MapWindow::RenderAirspace(LKSurface& Surface, const RECT& rc_input) {
 
     if (fSplitFact > 0.0) {
         sDia.rc = rct;
-        if (fSplitFact < 1.0) {
-            sDia.rc.bottom -= 1;
-        }
         if (getsideviewpage == IM_HEADING)
             MapWindow::SharedTopView(Surface, &sDia, GPSbrg, 90.0);
 

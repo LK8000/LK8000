@@ -342,7 +342,6 @@ void MapWindow::RenderNearAirspace(LKSurface& Surface, const RECT& rci) {
 
     if (fSplitFact > 0.0) {
         sDia.rc = rct;
-        sDia.rc.bottom -= 1;
         SharedTopView(Surface, &sDia, (double) iAS_Bearing, (double) wpt_brg);
 
     }
