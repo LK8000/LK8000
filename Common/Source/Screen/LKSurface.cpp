@@ -309,6 +309,15 @@ void LKSurface::Polyline(const POINT *apt, int cpt) {
 
 void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
     if(cpt >= 2) {
+#ifdef ENABLE_OPENGL
+        const GLPushScissor push_scissor;
+        const GLCanvasScissor scissor(ClipRect);
+        Polyline(apt, cpt);
+#elif defined(USE_GDI)
+        ExcludeClipRect(ClipRect);
+        Polyline(apt, cpt);
+#else
+
         POINT Line[2];
         const POINT * Start = NULL;
         size_t n=0;
@@ -344,6 +353,7 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
         if(Start) {
             Polyline(Start, n);
         }
+#endif
     }
 }
 
