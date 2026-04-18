@@ -314,8 +314,10 @@ void LKSurface::Polyline(const POINT *apt, int cpt, const RECT& ClipRect) {
         const GLCanvasScissor scissor(ClipRect);
         Polyline(apt, cpt);
 #elif defined(USE_GDI)
-        ExcludeClipRect(ClipRect);
+        int savedState = SaveState();
+        ::IntersectClipRect(*this, ClipRect.left, ClipRect.top, ClipRect.right, ClipRect.bottom);
         Polyline(apt, cpt);
+        RestoreState(savedState);
 #else
 
         POINT Line[2];
