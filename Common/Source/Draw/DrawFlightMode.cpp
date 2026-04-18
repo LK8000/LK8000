@@ -147,10 +147,8 @@ void MapWindow::DrawFlightMode(LKSurface& Surface, const RECT& rc)
       vsepar=NIBLSCALE(1);
       #define HSEPAR NIBLSCALE(1)  // right border and items separator
 
-      PixelScalar BottomSize = GetBottomBarSize();
-
       use_rescale=1; // IBLSCALING
-      PixelScalar minvsize = vsepar + rescale(mmIconSize.cy) + rescale(batteryIconSize.cy)+vsepar;
+      int minvsize= vsepar + rescale(mmIconSize.cy) + rescale(batteryIconSize.cy)+vsepar;
       if (minvsize > BottomSize) {
           use_rescale=0; // NO SCALING
           minvsize= vsepar + rescale(mmIconSize.cy) + rescale(batteryIconSize.cy)+vsepar;

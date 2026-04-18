@@ -70,7 +70,6 @@ RasterPoint MapWindow::GetOrigTargetPan(const RECT& rc, int targetPanSize, bool 
 }
 
 RasterPoint MapWindow::GetOrigNorthSmart(const RECT& rc, double trackbearing, bool isLandscape) {
-  PixelScalar BottomSize = GetBottomBarSize();
   double middleXY = isLandscape 
       ? ((rc.bottom - BottomSize) + rc.top) / 2 
       : (rc.left + rc.right) / 2;
@@ -91,7 +90,6 @@ RasterPoint MapWindow::GetOrigNorthSmart(const RECT& rc, double trackbearing, bo
 
 RasterPoint MapWindow::GetOrigAutoOrient(const RECT& rc, double scale, double autoOrientScale) {
   if (scale > autoOrientScale) {
-    PixelScalar BottomSize = GetBottomBarSize();
     return {
       (rc.left + rc.right) / 2,
       ((rc.bottom - BottomSize) + rc.top) / 2

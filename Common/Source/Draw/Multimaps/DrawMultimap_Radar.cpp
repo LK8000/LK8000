@@ -14,6 +14,6 @@
 
 void MapWindow::LKDrawMultimap_Radar(LKSurface& Surface, const RECT& rc) {
     RECT frc = rc;
-    frc.bottom = frc.bottom - GetBottomBarSize() - NIBLSCALE(2);
+    frc.bottom = frc.bottom - BottomSize - NIBLSCALE(2);
     LKDrawFlarmRadar(Surface, frc);
 }

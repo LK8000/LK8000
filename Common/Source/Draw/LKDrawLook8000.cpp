@@ -154,13 +154,6 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
         flipflopcount = 0;
     }
 
-	static unsigned BottomSize = GetBottomBarSize();
-	unsigned NewBottomSize = GetBottomBarSize();
-	if (BottomSize != NewBottomSize) {
-		BottomSize = NewBottomSize;
-		DoInit[MDI_DRAWLOOK8000] = true;  // Screen size has changed, all HSI
-									// dimensions must be recalculated
-	}
 
     if (DoInit[MDI_DRAWLOOK8000]) {
 

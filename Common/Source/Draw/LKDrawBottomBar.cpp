@@ -35,10 +35,3 @@ void MapWindow::DrawBottomBar(LKSurface& Surface, const RECT& rc) {
 void MapWindow::ResetBottomBarDrawer() {
   bottom_bar_ptr = nullptr;
 }
-
-unsigned MapWindow::GetBottomBarSize() {
-  if (!bottom_bar_ptr) {
-    return 0;
-  }
-  return bottom_bar_ptr->get_size();
-}

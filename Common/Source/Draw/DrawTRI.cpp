@@ -57,9 +57,7 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
 
   POINT Start;
 
-  unsigned BottomSize = GetBottomBarSize();
-
-  short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
+  static short top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
 
   Start.y = ((rc.bottom-BottomSize-top)/2)+top-NIBLSCALE(10);
   Start.x = (rc.right - rc.left)/2;
@@ -309,7 +307,6 @@ void MapWindow::DrawCompassRose(LKSurface& Surface, const RECT& rc, double direc
 }
 
 void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc) {
-  PixelScalar BottomSize = GetBottomBarSize();
 
   PixelScalar top =
       (((rc.bottom - BottomSize - (rc.top + TOPLIMITER) - BOTTOMLIMITER) /

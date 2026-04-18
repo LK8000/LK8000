@@ -187,6 +187,7 @@ GEXTERN short NewMapDeclutter;
 GEXTERN short AverEffTime;
 GEXTERN bool DrawBottom;
 GEXTERN short BottomMode; // Stripe number
+GEXTERN short BottomSize; // Height of bottom stripe
 GEXTERN short TopSize;
 
 // Overlay config

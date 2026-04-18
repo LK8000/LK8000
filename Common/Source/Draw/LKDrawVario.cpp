@@ -54,14 +54,6 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
     static double max_positiveGload;
     static double max_negativeGload;
 
-	static unsigned BottomSize = GetBottomBarSize();
-	unsigned NewBottomSize = GetBottomBarSize();
-	if (BottomSize != NewBottomSize) {
-		BottomSize = NewBottomSize;
-		DoInit[MDI_DRAWVARIO] = true;  // Screen size has changed, all HSI
-									// dimensions must be recalculated
-	}
-
     if (DoInit[MDI_DRAWVARIO]) {
 
         const int boxthick = IBLSCALE(BOXTHICK);
