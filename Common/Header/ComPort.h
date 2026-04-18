@@ -33,7 +33,7 @@ public:
     ComPort( ComPort&& ) = delete;
     ComPort& operator=( ComPort&& ) = delete;
 
-    virtual ~ComPort() {}
+    virtual ~ComPort();
 
     virtual bool StopRxThread();
     virtual bool StartRxThread();

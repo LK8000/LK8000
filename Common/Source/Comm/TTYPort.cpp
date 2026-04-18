@@ -35,7 +35,7 @@ TTYPort::TTYPort(unsigned idx, const tstring& sName, unsigned dwSpeed, BitIndex_
 }
 
 TTYPort::~TTYPort() {
-    Close();
+    assert(_tty < 0); // Port should have been closed by now
 }
 
 namespace {

@@ -27,6 +27,11 @@ ComPort::ComPort(unsigned idx, const tstring& sName)
     pLastNmea = std::begin(_NmeaString);
 }
 
+ComPort::~ComPort() {
+    assert(!rx_thread.IsDefined()); // Rx thread should have been stopped by now
+    assert(!status_thread.IsDefined()); // Status thread should have been stopped by now
+}
+
 bool ComPort::Close() {
     if (status_thread.IsDefined()) {
         WithLock(status_mutex, [&]() {
