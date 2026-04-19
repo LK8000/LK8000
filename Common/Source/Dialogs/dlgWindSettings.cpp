@@ -43,7 +43,7 @@ static void OnWindSpeedData(DataField* Sender,
       break;
     case DataField::daPut:
     case DataField::daChange:
-      CALCULATED_INFO.WindSpeed = Units::FromWindSpped(Sender->GetAsFloat());
+      CALCULATED_INFO.WindSpeed = Units::FromWindSpeed(Sender->GetAsFloat());
       break;
     default:
       // calc alt...

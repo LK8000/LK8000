@@ -249,7 +249,7 @@ namespace Units {
     return From(GetDistanceUnit(), Distance);
   }
 
-  inline double FromWindSpped(double speed) {
+  inline double FromWindSpeed(double speed) {
     return From(GetWindSpeedUnit(), speed);
   }
 
