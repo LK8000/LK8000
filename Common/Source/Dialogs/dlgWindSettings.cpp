@@ -24,30 +24,8 @@ static void OnCancelClicked(WndButton* pWnd){
   }
 }
 
-static void UpdateWind(bool set) {
-  WndProperty *wp;
-  double ws = 0.0, wb = 0.0;
-  wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
-  if (wp) {
-    ws = Units::FromWindSpped(wp->GetDataField()->GetAsFloat());
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpDirection"));
-  if (wp) {
-    wb = wp->GetDataField()->GetAsFloat();
-  }
-  if ((ws != CALCULATED_INFO.WindSpeed)
-      ||(wb != CALCULATED_INFO.WindBearing)) {
-    if (set) {
-      SetWindEstimate(ws, wb);
-    }
-    CALCULATED_INFO.WindSpeed = ws;
-    CALCULATED_INFO.WindBearing = wb;
-  }
-}
-
-
 static void OnCloseClicked(WndButton* pWnd){
-  UpdateWind(true);
+  SetWindEstimate(CALCULATED_INFO.WindSpeed, CALCULATED_INFO.WindBearing);
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -56,46 +34,36 @@ static void OnCloseClicked(WndButton* pWnd){
   }
 }
 
-
-static void OnWindSpeedData(DataField *Sender, DataField::DataAccessKind_t Mode){
-
-  switch(Mode){
+static void OnWindSpeedData(DataField* Sender,
+                            DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
     case DataField::daGet:
-      Sender->SetMax(Units::ToWindSpeed(Units::From(unKiloMeterPerHour,200.0)));
+      Sender->SetMax(Units::ToWindSpeed(Units::From(unKiloMeterPerHour, 200.0)));
       Sender->Set(Units::ToWindSpeed(CALCULATED_INFO.WindSpeed));
-    break;
+      break;
     case DataField::daPut:
-      UpdateWind(false);
-    break;
     case DataField::daChange:
+      CALCULATED_INFO.WindSpeed = Units::FromWindSpped(Sender->GetAsFloat());
+      break;
     default:
       // calc alt...
-    break;
+      break;
   }
 }
 
-static void OnWindDirectionData(DataField *Sender, DataField::DataAccessKind_t Mode){
-
-  double lastWind;
-
-  switch(Mode){
-	case DataField::daGet:
-		lastWind = CALCULATED_INFO.WindBearing;
-		if (lastWind>=359)
-			lastWind=0;
-		Sender->Set(lastWind);
-		break;
-	case DataField::daPut:
-		UpdateWind(false);
-		break;
-	case DataField::daChange:
-		lastWind = Sender->GetAsFloat();
-		if (lastWind > 359)
-			Sender->Set(0.0);
-		break;
-	default:
-		break;
-	}
+static void OnWindDirectionData(DataField* Sender,
+                                DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      Sender->Set(AngleLimit360(CALCULATED_INFO.WindBearing));
+      break;
+    case DataField::daPut:
+    case DataField::daChange:
+      CALCULATED_INFO.WindBearing = AngleLimit360(Sender->GetAsFloat());
+      break;
+    default:
+      break;
+  }
 }
 
 static CallBackTableEntry_t CallBackTable[]={
