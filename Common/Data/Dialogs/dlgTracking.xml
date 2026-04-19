@@ -34,6 +34,9 @@
         <WndProperty Caption="_@M002282_" X="1" Y="0" Width="-1" Height="22" Font="2" CaptionWidth="100" Help="_@H1258_">
             <DataField DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min="0.0" Max="60.0" Step="1.0"  OnDataAccess="OnInterval"/>
         </WndProperty>
+        <WndProperty Caption="_@M2333_" X="1" Y="-1" Width="-1" Height="22" Font="2" CaptionWidth="100" Help="_@H1298_">
+          <DataField DataType="enum"  Min="0" Max="2" Step="1" OnDataAccess="OnStartConfig"/>
+        </WndProperty>
         <WndProperty Caption="_@M002286_" X="1" Y="-1" Width="-1" Height="22" Font="2" Keyboard="1" CaptionWidth="100">
             <DataField DataType="string" OnDataAccess="OnUser"/>
         </WndProperty>

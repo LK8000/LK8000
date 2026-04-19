@@ -616,6 +616,7 @@ static void DrawTrackingSkylinesAero(tracking::Profile& profile, LKSurface& Surf
   Surface.DrawText(rcClient.GetTopLeft(), label);
   // TODO: add usefull info
   //    profile.interval
+  //    profile.always_on
   //    profile.user
   //    profile.radar
 }
