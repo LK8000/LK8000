@@ -13,19 +13,19 @@
 #include "WindowControls.h"
 #include "resource.h"
 
-static WndForm *wf=NULL;
+using std::placeholders::_1;
+using std::placeholders::_2;
 
 static void OnCancelClicked(WndButton* pWnd){
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
-      pForm->SetModalResult(mrOK);
+      pForm->SetModalResult(mrCancel);
     }
   }
 }
 
 static void OnCloseClicked(WndButton* pWnd){
-  SetWindEstimate(CALCULATED_INFO.WindSpeed, CALCULATED_INFO.WindBearing);
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -34,16 +34,16 @@ static void OnCloseClicked(WndButton* pWnd){
   }
 }
 
-static void OnWindSpeedData(DataField* Sender,
+static void OnWindSpeedData(double& WindSpeed, DataField* Sender,
                             DataField::DataAccessKind_t Mode) {
   switch (Mode) {
     case DataField::daGet:
       Sender->SetMax(Units::ToWindSpeed(Units::From(unKiloMeterPerHour, 200.0)));
-      Sender->Set(Units::ToWindSpeed(CALCULATED_INFO.WindSpeed));
+      Sender->Set(Units::ToWindSpeed(WindSpeed));
       break;
     case DataField::daPut:
     case DataField::daChange:
-      CALCULATED_INFO.WindSpeed = Units::FromWindSpeed(Sender->GetAsFloat());
+      WindSpeed = Units::FromWindSpeed(Sender->GetAsFloat());
       break;
     default:
       // calc alt...
@@ -51,81 +51,93 @@ static void OnWindSpeedData(DataField* Sender,
   }
 }
 
-static void OnWindDirectionData(DataField* Sender,
+static void OnWindDirectionData(double& WindBearing, DataField* Sender,
                                 DataField::DataAccessKind_t Mode) {
   switch (Mode) {
     case DataField::daGet:
-      Sender->Set(AngleLimit360(CALCULATED_INFO.WindBearing));
+      Sender->Set(AngleLimit360(WindBearing));
       break;
     case DataField::daPut:
     case DataField::daChange:
-      CALCULATED_INFO.WindBearing = AngleLimit360(Sender->GetAsFloat());
+      WindBearing = AngleLimit360(Sender->GetAsFloat());
       break;
     default:
       break;
   }
 }
 
-static CallBackTableEntry_t CallBackTable[]={
-  CallbackEntry(OnWindSpeedData),
-  CallbackEntry(OnWindDirectionData),
-  CallbackEntry(OnCancelClicked),
-  CallbackEntry(OnCloseClicked),
-  EndCallbackEntry()
-};
 
-void dlgWindSettingsShowModal(void){
+void dlgWindSettingsShowModal(void) {
+  auto wind= WithLock(CritSec_FlightData, []() -> WindData {
+    return {
+        .Speed = CALCULATED_INFO.WindSpeed,
+        .Direction = CALCULATED_INFO.WindBearing,
+    };
+  });
 
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_WINDSETTINGS);
+  CallBackTableEntry_t CallBackTable[] = {
+      callback_entry(
+          "OnWindSpeedData",
+          std::bind(&OnWindSpeedData, std::ref(wind.Speed), _1, _2)),
+      callback_entry(
+          "OnWindDirectionData",
+          std::bind(&OnWindDirectionData, std::ref(wind.Direction), _1, _2)),
 
-  if (wf) {
-    WndProperty* wp;
+      CallbackEntry(OnCancelClicked),
+      CallbackEntry(OnCloseClicked),
+      EndCallbackEntry()};
 
-    wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
-    if (wp) {
-      wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
-      wp->RefreshDisplay();
-    }
-
-    wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
-    if (wp) {
-      DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M418_ = "Manual"
-      dfe->addEnumText(MsgToken<418>());
-	// LKTOKEN  _@M175_ = "Circling"
-      dfe->addEnumText(MsgToken<175>());
-      dfe->addEnumText(LKGetText(TEXT("ZigZag")));
-	// LKTOKEN  _@M149_ = "Both"
-      dfe->addEnumText(MsgToken<149>());
-      dfe->addEnumText(MsgToken<1793>()); // External
-
-      wp->GetDataField()->Set(AutoWindMode);
-      wp->RefreshDisplay();
-
-      wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
-      if (wp) {
-        wp->GetDataField()->Set(MapWindow::EnableTrailDrift);
-        wp->RefreshDisplay();
-      }
-    }
-
-    wf->ShowModal();
-
-    wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
-    if (wp) {
-      if (AutoWindMode != wp->GetDataField()->GetAsInteger()) {
-	AutoWindMode = wp->GetDataField()->GetAsInteger();
-      }
-    }
-    wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
-    if (wp) {
-      if (MapWindow::EnableTrailDrift != wp->GetDataField()->GetAsBoolean()) {
-        MapWindow::EnableTrailDrift = wp->GetDataField()->GetAsBoolean();
-      }
-    }
-
-    delete wf;
+  std::unique_ptr<WndForm> wf(
+      dlgLoadFromXML(CallBackTable, IDR_XML_WINDSETTINGS));
+  if (!wf) {
+    return;
   }
-  wf = NULL;
 
+  auto wp = wf->FindByName<WndProperty>(TEXT("prpSpeed"));
+  if (wp) {
+    wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
+    wp->RefreshDisplay();
+  }
+
+  wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
+  if (wp) {
+    DataField* dfe = wp->GetDataField();
+    if (dfe) {
+      dfe->addEnumList({
+        MsgToken<418>(),  // Manual
+        MsgToken<175>(),  // Circling
+        LKGetText(TEXT("ZigZag")),
+        MsgToken<149>(),  // Both
+        MsgToken<1793>()  // External
+      });
+    }
+    wp->GetDataField()->Set(AutoWindMode);
+    wp->RefreshDisplay();
+  }
+
+  wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
+  if (wp) {
+    wp->GetDataField()->Set(MapWindow::EnableTrailDrift);
+    wp->RefreshDisplay();
+  }
+
+  int res =wf->ShowModal();
+  if (res == mrCancel) {
+    return;
+  }
+
+  SetWindEstimate(wind.Speed, wind.Direction);
+
+  wp = wf->FindByName<WndProperty>(TEXT("prpAutoWind"));
+  if (wp) {
+    if (AutoWindMode != wp->GetDataField()->GetAsInteger()) {
+      AutoWindMode = wp->GetDataField()->GetAsInteger();
+    }
+  }
+  wp = wf->FindByName<WndProperty>(TEXT("prpTrailDrift"));
+  if (wp) {
+    if (MapWindow::EnableTrailDrift != wp->GetDataField()->GetAsBoolean()) {
+      MapWindow::EnableTrailDrift = wp->GetDataField()->GetAsBoolean();
+    }
+  }
 }
