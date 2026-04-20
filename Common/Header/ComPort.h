@@ -105,9 +105,9 @@ protected:
     Poco::Event StopEvt = { false };
 
 private:
-    InvokeThread rx_thread = { 
-        "ComPort",
-        [&]() { this->RxThread(); }
+    InvokeThread<decltype(&ComPort::RxThread), ComPort*> rx_thread = {
+        "ComPort", 
+        &ComPort::RxThread, this 
     };
 
     using _NmeaString_t = char[MAX_NMEA_LEN];
@@ -143,9 +143,9 @@ private:
     Mutex status_mutex;
     Cond status_cv;
 
-    InvokeThread status_thread = {
+    InvokeThread<decltype(&ComPort::status_thread_loop), ComPort*> status_thread = {
         "ComPort::status_thread",
-        [&]() { this->status_thread_loop(); }
+        &ComPort::status_thread_loop, this
     };
 };
 
