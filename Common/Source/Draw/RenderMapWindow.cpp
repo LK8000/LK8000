@@ -22,6 +22,8 @@ bool FastZoom;
 //
 void MapWindow::RenderMapWindow(LKSurface& Surface, const RECT& rc)
 {
+  InitBottomBar(Surface, rc);
+
   // First of all we set the flag for DrawBottom. This is critical.
   if (NOTANYPAN)
 	DrawBottom=true;

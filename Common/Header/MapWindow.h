@@ -959,6 +959,7 @@ private:
 
 private:
 
+  static void InitBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void ResetBottomBarDrawer();
   static unsigned GetBottomBarSize();

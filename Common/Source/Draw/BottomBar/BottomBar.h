@@ -40,10 +40,11 @@ class bottom_bar final {
     return _rect.GetSize().cy;
   }
 
+  void refresh_layout(LKSurface& Surface, const PixelRect& rc);
+
  private:
   static unsigned get_current_mode();
 
-  void refresh_layout(LKSurface& Surface, const PixelRect& rc);
   void fill_background(LKSurface& Surface);
   void draw_data(LKSurface& Surface);
 
