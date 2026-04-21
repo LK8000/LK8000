@@ -11,7 +11,8 @@
 #define _THREAD_THREAD_HPP_
 
 #include "Poco/Thread.h"
-#include <functional>
+#include <tuple>
+#include <utility>
 
 #ifdef __linux__
 #include <linux/prctl.h>  /* Definition of PR_* constants */
@@ -53,16 +54,21 @@ private:
     Poco::Thread _thread;
 };
 
+template <typename Callable, typename... Args>
 class InvokeThread : public Thread {
-public:
-    InvokeThread(const char* name, std::function<void()>&& func) : Thread(name) , _func(std::move(func)) {}
+ public:
+  InvokeThread(const char* name, Callable&& func, Args&&... args)
+      : Thread(name),
+        func(std::forward<Callable>(func)),
+        args(std::forward<Args>(args)...) {}
 
-    void Run() override {
-        _func();
-    }
+  void Run() override {
+    std::apply(func, args);
+  }
 
-private:
-    std::function<void()> _func;
+ private:
+  std::decay_t<Callable> func;
+  std::tuple<std::decay_t<Args>...> args;
 };
 
 #endif //_THREAD_THREAD_HPP_

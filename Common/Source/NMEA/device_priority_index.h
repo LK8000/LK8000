@@ -10,6 +10,17 @@
 #define _NMEA_device_priority_index_h_
 #include "Comm/DeviceDescriptor.h"
 
+/**
+ * Default source priority index used by from_device_data.
+ *
+ * Priority is based only on the device port index: lower port numbers have
+ * higher priority. NUMDEV represents the invalid/unset state, so any valid
+ * device can replace it.
+ *
+ * A new source is accepted only if its priority is greater than or equal to
+ * the current source (operator>=). Equal priority allows the same device to
+ * keep refreshing its value.
+ */
 struct default_device_priority_index final {
  public:
   default_device_priority_index() = default;

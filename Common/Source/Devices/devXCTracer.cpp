@@ -201,10 +201,13 @@ bool LXWP0(DeviceDescriptor_t* d, char **params, size_t nparams, NMEA_INFO *pGPS
         }
     }
 
+#if 0
+// heading is disabled for now, value is reported as unreliable by users.
     double mag;
     if (ReadChecked(params[10], mag)) {
       pGPS->MagneticHeading.update(*d, mag);
     }
+#endif
 
     double wind_speed, wind_dir;
     if (ReadChecked(params[11], wind_dir) && ReadChecked(params[12], wind_speed)) {

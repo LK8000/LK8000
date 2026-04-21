@@ -18,42 +18,52 @@
 
 
 /**
- * used to manage Baro Altitude Source priority
- *   - Flarm device First ordered by port index
- *   - other external device after order by port index too.
- *   - some old WinCE device handel baro sensor withiut device config, 
- *     this have the lowest prriority any time (index greater than DeviceList size).
+ * Priority index for the Baro Altitude source.
+ *
+ * Priority rules (highest to lowest):
+ *   1. Flarm device, ordered by port index (lowest port number = highest priority).
+ *   2. Any other external device, ordered by port index.
+ *   3. Invalid/unset state: device_index == NUMDEV (no source active).
+ *
+ * A new source is accepted only if its priority is greater than or equal to
+ * the current source (operator>=). Equal priority allows the same device to
+ * keep refreshing its value.
+ *
+ * Note: some legacy WinCE devices report a baro sensor without a device
+ * config entry; they are represented with device_index >= NUMDEV and therefore
+ * always have the lowest possible priority.
  */
-struct BaroIndex {
+class BaroIndex {
+public:
     BaroIndex() = default;
 
-    explicit BaroIndex(unsigned index) : device_index(index) {}
-
-    BaroIndex& operator=(const DeviceDescriptor_t& d) {
+    BaroIndex& operator = (const DeviceDescriptor_t& d) {
         device_index = d.PortNumber;
         is_flarm = d.nmeaParser.isFlarm;
         return *this;
     }
 
-    bool operator>=(const DeviceDescriptor_t& d) const {
+    bool operator >= (const DeviceDescriptor_t& d) const {
         if (is_flarm == d.nmeaParser.isFlarm) {
             return device_index >= d.PortNumber;
         }
-        return is_flarm;
+        return d.nmeaParser.isFlarm;
     }
 
-    bool is_flarm = false;
-    unsigned device_index = NUMDEV;
-
-    bool operator <= (BaroIndex& idx) const {
-        if (is_flarm == idx.is_flarm) {
-            return device_index <= idx.device_index;
-        }
-        return is_flarm;
+    bool operator == (const BaroIndex& idx) const {
+        return (is_flarm == idx.is_flarm) && (device_index == idx.device_index);
     }
 
-    bool operator != (BaroIndex& idx) const {
-        return (is_flarm != idx.is_flarm) && (device_index != idx.device_index);
+    bool operator != (const BaroIndex& idx) const {
+        return (is_flarm != idx.is_flarm) || (device_index != idx.device_index);
+    }
+
+    bool operator == (unsigned idx) const {
+        return device_index == idx;
+    }
+
+    bool operator != (unsigned idx) const {
+        return device_index != idx;
     }
 
     bool valid() const {
@@ -68,6 +78,9 @@ struct BaroIndex {
     operator unsigned () const {
         return device_index;
     }
+private:
+    unsigned device_index = NUMDEV;
+    bool is_flarm = false;    
 };
 
 struct WindData {
