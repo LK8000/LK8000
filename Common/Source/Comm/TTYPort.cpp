@@ -75,11 +75,16 @@ bool TTYPort::Initialize() {
         szPath.replace(szPath.begin(), std::next(szPath.begin(), 3), _T("/dev/serial/by-id/"));
     }
 
-    _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY);
+    // Open non-blocking first to avoid hangs on some serial drivers (e.g. rfcomm).
+    _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (_tty < 0 || !isatty(_tty)) {
         StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, errno, NEWLINE); // 091117
         StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
-        goto failed;
+        if (_tty >= 0) {
+            close(_tty);
+            _tty = -1;
+        }
+        return false;
     }
 
     struct termios newtio;
@@ -100,17 +105,11 @@ bool TTYPort::Initialize() {
     tcflush(_tty, TCIFLUSH);
     tcsetattr(_tty, TCSANOW, &newtio);
 
+    // Keep non-blocking mode enabled to avoid open/read/write stalls on rfcomm-like ports.
+
     StartupStore(_T(". ComPort %u Init <%s> end OK"), GetPortIndex() + 1, GetPortName());
 
     return true;
-
-failed:
-    if (_tty >= 0) {
-        tcsetattr(_tty, TCSANOW, &_oldtio);
-        close(_tty);
-        _tty = -1;
-    }
-    return false;
 }
 
 int TTYPort::SetRxTimeout(int Timeout) {
@@ -175,7 +174,7 @@ bool TTYPort::IsReady() {
 
 size_t TTYPort::Read(void *szString, size_t size) {
     if(_tty < 0) {
-        return 0;
+        return 0U;
     }
 
     struct timespec timeout;
@@ -203,6 +202,9 @@ size_t TTYPort::Read(void *szString, size_t size) {
         if (iResult > 0) {
             AddStatRx(iResult);
             return iResult;
+        }
+        if (iResult == -1 && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)) {
+            return 0U;
         }
     }
 
@@ -235,35 +237,55 @@ bool TTYPort::Write_Impl(const void *data, size_t size) {
         return 0;
     }
 
-    struct timeval timeout;
-    fd_set writefs;
-    timeout.tv_sec = _Timeout / 1000;
-    timeout.tv_usec = _Timeout % 1000;
+    const char* p = static_cast<const char*>(data);
+    size_t remaining = size;
 
-    int iResult = 0;
-    FD_ZERO(&writefs);
-    FD_SET(_tty, &writefs);
+    while (remaining > 0) {
+        struct timeval timeout;
+        fd_set writefs;
+        timeout.tv_sec = _Timeout / 1000;
+        timeout.tv_usec = (_Timeout % 1000) * 1000;
 
-    // wait for socket ready to write
-    iResult = select(_tty + 1, NULL, &writefs, NULL, &timeout);
-    if (iResult == 0) {
-        return false; // timeout
-    }
+        FD_ZERO(&writefs);
+        FD_SET(_tty, &writefs);
 
-    if ((iResult != -1) && FD_ISSET(_tty, &writefs)) {
-        // socket ready, Write data.
-        iResult = write(_tty, (const char*) data, size);
+        // wait for tty ready to write
+        int iResult = select(_tty + 1, NULL, &writefs, NULL, &timeout);
+        if (iResult == 0) {
+            return false; // timeout before all bytes were written
+        }
+
+        if (iResult == -1) {
+            if (errno == EINTR) {
+                continue;
+            }
+            AddStatErrTx(1);
+            close(_tty);
+            _tty = -1;
+            return false;
+        }
+
+        // writefs contains only _tty; when select() returns > 0, it should be writable.
+        // Keep this check as a defensive guard.
+        if (!FD_ISSET(_tty, &writefs)) {
+            continue;
+        }
+
+        iResult = write(_tty, p, remaining);
         if (iResult > 0) {
             AddStatTx(iResult);
-            return true;
+            p += iResult;
+            remaining -= static_cast<size_t>(iResult);
+            continue;
         }
-    }
 
-    if (iResult == -1) {
+        if (iResult == -1 && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)) {
+            continue;
+        }
+
         AddStatErrTx(1);
         close(_tty);
         _tty = -1;
-
         return false;
     }
 
