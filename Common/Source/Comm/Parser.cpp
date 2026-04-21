@@ -13,6 +13,7 @@
 #include "Logger.h"
 #include "Geoid.h"
 #include "GpsWeekNumberFix.h"
+#include <algorithm>
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "Devices/LKHolux.h"
@@ -26,6 +27,127 @@ extern double NorthOrSouth(double in, TCHAR NoS);
 extern double MixedFormatToDegrees(double mixed);
 
 namespace {
+
+// Returns true if two NMEA time-of-day values belong to the same fix epoch.
+// GGA and RMC from the same GPS fix can carry slightly different subsecond
+// timestamps (e.g. S100 + Flarm). The epsilon is adaptive: derived from the
+// observed RMC cadence so it scales correctly from 0.5 Hz to 5 Hz GPS rates.
+inline bool SameNMEATime(double t1, double t2, double epsilon) {
+  return fabs(t1 - t2) < epsilon;
+}
+
+struct ParsedNMEATime {
+  int hour = 0;
+  int minute = 0;
+  int second = 0;
+  double time_of_day = 0.0;
+};
+
+double NMEATimeOfDay(const NMEA_INFO& gps) {
+  return gps.Second + (gps.Minute * 60) + (gps.Hour * 3600);
+}
+
+double ApplyDayRollover(double fix_time, int year, int month, int day,
+                        int& StartDay) {
+  constexpr int SECONDS_PER_DAY = 86400;
+
+  static int day_difference = 0;
+  static int previous_months_day_difference = 0;
+
+  // Waiting for the first valid date
+  if (StartDay == -1) {
+    if (day == 0) {
+      return fix_time;
+    }
+    StartupStore(_T(". First GPS DATE: %d-%d-%d  %s%s"), year, month, day,
+                 WhatTimeIsIt(), NEWLINE);
+    StartDay = day;
+    day_difference = 0;
+    previous_months_day_difference = 0;
+    return fix_time;  // No offset on first fix
+  }
+
+  if (day < StartDay) {
+    // Month boundary detected (e.g. day=1, StartDay=26): accumulate elapsed
+    // days
+    previous_months_day_difference = day_difference + 1;
+    day_difference = 0;
+    StartDay = day;
+    StartupStore(
+        _T(". Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"),
+        year, month, day, previous_months_day_difference, NEWLINE);
+  }
+  else {
+    const int new_day_difference = day - StartDay;
+    if (new_day_difference != day_difference) {
+      day_difference = new_day_difference;
+      StartupStore(_T(". Change GPS DATE: %d-%d-%d  %s%s"), year, month, day,
+                   WhatTimeIsIt(), NEWLINE);
+    }
+  }
+
+  // Add accumulated day offset to keep time monotonic across midnight/month
+  // boundaries
+  const int total_days = day_difference + previous_months_day_difference;
+  if (total_days > 0) {
+    fix_time += total_days * SECONDS_PER_DAY;
+  }
+
+  return fix_time;
+}
+
+template <typename CharT>
+ParsedNMEATime ParseNMEATime(const CharT* StrTime) {
+  ParsedNMEATime result;
+  // NMEA time format: HHMMSS[.ss] - minimum 6 characters required
+  size_t len = 0;
+  while (StrTime[len] != '\0') ++len;
+  if (len < 6) {
+    return result;  // Return default (zeros)
+  }
+
+  double secs = 0.0;
+
+  if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
+    result.hour = (StrTime[0] - '0') * 10 + (StrTime[1] - '0');
+  }
+  if (_istdigit(StrTime[2]) && _istdigit(StrTime[3])) {
+    result.minute = (StrTime[2] - '0') * 10 + (StrTime[3] - '0');
+  }
+  if (_istdigit(StrTime[4]) && _istdigit(StrTime[5])) {
+    result.second = (StrTime[4] - '0') * 10 + (StrTime[5] - '0');
+  }
+
+  if (StrTime[6] == '.') {
+    int i = 7;
+    while (_istdigit(StrTime[i])) {
+      double tmp = (StrTime[i] - '0') * 0.1;
+      for (int j = 7; j < i; ++j) {
+        tmp *= 0.1;
+      }
+      secs += tmp;
+      ++i;
+    }
+  }
+
+  result.time_of_day =
+      secs + result.second + (result.minute * 60) + (result.hour * 3600);
+  return result;
+}
+
+//
+// Make time absolute, over 86400seconds when day is changing
+// We need a valid date to use it. We are relying on StartDay.
+//
+template <typename CharT>
+double TimeModify(const CharT* StrTime, NMEA_INFO* pGPS, int& StartDay) {
+  const ParsedNMEATime parsed_time = ParseNMEATime(StrTime);
+  pGPS->Hour = parsed_time.hour;
+  pGPS->Minute = parsed_time.minute;
+  pGPS->Second = parsed_time.second;
+  return ApplyDayRollover(parsed_time.time_of_day, pGPS->Year, pGPS->Month,
+                          pGPS->Day, StartDay);
+}
 
 bool NAVWarn(char c) {
   return c != 'A';
@@ -70,6 +192,50 @@ void NMEAParser::Reset() {
   RMCtime=0;
   GLLtime=0; 
   LastTime = 0;
+
+  nmeaTimeEpsilon.reset();
+}
+
+void NMEAParser::NMEATimeEpsilonEstimator::reset() {
+  samples.fill(0);
+  epsilon = kDefaultEpsilon;
+  lastAbsoluteTime = -1;
+  sampleCount = 0;
+}
+
+void NMEAParser::NMEATimeEpsilonEstimator::update(double absoluteTime) {
+  if (lastAbsoluteTime < 0) {
+    lastAbsoluteTime = absoluteTime;
+    return;
+  }
+
+  const double delta = absoluteTime - lastAbsoluteTime;
+  lastAbsoluteTime = absoluteTime;
+
+  if (delta <= 0 || delta > kMaxCadenceDelta) {
+    return;
+  }
+
+  // Keep only the latest kWindowSize cadence samples.
+  if (sampleCount < samples.size()) {
+    samples[sampleCount++] = delta;
+    return;  // Wait until buffer is full.
+  }
+
+  // Buffer is full: shift-left and add new sample.
+  std::move(samples.begin() + 1, samples.end(), samples.begin());
+  samples.back() = delta;
+
+  // Calculate median from full window; robust against jitter/outliers.
+  // Window of 16 samples spans 16–32 sec at 0.5 Hz, or 3–4 sec at 5 Hz.
+  std::array<double, kWindowSize> sorted = {};
+  std::copy_n(samples.begin(), kWindowSize, sorted.begin());
+  std::nth_element(sorted.begin(), sorted.begin() + kWindowSize / 2,
+                   sorted.end());
+  const double medianDelta = sorted[kWindowSize / 2];
+
+  epsilon = std::clamp(medianDelta * kCadenceToEpsilonFactor, kMinEpsilon,
+                       kMaxEpsilon);
 }
 
 #if defined(PNA) && defined(UNDER_CE)
@@ -293,41 +459,6 @@ void NMEAParser::CheckRMZ() {
   }
 }
 
-namespace {
-//
-// Make time absolute, over 86400seconds when day is changing
-// We need a valid date to use it. We are relying on StartDay.
-//
-template<typename CharT>
-double TimeModify(const CharT* StrTime, NMEA_INFO* pGPS, int& StartDay) {
-    double secs = 0.0;
-
-    if (_istdigit(StrTime[0]) && _istdigit(StrTime[1])) {
-        pGPS->Hour = (StrTime[0] - '0')*10 + (StrTime[1] - '0');
-    }
-    if (_istdigit(StrTime[2]) && _istdigit(StrTime[3])) {
-        pGPS->Minute = (StrTime[2] - '0')*10 + (StrTime[3] - '0');
-    }
-    if (_istdigit(StrTime[4]) && _istdigit(StrTime[5])) {
-        pGPS->Second = (StrTime[4] - '0')*10 + (StrTime[5] - '0');
-    }
-
-    if (StrTime[6] == '.') {
-        int i = 7;
-        while (_istdigit(StrTime[i])) {
-            double tmp = (StrTime[i] - '0')*0.1;
-            for (int j = 7; j < i; ++j) {
-                tmp *= 0.1;
-            }
-            secs += tmp;
-            ++i;
-        }
-    }
-    return secs + TimeModify(pGPS, StartDay);
-}
-
-}
-
 double TimeModify(const char* FixTime, NMEA_INFO* info, int& StartDay) {
   return TimeModify<char>(FixTime, info, StartDay);
 }
@@ -337,37 +468,8 @@ double TimeModify(const wchar_t* FixTime, NMEA_INFO* info, int& StartDay) {
 }
 
 double TimeModify(NMEA_INFO* pGPS, int& StartDay) {
-  static int day_difference = 0, previous_months_day_difference = 0;
-
-  double FixTime = (double) (pGPS->Second + (pGPS->Minute * 60) + (pGPS->Hour * 3600));
-
-  if ((StartDay== -1) && (pGPS->Day != 0)) {
-    StartupStore(_T(". First GPS DATE: %d-%d-%d  %s%s"), pGPS->Year, pGPS->Month, pGPS->Day,WhatTimeIsIt(),NEWLINE);
-    StartDay = pGPS->Day;
-    day_difference=0;
-    previous_months_day_difference=0;
-  }
-  if (StartDay != -1) {
-    if (pGPS->Day < StartDay) {
-      // detect change of month (e.g. day=1, startday=26)
-      previous_months_day_difference=day_difference+1;
-      day_difference=0;
-      StartDay = pGPS->Day;
-      StartupStore(_T(". Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"), 
-	pGPS->Year, pGPS->Month, pGPS->Day,previous_months_day_difference,NEWLINE);
-    }
-    if ( (pGPS->Day-StartDay)!=day_difference) {
-      StartupStore(_T(". Change GPS DATE: %d-%d-%d  %s%s"), pGPS->Year, pGPS->Month, pGPS->Day,WhatTimeIsIt(),NEWLINE);
-    }
-
-    day_difference = pGPS->Day-StartDay;
-    if ((day_difference+previous_months_day_difference)>0) {
-      // Add seconds to fix time so time doesn't wrap around when
-      // going past midnight in UTC
-      FixTime += (day_difference+previous_months_day_difference) * 86400;
-    }
-  }
-  return FixTime;
+  return ApplyDayRollover(NMEATimeOfDay(*pGPS), pGPS->Year, pGPS->Month,
+                          pGPS->Day, StartDay);
 }
 
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
@@ -417,27 +519,25 @@ BOOL NMEAParser::GLL(const char* String, char** params, size_t nparams, NMEA_INF
   pGPS->NAVWarning = !gpsValid;
   
   // use valid time with invalid fix
-  GLLtime = StrToDouble(params[4],NULL);
-  if (!RMCAvailable &&  !GGAAvailable && (GLLtime>0)) {
-    double ThisTime = TimeModify(params[4], pGPS, StartDay);
-    if (!TimeHasAdvanced(ThisTime, pGPS)) return FALSE; 
+  const ParsedNMEATime parsed_time = ParseNMEATime(params[4]);
+  GLLtime = parsed_time.time_of_day;
+  if (!RMCAvailable && !GGAAvailable && (GLLtime > 0)) {
+    const double ThisTime = ApplyDayRollover(parsed_time.time_of_day,
+                                             pGPS->Year, pGPS->Month,
+                                             pGPS->Day, StartDay);
+    if (!TimeHasAdvanced(ThisTime, pGPS)) return FALSE;
   }
   if (!gpsValid) return FALSE;
-  
-  double tmplat;
-  double tmplon;
-  
-  tmplat = MixedFormatToDegrees(StrToDouble(params[0], NULL));
+
+  double tmplat = MixedFormatToDegrees(StrToDouble(params[0], NULL));
   tmplat = NorthOrSouth(tmplat, params[1][0]);
-  
-  tmplon = MixedFormatToDegrees(StrToDouble(params[2], NULL));
-  tmplon = EastOrWest(tmplon,params[3][0]);
-  
+
+  double tmplon = MixedFormatToDegrees(StrToDouble(params[2], NULL));
+  tmplon = EastOrWest(tmplon, params[3][0]);
+
   if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-	pGPS->Latitude = tmplat;
-	pGPS->Longitude = tmplon;
-  } else {
-    
+    pGPS->Latitude = tmplat;
+    pGPS->Longitude = tmplon;
   }
   return TRUE;
 
@@ -489,15 +589,17 @@ BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INF
 
 } // END VTG
 
-BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
-{
-  if(nparams < 9) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
+BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
+                     NMEA_INFO* pGPS) {
+  if (nparams < 9) {
+    TESTBENCH_DO_ONLY(
+        10, StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%u%s"),
+                         (unsigned)nparams, NEWLINE));
     // max index used is 8...
     return FALSE;
   }
 
-  double speed=0;
+  double speed = 0;
 
   gpsValid = !NAVWarn(params[1][0]);
   if (gpsValid) {
@@ -505,13 +607,13 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
   }
 
   connected = true;
-  RMCAvailable=true; // 100409
+  RMCAvailable = true;  // 100409
 
-  #ifdef PNA
+#ifdef PNA
 
   if (DeviceIsGM130) {
     double ps = GM130BarPressure();
-    double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+    double Altitude = (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69;
 
     ScopeLock lock(CritSec_FlightData);
     UpdateBaroSource(pGPS, nullptr, Altitude);
@@ -520,14 +622,14 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
   if (DeviceIsRoyaltek3200) {
     if (Royaltek3200_ReadBarData()) {
       double ps = Royaltek3200_GetPressure();
-      double Altitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+      double Altitude = (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69;
 
       ScopeLock lock(CritSec_FlightData);
-      UpdateBaroSource(pGPS, nullptr,  Altitude);
+      UpdateBaroSource(pGPS, nullptr, Altitude);
     }
   }
 
-  #endif // PNA
+#endif  // PNA
 
   if (!activeGPS) {
     return TRUE;
@@ -538,173 +640,185 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams, NMEA_INF
     // speed is in knots, 2 = 3.7kmh
     speed = StrToDouble(params[6], NULL);
   }
-  
+
   ScopeLock lock(CritSec_FlightData);
 
   pGPS->NAVWarning = !gpsValid;
 
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
-  // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
+  // the RMC sentence marks the start of a new fix, so we force the old data to
+  // be saved for calculations
 
-	if(!gpsValid && !dateValid) {
-		// we have valid date with invalid fix only if we have already got valid fix ...
-		return TRUE;
-	}
+  if (!gpsValid && !dateValid) {
+    // we have valid date with invalid fix only if we have already got valid fix
+    // ...
+    return TRUE;
+  }
 
-	// note that Condor sends no date..
-	const size_t size_date = strlen(params[8]);
-	if (size_date < 6 && !DevIsCondor) {
-		TestLog(_T(".... RMC date field empty, skip sentence!"));
-		return TRUE;
-	}
+  // note that Condor sends no date..
+  const size_t size_date = strlen(params[8]);
+  if (size_date < 6 && !DevIsCondor) {
+    TestLog(_T(".... RMC date field empty, skip sentence!"));
+    return TRUE;
+  }
 
-	// Even with no valid position, we let RMC set the time and date if valid
-	int year, month, day;
-	if (parse_rmc_date(params[8], size_date, year, month, day)) {
-		pGPS->Year = year;
-		pGPS->Month = month;
-		pGPS->Day = day;
-	} else {
-		//.. Condor not sending valid date;
-		if (!DevIsCondor) {
-			static bool logbaddate = true;
-			if (gpsValid && logbaddate) { // 091115
-				StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS"));
-				StartupStore(_T("------ NMEAParser: Date received is \"%04d-%02d-%02d\""), year, month, day); // 100422
-				StartupStore(_T("------ This message will NOT be repeated. %s"), WhatTimeIsIt());
-				// _@M875_ "WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG TIME"
-				DoStatusMessage(MsgToken<875>());
-				logbaddate = false;
-			}
-		}
-	}
+  // Even with no valid position, we let RMC set the time and date if valid
+  int year, month, day;
+  if (parse_rmc_date(params[8], size_date, year, month, day)) {
+    pGPS->Year = year;
+    pGPS->Month = month;
+    pGPS->Day = day;
+  }
+  else {
+    //.. Condor not sending valid date;
+    if (!DevIsCondor) {
+      static bool logbaddate = true;
+      if (gpsValid && logbaddate) {  // 091115
+        StartupStore(
+            _T("------ NMEAParser:RMC Receiving an invalid or null DATE from ")
+            _T("GPS"));
+        StartupStore(
+            _T("------ NMEAParser: Date received is \"%04d-%02d-%02d\""), year,
+            month, day);  // 100422
+        StartupStore(_T("------ This message will NOT be repeated. %s"),
+                     WhatTimeIsIt());
+        // _@M875_ "WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG
+        // TIME"
+        DoStatusMessage(MsgToken<875>());
+        logbaddate = false;
+      }
+    }
+  }
 
-	dateValid = true;
+  dateValid = true;
 
-	RMCtime = StrToDouble(params[0],NULL);
-	double ThisTime = TimeModify(params[0], pGPS, StartDay);
-	// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
-	if (!TimeHasAdvanced(ThisTime, pGPS)) {
-#if DEBUGSEQ
-		StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
-#endif
-		return FALSE;
-	}
+  const ParsedNMEATime parsed_time = ParseNMEATime(params[0]);
+  RMCtime = parsed_time.time_of_day;
+  const double ThisTime = ApplyDayRollover(parsed_time.time_of_day, pGPS->Year,
+                                           pGPS->Month, pGPS->Day, StartDay);
+  // RMC time has priority on GGA and GLL etc. so if we have it we use it at
+  // once
+  if (!TimeHasAdvanced(ThisTime, pGPS)) {
+    DebugLog(_T("..... RMC time not advanced, skipping \n"));  // 31C
+    return FALSE;
+  }
 
-  if (gpsValid) { 
-	double tmplat;
-	double tmplon;
+  nmeaTimeEpsilon.update(ThisTime);
 
-	tmplat = MixedFormatToDegrees(StrToDouble(params[2], NULL));
-	tmplat = NorthOrSouth(tmplat, params[3][0]);
-	  
-	tmplon = MixedFormatToDegrees(StrToDouble(params[4], NULL));
-	tmplon = EastOrWest(tmplon,params[5][0]);
-  
-	if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-		pGPS->Latitude = tmplat;
-		pGPS->Longitude = tmplon;
-	}
-  
-	pGPS->Speed = Units::From(unKnots, speed);;
-  
-	if (pGPS->Speed > GetTrackBearingMinSpeed()) {
-		pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
-	}
-  } // gpsvalid 091108
+  pGPS->Hour = parsed_time.hour;
+  pGPS->Minute = parsed_time.minute;
+  pGPS->Second = parsed_time.second;
+
+  if (gpsValid) {
+    double tmplat = MixedFormatToDegrees(StrToDouble(params[2], NULL));
+    tmplat = NorthOrSouth(tmplat, params[3][0]);
+
+    double tmplon = MixedFormatToDegrees(StrToDouble(params[4], NULL));
+    tmplon = EastOrWest(tmplon, params[5][0]);
+
+    if (!((tmplat == 0.0) && (tmplon == 0.0))) {
+      pGPS->Latitude = tmplat;
+      pGPS->Longitude = tmplon;
+    }
+
+    pGPS->Speed = Units::From(unKnots, speed);
+
+    if (pGPS->Speed > GetTrackBearingMinSpeed()) {
+      pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
+    }
+  }  // gpsvalid 091108
 
 #if defined(PPC2003) || defined(PNA)
   // As soon as we get a fix for the first time, set the
   // system clock to the GPS time.
   static bool sysTimeInitialised = false;
-  
+
   if (!pGPS->NAVWarning && (gpsValid)) {
-	if (SetSystemTimeFromGPS) {
-		if (!sysTimeInitialised) {
-			if ( ( pGPS->Year > 1980 && pGPS->Year<2100) && ( pGPS->Month > 0) && ( pGPS->Hour > 0)) {
-        
-				sysTimeInitialised =true; // Attempting only once
-				SYSTEMTIME sysTime;
-				// ::GetSystemTime(&sysTime);
-				int hours = (int)pGPS->Hour;
-				int mins = (int)pGPS->Minute;
-				int secs = (int)pGPS->Second;
-				sysTime.wYear = (unsigned short)pGPS->Year;
-				sysTime.wMonth = (unsigned short)pGPS->Month;
-				sysTime.wDay = (unsigned short)pGPS->Day;
-				sysTime.wHour = (unsigned short)hours;
-				sysTime.wMinute = (unsigned short)mins;
-				sysTime.wSecond = (unsigned short)secs;
-				sysTime.wMilliseconds = 0;
-				::SetSystemTime(&sysTime);
-			}
-		}
-	}
+    if (SetSystemTimeFromGPS) {
+      if (!sysTimeInitialised) {
+        if ((pGPS->Year > 1980 && pGPS->Year < 2100) && (pGPS->Month > 0) &&
+            (pGPS->Hour > 0)) {
+          sysTimeInitialised = true;  // Attempting only once
+          SYSTEMTIME sysTime;
+          // ::GetSystemTime(&sysTime);
+          int hours = (int)pGPS->Hour;
+          int mins = (int)pGPS->Minute;
+          int secs = (int)pGPS->Second;
+          sysTime.wYear = (unsigned short)pGPS->Year;
+          sysTime.wMonth = (unsigned short)pGPS->Month;
+          sysTime.wDay = (unsigned short)pGPS->Day;
+          sysTime.wHour = (unsigned short)hours;
+          sysTime.wMinute = (unsigned short)mins;
+          sysTime.wSecond = (unsigned short)secs;
+          sysTime.wMilliseconds = 0;
+          ::SetSystemTime(&sysTime);
+        }
+      }
+    }
   }
 #endif
 
   if (!GGAAvailable) {
-	// update SatInUse, some GPS receiver dont emmit GGA sentance
-	if (!gpsValid) { 
-		pGPS->SatellitesUsed = 0;
-	} else {
-		pGPS->SatellitesUsed = -1;
-	}
+    // update SatInUse, some GPS receiver dont emmit GGA sentences
+    if (!gpsValid) {
+      pGPS->SatellitesUsed = 0;
+    }
+    else {
+      pGPS->SatellitesUsed = -1;
+    }
   }
-  
-  if ( !GGAAvailable || (GGAtime == RMCtime)  )  {
-	#if DEBUGSEQ
-	StartupStore(_T("... RMC trigger gps, GGAtime==RMCtime\n")); // 31C
-	#endif
-	TriggerGPSUpdate(); 
+
+  if (!GGAAvailable ||
+      SameNMEATime(GGAtime, RMCtime, nmeaTimeEpsilon.value())) {
+    TriggerGPSUpdate();
   }
 
   return TRUE;
 
-} // END RMC
+}  // END RMC
 
-
-
-
-BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
-{
-  if(nparams < 11) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u <%s>"),(unsigned)nparams,String));
+BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
+                     NMEA_INFO* pGPS) {
+  if (nparams < 11) {
+    TESTBENCH_DO_ONLY(
+        10,
+        StartupStore(_T(". NMEAParser invalid GGA sentence, nparams=%u <%s>"),
+                     (unsigned)nparams, String));
     // max index used is 10...
     return FALSE;
   }
 
   GGAAvailable = TRUE;
-  connected = true;     // 091208
+  connected = true;  // 091208
 
   // this will force gps invalid but will NOT assume gps valid!
   nSatellites = (int)(min(16.0, StrToDouble(params[6], NULL)));
-  if (nSatellites==0) {
-	gpsValid = false;
+  if (nSatellites == 0) {
+    gpsValid = false;
   }
 
-    /*
-     * Fix quality : 
-     *  0 = invalid
-     *  1 = GPS fix (SPS)
-     *  2 = DGPS fix
-     *  3 = PPS fix
-     *  4 = Real Time Kinematic
-     *  5 = Float RTK
-     *  6 = estimated (dead reckoning) (2.3 feature)
-     *  7 = Manual input mode
-     *  8 = Simulation mode
-     */
+  /*
+   * Fix quality :
+   *  0 = invalid
+   *  1 = GPS fix (SPS)
+   *  2 = DGPS fix
+   *  3 = PPS fix
+   *  4 = Real Time Kinematic
+   *  5 = Float RTK
+   *  6 = estimated (dead reckoning) (2.3 feature)
+   *  7 = Manual input mode
+   *  8 = Simulation mode
+   */
 
   unsigned ggafix = strtoul(params[5], nullptr, 10);
   gpsValid = (ggafix > 0 && ggafix < 6);
-  if (ggafix == 6 ) {
+  if (ggafix == 6) {
     DebugLog(_T("------ GGA DEAD RECKON fix skipped"));
   }
 #ifdef YDEBUG
   // in debug we need to accept manual or simulated fix
-  gpsValid = gpsValid || (ggafix == 7 || ggafix == 8); 
+  gpsValid = gpsValid || (ggafix == 7 || ggafix == 8);
 #endif
 
   if (gpsValid) {
@@ -715,109 +829,102 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams, NMEA_INF
     return TRUE;
   }
 
-  // some device don't send sat in use count, set it to "-1" if fix is valid and sat in use is 0
-  if(gpsValid && (nSatellites == 0)) {
-    nSatellites = -1; // unknown count but valid fix !
+  // some device don't send sat in use count, set it to "-1" if fix is valid and
+  // sat in use is 0
+  if (gpsValid && (nSatellites == 0)) {
+    nSatellites = -1;  // unknown count but valid fix !
   }
 
   ScopeLock lock(CritSec_FlightData);
 
-  pGPS->SatellitesUsed = nSatellites; // 091208
-  pGPS->NAVWarning = !gpsValid; // 091208
+  pGPS->SatellitesUsed = nSatellites;  // 091208
+  pGPS->NAVWarning = !gpsValid;        // 091208
 
-  GGAtime=StrToDouble(params[0],NULL);
-  // Even with invalid fix, we might still have valid time
-  // I assume that 0 is invalid, and I am very sorry for UTC time 00:00 ( missing a second a midnight).
-  // is better than risking using 0 as valid, since many gps do not respect any real nmea standard
+  const ParsedNMEATime parsed_time = ParseNMEATime(params[0]);
+  GGAtime = parsed_time.time_of_day;
+  // Even with invalid fix, we might still have valid time.
+  // We treat GGAtime==0 as invalid to guard against faulty GPS sending
+  // all-zero fields. This does miss the exact UTC midnight second, but that
+  // is acceptable — at 00:00:00.xx the subsecond fraction keeps GGAtime > 0.
   //
-  // Update 121215: do not update time with GGA if RMC is found, because at 00UTC only RMC will set the date change!
-  // Remember that we trigger update of calculations when we get GGA.
-  // So what happens if the gps sequence is GGA and then RMC?
-  //    2359UTC:
-  //           GGA , old date, trigger gps calc
-  //           RMC,  old date
-  //    0000UTC:
-  //           GGA, old date even if new date will come for the same quantum,
-  //                GGAtime>0, see (*)
-  //                BANG! oldtime from RMC is 2359, new time from GGA is 0, time is in the past!
+  // Do NOT advance time from GGA when RMC is available, because only RMC
+  // carries the date field needed for the day-rollover. If the sequence is
+  // GGA-then-RMC and we cross midnight:
+  //    2359UTC:  GGA (old date) → trigger; RMC (old date)
+  //    0000UTC:  GGA (still old date, new date arrives with RMC later)
+  //              → GGAtime > 0, time appears to jump backward → BANG!
   //
-  // If the gps is sending first RMC, this problem does not appear of course.
-  //
-  // (*) IMPORTANT> GGAtime at 00UTC will most likely be >0! Because time is in hhmmss.ss  .ss is always >0!!
-  // We check GGAtime, RMCtime, GLLtime etc. for 0 because in case of error the gps will send 000000.000 !!
-  //
-  if ( (!RMCAvailable && (GGAtime>0)) || ((GGAtime>0) && (GGAtime == RMCtime))  ) {  // RMC already came in same time slot
+  // When RMC arrives first, the problem does not occur.
+  // We gate on SameNMEATime(GGAtime, RMCtime) to confirm RMC has already
+  // been processed for this epoch before letting GGA advance the clock.
+  if ((!RMCAvailable && (GGAtime > 0)) ||
+      ((GGAtime > 0) &&
+       SameNMEATime(
+           GGAtime, RMCtime,
+           nmeaTimeEpsilon.value()))) {  // RMC already came in same time slot
 
-	#if DEBUGSEQ
-	StartupStore(_T("... GGA update time = %f RMCtime=%f\n"),GGAtime,RMCtime); // 31C
-	#endif
-	double ThisTime = TimeModify(params[0], pGPS, StartDay);
-	if (!TimeHasAdvanced(ThisTime, pGPS)) {
-		#if DEBUGSEQ
-		StartupStore(_T(".... GGA time not advanced, skip\n")); // 31C
-		#endif
-		return FALSE;
-	}
+    double ThisTime = ApplyDayRollover(parsed_time.time_of_day, pGPS->Year,
+                                       pGPS->Month, pGPS->Day, StartDay);
+    if (!TimeHasAdvanced(ThisTime, pGPS)) {
+      return FALSE;
+    }
+
+    pGPS->Hour = parsed_time.hour;
+    pGPS->Minute = parsed_time.minute;
+    pGPS->Second = parsed_time.second;
   }
   if (gpsValid) {
-	double tmplat;
-	double tmplon;
-	tmplat = MixedFormatToDegrees(StrToDouble(params[1], NULL));
-	tmplat = NorthOrSouth(tmplat, params[2][0]);
-	tmplon = MixedFormatToDegrees(StrToDouble(params[3], NULL));
-	tmplon = EastOrWest(tmplon,params[4][0]);
-	if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-		pGPS->Latitude = tmplat;
-		pGPS->Longitude = tmplon;
-	} 
-	else {
-		DebugLog(_T("++++++ GGA gpsValid with invalid posfix!"));
-		gpsValid=false;
-	}
+    double tmplat = MixedFormatToDegrees(StrToDouble(params[1], NULL));
+    tmplat = NorthOrSouth(tmplat, params[2][0]);
+    double tmplon = MixedFormatToDegrees(StrToDouble(params[3], NULL));
+    tmplon = EastOrWest(tmplon, params[4][0]);
+    if (!((tmplat == 0.0) && (tmplon == 0.0))) {
+      pGPS->Latitude = tmplat;
+      pGPS->Longitude = tmplon;
+    }
+    else {
+      DebugLog(_T("++++++ GGA gpsValid with invalid posfix!"));
+      gpsValid = false;
+    }
   }
 
-  // any NMEA sentence with time can now trigger gps update: the first to detect new time will make trigger.
-  // we assume also that any sentence with no time belongs to current time.
-  // note that if no time from gps, no use of vario and baro data, but also no fix available.. so no problems
+  // any NMEA sentence with time can now trigger gps update: the first to detect
+  // new time will make trigger. we assume also that any sentence with no time
+  // belongs to current time. note that if no time from gps, no use of vario and
+  // baro data, but also no fix available.. so no problems
 
   // If  no gps fix, at this point we trigger refresh and quit
-  if (!gpsValid) { 
-	#if DEBUGSEQ
-	StartupStore(_T("........ GGA no gps valid, triggerGPS!\n")); // 31C
-	#endif
-	TriggerGPSUpdate(); 
-	return FALSE;
+  if (!gpsValid) {
+    TriggerGPSUpdate();
+    return FALSE;
   }
 
   // "Altitude" should always be GPS Altitude.
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
-  pGPS->Altitude += (GPSAltitudeOffset/1000); // BUGFIX 100429
- 
+  pGPS->Altitude += (GPSAltitudeOffset / 1000);  // BUGFIX 100429
+
   if ((*params[10]) && (params[10] != "0"sv)) {
     // No real need to parse this value,
     // but we do assume that no correction is required in this case
     // double GeoidSeparation = ParseAltitude(params[10], params[11]);
-  } else if (UseGeoidSeparation) {
-      pGPS->Altitude -= LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
+  }
+  else if (UseGeoidSeparation) {
+    pGPS->Altitude -= LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
   }
 
-  // if RMC would be Triggering update, we loose the relative altitude, which is coming AFTER rmc! 
-  // This was causing old altitude recorded in new pos fix.
+  // if RMC would be Triggering update, we loose the relative altitude, which is
+  // coming AFTER rmc! This was causing old altitude recorded in new pos fix.
   // 120428:
-  // GGA will trigger gps if there is no RMC,  
-  // or if GGAtime is the same as RMCtime, which means that RMC already came and we are last in the sequence
-  if ( !RMCAvailable || (GGAtime == RMCtime)  )  {
-	#if DEBUGSEQ
-	StartupStore(_T("... GGA trigger gps, GGAtime==RMCtime\n")); // 31C
-	#endif
-	TriggerGPSUpdate(); 
+  // GGA will trigger gps if there is no RMC,
+  // or if GGAtime is the same as RMCtime, which means that RMC already came and
+  // we are last in the sequence
+  if (!RMCAvailable ||
+      SameNMEATime(GGAtime, RMCtime, nmeaTimeEpsilon.value())) {
+    TriggerGPSUpdate();
   }
   return TRUE;
 
-} // END GGA
-
-
-
+}  // END GGA
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
 BOOL NMEAParser::PLKAS(DeviceDescriptor_t& d, const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)

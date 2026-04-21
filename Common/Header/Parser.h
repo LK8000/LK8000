@@ -8,6 +8,7 @@
 #include "Util/ScopeExit.hxx"
 #include "Time/PeriodClock.hpp"
 #include "Sizes.h"
+#include <array>
 
 #if defined(PNA) && defined(UNDER_CE)
 #include "lkgpsapi.h"
@@ -93,6 +94,29 @@ public:
   double GGAtime;
   double RMCtime;
   double GLLtime;
+
+  struct NMEATimeEpsilonEstimator {
+    static constexpr size_t kWindowSize = 16;
+    static constexpr double kDefaultEpsilon = 0.5;
+    static constexpr double kMinEpsilon = 0.08;
+    static constexpr double kMaxEpsilon = 0.5;
+    static constexpr double kCadenceToEpsilonFactor = 0.25;
+    static constexpr double kMaxCadenceDelta = 5.0;
+
+    void reset();
+    void update(double absoluteTime);
+    double value() const {
+      return epsilon;
+    }
+
+   private:
+    std::array<double, kWindowSize> samples = {};
+    double epsilon = kDefaultEpsilon;
+    double lastAbsoluteTime = -1;
+    unsigned sampleCount = 0;
+  };
+
+  NMEATimeEpsilonEstimator nmeaTimeEpsilon;
 
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
 
