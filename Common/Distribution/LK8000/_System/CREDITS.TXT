@@ -10,6 +10,17 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.5.3]
+* Fix:
+ - Contention when multiple devices are connected
+ - Clear Task — do not reset Home Waypoint when flying
+ - XCTracer driver — ignore heading from LXWP0
+ - Incorrect barometric altitude device priority
+ - Map freeze when GPS sends RMC and GGA sentences with different timestamps (gap < 0.5s)
+ - Hang when "Starting device" with /dev/rfcommX port
+* New
+ - Support for Kobo Clara HD "SN-R2493" 
+
 [version 7.5.2]
 * Fix : 
  - Map layout in task target dialog
