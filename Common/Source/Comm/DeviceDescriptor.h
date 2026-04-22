@@ -186,12 +186,12 @@ struct DeviceDescriptor_t {
   }
 
   template <typename T>
-  T* get_data(unsigned tag) {
+  std::shared_ptr<T> get_data(unsigned tag) {
     auto ib = driver_data.emplace(tag, nullptr);
     if (ib.second) {
-      ib.first->second = std::make_unique<T>();
+      ib.first->second = std::make_shared<T>();
     }
-    return dynamic_cast<T*>(ib.first->second.get());
+    return std::dynamic_pointer_cast<T>(ib.first->second);
   }
 
  private:
