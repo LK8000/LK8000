@@ -9,6 +9,7 @@
 #ifndef _Comm_DeviceDescriptor_h_
 #define _Comm_DeviceDescriptor_h_
 
+#include "options.h"
 #include "tchar.h"
 #include "types.h"
 #include "Sizes.h"
