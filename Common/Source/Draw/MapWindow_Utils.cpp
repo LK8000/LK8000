@@ -263,8 +263,53 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   }
   
   mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+  if (do_pan) {
+    MapWindow::RefreshMap();
+  }
 }
 
+namespace {
+/// Map zoom span (metres) so the direct leg and runway fit comfortably in approach pan mode.
+double ApproachZoomDistanceFromDirectLeg_m() {
+  return max(8000.0, MapApproachDirectDistance_m * 1.5);
+}
+}  // namespace
+
+void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize)
+{
+  static double old_latitude;
+  static double old_longitude;
+
+  if (dlgSize) {
+    targetPanSize = dlgSize;
+  }
+
+  if (do_pan && !mode.Is(Mode::MODE_APPROACH_PAN)) {
+    old_latitude = PanLatitude;
+    old_longitude = PanLongitude;
+  }
+
+  if (do_pan && waypoint_index >= 0) {
+    ScopeLock lock(CritSec_TaskData);
+    if (ValidWayPointFast(waypoint_index)) {
+      PanLongitude = WayPointList[waypoint_index].Longitude;
+      PanLatitude = WayPointList[waypoint_index].Latitude;
+      ApproachZoomDistance = ApproachZoomDistanceFromDirectLeg_m();
+    }
+  } else if (!do_pan && mode.Is(Mode::MODE_APPROACH_PAN)) {
+    PanLongitude = old_longitude;
+    PanLatitude = old_latitude;
+  }
+
+  mode.Special(Mode::MODE_SPECIAL_APPROACH_PAN, do_pan);
+  if (do_pan) {
+    MapWindow::RefreshMap();
+  }
+}
+
+void MapWindow::SyncApproachZoomFromDirectLeg() {
+  ApproachZoomDistance = ApproachZoomDistanceFromDirectLeg_m();
+}
 
 void MapWindow::SetPanTaskEdit(unsigned TskPoint) {
     LockTaskData();

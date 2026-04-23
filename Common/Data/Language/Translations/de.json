@@ -2228,5 +2228,10 @@
     "_@M000830_": "Zone",
     "_@M000394_": "Live",
     "_@M000452_": "Name:",
-    "_@M000673_": "Systemstatus"
+    "_@M000673_": "Systemstatus",
+    "_@M002516_": "Anflug",
+    "_@M002517_": "Bestätigen",
+    "_@M002518_": "IGNORIEREN!!",
+    "_@M002519_": "Anflugaufgabe",
+    "_@M002520_": "LK8000 erstellt eine Anflugaufgabe ohne Berücksichtigung von Verkehr und Gelände. Die Situationswahrnehmung des Piloten muss auf höchstem Niveau sein."
 }

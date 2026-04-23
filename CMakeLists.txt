@@ -381,6 +381,7 @@ add_library( LK8000 SHARED
     Common/Source/Draw/DrawFuturePos.cpp
     Common/Source/Draw/DrawGlideThroughTerrain.cpp
     Common/Source/Draw/DrawGPSStatus.cpp
+    Common/Source/Draw/DrawApproach.cpp
     Common/Source/Draw/DrawGreatCircle.cpp
     Common/Source/Draw/DrawHeading.cpp
     Common/Source/Draw/DrawHSI.cpp
@@ -708,6 +709,7 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgStartup.cpp
     Common/Source/Dialogs/dlgStatus.cpp
     Common/Source/Dialogs/dlgTarget.cpp
+    Common/Source/Dialogs/dlgApproach.cpp
     Common/Source/Dialogs/dlgTaskCalculator.cpp
     Common/Source/Dialogs/dlgTaskOverview.cpp
     Common/Source/Dialogs/dlgTaskRules.cpp

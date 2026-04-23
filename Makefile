@@ -850,6 +850,7 @@ DRAW	:=\
 	$(DRW)/DrawFuturePos.cpp \
 	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
+	$(DRW)/DrawApproach.cpp \
 	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawHSI.cpp \
@@ -1190,6 +1191,7 @@ DLGS	:=\
 	$(DLG)/dlgStartup.cpp \
 	$(DLG)/dlgStatus.cpp \
 	$(DLG)/dlgTarget.cpp \
+	$(DLG)/dlgApproach.cpp \
 	$(DLG)/dlgTaskCalculator.cpp \
 	$(DLG)/dlgTaskOverview.cpp \
 	$(DLG)/dlgTaskRules.cpp \

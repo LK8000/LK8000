@@ -110,3 +110,7 @@
 #define IDR_XML_RADIOPRISECSEL      704
 #define IDR_XML_MACCREADY           705
 #define IDR_XML_TRACKING            706
+#define IDR_XML_APPROACH_P          707
+#define IDR_XML_APPROACH_L          708
+#define IDR_XML_APPROACH_APPROVE_P  709
+#define IDR_XML_APPROACH_APPROVE_L  710

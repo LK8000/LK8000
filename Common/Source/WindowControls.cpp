@@ -1797,6 +1797,19 @@ void WndForm::SetCaption(const TCHAR *Value) {
         rcClient.top = (mBorderKind & BORDERTOP) ? DLGSCALE(1) : 0;
     }
 
+    /* Outer size can change via SetHeight without caption text changing; rcClient was only
+       updating top from the title bar, so bottom/right stayed at initial XML size and
+       mClientWindow stayed short — children (e.g. Approve) clipped, targetPanSize mismatch. */
+    {
+      const int leftInset = (mBorderKind & BORDERLEFT) ? DLGSCALE(1) : 0;
+      const int rightInset = (mBorderKind & BORDERRIGHT) ? DLGSCALE(1) : 0;
+      const int bottomInset = (mBorderKind & BORDERBOTTOM) ? DLGSCALE(1) : 0;
+      rcClient.left = leftInset;
+      rcClient.right = (LONG)GetWidth() - rightInset;
+      rcClient.bottom = (LONG)GetHeight() - bottomInset;
+      mTitleRect.right = (LONG)GetWidth();
+    }
+
     if (!EqualRect(&mClientRect, &rcClient)){
         mClientRect = rcClient;
         if(mClientWindow) {
@@ -1808,6 +1821,11 @@ void WndForm::SetCaption(const TCHAR *Value) {
     if(bRedraw) {
         Redraw();
     }
+}
+
+bool WndForm::OnSize(int cx, int cy) {
+  SetCaption(GetWndText());
+  return false;
 }
 
 int  WndForm::SetBorderKind(int Value) {
@@ -1891,6 +1909,7 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
       WindowControl(Parent, Name, X, Y, Width, Height), mOnClickNotify(std::move(Function))
 {
   mDown = false;
+  mSelected = false;
   mDefault = false;
   mCanFocus = true;
 
@@ -1923,6 +1942,14 @@ void WndButton::LedSetColor(unsigned short ledcolor) {
    mLedColor=ledcolor;
 }
 
+void WndButton::SetSelected(bool selected) {
+  if (mSelected != selected) {
+    mSelected = selected;
+    if (IsVisible()) {
+      Redraw();
+    }
+  }
+}
 
 bool WndButton::OnKeyDown(unsigned KeyCode) {
     switch (KeyCode) {
@@ -1988,6 +2015,7 @@ bool WndButton::OnLButtonDblClick(const POINT& Pos) {
 void WndButton::DrawPushButton(LKSurface& Surface){
   PixelRect rc(GetClientRect());
   rc.Grow(-2); // todo border width
+  // only physical press changes button 3D state; selection is shown via border in Paint()
   Surface.DrawPushButton(rc, mDown);
 }
 
@@ -2044,12 +2072,13 @@ void WndButton::Paint(LKSurface& Surface){
   const size_t nSize = _tcslen(szCaption);
   if (nSize > 0) {
 
+    const bool pushed = mDown;  // only physical press changes text colour
     Surface.SetTextColor(IsDithered()?
-            (mDown ? RGB_WHITE : RGB_BLACK) : 
+            (pushed ? RGB_WHITE : RGB_BLACK) :
             GetForeColor());
 
     Surface.SetBkColor(IsDithered()?
-            (mDown ? RGB_BLACK : RGB_WHITE) : 
+            (pushed ? RGB_BLACK : RGB_WHITE) :
             GetBackColor());
     
     Surface.SetBackgroundTransparent();
@@ -2084,6 +2113,14 @@ void WndButton::Paint(LKSurface& Surface){
 
     }
 
+    if (mSelected && !mDown) {
+      const auto oldBrush = Surface.SelectObject(LK_HOLLOW_BRUSH);
+      const auto oldPen = Surface.SelectObject(
+          IsDithered() ? LKPen_Black_N2 : LKPen_Higlighted);
+      Surface.Rectangle(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
+      Surface.SelectObject(oldPen);
+      Surface.SelectObject(oldBrush);
+    }
 
     unsigned height = GetHeight();
     unsigned offset = ((GetHeight()-4-mLastDrawTextHeight)/2);

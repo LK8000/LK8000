@@ -853,6 +853,7 @@ extern WindowControl *LastFocusControl;
 
 #define mrOK             2
 #define mrCancel         3
+#define mrYES            4
 
 class WndForm:public WindowControl{
 
@@ -956,9 +957,12 @@ protected:
     }
 
     void OnDestroy() override {
-        mModalResult = mrCancel;
-        WndCtrlBase::OnDestroy();
+      mModalResult = mrCancel;
+      WndCtrlBase::OnDestroy();
     }
+
+    /// After outer resize, re-sync client area (title + borders); see SetCaption.
+    bool OnSize(int cx, int cy) override;
 };
 
 #define LEDMODE_DISABLED    0
@@ -990,6 +994,7 @@ class WndButton:public WindowControl{
 
     void Paint(LKSurface& Surface) override;
     bool mDown;
+    bool mSelected;  // persistent "pushed" look for selected state (e.g. approach Direct/Circuit)
     bool mDefault;
     unsigned short mLedMode;   // 0=no led  1=OnOff mode  2=manual (choose colors)
     bool mLedOnOff;            // if mLedUse=1  this is used to toggle false=orange/true=green
@@ -1018,6 +1023,9 @@ class WndButton:public WindowControl{
     void SetOnClickNotify(ClickNotifyCallback_t&& Function){
       mOnClickNotify = std::move(Function);
     }
+
+    void SetSelected(bool selected);
+    bool GetSelected() const { return mSelected; }
 };
 
 
