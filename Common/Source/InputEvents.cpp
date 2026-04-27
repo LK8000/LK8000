@@ -869,7 +869,7 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
     ForceRenderMap = true;
   } else {
     auto pos = WithLock(CritSec_FlightData, [&]() -> AGeoPoint {
-      return {{GPS_INFO.Longitude, GPS_INFO.Latitude}, CALCULATED_INFO.NavAltitude};
+      return {{GPS_INFO.Latitude, GPS_INFO.Longitude}, CALCULATED_INFO.NavAltitude};
     });
     MarkLocation(pos.longitude, pos.latitude, pos.altitude);
   }
