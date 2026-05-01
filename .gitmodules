@@ -1,7 +1,7 @@
 [submodule "lib/doctest"]
 	path = lib/doctest
 	url = https://github.com/doctest/doctest.git
-	tags = v2.4.12
+	tags = v2.5.2
 [submodule "lib/glm"]
 	path = lib/glm
 	url = https://github.com/g-truc/glm.git

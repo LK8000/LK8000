@@ -325,20 +325,20 @@ TEST_SUITE("Radio") {
 		size_t start, len;
 
 		CHECK_EQ(ExtractFrequency(_T("118.500"), &start, &len), 118500U);
-		CHECK_EQ(start, 0);
-		CHECK_EQ(len, 7);
+		CHECK_EQ(start, 0U);
+		CHECK_EQ(len, 7U);
 
 		CHECK_EQ(ExtractFrequency(_T("azazaz 118025 azazaz "), &start, &len), 118025U);
-		CHECK_EQ(start, 7);
-		CHECK_EQ(len, 6);
+		CHECK_EQ(start, 7U);
+		CHECK_EQ(len, 6U);
 
 		CHECK_EQ(ExtractFrequency(_T("azazaz 118.025 azazaz "), &start, &len), 118025U);
-		CHECK_EQ(start, 7);
-		CHECK_EQ(len, 7);
+		CHECK_EQ(start, 7U);
+		CHECK_EQ(len, 7U);
 
 		CHECK_EQ(ExtractFrequency(_T("azazaz 118,025 azazaz "), &start, &len), 118025U);
-		CHECK_EQ(start, 7);
-		CHECK_EQ(len, 7);
+		CHECK_EQ(start, 7U);
+		CHECK_EQ(len, 7U);
 	}
 }
 

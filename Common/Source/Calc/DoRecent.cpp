@@ -249,15 +249,15 @@ TEST_CASE("InsertRecentList") {
 
   for (int i = 0; i < 10; ++i) {
     InsertRecentList(i);
-    CHECK_EQ(GetRecentIndex(i), 0);
+    CHECK_EQ(GetRecentIndex(i), 0U);
     CHECK_EQ(RecentNumber, i + 1);
   }
 
   InsertRecentList(3);
   CHECK_EQ(RecentNumber, 10);
-  CHECK_EQ(GetRecentIndex(3), 0);
-  CHECK_EQ(GetRecentIndex(2), 7);
-  CHECK_EQ(GetRecentIndex(4), 6);
+  CHECK_EQ(GetRecentIndex(3), 0U);
+  CHECK_EQ(GetRecentIndex(2), 7U);
+  CHECK_EQ(GetRecentIndex(4), 6U);
 
   ResetRecentList();
 }
