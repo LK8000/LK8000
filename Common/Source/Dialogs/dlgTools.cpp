@@ -604,3 +604,19 @@ WndForm *dlgLoadFromXML(const CallBackTableEntry_t *LookUpTable, unsigned resID)
 
   return theForm;
 }
+
+void dlgApplyPortraitOverlayGeometry(WndForm* wf) {
+  if (!wf || ScreenLandscape) return;
+
+  const PixelRect rc(main_window->GetClientRect());
+  const PixelScalar client_h = rc.GetSize().cy;
+  const PixelScalar strip_lift = MapWindow::GetBottomBarSize() + NIBLSCALE<PixelScalar>(12);
+  const UPixelScalar max_h = std::max<PixelScalar>(1, client_h - strip_lift - NIBLSCALE<PixelScalar>(8));
+  if (wf->GetHeight() > max_h) {
+    wf->SetHeight(max_h);
+  }
+  wf->SetTop(rc.top);
+  wf->SetLeft(rc.left);
+  /* Re-sync client rect after outer resize (WndForm::SetCaption updates mClientWindow). */
+  wf->SetCaption(wf->GetWndText());
+}

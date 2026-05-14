@@ -340,13 +340,11 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			if (!tp.Visible) {
 				continue;
 			}
+			// In Approach Pan always draw the approach waypoint runway like in Target
+			const bool is_approach_wpt = (mode.Is(Mode::MODE_APPROACH_PAN) && MapApproachWaypoint >= 0 && (size_t)MapApproachWaypoint == idx);
 		    if(Appearance.IndLandable == wpLandableDefault) {
 				double fScaleFact = zoom.RealScale();
-				if (decluttericons) {
-					if (tpc.IsAirport && (tp.RunwayLen>minrunway || tp.RunwayLen==0)) {
-						DrawRunway(Surface,&tp,rc, &_Proj, fScaleFact);
-					}
-				} else {
+				if (is_approach_wpt || !decluttericons || (tpc.IsAirport && (tp.RunwayLen>minrunway || tp.RunwayLen==0))) {
 					DrawRunway(Surface,&tp,rc, &_Proj, fScaleFact);
 				}
 			} else {
@@ -384,6 +382,10 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 					const RasterPoint ScreenPt =  _Proj.ToRasterPoint(tp.Latitude, tp.Longitude);
 					DrawBitmapIn(Surface, ScreenPt, *pWptBmp);
 				}
+				// Approach Pan: draw runway over icon so waypoint looks like Target
+				if (is_approach_wpt) {
+					DrawRunway(Surface,&tp,rc, &_Proj, zoom.RealScale());
+				}
     		}
   		} // for all waypoints
 	}
@@ -407,6 +409,9 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 			continue;
 		}
 
+		// In Approach Pan always show the approach waypoint label like in Target
+		const bool is_approach_wpt_label = (mode.Is(Mode::MODE_APPROACH_PAN) && MapApproachWaypoint >= 0 && (size_t)MapApproachWaypoint == idx);
+
 		memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
 
 		bool excluded=false;
@@ -423,15 +428,19 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		// always in range if MapScale <=10
 		bool irange = inrange;
 
-		if(zoom.RealScale() > 20) {
+		if(zoom.RealScale() > 20 && !is_approach_wpt_label) {
 			irange=false;
 			goto NiklausWirth; // with compliments
 		}
-		if (decluttericons) {
+		if (decluttericons && !is_approach_wpt_label) {
 			if (! (tpc.IsAirport && (tp.RunwayLen>minrunway || tp.RunwayLen==0))) {
 				irange=false;
 				goto NiklausWirth;
 			}
+		}
+		if (is_approach_wpt_label) {
+			irange = true;
+			dowrite = true;
 		}
 
 		if(islandable && tp.Reachable) {
@@ -590,7 +599,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 	for (MapWaypointLabel_t *E : sorted_array) {
 
 		RasterPoint TextPos;
-		if (mode.Is(Mode::MODE_TARGET_PAN) && E->isLandable) {
+		if ((mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN)) && E->isLandable) {
 			// In Target Pan view: place waypoint name centered above the runway symbol
 			TextPos = RasterPoint(IsDithered() ? (rc.left + rc.right - (ScreenLandscape ? (int)MapWindow::targetPanSize : 0)) / 2 : E->Pos.x, rc.top + NIBLSCALE(10));
 			E->Mode.AlligneCenter = true;
@@ -601,7 +610,7 @@ void MapWindow::DrawWaypointsNew(LKSurface& Surface, const RECT& rc, const Scree
 		} else {
 			TextPos = RasterPoint(E->Pos) + RasterPoint(IBLSCALE(5), IBLSCALE(1));
 		}
-		const bool overlap = !(mode.Is(Mode::MODE_TARGET_PAN) && E->isLandable);
+		const bool overlap = !((mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN)) && E->isLandable);
 		if (!TextInBox(Surface, &rc, E->Name, TextPos.x, TextPos.y, &(E->Mode), overlap)) {
 			continue;
 		}
