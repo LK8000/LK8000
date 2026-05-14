@@ -17,24 +17,14 @@
 #include "NavFunctions.h"
 #include "ColorRamps.h"
 #include "Kobo/Model.hpp"
-#include "Util/Clamp.hpp"
 #include "Asset.hpp"
 #include <utility>
 #include <type_traits>
 #include <memory>
 
 #if (defined(__ARM_NEON) || defined(__ARM_NEON__))
- #if !GCC_OLDER_THAN(5,0)
   #include <arm_neon.h>
- #else
-  /**
-   * GCC 4.8 (kobo) & 4.9 (openvario) has the same problem :
-   * 
-   * ..../include/arm_neon.h:2769:57: internal compiler error: in copy_to_mode_reg, at explow.c:665
-   *    return (int16x4_t)__builtin_neon_vmaxv4hi (__a, __b, 1);
-   */
-  #warning "too old compiler, optimized terrain drawing disabled"
- #endif
+  #include "Util/Clamp.hpp"
 #endif
 
 extern bool FastZoom;
@@ -552,11 +542,11 @@ public:
                     int32x4_t mag = vcvtq_s32_f32(fmag - v_sz);
 
                     mag = mag + 64;
-                    mag = Clamp(mag, mag_0, mag_127);
+                    mag = neon::clamp(mag, mag_0, mag_127);
 
                     int16x4_t h =  vld1_s16(curr_row + x);
                     h = (h - v_height_min) >> v_height_scale;
-                    h = Clamp(h, height_0, height_255);
+                    h = neon::clamp(h, height_0, height_255);
 
                     screen_row[x]   = color_table[vgetq_lane_s32(mag,0)][vget_lane_s16(h, 0)];
                     screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
@@ -589,11 +579,11 @@ public:
                 int32x4_t mag = vcvtq_s32_f32(fmag - v_sz);
 
                 mag = mag + 64;
-                mag = Clamp(mag, mag_0, mag_127);
+                mag = neon::clamp(mag, mag_0, mag_127);
 
                 int16x4_t h =  vld1_s16(curr_row + x);
                 h = (h - height_min) >> height_scale;
-                h = Clamp(h, height_0, height_255);
+                h = neon::clamp(h, height_0, height_255);
 
                 screen_row[x]   = color_table[vgetq_lane_s32(mag,0)][vget_lane_s16(h, 0)];
                 screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
@@ -625,11 +615,11 @@ public:
                     int32x4_t mag = vcvtq_s32_f32(fmag - v_sz);
 
                     mag = mag + 64;
-                    mag = Clamp(mag, mag_0, mag_127);
+                    mag = neon::clamp(mag, mag_0, mag_127);
 
                     int16x4_t h =  vld1_s16(curr_row + x);
                     h = (h - height_min) >> height_scale;
-                    h = Clamp(h, height_0, height_255);
+                    h = neon::clamp(h, height_0, height_255);
 
                     screen_row[x]   = color_table[vgetq_lane_s32(mag,0)][vget_lane_s16(h, 0)];
                     screen_row[x+1] = color_table[vgetq_lane_s32(mag,1)][vget_lane_s16(h, 1)];
@@ -668,7 +658,7 @@ public:
             for (x = 0; x < (ixs-8); x+=8) {
                 int16x8_t h =  vld1q_s16(height_row + x);
                 h = (h - qv_height_min) >> qv_height_scale;
-                h = Clamp(h, qheight_0, qheight_255);
+                h = neon::clamp(h, qheight_0, qheight_255);
 
                 screen_row[x]   = GetColor(vgetq_lane_s16(h, 0));
                 screen_row[x+1] = GetColor(vgetq_lane_s16(h, 1));
@@ -683,7 +673,7 @@ public:
             for (; x < (ixs-4); x+=4) {
                 int16x4_t h =  vld1_s16(height_row + x);
                 h = (h - v_height_min) >> v_height_scale;
-                h = Clamp(h, height_0, height_255);
+                h = neon::clamp(h, height_0, height_255);
 
                 screen_row[x]   = GetColor(vget_lane_s16(h, 0));
                 screen_row[x+1] = GetColor(vget_lane_s16(h, 1));
@@ -694,7 +684,7 @@ public:
             for (; x < ixs; ++x) {
                 int16_t h =  *(height_row + x);
                 h = ((unsigned)(h - height_min)) >> height_scale;
-                h = Clamp<int16_t>(h, 0, 255);
+                h = std::clamp<int16_t>(h, 0, 255);
 
                 screen_row[x]   = GetColor(h);
             }
@@ -753,12 +743,12 @@ public:
 
                 const uint32_t sqr_mag = (dd0 * dd0 + dd1 * dd1 + dd2 * dd2);
                 int32_t mag = (dd2 * sz + dd0 * sx + dd1 * sy) / (isqrt4(sqr_mag)|1);
-                mag = Clamp<int32_t>((mag - sz), -64, 63);
+                mag = std::clamp<int32_t>((mag - sz), -64, 63);
 
                 // when h is invalid, result is clamped to 255 so we have invalid terrain color
                 int16_t h =  *(curr_row + x);
                 h = ((h - height_min) >> height_scale);
-                h = Clamp<int16_t>(h, 0, 255);
+                h = std::clamp<int16_t>(h, 0, 255);
 
                 screen_row[x] = GetColor(h, mag);
             }
@@ -782,7 +772,7 @@ public:
             for (size_t x = 0; x < ixs; ++x) {
                 int16_t h = height_row[x];
                 h = ((h - height_min) >> height_scale);
-                h = Clamp<int16_t>(h, 0, 255);
+                h = std::clamp<int16_t>(h, 0, 255);
                 screen_row[x] = GetColor(h);
             }
         }
@@ -935,7 +925,7 @@ public:
 
                 uint16x8_t mask = (vceqq_s16(h, h2) | vceqq_s16(h3, h1)) & vceqq_s16(h, h3);
                 height = (height - qv_height_min) >> qv_height_scale;
-                height = Clamp(height, qheight_0, qheight_255);
+                height = neon::clamp(height, qheight_0, qheight_255);
                 drawIsoLinePixel<BGRColor>(&screen_row[x], height, mask);
             }
 #else
@@ -952,7 +942,7 @@ public:
                 const int16_t& h3 = current_iso_band[x-1]; // left value
 
                 int16_t height = (height_row[x] - height_min) >> height_scale;
-                height = Clamp<int16_t>(height, 0, 255);
+                height = std::clamp<int16_t>(height, 0, 255);
 
                 // apply marching squares algorithm : https://en.wikipedia.org/wiki/Marching_squares#Disambiguation_of_saddle_points
                 // 2 equal point are in same iso band, so one is above iso-line and the other is bellow iso-line
