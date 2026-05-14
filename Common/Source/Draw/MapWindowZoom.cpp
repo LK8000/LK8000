@@ -20,6 +20,15 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
   *_requestedScale = LimitMapScale(Units::ToDistance(TargetZoomDistance / 6.0));
 }
 
+/**
+ * @brief Sets requested zoom scale for APPROACH_PAN mode.
+ * Uses ApproachZoomDistance (the direct leg length) so the approach path
+ * fits across the screen at the same relative scale as TARGET_PAN.
+ */
+void MapWindow::Zoom::CalculateApproachPanZoom()
+{
+  *_requestedScale = LimitMapScale(Units::ToDistance(ApproachZoomDistance / 6.0));
+}
 
 /**
  * @brief Sets requested zoom scale for AUTO_ZOOM mode
@@ -117,6 +126,9 @@ void MapWindow::Zoom::SwitchMode_Locked() {
   }
 
   if (mode._mode & Mode::MODE_TARGET_PAN) {
+    _requestedScale = &_modeScale[SCALE_TARGET_PAN];
+  }
+  else if (mode._mode & Mode::MODE_APPROACH_PAN) {
     _requestedScale = &_modeScale[SCALE_TARGET_PAN];
   }
   else if (mode._mode & Mode::MODE_PAN) {
@@ -301,8 +313,10 @@ void MapWindow::Zoom::UpdateMapScale() {
   ScopeLock Lock(_zoomMutex);  // Protect _requestedScale and _scale access
 
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-    // update TARGET_PAN
     CalculateTargetPanZoom();
+  }
+  if (mode.Is(Mode::MODE_APPROACH_PAN)) {
+    CalculateApproachPanZoom();
   }
 
   if (_autoZoom && mode.Special() == Mode::MODE_SPECIAL_NONE &&

@@ -95,6 +95,10 @@
 
     binfile IDR_XML_TARGET_L, Common/Data/Dialogs/dlgTarget_L.xml
     binfile IDR_XML_TARGET_P, Common/Data/Dialogs/dlgTarget_P.xml
+    binfile IDR_XML_APPROACH_L, Common/Data/Dialogs/dlgApproach_L.xml
+    binfile IDR_XML_APPROACH_P, Common/Data/Dialogs/dlgApproach_P.xml
+    binfile IDR_XML_APPROACH_APPROVE_L, Common/Data/Dialogs/dlgApproachApprove_L.xml
+    binfile IDR_XML_APPROACH_APPROVE_P, Common/Data/Dialogs/dlgApproachApprove_P.xml
 
     binfile IDR_XML_LKAIRSPACEWARNING_L, Common/Data/Dialogs/dlgLKAirspaceWarning_L.xml
     binfile IDR_XML_LKAIRSPACEWARNING_P, Common/Data/Dialogs/dlgLKAirspaceWarning_P.xml

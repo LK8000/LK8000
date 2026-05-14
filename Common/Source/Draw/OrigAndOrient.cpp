@@ -37,8 +37,8 @@ void MapWindow::CalculateOrientationNormal() {
     return DisplayOrientation;
   };
 
-  // always center when circling or in Target dialog
-  bool Center = mode.Is(Mode::MODE_CIRCLING) || mode.Is(Mode::MODE_TARGET_PAN);
+  // always center when circling or in Target/Approach dialog
+  bool Center = mode.Is(Mode::MODE_CIRCLING) || mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN);
 
   switch (Orientation()) {
     case NORTHUP:
@@ -63,6 +63,8 @@ RasterPoint MapWindow::GetOrigCenter(const RECT& rc) {
 }
 
 RasterPoint MapWindow::GetOrigTargetPan(const RECT& rc, int targetPanSize, bool isLandscape) {
+  /* Portrait: (rc.top+rc.bottom+h)/2 centers the pan origin for a top overlay (Target strip);
+     same formula applies when the dialog was historically at the bottom — LK convention. */
   return {
     (rc.left + rc.right - (isLandscape ? targetPanSize : 0)) / 2,
     (rc.bottom + rc.top + (isLandscape ? 0 : targetPanSize)) / 2
@@ -112,7 +114,7 @@ RasterPoint MapWindow::CalculateOrigin(const RECT& rc) {
 
   CalculateOrientationNormal();
 
-  if (mode.Is(Mode::MODE_TARGET_PAN)) {
+  if (mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN)) {
     return GetOrigTargetPan(rc, targetPanSize, ScreenLandscape);
   }
 

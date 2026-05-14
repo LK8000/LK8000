@@ -143,6 +143,6 @@ bool CScreenOrientation::SetScreenSetting(unsigned short NewO) {
       event_queue->SetDisplayOrientation(static_cast<DisplayOrientation_t>(NewO));
       return true;
     }
-#endif    
+#endif
     return false;
 }

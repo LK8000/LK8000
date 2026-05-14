@@ -2653,6 +2653,12 @@
 
     "_@M002515_": "Invalid Image",
 
+    "_@M002516_": "Approach",
+    "_@M002517_": "Approve",
+    "_@M002518_": "IGNORE!!",
+    "_@M002519_": "Approach task",
+    "_@M002520_": "LK8000 creates approach task ignoring traffic and terrain. Pilot situational awareness must be at maximum.",
+
     "_@M002282_": "Interval",
     "_@M002283_": "Server",
     "_@M002284_": "Port",

@@ -1870,5 +1870,10 @@
     "_@M002419_": "Laterale destra MM1",
     "_@M002420_": "Laterale Target MM2",
     "_@M002421_": "Laterale Airspace MM3",
-    "_@M002424_": "Max liv. Autozoom"
+    "_@M002424_": "Max liv. Autozoom",
+    "_@M002516_": "Approccio",
+    "_@M002517_": "Conferma",
+    "_@M002518_": "IGNORA!!",
+    "_@M002519_": "Task di avvicinamento",
+    "_@M002520_": "LK8000 crea un task di avvicinamento ignorando il traffico e il terreno. La consapevolezza situazionale del pilota deve essere al massimo."
 }

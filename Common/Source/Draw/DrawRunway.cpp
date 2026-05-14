@@ -274,7 +274,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 
     // Draw runway headings as horizontal boxes at both ends of runway (Target
     // Pan view only)
-    if (wp->RunwayDir >= 0 && mode.Is(Mode::MODE_TARGET_PAN)) {
+    if (wp->RunwayDir >= 0 && (mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN))) {
       TCHAR szHead1[4], szHead2[4];
       int h1 = std::lrint(wp->RunwayDir / 10.0);
       if (h1 <= 0) {
@@ -315,7 +315,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
     // Print waypoint information on screen
     if (MapWindow::zoom.RealScale() <= scale_drawradio) {
       unsigned int offset =
-          mode.Is(Mode::MODE_TARGET_PAN)
+          (mode.Is(Mode::MODE_TARGET_PAN) || mode.Is(Mode::MODE_APPROACH_PAN))
               ? (unsigned int)(IBLSCALE(irw_len) + NIBLSCALE(10))
               : irw_radius + NIBLSCALE(1);
 
