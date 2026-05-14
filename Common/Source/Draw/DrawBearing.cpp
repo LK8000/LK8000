@@ -22,32 +22,39 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
 
   // Approach: track target depends on mode. Direct = outer point of direct leg (user distance),
   // Circuit = waypoint centre.
-  if (mode.Is(Mode::MODE_APPROACH_PAN) && MapApproachEnabled && MapApproachWaypoint >= 0 &&
-      ValidWayPointFast(MapApproachWaypoint) && WayPointCalc[MapApproachWaypoint].IsLandable) {
-    double wlat, wlon;
-    int rw_dir;
+  if (mode.Is(Mode::MODE_APPROACH_PAN) && MapApproachEnabled && MapApproachWaypoint >= 0) {
+    double wlat = 0.0, wlon = 0.0;
+    int rw_dir = 0;
+    bool approach_valid = false;
     {
       ScopeLock lock(CritSec_TaskData);
-      const WAYPOINT& wp = WayPointList[MapApproachWaypoint];
-      wlat = wp.Latitude;
-      wlon = wp.Longitude;
-      rw_dir = MapApproachRunwayDir >= 0 ? MapApproachRunwayDir : wp.RunwayDir;
+      const int wp_index = MapApproachWaypoint;
+      if (ValidWayPointFast(wp_index) && WayPointCalc[wp_index].IsLandable) {
+        const WAYPOINT& wp = WayPointList[wp_index];
+        wlat = wp.Latitude;
+        wlon = wp.Longitude;
+        rw_dir = MapApproachRunwayDir >= 0 ? MapApproachRunwayDir : wp.RunwayDir;
+        approach_valid = true;
+      }
     }
-    if (rw_dir < 0) rw_dir = 0;
-    const double rw_recip = AngleLimit360(static_cast<double>(rw_dir) + 180.0);
 
-    if (MapApproachMode == 0) {
-      // Direct: bearing line goes to the outer direct point (start of direct leg), not waypoint centre
-      const double leg_m = max(100.0, MapApproachDirectDistance_m);
-      FindLatitudeLongitude(wlat, wlon, rw_recip, leg_m, &targetLat, &targetLon);
+    if (approach_valid) {
+      if (rw_dir < 0) rw_dir = 0;
+      const double rw_recip = AngleLimit360(static_cast<double>(rw_dir) + 180.0);
+
+      if (MapApproachMode == 0) {
+        // Direct: bearing line goes to the outer direct point (start of direct leg), not waypoint centre
+        const double leg_m = max(100.0, MapApproachDirectDistance_m);
+        FindLatitudeLongitude(wlat, wlon, rw_recip, leg_m, &targetLat, &targetLon);
+        DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
+        return;
+      }
+      // Circuit: track to waypoint centre
+      targetLat = wlat;
+      targetLon = wlon;
       DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
       return;
     }
-    // Circuit: track to waypoint centre
-    targetLat = wlat;
-    targetLon = wlon;
-    DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
-    return;
   }
 
   int overindex=GetOvertargetIndex();

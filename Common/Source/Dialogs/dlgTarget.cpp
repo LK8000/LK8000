@@ -334,10 +334,12 @@ static void CompactTargetPortraitLayout(void) {
   if (maxBottom > 0) {
     const unsigned needClient = (unsigned)maxBottom + (unsigned)NIBLSCALE(10);
     WindowControl* const client = wf->GetClientArea();
-    const unsigned curClient = client->GetHeight();
-    const int delta = (int)needClient - (int)curClient;
-    if (delta != 0) {
-      wf->SetHeight((unsigned)((int)wf->GetHeight() + delta));
+    if (client) {
+      const unsigned curClient = client->GetHeight();
+      const int delta = (int)needClient - (int)curClient;
+      if (delta != 0) {
+        wf->SetHeight((unsigned)((int)wf->GetHeight() + delta));
+      }
     }
   }
 }
@@ -702,22 +704,24 @@ void dlgTarget(int TaskPoint) {
   TargetDialogOpen = true;
   TargetMoveMode = false;
 
+  const PixelRect rc(main_window->GetClientRect());
   if (ScreenLandscape) {
     /* Full-height strip aligned to main map client (same idea as Approach). Do not use SetTop(0):
        on Kobo the map client is often offset — that caused the gap above the overlay. Portrait
        layout is handled separately; do not shrink strip height to content here (regression). */
     dlgSize = wf->GetWidth();
-    const PixelRect rc(main_window->GetClientRect());
-    const int client_h = rc.GetSize().cy;
+    const PixelScalar client_h = rc.GetSize().cy;
     /* Full client height so the strip reaches the bottom (Approve etc. stay visible). Width unchanged. */
-    const unsigned max_h = (unsigned)max(1, client_h);
+    const PixelScalar max_h = std::max<PixelScalar>(1, client_h);
     wf->SetHeight(max_h);
     wf->SetTop(rc.top);
-    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize);
+    wf->SetLeft(rc.left + rc.GetSize().cx - dlgSize);
     wf->SetCaption(wf->GetWndText());
   }
   else {
-    wf->SetLeft(0);
+    wf->SetLeft(rc.left);
+    wf->SetWidth(rc.GetSize().cx);
+    /* Height is set in CompactTargetPortraitLayout after showing Approach button if needed. */
   }
 
   btnMove = wf->FindByName<WindowControl>(TEXT("btnMove"));

@@ -158,10 +158,12 @@ static bool ShowApproachApproveDialog() {
       ScreenLandscape ? IDR_XML_APPROACH_APPROVE_L : IDR_XML_APPROACH_APPROVE_P));
   if (!pf) return false;
 
+  const PixelRect rc(main_window->GetClientRect());
+
   const int fw = pf->GetWidth();
   const int fh = pf->GetHeight();
-  pf->SetLeft((ScreenSizeX - fw) / 2);
-  pf->SetTop((ScreenSizeY - fh) / 2);
+  pf->SetLeft((rc.left + rc.GetSize().cx - fw) / 2);
+  pf->SetTop((rc.top + rc.GetSize().cy - fh) / 2);
 
   WndProperty* prpMessage = pf->FindByName<WndProperty>(TEXT("prpMessage"));
   if (prpMessage) {
@@ -169,7 +171,9 @@ static bool ShowApproachApproveDialog() {
   }
 
   WndButton* btnIgnore = pf->FindByName<WndButton>(TEXT("btnIgnore"));
-  if (btnIgnore) btnIgnore->SetSelected(true);
+  if (btnIgnore) {
+    btnIgnore->SetFocus();
+  }
 
   const int res = pf->ShowModal();
   return (res == mrOK);
@@ -207,23 +211,25 @@ static void OnApproveClicked(WndButton* pWnd) {
   if_wp.FileNum = -1;
   lk::snprintf(if_wp.Name, NAME_SIZE, _T("DIRECT %02d"), rw_dir / 10);
 
-  if (!AddWaypoint(if_wp)) return;
-  const int if_index = (int)WayPointList.size() - 1;
+  {
+    ScopeLock lock(CritSec_TaskData);
 
-  LockTaskData();
-  gTaskType = task_type_t::DEFAULT;
-  ClearTask();
-  ResetTaskWaypoint(0);
-  Task[0].Index = if_index;
-  ResetTaskWaypoint(1);
-  Task[1].Index = approach_wp;
-  ActiveTaskPoint = 0;
-  RefreshTask();
-  UnlockTaskData();
+    if (!AddWaypoint(if_wp)) return;
+    const int if_index = (int)WayPointList.size() - 1;
 
+    gTaskType = task_type_t::DEFAULT;
+    ClearTask();
+    ResetTaskWaypoint(0);
+    Task[0].Index = if_index;
+    ResetTaskWaypoint(1);
+    Task[1].Index = approach_wp;
+    ActiveTaskPoint = 0;
+    RefreshTask();
+  }
+  
   if (pWnd) {
     WndForm* pForm = pWnd->GetParentWndForm();
-    if (pForm) pForm->SetModalResult(mrYES);
+    if (pForm) pForm->SetModalResult(mrOK);
   }
 }
 
@@ -276,27 +282,29 @@ bool dlgApproach(int waypoint_index) {
     prpDist->RefreshDisplay();
   }
 
+  const PixelRect rc(main_window->GetClientRect());
+
   if (ScreenLandscape) {
-    const PixelRect rc(main_window->GetClientRect());
-    const int client_h = rc.GetSize().cy;
-    const unsigned max_h = (unsigned)max(1, client_h);
+    const PixelScalar client_h = rc.GetSize().cy;
+    const auto max_h = std::max<PixelScalar>(1, client_h);
     wf->SetHeight(max_h);
     dlgSize = wf->GetWidth();
     wf->SetTop(rc.top);
-    wf->SetLeft(rc.left + rc.GetSize().cx - (int)dlgSize);
+    wf->SetLeft(rc.left + rc.GetSize().cx - dlgSize);
     wf->SetCaption(wf->GetWndText());
   } else {
-    WndButton* btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
-    int maxBottom = 0;
-    if (btnApprove) {
-      maxBottom = (int)btnApprove->GetTop() + (int)btnApprove->GetHeight();
-    }
+    wf->SetLeft(rc.left);
+    wf->SetTop(rc.top);
+    wf->SetWidth(rc.GetSize().cx);
+
+    auto btnApprove = wf->FindByName<WndButton>(TEXT("btnApprove"));
+    PixelScalar maxBottom = btnApprove ? btnApprove->GetBottom() : 0;
     if (maxBottom > 0) {
-      const unsigned needClient = (unsigned)maxBottom + (unsigned)NIBLSCALE(10);
-      WindowControl* const client = wf->GetClientArea();
-      const int delta = (int)needClient - (int)client->GetHeight();
+      PixelScalar needClient = maxBottom + NIBLSCALE<PixelScalar>(10);
+      WindowControl* client = wf->GetClientArea();
+      PixelScalar delta = needClient - client->GetHeight();
       if (delta > 0) {
-        wf->SetHeight(wf->GetHeight() + (unsigned)delta);
+        wf->SetHeight(wf->GetHeight() + delta);
       }
     }
     dlgApplyPortraitOverlayGeometry(wf.get());
@@ -324,5 +332,5 @@ bool dlgApproach(int waypoint_index) {
   MapApproachWaypoint = -1;
   MapApproachRunwayDir = -1;
 
-  return (result == mrYES);
+  return (result == mrOK);
 }

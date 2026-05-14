@@ -445,9 +445,11 @@ class MapWindow {
     void Special(TModeSpecial specialMode, bool enable);
     TModeSpecial Special() const { return static_cast<TModeSpecial>(_mode & SPECIAL_MASK); }
 
-    bool AnyPan() const { return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN | MODE_SPECIAL_APPROACH_PAN); }
+    bool AnyPan() const {
+      return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN |
+                      MODE_SPECIAL_APPROACH_PAN);
+    }
   };
-
 
   static bool IsDisplayRunning();
 
@@ -970,6 +972,8 @@ private:
   static void InitBottomBar(LKSurface& Surface, const RECT& rc);
   static void DrawBottomBar(LKSurface& Surface, const RECT& rc);
   static void ResetBottomBarDrawer();
+
+public:  
   static unsigned GetBottomBarSize();
 
 public:

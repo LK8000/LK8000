@@ -609,10 +609,10 @@ void dlgApplyPortraitOverlayGeometry(WndForm* wf) {
   if (!wf || ScreenLandscape) return;
 
   const PixelRect rc(main_window->GetClientRect());
-  const int client_h = rc.GetSize().cy;
-  const int strip_lift = (int)BottomSize + NIBLSCALE(12);
-  const unsigned max_h = (unsigned)max(1, client_h - strip_lift - (int)NIBLSCALE(8));
-  if ((unsigned)wf->GetHeight() > max_h) {
+  const PixelScalar client_h = rc.GetSize().cy;
+  const PixelScalar strip_lift = MapWindow::GetBottomBarSize() + NIBLSCALE<PixelScalar>(12);
+  const UPixelScalar max_h = std::max<PixelScalar>(1, client_h - strip_lift - NIBLSCALE<PixelScalar>(8));
+  if (wf->GetHeight() > max_h) {
     wf->SetHeight(max_h);
   }
   wf->SetTop(rc.top);

@@ -1800,15 +1800,10 @@ void WndForm::SetCaption(const TCHAR *Value) {
     /* Outer size can change via SetHeight without caption text changing; rcClient was only
        updating top from the title bar, so bottom/right stayed at initial XML size and
        mClientWindow stayed short — children (e.g. Approve) clipped, targetPanSize mismatch. */
-    {
-      const int leftInset = (mBorderKind & BORDERLEFT) ? DLGSCALE(1) : 0;
-      const int rightInset = (mBorderKind & BORDERRIGHT) ? DLGSCALE(1) : 0;
-      const int bottomInset = (mBorderKind & BORDERBOTTOM) ? DLGSCALE(1) : 0;
-      rcClient.left = leftInset;
-      rcClient.right = (LONG)GetWidth() - rightInset;
-      rcClient.bottom = (LONG)GetHeight() - bottomInset;
-      mTitleRect.right = (LONG)GetWidth();
-    }
+    rcClient.left = (mBorderKind & BORDERLEFT) ? DLGSCALE(1) : 0;
+    rcClient.right = GetWidth() - ((mBorderKind & BORDERRIGHT) ? DLGSCALE(1) : 0);
+    rcClient.bottom = GetHeight() - ((mBorderKind & BORDERBOTTOM) ? DLGSCALE(1) : 0);
+    mTitleRect.right = GetWidth();
 
     if (!EqualRect(&mClientRect, &rcClient)){
         mClientRect = rcClient;

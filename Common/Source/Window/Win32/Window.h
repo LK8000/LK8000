@@ -97,7 +97,7 @@ public:
         ::ShowWindow(_hWnd, Visible ? SW_SHOW : SW_HIDE);
     }
 
-    bool IsVisible() {
+    bool IsVisible() const {
         // IsWindowVisible also test parent's, we don't want that
         // return ::IsWindowVisible(_hWnd);
         return (GetWindowLongPtr(_hWnd, GWL_STYLE) & WS_VISIBLE);
