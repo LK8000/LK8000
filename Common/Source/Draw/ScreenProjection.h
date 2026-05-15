@@ -15,6 +15,7 @@
 #include "Screen/Point.hpp"
 #include "Math/Point2D.hpp"
 #include "Geographic/GeoPoint.h"
+#include <concepts>
 #include <cstdint>
 #ifdef USE_GLSL
 #include <glm/fwd.hpp>
@@ -140,21 +141,14 @@ protected:
     static constexpr int32_t fixed_shift = 18;
 
 private:
-
-    template<typename scalar_type>
-    using integral_t = std::enable_if_t<std::is_integral_v<scalar_type>, scalar_type>;
-
-    template<typename scalar_type>
-    using floating_point_t = std::enable_if_t<std::is_floating_point_v<scalar_type>, scalar_type>;
-
     // helper to convert double to scalar type
-    template<typename scalar_type>
-    static floating_point_t<scalar_type> to_scalar(double value) {
+    template<std::floating_point scalar_type>
+    static scalar_type to_scalar(double value) {
         return value;
     }
 
-    template<typename scalar_type>
-    static integral_t<scalar_type> to_scalar(double value) {
+    template<std::integral scalar_type>
+    static scalar_type to_scalar(double value) {
         return lround(value);
     }
 
@@ -166,7 +160,7 @@ private:
      *
      * this is specialization for integral type only.
      */
-    template<typename scalar_type, integral_t<scalar_type>* = nullptr>
+    template<std::integral scalar_type>
     bool Overflow(const GeoPoint& pt) const {
         using numeric_limits = std::numeric_limits<scalar_type>;
         FloatPoint screen_point = ToScreen<FloatPoint>(pt);
@@ -179,7 +173,7 @@ private:
     /*
      * this is specialization for floating point type to avoid recursive call.
      */
-    template<typename scalar_type, floating_point_t<scalar_type>* = nullptr>
+    template<std::floating_point scalar_type>
     bool Overflow(const GeoPoint& pt) const {
         return false;
     }
