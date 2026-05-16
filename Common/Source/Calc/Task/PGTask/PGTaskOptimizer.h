@@ -58,11 +58,10 @@ private:
     /**
      * T must inherit from PGTaskPt
      */
-    template<typename T, typename ...Args>
-    std::enable_if_t<std::is_base_of_v<PGTaskPt, T>, std::unique_ptr<T>>
-    Make(const GeoPoint& center, Args&&... args) {
-      assert(m_Projection);
-      return std::make_unique<T>(m_Projection->Forward(center), std::forward<Args>(args)...);
+    template <std::derived_from<PGTaskPt> T, typename... Args>
+    std::unique_ptr<T> Make(const GeoPoint& center, Args&&... args) {
+      return std::make_unique<T>(m_Projection->Forward(center),
+                                 std::forward<Args>(args)...);
     }
 
     using PGTaskPt_ptr = std::unique_ptr<PGTaskPt>;
