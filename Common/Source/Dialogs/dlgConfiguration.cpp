@@ -41,6 +41,7 @@
 #include "Screen/LKIcon.h"
 #include "Dialogs/dlgTracking.h"
 #include "Tracking/http_session.h"
+#include "MapDraw/Terrain/ColorRamps.h"
 
 #ifdef ANDROID
 #include <jni.h>
@@ -2934,32 +2935,13 @@ DataField* dfe = wp->GetDataField();
   wp = pForm->FindByName<WndProperty>(TEXT("prpTerrainRamp"));
   if (wp) {
     DataField* dfe = wp->GetDataField();
-	// LKTOKEN  _@M413_ = "Low lands" 
-    dfe->addEnumText(MsgToken<413>());
-	// LKTOKEN  _@M439_ = "Mountainous" 
-    dfe->addEnumText(MsgToken<439>());
-    dfe->addEnumText(TEXT("Imhof 7"));
-    dfe->addEnumText(TEXT("Imhof 4"));
-    dfe->addEnumText(TEXT("Imhof 12"));
-    dfe->addEnumText(TEXT("Imhof Atlas"));
-    dfe->addEnumText(TEXT("ICAO")); 
-	// LKTOKEN  _@M377_ = "LKoogle lowlands" 
-    dfe->addEnumText(MsgToken<377>()); 
-	// LKTOKEN  _@M378_ = "LKoogle mountains" 
-    dfe->addEnumText(MsgToken<378>());
-	// LKTOKEN  _@M412_ = "Low Alps" 
-    dfe->addEnumText(MsgToken<412>());
-	// LKTOKEN  _@M338_ = "High Alps" 
-    dfe->addEnumText(MsgToken<338>());
-    dfe->addEnumText(TEXT("YouSee"));
-	// LKTOKEN  _@M340_ = "HighContrast" 
-    dfe->addEnumText(MsgToken<340>());
-    dfe->addEnumText(TEXT("GA Relative"));
-    dfe->addEnumText(TEXT("LiteAlps"));
-    dfe->addEnumText(TEXT("Low Hills"));
-    dfe->addEnumText(TEXT("Low Alps color e-ink"));
-    dfe->addEnumText(TEXT("Low Alps gray e-ink"));
-    dfe->Set(TerrainRamp_Config);
+    if (dfe) {
+      for (auto& ramp : TerrainColorRamps()) {
+        dfe->addEnumText(ramp.name());
+      }
+      dfe->Set(std::clamp<short>(TerrainRamp_Config, 0,
+                                 TerrainColorRamps::size() - 1));
+    }
     wp->RefreshDisplay();
   }
 
@@ -4300,7 +4282,7 @@ int ival;
   if (wp) {
     if (TerrainRamp_Config != wp->GetDataField()->GetAsInteger()) {
       TerrainRamp_Config = wp->GetDataField()->GetAsInteger();
-      TerrainRamp=TerrainRamp_Config;
+      TerrainRamp = std::clamp<short>(TerrainRamp_Config, 0, TerrainColorRamps::size() - 1);
     }
   }
 

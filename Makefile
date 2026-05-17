@@ -1052,6 +1052,7 @@ MAPDRAW	:=\
 	$(MAP)/OpenCloseTopology.cpp		\
 	$(MAP)/SetTopologyBounds.cpp		\
 	$(MAP)/ZoomTopology.cpp		\
+	$(MAP)/Terrain/ColorRamps.cpp \
 
 UTILS	:=\
 	$(SRC)/utils/fileext.cpp \

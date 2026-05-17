@@ -578,6 +578,7 @@ add_library( LK8000 SHARED
     Common/Source/MapDraw/OpenCloseTopology.cpp
     Common/Source/MapDraw/SetTopologyBounds.cpp
     Common/Source/MapDraw/ZoomTopology.cpp
+    Common/Source/MapDraw/Terrain/ColorRamps.cpp
 
     Common/Source/utils/fileext.cpp
     Common/Source/utils/stringext.cpp

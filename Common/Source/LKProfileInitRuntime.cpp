@@ -11,6 +11,7 @@
 #include "McReady.h"
 #include "Modeltype.h"
 #include "Calc/Task/TimeGates.h"
+#include "MapDraw/Terrain/ColorRamps.h"
 
 
 //
@@ -50,7 +51,9 @@ void LKProfileInitRuntime() {
   EnableNavBaroAltitude		= EnableNavBaroAltitude_Config;
   Orbiter			= Orbiter_Config;
   Shading			= Shading_Config;
-  TerrainRamp			= TerrainRamp_Config;
+  
+  TerrainRamp			= std::clamp<short>(TerrainRamp_Config, 0, TerrainColorRamps::size() - 1);
+
   TrailActive			= TrailActive_Config;
   UseTotalEnergy		= UseTotalEnergy_Config;
   AutoWindMode			= AutoWindMode_Config;

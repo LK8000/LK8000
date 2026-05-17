@@ -47,6 +47,7 @@
 #include <regex>
 #include <vector>
 #include <charconv>
+#include "MapDraw/Terrain/ColorRamps.h"
 
 using std::string_view_literals::operator""sv;
 
@@ -1921,21 +1922,27 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("TERRCOL")) == 0) {
-	if (TerrainRamp+1>=NUMRAMPS)
-		TerrainRamp=0;  // 15 = NUMRAMPS -1
-	else
-		++TerrainRamp;
-	MapWindow::RefreshMap();
-	return;
+    if (TerrainRamp + 1 >= TerrainColorRamps::size()) {
+      TerrainRamp = 0;  // wrap to first terrain ramp
+    }
+    else {
+      ++TerrainRamp;
+    }
+    MapWindow::RefreshMap();
+    return;
   }
   if (_tcscmp(misc, TEXT("TERRCOLBACK")) == 0) {
-	if (TerrainRamp-1<0)
-		TerrainRamp=NUMRAMPS-1;
-	else
-		--TerrainRamp;
-	MapWindow::RefreshMap();
-	return;
+    if (TerrainRamp < 1) {
+      // wrap to last terrain ramp
+      TerrainRamp = TerrainColorRamps::size() - 1;
+    }
+    else {
+      --TerrainRamp;
+    }
+    MapWindow::RefreshMap();
+    return;
   }
+
   if (_tcscmp(misc, TEXT("LOGBTXT")) == 0) {
 	dlgChecklistShowModal(1); // 1 for logbook TXT
 	return;
