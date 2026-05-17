@@ -135,7 +135,7 @@ public class FileUtils {
         }
     }
 
-    public static String getDocumentType(final File file) throws FileNotFoundException {
+    public static String getDocumentType(final File file) {
         if (file.isDirectory()) {
             return DocumentsContract.Document.MIME_TYPE_DIR;
         }
@@ -167,7 +167,7 @@ public class FileUtils {
                 if (header.contains("OziExplorer Waypoint File")) {
                     return "application/vnd.oziexplorer.wpt";
                 }
-            } catch (IOException ignore) {
+            } catch (Exception ignore) {
             }
         }
 
