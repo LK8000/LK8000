@@ -45,12 +45,11 @@ Copyright_License {
 
 #include <assert.h>
 
-#ifndef NDEBUG
-#endif
+namespace {
 
 gcc_const gcc_unused
-static GLsizei
-NextPowerOfTwo(GLsizei i)
+GLsizei
+NextPowerOfTwo(GLsizei i) noexcept
 {
   GLsizei p = 1;
   while (p < i)
@@ -59,15 +58,15 @@ NextPowerOfTwo(GLsizei i)
 }
 
 gcc_const
-static inline GLsizei
-ValidateTextureSize(GLsizei i)
+GLsizei
+ValidateTextureSize(GLsizei i) noexcept
 {
   return OpenGL::texture_non_power_of_two ? i : NextPowerOfTwo(i);
 }
 
 gcc_const
-static inline PixelSize
-ValidateTextureSize(PixelSize size)
+PixelSize
+ValidateTextureSize(PixelSize size) noexcept
 {
   return { ValidateTextureSize(size.cx), ValidateTextureSize(size.cy) };
 }
@@ -76,10 +75,10 @@ ValidateTextureSize(PixelSize size)
  * Load data into the current texture.  Fixes alignment to the next
  * power of two if needed.
  */
-static void
+void
 LoadTextureAutoAlign(GLint internal_format,
                      GLsizei width, GLsizei height,
-                     GLenum format, GLenum type, const GLvoid *pixels)
+                     GLenum format, GLenum type, const GLvoid *pixels) noexcept
 {
   assert(pixels != nullptr);
 
@@ -96,6 +95,29 @@ LoadTextureAutoAlign(GLint internal_format,
                     format, type, pixels);
   }
 }
+
+void DrawInternal(const RasterPoint (&position)[4], const FloatPoint (&tex_coord)[4]) noexcept {
+  ScopeVertexPointer vp(position);
+
+#ifdef USE_GLSL
+  glEnableVertexAttribArray(OpenGL::Attribute::TEXCOORD);
+  glVertexAttribPointer(OpenGL::Attribute::TEXCOORD, 2, GL_FLOAT, GL_FALSE,
+                        0, tex_coord);
+#else
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glTexCoordPointer(2, GL_FLOAT, 0, tex_coord);
+#endif
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+#ifdef USE_GLSL
+  glDisableVertexAttribArray(OpenGL::Attribute::TEXCOORD);
+#else
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#endif
+}
+
+} // namespace
 
 GLTexture::GLTexture(UPixelScalar _width, UPixelScalar _height)
   :width(_width), height(_height),
@@ -120,7 +142,7 @@ GLTexture::GLTexture(GLint internal_format, GLsizei _width, GLsizei _height,
 }
 
 void
-GLTexture::ResizeDiscard(PixelSize new_size)
+GLTexture::ResizeDiscard(PixelSize new_size) noexcept
 {
   const PixelSize validated_size = ValidateTextureSize(new_size);
   const PixelSize old_size = GetAllocatedSize();
@@ -143,7 +165,7 @@ GLTexture::ResizeDiscard(PixelSize new_size)
 }
 
 void
-GLTexture::Initialise()
+GLTexture::Initialise() noexcept
 {
   glGenTextures(1, &id);
   Bind();
@@ -151,7 +173,7 @@ GLTexture::Initialise()
 }
 
 void
-GLTexture::Configure()
+GLTexture::Configure() noexcept
 {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -162,7 +184,7 @@ GLTexture::Configure()
 }
 
 void
-GLTexture::EnableInterpolation()
+GLTexture::EnableInterpolation() noexcept
 {
   if (IsEmbedded()) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -176,7 +198,7 @@ inline void
 GLTexture::DrawOES(PixelScalar dest_x, PixelScalar dest_y,
                    UPixelScalar dest_width, UPixelScalar dest_height,
                    PixelScalar src_x, PixelScalar src_y,
-                   UPixelScalar src_width, UPixelScalar src_height) const
+                   UPixelScalar src_width, UPixelScalar src_height) const noexcept
 {
   const GLint rect[4] = { src_x, src_y + src_height, src_width,
                           /* negative height to flip the texture */
@@ -196,7 +218,7 @@ void
 GLTexture::Draw(PixelScalar dest_x, PixelScalar dest_y,
                 UPixelScalar dest_width, UPixelScalar dest_height,
                 PixelScalar src_x, PixelScalar src_y,
-                UPixelScalar src_width, UPixelScalar src_height) const
+                UPixelScalar src_width, UPixelScalar src_height) const noexcept
 {
 #ifdef HAVE_OES_DRAW_TEXTURE
   if (OpenGL::oes_draw_texture) {
@@ -213,44 +235,26 @@ GLTexture::Draw(PixelScalar dest_x, PixelScalar dest_y,
     { dest_x + int(dest_width), dest_y + int(dest_height) },
   };
 
-  const ScopeVertexPointer vp(vertices);
-
   const PixelSize allocated = GetAllocatedSize();
   GLfloat x0 = (GLfloat)src_x / allocated.cx;
   GLfloat y0 = (GLfloat)src_y / allocated.cy;
   GLfloat x1 = (GLfloat)(src_x + src_width) / allocated.cx;
   GLfloat y1 = (GLfloat)(src_y + src_height) / allocated.cy;
 
-  const GLfloat coord[] = {
-    x0, y0,
-    x1, y0,
-    x0, y1,
-    x1, y1,
+  const FloatPoint coord[] = {
+    { x0, y0 },
+    { x1, y0 },
+    { x0, y1 },
+    { x1, y1 }
   };
 
-#ifdef USE_GLSL
-  glEnableVertexAttribArray(OpenGL::Attribute::TEXCOORD);
-  glVertexAttribPointer(OpenGL::Attribute::TEXCOORD, 2, GL_FLOAT, GL_FALSE,
-                        0, coord);
-#else
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glTexCoordPointer(2, GL_FLOAT, 0, coord);
-#endif
-
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-#ifdef USE_GLSL
-  glDisableVertexAttribArray(OpenGL::Attribute::TEXCOORD);
-  OpenGL::solid_shader->Use();
-#else
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
+  DrawInternal(vertices, coord);
 }
 
 #ifdef HAVE_OES_DRAW_TEXTURE
 
 inline void
-GLTexture::DrawFlippedOES(PixelRect dest, PixelRect src) const
+GLTexture::DrawFlippedOES(PixelRect dest, PixelRect src) const noexcept
 {
   const GLint rect[4] = { src.left, src.top,
                           src.right - src.left, src.bottom - src.top };
@@ -266,7 +270,7 @@ GLTexture::DrawFlippedOES(PixelRect dest, PixelRect src) const
 #endif
 
 void
-GLTexture::DrawFlipped(PixelRect dest, PixelRect src) const
+GLTexture::DrawFlipped(PixelRect dest, PixelRect src) const noexcept
 {
 #ifdef HAVE_OES_DRAW_TEXTURE
   if (OpenGL::oes_draw_texture) {
@@ -282,36 +286,18 @@ GLTexture::DrawFlipped(PixelRect dest, PixelRect src) const
     dest.GetBottomRight(),
   };
 
-  const ScopeVertexPointer vp(vertices);
-
   const PixelSize allocated = GetAllocatedSize();
   GLfloat x0 = (GLfloat)src.left / allocated.cx;
   GLfloat y0 = (GLfloat)src.top / allocated.cy;
   GLfloat x1 = (GLfloat)src.right / allocated.cx;
   GLfloat y1 = (GLfloat)src.bottom / allocated.cy;
 
-  const GLfloat coord[] = {
-    x0, y1,
-    x1, y1,
-    x0, y0,
-    x1, y0,
+  const FloatPoint coord[] = {
+    { x0, y1 },
+    { x1, y1 },
+    { x0, y0 },
+    { x1, y0 }
   };
 
-#ifdef USE_GLSL
-  glEnableVertexAttribArray(OpenGL::Attribute::TEXCOORD);
-  glVertexAttribPointer(OpenGL::Attribute::TEXCOORD, 2, GL_FLOAT, GL_FALSE,
-                        0, coord);
-#else
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glTexCoordPointer(2, GL_FLOAT, 0, coord);
-#endif
-
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-#ifdef USE_GLSL
-  glDisableVertexAttribArray(OpenGL::Attribute::TEXCOORD);
-  OpenGL::solid_shader->Use();
-#else
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
+  DrawInternal(vertices, coord);
 }

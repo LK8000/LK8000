@@ -71,7 +71,7 @@ public:
   GLTexture(GLint internal_format, GLsizei width, GLsizei height,
             GLenum format, GLenum type, const GLvoid *data);
 
-  ~GLTexture() {
+  ~GLTexture() noexcept {
     glDeleteTextures(1, &id);
   }
 
@@ -79,22 +79,22 @@ public:
    * Returns the standard pixel format of the platform.
    */
   constexpr
-  static GLenum GetType() {
+  static GLenum GetType() noexcept {
     return HaveGLES()
       ? GL_UNSIGNED_SHORT_5_6_5
       : GL_UNSIGNED_BYTE;
   }
 
-  UPixelScalar GetWidth() const {
+  UPixelScalar GetWidth() const noexcept {
     return width;
   }
 
-  UPixelScalar GetHeight() const {
+  UPixelScalar GetHeight() const noexcept {
     return height;
   }
 
   gcc_pure
-  PixelSize GetSize() const {
+  PixelSize GetSize() const noexcept {
     return { width, height };
   }
 
@@ -102,7 +102,7 @@ public:
    * Returns the physical size of the texture.
    */
   gcc_pure
-  PixelSize GetAllocatedSize() const {
+  PixelSize GetAllocatedSize() const noexcept {
     return { allocated_width, allocated_height };
   }
 
@@ -110,33 +110,33 @@ public:
    * Enable interpolation when minifying/magnifying the texture.  The
    * caller must bind the texture prior to calling this method.
    */
-  static void EnableInterpolation();
+  static void EnableInterpolation() noexcept;
 
   /**
    * Change the size of the texture, discarding any previous contents.
    */
-  void ResizeDiscard(PixelSize new_size);
+  void ResizeDiscard(PixelSize new_size) noexcept;
 
 protected:
-  void Initialise();
+  void Initialise() noexcept;
 
-  static void Configure();
+  static void Configure() noexcept;
 
 #ifdef HAVE_OES_DRAW_TEXTURE
 private:
   void DrawOES(PixelScalar dest_x, PixelScalar dest_y,
                UPixelScalar dest_width, UPixelScalar dest_height,
                PixelScalar src_x, PixelScalar src_y,
-               UPixelScalar src_width, UPixelScalar src_height) const;
-  void DrawFlippedOES(PixelRect dest, PixelRect src) const;
+               UPixelScalar src_width, UPixelScalar src_height) const noexcept;
+  void DrawFlippedOES(PixelRect dest, PixelRect src) const noexcept;
 #endif
 
 public:
-  void Bind() {
+  void Bind() noexcept {
     glBindTexture(GL_TEXTURE_2D, id);
   }
 
-  void AttachFramebuffer(GLenum attachment) {
+  void AttachFramebuffer(GLenum attachment) noexcept {
     FBO::FramebufferTexture2D(FBO::FRAMEBUFFER, attachment,
                               GL_TEXTURE_2D, id, 0);
   }
@@ -144,9 +144,9 @@ public:
   void Draw(PixelScalar dest_x, PixelScalar dest_y,
             UPixelScalar dest_width, UPixelScalar dest_height,
             PixelScalar src_x, PixelScalar src_y,
-            UPixelScalar src_width, UPixelScalar src_height) const;
+            UPixelScalar src_width, UPixelScalar src_height) const noexcept;
 
-  void Draw(PixelScalar dest_x, PixelScalar dest_y) const {
+  void Draw(PixelScalar dest_x, PixelScalar dest_y) const noexcept {
     Draw(dest_x, dest_y, width, height,
          0, 0, width, height);
   }
@@ -155,7 +155,7 @@ public:
    * Just like Draw(), but flip the texture vertically.  This is used
    * for textures that were recorded with glCopyTexSubImage2D().
    */
-  void DrawFlipped(PixelRect dest, PixelRect src) const;
+  void DrawFlipped(PixelRect dest, PixelRect src) const noexcept;
 };
 
 #endif
