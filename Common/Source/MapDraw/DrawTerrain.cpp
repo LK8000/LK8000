@@ -51,15 +51,18 @@ class TerrainRenderer {
     TerrainRenderer &operator=(TerrainRenderer &&) = delete; // disallowed
 public:
 
-    explicit TerrainRenderer(const RECT& rc) {
-        TestLog(_T(".... Init TerrainRenderer area LTRB (%d,%d,%d,%d)"), (int)rc.left, (int)rc.top, (int)rc.right, (int)rc.bottom);
+    explicit TerrainRenderer(const RECT& rect) : _size(PixelRect(rect).GetSize()) {
+        TestLog(_T(".... Init TerrainRenderer area LTRB (%d,%d,%d,%d)"),
+                    (int)rect.left, (int)rect.top, (int)rect.right, (int)rect.bottom);
 
         static bool error = false;
         // This will not disable terrain! So we shall get calling here again, but no problem.
-        if (rc.right < 1 || rc.bottom < 1) {
+        if (_size.cx < 1 || _size.cy < 1) {
             if(!error) {
                 // log error only once
-                StartupStore(_T(". CRITICAL PROBLEM, cannot render terrain. rcright=%d rcbottom=%d%s"),rc.right,rc.bottom,NEWLINE);
+                StartupStore(
+                    _T(". CRITICAL PROBLEM, cannot render terrain. size=(%d,%d)"),
+                    static_cast<int>(_size.cx), static_cast<int>(_size.cy));
             }
             error = true;
             LKASSERT(0); // THIS WILL NOT POP UP A DIALOG ERROR!
@@ -82,8 +85,8 @@ public:
         */
         try {
 
-            const int res_x = iround((rc.right - rc.left) / dtquant);
-            const int res_y = iround((rc.bottom - rc.top) / dtquant);
+            const int res_x = iround(_size.cx / dtquant);
+            const int res_y = iround(_size.cy / dtquant);
 
             screen_buffer = std::make_unique<CSTScreenBuffer>(res_x, res_y);
 
@@ -129,8 +132,13 @@ public:
         return auto_brightness;
     }
 
+    const PixelSize& GetSize() const {
+        return _size;
+    }
+
 private:
     bool _dirty = true; // indicate screen_buffer is up-to-date
+    const PixelSize _size;
 
     unsigned int dtquant;
     unsigned int epx; // step size used for slope calculations
@@ -1003,28 +1011,22 @@ bool UpToDate(short TerrainContrast, short TerrainBrightness, short TerrainRamp,
 /**
  * Require LockTerrainDataGraphics() everytime !
  */
-bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj,
-        const double sunazimuth, const double sunelevation) {
-    (void) sunelevation; // TODO feature: sun-based rendering option
+bool DrawTerrain(LKSurface& Surface, const RECT& rc,
+                 const ScreenProjection& _Proj,
+                 double sunazimuth, double sunelevation)
+{
+    // TODO feature: sun-based rendering option
 
     if (!RasterTerrain::isTerrainLoaded()) {
         return false;
     }
 
-    static RECT oldrc = {};
-
-    if (PixelRect(rc) != PixelRect(oldrc)) {
-        // Resolution has changed, probably PAN mode on with bottombar full opaque
-        // We paint full screen, so we resize it.
-        trenderer = nullptr;
-    }
-
     try {
-        if (!trenderer) {
-            oldrc = rc;
+        if (!trenderer || trenderer->GetSize() != PixelRect(rc).GetSize()) {
             trenderer = std::make_unique<TerrainRenderer>(rc);
         }
     } catch(std::exception& e) {
+        trenderer = nullptr;
         return false;
     }
 

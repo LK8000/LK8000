@@ -12,7 +12,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode);
 double ReadZoomTopology(int iCategory);
 bool HaveZoomTopology(int iCategory);
 void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly=false);
-bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const double sunazimuth, const double sunelevation);
+bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double sunazimuth, double sunelevation);
 
 void MarkLocation(const double lon, const double lat, const double altitude);
 
