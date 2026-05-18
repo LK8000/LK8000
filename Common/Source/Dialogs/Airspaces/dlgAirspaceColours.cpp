@@ -35,7 +35,7 @@ protected:
   }
 
   int GetItemCount() const override {
-    return NUMAIRSPACECOLORS + 1;
+    return std::size(MapWindow::Colours) + 1;
   }
 
   const TCHAR* GetTitle() const override {
