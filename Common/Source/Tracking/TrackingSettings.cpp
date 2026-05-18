@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <concepts>
 #include <string_view>
 #include <type_traits>
 
@@ -22,29 +23,21 @@ namespace {
 
 using namespace std::string_view_literals;
 
-template <typename>
-inline constexpr bool always_false_v = false;
-
-template <typename T>
-bool is_valid_enum(std::underlying_type_t<T> value) noexcept {
-  if constexpr (std::is_same_v<T, platform>) {
-    switch (static_cast<T>(value)) {
-      case platform::none:
-      case platform::livetrack24:
-      case platform::skylines_aero:
-      case platform::ffvl:
-      case platform::osmand:
-      case platform::traccar:
-        return true;
-    }
-    return false;
+// NOTE: If you add/remove values in enum platform, update this switch accordingly.
+bool is_valid_platform(std::underlying_type_t<platform> value) noexcept {
+  switch (static_cast<platform>(value)) {
+    case platform::none:
+    case platform::livetrack24:
+    case platform::skylines_aero:
+    case platform::ffvl:
+    case platform::osmand:
+    case platform::traccar:
+      return true;
   }
-  else {
-    static_assert(always_false_v<T>, "Unsupported enum type");
-  }
+  return false;
 }
 
-std::string escape_string(const std::string& field) {
+std::string escape_string(std::string_view field) {
   std::string out;
   for (char c : field) {
     if (c == '\\' || c == ';') {
@@ -55,24 +48,24 @@ std::string escape_string(const std::string& field) {
   return out;
 }
 
+std::string to_string(bool value) {
+  return value ? "true" : "false";
+}
+
+template <std::integral T>
+  requires (!std::same_as<T, bool>)
+std::string to_string(T value) {
+  return std::to_string(value);
+}
+
 template <typename T>
-std::string to_string(const T& value) {
-  if constexpr (std::is_same_v<T, bool>) {
-    return value ? "true" : "false";
-  }
-  else if constexpr (std::is_integral_v<T>) {
-    return std::to_string(value);
-  }
-  else if constexpr (std::is_enum_v<T>) {
-    using underlying = std::underlying_type_t<T>;
-    return to_string(static_cast<underlying>(value));
-  }
-  else if constexpr (std::is_same_v<T, std::string>) {
-    return escape_string(value);
-  }
-  else {
-    static_assert(always_false_v<T>, "Unsupported type");
-  }
+  requires std::is_enum_v<T>
+std::string to_string(T value) {
+  return to_string(static_cast<std::underlying_type_t<T>>(value));
+}
+
+std::string to_string(std::string_view value) {
+  return escape_string(value);
 }
 
 // Parse one escaped field.
@@ -112,63 +105,43 @@ bool ParseEscapedField(const char*& p, std::string& out, bool& valid) {
   return false;
 }
 
-template <typename T, typename = void>
-struct from_string_parser;
+bool from_string(const std::string& s, bool& out) noexcept {
+  if (s == "true") {
+    out = true;
+    return true;
+  }
+  if (s == "false") {
+    out = false;
+    return true;
+  }
+  return false;
+}
 
-template <>
-struct from_string_parser<bool> {
-  static bool parse(const std::string& s, bool& out) noexcept {
-    if (s == "true") {
-      out = true;
-      return true;
-    }
-    if (s == "false") {
-      out = false;
-      return true;
-    }
+template <std::integral T>
+  requires (!std::same_as<T, bool>)
+bool from_string(const std::string& s, T& out) noexcept {
+  const char* begin = s.data();
+  const char* end = std::next(begin, s.size());
+  auto result = std::from_chars(begin, end, out);
+  return result.ec == std::errc() && result.ptr == end;
+}
+
+bool from_string(const std::string& s, platform& out) noexcept {
+  using underlying = std::underlying_type_t<platform>;
+  underlying value;
+  if (!from_string<underlying>(s, value)) {
     return false;
   }
-};
-
-template <typename T>
-struct from_string_parser<
-    T, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>>> {
-  static bool parse(const std::string& s, T& out) noexcept {
-    const char* begin = s.data();
-    const char* end = std::next(begin, s.size());
-    auto result = std::from_chars(begin, end, out);
-    return result.ec == std::errc() && result.ptr == end;
+  if (!is_valid_platform(value)) {
+    return false;
   }
-};
+  out = static_cast<platform>(value);
+  return true;
+}
 
-template <typename T>
-struct from_string_parser<T, std::enable_if_t<std::is_enum_v<T>>> {
-  static bool parse(const std::string& s, T& out) noexcept {
-    using underlying = std::underlying_type_t<T>;
-    underlying value;
-    if (!from_string_parser<underlying>::parse(s, value)) {
-      return false;
-    }
-    if (!is_valid_enum<T>(value)) {
-      return false;
-    }
-    out = static_cast<T>(value);
-    return true;
-  }
-};
-
-template <>
-struct from_string_parser<std::string> {
-  static bool parse(const std::string& s, std::string& out) {
-    out = s;
-    return true;
-  }
-};
-
-template <typename T>
-bool from_string(const std::string& s, T& out) noexcept(
-    noexcept(from_string_parser<T>::parse(s, out))) {
-  return from_string_parser<T>::parse(s, out);
+bool from_string(std::string_view s, std::string& out) {
+  out = s;
+  return true;
 }
 
 enum class FieldParseResult {
