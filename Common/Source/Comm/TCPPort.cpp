@@ -207,8 +207,8 @@ bool TCPServerPort::Connect() {
 
 unsigned TCPServerPort::RxThread() {
     struct timeval timeout;
-    timeout.tv_sec = (mTimeout) / 1000;
-    timeout.tv_usec = (mTimeout)  % 1000;
+    timeout.tv_sec = mTimeout / 1000;
+    timeout.tv_usec = (mTimeout % 1000) * 1000;
     
     //-------------------------
     // Set the socket I/O mode: In this case FIONBIO
@@ -282,7 +282,8 @@ bool UDPServerPort::Connect() {
 
     //set timer for recv_socket
     struct timeval tv;
-    tv.tv_usec = mTimeout;
+    tv.tv_sec = mTimeout / 1000;
+    tv.tv_usec = (mTimeout % 1000) * 1000;
     setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO,(char*)&tv,sizeof(tv));
 
     if(bind (mSocket, (SOCKADDR *)&sin, sizeof(sin)) == SOCKET_ERROR) {

@@ -71,10 +71,10 @@ size_t SocketPort::Read(void *data, size_t size) {
     }
 
     struct timeval timeout;
-    fd_set readfs;
     timeout.tv_sec = mTimeout / 1000;
-    timeout.tv_usec = mTimeout % 1000;
+    timeout.tv_usec = (mTimeout % 1000) * 1000;
 
+    fd_set readfs;
     FD_ZERO(&readfs);
     FD_SET(mSocket, &readfs);
     
@@ -121,16 +121,15 @@ bool SocketPort::Write_Impl(const void *data, size_t size) {
     }
     
     struct timeval timeout;
-    fd_set writefs;
     timeout.tv_sec = mTimeout / 1000;
-    timeout.tv_usec = mTimeout % 1000;
+    timeout.tv_usec = (mTimeout % 1000) * 1000;
 
-    int iResult = 0;
+    fd_set writefs;
     FD_ZERO(&writefs);
     FD_SET(mSocket, &writefs);
     
     // wait for socket ready to write
-    iResult = select(mSocket + 1, NULL, &writefs, NULL, &timeout); 
+    int iResult = select(mSocket + 1, NULL, &writefs, NULL, &timeout); 
     if (iResult == 0) {
         AddStatErrTx(1);
         return false; // timeout
