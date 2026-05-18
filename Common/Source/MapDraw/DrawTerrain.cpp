@@ -730,27 +730,29 @@ private:
      *  - first is for 16bit Color ( android, openvario ... )
      *  - second is for 8bit Color ( Kobo )
      */
-    template<typename Color_t>
-    std::enable_if_t<(sizeof(Color_t) == sizeof(int16_t))>
-    drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
+    template <typename Color_t>
+        requires (sizeof(Color_t) == sizeof(int16_t))
+    void drawIsoLinePixel(Color_t* pixel_src, int16x8_t height,
+                          uint16x8_t mask) const {
       uint16x8_t line_color = GetIsoLineColor<uint16x8_t>(height);
       uint16_t* screen_ptr = reinterpret_cast<uint16_t*>(pixel_src);
       uint16x8_t mask_line = vmvnq_u16(mask);
       uint16x8_t pixel = vld1q_u16(screen_ptr);
-      pixel = (pixel&mask) | (line_color&mask_line);
+      pixel = (pixel & mask) | (line_color & mask_line);
       vst1q_u16(screen_ptr, pixel);
     }
 
-    template<typename Color_t>
-    std::enable_if_t<(sizeof(Color_t) == sizeof(int8_t))>
-    drawIsoLinePixel(Color_t *pixel_src, int16x8_t height, uint16x8_t mask) const {
-        uint8x8_t line_color = GetIsoLineColor<uint8x8_t>(height);
-        uint8_t* screen_ptr = reinterpret_cast<uint8_t*>(pixel_src);
-        uint8x8_t mask_color = vmovn_u16(mask);
-        uint8x8_t mask_line = vmvn_u8(mask_color);
-        uint8x8_t pixel = vld1_u8(screen_ptr);
-        pixel = (pixel&mask_color) | (line_color&mask_line);
-        vst1_u8(screen_ptr, pixel);
+    template <typename Color_t>
+        requires (sizeof(Color_t) == sizeof(int8_t))
+    void drawIsoLinePixel(Color_t* pixel_src, int16x8_t height,
+                          uint16x8_t mask) const {
+      uint8x8_t line_color = GetIsoLineColor<uint8x8_t>(height);
+      uint8_t* screen_ptr = reinterpret_cast<uint8_t*>(pixel_src);
+      uint8x8_t mask_color = vmovn_u16(mask);
+      uint8x8_t mask_line = vmvn_u8(mask_color);
+      uint8x8_t pixel = vld1_u8(screen_ptr);
+      pixel = (pixel & mask_color) | (line_color & mask_line);
+      vst1_u8(screen_ptr, pixel);
     }
 #endif
 
