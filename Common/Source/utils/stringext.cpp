@@ -11,6 +11,7 @@
 #include <cassert>
 #include <string_view>
 #include <algorithm>
+#include <type_traits>
 
 #include <cstring>
 #include "array_back_insert_iterator.h"
@@ -21,11 +22,19 @@
 //______________________________________________________________________________
 namespace {
 
+template<typename T>
+concept UTF8CodeUnit = std::is_same_v<T, char>;
+
+template<typename T>
+concept UTF16CodeUnit = sizeof(T) == sizeof(uint16_t);
+
+template<typename T>
+concept UTF32CodeUnit = sizeof(T) == sizeof(uint32_t);
+
 /**
  * @param p utf-8 string
  */
-template<typename Tp, 
-         typename std::enable_if_t<std::is_same<Tp, char>::value>* = nullptr>
+template<UTF8CodeUnit Tp>
 std::pair<unsigned, const Tp *>
 NextChar(const Tp *p) {
   return NextUTF8(p);
@@ -34,11 +43,10 @@ NextChar(const Tp *p) {
 /**
  * @param p utf-16 string
  */
-template<typename Tp, 
-         typename std::enable_if_t<sizeof(Tp) == sizeof(uint16_t)>* = nullptr>
+template<UTF16CodeUnit Tp>
 std::pair<unsigned, const Tp *>
 NextChar(const Tp *p) {
-  auto pair = NextUTF16((uint16_t*)p);
+  auto pair = NextUTF16(reinterpret_cast<const uint16_t*>(p));
   const Tp* next = reinterpret_cast<const Tp*>(pair.second);
   return std::make_pair<unsigned, const Tp *>(std::move(pair.first), std::move(next));
 }
@@ -46,8 +54,7 @@ NextChar(const Tp *p) {
 /**
  * @param p utf-32 string
  */
-template<typename Tp, 
-         typename std::enable_if_t<sizeof(Tp) == sizeof(uint32_t)>* = nullptr>
+template<UTF32CodeUnit Tp>
 std::pair<unsigned, const Tp *>
 NextChar(const Tp *p) {
   return std::make_pair(unsigned(*p), p + 1);
@@ -57,14 +64,12 @@ NextChar(const Tp *p) {
  * this 2 template function allow Compiler to choose right encoding for wchar_t* string
  *   depending of sizeof wchar_t (utf16 for 2 bytes, utf32 for 4 bytes)
  */
-template<typename Tp, 
-         typename std::enable_if_t<sizeof(Tp) == sizeof(uint16_t)>* = nullptr>
+template<UTF16CodeUnit Tp>
 Tp* UnicodeToWChar(unsigned ch, Tp* q) {
   return reinterpret_cast<Tp*>(UnicodeToUTF16(ch, reinterpret_cast<uint16_t*>(q)));
 }
 
-template<typename Tp, 
-         typename std::enable_if_t<sizeof(Tp) == sizeof(uint32_t)>* = nullptr>
+template<UTF32CodeUnit Tp>
 Tp* UnicodeToWChar(unsigned ch, Tp* q) {
   (*q++) = ch;
   return q;
@@ -141,8 +146,7 @@ const CharT* ci_search_substr(const CharT* string, const CharT* sub_string) {
 /**
  * required size to store unicode character with utf8 encoding 
  */ 
-template<typename CharT, 
-         typename std::enable_if_t<std::is_same_v<CharT, char>>* = nullptr>
+template<UTF8CodeUnit CharT>
 size_t unicode_alloc_size(unsigned ch) {
   if (gcc_likely(ch < 0x80)) {
     return 1;
@@ -169,8 +173,7 @@ size_t unicode_alloc_size(unsigned ch) {
 /**
  * required size to store unicode character with utf16 encoding 
  */ 
-template<typename CharT, 
-         typename std::enable_if_t<sizeof(CharT) == sizeof(uint16_t)>* = nullptr>
+template<UTF16CodeUnit CharT>
 size_t unicode_alloc_size(unsigned ch) {
     if (ch < 0x10000) {
     return 1;
@@ -181,8 +184,7 @@ size_t unicode_alloc_size(unsigned ch) {
 /**
  * required size to store unicode character with utf32 encoding 
  */ 
-template<typename CharT, 
-         typename std::enable_if_t<sizeof(CharT) == sizeof(uint32_t)>* = nullptr>
+template<UTF32CodeUnit CharT>
 size_t unicode_alloc_size(unsigned ch) {
   return 1;
 }
