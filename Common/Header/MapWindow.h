@@ -565,7 +565,6 @@ class MapWindow {
 
  private:
 
-  static BOOL Initialised;
   static bool GliderCenter;
   static PeriodClock timestamp_newdata;
   static bool LandableReachable;
@@ -836,6 +835,11 @@ private:
   static double DisplayAircraftAngle;
   static unsigned targetPanSize;
 
+#ifndef ENABLE_OPENGL
+  static BOOL CLOSETHREAD;
+  static BOOL Initialised;
+#endif
+
  public:
   static void RefreshMap(); // set public VENTA
 
@@ -854,8 +858,6 @@ private:
   static short X_Left, X_Right; // Ungestured fast clicks on infopages (THE SAME AS IN: PROCESS_VIRTUALKEY)
 
   static atomic_shared_flag ThreadSuspended;
-
-  static BOOL CLOSETHREAD;
 
   static double LimitMapScale(double value);
 

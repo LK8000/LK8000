@@ -19,12 +19,12 @@
 #include "Screen/Canvas.hpp"
 #endif
 
-BOOL MapWindow::CLOSETHREAD = FALSE;
-BOOL MapWindow::Initialised = FALSE;
 atomic_shared_flag MapWindow::ThreadSuspended;
 
 
 #ifndef ENABLE_OPENGL
+BOOL MapWindow::Initialised = FALSE;
+BOOL MapWindow::CLOSETHREAD = FALSE;
 Mutex MapWindow::Surface_Mutex;
 Cond MapWindow::_draw_cv;
 
@@ -101,10 +101,10 @@ void MapWindow::Initialize() {
 	// These should be better checked. first_run is forcing also cache update for topo.
 	ForceRenderMap=true;
 	first_run=true;
-    // Signal that draw thread can run now
-    Initialised = TRUE;
 #ifndef ENABLE_OPENGL
-    _draw_cv.notify_one();
+  // Signal that draw thread can run now
+  Initialised = TRUE;
+  _draw_cv.notify_one();
 #endif
 }
 
@@ -317,9 +317,8 @@ InvokeThread MapWindowThread("MapWindow", MapWindow::DrawThread);
 void MapWindow::CreateDrawingThread() {
   Initialize();
 
-  CLOSETHREAD = FALSE;
-
 #ifndef ENABLE_OPENGL
+  CLOSETHREAD = FALSE;
   MapWindowThread.Start();
 #endif
 }
