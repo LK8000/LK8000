@@ -30,6 +30,7 @@
 #define _utils_lookup_table_h_
 
 #include <cstddef>
+#include <concepts>
 #include <utility>
 #include <functional>
 
@@ -63,10 +64,9 @@ public:
   /**
    * if @key_type and @mapped_type as same type, return @key if @key is not inside table.
    */
-  template<typename T = mapped_type,
-           typename=std::enable_if_t<std::is_same_v<key_type, T>>>
   inline constexpr
-  T get(key_type key) const {
+  mapped_type get(key_type key) const
+      requires std::same_as<key_type, mapped_type> {
     return get(key, key);
   }
 };
