@@ -192,7 +192,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
 
 static 
 tstring GetHomeWaypointName() {
-  const std::lock_guard<Mutex> lock(CritSec_TaskData);
+  const std::lock_guard lock(CritSec_TaskData);
   if (ValidWayPointFast(HomeWaypoint)) {
     return WayPointList[HomeWaypoint].Name;
   } else {

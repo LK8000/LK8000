@@ -195,7 +195,7 @@ public:
     void Height(const RasterPoint& offset, const ScreenProjection& _Proj) {
         assert(height_buffer && height_buffer->GetBuffer());
 
-        const std::lock_guard<Mutex> lock(RasterTerrain::mutex);
+        const std::lock_guard lock(RasterTerrain::mutex);
 
         RasterMap* DisplayMap = RasterTerrain::TerrainMap.get();
         assert(DisplayMap && DisplayMap->isMapLoaded());

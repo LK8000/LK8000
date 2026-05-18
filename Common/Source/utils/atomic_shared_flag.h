@@ -37,20 +37,20 @@ class atomic_shared_flag final {
   }
 
   operator bool() const {
-    const std::lock_guard<Mutex> lock(_mtx);
+    const std::lock_guard lock(_mtx);
     return _count > 0;
   }
 
  private:
   // Increment the counter
   void increment() {
-    const std::lock_guard<Mutex> lock(_mtx);
+    const std::lock_guard lock(_mtx);
     ++_count;
   }
 
   // Decrement the counter
   void decrement() {
-    const std::lock_guard<Mutex> lock(_mtx);
+    const std::lock_guard lock(_mtx);
     if (_count > 0) {
       --_count;
     }

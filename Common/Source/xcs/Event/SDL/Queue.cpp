@@ -160,7 +160,7 @@ EventQueue::Purge(Window &window)
 void
 EventQueue::AddTimer(Timer &timer, unsigned ms)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   timers.Add(timer, MonotonicClockUS() + ms * 1000);
 }
@@ -168,7 +168,7 @@ EventQueue::AddTimer(Timer &timer, unsigned ms)
 void
 EventQueue::CancelTimer(Timer &timer)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   timers.Cancel(timer);
 }

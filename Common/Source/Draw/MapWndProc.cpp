@@ -172,7 +172,7 @@ POINT targetScreen;
 void MapWindow::_OnSize(int cx, int cy) {
 #ifndef ENABLE_OPENGL
     // this is Used for check Thread_Draw don't use surface object.
-    const std::lock_guard<Mutex> lock(Surface_Mutex);
+    const std::lock_guard lock(Surface_Mutex);
 
     BackBufferSurface.Resize(cx, cy);
 

@@ -396,7 +396,7 @@ inline void CContestMgr::CResult::Update()
  */
 inline CContestMgr::CResult CContestMgr::Result(TType type, bool fillArray) const
 {
-  const std::lock_guard<Mutex> lock(_resultsCS);
+  const std::lock_guard lock(_resultsCS);
   return CResult(_resultArray[type], fillArray);
 }
 

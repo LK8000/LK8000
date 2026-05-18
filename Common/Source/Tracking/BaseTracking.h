@@ -66,7 +66,7 @@ class BaseTracking : public Thread, public ITrackingHandler {
 
  private:
   bool Wait() {
-    const std::lock_guard<Mutex> lock(queue_mtx);
+    const std::lock_guard lock(queue_mtx);
     while (!thread_stop && !queue.has_value()) {
       queue_cv.wait(queue_mtx);
     }

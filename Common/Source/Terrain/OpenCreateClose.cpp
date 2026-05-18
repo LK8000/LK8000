@@ -35,7 +35,7 @@ void RasterTerrain::OpenTerrain() {
 }
 
 bool RasterTerrain::CreateTerrainMap(const TCHAR* zfilename) {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   try {
     TerrainMap = std::make_unique<RasterMap>();
     if (!TerrainMap->Open(zfilename)) {
@@ -52,6 +52,6 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR* zfilename) {
 void RasterTerrain::CloseTerrain() {
   TestLog(_T(". CloseTerrain"));
 
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   TerrainMap = nullptr;
 }

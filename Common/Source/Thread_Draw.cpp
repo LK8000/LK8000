@@ -57,7 +57,7 @@ bool first_run=true;
 
 void MapWindow::Initialize() {
 #ifndef ENABLE_OPENGL
-    const std::lock_guard<Mutex> lock(Surface_Mutex);
+    const std::lock_guard lock(Surface_Mutex);
 #endif
     // Reset common topology and waypoint label declutter, first init. Done also in other places.
     ResetLabelDeclutter();
@@ -114,7 +114,7 @@ void MapWindow::DrawThread() {
   using namespace std::chrono_literals;
   
   TestLog(_T("... Thread_Draw : started"));
-  std::unique_lock<Mutex> lock(Surface_Mutex);
+  std::unique_lock lock(Surface_Mutex);
 
   TestLog(_T("... Thread_Draw : wait for init or stop"));
   _draw_cv.wait(lock, [&]() {
@@ -202,7 +202,7 @@ void MapWindow::DrawThread() {
             WhiteRectH.top = WhiteRectH.bottom - fromY;
           }
 
-          const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
+          const std::lock_guard lock(BackBuffer_Mutex);
 
           BackBufferSurface.Whiteness(WhiteRectV.left, WhiteRectV.top, WhiteRectV.GetSize().cx,
                                       WhiteRectV.GetSize().cy);
@@ -221,7 +221,7 @@ void MapWindow::DrawThread() {
           // The map was not dirty, and we are not in fastpanning mode.
           // FastRefresh!  We simply redraw old bitmap.
           //
-          const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
+          const std::lock_guard lock(BackBuffer_Mutex);
           DrawSurface.CopyTo(BackBufferSurface);
 
         }
@@ -252,7 +252,7 @@ void MapWindow::DrawThread() {
             goto _dontbitblt;
           }
 
-          const std::lock_guard<Mutex> lock(BackBuffer_Mutex);
+          const std::lock_guard lock(BackBuffer_Mutex);
           DrawSurface.CopyTo(BackBufferSurface);
 
           const RasterPoint centerscreen = {ScreenSizeX / 2, ScreenSizeY / 2};
@@ -326,14 +326,14 @@ void MapWindow::CreateDrawingThread() {
 
 void MapWindow::SuspendDrawingThread() {
 #ifndef ENABLE_OPENGL
-  const std::lock_guard<Mutex> Lock(Surface_Mutex);
+  const std::lock_guard Lock(Surface_Mutex);
 #endif
   ThreadSuspended = true;
 }
 
 void MapWindow::ResumeDrawingThread() {
 #ifndef ENABLE_OPENGL 
-  const std::lock_guard<Mutex> Lock(Surface_Mutex);
+  const std::lock_guard Lock(Surface_Mutex);
 #endif
   ThreadSuspended = false;
 #ifndef ENABLE_OPENGL 

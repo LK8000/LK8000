@@ -282,6 +282,6 @@ void ExternalDeviceSendTarget() {
 }
 
 void ResetMultitargetSync() {
-  const std::lock_guard<Mutex> lock(last_multitarget_mtx);
+  const std::lock_guard lock(last_multitarget_mtx);
   last_multitarget = {};
 }

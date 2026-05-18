@@ -40,7 +40,7 @@ TopWindow::Invalidate()
 void
 TopWindow::AnnounceResize(PixelSize _new_size)
 {
-  const std::lock_guard<Mutex> lock(paused_mutex);
+  const std::lock_guard lock(paused_mutex);
   resized = true;
   new_size = _new_size;
 }
@@ -81,7 +81,7 @@ TopWindow::RefreshSize()
   PixelSize new_size_copy;
 
   {
-    const std::lock_guard<Mutex> lock(paused_mutex);
+    const std::lock_guard lock(paused_mutex);
     if (!resized)
       return;
 
@@ -145,7 +145,7 @@ TopWindow::Pause()
   event_queue->Purge(match_pause_and_resume, nullptr);
   event_queue->Push(Event::PAUSE);
 
-  std::unique_lock<Mutex> lock(paused_mutex);
+  std::unique_lock lock(paused_mutex);
   while (running && !paused)
     paused_cond.wait(lock);
 }
@@ -235,7 +235,7 @@ TopWindow::OnEvent(const Event &event)
 void
 TopWindow::OnStartEventLoop()
 {
-  const std::lock_guard<Mutex> lock(paused_mutex);
+  const std::lock_guard lock(paused_mutex);
   ++running;
 }
 

@@ -22,7 +22,7 @@ inline void ResetStartPoint(START_POINT& StartPt) {
 } // namespace
 
 void ClearTask() {
-  const std::lock_guard<Mutex> lock(CritSec_TaskData);
+  const std::lock_guard lock(CritSec_TaskData);
 
   EnableFAIFinishHeight = false;
   FinishMinHeight = 0;

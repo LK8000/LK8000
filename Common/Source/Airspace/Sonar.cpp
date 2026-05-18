@@ -223,7 +223,7 @@ protected:
 	// return false every second
 	// return true if stop is signaled
 	bool WaitForStop() {
-		std::unique_lock<Mutex> lock(mutexRun);
+		std::unique_lock lock(mutexRun);
 		while (!stop && Timer.Elapsed() < 1000) {
 		    unsigned elapsed = Timer.ElapsedUpdate();
 		    auto timeout = std::chrono::milliseconds((elapsed >= 1000U) ? 0U : (1000U - elapsed));

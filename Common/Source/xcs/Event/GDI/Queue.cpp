@@ -99,7 +99,7 @@ EventQueue::HandlePaintMessages()
 void
 EventQueue::AddTimer(Timer &timer, unsigned ms)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   const uint64_t due_us = MonotonicClockUS() + ms * 1000;
   timers.Add(timer, due_us);
@@ -111,7 +111,7 @@ EventQueue::AddTimer(Timer &timer, unsigned ms)
 void
 EventQueue::CancelTimer(Timer &timer)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   timers.Cancel(timer);
 }

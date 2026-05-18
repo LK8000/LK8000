@@ -143,7 +143,7 @@ bool BluetoothSensor::StopRxThread() {
 }
 
 bool BluetoothSensor::StartRxThread() {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   running = true;
 
   return ComPort::StartRxThread();
@@ -154,7 +154,7 @@ void BluetoothSensor::CancelWaitEvent() {
 }
 
 bool BluetoothSensor::IsReady() {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   if (bridge) {
     return bridge->getState(Java::GetEnv()) == STATE_READY;
   }
@@ -236,7 +236,7 @@ bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& 
     return std::invoke(handler->DoEnableNotification, this);
   }
 
-  const std::lock_guard<Mutex> lock(CritSec_Comm);
+  const std::lock_guard lock(CritSec_Comm);
   auto port = devGetDeviceOnPort(GetPortIndex());
   if (port && port->DoEnableGattCharacteristic) {
     return port->DoEnableGattCharacteristic(*port, service, characteristic);
@@ -274,12 +274,12 @@ void BluetoothSensor::DeviceName(const std::vector<uint8_t>& data) {
 }
 
 tstring BluetoothSensor::GetDeviceName() {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   return device_name;
 }
 
 void BluetoothSensor::SerialNumber(const std::vector<uint8_t>& data) {
-  const std::lock_guard<Mutex> lock(CritSec_Comm);
+  const std::lock_guard lock(CritSec_Comm);
   auto port = devGetDeviceOnPort(GetPortIndex());
   if (port) {
     port->SerialNumber = { data.begin(), data.end() };

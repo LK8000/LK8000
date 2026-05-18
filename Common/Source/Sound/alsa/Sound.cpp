@@ -332,7 +332,7 @@ private:
     while (true) {
       std::optional<sound_item> sound;
       {
-        std::unique_lock<Mutex> lock(queue_mtx);
+        std::unique_lock lock(queue_mtx);
         // wait for stop or sound
         queue_cv.wait(lock, [&]() {
           return thread_stop || queue;

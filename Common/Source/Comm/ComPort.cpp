@@ -53,7 +53,7 @@ bool ComPort::Write(const void *data, size_t size) {
         // (e.g., RxThread calling devOpen() via device callbacks vs main thread calling device functions).
         // Each port implementation (SerialPort, TTYPort, SocketPort) uses OS resources
         // (HANDLE, fd, socket) that are not safe for concurrent access.
-        const std::lock_guard<Mutex> lock(CritSec_Comm);
+        const std::lock_guard lock(CritSec_Comm);
 
         bool success = Write_Impl(data, size);
 
@@ -125,7 +125,7 @@ bool ComPort::StartRxThread() {
 }
 
 bool ComPort::WaitForStop(int time) {
-    std::unique_lock<Mutex> lock(stop_mtx);
+    std::unique_lock lock(stop_mtx);
     if (stop) {
         return true;
     }
@@ -165,7 +165,7 @@ void ComPort::ProcessChar(char c) {
 }
 
 void ComPort::ProcessData(const char* string, size_t size) {
-  const std::lock_guard<Mutex> lock(CritSec_Comm);
+  const std::lock_guard lock(CritSec_Comm);
   std::for_each_n(string, size, [this](auto c) {
     ProcessChar(c);
   });
@@ -234,7 +234,7 @@ void ComPort::NotifyConnected() {
 void ComPort::status_thread_loop() {
     using namespace std::chrono_literals;
     try {
-        std::unique_lock<Mutex> lock(status_mutex);
+        std::unique_lock lock(status_mutex);
         while (!status_thread_stop) { // until stop not request
             if (status_disconnected_notify) { // if disconnect notify requested
                 tstring name = GetDeviceName();

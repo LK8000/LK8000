@@ -45,7 +45,7 @@ void EventQueue::Push(const Event& event) {
 bool
 EventQueue::Pop(Event &event)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   if (events.empty())
     return false;
 
@@ -70,7 +70,7 @@ EventQueue::Generate(Event &event)
 bool
 EventQueue::Wait(Event &event)
 {
-  std::unique_lock<Mutex> lock(mutex);
+  std::unique_lock lock(mutex);
 
   if (events.empty())
     now_us = MonotonicClockUS();
@@ -102,7 +102,7 @@ EventQueue::Wait(Event &event)
 void
 EventQueue::Purge(bool (*match)(const Event &event, void *ctx), void *ctx)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   size_t n = events.size();
   while (n-- > 0) {
     if (!match(events.front(), ctx))
@@ -163,7 +163,7 @@ EventQueue::AddTimer(Timer &timer, unsigned ms)
 void
 EventQueue::CancelTimer(Timer &timer)
 {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   timers.Cancel(timer);
 }

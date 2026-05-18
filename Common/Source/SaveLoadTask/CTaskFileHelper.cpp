@@ -228,7 +228,7 @@ bool CTaskFileHelper::Load(std::istream& stream) {
             return false;
         }
 
-        const std::lock_guard<Mutex> lock(CritSec_TaskData);
+        const std::lock_guard lock(CritSec_TaskData);
 
         ClearTask();
 
@@ -672,7 +672,7 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
 }
 
 bool CTaskFileHelper::Save(const TCHAR* szFileName) {
-    const std::lock_guard<Mutex> lock(CritSec_TaskData);
+    const std::lock_guard lock(CritSec_TaskData);
     if (WayPointList.empty()) return false; // this should never happen, but just to be safe...
 
     StartupStore(_T(". SaveTask : saving <%s>%s"), szFileName, NEWLINE);

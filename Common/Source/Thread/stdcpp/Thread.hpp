@@ -97,7 +97,7 @@ class Thread {
     // Block Start() until the new thread has fully initialized both _thread_id
     // and _running. This ensures no caller can observe a window where
     // _running=true but _thread_id is invalid, or vice versa.
-    std::unique_lock<std::mutex> lock(_start_mutex);
+    std::unique_lock lock(_start_mutex);
 
     // Prevent starting an already running thread.
     // Calling Start() from inside Run() would also be caught here.

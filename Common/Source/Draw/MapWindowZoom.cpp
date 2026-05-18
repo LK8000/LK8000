@@ -57,17 +57,17 @@ void MapWindow::Zoom::CalculateAutoZoom_Locked() {
 }
 
 double MapWindow::Zoom::ResScaleOverDistanceModify() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _resScaleOverDistanceModify;
 }
 
 double MapWindow::Zoom::DrawScale() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _drawScale;
 }
 
 double MapWindow::Zoom::InvDrawScale() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _invDrawScale;
 }
 
@@ -92,7 +92,7 @@ void MapWindow::Zoom::Reset()
 {
   constexpr double SCALE_PANORAMA_INIT    = 10.0;
 
-  const std::lock_guard<Mutex> Lock(_zoomMutex);  // Protect initialization of zoom state
+  const std::lock_guard Lock(_zoomMutex);  // Protect initialization of zoom state
   _modeScale[SCALE_CRUISE]   = GetZoomInitValue(CruiseZoom);
   _modeScale[SCALE_CIRCLING] = GetZoomInitValue(ClimbZoom);
   _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
@@ -108,12 +108,12 @@ void MapWindow::Zoom::Reset()
 }
 
 double MapWindow::Zoom::RequestedScale() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return *_requestedScale;
 }
 
 void MapWindow::Zoom::RequestedScale(double value) {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   *_requestedScale = value;
 }
 
@@ -152,39 +152,39 @@ void MapWindow::Zoom::SwitchMode_Locked() {
 }
 
 void MapWindow::Zoom::AutoZoom(bool enable) {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   _autoZoom = enable;
   SwitchMode_Locked();
 }
 
 bool MapWindow::Zoom::AutoZoom() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _autoZoom;
 }
 
 void MapWindow::Zoom::CircleZoom(bool enable) {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   _circleZoom = enable;
   SwitchMode_Locked();
 }
 
 bool MapWindow::Zoom::CircleZoom() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return CircleZoom_Locked();
 }
 
 void MapWindow::Zoom::BigZoom(bool enable) {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   _bigZoom = enable;
 }
 
 bool MapWindow::Zoom::BigZoom() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _bigZoom;
 }
 
 void MapWindow::Zoom::SetLimitMapScale(BOOL bOnOff) {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   _bMapScale = bOnOff;
 }
 
@@ -192,17 +192,17 @@ void MapWindow::Zoom::SetLimitMapScale(BOOL bOnOff) {
  * @brief Assigns proper zoom ratio for new Display Mode (thread-safe wrapper)
  */
 void MapWindow::Zoom::SwitchMode() {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);  // Protect pointer and array access
+  const std::lock_guard Lock(_zoomMutex);  // Protect pointer and array access
   SwitchMode_Locked();
 }
 
 double MapWindow::Zoom::Scale() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _scale;
 }
 
 double MapWindow::Zoom::RealScale() const {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);
+  const std::lock_guard Lock(_zoomMutex);
   return _realscale;
 }
 
@@ -216,7 +216,7 @@ double MapWindow::Zoom::RealScale() const {
  */
 void MapWindow::Zoom::EventAutoZoom(int vswitch)
 {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);  // Protect _autoZoom and _modeScale access
+  const std::lock_guard Lock(_zoomMutex);  // Protect _autoZoom and _modeScale access
   bool lastAutoZoom = _autoZoom;
   if (vswitch == -1) {
     _autoZoom = !_autoZoom;
@@ -241,7 +241,7 @@ void MapWindow::Zoom::EventAutoZoom(int vswitch)
  * @param value zoom ratio to set
  */
 void MapWindow::Zoom::EventSetZoom(double value) {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);  // Protect _requestedScale access
+  const std::lock_guard Lock(_zoomMutex);  // Protect _requestedScale access
   double _lastRequestedScale = *_requestedScale;
   *_requestedScale = LimitMapScale(value);
   if (*_requestedScale != _lastRequestedScale) {
@@ -262,7 +262,7 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
     return;
   }
 
-  const std::lock_guard<Mutex> Lock(_zoomMutex);  // Protect _autoZoom, _circleZoom, and _requestedScale access
+  const std::lock_guard Lock(_zoomMutex);  // Protect _autoZoom, _circleZoom, and _requestedScale access
   // disable AutoZoom if possible
   if(_autoZoom &&
      mode.Special() == Mode::MODE_SPECIAL_NONE &&
@@ -310,7 +310,7 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
  * @brief Updates current map scale
  */
 void MapWindow::Zoom::UpdateMapScale() {
-  const std::lock_guard<Mutex> Lock(_zoomMutex);  // Protect _requestedScale and _scale access
+  const std::lock_guard Lock(_zoomMutex);  // Protect _requestedScale and _scale access
 
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
     CalculateTargetPanZoom();

@@ -42,7 +42,7 @@ void MapWindow::DrawApproach(LKSurface& Surface, const RECT& rc, const ScreenPro
   WAYPOINT wp = {};
   bool landable = false;
   {
-    const std::lock_guard<Mutex> lock(CritSec_TaskData);
+    const std::lock_guard lock(CritSec_TaskData);
     if (!ValidWayPointFast(wp_index)) {
       return;
     }

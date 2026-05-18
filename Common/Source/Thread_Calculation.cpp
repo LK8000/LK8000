@@ -110,7 +110,7 @@ public:
     }
 
     bool CheckLastRun(unsigned duration) {
-      const std::lock_guard<Mutex> lock(mtx);
+      const std::lock_guard lock(mtx);
       return last_run.Check(duration);
     }
 
@@ -124,7 +124,7 @@ public:
 private:
 
     void UpdateLocalFlightData() {
-        const std::lock_guard<Mutex> lock(CritSec_FlightData);
+        const std::lock_guard lock(CritSec_FlightData);
         FLARM_RefreshSlots(&GPS_INFO);
         Fanet_RefreshSlots(&GPS_INFO); //refresh slots of FANET
         Local_NMEA = GPS_INFO;
@@ -132,12 +132,12 @@ private:
     }
 
     void UpdateCalculatedFlightData() {
-        const std::lock_guard<Mutex> lock(CritSec_FlightData);
+        const std::lock_guard lock(CritSec_FlightData);
         CALCULATED_INFO = Local_DERIVED;
     }
 
     bool Wait() {
-        std::unique_lock<Mutex> lock(mtx);
+        std::unique_lock lock(mtx);
 
         /*
          * updated here to avoid useless locking overhead :

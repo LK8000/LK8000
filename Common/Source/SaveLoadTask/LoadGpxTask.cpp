@@ -46,7 +46,7 @@ bool LoadGpxTask(std::istream& stream) {
         return false;
     }
 
-    const std::lock_guard<Mutex> lock(CritSec_TaskData);
+    const std::lock_guard lock(CritSec_TaskData);
 
     ClearTask();
 

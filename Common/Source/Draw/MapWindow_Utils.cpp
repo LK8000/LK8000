@@ -216,7 +216,7 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   }
   
   if (do_pan) {
-    const std::lock_guard<Mutex> lock(CritSec_TaskData);
+    const std::lock_guard lock(CritSec_TaskData);
     if (ValidTaskPointFast(target_point)) {
       PanLongitude = WayPointList[Task[target_point].Index].Longitude;
       PanLatitude = WayPointList[Task[target_point].Index].Latitude;
@@ -290,7 +290,7 @@ void MapWindow::SetApproachPan(bool do_pan, int waypoint_index, unsigned dlgSize
   }
 
   if (do_pan && waypoint_index >= 0) {
-    const std::lock_guard<Mutex> lock(CritSec_TaskData);
+    const std::lock_guard lock(CritSec_TaskData);
     if (ValidWayPointFast(waypoint_index)) {
       PanLongitude = WayPointList[waypoint_index].Longitude;
       PanLatitude = WayPointList[waypoint_index].Latitude;

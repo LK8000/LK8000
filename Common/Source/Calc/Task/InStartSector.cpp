@@ -63,7 +63,7 @@ bool InStartSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated, bool StartOut, in
   static std::optional<bool> LastInSector;  // unknown at start ( before takeoff ?)
   static int EntryStartSector = index;
 
-  const std::lock_guard<Mutex> lock(CritSec_TaskData);
+  const std::lock_guard lock(CritSec_TaskData);
 
   if (ISGAAIRCRAFT) {  // Detect start for GA aircraft
     if (!ValidTaskPointFast(ActiveTaskPoint) || !ValidTaskPointFast(0)) {

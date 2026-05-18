@@ -55,7 +55,7 @@ void InternalPort::CancelWaitEvent() {
 }
 
 void InternalPort::thread_run() {
-    std::unique_lock<std::mutex> lock(mutex_status);
+    std::unique_lock lock(mutex_status);
     while (internal_sensors) {
         cv_status.wait(lock);
         if (!internal_sensors) { // could be reset by other thread

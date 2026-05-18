@@ -280,7 +280,7 @@ void ThermalLocator::EstimateThermalBase(double Thermal_Longitude,
   double Xrounding = fabs(lon-Thermal_Longitude)/2;
   double Yrounding = fabs(lat-Thermal_Latitude)/2;
 
-  const std::lock_guard<Mutex> lock(RasterTerrain::mutex);
+  const std::lock_guard lock(RasterTerrain::mutex);
 
   RasterTerrain::SetTerrainRounding(Xrounding, Yrounding);
 

@@ -115,18 +115,18 @@ TEST_CASE("testing the wait_ack class") {
 
     test.check("abcd");
     {
-      std::lock_guard<Mutex> lock(mtx);
+      std::lock_guard lock(mtx);
       CHECK_EQ(test.wait(0), wait_ack_result::success);
     }
   }
 
   SUBCASE("method : wait_ack::wait()") {
     Mutex mtx;
-    std::lock_guard<Mutex> lock(mtx);
+    std::lock_guard lock(mtx);
     wait_ack test(mtx, "abcd", "error");
 
     std::thread success_thread([&] {
-      std::lock_guard<Mutex> lock(mtx);
+      std::lock_guard lock(mtx);
       std::this_thread::sleep_for(500ms);
       test.check("abcd");
     });
@@ -136,7 +136,7 @@ TEST_CASE("testing the wait_ack class") {
     success_thread.join();
 
     std::thread error_thread([&] {
-      std::lock_guard<Mutex> lock(mtx);
+      std::lock_guard lock(mtx);
       std::this_thread::sleep_for(500ms);
       test.check("error");
     });

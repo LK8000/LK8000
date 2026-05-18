@@ -64,7 +64,7 @@ void TaskStatistics(NMEA_INFO* Basic, DERIVED_INFO* Calculated, const double thi
     return;
   }
 
-  const std::lock_guard<Mutex> lock(CritSec_TaskData);
+  const std::lock_guard lock(CritSec_TaskData);
 
   // Calculate Task Distances
   // First calculate distances for this waypoint

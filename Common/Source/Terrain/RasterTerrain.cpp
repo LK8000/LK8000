@@ -104,7 +104,7 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
 ////////// Map general /////////////////////////////////////////////
 short RasterTerrain::GetHeightAccurate(const GeoPoint& position) {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
   // want most accurate rounding here
   RasterTerrain::SetTerrainRounding(0, 0);
   return RasterTerrain::GetTerrainHeight(position);
@@ -125,7 +125,7 @@ void RasterTerrain::SetTerrainRounding(double x, double y) {
 }
 
 bool RasterTerrain::WaypointIsInTerrainRange(double latitude, double longitude) {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   if (TerrainMap && TerrainMap->isMapLoaded()) {
     return TerrainMap->IsInside(latitude, longitude);
@@ -136,7 +136,7 @@ bool RasterTerrain::WaypointIsInTerrainRange(double latitude, double longitude) 
 
 
 bool RasterTerrain::GetTerrainCenter(double *latitude, double *longitude) {
-  const std::lock_guard<Mutex> lock(mutex);
+  const std::lock_guard lock(mutex);
 
   return TerrainMap && TerrainMap->GetMapCenter(latitude, longitude);
 }

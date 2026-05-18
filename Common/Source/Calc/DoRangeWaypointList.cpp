@@ -33,7 +33,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    StartupStore(_T(".... >> DoRangeWaypointList is running! <<\n"));
    #endif
 
-   const std::lock_guard<Mutex> lock(CritSec_TaskData);
+   const std::lock_guard lock(CritSec_TaskData);
    
    if (WayPointList.empty()) {
 	return false;

@@ -74,7 +74,7 @@ bool AndroidPort::StopRxThread() {
 }
 
 bool AndroidPort::StartRxThread() {
-    const std::lock_guard<Mutex> lock(mutex);
+    const std::lock_guard lock(mutex);
     running = true;
 
     return ComPort::StartRxThread();
@@ -88,7 +88,7 @@ void AndroidPort::Purge() {
 }
 
 void AndroidPort::Flush() {
-    const std::lock_guard<Mutex> lock(mutex);
+    const std::lock_guard lock(mutex);
     buffer.clear();
 }
 
@@ -140,7 +140,7 @@ bool AndroidPort::Write_Impl(const void *data, size_t size) {
 
 size_t AndroidPort::Read(void *szString, size_t size) {
 
-    std::unique_lock<Mutex> lock(mutex);
+    std::unique_lock lock(mutex);
     assert(!running);
 
     if(buffer.empty()) {
@@ -185,7 +185,7 @@ void AndroidPort::DataReceived(const void *data, size_t length) {
 }
 
 bool AndroidPort::IsReady() {
-    const std::lock_guard<Mutex> lock(mutex);
+    const std::lock_guard lock(mutex);
     if (bridge) {
         return bridge->getState(Java::GetEnv()) == STATE_READY;
     }
