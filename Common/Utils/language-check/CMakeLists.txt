@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.10)
 
 project(language-check)
 
@@ -10,6 +10,13 @@ add_executable (
 	check
 
 	"language-check.cpp"
+)
+
+target_include_directories(
+	check
+	PRIVATE
+	"../../../lib/json/include"
+	"../../../lib/fifo_map/src"
 )
 
 target_link_libraries(

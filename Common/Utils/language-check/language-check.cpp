@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <fstream>
 #include <set>
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "fifo_map.hpp"
 
 namespace fs = std::filesystem;
