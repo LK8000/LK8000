@@ -1948,7 +1948,6 @@
     "_@M001537_": "Aucun Périphérique",
     "_@M000864_": "Trace NMEA ON",
     "_@M000634_": "Standard",
-    "_@M000633_": "Etape",
     "_@H000948_": "[Vitesse moyenne XC]\nVitesse moyenne en vol campagne calculée sur trois points de virage\nCes données ne sont disponibles que si un moteur de calcul des scores supplémentaire est activé dans le menu Système n 22",
     "_@H000947_": "[Distance estimée du triangle XC]\nDistance pour boucler le triangle du concours le mieux noté ( FAI ou LIBRE ) en km\nCes données ne sont disponibles que si un moteur de calcul des scores supplémentaire est activé dans le menu Système n 22",
     "_@H000946_": "[Fermeture triangle XC %]\nDistance pour fermer le triangle du concours le mieux noté ( FAI ou LIBRE ) en pourcentage\nCes données ne sont disponibles que si un moteur de calcul des scores supplémentaire est activé dans le menu Système n 22",
