@@ -13,28 +13,38 @@
 #include <type_traits>
 #include <cstdlib>
 #include <cstring>
-#include <assert.h>
-#include "utils/stringext.h"
+#include <cassert>
+#include <string_view>
+#include "utils/strcpy.h"
 
 namespace settings {
 namespace detail {
+
+template <typename T>
+concept unsigned_enum = std::is_enum_v<T> && std::is_unsigned_v<std::underlying_type_t<T>>;
+
+template <typename T>
+concept signed_enum = std::is_enum_v<T> && std::is_signed_v<std::underlying_type_t<T>>;
 
 /**
  * any signed numeric type
  */
 template <typename T>
 concept signed_number =
-    std::is_arithmetic_v<T> && std::is_signed_v<T> && !std::is_enum_v<T>;
+    std::floating_point<T> || std::signed_integral<T> || signed_enum<T>;
 
 /**
- * any unsigned numeric type ( including enum )
+ * any unsigned numeric type
  */
 template <typename T>
-concept unsigned_number =
-    (std::is_arithmetic_v<T> && !std::is_signed_v<T>) || std::is_enum_v<T>;
+concept unsigned_number = std::unsigned_integral<T> || unsigned_enum<T>;
 
+/**
+ * any type that can be assigned from a C-style string
+ */
 template <typename T>
-concept cstring_assignable = std::assignable_from<T&, const char*>;
+concept cstring_assignable =
+    std::assignable_from<T&, const char*> && !std::is_pointer_v<T>;
 
 /**
  * read 'signed number' type
@@ -45,7 +55,7 @@ void read_value(const char* curvalue, T& lookupvalue) {
 }
 
 /**
- * read 'unsigned number' type ( including enum )
+ * read 'unsigned number' type
  */
 template <unsigned_number T>
 void read_value(const char* curvalue, T& lookupvalue) {
@@ -57,10 +67,9 @@ void read_value(const char* curvalue, T& lookupvalue) {
  */
 template <size_t size>
 void read_value(const char* curvalue, char (&lookupvalue)[size]) {
-  assert(strlen(curvalue) <
-         size);  // saved pref is longer than variable used to store value.
-  strncpy(lookupvalue, curvalue, size - 1);
-  lookupvalue[size - 1] = '\0';
+  // saved pref is longer than variable used to store value.
+  assert(strlen(curvalue) < size);
+  lk::strcpy(lookupvalue, curvalue);
 }
 
 /**
@@ -86,9 +95,9 @@ void read_value(const char* curvalue, T& lookupvalue) {
  * @return true if 'curname' is equal to 'lookupname'
  */
 template <typename T>
-bool read(const char* curname, const char* curvalue, const char* lookupname,
+bool read(std::string_view curname, const char* curvalue, const char* lookupname,
           T& lookupvalue) {
-  if (strcmp(curname, lookupname)) {
+  if (curname != lookupname) {
     return false;
   }
   detail::read_value<T>(curvalue, lookupvalue);
@@ -100,9 +109,9 @@ bool read(const char* curname, const char* curvalue, const char* lookupname,
  * @return true if 'curname' is equal to 'lookupname'
  */
 template <typename T, size_t size>
-bool read(const char* curname, const char* curvalue, const char* lookupname,
+bool read(std::string_view curname, const char* curvalue, const char* lookupname,
           T (&lookupvalue)[size]) {
-  if (strcmp(curname, lookupname)) {
+  if (curname != lookupname) {
     return false;
   }
   detail::read_value<size>(curvalue, lookupvalue);

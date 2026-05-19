@@ -12,7 +12,8 @@
 #include "tchar.h"
 #include <concepts>
 #include <type_traits>
-#include <stdio.h>
+#include <cstdio>
+#include <concepts>
 
 #define PNEWLINE "\r\n"
 
@@ -54,21 +55,29 @@ class writer final {
   }
 
  private:
+
+   /**
+   * generic #write_value for all enum type
+   */
+  template <typename T>
+    requires std::is_enum_v<T>
+  void write_value(const char* name, T value) {
+    using underlying = std::underlying_type_t<T>;
+    write_value<underlying>(name, static_cast<underlying>(value));
+  }
+
   /**
    * generic #write_value for all signed integer
    */
-  template <typename T>
-  requires(std::is_integral_v<T>&& std::is_signed_v<T> &&
-           !std::is_enum_v<T>)
+  template <std::signed_integral T>
   void write_value(const char* name, T value) {
     fprintf(file, "%s=%d" PNEWLINE, name, static_cast<int>(value));
   }
 
   /**
-   * generic #write_value for all unsigned integral or enum type
+   * generic #write_value for all unsigned integer or enum type
    */
-  template <typename T>
-  requires((std::is_integral_v<T> && !std::is_signed_v<T>) || std::is_enum_v<T>)
+  template <std::unsigned_integral T>
   void write_value(const char* name, T value) {
     fprintf(file, "%s=%u" PNEWLINE, name, static_cast<unsigned int>(value));
   }
@@ -78,8 +87,7 @@ class writer final {
    *  tips : floating point is saved without decimal point ( like int )
    *     but we use printf %.0f instead of %d and cast to int for rounding...
    */
-  template <typename T>
-  requires std::is_floating_point_v<T>
+  template <std::floating_point T>
   void write_value(const char* name, T value) {
     fprintf(file, "%s=%.0f" PNEWLINE, name, static_cast<double>(value));
   }
@@ -88,9 +96,8 @@ class writer final {
    * template specialization for utf8 string (aka const char*)
    */
   template <typename T>
-  requires std::is_same_v<std::remove_cv_t<T>, char*> 
-  void write_value(
-      const char* name, const char* value) {
+    requires std::same_as<std::remove_cv_t<T>, char*>
+  void write_value(const char* name, const char* value) {
     fprintf(file, "%s=\"%s\"" PNEWLINE, name, value);
   }
 
@@ -98,22 +105,18 @@ class writer final {
    * template specialization for utf8 string (aka const std::string&)
    */
   template <typename T>
-  requires std::same_as<T, std::string>
-  void write_value(
-      const char* name, const std::string& value) {
+    requires std::same_as<std::remove_cv_t<T>, std::string>
+  void write_value(const char* name, const std::string& value) {
     write_value<char*>(name, value.c_str());
   }
 
 #ifdef _UNICODE
   /**
-   * unicode string
-   */
-  /**
    * template specialization for unicode string (aka const wchar_t*)
    */
   template <typename T>
-  requires std::is_same_v<std::remove_cv_t<T>, wchar_t*> void write_value(
-      const char* name, const wchar_t* value) {
+    requires std::same_as<std::remove_cv_t<T>, wchar_t*> 
+  void write_value(const char* name, const wchar_t* value) {
     write_value<std::string>(name, to_utf8(value));
   }
 #endif
