@@ -18,6 +18,8 @@ Java::TrivialClass LK8000Activity::cls;
 jmethodID LK8000Activity::check_permissions_method;
 jmethodID LK8000Activity::scan_qrcode_method;
 jmethodID LK8000Activity::share_file_method;
+jmethodID LK8000Activity::acquire_multicast_lock_method;
+jmethodID LK8000Activity::release_multicast_lock_method;
 jmethodID LK8000Activity::detect_keyboard_method;
 jmethodID LK8000Activity::get_clipboard_text_method;
 
@@ -40,6 +42,12 @@ void LK8000Activity::Initialise(JNIEnv *env, jobject obj) {
 
   get_clipboard_text_method = env->GetMethodID(cls, "getClipboardText", "()Ljava/lang/String;");
   assert(get_clipboard_text_method);
+
+  acquire_multicast_lock_method = env->GetMethodID(cls, "acquireMulticastLock", "()V");
+  assert(acquire_multicast_lock_method);
+
+  release_multicast_lock_method = env->GetMethodID(cls, "releaseMulticastLock", "()V");
+  assert(release_multicast_lock_method);
 
   assert(activity_instance == nullptr); // memory leak;
   activity_instance = new LK8000Activity(env, obj);
@@ -113,6 +121,14 @@ std::string LK8000Activity::GetClipboardText() {
     clipbaord_text = Java::String::ToString(env, str);
   }
   return clipbaord_text;
+}
+
+void LK8000Activity::AcquireMulticastLock() {
+  Java::GetEnv()->CallVoidMethod(obj, acquire_multicast_lock_method);
+}
+
+void LK8000Activity::ReleaseMulticastLock() {
+  Java::GetEnv()->CallVoidMethod(obj, release_multicast_lock_method);
 }
 
 

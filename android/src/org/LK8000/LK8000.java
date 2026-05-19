@@ -43,6 +43,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -79,6 +80,7 @@ public class LK8000 extends Activity {
   private static NativeView nativeView;
 
   PowerManager.WakeLock wakeLock;
+  WifiManager.MulticastLock multicastLock;
 
   BatteryReceiver batteryReceiver;
   private ClipboardManager clipboard;
@@ -331,6 +333,11 @@ public class LK8000 extends Activity {
 
     // Activate the WakeLock
     wakeLock.acquire();
+
+    // Create (but don't acquire yet) a MulticastLock for UDP broadcast reception
+    WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    multicastLock = wm.createMulticastLock("LK8000:multicast");
+    multicastLock.setReferenceCounted(true);
   }
 
   @Override protected void onPause() {
@@ -386,6 +393,14 @@ public class LK8000 extends Activity {
     if (nativeView != null) {
       nativeView.exitApp();
       nativeView = null;
+    }
+
+    // Release the MulticastLock if still held
+    if (multicastLock != null) {
+      if (multicastLock.isHeld()) {
+        multicastLock.release();
+      }
+      multicastLock = null;
     }
 
     // Release the WakeLock instance to re-enable screen timeouts
@@ -456,6 +471,20 @@ public class LK8000 extends Activity {
   private native void setKeyboardModelType(String name);
 
   private native void setHasKeyboard(boolean b);
+
+  /** Acquire the WiFi multicast lock (called from native when a UDP port opens). */
+  public void acquireMulticastLock() {
+    if (multicastLock != null) {
+      multicastLock.acquire();
+    }
+  }
+
+  /** Release the WiFi multicast lock (called from native when a UDP port closes). */
+  public void releaseMulticastLock() {
+    if (multicastLock != null && multicastLock.isHeld()) {
+      multicastLock.release();
+    }
+  }
 
   /**
    * permissions request code

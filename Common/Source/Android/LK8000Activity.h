@@ -22,6 +22,8 @@ class LK8000Activity {
   static jmethodID share_file_method;
   static jmethodID detect_keyboard_method;
   static jmethodID get_clipboard_text_method;
+  static jmethodID acquire_multicast_lock_method;
+  static jmethodID release_multicast_lock_method;
   static LK8000Activity *activity_instance;
 
 
@@ -66,6 +68,9 @@ public:
   void DetectKeyboardModel();
 
   std::string GetClipboardText();
+
+  void AcquireMulticastLock();
+  void ReleaseMulticastLock();
 };
 
 

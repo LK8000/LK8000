@@ -14,6 +14,10 @@
 #include <functional>
 using namespace std::placeholders;
 
+#ifdef ANDROID
+#include "Android/LK8000Activity.h"
+#endif
+
 #ifdef __linux__
 // Optionally disable the tcp/ip optimization, to reduce latencies
 // This has effect only on write operations.
@@ -293,7 +297,21 @@ bool UDPServerPort::Connect() {
         return false;
     }
     StartupStore(_T(". UDPServerPort %u Connect <%s> OK") NEWLINE, (unsigned)GetPortIndex() + 1, GetPortName());
+#ifdef ANDROID
+    if (LK8000Activity *activity = LK8000Activity::Get()) {
+        activity->AcquireMulticastLock();
+    }
+#endif
     return true;
+}
+
+bool UDPServerPort::Close() {
+#ifdef ANDROID
+    if (LK8000Activity *activity = LK8000Activity::Get()) {
+        activity->ReleaseMulticastLock();
+    }
+#endif
+    return SocketPort::Close();
 }
 
 unsigned UDPServerPort::RxThread() {

@@ -47,6 +47,7 @@ public:
 	UDPServerPort(int idx, const tstring& sName) : SocketPort(idx, sName), mSAddressClient() {
 	}
 
+    bool Close() override;
     int SetRxTimeout(int TimeOut) override { return 0; }
 protected:
     bool Connect() override;
