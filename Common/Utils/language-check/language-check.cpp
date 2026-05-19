@@ -62,13 +62,14 @@ int main(int argc, char *argv[]) {
     for (const auto &p : language.items()) {
       auto it = default_language.find(p.key());
       if (it != default_language.end()) {
-        if (it->get<std::string>() == p.value().get<std::string>()) {
-          continue;
-        } else if (it->get<std::string>() == "[deprecated]") {
-          continue;
+        if (it->get<std::string>() == "[deprecated]") {
+          continue; //ignore deprecated translation
+        }
+        else if (it->get<std::string>() == p.value().get<std::string>()) {
+//          continue; //ignore unchanged translation
         }
       } else {
-        continue;
+        continue; //ignore missing translation
       }
       updated[p.key()] = p.value();
     }
