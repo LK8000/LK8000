@@ -110,7 +110,7 @@ namespace {
 
     const std::string& operator[](const TCHAR* Name) const {
       auto it = Headers.find(Name);
-      if(it != Headers.end()) {
+      if(it != Headers.end() && it->second < Entries.size()) {
         return Entries[it->second];
       }
       return empty;
@@ -290,6 +290,6 @@ TEST_CASE("ParseCUP") {
 		CHECK(ReadLength("1000000.0m") == doctest::Approx(1000000.0).epsilon(0.0000001));
 		CHECK(ReadLength("539.956803nm") == doctest::Approx(1000000.0).epsilon(0.0000001));
 		CHECK(ReadLength("621.371192ml") == doctest::Approx(1000000.0).epsilon(0.0000001));
-	}
+  }
 }
 #endif
