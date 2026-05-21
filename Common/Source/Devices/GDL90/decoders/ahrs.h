@@ -37,7 +37,7 @@ struct levil_ahrs {
   int16_t yaw_rate = invalid;           // ×10°/s
   int16_t g_load = invalid;             // ×100 g
   int16_t airspeed = invalid;           // ×10 kt
-  uint16_t pressure_alt = invalid_alt;  // encoded feet (baro_alt + 5000)
+  uint16_t pressure_alt = invalid_alt;  // QNE altitude : encoded feet (baro_alt + 5000)
   int16_t vert_velocity = invalid;      // ft/min
 
   // Typed getters — pitch and roll always return a value (divide raw by 10);

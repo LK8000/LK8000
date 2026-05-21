@@ -101,7 +101,7 @@ struct traffic_report {
 
   double latitude;          // degrees  [-90..+90]
   double longitude;         // degrees  [-180..+180]
-  int32_t pressure_alt;     // feet, -1000 = invalid
+  int32_t pressure_alt;     // QNE altitude : feet, -1000 = invalid
   bool air_ground;          // true = airborne
 
   uint16_t heading;         // degrees [0..359], valid only when horiz_velocity is valid

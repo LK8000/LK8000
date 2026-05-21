@@ -19,6 +19,7 @@
 #include "Calc/Vario.h"
 #include "Defines.h"
 #include "lk8000.h"
+#include "Utils.h"
 
 namespace {
 /**
@@ -91,7 +92,8 @@ class MessageDispatcher {
       TriggerGPSUpdate();
     }
     if (auto a = r.get_pressure_alt()) {
-      UpdateBaroSource(&NmeaInfo, &d, Units::From(unFeet, *a));
+      double altitude = QNEAltitudeToQNHAltitude(Units::From(unFeet, *a));
+      UpdateBaroSource(&NmeaInfo, &d, altitude);
     }
     if (auto vv = r.get_vert_velocity()) {
       UpdateVarioSource(NmeaInfo, d, Units::From(unFeetPerMinutes, *vv));
@@ -126,7 +128,7 @@ class MessageDispatcher {
     }
 
     if (auto a = r.get_pressure_alt()) {
-      traffic.Altitude = Units::From(unFeet, *a);
+      traffic.Altitude = QNEAltitudeToQNHAltitude(Units::From(unFeet, *a));
     }
     if (auto v = r.get_horiz_velocity()) {
       traffic.Speed = Units::From(unKnots, *v);
