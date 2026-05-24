@@ -129,7 +129,10 @@ public class InternalGPS
             Location loc = locationManager.getLastKnownLocation(p);
             if (loc != null
                 && (now - loc.getTime()) < LOCATION_MAX_AGE_MS
-                && (best == null || loc.getAccuracy() < best.getAccuracy())) {
+                && (best == null
+                    || loc.getTime() > best.getTime()
+                    || (loc.getTime() == best.getTime()
+                        && loc.getAccuracy() < best.getAccuracy()))) {
               best = loc;
             }
           } catch (SecurityException | IllegalArgumentException ignore) {}
@@ -317,7 +320,11 @@ public class InternalGPS
 
   /** from LocationListener — fallback when NMEA listener delivers nothing */
   @Override public void onLocationChanged(Location newLocation) {
-    if (System.currentTimeMillis() - lastNmeaTime > NMEA_TIMEOUT_MS) {
+    long now = System.currentTimeMillis();
+    long ageMs = now - newLocation.getTime();
+    if (now - lastNmeaTime > NMEA_TIMEOUT_MS
+        && ageMs >= 0
+        && ageMs < LOCATION_MAX_AGE_MS) {
       parseNMEA(buildGPRMC(newLocation));
       parseNMEA(buildGPGGA(newLocation));
     }
