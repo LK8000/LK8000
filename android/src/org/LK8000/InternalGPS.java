@@ -39,6 +39,9 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 /**
@@ -103,6 +106,43 @@ public class InternalGPS
   private OnNmeaMessageListener listener_N = null;
   private GnssMeasurementsEvent.Callback measurementsCallback = null;
 
+  /** timestamp of last NMEA sentence received; 0 = none yet */
+  private volatile long lastNmeaTime = 0;
+  private static final long NMEA_TIMEOUT_MS = 5000;
+
+  private static final long POLLER_INTERVAL_MS  = 1000;
+  private static final long LOCATION_MAX_AGE_MS = 60000;
+
+  /** Periodic runnable that polls getLastKnownLocation() when no NMEA/location arrives */
+  private final Runnable locationPoller = new Runnable() {
+    @SuppressLint("MissingPermission")
+    @Override public void run() {
+      if (locationProvider == null) return;
+      if (System.currentTimeMillis() - lastNmeaTime > NMEA_TIMEOUT_MS) {
+        Location best = null;
+        long now = System.currentTimeMillis();
+        for (String p : new String[]{
+            LocationManager.GPS_PROVIDER,
+            LocationManager.NETWORK_PROVIDER,
+            LocationManager.PASSIVE_PROVIDER}) {
+          try {
+            Location loc = locationManager.getLastKnownLocation(p);
+            if (loc != null
+                && (now - loc.getTime()) < LOCATION_MAX_AGE_MS
+                && (best == null || loc.getAccuracy() < best.getAccuracy())) {
+              best = loc;
+            }
+          } catch (SecurityException | IllegalArgumentException ignore) {}
+        }
+        if (best != null) {
+          parseNMEA(buildGPRMC(best));
+          parseNMEA(buildGPGGA(best));
+        }
+      }
+      handler.postDelayed(this, POLLER_INTERVAL_MS);
+    }
+  };
+
 
   /**
    * Called by the #Handler, indirectly by update().  Updates the
@@ -152,12 +192,18 @@ public class InternalGPS
 
       if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
         if(listener == null) {
-          listener = (timestamp, nmea) -> InternalGPS.this.parseNMEA(nmea);
+          listener = (timestamp, nmea) -> {
+            InternalGPS.this.lastNmeaTime = System.currentTimeMillis();
+            InternalGPS.this.parseNMEA(nmea);
+          };
         }
         locationManager.addNmeaListener(listener);
       } else {
         if(listener_N == null) {
-          listener_N = (nmea, timestamp) -> InternalGPS.this.parseNMEA(nmea);
+          listener_N = (nmea, timestamp) -> {
+            InternalGPS.this.lastNmeaTime = System.currentTimeMillis();
+            InternalGPS.this.parseNMEA(nmea);
+          };
         }
         // Must be Bound to MainThread
         try {
@@ -169,9 +215,31 @@ public class InternalGPS
         }
       }
 
+      // Fallback: also subscribe to network and passive providers so onLocationChanged()
+      // fires even when the GPS HAL is broken and never delivers callbacks or NMEA.
+      // PASSIVE piggybacks on other apps' location requests (e.g. Google Maps, Enroute)
+      // and keeps data flowing while stationary without extra battery cost.
+      if (LocationManager.GPS_PROVIDER.equals(locationProvider)) {
+        for (String fallback : new String[]{
+            LocationManager.NETWORK_PROVIDER,
+            LocationManager.PASSIVE_PROVIDER}) {
+          try {
+            if (locationManager.isProviderEnabled(fallback)) {
+              locationManager.requestLocationUpdates(fallback, 1000, 0, this,
+                  Looper.getMainLooper());
+              Log.d(TAG, "Subscribed to " + fallback + " provider as fallback.");
+            }
+          } catch (IllegalArgumentException | SecurityException e) {
+            // not critical — GPS is primary
+          }
+        }
+      }
+
+      handler.postDelayed(locationPoller, POLLER_INTERVAL_MS);
       setConnectedSafe(true); // waiting for fix
     } else {
       Log.d(TAG, "Unsubscribing from GPS updates.");
+      handler.removeCallbacks(locationPoller);
       setConnectedSafe(false); // not connected
     }
     Log.d(TAG, "Done updating GPS subscription...");
@@ -193,6 +261,7 @@ public class InternalGPS
   }
 
   private void unregisterCallback() {
+    handler.removeCallbacks(locationPoller);
     locationManager.removeUpdates(this);
 
     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -234,16 +303,75 @@ public class InternalGPS
 
   /** from LocationListener */
   @Override public void onProviderDisabled(String provider) {
-    setConnectedSafe(false); // not connected
+    if (LocationManager.GPS_PROVIDER.equals(provider)) {
+      setConnectedSafe(false); // not connected
+    }
   }
 
   /** from LocationListener */
   @Override public void onProviderEnabled(String provider) {
-    setConnectedSafe(true); // waiting for fix
+    if (LocationManager.GPS_PROVIDER.equals(provider)) {
+      setConnectedSafe(true); // waiting for fix
+    }
   }
 
-  /** from LocationListener (unused) */
+  /** from LocationListener — fallback when NMEA listener delivers nothing */
   @Override public void onLocationChanged(Location newLocation) {
+    if (System.currentTimeMillis() - lastNmeaTime > NMEA_TIMEOUT_MS) {
+      parseNMEA(buildGPRMC(newLocation));
+      parseNMEA(buildGPGGA(newLocation));
+    }
+  }
+
+  private static String nmeaChecksum(String body) {
+    int cs = 0;
+    for (char c : body.toCharArray()) cs ^= c;
+    return String.format(Locale.US, "%02X", cs);
+  }
+
+  private static String fmtLat(double lat) {
+    char h = lat >= 0 ? 'N' : 'S';
+    lat = Math.abs(lat);
+    int deg = (int) lat;
+    double min = (lat - deg) * 60.0;
+    return String.format(Locale.US, "%02d%08.5f,%c", deg, min, h);
+  }
+
+  private static String fmtLon(double lon) {
+    char h = lon >= 0 ? 'E' : 'W';
+    lon = Math.abs(lon);
+    int deg = (int) lon;
+    double min = (lon - deg) * 60.0;
+    return String.format(Locale.US, "%03d%08.5f,%c", deg, min, h);
+  }
+
+  private static String utcTime(long millis) {
+    Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    c.setTimeInMillis(millis);
+    return String.format(Locale.US, "%02d%02d%02d.00",
+        c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND));
+  }
+
+  private static String buildGPRMC(Location loc) {
+    Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    c.setTimeInMillis(loc.getTime());
+    String date = String.format(Locale.US, "%02d%02d%02d",
+        c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) % 100);
+    double knots = loc.getSpeed() * 1.94384449;
+    double bearing = loc.hasBearing() ? loc.getBearing() : 0.0;
+    String body = String.format(Locale.US, "GPRMC,%s,A,%s,%s,%.2f,%.2f,%s,,,A",
+        utcTime(loc.getTime()), fmtLat(loc.getLatitude()), fmtLon(loc.getLongitude()),
+        knots, bearing, date);
+    return "$" + body + "*" + nmeaChecksum(body) + "\r\n";
+  }
+
+  private static String buildGPGGA(Location loc) {
+    double alt = loc.hasAltitude() ? loc.getAltitude() : 0.0;
+    float  acc = loc.hasAccuracy() ? loc.getAccuracy() : 10.0f;
+    String body = String.format(Locale.US, "GPGGA,%s,%s,%s,1,00,%.1f,%.1f,M,0.0,M,,",
+        utcTime(loc.getTime()), fmtLat(loc.getLatitude()), fmtLon(loc.getLongitude()),
+        acc / 5.0f, alt);
+    return "$" + body + "*" + nmeaChecksum(body) + "\r\n";
   }
 
   /**

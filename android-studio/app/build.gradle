@@ -59,7 +59,8 @@ android {
         externalNativeBuild {
             cmake {
                 // Passes optional arguments to CMake.
-                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared"
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_shared",
+                        "-DENABLE_OPENMP=" + (project.findProperty("ENABLE_OPENMP") ?: "ON")
             }
         }
 

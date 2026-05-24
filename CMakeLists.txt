@@ -35,11 +35,13 @@ if("${ANDROID_ABI}" MATCHES "arm")
     )
 endif()
 
+option(ENABLE_OPENMP "Enable OpenMP support" ON)
+
 add_compile_options(
     -Werror
     -Wall
     -fno-math-errno
-    -fopenmp
+    $<$<BOOL:${ENABLE_OPENMP}>:-fopenmp>
     -fsigned-char
     -Wunused-label
     -Wunused-variable
@@ -943,6 +945,6 @@ target_link_libraries(LK8000 PRIVATE
     z
     EGL
     GLESv2
-    -fopenmp
-    -static-openmp
+    $<$<BOOL:${ENABLE_OPENMP}>:-fopenmp>
+    $<$<BOOL:${ENABLE_OPENMP}>:-static-openmp>
 )
