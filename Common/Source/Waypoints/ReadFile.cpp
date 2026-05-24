@@ -56,6 +56,9 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
     if (src_line.front() == 'B') {
       continue;  // Skip encoding
     }
+    if (src_line.front() == '*') {
+      continue;  // Skip comment
+    }
 
     if (src_line.starts_with("G  WGS 84") || 
         src_line.starts_with("G WGS 84")) {
