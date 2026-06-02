@@ -6,6 +6,9 @@
     <WndProperty Name="prpTaskPoint" Caption="Tp" X="2" Y="26"   Width="115" Height="24" CaptionWidth="30" Font="2" Help="_@H460_">
       <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskPointData"/>
     </WndProperty>
+    <WndButton Name="btnPrev"    Caption="&lt;" X="2"  Y="-1" Width="37" Height="22" Font="2" OnClickNotify="OnPrevClicked"    Tag="1"/>
+    <WndButton Name="btnNext"    Caption="&gt;" X="40" Y="50" Width="37" Height="22" Font="2" OnClickNotify="OnNextClicked"    Tag="1"/>
+    <WndButton Name="btnDirectTo" Caption="_@M002521_" X="78" Y="50" Width="39" Height="22" Font="2" OnClickNotify="OnDirectToClicked" Tag="1"/>
     <WndButton  Name="btnMove" Caption="_@M444_"    X="34" Y="-1" Width="50"  Height="22" Font="2" OnClickNotify="OnMoveClicked" Tag="1"/>
     <WndProperty Name="prpRange" Caption="_@M543_"      X="2" Y="-1"   Width="115" Height="22" CaptionWidth="60" Font="2" Help="_@H461_">
       <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="-100" Max="100" Step="2" OnDataAccess="OnRangeData"/>

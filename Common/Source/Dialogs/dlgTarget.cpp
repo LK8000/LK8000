@@ -18,6 +18,10 @@
 
 #include <algorithm>
 
+static void UpdateNavButtons();
+static void RefreshTargetPoint();
+static void ApplyTargetPanIfNeeded();
+
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
 static int ActiveWayPointOnEntry = 0;
@@ -27,6 +31,7 @@ static double Range = 0;
 static double Radial = 0;
 static int target_point = 0;
 static bool TargetMoveMode = false;
+static bool show_direct_button = false;
 
 static unsigned dlgSize = 0;
 
@@ -251,6 +256,10 @@ static void CompactTargetPortraitLayout(void) {
   WndButton* const btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
   if (!btnApproach) return;
 
+  WndButton* const btnPrevP   = wf->FindByName<WndButton>(TEXT("btnPrev"));
+  WndButton* const btnNextP   = wf->FindByName<WndButton>(TEXT("btnNext"));
+  WndButton* const btnDirectP = wf->FindByName<WndButton>(TEXT("btnDirectTo"));
+
   WindowControl* const btnOK = wf->FindByName<WindowControl>(TEXT("btnOK"));
   WndProperty* const wTask = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   WndProperty* const pRange = wf->FindByName<WndProperty>(TEXT("prpRange"));
@@ -283,6 +292,21 @@ static void CompactTargetPortraitLayout(void) {
     if (b && b->IsVisible()) h = std::max(h, (int)b->GetHeight());
     return h;
   };
+
+  // Nav buttons row (Prev / Next / Direct To)
+  const bool any_nav_visible = (btnPrevP && btnPrevP->IsVisible()) ||
+                               (btnNextP && btnNextP->IsVisible()) ||
+                               (btnDirectP && btnDirectP->IsVisible());
+  if (any_nav_visible) {
+    if (btnPrevP  && btnPrevP->IsVisible())  btnPrevP->SetTop(y);
+    if (btnNextP  && btnNextP->IsVisible())  btnNextP->SetTop(y);
+    if (btnDirectP && btnDirectP->IsVisible()) btnDirectP->SetTop(y);
+    int nav_h = 0;
+    if (btnPrevP  && btnPrevP->IsVisible())  nav_h = std::max(nav_h, (int)btnPrevP->GetHeight());
+    if (btnNextP  && btnNextP->IsVisible())  nav_h = std::max(nav_h, (int)btnNextP->GetHeight());
+    if (btnDirectP && btnDirectP->IsVisible()) nav_h = std::max(nav_h, (int)btnDirectP->GetHeight());
+    y += nav_h + gap;
+  }
 
   if (pRange && pRange->IsVisible()) {
     pRange->SetTop(y);
@@ -319,6 +343,9 @@ static void CompactTargetPortraitLayout(void) {
   acc(btnOK);
   acc(wTask);
   acc(btnApproach);
+  acc(btnPrevP);
+  acc(btnNextP);
+  acc(btnDirectP);
   acc(pRange);
   acc(pRadial);
   acc(pEst);
@@ -492,6 +519,8 @@ static void RefreshCalculator(void) {
   } else if (ScreenLandscape && wf) {
     dlgSize = wf->GetWidth();
   }
+
+  UpdateNavButtons();
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -526,6 +555,143 @@ static void OnTargetApproachClicked(WndButton* pWnd) {
   if (!CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
   const bool task_created = dlgApproach(wp_index);
   if (task_created) {
+    WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
+    if (targetForm) targetForm->SetModalResult(mrOK);
+  }
+}
+
+// --- Direct To countdown popup ---
+
+static int countdown_seconds = 0;
+static TCHAR countdown_wp_name[NAME_SIZE] = {};
+
+static bool OnDirectToCountdownTimer(WndForm* pWnd) {
+  countdown_seconds--;
+
+  WndProperty* prpMsg = pWnd->FindByName<WndProperty>(TEXT("prpMessage"));
+  if (prpMsg) {
+    TCHAR msg[NAME_SIZE + 16];
+    lk::snprintf(msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
+    prpMsg->SetText(msg);
+  }
+
+  if (countdown_seconds <= 0) {
+    pWnd->SetModalResult(mrOK);
+  }
+  return true;
+}
+
+static void OnDirectToCountdownCancelClicked(WndButton* pWnd) {
+  if (pWnd) {
+    WndForm* pForm = pWnd->GetParentWndForm();
+    if (pForm) pForm->SetModalResult(mrCancel);
+  }
+}
+
+static CallBackTableEntry_t CountdownCallBackTable[] = {
+  CallbackEntry(OnDirectToCountdownCancelClicked),
+  EndCallbackEntry()
+};
+
+static bool ShowDirectToCountdownDialog(int new_tp) {
+  {
+    const std::lock_guard lock(CritSec_TaskData);
+    if (!ValidTaskPoint(new_tp) || !ValidWayPointFast(Task[new_tp].Index)) {
+      return false;
+    }
+    LK_tcsncpy(countdown_wp_name, WayPointList[Task[new_tp].Index].Name, NAME_SIZE - 1);
+  }
+
+  std::unique_ptr<WndForm> pf(dlgLoadFromXML(CountdownCallBackTable,
+      ScreenLandscape ? IDR_XML_DIRECTTO_COUNTDOWN_L : IDR_XML_DIRECTTO_COUNTDOWN_P));
+  if (!pf) return false;
+
+  const PixelRect rc(main_window->GetClientRect());
+  pf->SetLeft((rc.left + rc.GetSize().cx - (int)pf->GetWidth()) / 2);
+  pf->SetTop((rc.top + rc.GetSize().cy - (int)pf->GetHeight()) / 2);
+
+  countdown_seconds = 10;
+
+  WndProperty* prpMsg = pf->FindByName<WndProperty>(TEXT("prpMessage"));
+  if (prpMsg) {
+    TCHAR msg[NAME_SIZE + 16];
+    lk::snprintf(msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
+    prpMsg->SetText(msg);
+  }
+
+  pf->SetTimerNotify(1000, OnDirectToCountdownTimer);
+
+  const int result = pf->ShowModal();
+
+  if (result == mrOK) {
+    const std::lock_guard lock(CritSec_TaskData);
+    if (ValidTaskPoint(new_tp)) {
+      ActiveTaskPoint = new_tp;
+      DirectToActive = true;
+      DirectToOriginLat = GPS_INFO.Latitude;
+      DirectToOriginLon = GPS_INFO.Longitude;
+    }
+    return true;
+  }
+  return false;
+}
+
+// --- Navigation buttons (Next / Prev / Direct To) ---
+
+static void UpdateNavButtons() {
+  if (!wf) return;
+
+  WndButton* btnPrev   = wf->FindByName<WndButton>(TEXT("btnPrev"));
+  WndButton* btnNext   = wf->FindByName<WndButton>(TEXT("btnNext"));
+  WndButton* btnDirect = wf->FindByName<WndButton>(TEXT("btnDirectTo"));
+
+  bool in_task = false;
+  bool has_prev = false;
+  bool has_next = false;
+  {
+    const std::lock_guard lock(CritSec_TaskData);
+    in_task = (ActiveTaskPoint >= 0) && ValidTaskPoint(target_point);
+    has_prev = in_task && (target_point > ActiveTaskPoint) && ValidTaskPoint(target_point - 1);
+    has_next = in_task && ValidTaskPoint(target_point + 1);
+  }
+
+  if (btnPrev)   btnPrev->SetVisible(in_task && has_prev);
+  if (btnNext)   btnNext->SetVisible(in_task && has_next);
+  if (btnDirect) btnDirect->SetVisible(show_direct_button && in_task &&
+                                       (target_point > ActiveTaskPoint));
+}
+
+static void OnPrevClicked(WndButton* /*pWnd*/) {
+  bool valid = false;
+  {
+    const std::lock_guard lock(CritSec_TaskData);
+    valid = (target_point > ActiveTaskPoint) && ValidTaskPoint(target_point - 1);
+  }
+  if (!valid) return;
+  target_point--;
+  show_direct_button = true;
+  RefreshTargetPoint();
+  UpdateNavButtons();
+  ApplyTargetPanIfNeeded();
+}
+
+static void OnNextClicked(WndButton* /*pWnd*/) {
+  bool valid = false;
+  {
+    const std::lock_guard lock(CritSec_TaskData);
+    valid = ValidTaskPoint(target_point + 1);
+  }
+  if (!valid) return;
+  target_point++;
+  show_direct_button = true;
+  RefreshTargetPoint();
+  UpdateNavButtons();
+  ApplyTargetPanIfNeeded();
+}
+
+static void OnDirectToClicked(WndButton* pWnd) {
+  const bool activated = ShowDirectToCountdownDialog(target_point);
+  if (activated) {
     WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
     if (targetForm) targetForm->SetModalResult(mrOK);
   }
@@ -665,6 +831,7 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
       target_point = Sender->GetAsInteger() + ActiveWayPointOnEntry;
       target_point = max(target_point,ActiveTaskPoint);
       if (target_point != old_target_point) {
+        show_direct_button = false;
         RefreshTargetPoint();
       }
     break;
@@ -684,6 +851,9 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnOKClicked),
   CallbackEntry(OnMoveClicked),
   CallbackEntry(OnTargetApproachClicked),
+  CallbackEntry(OnPrevClicked),
+  CallbackEntry(OnNextClicked),
+  CallbackEntry(OnDirectToClicked),
   EndCallbackEntry()
 };
 
@@ -703,6 +873,7 @@ void dlgTarget(int TaskPoint) {
 
   TargetDialogOpen = true;
   TargetMoveMode = false;
+  show_direct_button = false;
 
   const PixelRect rc(main_window->GetClientRect());
   if (ScreenLandscape) {

@@ -1182,5 +1182,6 @@
     "_@M000856_": "Enfoque Automático activado",
     "_@H001300_": "[Nivel máximo de enfoque automático]\nCuando el enfoque automático está activo, acercará máximo hasta este nivel",
     "_@H001214_": "[Límite de enfoque automático]\nCuando se utiliza enfoque automático, éste comienza a operar si la siguiente baliza se encuentra por debajo de este límite.\nPor ejemplo si selecciona 5km, significa que cuando esté a menos de 5km de la siguiente baliza, el enfoque automático a funcionar.\nEmpieza en un rango de 5km y comenzará a acercarse en la medida en que se aproxime a la baliza.\nUna vez alcanzada la baliza, el enfoque vuelve al modo crucero. Tan pronto se encuentre a 5km de la siguiente baliza, comenzará a operar nuevamente.",
-    "_@H001252_": "Incluso si ha reconocido un espacio aéreo, después de este tiempo volverán a activarse las alarmas.\nDe forma tal que será avisado nuevamente cuando vuele de regreso a casa y cruce un espacio aéreo que había cruzado en la mañana, por ejemplo!\nPredeterminado, después de 15 minutos se rearmarán las alarmas de espacios aéreos."
+    "_@H001252_": "Incluso si ha reconocido un espacio aéreo, después de este tiempo volverán a activarse las alarmas.\nDe forma tal que será avisado nuevamente cuando vuele de regreso a casa y cruce un espacio aéreo que había cruzado en la mañana, por ejemplo!\nPredeterminado, después de 15 minutos se rearmarán las alarmas de espacios aéreos.",
+    "_@M002521_": "Direct To"
 }
