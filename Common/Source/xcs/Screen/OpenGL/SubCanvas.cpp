@@ -43,8 +43,8 @@ SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
   offset = canvas.offset + _offset;
   
   /* sub canvas bottom right limits can't be outside "parent" canvas. */
-  size.cx = std::min<PixelScalar>(_size.cx, canvas.GetSize().cx - _offset.x) ;
-  size.cy = std::min<PixelScalar>(_size.cy, canvas.GetSize().cy - _offset.y) ;
+  size.cx = std::max<PixelScalar>(0, std::min<PixelScalar>(_size.cx, canvas.GetSize().cx - _offset.x));
+  size.cy = std::max<PixelScalar>(0, std::min<PixelScalar>(_size.cy, canvas.GetSize().cy - _offset.y));
 
   if (relative.x != 0 || relative.y != 0) {
     OpenGL::translate += _offset;
@@ -61,8 +61,9 @@ SubCanvas::SubCanvas(Canvas &canvas, RasterPoint _offset, PixelSize _size)
 #endif /* !USE_GLSL */
   }
   
-  if ((relative.x + size.cx < canvas.GetSize().cx) 
-          || (relative.y + size.cy < canvas.GetSize().cy)) {
+  if (size.cx > 0 && size.cy > 0 &&
+      ((relative.x + size.cx < canvas.GetSize().cx)
+          || (relative.y + size.cy < canvas.GetSize().cy))) {
 
     /* Enable Clipping */
     push_scissor = std::make_unique<GLPushScissor>();
