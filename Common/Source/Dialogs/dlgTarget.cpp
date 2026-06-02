@@ -564,15 +564,15 @@ static void OnTargetApproachClicked(WndButton* pWnd) {
 
 static int countdown_seconds = 0;
 static TCHAR countdown_wp_name[NAME_SIZE] = {};
+static TCHAR countdown_msg[NAME_SIZE + 32] = {};
 
 static bool OnDirectToCountdownTimer(WndForm* pWnd) {
   countdown_seconds--;
 
   WndProperty* prpMsg = pWnd->FindByName<WndProperty>(TEXT("prpMessage"));
   if (prpMsg) {
-    TCHAR msg[NAME_SIZE + 16];
-    lk::snprintf(msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
-    prpMsg->SetText(msg);
+    lk::snprintf(countdown_msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
+    prpMsg->SetText(countdown_msg);
   }
 
   if (countdown_seconds <= 0) {
@@ -614,9 +614,8 @@ static bool ShowDirectToCountdownDialog(int new_tp) {
 
   WndProperty* prpMsg = pf->FindByName<WndProperty>(TEXT("prpMessage"));
   if (prpMsg) {
-    TCHAR msg[NAME_SIZE + 16];
-    lk::snprintf(msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
-    prpMsg->SetText(msg);
+    lk::snprintf(countdown_msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
+    prpMsg->SetText(countdown_msg);
   }
 
   pf->SetTimerNotify(1000, OnDirectToCountdownTimer);
