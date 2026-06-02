@@ -416,6 +416,8 @@ static void RefreshCalculator(void) {
       wp->SetVisible(false);
     } else {
       wp->SetVisible(true);
+      wp->GetDataField()->Set(target_point - ActiveWayPointOnEntry);
+      wp->RefreshDisplay();
     }
   }
 
@@ -564,17 +566,21 @@ static void OnTargetApproachClicked(WndButton* pWnd) {
 
 static int countdown_seconds = 0;
 static TCHAR countdown_wp_name[NAME_SIZE] = {};
-static TCHAR countdown_msg[NAME_SIZE + 32] = {};
+static TCHAR countdown_sec_str[8] = {};
+
+static void UpdateCountdownFrames(WndForm* pWnd) {
+  WndFrame* frmWpName    = pWnd->FindByName<WndFrame>(TEXT("frmWpName"));
+  WndFrame* frmCountdown = pWnd->FindByName<WndFrame>(TEXT("frmCountdown"));
+  if (frmWpName)    frmWpName->SetCaption(countdown_wp_name);
+  if (frmCountdown) {
+    lk::snprintf(countdown_sec_str, TEXT("%d"), countdown_seconds);
+    frmCountdown->SetCaption(countdown_sec_str);
+  }
+}
 
 static bool OnDirectToCountdownTimer(WndForm* pWnd) {
   countdown_seconds--;
-
-  WndProperty* prpMsg = pWnd->FindByName<WndProperty>(TEXT("prpMessage"));
-  if (prpMsg) {
-    lk::snprintf(countdown_msg, NAME_SIZE + 32, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
-    prpMsg->SetText(countdown_msg);
-  }
-
+  UpdateCountdownFrames(pWnd);
   if (countdown_seconds <= 0) {
     pWnd->SetModalResult(mrOK);
   }
@@ -612,11 +618,18 @@ static bool ShowDirectToCountdownDialog(int new_tp) {
 
   countdown_seconds = 10;
 
-  WndProperty* prpMsg = pf->FindByName<WndProperty>(TEXT("prpMessage"));
-  if (prpMsg) {
-    lk::snprintf(countdown_msg, NAME_SIZE + 32, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
-    prpMsg->SetText(countdown_msg);
+  const UINT centered = DT_CENTER | DT_VCENTER | DT_NOCLIP;
+  WndFrame* frmLabel = pf->FindByName<WndFrame>(TEXT("frmLabel"));
+  if (frmLabel) {
+    frmLabel->SetCaption(TEXT("Direct to:"));
+    frmLabel->SetCaptionStyle(centered);
   }
+  WndFrame* frmWpName = pf->FindByName<WndFrame>(TEXT("frmWpName"));
+  if (frmWpName) frmWpName->SetCaptionStyle(centered);
+  WndFrame* frmCountdown = pf->FindByName<WndFrame>(TEXT("frmCountdown"));
+  if (frmCountdown) frmCountdown->SetCaptionStyle(centered);
+
+  UpdateCountdownFrames(pf.get());
 
   pf->SetTimerNotify(1000, OnDirectToCountdownTimer);
 
