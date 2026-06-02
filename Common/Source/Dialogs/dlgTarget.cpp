@@ -571,7 +571,7 @@ static bool OnDirectToCountdownTimer(WndForm* pWnd) {
 
   WndProperty* prpMsg = pWnd->FindByName<WndProperty>(TEXT("prpMessage"));
   if (prpMsg) {
-    lk::snprintf(countdown_msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
+    lk::snprintf(countdown_msg, NAME_SIZE + 32, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
     prpMsg->SetText(countdown_msg);
   }
 
@@ -614,7 +614,7 @@ static bool ShowDirectToCountdownDialog(int new_tp) {
 
   WndProperty* prpMsg = pf->FindByName<WndProperty>(TEXT("prpMessage"));
   if (prpMsg) {
-    lk::snprintf(countdown_msg, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
+    lk::snprintf(countdown_msg, NAME_SIZE + 32, TEXT("%s\n\n%d"), countdown_wp_name, countdown_seconds);
     prpMsg->SetText(countdown_msg);
   }
 
