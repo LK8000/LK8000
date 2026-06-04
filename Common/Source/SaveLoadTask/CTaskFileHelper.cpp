@@ -331,7 +331,7 @@ void CTaskFileHelper::LoadOptions(const xml_node* node) {
                 }
             }
             LoadRules(nodeOpt->first_node("rules"));
-            LoadTimeGate(node->first_node("time-gate"));
+            LoadTimeGate(nodeOpt->first_node("time-gate"));
         }
     }
 }
