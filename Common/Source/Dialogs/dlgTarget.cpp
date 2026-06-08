@@ -15,6 +15,7 @@
 #include "resource.h"
 #include "NavFunctions.h"
 #include "CalcTask.h"
+#include "GADirectTo.h"
 
 #include <algorithm>
 #include "Library/TimeFunctions.h"
@@ -32,7 +33,6 @@ static double Range = 0;
 static double Radial = 0;
 static int target_point = 0;
 static bool TargetMoveMode = false;
-static bool show_direct_button = false;
 
 static unsigned dlgSize = 0;
 
@@ -397,14 +397,19 @@ static void ApplyTargetPanIfNeeded(void) {
   if (!wf || !TargetDialogOpen) return;
   dlgSize = ScreenLandscape ? wf->GetWidth() : wf->GetHeight();
 
-  // GA off-task DirectTo: pan map to the fix, not the task point
-  if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)) {
-    MapWindow::SetTargetPanWaypoint(DirectToWaypointIndex, dlgSize);
-    return;
-  }
+  if (GA_ApplyTargetPanOverride(dlgSize)) return;
 
   if (!ValidTaskPoint(target_point)) return;
   MapWindow::SetTargetPan(true, target_point, dlgSize);
+
+  // GA: tell the nav system which WP the pilot is looking at so the bearing line
+  // and leg-loop draw aircraft→browsed fix instead of aircraft→ActiveTaskPoint.
+  if (ISGAAIRCRAFT) {
+    const std::lock_guard lock(CritSec_TaskData);
+    const int browse_wp = ValidWayPointFast(Task[target_point].Index)
+                          ? Task[target_point].Index : -1;
+    GA_SetTargetBrowseWP(browse_wp, browse_wp >= 0 ? target_point : -1);
+  }
 }
 
 /// Refresh Target dialog fields and show/hide Approach button for landable waypoints.
@@ -413,9 +418,10 @@ static void RefreshCalculator(void) {
 
   RefreshTask();
   RefreshTaskStatistics();
-  target_point = max(target_point,ActiveTaskPoint);
+  if (!ISGAAIRCRAFT)
+    target_point = max(target_point, ActiveTaskPoint);
 
-  bool nodisplay = gTaskType != task_type_t::AAT 
+  bool nodisplay = gTaskType != task_type_t::AAT
     || (target_point==0)
     || !ValidTaskPoint(target_point+1);
 
@@ -430,15 +436,9 @@ static void RefreshCalculator(void) {
 
   nodisplay = nodisplay || TargetMoveMode;
 
-  const bool isGA = ISGAAIRCRAFT;
-  const bool ga_offtask_active = isGA && DirectToActive && ValidWayPointFast(DirectToWaypointIndex);
-
-  // When off-task DirectTo is active: show fix name in title, hide task point selector
-  if (ga_offtask_active) {
-    TCHAR dt_title[NAME_SIZE + 12];
-    lk::snprintf(dt_title, _T("%s: %s"), MsgToken<2521>(), WayPointList[DirectToWaypointIndex].Name);
-    wf->SetCaption(dt_title);
-  }
+  const bool ga_offtask_active = ISGAAIRCRAFT && DirectToActive
+                                  && ValidWayPointFast(DirectToWaypointIndex)
+                                  && !GA_IsOfftaskBrowsing();
 
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   if (wp) {
@@ -459,6 +459,8 @@ static void RefreshCalculator(void) {
       wc->SetVisible(true);
     }
   }
+
+  const bool isGA = ISGAAIRCRAFT;
 
   wp = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
   if (wp) {
@@ -518,70 +520,13 @@ static void RefreshCalculator(void) {
     wp->SetVisible(!isGA);
   }
 
-  // GA fields: Dist / ETE / ETA direct to selected waypoint using average GS
-  {
-    WndProperty* pDist = wf->FindByName<WndProperty>(TEXT("prpGADist"));
-    WndProperty* pETE  = wf->FindByName<WndProperty>(TEXT("prpGAETE"));
-    WndProperty* pETA  = wf->FindByName<WndProperty>(TEXT("prpGAETA"));
-
-    if (pDist) pDist->SetVisible(isGA);
-    if (pETE)  pETE->SetVisible(isGA);
-    if (pETA)  pETA->SetVisible(isGA);
-
-    // When GA Direct To to an off-task fix is active, calculate toward that fix
-    const int ga_calc_wp = (isGA && DirectToActive && ValidWayPointFast(DirectToWaypointIndex))
-                           ? DirectToWaypointIndex
-                           : (ValidTaskPoint(target_point) ? Task[target_point].Index : -1);
-
-    if (isGA && ValidWayPointFast(ga_calc_wp)) {
-      const int wp_idx = ga_calc_wp;
-      // Calculate fresh direct distance from current position to selected waypoint
-      double dist_m = 0., bearing = 0.;
-      DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude,
-                      WayPointList[wp_idx].Latitude, WayPointList[wp_idx].Longitude,
-                      &dist_m, &bearing);
-      const double ete_s = (CALCULATED_INFO.AverageGS > 0)
-                           ? dist_m / CALCULATED_INFO.AverageGS
-                           : -1;
-
-      // Distance
-      if (pDist) {
-        TCHAR buf[32];
-        lk::snprintf(buf, TEXT("%.1f %s"),
-                     Units::ToDistance(dist_m),
-                     Units::GetDistanceName());
-        pDist->SetText(buf);
-      }
-
-      // ETE
-      if (pETE) {
-        TCHAR buf[32];
-        if (ete_s > 0) {
-          Units::TimeToTextDown(buf, (int)ete_s);
-        } else {
-          lk::strcpy(buf, TEXT("--:--"));
-        }
-        pETE->SetText(buf);
-      }
-
-      // ETA (local time)
-      if (pETA) {
-        TCHAR buf[32];
-        if (ete_s > 0) {
-          Units::TimeToText(buf, (int)(LocalTime(GPS_INFO.Time) + ete_s));
-        } else {
-          lk::strcpy(buf, TEXT("--:--"));
-        }
-        pETA->SetText(buf);
-      }
-    }
-  }
+  GA_RefreshTargetFields();
 
   WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
   if (btnApproach) {
-    // GA Direct To: approach button refers to the off-task fix if active
-    const int ap_wp = (isGA && DirectToActive && ValidWayPointFast(DirectToWaypointIndex))
-                      ? DirectToWaypointIndex
+    const int ga_ap_wp = GA_GetApproachWPForTarget();
+    const int ap_wp = (ga_ap_wp >= 0)
+                      ? ga_ap_wp
                       : (ValidTaskPoint(target_point) && ValidWayPointFast(Task[target_point].Index)
                          ? Task[target_point].Index : -1);
     const bool landable = ValidWayPointFast(ap_wp) && WayPointCalc[ap_wp].IsLandable;
@@ -626,14 +571,8 @@ static void OnMoveClicked(WndButton* pWnd) {
 /// Open Approach dialog for current target waypoint if it is landable.
 /// Closes Target only if a task was created (Approve clicked); on Ignore the user returns to Target.
 static void OnTargetApproachClicked(WndButton* pWnd) {
-  int wp_index = -1;
-  // GA Direct To: open approach for the off-task fix if active and landable
-  if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex) &&
-      WayPointCalc[DirectToWaypointIndex].IsLandable) {
-    wp_index = DirectToWaypointIndex;
-  } else {
-    if (!CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
-  }
+  int wp_index = GA_GetApproachWPForTarget();
+  if (wp_index < 0 && !CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
   const bool task_created = dlgApproach(wp_index);
   if (task_created) {
     WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
@@ -641,170 +580,26 @@ static void OnTargetApproachClicked(WndButton* pWnd) {
   }
 }
 
-// --- Direct To countdown popup ---
-
-static int countdown_seconds = 0;
-static TCHAR countdown_wp_name[NAME_SIZE] = {};
-static TCHAR countdown_sec_str[8] = {};
-
-static void UpdateCountdownFrames(WndForm* pWnd) {
-  WndFrame* frmWpName    = pWnd->FindByName<WndFrame>(TEXT("frmWpName"));
-  WndFrame* frmCountdown = pWnd->FindByName<WndFrame>(TEXT("frmCountdown"));
-  if (frmWpName)    frmWpName->SetCaption(countdown_wp_name);
-  if (frmCountdown) {
-    lk::snprintf(countdown_sec_str, TEXT("%d"), countdown_seconds);
-    frmCountdown->SetCaption(countdown_sec_str);
-  }
-}
-
-static bool OnDirectToCountdownTimer(WndForm* pWnd) {
-  countdown_seconds--;
-  UpdateCountdownFrames(pWnd);
-  if (countdown_seconds <= 0) {
-    pWnd->SetModalResult(mrOK);
-  }
-  return true;
-}
-
-static void OnDirectToCountdownCancelClicked(WndButton* pWnd) {
-  if (pWnd) {
-    WndForm* pForm = pWnd->GetParentWndForm();
-    if (pForm) pForm->SetModalResult(mrCancel);
-  }
-}
-
-static CallBackTableEntry_t CountdownCallBackTable[] = {
-  CallbackEntry(OnDirectToCountdownCancelClicked),
-  EndCallbackEntry()
-};
-
-// Shared countdown popup.
-// new_tp >= 0: task point (advances ActiveTaskPoint, clears DirectToWaypointIndex)
-// new_tp == -1: off-task waypoint; wp_index = WayPointList index (GA only)
-static bool RunDirectToCountdown(int new_tp, int wp_index) {
-  {
-    const std::lock_guard lock(CritSec_TaskData);
-    if (new_tp >= 0) {
-      if (!ValidTaskPoint(new_tp) || !ValidWayPointFast(Task[new_tp].Index))
-        return false;
-      LK_tcsncpy(countdown_wp_name, WayPointList[Task[new_tp].Index].Name, NAME_SIZE - 1);
-    } else {
-      if (!ValidWayPointFast(wp_index))
-        return false;
-      LK_tcsncpy(countdown_wp_name, WayPointList[wp_index].Name, NAME_SIZE - 1);
-    }
-  }
-
-  std::unique_ptr<WndForm> pf(dlgLoadFromXML(CountdownCallBackTable,
-      ScreenLandscape ? IDR_XML_DIRECTTO_COUNTDOWN_L : IDR_XML_DIRECTTO_COUNTDOWN_P));
-  if (!pf) return false;
-
-  const PixelRect rc(main_window->GetClientRect());
-  pf->SetLeft((rc.left + rc.GetSize().cx - (int)pf->GetWidth()) / 2);
-  pf->SetTop((rc.top + rc.GetSize().cy - (int)pf->GetHeight()) / 2);
-
-  countdown_seconds = 10;
-
-  const UINT centered = DT_CENTER | DT_VCENTER | DT_NOCLIP;
-  WndFrame* frmLabel = pf->FindByName<WndFrame>(TEXT("frmLabel"));
-  if (frmLabel) { frmLabel->SetCaption(TEXT("Direct to:")); frmLabel->SetCaptionStyle(centered); }
-  WndFrame* frmWpName = pf->FindByName<WndFrame>(TEXT("frmWpName"));
-  if (frmWpName) frmWpName->SetCaptionStyle(centered);
-  WndFrame* frmCountdown = pf->FindByName<WndFrame>(TEXT("frmCountdown"));
-  if (frmCountdown) frmCountdown->SetCaptionStyle(centered);
-
-  UpdateCountdownFrames(pf.get());
-  pf->SetTimerNotify(1000, OnDirectToCountdownTimer);
-
-  if (pf->ShowModal() != mrOK)
-    return false;
-
-  const std::lock_guard lock(CritSec_TaskData);
-  DirectToActive = true;
-  DirectToOriginLat = GPS_INFO.Latitude;
-  DirectToOriginLon = GPS_INFO.Longitude;
-  if (new_tp >= 0 && ValidTaskPoint(new_tp)) {
-    ActiveTaskPoint = new_tp;
-    DirectToWaypointIndex = -1;
-  } else if (ValidWayPointFast(wp_index)) {
-    DirectToWaypointIndex = wp_index;
-  } else {
-    DirectToActive = false;
-    return false;
-  }
-  return true;
-}
-
-// Called from Target dialog (task waypoint Direct To)
-static bool ShowDirectToCountdownDialog(int new_tp) {
-  return RunDirectToCountdown(new_tp, -1);
-}
-
-// Called from dlgWayQuick (off-task waypoint Direct To in GA mode)
-bool ShowDirectToOffTaskDialog(int wp_index) {
-  return RunDirectToCountdown(-1, wp_index);
-}
-
-// --- Navigation buttons (Next / Prev / Direct To) ---
-
 static void UpdateNavButtons() {
-  if (!wf) return;
-
-  WndButton* btnPrev   = wf->FindByName<WndButton>(TEXT("btnPrev"));
-  WndButton* btnNext   = wf->FindByName<WndButton>(TEXT("btnNext"));
-  WndButton* btnDirect = wf->FindByName<WndButton>(TEXT("btnDirectTo"));
-
-  bool in_task = false;
-  bool has_prev = false;
-  bool has_next = false;
-  {
-    const std::lock_guard lock(CritSec_TaskData);
-    in_task = (ActiveTaskPoint >= 0) && ValidTaskPoint(target_point);
-    has_prev = in_task && (target_point > ActiveTaskPoint) && ValidTaskPoint(target_point - 1);
-    has_next = in_task && ValidTaskPoint(target_point + 1);
-  }
-
-  const bool ga_offtask = ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex);
-  if (btnPrev)   btnPrev->SetVisible(ISGAAIRCRAFT && !ga_offtask && in_task && has_prev);
-  if (btnNext)   btnNext->SetVisible(ISGAAIRCRAFT && !ga_offtask && in_task && has_next);
-  if (btnDirect) btnDirect->SetVisible(ISGAAIRCRAFT && !ga_offtask && show_direct_button && in_task &&
-                                       (target_point > ActiveTaskPoint));
+  GA_UpdateNavButtons();
 }
 
 static void OnPrevClicked(WndButton* /*pWnd*/) {
-  bool valid = false;
-  {
-    const std::lock_guard lock(CritSec_TaskData);
-    valid = (target_point > ActiveTaskPoint) && ValidTaskPoint(target_point - 1);
-  }
-  if (!valid) return;
-  target_point--;
-  show_direct_button = true;
+  if (!GA_OnTargetPrev()) return;
   RefreshTargetPoint();
   UpdateNavButtons();
   ApplyTargetPanIfNeeded();
 }
 
 static void OnNextClicked(WndButton* /*pWnd*/) {
-  bool valid = false;
-  {
-    const std::lock_guard lock(CritSec_TaskData);
-    valid = ValidTaskPoint(target_point + 1);
-  }
-  if (!valid) return;
-  target_point++;
-  show_direct_button = true;
+  if (!GA_OnTargetNext()) return;
   RefreshTargetPoint();
   UpdateNavButtons();
   ApplyTargetPanIfNeeded();
 }
 
 static void OnDirectToClicked(WndButton* pWnd) {
-  const bool activated = ShowDirectToCountdownDialog(target_point);
-  if (activated) {
-    WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
-    if (targetForm) targetForm->SetModalResult(mrOK);
-  }
+  GA_OnTargetDirectTo(pWnd);
 }
 
 static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
@@ -892,7 +687,8 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
 
 static void RefreshTargetPoint(void) {
   LockTaskData();
-  target_point = max(target_point, ActiveTaskPoint);
+  if (!ISGAAIRCRAFT)
+    target_point = max(target_point, ActiveTaskPoint);
   if (ValidTaskPoint(target_point)) {
     Range = Task[target_point].AATTargetOffsetRadius;
     Radial = Task[target_point].AATTargetOffsetRadial;
@@ -939,9 +735,10 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
     case DataField::daPut:
     case DataField::daChange:
       target_point = Sender->GetAsInteger() + ActiveWayPointOnEntry;
-      target_point = max(target_point,ActiveTaskPoint);
+      if (!ISGAAIRCRAFT)
+        target_point = max(target_point, ActiveTaskPoint);
       if (target_point != old_target_point) {
-        show_direct_button = true;
+        GA_OnTargetPointSelected();
         RefreshTargetPoint();
         UpdateNavButtons();
         ApplyTargetPanIfNeeded();
@@ -972,9 +769,10 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgTarget(int TaskPoint) {
 
-  if(TaskPoint == -1)
-	  TaskPoint =  ActiveTaskPoint;
-  if (!ValidTaskPoint(TaskPoint)) {
+  if (TaskPoint == -1)
+    TaskPoint = ActiveTaskPoint;
+
+  if (!ValidTaskPoint(TaskPoint) && !GA_CanOpenWithoutTask(TaskPoint)) {
     return;
   }
   target_point = TaskPoint;
@@ -985,7 +783,7 @@ void dlgTarget(int TaskPoint) {
 
   TargetDialogOpen = true;
   TargetMoveMode = false;
-  show_direct_button = false;
+  GA_InitTargetDialog(wf, &target_point);
 
   const PixelRect rc(main_window->GetClientRect());
   if (ScreenLandscape) {
@@ -1052,6 +850,9 @@ void dlgTarget(int TaskPoint) {
   wf->ShowModal();
 
   MapWindow::SetTargetPan(false, 0);
+
+  GA_SetTargetBrowseWP(-1, -1);
+  GA_ResetTargetDialog();
 
   TargetDialogOpen = false;
 

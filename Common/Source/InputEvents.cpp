@@ -37,6 +37,7 @@
 #include "Library/Utm.h"
 #include "utils/tokenizer.h"
 #include "utils/lookup_table.h"
+#include "GADirectTo.h"
 #include <type_traits>
 #include "Waypoints/SetHome.h"
 #include "LocalPath.h"
@@ -863,6 +864,30 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
     });
     MarkLocation(pos.longitude, pos.latitude, pos.altitude);
   }
+}
+
+void InputEvents::eventDirectToFromPan(const TCHAR* /*misc*/) {
+  if (!ISGAAIRCRAFT) return;
+  if (!MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) return;
+
+  double pan_lat = MapWindow::GetPanLatitude();
+  double pan_lon = MapWindow::GetPanLongitude();
+
+  short th = WithLock(RasterTerrain::mutex, [&]() {
+    return RasterTerrain::GetTerrainHeight(pan_lat, pan_lon);
+  });
+  if (th == TERRAIN_INVALID) th = 0;
+
+  {
+    const std::lock_guard lock(CritSec_TaskData);
+    WayPointList[RESWP_PANPOS].Latitude  = pan_lat;
+    WayPointList[RESWP_PANPOS].Longitude = pan_lon;
+    WayPointList[RESWP_PANPOS].Altitude  = (double)th;
+  }
+
+  MapWindow::Event_Pan(0);  // exit pan mode before showing countdown
+
+  ShowDirectToFromPanDialog(RESWP_PANPOS, pan_lat, pan_lon);
 }
 
 void InputEvents::eventSounds(const TCHAR *misc) {
@@ -3466,6 +3491,7 @@ namespace {
     { "SendDataPort5", &InputEvents::eventSendDataPort<4> },
     { "SendDataPort6", &InputEvents::eventSendDataPort<5> },
     DELARE_EVENT(PilotEvent),
+    DELARE_EVENT(DirectToFromPan),
   });
 
   #define DELARE_GCE(Name) { #Name, GCE_ ## Name }

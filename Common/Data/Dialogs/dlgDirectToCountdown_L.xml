@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
-  <WndForm Name="frmDirectToCountdown" Type="Dialog" X="0" Y="0" Width="220" Height="104" Caption="" Font="2" Popup="1" Modal="1">
-    <WndFrame Name="frmBorder"    X="0" Y="0"  Width="220" Height="104" Font="2" Border="30"/>
+  <WndForm Name="frmDirectToCountdown" Type="Dialog" X="0" Y="0" Width="220" Height="148" Caption="" Font="2" Popup="1" Modal="1">
+    <WndFrame Name="frmBorder"    X="0" Y="0"  Width="220" Height="148" Font="2" Border="30"/>
     <WndFrame Name="frmLabel"     X="4" Y="4"  Width="212" Height="22"  Font="2"/>
     <WndFrame Name="frmWpName"    X="4" Y="28" Width="212" Height="22"  Font="2"/>
-    <WndFrame Name="frmCountdown" X="4" Y="52" Width="212" Height="22"  Font="2"/>
-    <WndButton Name="btnCancel" Caption="_@M000161_" X="60" Y="76" Width="100" Height="24" Font="2" OnClickNotify="OnDirectToCountdownCancelClicked" Tag="1"/>
+    <WndFrame Name="frmInfo1"     X="4" Y="52" Width="212" Height="22"  Font="2"/>
+    <WndFrame Name="frmInfo2"     X="4" Y="76" Width="212" Height="22"  Font="2"/>
+    <WndFrame Name="frmCountdown" X="4" Y="100" Width="212" Height="22" Font="2"/>
+    <WndButton Name="btnCancel" Caption="_@M000161_" X="60" Y="122" Width="100" Height="24" Font="2" OnClickNotify="OnDirectToCountdownCancelClicked" Tag="1"/>
   </WndForm>
 </PMML>

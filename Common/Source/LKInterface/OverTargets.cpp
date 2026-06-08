@@ -12,14 +12,12 @@
 #include "Sound/Sound.h"
 #include "Geographic/GeoPoint.h"
 #include "utils/printf.h"
+#include "GADirectTo.h"
 #include <optional>
 
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex() {
-	// GA: off-task Direct To temporarily overrides the displayed nav target
-	if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)) {
-		return DirectToWaypointIndex;
-	}
+	{ int ga = GA_GetDirectToNavIndex(); if (ga >= 0) return ga; }
 
 	int index = -1;
 	switch (OvertargetMode) {

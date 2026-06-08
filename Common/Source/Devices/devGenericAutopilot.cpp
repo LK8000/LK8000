@@ -15,6 +15,7 @@
 #include <regex>
 #include "utils/printf.h"
 #include "LKInterface.h"
+#include "GADirectTo.h"
 
 namespace {
 
@@ -51,12 +52,7 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
         next_index = GetOvertargetIndex();
       }
 
-      // GA only: DirectTo off-task fix overrides destination
-      if (ISGAAIRCRAFT && DirectToActive && DirectToWaypointIndex >= 0
-          && ValidWayPointFast(DirectToWaypointIndex)) {
-        next_index = DirectToWaypointIndex;
-        prev_index = -1;
-      }
+      GA_ApplyDirectToAutopilotOverride(prev_index, next_index);
 
       if (ValidWayPointFast(next_index)) {
         const WAYPOINT& next_tp = WayPointList[next_index];

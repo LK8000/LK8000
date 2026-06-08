@@ -12,6 +12,7 @@
 #include "Bitmaps.h"
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
+#include "GADirectTo.h"
 
 void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
@@ -69,6 +70,14 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
   }
   else {
     if (!ValidTaskPoint(ActiveTaskPoint)) {
+      // No active task point, but GetOvertargetIndex() returned a valid waypoint
+      // (e.g. a nav override is active).  Draw a direct bearing line to that waypoint
+      // so the pilot always sees where to go, even without a loaded task.
+      LockTaskData();
+      targetLat = WayPointList[overindex].Latitude;
+      targetLon = WayPointList[overindex].Longitude;
+      UnlockTaskData();
+      DrawGreatCircle(Surface, rc, _Proj, startLon, startLat, targetLon, targetLat);
       return;
     }
     LockTaskData();
@@ -90,9 +99,10 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
       startLon = targetLon;
 
       LockTaskData();
-      const int loopStart = (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex))
-                            ? ActiveTaskPoint : ActiveTaskPoint + 1;
-      for (int i = loopStart; i < MAXTASKPOINTS; i++) {
+      // GA_GetTargetPanLoopStart returns the browsed task WP index when a GA
+      // Target-dialog browse override is active; otherwise returns ActiveTaskPoint
+      // unchanged, so non-GA behaviour is identical to the original.
+      for (int i=GA_GetTargetPanLoopStart(ActiveTaskPoint)+1; i<MAXTASKPOINTS; i++) {
         if (ValidTaskPoint(i)) {
 
           if (UseAATTarget() && ValidTaskPoint(i+1)) {

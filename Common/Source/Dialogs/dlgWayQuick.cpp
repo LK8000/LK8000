@@ -19,6 +19,7 @@
 #include "LKStyle.h"
 #include "Radio.h"
 #include "Util/TruncateString.hpp"
+#include "GADirectTo.h"
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
@@ -84,7 +85,6 @@ static void OnSetAlt2Clicked(WndButton* pWnd){
 
 static void OnGotoClicked(WndButton* pWnd){
   if (ISGAAIRCRAFT) {
-    extern bool ShowDirectToOffTaskDialog(int wp_index);
     if (ShowDirectToOffTaskDialog(SelectedWaypoint)) {
       retStatus = 2;
     }

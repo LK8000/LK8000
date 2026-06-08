@@ -114,6 +114,7 @@ public:
   static void eventLogger(const TCHAR *misc);
   static void eventMacCready(const TCHAR *misc);
   static void eventMarkLocation(const TCHAR *misc);
+  static void eventDirectToFromPan(const TCHAR *misc);
   static void eventMode(const TCHAR *misc);
   static void eventNearestAirspaceDetails(const TCHAR *misc);
   static void eventNearestWaypointDetails(const TCHAR *misc);
