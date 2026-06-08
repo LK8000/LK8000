@@ -90,7 +90,9 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
       startLon = targetLon;
 
       LockTaskData();
-      for (int i=ActiveTaskPoint+1; i<MAXTASKPOINTS; i++) {
+      const int loopStart = (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex))
+                            ? ActiveTaskPoint : ActiveTaskPoint + 1;
+      for (int i = loopStart; i < MAXTASKPOINTS; i++) {
         if (ValidTaskPoint(i)) {
 
           if (UseAATTarget() && ValidTaskPoint(i+1)) {

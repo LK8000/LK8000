@@ -383,7 +383,7 @@ void MapWindow::DrawTask(LKSurface& Surface, const RECT& rc, const ScreenProject
   LKBrush ArrowBrush(taskcolor);
 
   if (!task_polyline.empty()) {
-    int StartTaskPoint = ISGAAIRCRAFT ? (ActiveTaskPoint > 0 ? ActiveTaskPoint - 1 : 0) : ActiveTaskPoint;
+    int StartTaskPoint = ISGAAIRCRAFT ? 0 : ActiveTaskPoint;
     // In case of GA airplane draw also current routeline, otherwise draw routelines only from next WP
     for (int i = StartTaskPoint; i < static_cast<int>(task_polyline.size() - 1); i++) {
       ScreenPoint sct1 = task_polyline[i];
