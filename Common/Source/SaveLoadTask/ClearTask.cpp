@@ -38,6 +38,7 @@ void ClearTask() {
   TskOptimizeRoute = TskOptimizeRoute_Config;
   LastTaskFileName[0] = _T('\0');
   ActiveTaskPoint = -1;
+  DirectToActive = false;
 
   MultipleStartPoints = false;
 
