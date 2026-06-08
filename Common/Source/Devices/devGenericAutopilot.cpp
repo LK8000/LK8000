@@ -51,6 +51,13 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
         next_index = GetOvertargetIndex();
       }
 
+      // GA only: DirectTo off-task fix overrides destination
+      if (ISGAAIRCRAFT && DirectToActive && DirectToWaypointIndex >= 0
+          && ValidWayPointFast(DirectToWaypointIndex)) {
+        next_index = DirectToWaypointIndex;
+        prev_index = -1;
+      }
+
       if (ValidWayPointFast(next_index)) {
         const WAYPOINT& next_tp = WayPointList[next_index];
         next_pos = GetWayPointPosition(next_tp);

@@ -83,8 +83,15 @@ static void OnSetAlt2Clicked(WndButton* pWnd){
 }
 
 static void OnGotoClicked(WndButton* pWnd){
-  GotoWaypoint(SelectedWaypoint);
-  retStatus=2;
+  if (ISGAAIRCRAFT) {
+    extern bool ShowDirectToOffTaskDialog(int wp_index);
+    if (ShowDirectToOffTaskDialog(SelectedWaypoint)) {
+      retStatus = 2;
+    }
+  } else {
+    GotoWaypoint(SelectedWaypoint);
+    retStatus = 2;
+  }
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -220,6 +227,12 @@ short dlgWayQuickShowModal(void){
     }
   }
   wf->SetCaption(sTmp);
+
+  // In GA mode rename GOTO to Direct To (task is preserved, leg is temporary)
+  if (ISGAAIRCRAFT) {
+    WindowControl* pGoto = wf->FindByName(TEXT("cmdGoto"));
+    if (pGoto) pGoto->SetCaption(MsgToken<2521>());  // "Direct To"
+  }
 
   const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
 

@@ -75,10 +75,10 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
 
     if (UseAATTarget() && ( DoOptimizeRoute() || ((ActiveTaskPoint>0) && ValidTaskPoint(ActiveTaskPoint+1))) ) {
       targetLat = Task[ActiveTaskPoint].AATTargetLat;
-      targetLon = Task[ActiveTaskPoint].AATTargetLon; 
+      targetLon = Task[ActiveTaskPoint].AATTargetLon;
     } else {
-      targetLat = WayPointList[Task[ActiveTaskPoint].Index].Latitude;
-      targetLon = WayPointList[Task[ActiveTaskPoint].Index].Longitude;
+      targetLat = WayPointList[overindex].Latitude;
+      targetLon = WayPointList[overindex].Longitude;
     }
     UnlockTaskData();
 

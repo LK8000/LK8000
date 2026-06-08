@@ -81,6 +81,10 @@ bool DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   if(ValidTaskPoint(ActiveTaskPoint)) {
     DoAlternates(Basic,Calculated,TASKINDEX);
+    if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)
+        && DirectToWaypointIndex != TASKINDEX) {
+      DoAlternates(Basic, Calculated, DirectToWaypointIndex);
+    }
   }
   if (IsMultiMapShared()) {
     DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);

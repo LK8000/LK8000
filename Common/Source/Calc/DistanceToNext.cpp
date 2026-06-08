@@ -22,7 +22,18 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       double w1lat, w1lon;
       double w0lat, w0lon;
 
-      if(DoOptimizeRoute()) {
+      if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)) {
+        // GA off-task DirectTo: calculate distance/bearing to the fix, not the task point
+        w0lat = WayPointList[DirectToWaypointIndex].Latitude;
+        w0lon = WayPointList[DirectToWaypointIndex].Longitude;
+        DistanceBearing(Basic->Latitude, Basic->Longitude,
+                        w0lat, w0lon,
+                        &Calculated->WaypointDistance,
+                        &Calculated->WaypointBearing);
+        Calculated->ZoomDistance = Calculated->WaypointDistance;
+        UnlockTaskData();
+        return;
+      } else if(DoOptimizeRoute()) {
         w0lat = Task[ActiveTaskPoint].AATTargetLat;
         w0lon = Task[ActiveTaskPoint].AATTargetLon;
       } else {

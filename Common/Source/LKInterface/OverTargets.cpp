@@ -16,6 +16,11 @@
 
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex() {
+	// GA: off-task Direct To temporarily overrides the displayed nav target
+	if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)) {
+		return DirectToWaypointIndex;
+	}
+
 	int index = -1;
 	switch (OvertargetMode) {
 	case OVT_TASK: // task
