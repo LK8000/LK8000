@@ -17,6 +17,7 @@
 #include "CalcTask.h"
 
 #include <algorithm>
+#include "Library/TimeFunctions.h"
 
 static void UpdateNavButtons();
 static void RefreshTargetPoint();
@@ -270,6 +271,9 @@ static void CompactTargetPortraitLayout(void) {
   WndProperty* const pAch = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
   WndButton* const btnMov = wf->FindByName<WndButton>(TEXT("btnMove"));
   WndProperty* const pLock = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
+  WndProperty* const pGADist = wf->FindByName<WndProperty>(TEXT("prpGADist"));
+  WndProperty* const pGAETE  = wf->FindByName<WndProperty>(TEXT("prpGAETE"));
+  WndProperty* const pGAETA  = wf->FindByName<WndProperty>(TEXT("prpGAETA"));
 
   const int gap = NIBLSCALE(2);
 
@@ -333,6 +337,11 @@ static void CompactTargetPortraitLayout(void) {
     y += (int)pLock->GetHeight() + gap;
   }
 
+  // GA fields (each on its own row)
+  if (pGADist && pGADist->IsVisible()) { pGADist->SetTop(y); y += (int)pGADist->GetHeight() + gap; }
+  if (pGAETE  && pGAETE->IsVisible())  { pGAETE->SetTop(y);  y += (int)pGAETE->GetHeight()  + gap; }
+  if (pGAETA  && pGAETA->IsVisible())  { pGAETA->SetTop(y);  y += (int)pGAETA->GetHeight()  + gap; }
+
   int maxBottom = 0;
   const auto acc = [&maxBottom](const WindowControl* w) {
     if (w && w->IsVisible()) {
@@ -354,6 +363,9 @@ static void CompactTargetPortraitLayout(void) {
   acc(pAch);
   acc(btnMov);
   acc(pLock);
+  acc(pGADist);
+  acc(pGAETE);
+  acc(pGAETA);
 
   /* maxBottom is in client (content) coordinates; outer WndForm height must include title bar
      and borders. Growing only when newH < GetHeight() never expanded when scaled widgets
@@ -430,40 +442,29 @@ static void RefreshCalculator(void) {
     }
   }
 
+  const bool isGA = ISGAAIRCRAFT;
+
   wp = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
   if (wp) {
     wp->GetDataField()->Set(Task[target_point].AATTargetLocked);
     wp->RefreshDisplay();
-    if (nodisplay) {
-      wp->SetVisible(false);
-    } else {
-      wp->SetVisible(true);
-    }
+    wp->SetVisible(!isGA && !nodisplay);
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Range*100.0);
     wp->RefreshDisplay();
-    if (nodisplay) {
-      wp->SetVisible(false);
-    } else {
-      wp->SetVisible(true);
-    }
+    wp->SetVisible(!isGA && !nodisplay);
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Radial);
     wp->RefreshDisplay();
-    if (nodisplay) {
-      wp->SetVisible(false);
-    } else {
-      wp->SetVisible(true);
-    }
+    wp->SetVisible(!isGA && !nodisplay);
   }
 
-  // update outputs
   double dd = CALCULATED_INFO.TaskTimeToGo;
   if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) {
     dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
@@ -473,38 +474,86 @@ static void RefreshCalculator(void) {
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd);
     wp->RefreshDisplay();
+    wp->SetVisible(!isGA);
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpAATDelta"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd-AATTaskLength);
-    if (gTaskType == task_type_t::AAT) {
-      wp->SetVisible(true);
-    } else {
-      wp->SetVisible(false);
-    }
+    wp->SetVisible(!isGA && gTaskType == task_type_t::AAT);
     wp->RefreshDisplay();
   }
 
-  double v1;
+  double v1 = 0;
   if (CALCULATED_INFO.TaskTimeToGo>0) {
-    v1 = CALCULATED_INFO.TaskDistanceToGo/
-      CALCULATED_INFO.TaskTimeToGo;
-  } else {
-    v1 = 0;
+    v1 = CALCULATED_INFO.TaskDistanceToGo / CALCULATED_INFO.TaskTimeToGo;
   }
-
   wp = wf->FindByName<WndProperty>(TEXT("prpSpeedRemaining"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(v1));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
+    wp->SetVisible(!isGA);
   }
-
   wp = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
+    wp->SetVisible(!isGA);
+  }
+
+  // GA fields: Dist / ETE / ETA direct to selected waypoint using average GS
+  {
+    WndProperty* pDist = wf->FindByName<WndProperty>(TEXT("prpGADist"));
+    WndProperty* pETE  = wf->FindByName<WndProperty>(TEXT("prpGAETE"));
+    WndProperty* pETA  = wf->FindByName<WndProperty>(TEXT("prpGAETA"));
+
+    if (pDist) pDist->SetVisible(isGA);
+    if (pETE)  pETE->SetVisible(isGA);
+    if (pETA)  pETA->SetVisible(isGA);
+
+    if (isGA && ValidTaskPoint(target_point) && ValidWayPointFast(Task[target_point].Index)) {
+      const int wp_idx = Task[target_point].Index;
+      // Calculate fresh direct distance from current position to selected waypoint
+      double dist_m = 0., bearing = 0.;
+      DistanceBearing(GPS_INFO.Latitude, GPS_INFO.Longitude,
+                      WayPointList[wp_idx].Latitude, WayPointList[wp_idx].Longitude,
+                      &dist_m, &bearing);
+      const double ete_s = (CALCULATED_INFO.AverageGS > 0)
+                           ? dist_m / CALCULATED_INFO.AverageGS
+                           : -1;
+
+      // Distance
+      if (pDist) {
+        TCHAR buf[32];
+        lk::snprintf(buf, TEXT("%.1f %s"),
+                     Units::ToDistance(dist_m),
+                     Units::GetDistanceName());
+        pDist->SetText(buf);
+      }
+
+      // ETE
+      if (pETE) {
+        TCHAR buf[32];
+        if (ete_s > 0) {
+          Units::TimeToTextDown(buf, (int)ete_s);
+        } else {
+          lk::strcpy(buf, TEXT("--:--"));
+        }
+        pETE->SetText(buf);
+      }
+
+      // ETA (local time)
+      if (pETA) {
+        TCHAR buf[32];
+        if (ete_s > 0) {
+          Units::TimeToText(buf, (int)(LocalTime(GPS_INFO.Time) + ete_s));
+        } else {
+          lk::strcpy(buf, TEXT("--:--"));
+        }
+        pETA->SetText(buf);
+      }
+    }
   }
 
   WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
@@ -532,10 +581,10 @@ static bool OnTimerNotify(WndForm* pWnd) {
         MoveTarget(lon, lat);
     }
     if (TargetModified) {
-        RefreshCalculator();
         TargetModified = false;
         ApplyTargetPanIfNeeded();
     }
+    RefreshCalculator();
     return true;
 }
 
@@ -667,9 +716,9 @@ static void UpdateNavButtons() {
     has_next = in_task && ValidTaskPoint(target_point + 1);
   }
 
-  if (btnPrev)   btnPrev->SetVisible(in_task && has_prev);
-  if (btnNext)   btnNext->SetVisible(in_task && has_next);
-  if (btnDirect) btnDirect->SetVisible(show_direct_button && in_task &&
+  if (btnPrev)   btnPrev->SetVisible(ISGAAIRCRAFT && in_task && has_prev);
+  if (btnNext)   btnNext->SetVisible(ISGAAIRCRAFT && in_task && has_next);
+  if (btnDirect) btnDirect->SetVisible(ISGAAIRCRAFT && show_direct_button && in_task &&
                                        (target_point > ActiveTaskPoint));
 }
 
@@ -843,8 +892,10 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
       target_point = Sender->GetAsInteger() + ActiveWayPointOnEntry;
       target_point = max(target_point,ActiveTaskPoint);
       if (target_point != old_target_point) {
-        show_direct_button = false;
+        show_direct_button = true;
         RefreshTargetPoint();
+        UpdateNavButtons();
+        ApplyTargetPanIfNeeded();
       }
     break;
   case DataField::daInc:
