@@ -139,6 +139,10 @@ static void ComputePanDescription(double pan_lat, double pan_lon,
     return;
   }
 
+  // Sanitize: waypoint names from Latin-1 databases contain non-UTF8 bytes
+  for (TCHAR* p = ref->name; *p; ++p)
+    if ((unsigned char)*p > 0x7F) *p = '?';
+
   double dist = 0., bearing = 0.;
   DistanceBearing(ref->lat, ref->lon, pan_lat, pan_lon, &dist, &bearing);
   static const TCHAR* dirs[] = {
