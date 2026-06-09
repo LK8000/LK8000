@@ -13,6 +13,10 @@
 #include "ScreenProjection.h"
 #include "NavFunctions.h"
 #include "GADirectTo.h"
+#include "utils/2dpclip.h"
+#include "LKObjects.h"
+
+extern LKColor taskcolor;
 
 void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj)
 {
@@ -98,6 +102,21 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
       startLat = targetLat;
       startLon = targetLon;
 
+      // When GA off-task DirectTo is active the first leg in the loop is the
+      // rejoin leg (DirectToWP → Task[ActiveTaskPoint]).  Draw it like a task
+      // leg (DrawMulticolorDashLine + arrow) so it is visually distinct from
+      // the solid magenta bearing line but consistent with the task rendering.
+      bool draw_rejoin = ISGAAIRCRAFT && DirectToActive
+                         && ValidWayPointFast(DirectToWaypointIndex);
+
+#ifdef HAVE_GLES
+      typedef FloatPoint ScrPt;
+#else
+      typedef RasterPoint ScrPt;
+#endif
+      const GeoToScreen<ScrPt> ToScrPt(_Proj);
+      const int size_tl = NIBLSCALE(4);
+
       LockTaskData();
       // GA_GetTargetPanLoopStart returns the browsed task WP index when a GA
       // Target-dialog browse override is active; otherwise returns ActiveTaskPoint
@@ -113,8 +132,19 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
             targetLon = WayPointList[Task[i].Index].Longitude;
           }
 
-          DrawGreatCircle(Surface, rc, _Proj, startLon, startLat,
-                          targetLon, targetLat);
+          if (draw_rejoin) {
+            ScrPt spt1 = ToScrPt(startLat, startLon);
+            ScrPt spt2 = ToScrPt(targetLat, targetLon);
+            if (LKGeom::ClipLine(rc, spt1, spt2)) {
+              const RasterPoint pt1((int)spt1.x, (int)spt1.y);
+              const RasterPoint pt2((int)spt2.x, (int)spt2.y);
+              DrawMulticolorDashLine(Surface, size_tl, pt1, pt2, taskcolor, RGB_BLACK, rc);
+            }
+            draw_rejoin = false;
+          } else {
+            DrawGreatCircle(Surface, rc, _Proj, startLon, startLat,
+                            targetLon, targetLat);
+          }
 
           startLat = targetLat;
           startLon = targetLon;
