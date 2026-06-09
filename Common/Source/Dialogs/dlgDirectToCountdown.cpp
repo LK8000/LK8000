@@ -259,6 +259,30 @@ bool ShowDirectToOffTaskDialog(int wp_index) {
 }
 
 bool ShowDirectToFromPanDialog(int wp_index, double pan_lat, double pan_lon) {
-  ComputePanDescription(pan_lat, pan_lon, countdown_wp_name, NAME_SIZE - 1);
+  // Snap to a real landable waypoint if the pan cursor is within ~4% of the visible
+  // screen range (~30 px on a typical screen), independent of zoom level.
+  const double SNAP_M = MapWindow::GetApproxScreenRange() * 0.04;
+  {
+    int best_idx = -1;
+    double best_dist = SNAP_M;
+    const std::lock_guard lock(CritSec_TaskData);
+    for (int i = NUMRESWP; i < (int)WayPointList.size(); i++) {
+      if (WayPointList[i].Latitude == RESWP_INVALIDNUMBER) continue;
+      if (!WayPointCalc[i].IsLandable) continue;
+      double d = 0.;
+      DistanceBearing(pan_lat, pan_lon,
+                      WayPointList[i].Latitude, WayPointList[i].Longitude,
+                      &d, nullptr);
+      if (d < best_dist) { best_dist = d; best_idx = i; }
+    }
+    if (best_idx >= 0) {
+      LK_tcsncpy(countdown_wp_name, WayPointList[best_idx].Name, NAME_SIZE - 1);
+      for (TCHAR* p = countdown_wp_name; *p; ++p)
+        if ((unsigned char)*p > 0x7F) *p = '?';
+      wp_index = best_idx;
+    }
+  }
+  if (wp_index == RESWP_PANPOS)
+    ComputePanDescription(pan_lat, pan_lon, countdown_wp_name, NAME_SIZE - 1);
   return RunDirectToCountdown(-1, wp_index, /*name_preset=*/true);
 }
