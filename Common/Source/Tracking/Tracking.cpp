@@ -40,8 +40,32 @@ namespace tracking {
 std::vector<Profile> profiles;
 
 namespace {
+
+class tracker_list final {
+ public:
+
+  template <std::derived_from<ITrackingHandler> Handler, typename... Args>
+  void add(Args&&... args) {
+    handlers.emplace_back(
+        std::make_unique<Handler>(std::forward<Args>(args)...));
+  }
+
+  void update(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) const {
+    for (auto& handler : handlers) {
+      handler->Update(Basic, Calculated);
+    }
+  }
+
+  void clear() {
+    handlers.clear();
+  }
+
+ private:
+  std::vector<std::unique_ptr<ITrackingHandler>> handlers;
+};
+
 // private global;
-std::vector<std::unique_ptr<ITrackingHandler>> active_handlers;
+tracker_list active_handlers;
 
 namespace migration {
 // --- Variables for migrating old settings ---
@@ -123,40 +147,32 @@ void Initialize() {
           std::transform(server_upper.begin(), server_upper.end(),
                          server_upper.begin(), ::toupper);
           if (server_upper.compare("WWW.LIVETRACK24.COM") == 0) {
-            active_handlers.emplace_back(
-                std::make_unique<LiveTrack24V2Handler>(profile));
+            active_handlers.add<LiveTrack24V2Handler>(profile);
           }
           else {
-            active_handlers.emplace_back(
-                std::make_unique<LiveTrack24V1Handler>(profile));
+            active_handlers.add<LiveTrack24V1Handler>(profile);
           }
         }
         break;
       case platform::skylines_aero:
         if (profile.interval > 0) {
-          auto skylines_glue = std::make_unique<SkylinesGlue>(profile);
-
+          active_handlers.add<SkylinesGlue>(profile);
           if (profile.radar) {
             LKTime_Real = 90;
             LKTime_Ghost = 180;
             LKTime_Zombie = 360;
           }
-          active_handlers.emplace_back(std::move(skylines_glue));
         }
         break;
       case platform::ffvl:
         if (http_session::ssl_available() && !profile.user.empty()) {
-          auto ffvl_handler = std::make_unique<FFVLTracking>(profile.user);
-          ffvl_handler->Start();
-          active_handlers.emplace_back(std::move(ffvl_handler));
+          active_handlers.add<FFVLTracking>(profile.user);
         }
         break;
       case platform::osmand:
       case platform::traccar:
-        if (http_session::ssl_available() && profile.interval > 0) {
-          auto handler = std::make_unique<OsmAndTracking>(profile);
-          handler->Start();
-          active_handlers.emplace_back(std::move(handler));
+        if (profile.interval > 0) {
+          active_handlers.add<OsmAndTracking>(profile);
         }
         break;
       case platform::none:
@@ -172,10 +188,7 @@ void Update(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) {
     return;  // skip tracking in simulation mode or replay mode
   }
 #endif
-
-  for (auto& handler : active_handlers) {
-    handler->Update(Basic, Calculated);
-  }
+  active_handlers.update(Basic, Calculated);
 }
 
 void DeInitialize() {

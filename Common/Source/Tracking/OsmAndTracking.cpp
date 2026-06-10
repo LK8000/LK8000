@@ -17,7 +17,9 @@ OsmAndTracking::OsmAndTracking(const tracking::Profile& profile)
     : BaseTracking("osmand_tracker"),
       _url(profile.server),
       _device_id(profile.user),
-      _interval(std::chrono::seconds(profile.interval)) {}
+      _interval(std::chrono::seconds(profile.interval)) {
+  Start();
+}
 
 OsmAndTracking::~OsmAndTracking() {
   StopAndJoin();

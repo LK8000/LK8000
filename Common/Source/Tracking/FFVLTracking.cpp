@@ -3,7 +3,7 @@
  * Released under GNU/GPL License v.2 or later
  * See CREDITS.TXT file for authors and copyrights
  *
- * File:   FFVLTracking.h
+ * File:   FFVLTracking.cpp
  * Author: Bruno de Lacheisserie
  *
  * Created on February 18, 2024
@@ -17,6 +17,7 @@
 
 FFVLTracking::FFVLTracking(std::string user_key)
             : BaseTracking("ffvl_tracker"), _user_key(std::move(user_key)) {
+  Start();
 }
 
 FFVLTracking::~FFVLTracking() {
