@@ -624,11 +624,6 @@ static void DrawTrackingSkylinesAero(tracking::Profile& profile, LKSurface& Surf
 
 static void DrawTrackingFFVL(tracking::Profile& profile, LKSurface& Surface,
                              PixelRect& rcClient) {
-  if (!http_session::ssl_available()) {
-    DrawTrackingNone(profile, Surface, rcClient);
-    return;
-  }
-
   auto label = PlatformLabel(profile.protocol);
   Surface.SetTextColor(clBlack);
   Surface.DrawText(rcClient.GetTopLeft(), label);
@@ -638,10 +633,6 @@ static void DrawTrackingFFVL(tracking::Profile& profile, LKSurface& Surface,
 
 static void DrawTrackingOsmAnd(tracking::Profile& profile, LKSurface& Surface,
                              PixelRect& rcClient) {
-  if (!http_session::ssl_available()) {
-    DrawTrackingNone(profile, Surface, rcClient);
-    return;
-  }
 
   auto label = PlatformLabel(profile.protocol);
   Surface.SetTextColor(clBlack);

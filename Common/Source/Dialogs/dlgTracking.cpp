@@ -32,16 +32,10 @@ void dlgTracking::OnTrackingType(DataField* Sender,
         PlatformLabel(tracking::platform::none),
         PlatformLabel(tracking::platform::livetrack24),
         PlatformLabel(tracking::platform::skylines_aero),
+        PlatformLabel(tracking::platform::ffvl),
+        PlatformLabel(tracking::platform::osmand),
+        PlatformLabel(tracking::platform::traccar)
     });
-
-    if (http_session::ssl_available()) {
-      Sender->addEnumList({
-          PlatformLabel(tracking::platform::ffvl),
-          PlatformLabel(tracking::platform::osmand),
-          PlatformLabel(tracking::platform::traccar)
-      });
-    }
-
   }
 
   auto& wp = Sender->GetOwner();

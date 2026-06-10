@@ -1282,13 +1282,15 @@ ifeq ($(CONFIG_WIN32),y)
  TRACKING += \
    $(SRC_TRACKING)/WinHttp/http_session.cpp \
    $(SRC_TRACKING)/FFVLTracking.cpp \
-   $(SRC_TRACKING)/OsmAndTracking.cpp \
+   $(SRC_TRACKING)/Traccar.cpp \
+   $(SRC_TRACKING)/OsmAnd.cpp \
 
 else ifeq ($(USE_CURL),y)
  TRACKING += \
    $(SRC_TRACKING)/Curl/http_session.cpp\
    $(SRC_TRACKING)/FFVLTracking.cpp \
-   $(SRC_TRACKING)/OsmAndTracking.cpp \
+   $(SRC_TRACKING)/Traccar.cpp \
+   $(SRC_TRACKING)/OsmAnd.cpp \
 
 else
  TRACKING += \

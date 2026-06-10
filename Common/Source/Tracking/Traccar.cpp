@@ -4,7 +4,7 @@
  * See CREDITS.TXT file for authors and copyrights
  */
 
-#include "OsmAndTracking.h"
+#include "Traccar.h"
 #include "NMEA/Info.h"
 #include "NMEA/Derived.h"
 #include <format>
@@ -13,19 +13,19 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-OsmAndTracking::OsmAndTracking(const tracking::Profile& profile)
-    : BaseTracking("osmand_tracker"),
+Traccar::Traccar(const tracking::Profile& profile)
+    : BaseTracking("traccar"),
       _url(profile.server),
       _device_id(profile.user),
       _interval(std::chrono::seconds(profile.interval)) {
   Start();
 }
 
-OsmAndTracking::~OsmAndTracking() {
+Traccar::~Traccar() {
   StopAndJoin();
 }
 
-void OsmAndTracking::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) {
+void Traccar::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) {
   using namespace std::chrono_literals;
 
   if (basic.NAVWarning) {
@@ -53,7 +53,7 @@ extern int PDABatteryPercent;
 extern int PDABatteryStatus;
 extern int PDABatteryFlag;
 
-void OsmAndTracking::Send(http_session& http, const OsmAndData& data) {
+void Traccar::Send(http_session& http, const TraccarData& data) {
 
   json location = {
     {"timestamp", data.timestamp},

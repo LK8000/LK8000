@@ -4,8 +4,8 @@
  * See CREDITS.TXT file for authors and copyrights
  */
 
-#ifndef _TRACKING_OSMANDTRACKING_H_
-#define _TRACKING_OSMANDTRACKING_H_
+#ifndef _TRACKING_TRACCAR_H_
+#define _TRACKING_TRACCAR_H_
 
 #include <string>
 #include <chrono>
@@ -16,7 +16,7 @@
 struct NMEA_INFO;
 struct DERIVED_INFO;
 
-struct OsmAndData {
+struct TraccarData {
   AGeoPoint position = {};
   double speed = 0.0;
   double heading = 0.0;
@@ -24,17 +24,24 @@ struct OsmAndData {
   bool flying = false;
 };
 
-class OsmAndTracking final : public BaseTracking<OsmAndData> {
+class Traccar final : public BaseTracking<TraccarData> {
 public:
-  OsmAndTracking() = delete;
-  explicit OsmAndTracking(const tracking::Profile& profile);
+  Traccar() = delete;
 
-  ~OsmAndTracking() override;
+  Traccar(const Traccar&) = delete;
+  Traccar& operator=(const Traccar&) = delete;
+
+  Traccar(Traccar&&) = delete;
+  Traccar& operator=(Traccar&&) = delete;
+
+  explicit Traccar(const tracking::Profile& profile);
+
+  ~Traccar() override;
 
   void Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) override;
 
 protected:
-  void Send(http_session& http, const OsmAndData& data) override;
+  void Send(http_session& http, const TraccarData& data) override;
 
 private:
   const std::string _url;

@@ -23,7 +23,8 @@
 #include "Settings/write.h"
 #include "TrackingSettings.h"
 #include "FFVLTracking.h"
-#include "OsmAndTracking.h"
+#include "OsmAnd.h"
+#include "Traccar.h"
 #include "utils/stringext.h"
 #include "utils/strcpy.h"
 #include "MessageLog.h"
@@ -170,9 +171,13 @@ void Initialize() {
         }
         break;
       case platform::osmand:
+        if (profile.interval > 0) {
+          active_handlers.add<OsmAnd>(profile);
+        }
+        break;
       case platform::traccar:
         if (profile.interval > 0) {
-          active_handlers.add<OsmAndTracking>(profile);
+          active_handlers.add<Traccar>(profile);
         }
         break;
       case platform::none:
