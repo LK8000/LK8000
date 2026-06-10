@@ -196,6 +196,22 @@ public:
   TopCanvas():tty_fd(-1) {}
 #endif /* USE_TTY */
 
+  /**
+   * Is this object ready for drawing?
+   */
+  bool IsReady() const noexcept {
+#ifdef USE_EGL
+    /* can't draw if there is no EGL surface (e.g. if the Android app
+       is paused) */
+    return surface != EGL_NO_SURFACE;
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
+    /* on iOS, check if the app is active and in foreground */
+    return IsIOSAppActive();
+#else
+   return true;
+#endif
+  }
+
 #ifndef ANDROID
   ~TopCanvas() {
     Destroy();

@@ -239,9 +239,18 @@ TopWindow::OnEvent(const Event &event)
   case Event::POINTER_UP:
     return OnMultiTouchUp();
 
-  case Event::RESIZE:
-    if (screen->CheckResize(PixelSize(event.point.x, event.point.y)))
-      Resize(screen->GetSize());
+  case Event::RESIZE: {
+    if (!screen->IsReady()) {
+      /* postpone the resize if we're paused; the real resize will be
+         handled by TopWindow::refresh() as soon as XCSoar is
+         resumed */
+      return true;
+    }
+
+    PixelSize event_size(event.point.x, event.point.y);
+    screen->CheckResize(event_size);
+    PixelSize screen_size = screen->GetSize();
+    Resize(screen_size);
 
     /* it seems the first page flip after a display orientation change
        is ignored on Android (tested on a Dell Streak / Android
@@ -249,8 +258,11 @@ TopWindow::OnEvent(const Event &event)
        something */
     screen->Flip();
 
-    Resize(event.point.x, event.point.y);
+    /* after a surface recreation (e.g. orientation change), the
+       buffer is empty; schedule a full redraw */
+    Invalidate();
     return true;
+  }
 
   case Event::PAUSE:
     OnPause();
