@@ -11,6 +11,7 @@
 #include "http_session.h"
 #include "../../MessageLog.h"
 #include <regex>
+#include <stdexcept>
 #include <utility>
 
 #ifdef WIN32
@@ -190,7 +191,7 @@ int WriteData(SOCKET s, const std::string_view& string) {
 
 } // namespace
 
-bool http_session::ssl_available() {
+bool http_session::ssl_available_impl() {
 	return false;
 }
 
@@ -221,23 +222,29 @@ http_session::~http_session() {
 #endif
 }
 
-std::string http_session::request(const char* server_name, int server_port, const char* query_string) const {
+namespace {
+
+std::string request_socket(const char* server_name, int server_port,
+                           const char* request_target,
+                           const std::string* post_data,
+                           const char* content_type) {
 
 	ScopeSocket s = EstablishConnection(server_name, server_port);
 	if (!s) {
 		return {};
     }
 
-	//Send the query to the server
-	int tmpres = WriteData(s.get(), "GET ");
+	const bool is_post = post_data != nullptr;
+	const char* method = is_post ? "POST " : "GET ";
+	int tmpres = WriteData(s.get(), method);
 	if (tmpres < 0) {
 		return {};
 	}
-	tmpres = WriteData(s.get(), query_string);
+	tmpres = WriteData(s.get(), request_target);
 	if (tmpres < 0) {
 		return {};
 	}
-	tmpres = WriteData(s.get(), " HTTP/1.0\r\nHost: ");
+	tmpres = WriteData(s.get(), is_post ? " HTTP/1.0\r\nHost: " : " HTTP/1.0\r\nHost: ");
 	if (tmpres < 0) {
 		return {};
 	}
@@ -245,9 +252,47 @@ std::string http_session::request(const char* server_name, int server_port, cons
 	if (tmpres < 0) {
 		return {};
 	}
-	tmpres = WriteData(s.get(), "\r\n\r\n");
-	if (tmpres < 0) {
-		return {};
+	if (is_post) {
+		tmpres = WriteData(s.get(), "\r\nConnection: close\r\n");
+		if (tmpres < 0) {
+			return {};
+		}
+		if (content_type && *content_type) {
+			tmpres = WriteData(s.get(), "Content-Type: ");
+			if (tmpres < 0) {
+				return {};
+			}
+			tmpres = WriteData(s.get(), content_type);
+			if (tmpres < 0) {
+				return {};
+			}
+			tmpres = WriteData(s.get(), "\r\n");
+			if (tmpres < 0) {
+				return {};
+			}
+		}
+		tmpres = WriteData(s.get(), "Content-Length: ");
+		if (tmpres < 0) {
+			return {};
+		}
+		tmpres = WriteData(s.get(), std::to_string(post_data->size()));
+		if (tmpres < 0) {
+			return {};
+		}
+		tmpres = WriteData(s.get(), "\r\n\r\n");
+		if (tmpres < 0) {
+			return {};
+		}
+		tmpres = WriteData(s.get(), *post_data);
+		if (tmpres < 0) {
+			return {};
+		}
+	}
+	else {
+		tmpres = WriteData(s.get(), "\r\n\r\n");
+		if (tmpres < 0) {
+			return {};
+		}
 	}
 
 	std::string response;
@@ -297,16 +342,19 @@ std::string http_session::request(const char* server_name, int server_port, cons
 	return response;
 }
 
-std::string http_session::request(const std::string& url) const {
-    const static std::regex re(R"(^(.*:)//([A-Za-z0-9\-\.]+)(:[0-9]+)?(.*)$)");
-    std::smatch match;
-    if (std::regex_match(url, match, re)) {
+} // namespace
 
-        const std::string host = match[2];
-        const std::string port = match[3];
-        const std::string rest = match[4];
-
-        return http_session::request(host.c_str(), port.empty() ? 80 : strtoul(port.c_str(), nullptr, 10), rest.c_str());
-    }
-    return {};
+std::string http_session::request_impl(const std::string& url, const std::string* post_data, const char* content_type) const {
+	const static std::regex re(R"(^(https?:)//([A-Za-z0-9\-\.]+)(?::([0-9]+))?(.*)$)");
+	std::smatch match;
+	if (std::regex_match(url, match, re)) {
+		const std::string scheme = match[1];
+		const std::string host = match[2];
+		const std::string port = match[3];
+		const std::string rest = match[4];
+		const unsigned default_port = (scheme == "https:") ? 443u : 80u;
+		const unsigned resolved_port = port.empty() ? default_port : static_cast<unsigned>(strtoul(port.c_str(), nullptr, 10));
+		return request_socket(host.c_str(), resolved_port, rest.c_str(), post_data, content_type);
+	}
+	return {};
 }

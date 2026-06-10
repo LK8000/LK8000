@@ -12,19 +12,21 @@
 #define _TRACKING_DEFAULT_HTTP_SESSION_H_
 
 #include <string>
+#include "../http_session_base.h"
 
-class http_session {
+class http_session : public http_session_base<http_session> {
+  friend class http_session_base<http_session>;
+
 public:
   http_session();
   ~http_session();
 
-  static bool ssl_available();
+private:
+  static bool ssl_available_impl();
 
-  // Do a transaction with server
-  // returns received string, empty string if transaction failed
-  std::string request(const char* server_name, int server_port, const char* query_string) const;
-
-  std::string request(const std::string& url) const;
+  std::string request_impl(const std::string& url,
+                          const std::string* post_data,
+                          const char* content_type) const;
 };
 
-#endif // _TRACKING_CURL_HTTP_SESSION_H_
+#endif // _TRACKING_DEFAULT_HTTP_SESSION_H_

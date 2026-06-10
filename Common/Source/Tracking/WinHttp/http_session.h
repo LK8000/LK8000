@@ -12,30 +12,20 @@
 #define TRACKING_WINHTTP_HTTP_SESSION_H_
 
 #include <string>
+#include "../http_session_base.h"
 #include "winhttp_ptr.h"
 
-class http_session {
+class http_session : public http_session_base<http_session> {
+  friend class http_session_base<http_session>;
+
  public:
   http_session() = default;
 
-  static bool ssl_available();
-
-  // returns received string, empty string if transaction failed
-  std::string get(const std::string& url) const;
-
-  std::string post(const std::string& url, const std::string& data,
-                   const char* content_type = nullptr) const;
-
-  // for compatibility with legacy code
-  std::string request(const char* server_name, int server_port,
-                      const char* query_string) const;
-
-  std::string request(const std::string& url) const {
-    return get(url);
-  }
-
  private:
-  std::string request_impl(const std::string& url, const std::string* post_data,
+  static bool ssl_available_impl();
+
+  std::string request_impl(const std::string& url,
+                           const std::string* post_data,
                            const char* content_type) const;
 
   winhttp_session_ptr session;

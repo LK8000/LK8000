@@ -67,7 +67,7 @@ bool parse_url(const std::string& url, url_parts& parts) {
 
 }  // namespace
 
-bool http_session::ssl_available() {
+bool http_session::ssl_available_impl() {
   // WinHTTP always supports SSL/TLS on Windows
   return true;
 }
@@ -210,30 +210,4 @@ std::string http_session::request_impl(const std::string& url,
     DebugLog(_T("http_session : %s\n"), to_tstring(e.what()).c_str());
   }
   return {};
-}
-
-std::string http_session::get(const std::string& url) const {
-  return request_impl(url, nullptr, nullptr);
-}
-
-std::string http_session::post(const std::string& url, const std::string& data,
-                               const char* content_type) const {
-  return request_impl(url, &data, content_type);
-}
-
-std::string http_session::request(const char* server_name, int server_port,
-                                  const char* query_string) const {
-  if (!server_name || !query_string) {
-    return {};
-  }
-
-  std::string url = (server_port == 443) ? "https://" : "http://";
-  url += server_name;
-  url += ":";
-  url += std::to_string(server_port);
-  if (query_string[0] != '/') {
-    url += '/';
-  }  
-  url += query_string;
-  return get(url);
 }

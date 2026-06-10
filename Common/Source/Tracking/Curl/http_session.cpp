@@ -9,7 +9,13 @@
  * Created on February 18, 2024
  */
 #include "http_session.h"
+#include <stdexcept>
+#include <format>
 #include "../../../Header/Defines.h"
+
+#ifdef ANDROID
+#include <android/log.h>
+#endif
 
 http_session::http_session() {
   curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -37,7 +43,7 @@ bool curl_version_ssl() {
 
 } // namespace
 
-bool http_session::ssl_available() {
+bool http_session::ssl_available_impl() {
   static bool ssl = curl_version_ssl(); // thread safe since C++11
   return ssl;
 }
@@ -86,32 +92,26 @@ std::string http_session::request_impl(const std::string& url, const std::string
 
     CURLcode res = curl_easy_perform(curl.get());
     if (headers) {
-        curl_slist_free_all(headers);
-        curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, nullptr);
+      curl_slist_free_all(headers);
+      curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, nullptr);
     }
-    if (res == CURLE_OK) {
-      return response;
+
+    if (res != CURLE_OK) {
+      throw std::runtime_error(curl_easy_strerror(res));
     }
+
+    return response;
   }
   catch (std::exception& e) {
-    fprintf(stderr, "http_session : %s\n", e.what());
+    if (last_error != e.what()) {
+      last_error = e.what();
+      auto error = std::format("request failed: <{}> : {}\n", url, e.what());
+#ifdef ANDROID
+      __android_log_print(ANDROID_LOG_ERROR, "LK8000", "%s", error.c_str());
+#else
+      fprintf(stderr, "%s", error.c_str());
+#endif
+    }
   }
   return {};
-}
-
-std::string http_session::get(const std::string& url) const {
-  return request_impl(url, nullptr, nullptr);
-}
-
-std::string http_session::post(const std::string& url, const std::string& data, const char* content_type) const {
-  return request_impl(url, &data, content_type);
-}
-
-std::string http_session::request(const char* server_name, int server_port, const char* query_string) const {
-  std::string url = (server_port == 443) ? "https://" : "http://";
-  url += server_name;
-  url += ":";
-  url += std::to_string(server_port);
-  url += query_string;
-  return http_session::request(url);
 }

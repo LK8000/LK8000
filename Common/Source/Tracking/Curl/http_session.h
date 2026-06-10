@@ -12,30 +12,26 @@
 #define _TRACKING_CURL_HTTP_SESSION_H_
 
 #include <string>
+#include "../http_session_base.h"
 #include "curl_ptr.h"
 
-class http_session {
-public:
+class http_session : public http_session_base<http_session> {
+  friend class http_session_base<http_session>;
+
+ public:
   http_session();
   ~http_session();
 
-  static bool ssl_available();
-
-  // returns received string, empty string if transaction failed
-  std::string get(const std::string& url) const;
-
-  std::string post(const std::string& url, const std::string& data, const char* content_type = nullptr) const;
-
-  // for compatibility with legacy code
-  std::string request(const char* server_name, int server_port, const char* query_string) const;
-
-  std::string request(const std::string& url) const {
-    return get(url);
-  }
-
 private:
-  std::string request_impl(const std::string& url, const std::string* post_data, const char* content_type) const;
+  static bool ssl_available_impl();
+
+  std::string request_impl(const std::string& url,
+                           const std::string* post_data,
+                           const char* content_type) const;
+
   curl_ptr curl;
+
+  mutable std::string last_error; // to avoid spamming logs with the same error
 };
 
 #endif // _TRACKING_CURL_HTTP_SESSION_H_
