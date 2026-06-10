@@ -66,8 +66,9 @@ android {
         manifestPlaceholders = [
                 sentryDsnUrl: "",
                 sentryAutoInit: "false",
-                sentryAnrEnable: "false"
-        ]        
+                sentryAnrEnable: "false",
+                sentryTombstone: "false"
+        ]
     }
     buildFeatures {
         prefab true
@@ -116,7 +117,8 @@ android {
             manifestPlaceholders = [
                     sentryDsnUrl: sentryDsnUrl,
                     sentryAutoInit: "true",
-                    sentryAnrEnable: "true"
+                    sentryAnrEnable: "true",
+                    sentryTombstone: "true"
             ]
         }
     }

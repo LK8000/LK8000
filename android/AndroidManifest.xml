@@ -81,6 +81,7 @@
     <meta-data android:name="io.sentry.dsn" android:value="${sentryDsnUrl}" />
     <meta-data android:name="io.sentry.auto-init" android:value="${sentryAutoInit}" />
     <meta-data android:name="io.sentry.anr.enable" android:value="${sentryAnrEnable}" />
+    <meta-data android:name="io.sentry.tombstone.enable" android:value="${sentryTombstone}" />
 
     <activity android:name=".LK8000"
               android:theme="@style/SplashTheme"
