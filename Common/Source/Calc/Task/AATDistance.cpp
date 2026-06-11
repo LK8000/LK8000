@@ -41,12 +41,22 @@ void AATDistance::AddPoint(const GeoPoint& position, int taskwaypoint) {
   aat_data& data = aat_datas[taskwaypoint];
   bool was_entered = std::exchange(data.has_entered, true);
 
+  if (taskwaypoint == 0) {
+    if (data.points.empty()) {
+      data.points.push_back({position, 0.});
+    } else {
+      data.points.front() = {position, 0.};
+    }
+    data.best = 0;
+    return;
+  }
+
   if (data.points.size() >= MAXNUM_AATDISTANCE) {
     ThinData(taskwaypoint);
   }
 
-  bool add_point = data.points.empty();
-  if (!add_point && data.points.size() > 1) {
+  bool add_point = data.points.size() <= 1;
+  if (!add_point) {
     const GeoPoint& p = std::next(data.points.rbegin(), 1)->position;
     double d = p.Distance(position);
     add_point = (d >= data.distancethreshold);
