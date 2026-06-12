@@ -79,7 +79,7 @@ static void ComputeCountdownInfo(int wp_index) {
   TCHAR dist_buf[20];
   lk::snprintf(dist_buf, _T("%.1f %s"),
                Units::ToDistance(dist_m), Units::GetDistanceName());
-  lk::snprintf(countdown_info1, _T("BRG %.0f\xc2\xb0   DIST %s"), bearing, dist_buf);
+  lk::snprintf(countdown_info1, _T("BRG %.0f°   DIST %s"), bearing, dist_buf);
 
   TCHAR ete_buf[12];
   TCHAR eta_buf[12];
