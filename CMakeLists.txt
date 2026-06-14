@@ -35,7 +35,7 @@ if("${ANDROID_ABI}" MATCHES "arm")
     )
 endif()
 
-option(ENABLE_OPENMP "Enable OpenMP support" ON)
+option(ENABLE_OPENMP "Enable OpenMP support" OFF)
 
 add_compile_options(
     -Werror

@@ -49,6 +49,7 @@ void GA_CheckDirectToOffTaskArrival(NMEA_INFO* Basic) {
 
     ActiveTaskPoint = GA_FindNextForwardTaskWP(fix_lat, fix_lon);
     DirectToWaypointIndex = -1;
+    DirectToActive = false;
   }
 }
 

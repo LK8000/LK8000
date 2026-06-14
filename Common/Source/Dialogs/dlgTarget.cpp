@@ -525,13 +525,13 @@ static void RefreshCalculator(void) {
   WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
   if (btnApproach) {
     const int ga_ap_wp = GA_GetApproachWPForTarget();
-    // When GA off-task DirectTo is active (DirectToWaypointIndex >= 0), the approach
-    // target is the DirectTo WP itself — do not fall through to the task point.
-    // ValidWayPointFast(-1) is false so task-point DirectTo is unaffected.
-    const bool ga_offtask = ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex);
+    // When DirectTo is active and not browsing, GA_GetApproachWPForTarget returns the
+    // DirectTo WP directly (>= 0). When browsing, it returns -1 and we fall back to the
+    // current browse target (task point) so the Approach button can still appear for
+    // landable task waypoints — the pilot may choose to fly the approach from browse.
     const int ap_wp = (ga_ap_wp >= 0)
                       ? ga_ap_wp
-                      : (!ga_offtask && ValidTaskPoint(target_point) && ValidWayPointFast(Task[target_point].Index)
+                      : (ValidTaskPoint(target_point) && ValidWayPointFast(Task[target_point].Index)
                          ? Task[target_point].Index : -1);
     const bool landable = ValidWayPointFast(ap_wp) && WayPointCalc[ap_wp].IsLandable;
     btnApproach->SetVisible(landable);
