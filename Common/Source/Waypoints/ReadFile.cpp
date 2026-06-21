@@ -13,6 +13,16 @@
 #include "utils/stream_helper.h"
 #include <format>
 
+namespace {
+
+  bool is_utf8_bom(const char (&line)[3]) {
+    const char utf8bom_expected[3] = {'\xEF', '\xBB', '\xBF'};
+    return std::equal(std::begin(line), std::end(line),
+                      std::begin(utf8bom_expected));
+  }
+
+} // namespace
+
 extern int globalFileNum;
 
 // returns -1 if error, or the WpFileType
@@ -26,6 +36,16 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
 
   std::string src_line;
 
+  char utf8bom[3] = {};
+  stream.read(utf8bom, std::size(utf8bom));
+
+  if (is_utf8_bom(utf8bom)) {
+    // UTF-8 BOM detected, continue reading from the stream
+  } else {
+    // No BOM, reset the stream position to the beginning
+    stream.clear();
+    stream.seekg(0);
+  }
   // check file format
   bool fempty = true;
   while (lk::getline_unknown_charset(stream, src_line)) {
@@ -37,8 +57,8 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
       continue;  // Skip encoding
     }
 
-    if (src_line.starts_with("G  WGS 84") || src_line.starts_with("G WGS 84") ||
-        src_line.starts_with("\xEF\xBB\xBFG  WGS 84")) {
+    if (src_line.starts_with("G  WGS 84") || 
+        src_line.starts_with("G WGS 84")) {
       if (!lk::getline_unknown_charset(stream, src_line)) {
         StartupStore(
             _T(". Waypoint file %d format: CompeGPS truncated, rejected"),
@@ -82,8 +102,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
       fileformat = LKW_CUP;
       break;
     }
-    if (src_line.starts_with("OziExplorer Waypoint File") ||
-        src_line.starts_with("\xEF\xBB\xBFOziExplorer Waypoint File")) {
+    if (src_line.starts_with("OziExplorer Waypoint File")) {
       StartupStore(_T(". Waypoint file %d format: OziExplorer"), globalFileNum);
       fempty = false;
       fileformat = LKW_OZI;
