@@ -642,4 +642,16 @@ public class LK8000 extends Activity {
     }
     return null;
   }
+
+  void setClipboardText(String text) {
+    try {
+      if (clipboard != null) {
+        ClipData clip = ClipData.newPlainText(null, text);
+        clipboard.setPrimaryClip(clip);
+      }
+    }
+    catch(Exception e) {
+    	e.printStackTrace();
+    }
+  }
 }

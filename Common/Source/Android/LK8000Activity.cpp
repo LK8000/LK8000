@@ -22,6 +22,7 @@ jmethodID LK8000Activity::acquire_multicast_lock_method;
 jmethodID LK8000Activity::release_multicast_lock_method;
 jmethodID LK8000Activity::detect_keyboard_method;
 jmethodID LK8000Activity::get_clipboard_text_method;
+jmethodID LK8000Activity::set_clipboard_text_method;
 
 LK8000Activity* LK8000Activity::activity_instance = nullptr;
 
@@ -42,6 +43,9 @@ void LK8000Activity::Initialise(JNIEnv *env, jobject obj) {
 
   get_clipboard_text_method = env->GetMethodID(cls, "getClipboardText", "()Ljava/lang/String;");
   assert(get_clipboard_text_method);
+
+  set_clipboard_text_method = env->GetMethodID(cls, "setClipboardText", "(Ljava/lang/String;)V");
+  assert(set_clipboard_text_method);
 
   acquire_multicast_lock_method = env->GetMethodID(cls, "acquireMulticastLock", "()V");
   assert(acquire_multicast_lock_method);
@@ -121,6 +125,12 @@ std::string LK8000Activity::GetClipboardText() {
     clipbaord_text = Java::String::ToString(env, str);
   }
   return clipbaord_text;
+}
+
+void LK8000Activity::SetClipboardText(const std::string &text) {
+  JNIEnv *env = Java::GetEnv();
+  Java::String stringText(env, text.c_str());
+  env->CallVoidMethod(obj, set_clipboard_text_method, stringText.Get());
 }
 
 void LK8000Activity::AcquireMulticastLock() {

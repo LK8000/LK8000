@@ -18,4 +18,6 @@ bool ClipboardAvailable();
 
 tstring GetClipboardData();
 
+void SetClipboardData(const tstring& data);
+
 #endif // FORM_CLIPBOARD_H

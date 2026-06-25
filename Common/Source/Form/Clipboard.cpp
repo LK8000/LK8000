@@ -18,6 +18,7 @@
 
 #if defined(WIN32)
 #include "windows.h"
+#include <cstring>
 
 namespace {
 
@@ -91,4 +92,44 @@ tstring GetClipboardData() {
 #endif
 
   return _T("");
+}
+
+void SetClipboardData(const tstring& data) {
+#ifdef ANDROID
+  LK8000Activity* activity = LK8000Activity::Get();
+  if (activity) {
+    return activity->SetClipboardText(data);
+  }
+#endif
+
+#if defined(WIN32)
+  try {
+    ScopeClipboard clipboard;
+    EmptyClipboard();
+
+    const size_t bytes = (data.size() + 1) * sizeof(wchar_t);
+    HGLOBAL hdata = GlobalAlloc(GMEM_MOVEABLE, bytes);
+    if (!hdata) {
+      throw std::runtime_error("failed to allocate clipboard data");
+    }
+
+    auto* pdata = static_cast<wchar_t*>(GlobalLock(hdata));
+    if (!pdata) {
+      GlobalFree(hdata);
+      throw std::runtime_error("failed to lock clipboard data");
+    }
+
+    std::memcpy(pdata, data.c_str(), bytes);
+    GlobalUnlock(hdata);
+
+    if (!::SetClipboardData(CF_UNICODETEXT, hdata)) {
+      GlobalFree(hdata);
+      throw std::runtime_error("failed to set clipboard data");
+    }
+  }
+  catch(std::exception& e) {
+    StartupStore(_T("%s"), to_tstring(e.what()).c_str());
+  }
+#endif
+
 }
