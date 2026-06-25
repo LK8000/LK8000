@@ -58,6 +58,7 @@
 #include "LocalPath.h"
 #include "Calc/LDRotaryBuffer.h"
 #include "Thread/NamedMutex.hpp"
+#include "Library/TimeFunctions.h"
 
 #ifdef __linux__
 #include <sys/utsname.h>
@@ -326,19 +327,8 @@ bool Startup(const TCHAR* szCmdLine) {
   }
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
+  from_time_t(time(0), GPS_INFO); // set current time in GPS_INFO
 
-  time_t  linux_time;
-  linux_time = time(0);
-  tm utc_tm = {};
-  struct tm *pda_time;
-  pda_time = gmtime_r(&linux_time, &utc_tm);
-  GPS_INFO.Time  = pda_time->tm_hour*3600+pda_time->tm_min*60+pda_time->tm_sec;
-  GPS_INFO.Year  = pda_time->tm_year + 1900;
-  GPS_INFO.Month = pda_time->tm_mon + 1;
-  GPS_INFO.Day = pda_time->tm_mday;
-  GPS_INFO.Hour  = pda_time->tm_hour;
-  GPS_INFO.Minute = pda_time->tm_min;
-  GPS_INFO.Second = pda_time->tm_sec;
 
   ReadWinPilotPolar();
 
