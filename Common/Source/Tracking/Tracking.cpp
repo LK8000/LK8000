@@ -91,7 +91,7 @@ void DoMigration() {
   // --- Starting migration ---
   StartupStore(_T(". Migrating old tracking settings to new format."));
 
-  // Clear existing profiles to start from a clean slate
+  // Clear existing profiles to start from a clean state
   profiles.clear();
 
   // --- Migration of LiveTrack24/Skylines to profile 0 ---

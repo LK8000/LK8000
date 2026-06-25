@@ -105,7 +105,7 @@ bool ParseEscapedField(const char*& p, std::string& out, bool& valid) {
   return false;
 }
 
-bool from_string(const std::string& s, bool& out) noexcept {
+bool from_string(const std::string_view& s, bool& out) noexcept {
   if (s == "true") {
     out = true;
     return true;
@@ -119,14 +119,14 @@ bool from_string(const std::string& s, bool& out) noexcept {
 
 template <std::integral T>
   requires (!std::same_as<T, bool>)
-bool from_string(const std::string& s, T& out) noexcept {
+bool from_string(const std::string_view& s, T& out) noexcept {
   const char* begin = s.data();
   const char* end = std::next(begin, s.size());
   auto result = std::from_chars(begin, end, out);
   return result.ec == std::errc() && result.ptr == end;
 }
 
-bool from_string(const std::string& s, platform& out) noexcept {
+bool from_string(const std::string_view& s, platform& out) noexcept {
   using underlying = std::underlying_type_t<platform>;
   underlying value;
   if (!from_string<underlying>(s, value)) {
@@ -139,7 +139,7 @@ bool from_string(const std::string& s, platform& out) noexcept {
   return true;
 }
 
-bool from_string(std::string_view s, std::string& out) {
+bool from_string(const std::string_view& s, std::string& out) {
   out = s;
   return true;
 }
@@ -150,8 +150,8 @@ enum class FieldParseResult {
   error,
 };
 
-FieldParseResult ParseProfileField(const std::string& key,
-                                   const std::string& val,
+FieldParseResult ParseProfileField(const std::string_view& key,
+                                   const std::string_view& val,
                                    Profile& parsed) {
   if (key == "protocol"sv) {
     if (!from_string(val, parsed.protocol)) {
