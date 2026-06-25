@@ -18,6 +18,7 @@
 #include "Baro.h"
 #include "Calc/Vario.h"
 #include "Calc/ThermalHistory.h"
+#include "Library/TimeFunctions.h"
 
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
@@ -290,11 +291,9 @@ void LKSimulator(void) {
                           &GPS_INFO.Latitude,
                           &GPS_INFO.Longitude);
   }
-  GPS_INFO.Time+= 1.0;
-  long tsec = (long)GPS_INFO.Time;
-  GPS_INFO.Hour = tsec/3600;
-  GPS_INFO.Minute = (tsec-GPS_INFO.Hour*3600)/60;
-  GPS_INFO.Second = (tsec-GPS_INFO.Hour*3600-GPS_INFO.Minute*60);
+
+  time_t unixtime = to_time_t(GPS_INFO);
+  from_time_t(unixtime + 1, GPS_INFO); // add one second to the current time
 }
 
 
