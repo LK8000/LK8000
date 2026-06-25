@@ -40,11 +40,15 @@ inline void TestLog(const TCHAR* fmt, ...)
 /**
  * add string to Runtime.log only if #NDEBUG is not defined
  */
-inline void DebugLog(const TCHAR* fmt, ...)
-        gcc_printf(1,2) gcc_nonnull(1);
+template<typename CharT>
+inline void DebugLog(const CharT* fmt, ...);
 
 
-void StartupStoreV(const TCHAR* fmt, va_list ap);
+void StartupStoreV(const char* fmt, va_list ap);
+
+#ifdef UNICODE
+void StartupStoreV(const wchar_t* fmt, va_list ap);
+#endif
 
 
 void StartupStore(const TCHAR* fmt, ...) {
@@ -63,7 +67,8 @@ void TestLog(const TCHAR* fmt, ...) {
 #endif
 }
 
-void DebugLog(const TCHAR* fmt, ...) {
+template<typename CharT>
+void DebugLog(const CharT* fmt, ...) {
 #ifndef NDEBUG
     va_list ap;
     va_start(ap, fmt);

@@ -18,7 +18,6 @@
 #include <android/log.h>
 #endif
 
-constexpr size_t MAX_LOG_SIZE = 1024*1024; // 1MB
 
 void DebugStore(const char* fmt, ...) {
 #ifndef NDEBUG
@@ -43,36 +42,35 @@ void DebugStore(const char* fmt, ...) {
 #endif
 }
 
-void StartupStoreV(const TCHAR* fmt, va_list args)
-{
+
+namespace {
+
+constexpr size_t MAX_LOG_SIZE = 1024*1024; // 1MB
+
+#ifdef UNICODE
+// Trim trailing space
+void TrimRight(char* str) {
+    char * end = str + strlen(str);
+    while(end > str && isspace(*(end-1))) end--;
+    // Write new null terminator
+    *(end) = 0;
+}
+#endif
+
+void StartupStoreWrite(const char* sbuf) {
   static Mutex mutex;
   const std::lock_guard lock(mutex);
 
-  TCHAR buf[1024]; // 2 kByte for unicode, 1kByte for utf-8
-
-  _vsntprintf(buf, std::size(buf), fmt, args);
-
-  buf[std::size(buf) -1] = _T('\0'); // grant string is null terminated.
-
-  TrimRight(buf);
-
-#ifdef ANDROID
-  __android_log_print(ANDROID_LOG_INFO, "LK8000","%s\n", buf);
-#elif defined(__linux__) && !defined(NDEBUG)
-  printf("%s\n", buf);
-#endif
-  
-
   static TCHAR szFileName[MAX_PATH];
   static bool initialised = false;
-  if (!initialised) {
-    LocalPath(szFileName, TEXT(LKF_RUNLOG));
 
-    // rotate log
+  if (!initialised) {
+    LocalPath(szFileName, _T(LKF_RUNLOG));
+
     size_t filesize = lk::filesystem::getFileSize(szFileName);
-    if(filesize > MAX_LOG_SIZE) {
+    if (filesize > MAX_LOG_SIZE) {
       TCHAR szFileNameOld[MAX_PATH];
-      LocalPath(szFileNameOld, TEXT(LKF_RUNLOG ".old"));
+      LocalPath(szFileNameOld, _T(LKF_RUNLOG) _T(".old"));
       lk::filesystem::deleteFile(szFileNameOld);
       lk::filesystem::moveFile(szFileName, szFileNameOld);
     }
@@ -80,25 +78,76 @@ void StartupStoreV(const TCHAR* fmt, va_list args)
     initialised = true;
   }
 
-  auto startupStoreFile = make_unique_file_ptr(szFileName, TEXT("ab+"));
+  auto startupStoreFile = make_unique_file_ptr(szFileName, _T("ab+"));
   if (startupStoreFile) {
-#ifdef UNICODE
-    /* each codepoints can be encoded in one to four bytes.
-    * worst case : ( <number of codepoint> x 4 ) + <size of '\0'>
-    */
-    const size_t buff_size = (_tcslen(buf) * 4) + 1; // (max 4kByte + 1Byte)
-    char sbuf[buff_size]; 
-    size_t i = to_utf8(buf, sbuf, buff_size);
-#else
-    const char* sbuf = buf; // string is already utf-8 encoded, no need to convert.
     size_t i = strlen(sbuf);
-#endif
 
     if (i > 0) {
-      startupStoreFile.fprintf("[%09u] %s" SNEWLINE, MonotonicClockMS(), sbuf);
+      startupStoreFile.fprintf("[%09u] %s\r\n", MonotonicClockMS(), sbuf);
     }
   }
 }
+
+}  // namespace
+
+
+void StartupStoreV(const char* fmt, va_list args)
+{
+  va_list args_copy;
+  va_copy(args_copy, args);
+
+  int size = vsnprintf(nullptr, 0, fmt, args_copy);
+  va_end(args_copy);
+
+  if (size < 0) {
+    return;
+  }
+
+  auto buffer = std::make_unique<char[]>(size + 1);
+  char* buf = buffer.get();
+
+  vsnprintf(buf, size + 1, fmt, args);
+  buf[size] = '\0';
+
+  TrimRight(buf);
+
+#ifdef ANDROID
+  __android_log_print(ANDROID_LOG_INFO, "LK8000", "%s\n", buf);
+#elif defined(__linux__) && !defined(NDEBUG)
+  printf("%s\n", buf);
+#endif
+
+  StartupStoreWrite(buf);
+}
+
+#ifdef UNICODE
+
+void StartupStoreV(const wchar_t* fmt, va_list args)
+{
+  va_list args_copy;
+  va_copy(args_copy, args);
+
+  int size = vswprintf(nullptr, 0, fmt, args_copy);
+  va_end(args_copy);
+
+  if (size < 0) {
+    return;
+  }
+
+  auto buffer = std::make_unique<wchar_t[]>(size + 1);
+  wchar_t* buf = buffer.get();
+
+  vswprintf(buf, size + 1, fmt, args);
+  buf[size] = L'\0';
+
+  TrimRight(buf);
+
+  std::string utf8_str = to_utf8(buf);
+
+  StartupStoreWrite(utf8_str.c_str());
+}
+
+#endif
 
 tstring toHexString(const void* data, size_t size) {
   tstring szHex;
