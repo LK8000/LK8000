@@ -30,6 +30,7 @@ Copyright_License {
 
 bool has_cursor_keys = false;
 bool has_keyboard = false;
+std::string android_unique_device_id;
 
 #if defined __arm__ || defined __aarch64__
 
@@ -38,3 +39,7 @@ bool is_dithered = false;
 bool is_eink_colored = false;
 
 #endif
+
+const std::string& GetUniqueDeviceId() {
+  return android_unique_device_id;
+}

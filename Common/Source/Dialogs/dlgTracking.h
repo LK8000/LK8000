@@ -31,6 +31,8 @@ class dlgTracking final {
   void OnUser(DataField* Sender, DataField::DataAccessKind_t Mode);
   void OnPassword(DataField* Sender, DataField::DataAccessKind_t Mode);
   void OnRadar(DataField* Sender, DataField::DataAccessKind_t Mode);
+  void OnDeviceID(DataField* Sender, DataField::DataAccessKind_t Mode);
+  void OnCopyDeviceID(WndButton* Sender);
 
   void ShowFrame(WndForm* pForm, const TCHAR* WndName, std::initializer_list<tracking::platform> platform);
 

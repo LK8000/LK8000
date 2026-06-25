@@ -1284,6 +1284,7 @@ ifeq ($(CONFIG_WIN32),y)
    $(SRC_TRACKING)/FFVLTracking.cpp \
    $(SRC_TRACKING)/Traccar.cpp \
    $(SRC_TRACKING)/OsmAnd.cpp \
+   $(SRC_TRACKING)/PureTrack.cpp \
 
 else ifeq ($(USE_CURL),y)
  TRACKING += \
@@ -1291,6 +1292,7 @@ else ifeq ($(USE_CURL),y)
    $(SRC_TRACKING)/FFVLTracking.cpp \
    $(SRC_TRACKING)/Traccar.cpp \
    $(SRC_TRACKING)/OsmAnd.cpp \
+   $(SRC_TRACKING)/PureTrack.cpp \
 
 else
  TRACKING += \
@@ -1369,6 +1371,7 @@ SRC_FILES :=\
 	$(SRC)/Models.cpp\
 	$(SRC)/Multimap.cpp\
 	$(SRC)/Oracle.cpp\
+	$(SRC)/xcs/Product.cpp \
 	$(SRC)/Polar.cpp		\
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/SaveLoadTask/ClearTask.cpp\

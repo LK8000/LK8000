@@ -25,6 +25,7 @@
 #include "FFVLTracking.h"
 #include "OsmAnd.h"
 #include "Traccar.h"
+#include "PureTrack.h"
 #include "utils/stringext.h"
 #include "utils/strcpy.h"
 #include "MessageLog.h"
@@ -180,8 +181,15 @@ void Initialize() {
           active_handlers.add<Traccar>(profile);
         }
         break;
+      case platform::puretrack:
+        if (http_session::ssl_available() && profile.interval > 0) {
+          auto id = GetUniqueDeviceId();  // ensure device ID is valid
+          if (!id.empty()) {
+            active_handlers.add<PureTrack>(id, profile);
+          }
+        }
+        break;
       case platform::none:
-      default:
         break;
     }
   }
@@ -282,6 +290,8 @@ const TCHAR* PlatformLabel(platform platform) {
       return _T("OsmAnd");
     case tracking::platform::traccar:
       return _T("Traccar");
+    case tracking::platform::puretrack:
+      return _T("PureTrack");
   }
   return _T("");
 }
@@ -298,6 +308,8 @@ LKBitmap load_bitmap(platform platform) {
       return LKLoadBitmap(_T("OSMAND"), false);
     case tracking::platform::traccar:
       return LKLoadBitmap(_T("TRACCAR"), false);
+    case tracking::platform::puretrack:
+      return LKLoadBitmap(_T("PURETRACK"), false);
     case tracking::platform::none:
       break;
   }

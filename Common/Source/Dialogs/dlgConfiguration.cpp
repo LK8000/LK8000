@@ -634,12 +634,21 @@ static void DrawTrackingFFVL(tracking::Profile& profile, LKSurface& Surface,
 static void DrawTrackingOsmAnd(tracking::Profile& profile, LKSurface& Surface,
                              PixelRect& rcClient) {
 
+  auto label = to_tstring(profile.server);
+  Surface.SetTextColor(clBlack);
+  Surface.DrawText(rcClient.GetTopLeft(), label.c_str());
+  // TODO: add usefull info
+  //    profile.url
+  //    profile.user
+}
+
+static void DrawTrackingPureTrack(tracking::Profile& profile, LKSurface& Surface,
+                             PixelRect& rcClient) {
   auto label = PlatformLabel(profile.protocol);
   Surface.SetTextColor(clBlack);
   Surface.DrawText(rcClient.GetTopLeft(), label);
   // TODO: add usefull info
-  //    profile.url
-  //    profile.user
+  //   profile.always_on
 }
 
 static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
@@ -662,6 +671,9 @@ static void DrawTracking(tracking::Profile& profile, LKSurface& Surface,
     case tracking::platform::osmand:
     case tracking::platform::traccar:
       DrawTrackingOsmAnd(profile, Surface, rcText);
+      break;
+    case tracking::platform::puretrack:
+      DrawTrackingPureTrack(profile, Surface, rcText);
       break;
   }
 }

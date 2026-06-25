@@ -34,7 +34,8 @@ enum class platform : uint8_t {
   skylines_aero,
   ffvl,
   osmand,
-  traccar
+  traccar,
+  puretrack
 };
 // clang-format on
 

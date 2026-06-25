@@ -25,11 +25,16 @@ Copyright_License {
 #define XCSOAR_ANDROID_PRODUCT_HPP
 
 #include "Compiler.h"
+#include <string>
+#include <cstdint>
 
+#ifdef ANDROID
 extern bool has_cursor_keys;
 extern bool has_keyboard;
+extern std::string android_unique_device_id;
+#endif
 
-#if defined __arm__ || defined __aarch64__
+#if defined(ANDROID) && (defined(__arm__) || defined(__aarch64__))
 extern bool is_nook, is_dithered, is_eink_colored;
 #endif
 
@@ -44,11 +49,47 @@ constexpr
 static inline bool
 IsNookSimpleTouch()
 {
-#ifdef __arm__
+#if defined(ANDROID) && defined(__arm__)
   return is_nook;
 #else
   return false;
 #endif
 }
+
+inline constexpr std::string_view GetDeviceIdAlphabet() {
+  // The alphabet excludes visually similar characters (0, 1, O, I, l) to avoid user confusion 
+  // when displaying device IDs.
+  return "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+}
+
+inline std::string EncodeDeviceId(uint64_t value) {
+  constexpr auto alphabet = GetDeviceIdAlphabet();
+  constexpr size_t alphabet_size = alphabet.size();
+  if (value == 0) {
+    // Invalid device ID, return empty string to indicate error
+    return "";
+  }
+  std::string result;
+  while (value > 0) {
+    result.push_back(alphabet[value % alphabet_size]);
+    value /= alphabet_size;
+  }
+  return result;
+}
+
+inline bool IsValidDeviceId(const std::string& id) {
+  constexpr auto alphabet = GetDeviceIdAlphabet();
+  if (id.empty()) {
+    return false;
+  }
+  for (unsigned char c : id) {
+    if (alphabet.find(c) == std::string_view::npos) {
+      return false;
+    }
+  }
+  return true;
+}
+
+const std::string& GetUniqueDeviceId();
 
 #endif

@@ -807,6 +807,7 @@ add_library( LK8000 SHARED
     Common/Source/Tracking/FFVLTracking.cpp
     Common/Source/Tracking/Traccar.cpp
     Common/Source/Tracking/OsmAnd.cpp
+    Common/Source/Tracking/PureTrack.cpp
 
     Common/Source/NMEA/Derived.h
     Common/Source/NMEA/Info.h

@@ -74,6 +74,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
+import android.provider.Settings;
+
 public class LK8000 extends Activity {
   private static final String TAG = "LK8000";
 
@@ -131,6 +133,20 @@ public class LK8000 extends Activity {
 
     setHasKeyboard(hasKeyboard());
 
+    final String androidId = Settings.Secure.getString(
+            getContentResolver(),
+            Settings.Secure.ANDROID_ID);
+    if(androidId != null) {
+      try {
+        setUniqueDeviceId(Long.parseUnsignedLong(androidId, 16));
+      } catch (NumberFormatException e) {
+        Log.w(TAG, "Invalid ANDROID_ID format: " + androidId, e);
+        setUniqueDeviceId(0);
+      }
+    }
+    else {
+      setUniqueDeviceId(0); // error, check before use...
+    }
     NetUtil.initialise(this);
     InternalGPS.Initialize();
     NonGPSSensors.Initialize();
@@ -469,6 +485,8 @@ public class LK8000 extends Activity {
   }
 
   private native void setKeyboardModelType(String name);
+
+  private native void setUniqueDeviceId(long id);
 
   private native void setHasKeyboard(boolean b);
 

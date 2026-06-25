@@ -32,6 +32,7 @@ bool is_valid_platform(std::underlying_type_t<platform> value) noexcept {
     case platform::ffvl:
     case platform::osmand:
     case platform::traccar:
+    case platform::puretrack:
       return true;
   }
   return false;

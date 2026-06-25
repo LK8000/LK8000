@@ -13,6 +13,9 @@
 #include "resource.h"
 #include "LKLanguage.h" 
 #include "Tracking/http_session.h"
+#include "Asset.hpp"
+#include "ScreenGeometry.h"
+#include "Form/Clipboard.h"
 
 namespace {
 
@@ -34,7 +37,8 @@ void dlgTracking::OnTrackingType(DataField* Sender,
         PlatformLabel(tracking::platform::skylines_aero),
         PlatformLabel(tracking::platform::ffvl),
         PlatformLabel(tracking::platform::osmand),
-        PlatformLabel(tracking::platform::traccar)
+        PlatformLabel(tracking::platform::traccar),
+        PlatformLabel(tracking::platform::puretrack)
     });
   }
 
@@ -178,6 +182,30 @@ void dlgTracking::OnRadar(DataField* Sender,
   }
 }
 
+void dlgTracking::OnDeviceID(DataField* Sender,
+                             DataField::DataAccessKind_t Mode) {
+  switch (Mode) {
+    case DataField::daGet:
+      Sender->SetAsString(to_tstring(GetUniqueDeviceId()).c_str());
+      break;
+    default:
+      break;
+  }
+}
+
+void dlgTracking::OnCopyDeviceID(WndButton* Sender) {
+  auto pForm = Sender->GetParentWndForm();
+  if (pForm) {
+    auto wpDeviceId = pForm->FindByName<WndProperty>(_T("prpDeviceID"));
+    if (wpDeviceId) {
+      auto df = wpDeviceId->GetDataField();
+      if (df) {
+        SetClipboardData(df->GetAsString());
+      }
+    }
+  }
+}
+
 void dlgTracking::ShowFrame(
     WndForm* pForm, const TCHAR* WndName,
     std::initializer_list<tracking::platform> platform) {
@@ -204,6 +232,7 @@ void dlgTracking::UpdateTypeUI(WndForm* pForm) {
     ShowFrame(pForm, _T("frmVLSafe"), {tracking::platform::ffvl});
     ShowFrame(pForm, _T("frmOsmAnd"),
               {tracking::platform::osmand, tracking::platform::traccar});
+    ShowFrame(pForm, _T("frmPureTrack"), {tracking::platform::puretrack});
   }
 }
 
@@ -228,13 +257,31 @@ int dlgTracking::DoModal() {
       callback_entry("OnPassword",
                      std::bind(&dlgTracking::OnPassword, this, _1, _2)),
       callback_entry("OnRadar",
-                     std::bind(&dlgTracking::OnRadar, this, _1, _2)),                     
+                     std::bind(&dlgTracking::OnRadar, this, _1, _2)),
+      callback_entry("OnDeviceID",
+                     std::bind(&dlgTracking::OnDeviceID, this, _1, _2)),
+      callback_entry("OnCopyDeviceID",
+                     std::bind(&dlgTracking::OnCopyDeviceID, this, _1)),
       EndCallbackEntry()
   };
 
   std::unique_ptr<WndForm> pForm(dlgLoadFromXML(CallBackTable, IDR_XML_TRACKING));
   if (!pForm) {
     return mrCancel;
+  }
+
+  auto wpCopyDeviceId = pForm->FindByName(_T("btCopyDeviceID"));
+  if (wpCopyDeviceId) {
+    if (ClipboardAvailable()) {
+      auto wpDeviceId = pForm->FindByName(_T("prpDeviceID"));
+      if (wpDeviceId) {
+        wpDeviceId->SetWidth(wpDeviceId->GetWidth() - wpCopyDeviceId->GetWidth() - DLGSCALE(2));
+        wpCopyDeviceId->SetLeft(wpDeviceId->GetRight() + DLGSCALE(2));
+      }
+    }
+    else {
+      wpCopyDeviceId->SetVisible(false);
+    }
   }
 
   UpdateTypeUI(pForm.get());

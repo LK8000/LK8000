@@ -222,3 +222,9 @@ Java_org_LK8000_LK8000_setKeyboardModelType(JNIEnv *env, jobject thiz, jstring j
     DoStatusMessage((name + " " + MsgToken<199>()).c_str()); // "XXXX Connected"
   }
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_LK8000_LK8000_setUniqueDeviceId(JNIEnv *env, jobject thiz, jlong id) {
+  android_unique_device_id = EncodeDeviceId(static_cast<uint64_t>(id));
+}
