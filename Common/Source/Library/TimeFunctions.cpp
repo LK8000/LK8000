@@ -6,6 +6,19 @@
 
 #include "externs.h"
 
+namespace {
+
+#ifdef _WIN32
+// timegm() is a GNU extension, not standard C)
+//    not available by default on MinGW / Windows 
+time_t timegm (struct tm *tp) {
+  return _mkgmtime(tp);
+} 
+
+#endif
+
+}  // namespace
+
 // simple localtime with no 24h exceeding
 int LocalTime(int utc_time) {
   int localtime = (utc_time + GetUTCOffset()) % (24 * 3600);
@@ -22,70 +35,40 @@ int LocalTime() {
   return LocalTime(utc_time);
 }
 
-namespace {
-
-constexpr bool is_leap(int y) {
-  return (y % 4 == 0) && (y % 100 != 0 || y % 400 == 0);
-}
-
-constexpr int days_before_year(int y) {
-  // Total days from year 1 to start of year y
-  --y;
-  return y * 365 + y / 4 - y / 100 + y / 400;
-}
-
-constexpr int days_before_1970 = days_before_year(1970);
-
-constexpr int days_before_month(int year, int mon) {
-  // mon = 1..12
-  constexpr int cum[12] = {
-      0,    // Jan
-      31,   // Feb
-      59,   // Mar
-      90,   // Apr
-      120,  // May
-      151,  // Jun
-      181,  // Jul
-      212,  // Aug
-      243,  // Sep
-      273,  // Oct
-      304,  // Nov
-      334   // Dec
-  };
-
-  int d = cum[mon - 1];
-  if (mon > 2 && is_leap(year)) {
-    ++d;
-  }
-  return d;
-}
-
-} // namespace
-
-time_t to_time_t(int year, int mon, int mday, int hour, int min,
-                           int sec) {
+time_t to_time_t(int year, int mon, int mday, int hour, int min, int sec) {
   // mon = 1..12, mday = 1..31 (no validation required)
-  int days = days_before_year(year) - days_before_1970;
-  days += days_before_month(year, mon);
-  days += (mday - 1);
-  return time_t(days) * 86400 + time_t(hour) * 3600 + time_t(min) * 60 + sec;
+  struct tm t = {};
+  t.tm_year = year - 1900;
+  t.tm_mon = mon - 1;
+  t.tm_mday = mday;
+  t.tm_hour = hour;
+  t.tm_min = min;
+  t.tm_sec = sec;
+  return timegm(&t);  // UTC-safe
 }
-
-
-// ============================================================
-//                      STATIC ASSERT TESTS
-// ============================================================
-static_assert(is_leap(2000) == true,  "Year 2000 must be leap");
-static_assert(is_leap(1900) == false, "Year 1900 must NOT be leap");
-static_assert(is_leap(1996) == true,  "Year 1996 must be leap");
-static_assert(is_leap(1999) == false, "Year 1999 must not be leap");
-// ============================================================
-
 
 time_t to_time_t(const NMEA_INFO& info) {
-  return to_time_t(info.Year, info.Month, info.Day, 
-                   info.Hour, info.Minute, info.Second);
+  return to_time_t(info.Year, info.Month, info.Day, info.Hour, info.Minute, info.Second);
 }
+
+void from_time_t(time_t t, int& year, int& mon, int& mday, int& hour, int& min, int& sec) {
+  // Convert time_t to UTC date and time components
+  tm utc_tm = {};
+  struct tm* pda_time;
+  pda_time = gmtime_r(&t, &utc_tm);
+  year = pda_time->tm_year + 1900;
+  mon = pda_time->tm_mon + 1;
+  mday = pda_time->tm_mday;
+  hour = pda_time->tm_hour;
+  min = pda_time->tm_min;
+  sec = pda_time->tm_sec;
+}
+
+void from_time_t(time_t t, NMEA_INFO& info) {
+  from_time_t(t, info.Year, info.Month, info.Day, info.Hour, info.Minute, info.Second);
+  info.Time = info.Hour * 3600 + info.Minute * 60 + info.Second;
+}
+
 
 // Calculate the ISO 8601 day of the week number 
 //   now - Unix timestamp like that from time(NULL)
@@ -129,16 +112,6 @@ TEST_CASE("to_time_t") {
           to_time_t(2019, 2, 28, 0, 0, 0) + 86400);
 
     // 2000-03-01 (day after leap day)
-    CHECK(to_time_t(2000, 3, 1, 0, 0, 0) ==
-          to_time_t(2000, 2, 29, 0, 0, 0) + 86400);
-  }
-
-  SUBCASE("Century leap year rules") {
-    CHECK(is_leap(2000) == true);   // divisible by 400
-    CHECK(is_leap(1900) == false);  // divisible by 100 but NOT 400
-    CHECK(is_leap(2100) == false);
-
-    // 2000-03-01 vs 2000-02-29
     CHECK(to_time_t(2000, 3, 1, 0, 0, 0) ==
           to_time_t(2000, 2, 29, 0, 0, 0) + 86400);
   }
