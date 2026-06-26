@@ -2451,7 +2451,26 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
 
 
 void InputEvents::eventBeep(const TCHAR *misc) {
-  PlayResource(misc); // 100221 FIX
+  switch (misc[0]) {
+  case '1':
+    LKSound(TEXT("LK_BEEP1.WAV"));
+    break;
+  case '2':
+    LKSound(TEXT("LK_BEEP2.WAV"));
+    break;
+  case '3':
+    LKSound(TEXT("LK_BEEP3.WAV"));
+    break;
+  case '4':
+    LKSound(TEXT("LK_BEEP4.WAV"));
+    break;
+  case '6':
+    LKSound(TEXT("LK_BEEP6.WAV"));
+    break;
+  case '9':
+    LKSound(TEXT("LK_BEEP9.WAV"));
+    break;
+  }
 }
 
 void SystemConfiguration(short mode);

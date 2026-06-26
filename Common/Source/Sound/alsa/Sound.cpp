@@ -359,6 +359,10 @@ void PlayResource(const TCHAR* lpName) {
   if (!lpName || !EnableSoundModes || !pcm_handle) {
     return;
   }
+
+  // check if resource exists, assert if not
+  assert(!GetNamedResource(lpName).IsNull());
+
   thread_sound.Queue(sound_type::ressource, lpName);
 }
 
