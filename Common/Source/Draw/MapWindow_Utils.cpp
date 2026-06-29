@@ -268,6 +268,36 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, unsigned dlgSize /* 
   }
 }
 
+// Pan map to an arbitrary waypoint (not a task point) — used for off-task DirectTo.
+void MapWindow::SetTargetPanWaypoint(int wp_index, unsigned dlgSize)
+{
+  static double old_latitude;
+  static double old_longitude;
+
+  if (dlgSize)
+    targetPanSize = dlgSize;
+
+  if (!mode.Is(Mode::MODE_TARGET_PAN)) {
+    old_latitude = PanLatitude;
+    old_longitude = PanLongitude;
+  }
+
+  TargetPanIndex = -1;  // not a task point
+
+  if (ValidWayPointFast(wp_index)) {
+    const std::lock_guard lock(CritSec_TaskData);
+    PanLongitude = WayPointList[wp_index].Longitude;
+    PanLatitude  = WayPointList[wp_index].Latitude;
+    TargetZoomDistance = max(2e3, (double)SectorRadius * 2);
+  } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
+    PanLongitude = old_longitude;
+    PanLatitude  = old_latitude;
+  }
+
+  mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, true);
+  MapWindow::RefreshMap();
+}
+
 namespace {
 /// Map zoom span (metres) so the direct leg and runway fit comfortably in approach pan mode.
 double ApproachZoomDistanceFromDirectLeg_m() {

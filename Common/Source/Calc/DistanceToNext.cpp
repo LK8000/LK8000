@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "NavFunctions.h"
 #include "AATDistance.h"
+#include "GADirectTo.h"
 
 extern double AATCloseBearing(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
@@ -16,6 +17,11 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   //  LockFlightData();
   LockTaskData();
+
+  if (GA_ComputeDirectToDistanceBearing(Basic, Calculated)) {
+    UnlockTaskData();
+    return;
+  }
 
   if(ValidTaskPoint(ActiveTaskPoint))
     {

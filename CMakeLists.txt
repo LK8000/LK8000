@@ -35,11 +35,13 @@ if("${ANDROID_ABI}" MATCHES "arm")
     )
 endif()
 
+option(ENABLE_OPENMP "Enable OpenMP support" OFF)
+
 add_compile_options(
     -Werror
     -Wall
     -fno-math-errno
-    -fopenmp
+    $<$<BOOL:${ENABLE_OPENMP}>:-fopenmp>
     -fsigned-char
     -Wunused-label
     -Wunused-variable
@@ -532,6 +534,7 @@ add_library( LK8000 SHARED
     Common/Source/Calc/Task/CheckStartRestartFinish.cpp
     Common/Source/Calc/Task/FAIFinishHeight.cpp
     Common/Source/Calc/Task/FlyDirectTo.cpp
+    Common/Source/Calc/Task/GADirectTo.cpp
     Common/Source/Calc/Task/InFinishSector.cpp
     Common/Source/Calc/Task/InSector.cpp
     Common/Source/Calc/Task/InStartSector.cpp
@@ -712,7 +715,9 @@ add_library( LK8000 SHARED
     Common/Source/Dialogs/dlgStartTask.cpp
     Common/Source/Dialogs/dlgStartup.cpp
     Common/Source/Dialogs/dlgStatus.cpp
+    Common/Source/Dialogs/dlgDirectToCountdown.cpp
     Common/Source/Dialogs/dlgTarget.cpp
+    Common/Source/Dialogs/dlgTargetGA.cpp
     Common/Source/Dialogs/dlgApproach.cpp
     Common/Source/Dialogs/dlgTaskCalculator.cpp
     Common/Source/Dialogs/dlgTaskOverview.cpp
@@ -945,6 +950,6 @@ target_link_libraries(LK8000 PRIVATE
     z
     EGL
     GLESv2
-    -fopenmp
-    -static-openmp
+    $<$<BOOL:${ENABLE_OPENMP}>:-fopenmp>
+    $<$<BOOL:${ENABLE_OPENMP}>:-static-openmp>
 )
