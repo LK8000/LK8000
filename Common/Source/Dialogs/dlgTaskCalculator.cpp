@@ -82,14 +82,11 @@ static void RefreshCalculator(void) {
       wp->RefreshDisplay();
   }
 
-  double d1 = (CALCULATED_INFO.TaskDistanceToGo
-	       +CALCULATED_INFO.TaskDistanceCovered);
-  if (gTaskType == task_type_t::AAT && (d1==0.0)) {
-    d1 = CALCULATED_INFO.AATTargetDistance;
-  }
+  double Distance =
+      CALCULATED_INFO.TaskDistanceToGo + CALCULATED_INFO.TaskDistanceCovered;
   wp = wf->FindByName<WndProperty>(TEXT("prpDistance"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(Units::ToDistance(d1));
+    wp->GetDataField()->SetAsFloat(Units::ToDistance(Distance));
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     wp->RefreshDisplay();
   }

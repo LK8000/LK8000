@@ -1131,7 +1131,7 @@ goto_bearing:
 			if ( (ValidTaskPoint(ActiveTaskPoint) != false) && UseAATTarget() ) {
 				index = Task[ActiveTaskPoint].Index;
 				if (index>=0) {
-					value = Units::ToDistance(DerivedDrawInfo.AATTargetDistance);
+					value = Units::ToDistance(DerivedDrawInfo.TaskDistanceToGo);
 					valid=true;
 					if (value>99)
 						lk::snprintf(BufferValue, TEXT("%.0f"),value);

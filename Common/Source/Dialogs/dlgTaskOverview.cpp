@@ -156,22 +156,20 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
       }
       else
       {
-        double d1 = CALCULATED_INFO.TaskDistanceToGo;
-        if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) && (ActiveTaskPoint>0)) {
-          d1 += CALCULATED_INFO.TaskDistanceCovered;
-        }
-        if (d1==0.0) {
-          d1 = CALCULATED_INFO.AATTargetDistance;
+        double TaskDistance = CALCULATED_INFO.TaskDistanceToGo;
+        if ((CALCULATED_INFO.TaskStartTime > 0.0) && (CALCULATED_INFO.Flying) &&
+            (ActiveTaskPoint > 0)) {
+          TaskDistance += CALCULATED_INFO.TaskDistanceCovered;
         }
         lk::snprintf(sTmp, TEXT("%s %2i:%02ih %.0f (%.0f) %s"),
                   // LKTOKEN  _@M735_ = "Total:"
                   MsgToken<735>(),
-                  (int)AATTaskLength/60,
-                  (int)AATTaskLength%60,
+                  static_cast<int>(AATTaskLength) / 60,
+                  static_cast<int>(AATTaskLength) % 60,
                   Units::ToDistance(lengthtotal),
-                  Units::ToDistance(d1),
+                  Units::ToDistance(TaskDistance),
                   Units::GetDistanceName());
-        Surface.DrawText(rc.right +DLGSCALE(2), TextMargin,   sTmp);
+        Surface.DrawText(rc.right + DLGSCALE(2), TextMargin, sTmp);
       }
      }
      else if ((DrawListIndex == (UpLimit + 2)) && ValidTaskPoint(1)) {
