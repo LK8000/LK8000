@@ -10,6 +10,15 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.6.3]
+* New:
+ - Live-Tracking : add "puretrack.io"
+* Fix:
+ - Incorrect remaining distance in the status window. (#1699)
+ - Cup Waypoint file: 
+    accept "utf8 with Bom" file encoding 
+    ignore '*' comment lines (#1695)
+
 [version 7.6.2]
 * Fix:
  - AAT task distance regression (#1706)
