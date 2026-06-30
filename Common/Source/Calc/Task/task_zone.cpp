@@ -11,15 +11,6 @@
 
 #include "task_zone.h"
 
-
-GeoPoint task::from_task(int tp_index) {
-  return {
-    WayPointList[Task[tp_index].Index].Latitude,
-    WayPointList[Task[tp_index].Index].Longitude
-  };
-}
-
-
 sector_type_t task::get_zone_type(int tp_index) {
   if (tp_index == 0) {
     // start ...

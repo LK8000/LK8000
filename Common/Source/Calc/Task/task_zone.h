@@ -15,8 +15,6 @@
 
 namespace task {
 
-GeoPoint from_task(int tp_index);
-
 sector_type_t get_zone_type(int tp_index);
 
 
@@ -125,7 +123,7 @@ template <task_type_t task_type>
 struct zone_data<sector_type_t::DAe, task_type> {
   static dae_data get(int tp_index) {
     return {
-      from_task(tp_index),
+      GetTurnpointPosition(tp_index),
       Task[tp_index].Bisector
     };
   }
@@ -135,7 +133,7 @@ template <task_type_t task_type>
 struct zone_data<sector_type_t::LINE, task_type> {
   static line_data get(int tp_index) {
     return {
-      from_task(tp_index),
+      GetTurnpointPosition(tp_index),
       zone_radius<sector_type_t::LINE, task_type>::get(tp_index),
       Task[tp_index].Bisector,
       Task[tp_index].InBound,
@@ -148,7 +146,7 @@ template <task_type_t task_type>
 struct zone_data<sector_type_t::CIRCLE, task_type> {
   static circle_data get(int tp_index) {
     return {
-      from_task(tp_index),
+      GetTurnpointPosition(tp_index),
       zone_radius<sector_type_t::CIRCLE, task_type>::get(tp_index)
     };
   }
@@ -165,7 +163,7 @@ template <>
 struct zone_data<sector_type_t::SECTOR, task_type_t::DEFAULT> {
   static sector_data get(int tp_index) {
     return {
-      from_task(tp_index),
+      GetTurnpointPosition(tp_index),
       zone_radius<sector_type_t::SECTOR, task_type_t::DEFAULT>::get(tp_index),
       Task[tp_index].Bisector - 45.,
       Task[tp_index].Bisector + 45.,
@@ -177,7 +175,7 @@ template <>
 struct zone_data<sector_type_t::SECTOR, task_type_t::AAT> {
   static sector_data get(int tp_index) {
     return {
-      from_task(tp_index), 
+      GetTurnpointPosition(tp_index),
       zone_radius<sector_type_t::SECTOR, task_type_t::AAT>::get(tp_index),
       Task[tp_index].AATStartRadial,
       Task[tp_index].AATFinishRadial,
