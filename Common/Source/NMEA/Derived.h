@@ -96,7 +96,6 @@ struct DERIVED_INFO {
   double NextAltitudeAGL = {};
   double AATMaxDistance = {};
   double AATMinDistance = {};
-  double AATTargetDistance = {};
   double AATTimeToGo = {};
   double AATMaxSpeed = {};
   double AATTargetSpeed = {};

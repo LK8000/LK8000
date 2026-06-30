@@ -611,14 +611,14 @@ static void UpdateValuesTask(void) {
     }
   }
 
-  double dd = CALCULATED_INFO.TaskTimeToGo;
+  double EstimatedTaskTime = CALCULATED_INFO.TaskTimeToGo;
   if (CALCULATED_INFO.TaskStartTime>0.0) {
-    dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+    EstimatedTaskTime += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpETETime"));
   if (wp) {
-    Units::TimeToText(Temp, (int)dd);
+    Units::TimeToText(Temp, EstimatedTaskTime);
     wp->SetText(Temp);
   }
 
@@ -632,38 +632,36 @@ static void UpdateValuesTask(void) {
     wp->SetText(Temp);
   }
 
+  double TaskDistance =
+      CALCULATED_INFO.TaskDistanceToGo + CALCULATED_INFO.TaskDistanceCovered;
+
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskDistance"));
   if (wp) {
     lk::snprintf(Temp, TEXT("%.0f %s"),
-              Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo +CALCULATED_INFO.TaskDistanceCovered),
-              Units::GetDistanceName());
+                Units::ToDistance(TaskDistance),
+                Units::GetDistanceName());
     wp->SetText(Temp);
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRemainingDistance"));
   if (wp) {
-    if (UseAATTarget()) {
-      lk::snprintf(Temp, TEXT("%.0f %s"),
-                Units::ToDistance(CALCULATED_INFO.AATTargetDistance),
-                Units::GetDistanceName());
-    } else {
-      lk::snprintf(Temp, TEXT("%.0f %s"),
+    lk::snprintf(Temp, TEXT("%.0f %s"),
                 Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo),
                 Units::GetDistanceName());
-    }
     wp->SetText(Temp);
   }
 
-  double d1=0;
-  if (dd>0) {
-    d1 = (CALCULATED_INFO.TaskDistanceToGo +CALCULATED_INFO.TaskDistanceCovered)/dd;
+  double EstimatedTaskSpeed = 0;
+  if (EstimatedTaskTime > 0) {
+    EstimatedTaskSpeed = TaskDistance / EstimatedTaskTime;
     // TODO bug: this fails for OLC
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpEstimatedSpeed"));
   if (wp) {
     lk::snprintf(Temp, TEXT("%.0f %s"),
-              Units::ToTaskSpeed(d1), Units::GetTaskSpeedName());
+              Units::ToTaskSpeed(EstimatedTaskSpeed),
+              Units::GetTaskSpeedName());
     wp->SetText(Temp);
   }
 

@@ -209,7 +209,7 @@ void UpdateAnalysis(WndForm* pForm){
                     timetext2,
 	// LKTOKEN  _@M242_ = "Dist to go"
                     MsgToken<242>(),
-                    Units::ToDistance(CALCULATED_INFO.AATTargetDistance),
+                    Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo),
                     Units::GetDistanceName(),
 	// LKTOKEN  _@M626_ = "Sp "
                     MsgToken<626>(),
@@ -227,7 +227,7 @@ void UpdateAnalysis(WndForm* pForm){
                     timetext2,
 	// LKTOKEN  _@M242_ = "Dist to go"
                     MsgToken<242>(),
-                    Units::ToDistance(CALCULATED_INFO.AATTargetDistance),
+                    Units::ToDistance(CALCULATED_INFO.TaskDistanceToGo),
                     Units::GetDistanceName(),
 	// LKTOKEN  _@M681_ = "Targ.speed"
                     MsgToken<681>(),
