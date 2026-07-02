@@ -27,6 +27,11 @@ class zzip_file_stream : public std::streambuf {
  protected:
   int_type underflow() override;
 
+  pos_type seekoff(off_type off, std::ios_base::seekdir way,
+                   std::ios_base::openmode which) override;
+
+  pos_type seekpos(pos_type sp, std::ios_base::openmode which) override;
+
  private:
   zzip_file_ptr m_fp;
   std::array<char, 8192> m_buffer;
