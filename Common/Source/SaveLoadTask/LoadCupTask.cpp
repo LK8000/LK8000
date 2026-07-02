@@ -25,6 +25,7 @@
 #include "utils/printf.h"
 #include "utils/charset_helper.h"
 #include "Calc/Task/TimeGates.h"
+#include "Waypoints/SetHome.h"
 
 int dlgTaskSelectListShowModal(void) ;
 
@@ -62,6 +63,8 @@ public:
                 FinishLine = sector_type_t::CIRCLE;
                 FinishRadius = mR1;
             } else {
+                SectorType = sector_type_t::CIRCLE;
+                SectorRadius = mR1;
                 Task[mIdx].AATType = sector_type_t::CIRCLE;
                 Task[mIdx].AATCircleRadius = mR1;
             }
@@ -134,6 +137,8 @@ public:
             FinishLine = sector_type_t::SECTOR;
             FinishRadius = mR1;
         } else {
+            SectorType = sector_type_t::SECTOR;
+            SectorRadius = mR1;
             Task[mIdx].AATType = sector_type_t::SECTOR;
             Task[mIdx].AATSectorRadius = mR1;
             Task[mIdx].AATStartRadial = mA12 - 180.0 - (mA1);
@@ -259,6 +264,24 @@ using field_iterator = std::vector<std::string>::const_iterator;
 
 bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypoint_t &mapWaypoint) {
     size_t idxTP = 0;
+    if (begin != end) {
+        // Set Takeoff as HomeWaypoint if valid
+        mapCode2Waypoint_t::iterator It = mapWaypoint.find(from_unknown_charset(begin->c_str()));
+        if (It != mapWaypoint.end()) {
+            int ix = FindMatchingAirfield(&(It->second));  // first try to find airfield
+            if (ix < 0) {
+                ix = FindOrAddWaypoint(&(It->second), false); // not found try if waypoint exist
+            }
+            if (ix >= 0) { // valid TP
+              SetNewHome(ix); // set home to first task point
+            }
+        }
+        begin = std::next(begin); // skip Takeoff
+    }
+
+    if (begin != end) {
+        end = std::prev(end); // skip Landing
+    }
 
     std::for_each(begin, end, [&](const auto& code) {
         if (idxTP >= MAXTASKPOINTS) {
@@ -266,17 +289,12 @@ bool ConvertStringToTask(field_iterator begin, field_iterator end, mapCode2Waypo
         }
         mapCode2Waypoint_t::iterator It = mapWaypoint.find(from_unknown_charset(code.c_str()));
         if (It != mapWaypoint.end()) {
-            int ix = FindOrAddWaypoint(&(It->second), true);  // first try to find airfield
+            int ix = FindMatchingAirfield(&(It->second));  // first try to find airfield
             if (ix < 0) {
                 ix = FindOrAddWaypoint(&(It->second), false); // not found try if waypoint exist
             }
             if (ix >= 0) { // valid TP
-                Task[idxTP++].Index = ix;
-                if (idxTP > 1) {
-                    if (Task[idxTP - 1].Index == Task[idxTP - 2].Index) {  // not the same as before?
-                        --idxTP;
-                    }
-                }
+              Task[idxTP++].Index = ix;
             }
         }
     });
@@ -291,7 +309,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
   mapCode2Waypoint_t mapWaypoint;
 
   bool TaskFound = false;
-  bool bLoadComplet = true;
   std::vector<std::string> Entries;
   WAYPOINT newPoint = {};
 
@@ -390,8 +407,8 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
               lk::strcpy(TaskLine, string.c_str());
             }
 
-            bLoadComplet = ConvertStringToTask(std::next(Entries.begin()),
-                                               Entries.end(), mapWaypoint);
+            TaskValid = ConvertStringToTask(std::next(Entries.begin()),
+                                            Entries.end(), mapWaypoint);
             FileSection = Option;
           }
           break;
@@ -481,9 +498,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
                   else if (pToken->starts_with("A1=")) {
                     // Angle 1 in degrees
                     TmpZone.mA1 = strtod(pToken->c_str() + 3, nullptr);
-                    if (TmpZone.mA1 > 179.5)  //  180° = Circle sector
-                      if (TmpZone.mA1 < 180.5)
-                        SectorType = sector_type_t::CIRCLE;
                   }
                   else if (pToken->starts_with("R2=")) {
                     // Radius 2
@@ -500,8 +514,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
                   else if (pToken->starts_with("AAT=")) {
                     // AAT
                     gTaskType = task_type_t::AAT;
-                    if (strtod(pToken->c_str() + 4, nullptr) > 0)  // AAT = 1?
-                      SectorType = sector_type_t::CIRCLE;
                   }
                   else if (pToken->starts_with("Line=")) {
                     // true For Line Turmpoint type
@@ -509,10 +521,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
                     TmpZone.mLine = (strtol(pToken->c_str() + 5, nullptr, 10) == 1);
                   }
                 }
-                if (TmpZone.mR1 > 0)    // if both radius defined
-                  if (TmpZone.mR2 > 0)  // must be keyhole definition
-                    SectorType = sector_type_t::DAe;  // the only similar
-                                                      // sectortype in LK
 
                 if (TmpZone.mLine)  // line has priority (Start & Finish) if
                                     // multiple definitions
@@ -532,12 +540,6 @@ bool LoadCupTaskSingle(LPCTSTR szFileName, TCHAR (&TaskLine)[size], int Selected
       }
           src_line.clear(); // clear Temp Buffer
     }
-  }
-  if(!ISGAAIRCRAFT) {
-      // Landing don't exist in LK Task Systems, so Remove It;
-      if ( bLoadComplet ) {
-          RemoveTaskPoint(getFinalWaypoint());
-      }
   }
   UnlockTaskData();
   mapWaypoint.clear();
