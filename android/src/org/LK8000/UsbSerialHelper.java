@@ -98,6 +98,7 @@ public class UsbSerialHelper extends BroadcastReceiver {
             createDevice(0x0403, 0x6014), // FT232H
 
             createDevice(0x10C4, 0xEA60), // CP210x
+            createDevice(0x1A86, 0x55D3), // CH343
             createDevice(0x1A86, 0x55D4), // CH9102
             createDevice(0x1A86, 0x7523), // CH340, SoftRF Retro Mk2
 
