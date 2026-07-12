@@ -56,8 +56,14 @@ class zzip_disk_file_stream : public std::streambuf {
  protected:
   int_type underflow() override;
 
+  pos_type seekoff(off_type off, std::ios_base::seekdir way,
+                   std::ios_base::openmode which) override;
+
+  pos_type seekpos(pos_type sp, std::ios_base::openmode which) override;  
+
  private:
   zzip_mem_disk m_disk;
+  ZZIP_DISK_ENTRY* m_entry = nullptr;
   ZZIP_DISK_FILE* m_file = nullptr;
   std::array<char, 8192> m_buffer;
 };

@@ -21,14 +21,14 @@ zzip_disk_file_stream::zzip_disk_file_stream(std::span<const char> disk_data,
   // empty
   setg(nullptr, nullptr, nullptr);
 
-
-  ZZIP_DISK_ENTRY* entry = zzip_disk_findfile(
-      m_disk.get(), const_cast<char*>(filename.c_str()), nullptr, zzip_strcmp);
-  if (!entry) {
+  m_entry = zzip_disk_findfile(m_disk.get(),
+                               const_cast<char*>(filename.c_str()), nullptr,
+                               zzip_strcmp);
+  if (!m_entry) {
     throw std::runtime_error("File not found in zip archive: " + filename);
   }
 
-  m_file = zzip_disk_entry_fopen(m_disk.get(), entry);
+  m_file = zzip_disk_entry_fopen(m_disk.get(), m_entry);
   if (!m_file) {
     throw std::runtime_error("zzip_disk_entry_fopen failed");
   }
@@ -41,10 +41,12 @@ zzip_disk_file_stream::~zzip_disk_file_stream() {
 }
 
 zzip_disk_file_stream::zzip_disk_file_stream(zzip_disk_file_stream&& other) noexcept
-      : m_disk(std::move(other.m_disk)),
+    : m_disk(std::move(other.m_disk)),
+      m_entry(std::exchange(other.m_entry, nullptr)),
       m_file(std::exchange(other.m_file, nullptr)) {
   // Transfer the get-area pointers (eback/gptr/egptr) from other to this.
-  // Compute offsets relative to the buffer base so they remain valid after m_buffer is moved.
+  // Compute offsets relative to the buffer base so they remain valid after
+  // m_buffer is moved.
   char* other_eback = other.eback();
   if (other_eback != nullptr) {
     // Get-area is active in other; transfer it to this
@@ -73,10 +75,11 @@ zzip_disk_file_stream& zzip_disk_file_stream::operator=(
   }
 
   m_disk = std::move(other.m_disk);
+  m_entry = std::exchange(other.m_entry, nullptr);
   m_file = std::exchange(other.m_file, nullptr);
-  
-  // After swapping m_buffer, transfer the get-area pointers from other to this.
-  // Compute offsets relative to the buffer base so they remain valid.
+
+  // After swapping m_buffer, transfer the get-area pointers from other to
+  // this. Compute offsets relative to the buffer base so they remain valid.
   char* other_eback = other.eback();
   if (other_eback != nullptr) {
     // other has buffered data; transfer the get-area state to this
@@ -114,4 +117,62 @@ zzip_disk_file_stream::int_type zzip_disk_file_stream::underflow() {
   setg(m_buffer.data(), m_buffer.data(), m_buffer.data() + bytes_read);
 
   return traits_type::to_int_type(*gptr());
+}
+
+zzip_disk_file_stream::pos_type zzip_disk_file_stream::seekoff(
+    off_type off, std::ios_base::seekdir way, std::ios_base::openmode which) {
+  if (which != std::ios_base::in) {
+    return pos_type(off_type(-1));
+  }
+
+  // To support seeking, we reopen the file and read up to the new position.
+  if (m_file) {
+    zzip_disk_fclose(m_file);
+    m_file = nullptr;
+  }
+  setg(nullptr, nullptr, nullptr);
+
+  if (!m_entry) {
+    return pos_type(off_type(-1));
+  }
+
+  m_file = zzip_disk_entry_fopen(m_disk.get(), m_entry);
+  if (!m_file) {
+    return pos_type(off_type(-1));
+  }
+
+  off_type new_pos = 0;
+  if (way == std::ios_base::beg) {
+    new_pos = off;
+  } else if (way == std::ios_base::cur) {
+    // The zzip API does not support getting the current position,
+    // so SEEK_CUR is not supported.
+    return pos_type(off_type(-1));
+  } else if (way == std::ios_base::end) {
+    // The zzip API does not support seeking from the end.
+    return pos_type(off_type(-1));
+  }
+
+  if (new_pos < 0) {
+    return pos_type(off_type(-1));
+  }
+
+  // Read and discard data until we reach the desired position
+  while (new_pos > 0) {
+    zzip_ssize_t bytes_to_read =
+        std::min(static_cast<off_type>(m_buffer.size()), new_pos);
+    zzip_ssize_t bytes_read =
+        zzip_disk_fread(m_buffer.data(), 1, bytes_to_read, m_file);
+    if (bytes_read <= 0) {
+      return pos_type(off_type(-1));  // Reached EOF or an error occurred
+    }
+    new_pos -= bytes_read;
+  }
+
+  return pos_type(off);
+}
+
+zzip_disk_file_stream::pos_type zzip_disk_file_stream::seekpos(
+    pos_type sp, std::ios_base::openmode which) {
+  return seekoff(sp, std::ios_base::beg, which);
 }
