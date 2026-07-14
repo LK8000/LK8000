@@ -80,3 +80,7 @@ output.map
 /Common/Utils/wind-estimate/build/
 /GEMINI.md
 /local/
+.clangd
+.clinerules
+.cache
+/compile_commands.json
