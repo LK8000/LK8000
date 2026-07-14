@@ -81,3 +81,7 @@ output.map
 /GEMINI.md
 /local/
 /Common/Utils/cupx/build/
+.clangd
+.clinerules
+.cache
+/compile_commands.json
