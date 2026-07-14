@@ -82,7 +82,7 @@ int ReadWayPointFile(std::istream& stream, int fileformat) {
             globalFileNum);
         return -1;
       }
-      if (src_line.starts_with("U  1") || src_line.starts_with("U 1")) {
+      if (!src_line.starts_with("U  1") && !src_line.starts_with("U 1")) { 
         StartupStore(
             _T(". Waypoint file %d format: CompeGPS unknown U field, rejected"),
             globalFileNum);
