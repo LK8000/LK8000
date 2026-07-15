@@ -882,7 +882,7 @@ void InputEvents::eventDirectToFromPan(const TCHAR* /*misc*/) {
     const std::lock_guard lock(CritSec_TaskData);
     WayPointList[RESWP_PANPOS].Latitude  = pan_lat;
     WayPointList[RESWP_PANPOS].Longitude = pan_lon;
-    WayPointList[RESWP_PANPOS].Altitude  = (double)th;
+    WayPointList[RESWP_PANPOS].Altitude  = th;
   }
 
   MapWindow::Event_Pan(0);  // exit pan mode before showing countdown

@@ -548,7 +548,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 		case 42: // Pan mode Direct To button — visible only in GA aircraft mode
 			if (ISGAAIRCRAFT)
-				lk::strcpy(OutBuffer, _T("Direct\nTo"), Size);
+				lk::snprintf(OutBuffer,Size, _T("%s"),MsgToken<2522>());  // "Direct\nTo"
 			else
 				lk::strcpy(OutBuffer, _T(""), Size);
 		break;

@@ -90,6 +90,11 @@ void MapWindow::DrawBearing(LKSurface& Surface, const RECT& rc, const ScreenProj
       targetLat = Task[ActiveTaskPoint].AATTargetLat;
       targetLon = Task[ActiveTaskPoint].AATTargetLon;
     } else {
+      // Not a plain revert to Task[ActiveTaskPoint].Index: GetOvertargetIndex()'s
+      // OVT_TASK case (the only case reachable here, guarded by OvertargetMode<=OVT_TASK
+      // above) returns exactly Task[ActiveTaskPoint].Index when GA DirectTo is inactive,
+      // and the off-task fix (via GA_GetDirectToNavIndex()) when it is active — so
+      // overindex keeps the bearing line on the DirectTo target without a separate branch.
       targetLat = WayPointList[overindex].Latitude;
       targetLon = WayPointList[overindex].Longitude;
     }

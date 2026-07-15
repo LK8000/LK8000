@@ -116,7 +116,7 @@ static void ComputePanDescription(double pan_lat, double pan_lon,
         c.idx = i; c.dist = d;
         c.lat = WayPointList[i].Latitude;
         c.lon = WayPointList[i].Longitude;
-        LK_tcsncpy(c.name, WayPointList[i].Name, NAME_SIZE - 1);
+        lk::strcpy(c.name, WayPointList[i].Name);
       };
       switch (WayPointCalc[i].WpType) {
         case WPT_AIRPORT:    if (d < airport.dist)    fill(airport);    break;
@@ -141,10 +141,6 @@ static void ComputePanDescription(double pan_lat, double pan_lon,
                  std::fabs(pan_lat), lat_hemi, std::fabs(pan_lon), lon_hemi);
     return;
   }
-
-  // Sanitize: waypoint names from Latin-1 databases contain non-UTF8 bytes
-  for (TCHAR* p = ref->name; *p; ++p)
-    if ((unsigned char)*p > 0x7F) *p = '?';
 
   double dist = 0., bearing = 0.;
   DistanceBearing(ref->lat, ref->lon, pan_lat, pan_lon, &dist, &bearing);
@@ -177,14 +173,13 @@ static bool RunDirectToCountdown(int new_tp, int wp_index,
       if (!ValidTaskPoint(new_tp) || !ValidWayPointFast(Task[new_tp].Index))
         return false;
       if (!name_preset)
-        LK_tcsncpy(countdown_wp_name, WayPointList[Task[new_tp].Index].Name,
-                   NAME_SIZE - 1);
+        lk::strcpy(countdown_wp_name, WayPointList[Task[new_tp].Index].Name);
       info_wp = Task[new_tp].Index;
     } else {
       if (!ValidWayPointFast(wp_index))
         return false;
       if (!name_preset)
-        LK_tcsncpy(countdown_wp_name, WayPointList[wp_index].Name, NAME_SIZE - 1);
+        lk::strcpy(countdown_wp_name, WayPointList[wp_index].Name);
       info_wp = wp_index;
       // Save full DirectTo state for cancel restore.
       saved_state = { DirectToActive, DirectToWaypointIndex,
@@ -286,9 +281,7 @@ bool ShowDirectToFromPanDialog(int wp_index, double pan_lat, double pan_lon) {
       if (d < best_dist) { best_dist = d; best_idx = i; }
     }
     if (best_idx >= 0) {
-      LK_tcsncpy(countdown_wp_name, WayPointList[best_idx].Name, NAME_SIZE - 1);
-      for (TCHAR* p = countdown_wp_name; *p; ++p)
-        if ((unsigned char)*p > 0x7F) *p = '?';
+      lk::strcpy(countdown_wp_name, WayPointList[best_idx].Name);
       wp_index = best_idx;
     }
   }

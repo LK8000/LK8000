@@ -284,12 +284,17 @@ void MapWindow::SetTargetPanWaypoint(int wp_index, unsigned dlgSize)
 
   TargetPanIndex = -1;  // not a task point
 
-  if (ValidWayPointFast(wp_index)) {
+  bool valid_wp;
+  {
     const std::lock_guard lock(CritSec_TaskData);
-    PanLongitude = WayPointList[wp_index].Longitude;
-    PanLatitude  = WayPointList[wp_index].Latitude;
-    TargetZoomDistance = max(2e3, (double)SectorRadius * 2);
-  } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
+    valid_wp = ValidWayPointFast(wp_index);
+    if (valid_wp) {
+      PanLongitude = WayPointList[wp_index].Longitude;
+      PanLatitude  = WayPointList[wp_index].Latitude;
+      TargetZoomDistance = max(2e3, (double)SectorRadius * 2);
+    }
+  }
+  if (!valid_wp && mode.Is(Mode::MODE_TARGET_PAN)) {
     PanLongitude = old_longitude;
     PanLatitude  = old_latitude;
   }
