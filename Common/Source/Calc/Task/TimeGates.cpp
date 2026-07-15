@@ -163,10 +163,10 @@ class GateOpeningNotification {
 
 GateOpeningNotification notifications[] = {
     {60, nullptr, nullptr, _T("LK_3HITONES.WAV")},
-    {300, MsgToken<852>, MsgToken<2512>, _T("LK_HITONE.WAV")},
-    {600, MsgToken<852>, MsgToken<2511>, _T("LK_HITONE.WAV")},
-    {1800, MsgToken<851>, MsgToken<2510>, _T("LK_DINGDONG.WAV")},
-    {3600, MsgToken<850>, MsgToken<2509>, _T("LK_DINGDONG.WAV")},
+    {300, MsgToken<853>, MsgToken<2512>, _T("LK_HITONE.WAV")}, // "5 MINUTES TO GO" / "NEXT GATE OPEN IN 5 MINUTES"
+    {600, MsgToken<852>, MsgToken<2511>, _T("LK_HITONE.WAV")}, // "10 MINUTES TO GO" / "NEXT GATE OPEN IN 10 MINUTES"
+    {1800, MsgToken<851>, MsgToken<2510>, _T("LK_DINGDONG.WAV")}, // "FIRST GATE OPEN IN 30 MINUTES" / "NEXT GATE OPEN IN 30 MINUTES"
+    {3600, MsgToken<850>, MsgToken<2509>, _T("LK_DINGDONG.WAV")}, // "FIRST GATE OPEN IN 1 HOUR" / "NEXT GATE OPEN IN 1 HOUR"
 };
 
 int InitActiveGate(int utc_time) {
