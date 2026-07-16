@@ -20,22 +20,34 @@
 // Check that WingArea is NOT zero! Winpilot polars had no WingArea configurable!
 
 void WeightOffset(double wload) {
-  double calcweight;
+  // we should lock calculation thread probably
 
-  if (GlidePolar::WingArea<1) { // 100131
-	// we should lock calculation thread probably
-	if (GlidePolar::WeightOffset!=0) GlidePolar::WeightOffset=0;
-	return;
+  if (GlidePolar::WingArea < 1) {  // 100131
+    GlidePolar::WeightOffset = 0;
+    return;
   }
 
   // WEIGHTS[WEIGHT_WATER] is full ballast
   // BALLAST is percentage of full ballast
   // new weight = (wingload * wingarea) - ballast
-  calcweight=(wload*GlidePolar::WingArea) - (WEIGHTS[WEIGHT_WATER]*BALLAST);
+  double calcweight =
+      (wload * GlidePolar::WingArea) - (WEIGHTS[WEIGHT_WATER] * BALLAST);
+
   // We set a min limit here, see SetBallast()
-  // Probably only UAV can have such low wing loadings
-  // Or a gnome on an RC glider, maybe.
-  GlidePolar::WeightOffset = std::max(calcweight-WEIGHTS[WEIGHT_PILOT]-WEIGHTS[WEIGHT_PLANEDRY],(GlidePolar::WingArea - WEIGHTS[WEIGHT_PILOT] - WEIGHTS[WEIGHT_PLANEDRY]));
+
+  // use 1.0 kg/m2 for minimum wingloading, since wingloading range each type of
+  // gliders are different, and we want to avoid negative weight offset.
+  //
+  //   Paraglider     3–8 kg/m²
+  //   Hang glider    5–12 kg/m²
+  //   Sailplane      30–65+ kg/m²
+
+  constexpr double min_wload = 1.0;
+
+  const double dry_gross_weight = WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY];
+  const double min_offset = ((min_wload * GlidePolar::WingArea) - dry_gross_weight); 
+
+  GlidePolar::WeightOffset = std::max(calcweight - dry_gross_weight, min_offset);
 
   GlidePolar::SetBallast(); // BUGFIX 101002
 }
@@ -49,8 +61,9 @@ bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3], double (&w
   POLARLD[0] = dPOLARW[0];
   POLARLD[1] = dPOLARW[1];
   POLARLD[2] = dPOLARW[2];
-  WW[0]  = ww[0];
-  WW[1]  = ww[1];
+
+  WW[0] = ww[0]; // Glider Dry Gross weight ( Max takeoff weight minus ballast weight )
+  WW[1] = ww[1]; // Ballast Liters ( water ballast weight in kg, 1 liter = 1 kg )
 
   const double v1 = dPOLARV[0]/3.6; 
   const double v2 = dPOLARV[1]/3.6; 
