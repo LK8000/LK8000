@@ -1005,6 +1005,7 @@ TASK	:=\
 	$(TSK)/CheckStartRestartFinish.cpp \
 	$(TSK)/FAIFinishHeight.cpp \
 	$(TSK)/FlyDirectTo.cpp \
+	$(TSK)/GADirectTo.cpp \
 	$(TSK)/InFinishSector.cpp \
 	$(TSK)/InSector.cpp \
 	$(TSK)/InStartSector.cpp \
@@ -1205,6 +1206,8 @@ DLGS	:=\
 	$(DLG)/dlgStartup.cpp \
 	$(DLG)/dlgStatus.cpp \
 	$(DLG)/dlgTarget.cpp \
+	$(DLG)/dlgTargetGA.cpp \
+	$(DLG)/dlgDirectToCountdown.cpp \
 	$(DLG)/dlgApproach.cpp \
 	$(DLG)/dlgTaskCalculator.cpp \
 	$(DLG)/dlgTaskOverview.cpp \

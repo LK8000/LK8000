@@ -449,6 +449,10 @@ GEXTERN int PanTaskEdit;
 GEXTERN int RealActiveWaypoint;
 GEXTERN int ActiveTaskPoint;
 GEXTERN bool TaskAborted;
+GEXTERN bool DirectToActive GEXTFALSE;
+GEXTERN double DirectToOriginLat GEXTZERO;
+GEXTERN double DirectToOriginLon GEXTZERO;
+GEXTERN int DirectToWaypointIndex;  // >=0: off-task fix (GA); -1: use Task[ActiveTaskPoint] (set in Globals_Init(), like ActiveTaskPoint above)
 GEXTERN int SelectedWaypoint;
 GEXTERN sector_type_t SectorType;
 GEXTERN double SectorRadius;
