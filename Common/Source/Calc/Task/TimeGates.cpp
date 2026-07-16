@@ -54,7 +54,16 @@ using namespace TimeGates;
 
 namespace {
 
-  // ------------------------------
+#ifndef DOCTEST_CONFIG_DISABLE
+bool notify_called = false;
+inline void NotifyCalled() {
+  notify_called = true;
+}
+#else
+inline void NotifyCalled() {}
+#endif
+
+// ------------------------------
 // Rutime Global
 
 // PGOpenTime and PGCloseTime are in seconds from 00:00:00
@@ -89,9 +98,8 @@ int CalcNextGate(int timenow) {
   return -1;  // no gates left
 }
 
-bool NotifyCalled = false;
 inline void Notify(const TCHAR* text) {
-  NotifyCalled = true;
+  ::NotifyCalled();
   DoStatusMessage(text);
 }
 
@@ -211,11 +219,11 @@ void AlertGateOpen(int utc_time) {
     notification.ResetFlag();
   }
 
-  if (NextGate == (PGNumberOfGates - 1)) {
-    ::Notify(MsgToken<372>());  // LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
-  }
-  else if (PGNumberOfGates == 1) {
+  if (PGNumberOfGates == 1) {
     ::Notify(MsgToken<314>());  // "GATE OPEN"
+  }
+  else if (NextGate == PGNumberOfGates) {
+    ::Notify(MsgToken<372>());  // LKTOKEN  _@M372_ = "LAST GATE IS OPEN"
   }
   else {
     ::Notify(_T("%s %d / %d %s"),
@@ -403,10 +411,10 @@ TEST_CASE("TimeGates") {
 
   gTaskType = task_type_t::GP;
 
-  SUBCASE("Fixed gates") {
-    // Mock dependencies
+  // Helper function for fixed gates tests
+  auto RunFixedGatesTest = [](int num_gates, const std::map<int, std::pair<int, bool>>& expectations) {
     TimeGates::GateType = TimeGates::fixed_gates;
-    PGNumberOfGates = 3;
+    PGNumberOfGates = num_gates;
     PGGateIntervalTime = 30;  // 30 minutes
 
     PGCloseTimeH = 4;  // Close time is 04:00
@@ -417,7 +425,7 @@ TEST_CASE("TimeGates") {
     ResetGates();
 
     for (int time = 1; time < 86399; time += 2) {
-      NotifyCalled = false;
+      notify_called = false;
 
       NotifyGateState(time);
 
@@ -428,43 +436,73 @@ TEST_CASE("TimeGates") {
         CHECK_FALSE(ValidGate(time));
       }
 
-      switch (time) {
-        case 1:
-          CHECK_EQ(NextGate,  0);
-          CHECK_FALSE(NotifyCalled);
-          break;
-        case 3601:
-        case 5401:
-        case 6601:
-        case 6901:
-          CHECK_EQ(NextGate,  0);
-          CHECK(NotifyCalled);
-          break;
-        case 7201:
-        case 8401:
-        case 8701:
-          CHECK_EQ(NextGate,  1);
-          CHECK(NotifyCalled);
-          break;
-        case 9001:
-        case 10201:
-        case 10501:
-          CHECK_EQ(NextGate,  2);
-          CHECK(NotifyCalled);
-          break;
-        case 10801:
-          CHECK_EQ(NextGate,  3);
-          CHECK(NotifyCalled);
-          break;
-        case 14401:
-          CHECK_EQ(NextGate,  -1);
-          CHECK(NotifyCalled);
-          break;
-        default:
-          CHECK_FALSE(NotifyCalled);
-          break;
+      auto it = expectations.find(time);
+      if (it != expectations.end()) {
+        CHECK_EQ(NextGate, it->second.first);
+        if (it->second.second) {
+          CHECK(notify_called);
+        }
+        else {
+          CHECK_FALSE(notify_called);
+        }
+      }
+      else {
+        CHECK_FALSE(notify_called);
       }
     }
+  };
+
+  // Define expectations for each gate configuration
+  // Format: time -> {NextGate, ShouldNotify}
+  const std::map<int, std::pair<int, bool>> expectations_1gate = {
+    {1, {0, false}},
+    {3601, {0, true}},
+    {5401, {0, true}},
+    {6601, {0, true}},
+    {6901, {0, true}},
+    {7201, {1, true}},
+    {14401, {-1, true}},
+  };
+
+  const std::map<int, std::pair<int, bool>> expectations_2gates = {
+    {1, {0, false}},
+    {3601, {0, true}},
+    {5401, {0, true}},
+    {6601, {0, true}},
+    {6901, {0, true}},
+    {7201, {1, true}},
+    {8401, {1, true}},
+    {8701, {1, true}},
+    {9001, {2, true}},
+    {14401, {-1, true}},
+  };
+
+  const std::map<int, std::pair<int, bool>> expectations_3gates = {
+    {1, {0, false}},
+    {3601, {0, true}},
+    {5401, {0, true}},
+    {6601, {0, true}},
+    {6901, {0, true}},
+    {7201, {1, true}},
+    {8401, {1, true}},
+    {8701, {1, true}},
+    {9001, {2, true}},
+    {10201, {2, true}},
+    {10501, {2, true}},
+    {10801, {3, true}},
+    {14401, {-1, true}},
+  };
+
+  SUBCASE("Fixed gates (1 gate)") {
+    RunFixedGatesTest(1, expectations_1gate);
+  }
+
+  SUBCASE("Fixed gates (2 gates)") {
+    RunFixedGatesTest(2, expectations_2gates);
+  }
+
+  SUBCASE("Fixed gates (3 gates)") {
+    RunFixedGatesTest(3, expectations_3gates);
   }
 
   SUBCASE("PEV start") {
@@ -476,7 +514,7 @@ TEST_CASE("TimeGates") {
     bool trigger = true;
 
     for (int time = 1; time < 86399; time++) {
-      NotifyCalled = false;
+      notify_called = false;
       NotifyGateState(time);
 
       if (trigger && time > 100) {
