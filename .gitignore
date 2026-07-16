@@ -84,3 +84,5 @@ output.map
 .clinerules
 .cache
 /compile_commands.json
+/AGENTS.md
+.github/prompts/
