@@ -276,13 +276,31 @@ double CalculateLXBalastFactor(double Ballast)
 
 
 }
-double CalculateBalastFromLX(double Factor)
-{
-	double TotalAvailableBallast  = WEIGHTS[WEIGHT_WATER];
-	if(TotalAvailableBallast == 0)
-		TotalAvailableBallast = 1;
 
-	return ((Factor-1.0) * (WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] +  GlidePolar::WeightOffset))/ (TotalAvailableBallast+0.5);
+// Factor is the percent of dry weight,
+//    1.0 = 100% dry weight,
+//    1.5 = 50% more weight,
+//    2.0 = 100% more weight, etc
+// return percent of ballast, 1.0 = 100% ballast, 0.5 = 50% ballast, etc
+double CalculateBalastFromLX(double Factor) {
+  const double full_ballast = WEIGHTS[WEIGHT_WATER];
+  if (full_ballast <= 0) {
+    return 0;
+  }
+
+  // TODO: check for correct GlidePolar::WeightOffset usage !
+  const double polar_reference = WEIGHTS[WEIGHT_PLANEDRY] +
+                                 WEIGHTS[WEIGHT_PILOT] +
+                                 GlidePolar::WeightOffset;
+  if (polar_reference <= 0) {
+    return 0;
+  }
+
+  const double ballast_weight = (Factor * polar_reference) - polar_reference;
+  if (ballast_weight < 0) {
+    return 0;
+  }
+  return ballast_weight / full_ballast;
 }
 
 double CalculateLXBugs(double Bugs)
