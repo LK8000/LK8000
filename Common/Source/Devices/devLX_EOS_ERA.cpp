@@ -1110,9 +1110,9 @@ BOOL DevLX_EOS_ERA::EOSSetBAL(DeviceDescriptor_t* d,float fTmp, const TCHAR *inf
   if(Values(d))
   {
     TCHAR szTmp[MAX_NMEA_LEN];
-    if(WEIGHTS[2] > 0)
+    if(WEIGHTS[WEIGHT_WATER] > 0)
     {
-      lk::snprintf(szTmp,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[2]*100.0), info);
+      lk::snprintf(szTmp,  _T("%3.0f L = %3.0f%% %s"),fTmp,(fTmp/WEIGHTS[WEIGHT_WATER]*100.0), info);
       SetDataText( d,_BAL,  szTmp);
     }
   }
@@ -1121,10 +1121,10 @@ BOOL DevLX_EOS_ERA::EOSSetBAL(DeviceDescriptor_t* d,float fTmp, const TCHAR *inf
  
   if(IsDirInput(PortIO.BALDir  ))
   {
-    if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[2] > 0))
+    if((fabs(fTmp- GlidePolar::BallastLitres) > 1 )  &&   (WEIGHTS[WEIGHT_WATER] > 0))
     {
       GlidePolar::BallastLitres = fTmp;
-      d->RecvBallast(GlidePolar::BallastLitres / WEIGHTS[2]);
+      d->RecvBallast(GlidePolar::BallastLitres / WEIGHTS[WEIGHT_WATER]);
       ret = true;
     }
   }

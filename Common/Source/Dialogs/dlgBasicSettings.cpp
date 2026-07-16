@@ -302,13 +302,13 @@ void dlgBasicSettingsShowModal(void){
 
     wp = wf->FindByName<WndProperty>(TEXT("prpBallastPercent"));
     if (wp) {
-      if (WEIGHTS[2]==0) wp->SetReadOnly(1);
+      if (WEIGHTS[WEIGHT_WATER]==0) wp->SetReadOnly(1);
       wp->RefreshDisplay();
     }
 
     wp = wf->FindByName<WndProperty>(TEXT("prpBallastLitres"));
     if (wp) {
-      if (WEIGHTS[2]>0) {
+      if (WEIGHTS[WEIGHT_WATER]>0) {
         wp->GetDataField()-> SetAsFloat(GlidePolar::BallastLitres);
       } else {
 	wp->SetReadOnly(1);

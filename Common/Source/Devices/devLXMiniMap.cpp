@@ -326,8 +326,8 @@ bool DevLXMiniMap::LXWP1(DeviceDescriptor_t*, const char*, NMEA_INFO*)
 //static
 double DevLXMiniMap::CalculateBalastFactor(double Ballast)
 {
-	double CurrentWeight = WEIGHTS[0] +WEIGHTS[1] + (WEIGHTS[2]*Ballast) +  GlidePolar::WeightOffset;
-	double WithoutBallastWeight =  WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset;
+	double CurrentWeight = WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] + (WEIGHTS[WEIGHT_WATER]*Ballast) +  GlidePolar::WeightOffset;
+	double WithoutBallastWeight =  WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] +  GlidePolar::WeightOffset;
 
 	if(WithoutBallastWeight == 0)
 		WithoutBallastWeight = 1;
@@ -338,11 +338,11 @@ double DevLXMiniMap::CalculateBalastFactor(double Ballast)
 }
 double DevLXMiniMap::CalculateBalast(double Factor)
 {
-	double TotalAvailableBallast  = WEIGHTS[2];
+	double TotalAvailableBallast  = WEIGHTS[WEIGHT_WATER];
 	if(TotalAvailableBallast == 0)
 		TotalAvailableBallast = 1;
 
-	return ((Factor-1) * (WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset))/ TotalAvailableBallast;
+	return ((Factor-1) * (WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] +  GlidePolar::WeightOffset))/ TotalAvailableBallast;
 }
 
 

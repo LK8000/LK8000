@@ -180,6 +180,7 @@ BOOL DeviceDescriptor_t::RecvBugs(double Bugs) {
   return FALSE;
 }
 
+// @Ballast parameter values in the range 100% (1) to 0% (0);
 BOOL DeviceDescriptor_t::RecvBallast(double Ballast) {
   if (IgnoreBallast.Check(5000)) {
     CheckSetBallast(Ballast, this);

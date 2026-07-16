@@ -2345,7 +2345,7 @@ DataField* dfe = wp->GetDataField();
 #if 0
     // this wont update visibility or readonly after changing polar, so we dont use it
     // because this is also saved in the aircraft file and be better to be visible all the times
-    if (WEIGHTS[2]==0)
+    if (WEIGHTS[WEIGHT_WATER]==0)
 	wp->SetVisible(false);
     else
 	wp->SetVisible(true);

@@ -28,14 +28,14 @@ void WeightOffset(double wload) {
 	return;
   }
 
-  // WEIGHTS[2] is full ballast
+  // WEIGHTS[WEIGHT_WATER] is full ballast
   // BALLAST is percentage of full ballast
   // new weight = (wingload * wingarea) - ballast
-  calcweight=(wload*GlidePolar::WingArea) - (WEIGHTS[2]*BALLAST);
+  calcweight=(wload*GlidePolar::WingArea) - (WEIGHTS[WEIGHT_WATER]*BALLAST);
   // We set a min limit here, see SetBallast()
   // Probably only UAV can have such low wing loadings
   // Or a gnome on an RC glider, maybe.
-  GlidePolar::WeightOffset = std::max(calcweight-WEIGHTS[0]-WEIGHTS[1],(GlidePolar::WingArea - WEIGHTS[0] - WEIGHTS[1]));
+  GlidePolar::WeightOffset = std::max(calcweight-WEIGHTS[WEIGHT_PILOT]-WEIGHTS[WEIGHT_PLANEDRY],(GlidePolar::WingArea - WEIGHTS[WEIGHT_PILOT] - WEIGHTS[WEIGHT_PLANEDRY]));
 
   GlidePolar::SetBallast(); // BUGFIX 101002
 }
@@ -97,16 +97,16 @@ bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3], double (&w
   // however it doesnt hurt .
   // For this reason, the 70kg pilot weight is not important.
   // If we want to adjust wingloading, we just need to change gross weight.
-  WEIGHTS[0] = 70;                      // Pilot weight
-  WEIGHTS[1] = ww[0]-WEIGHTS[0];        // Glider empty weight
-  WEIGHTS[2] = ww[1];                   // Ballast weight
+  WEIGHTS[WEIGHT_PILOT] = 70;                      // Pilot weight
+  WEIGHTS[WEIGHT_PLANEDRY] = ww[0]-WEIGHTS[WEIGHT_PILOT];        // Glider empty weight
+  WEIGHTS[WEIGHT_WATER] = ww[1];                   // Ballast weight
 
 
   // now scale off weight
-  BUGSTOP_LKASSERT((WEIGHTS[0] + WEIGHTS[1])>=0);
-  if((WEIGHTS[0] + WEIGHTS[1])>=0) {
-    POLAR[0] = POLAR[0] * (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
-    POLAR[2] = POLAR[2] / (double)sqrt(WEIGHTS[0] + WEIGHTS[1]);
+  BUGSTOP_LKASSERT((WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY])>=0);
+  if((WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY])>=0) {
+    POLAR[0] = POLAR[0] * (double)sqrt(WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY]);
+    POLAR[2] = POLAR[2] / (double)sqrt(WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY]);
   }
   
   return true;

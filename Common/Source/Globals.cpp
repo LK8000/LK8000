@@ -174,9 +174,9 @@ void Globals_Init(void) {
   POLAR[1] = 0;
   POLAR[2] = 0;
 
-  WEIGHTS[0] = 250;
-  WEIGHTS[1] = 70;
-  WEIGHTS[2] = 100;
+  WEIGHTS[WEIGHT_PILOT] = 70;
+  WEIGHTS[WEIGHT_PLANEDRY] = 250;
+  WEIGHTS[WEIGHT_WATER] = 100;
 
   POLARV[0] = 21;
   POLARV[1] = 27;

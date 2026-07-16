@@ -39,13 +39,13 @@ static unsigned iSAFETYSPEED=0;
 //
 // 150428 limit wing loading minimum value to be 1.
 // BallastWeight/WingArea >= 1 which means BallastWeight must be >= WingArea
-// BallastLitres + WEIGHTS[0] + WEIGHTS[1] + GlidePolar::WeightOffset > WingArea
-// BallastLitres + GlidePolar::WeightOffset  > (WingArea - WEIGHTS[0] - WEIGHTS[1])
-// ->  GlidePolar::WeightOffset  > (WingArea - WEIGHTS[0] - WEIGHTS[1])
+// BallastLitres + WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY] + GlidePolar::WeightOffset > WingArea
+// BallastLitres + GlidePolar::WeightOffset  > (WingArea - WEIGHTS[WEIGHT_PILOT] - WEIGHTS[WEIGHT_PLANEDRY])
+// ->  GlidePolar::WeightOffset  > (WingArea - WEIGHTS[WEIGHT_PILOT] - WEIGHTS[WEIGHT_PLANEDRY])
 // and we use the above in the WeightOffset();
 
 double GlidePolar::GetAUW() {
-  return BallastLitres + WEIGHTS[0] + WEIGHTS[1] + GlidePolar::WeightOffset;
+  return BallastLitres + WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY] + GlidePolar::WeightOffset;
 }
 
 
@@ -53,7 +53,7 @@ void GlidePolar::SetBallast() {
   const std::lock_guard lock(CritSec_FlightData);
 
   double BallastWeight;
-  BallastLitres = WEIGHTS[2] * BALLAST;
+  BallastLitres = WEIGHTS[WEIGHT_WATER] * BALLAST;
   BallastWeight = GetAUW();
   // Always positive.  But sqrt requires a >=0 value and we do check anyway.
   BUGSTOP_LKASSERT(BallastWeight>=0);

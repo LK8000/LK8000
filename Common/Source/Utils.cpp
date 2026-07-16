@@ -266,8 +266,8 @@ void ToggleDrawTaskFAI() {
 
 double CalculateLXBalastFactor(double Ballast)
 {
-	double CurrentWeight = WEIGHTS[0] +WEIGHTS[1] + (WEIGHTS[2]*Ballast) +  GlidePolar::WeightOffset;
-	double WithoutBallastWeight =  WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset;
+	double CurrentWeight = WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] + (WEIGHTS[WEIGHT_WATER]*Ballast) +  GlidePolar::WeightOffset;
+	double WithoutBallastWeight =  WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] +  GlidePolar::WeightOffset;
 
 	if(WithoutBallastWeight == 0)
 		WithoutBallastWeight = 1;
@@ -278,11 +278,11 @@ double CalculateLXBalastFactor(double Ballast)
 }
 double CalculateBalastFromLX(double Factor)
 {
-	double TotalAvailableBallast  = WEIGHTS[2];
+	double TotalAvailableBallast  = WEIGHTS[WEIGHT_WATER];
 	if(TotalAvailableBallast == 0)
 		TotalAvailableBallast = 1;
 
-	return ((Factor-1.0) * (WEIGHTS[0] +WEIGHTS[1] +  GlidePolar::WeightOffset))/ (TotalAvailableBallast+0.5);
+	return ((Factor-1.0) * (WEIGHTS[WEIGHT_PILOT] +WEIGHTS[WEIGHT_PLANEDRY] +  GlidePolar::WeightOffset))/ (TotalAvailableBallast+0.5);
 }
 
 double CalculateLXBugs(double Bugs)

@@ -324,8 +324,8 @@ BOOL cai302Declare(DeviceDescriptor_t* d, const Declaration_t *decl, unsigned er
             (int)GlidePolar::bestld,
             (int)Units::To(unKiloMeterPerHour, GlidePolar::Vbestld()),
             (int)Units::To(unKiloMeterPerHour, GlidePolar::FindSpeedForSinkRateAccurate(-2.0)),
-            (int)(WEIGHTS[0] + WEIGHTS[1]),
-            (int)WEIGHTS[2],
+            (int)(WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY]),
+            (int)WEIGHTS[WEIGHT_WATER],
             0,
             1, //cai302_Gdata.ConfigWord,
             (int)(GlidePolar::WingArea * 1000)

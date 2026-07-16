@@ -234,7 +234,7 @@ _skip1:
     }
     if (BallastTimerActive) {
 		// LKTOKEN _@M1351_ " BALLAST"
-      lk::snprintf(TEMP,TEXT("%s %3.0fL"), MsgToken<1351>(), WEIGHTS[2]*BALLAST);
+      lk::snprintf(TEMP,TEXT("%s %3.0fL"), MsgToken<1351>(), WEIGHTS[WEIGHT_WATER]*BALLAST);
       _tcscat(Scale2, TEMP);
     }
 
