@@ -1811,17 +1811,34 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
    ****************************************************************/
   if (strcmp(szTmp1, "POLAR") == 0)
   {
-    double fLoad,fWeight,fMaxW, fEmptyW,fPilotW, fa,fb,fc;
-    if( (ParToDouble(sentence, 2, &fa)) &&
+    /**
+     * Parse the POLAR value from a PLXV0 sentence.
+     *
+     * Format: <a>,<b>,<c>,<polar_load>,<polar_weight>,
+     *         <max_weight>,<empty_weight>,<pilot_weight>,<name>,<stall>
+     *
+     * Coefficients arrive in LX units (v=1 corresponds to 100 km/h)
+     */
+
+    double fLoad, fWeight, fMaxW, fEmptyW, fPilotW, fa, fb, fc;
+    if ((ParToDouble(sentence, 2, &fa)) &&
         (ParToDouble(sentence, 3, &fb)) &&
         (ParToDouble(sentence, 4, &fc)) &&
         (ParToDouble(sentence, 5, &fLoad)) &&
         (ParToDouble(sentence, 6, &fWeight)) &&
         (ParToDouble(sentence, 7, &fMaxW)) &&
         (ParToDouble(sentence, 8, &fEmptyW)) &&
-        (ParToDouble(sentence, 9, &fPilotW))
-      )
-      StartupStore(_T("Nano3 POLAR: a:%5.2f b:%5.2f c:%5.2f L:%3.1f W:%3.1f E:%3.1f P:%3.1f"),fa,fb,fc, fLoad,fWeight,fEmptyW,fPilotW)  ;
+        (ParToDouble(sentence, 9, &fPilotW))) 
+    {
+      StartupStore(
+          _T("Nano3 POLAR: ")
+          _T("a:%5.2f b:%5.2f c:%5.2f ")
+          _T("Load:%3.1f Weight:%3.1f ")
+          _T("Max:%3.1f ")
+          _T("Empty:%3.1f ")
+          _T("Pilot:%3.1f"),
+          fa, fb, fc, fLoad, fWeight, fMaxW, fEmptyW, fPilotW);
+    }
     return true;
   }
 
