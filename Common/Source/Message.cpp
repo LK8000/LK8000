@@ -224,6 +224,9 @@ void Message::Render() {
 }
 
 void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
+    if (Text) {
+        TestLog(_T("Message::AddMessage: %s"), Text);
+    }
     ScopeLock lock(CritSec_Messages);
     if (!startTime.IsDefined()) {
         // too early ...
