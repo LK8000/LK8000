@@ -213,22 +213,22 @@ void AddReservedWaypoints()
 	//
 	// VIRTUAL UNUSED (RESERVED FOR NEXT TIME..)
 	//
-	WayPointList[RESWP_UNUSED].Number=RESWP_UNUSED+1;
-	WayPointList[RESWP_UNUSED].Latitude=RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_UNUSED].Longitude=RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_UNUSED].Altitude=RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_UNUSED].Flags=TURNPOINT;
-	lk::strcpy(WayPointList[RESWP_UNUSED].Name, LKGetText(TEXT(RESWP_UNUSED_NAME)) );
-	SetWaypointComment(WayPointList[RESWP_UNUSED],_T("UNUSED VIRTUAL TURNPOINT"));
-	WayPointList[RESWP_UNUSED].Reachable=FALSE;
-	WayPointList[RESWP_UNUSED].AltArivalAGL=0.0;
-	WayPointList[RESWP_UNUSED].Visible=FALSE;
-	WayPointList[RESWP_UNUSED].InTask=false;
-	WayPointList[RESWP_UNUSED].Details.clear();
+	WayPointList[RESWP_PANPOS_CANDIDATE].Number=RESWP_PANPOS_CANDIDATE+1;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Flags=TURNPOINT;
+	lk::strcpy(WayPointList[RESWP_PANPOS_CANDIDATE].Name, LKGetText(TEXT(RESWP_PANPOS_CANDIDATE_NAME)) );
+	SetWaypointComment(WayPointList[RESWP_PANPOS_CANDIDATE],_T("UNUSED VIRTUAL TURNPOINT"));
+	WayPointList[RESWP_PANPOS_CANDIDATE].Reachable=FALSE;
+	WayPointList[RESWP_PANPOS_CANDIDATE].AltArivalAGL=0.0;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Visible=FALSE;
+	WayPointList[RESWP_PANPOS_CANDIDATE].InTask=false;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Details.clear();
 
-	WayPointList[RESWP_UNUSED].FarVisible=false;
-	WayPointList[RESWP_UNUSED].FileNum=-1;
-	WayPointList[RESWP_UNUSED].Format= LKW_VIRTUAL;
+	WayPointList[RESWP_PANPOS_CANDIDATE].FarVisible=false;
+	WayPointList[RESWP_PANPOS_CANDIDATE].FileNum=-1;
+	WayPointList[RESWP_PANPOS_CANDIDATE].Format= LKW_VIRTUAL;
 
    for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
 	WayPointList[i].Number=i+1;

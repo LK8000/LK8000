@@ -175,7 +175,7 @@ static bool RunDirectToCountdown(int new_tp, int wp_index,
         lk::strcpy(countdown_wp_name, WayPointList[wp_index].Name);
       info_wp = wp_index;
       // Nothing else to do here: the candidate position lives in a scratch
-      // waypoint (RESWP_UNUSED for the pan case) that is never the live
+      // waypoint (RESWP_PANPOS_CANDIDATE for the pan case) that is never the live
       // DirectTo target, so an active DirectTo (if any) is left completely
       // untouched until the pilot confirms below.
     }
@@ -223,14 +223,14 @@ static bool RunDirectToCountdown(int new_tp, int wp_index,
     ActiveTaskPoint = new_tp;
     DirectToWaypointIndex = -1;
   } else if (ValidWayPointFast(wp_index)) {
-    if (wp_index == RESWP_UNUSED) {
+    if (wp_index == RESWP_PANPOS_CANDIDATE) {
       // Candidate confirmed: promote it from the scratch slot into the
       // actual pan-target slot, which is what the rest of the app (and the
       // unrelated task-point pan-edit feature) expects a pan-originated
       // target to live at.
-      WayPointList[RESWP_PANPOS].Latitude  = WayPointList[RESWP_UNUSED].Latitude;
-      WayPointList[RESWP_PANPOS].Longitude = WayPointList[RESWP_UNUSED].Longitude;
-      WayPointList[RESWP_PANPOS].Altitude  = WayPointList[RESWP_UNUSED].Altitude;
+      WayPointList[RESWP_PANPOS].Latitude  = WayPointList[RESWP_PANPOS_CANDIDATE].Latitude;
+      WayPointList[RESWP_PANPOS].Longitude = WayPointList[RESWP_PANPOS_CANDIDATE].Longitude;
+      WayPointList[RESWP_PANPOS].Altitude  = WayPointList[RESWP_PANPOS_CANDIDATE].Altitude;
       wp_index = RESWP_PANPOS;
     }
     DirectToWaypointIndex = wp_index;
@@ -271,7 +271,7 @@ bool ShowDirectToFromPanDialog(int wp_index, double pan_lat, double pan_lon) {
       wp_index = best_idx;
     }
   }
-  if (wp_index == RESWP_UNUSED)
+  if (wp_index == RESWP_PANPOS_CANDIDATE)
     ComputePanDescription(pan_lat, pan_lon, countdown_wp_name, NAME_SIZE - 1);
   return RunDirectToCountdown(-1, wp_index, /*name_preset=*/true);
 }

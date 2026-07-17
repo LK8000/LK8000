@@ -97,9 +97,9 @@ bool ShowDirectToCountdownDialog(int new_tp);
 bool ShowDirectToOffTaskDialog(int wp_index);
 
 // Pan-mode Direct To: builds Oracle description, then counts down.  The candidate
-// position is staged in RESWP_UNUSED (never the live DirectTo target) and only
+// position is staged in RESWP_PANPOS_CANDIDATE (never the live DirectTo target) and only
 // promoted to RESWP_PANPOS if the pilot confirms; wp_index is normally
-// RESWP_UNUSED but may be a real landable waypoint if pan snapped to one.
+// RESWP_PANPOS_CANDIDATE but may be a real landable waypoint if pan snapped to one.
 bool ShowDirectToFromPanDialog(int wp_index, double pan_lat, double pan_lon);
 
 #endif

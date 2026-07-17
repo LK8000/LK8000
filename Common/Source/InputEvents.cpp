@@ -883,14 +883,14 @@ void InputEvents::eventDirectToFromPan(const TCHAR* /*misc*/) {
     // if a previous pan DirectTo is already active there, it must stay untouched
     // for the whole countdown, and Cancel must not lose its coordinates.
     const std::lock_guard lock(CritSec_TaskData);
-    WayPointList[RESWP_UNUSED].Latitude  = pan_lat;
-    WayPointList[RESWP_UNUSED].Longitude = pan_lon;
-    WayPointList[RESWP_UNUSED].Altitude  = th;
+    WayPointList[RESWP_PANPOS_CANDIDATE].Latitude  = pan_lat;
+    WayPointList[RESWP_PANPOS_CANDIDATE].Longitude = pan_lon;
+    WayPointList[RESWP_PANPOS_CANDIDATE].Altitude  = th;
   }
 
   MapWindow::Event_Pan(0);  // exit pan mode before showing countdown
 
-  ShowDirectToFromPanDialog(RESWP_UNUSED, pan_lat, pan_lon);
+  ShowDirectToFromPanDialog(RESWP_PANPOS_CANDIDATE, pan_lat, pan_lon);
 }
 
 void InputEvents::eventSounds(const TCHAR *misc) {
