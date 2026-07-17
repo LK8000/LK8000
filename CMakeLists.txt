@@ -179,7 +179,6 @@ add_library( LK8000 SHARED
     Common/Source/xcs/Util/TruncateString.cpp
     Common/Source/xcs/Util/StaticString.cpp
     Common/Source/xcs/Util/UTF8.cpp
-    Common/Source/xcs/Util/StaticString.cpp
     Common/Source/xcs/Util/StringUtil.cpp
 
     Common/Source/xcs/OS/Clock.cpp
@@ -187,7 +186,6 @@ add_library( LK8000 SHARED
     Common/Source/xcs/OS/FileDescriptor.cpp
     Common/Source/xcs/OS/Poll.cpp
     Common/Source/xcs/OS/FileUtil.cpp
-    Common/Source/xcs/OS/Poll.cpp
     Common/Source/xcs/OS/Process.cpp
     Common/Source/xcs/OS/PathName.cpp
 
@@ -663,7 +661,6 @@ add_library( LK8000 SHARED
     Common/Source/Devices/devATR833.cpp
     Common/Source/Devices/devVaulter.cpp
     Common/Source/Devices/devOpenVario.cpp
-    Common/Source/Devices/devFlarm.cpp
     Common/Source/Devices/devFlarm.cpp
     Common/Source/Devices/devLX_EOS_ERA.cpp
     Common/Source/Devices/devFanet.cpp
