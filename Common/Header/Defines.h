@@ -363,7 +363,7 @@
 #define RESWP_PANPOS		7
 #define RESWP_PANPOS_NAME	"temporary"	// panning center position
 #define RESWP_PANPOS_CANDIDATE		8
-#define RESWP_PANPOS_CANDIDATE_NAME	"_@M1815_"	// unused
+#define RESWP_PANPOS_CANDIDATE_NAME	"_@M1815_"	// pan position candidate
 #define RESWP_EXT_TARGET	9
 
 #define RESWP_EXT_TARGET_NAME	"_@M2469_"	// Task Waypoint from external device
