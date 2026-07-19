@@ -11,7 +11,14 @@ There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
 [version 7.6.5]
+* Fix:
  - Invalid task time to start message [#1715]
+ - CompGPS waypoint file loading [#1713]
+ - Cupx waypoint file loading [#1713]
+ - Fixed time gates notification [#1719]
+ - Conversion from load factor to ballast percentage (#1714) 
+* New:
+ - Allow SoftRF Concorde, Prime Mk4 and Retro Mk2
 
 [version 7.6.4]
  - Fix CUP waypoint & Task loading
