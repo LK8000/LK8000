@@ -12,6 +12,7 @@
 #include "Compiler.h"
 #include "tchar.h"
 #include <array>
+#include <cstddef>
 
 namespace settings {
     class writer;
