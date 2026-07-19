@@ -140,9 +140,12 @@ BOOL XCV(DeviceDescriptor_t* d, const char* const* params, size_t nparams, NMEA_
   }
 
   if (params[1] == "bal-water"sv) {
-    double liters;
-    if (ReadChecked(params[2], liters)) {
-      d->RecvBallast(liters / WEIGHTS[WEIGHT_WATER]);
+    const double full_ballast = WEIGHTS[WEIGHT_WATER];
+    if (full_ballast > 0) {
+      double liters;
+      if (ReadChecked(params[2], liters)) {
+        d->RecvBallast(liters / full_ballast);
+      }
     }
   } 
   else if (params[1] == "crew-weight"sv) {
