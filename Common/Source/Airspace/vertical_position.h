@@ -9,8 +9,9 @@
 #ifndef _AIRSPACE_VERTICAL_POSITION_H_
 #define _AIRSPACE_VERTICAL_POSITION_H_
 
-#include "tchar.h"
+#include "Util/tstring.hpp"
 #include "Units.h"
+#include <cstdint>
 
 namespace rapidxml {
   template <class Ch>
