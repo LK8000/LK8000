@@ -1,6 +1,15 @@
 #if !defined(AFX_TASK_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_TASK_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
+#include "Sizes.h"
+#include "tchar.h"
+#include <memory>
+#include <istream>
+
+struct GeoPoint;
+struct WAYPOINT;
+
+
 enum class task_type_t : int {
   DEFAULT = 0,
   AAT = 1,
