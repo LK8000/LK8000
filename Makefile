@@ -56,6 +56,11 @@ endif
 BIN=Bin/$(TARGET)
 
 OPTIMIZE    := -O2 -g
+OPTIMIZE 	+= -flto
+OPTIMIZE 	+= -fipa-icf
+OPTIMIZE 	+= -ffunction-sections -fdata-sections
+
+
 PROFILE	    :=
 REMOVE_NS   := n
 
@@ -561,6 +566,9 @@ CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized -Wmi
 CPPFLAGS	+= -Wredundant-decls
 CPPFLAGS	+= -Wall -Wno-char-subscripts -fsigned-char
 CPPFLAGS	+= -Wno-psabi
+CPPFLAGS	+= -Wodr
+CPPFLAGS	+= -Werror=stringop-overread
+
 #CPPFLAGS	+= -Werror=stringop-overflow
 #CPPFLAGS	+= -Wall -Wno-char-subscripts -Wignored-qualifiers -Wunsafe-loop-optimizations 
 #CPPFLAGS	+= -Winit-self -Wswitch -Wcast-qual -Wcast-align
@@ -627,6 +635,16 @@ ifeq ($(CONFIG_PC),y)
 endif
 
 LDFLAGS		+=$(PROFILE)
+
+ifneq ($(DEBUG),y)
+ LDFLAGS += -flto
+ LDFLAGS += -Wl,--gc-sections
+# LDFLAGS += -fuse-ld=gold # unavailable on kobo toolchain ...
+# LDFLAGS += -Wl,--icf=all # unavailable without gold linker
+
+# LDFLAGS += -Wl,--print-icf-sections
+# LDFLAGS += -Wl,--print-gc-sections
+endif
 
 ifeq ($(CONFIG_LINUX),y)
  LDLIBS += $(MCPU) -lstdc++ -pthread -lrt -lm
