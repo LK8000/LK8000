@@ -13,14 +13,13 @@
 #include "PGTask/PGTaskOptimizer.h"
 #include "utils/printf.h"
 
-PGTaskOptimizer gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
+static PGTaskOptimizer gPGTask; // This Is Shared ressource, never use without Locking Task Data ( LockTaskData()/UnlockTaskData() )!
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+	const std::lock_guard lock(CritSec_TaskData);
 
 	if (!DoOptimizeRoute())
 		return;
-
-	LockTaskData();
 
 	gPGTask.Optimize(Basic, Calculated);
 
@@ -35,23 +34,21 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	WayPointList[RESWP_OPTIMIZED].Altitude = Task[ActiveTaskPoint].AATTargetAltitude;
 
 	lk::snprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"), WayPointList[stdwp].Name);
-
-	UnlockTaskData();
 }
 
 // Clear PG
 void ClearOptimizedTargetPos() {
+	const std::lock_guard lock(CritSec_TaskData);
 
 	if (!(gTaskType==task_type_t::GP))
 		return;
 
-	LockTaskData();
     if(!WayPointList.empty()) {
-	WayPointList[RESWP_OPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_OPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
-	WayPointList[RESWP_OPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
-	// name will be assigned by function dynamically
-	lk::strcpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
+		WayPointList[RESWP_OPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
+		WayPointList[RESWP_OPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
+		WayPointList[RESWP_OPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
+		// name will be assigned by function dynamically
+		lk::strcpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
     }
 
 	for(int i = 0; ValidWayPoint(Task[i].Index); ++i) {
@@ -62,6 +59,4 @@ void ClearOptimizedTargetPos() {
 	}
 
 	gPGTask.Initialize();
-
-	UnlockTaskData();
 }
