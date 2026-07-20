@@ -25,7 +25,7 @@ public:
 	}
 
 	inline COMMPortItem_t(tstring&& szName, tstring&& szLabel) :
-			_sName(szName), _sLabel(szLabel)
+			_sName(std::move(szName)), _sLabel(std::move(szLabel))
 	{
 	}
 
