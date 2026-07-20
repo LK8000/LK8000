@@ -41,6 +41,8 @@
   #define deb_Log(...)
 #endif
 
+namespace {
+
 enum thread_state {
   IDLE_STATE,
   OPEN_BIN_STATE,
@@ -91,6 +93,8 @@ public:
     return timer.Check(duration);
   }
 };
+
+} // namespace
 
 static thread_state_with_timer FlarmReadIGC;
 
