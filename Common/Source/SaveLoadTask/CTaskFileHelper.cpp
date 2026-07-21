@@ -340,9 +340,9 @@ void CTaskFileHelper::LoadOptions(const xml_node* node) {
                     LoadOptionDefault(nodeOpt);
                 }
             }
-            LoadRules(nodeOpt->first_node("rules"));
             LoadTimeGate(nodeOpt->first_node("time-gate"));
         }
+        LoadRules(node->first_node("rules"));
     }
 }
 
