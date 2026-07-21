@@ -10,6 +10,12 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.5.6]
+* Fix
+ - Fixed time gates notification. [#1719]
+ - Task rule loading from .lkt file [#1720]
+ - Invalid "Beep" event
+
 [version 7.5.5]
 * Fix
  - Incorrect remaining distance in the status window. [#1699]
