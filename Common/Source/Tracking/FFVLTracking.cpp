@@ -36,7 +36,7 @@ void FFVLTracking::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated
   if (time_now > next_time) {
     next_time = time_now + 60s;
 
-    Push({{basic.Latitude, basic.Longitude}, basic.Altitude});
+    Push({{basic.Latitude, basic.Longitude}, GetCurrentAltitude(basic)});
   }
 }
 

@@ -159,5 +159,14 @@ AGeoPoint GetCurrentPosition(const NMEA_INFO& Info) {
   return {{ Info.Latitude, Info.Longitude }, Info.Altitude };
 }
 
+inline
+double GetCurrentAltitude(const NMEA_INFO& Info) {
+  if (Info.BaroAltitude.available()) {
+    return Info.BaroAltitude.value();
+  } else if (!Info.NAVWarning) {
+    return Info.Altitude;
+  }
+  return 0.0; // invalid fix, return 0
+}
 
 #endif //_NMEA_INFO_H_

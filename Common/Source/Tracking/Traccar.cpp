@@ -41,7 +41,7 @@ void Traccar::Update(const NMEA_INFO &basic, const DERIVED_INFO &calculated) {
                                  basic.Year, basic.Month, basic.Day, basic.Hour,
                                  basic.Minute, basic.Second);
 
-    Push({{{basic.Latitude, basic.Longitude}, basic.Altitude},
+    Push({{{basic.Latitude, basic.Longitude}, GetCurrentAltitude(basic)},
           basic.Speed,
           basic.TrackBearing,
           std::move(timestamp),

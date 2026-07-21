@@ -16,6 +16,7 @@
 #include "Units.h"
 #include "Enums.h"
 #include "MessageLog.h"
+#include "Baro.h"
 
 using json = nlohmann::json;
 using namespace std::chrono_literals;
@@ -107,7 +108,7 @@ void PureTrack::Update(const NMEA_INFO& basic, const DERIVED_INFO& calculated) {
 bool PureTrack::Push(const NMEA_INFO& basic) {
   return Push({
       to_time_t(basic),
-      {{basic.Latitude, basic.Longitude}, basic.Altitude},
+      {{basic.Latitude, basic.Longitude}, GetCurrentAltitude(basic)},
       basic.Speed,
       basic.TrackBearing,
   });

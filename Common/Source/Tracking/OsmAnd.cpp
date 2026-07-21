@@ -40,7 +40,7 @@ void OsmAnd::Update(const NMEA_INFO& Basic,
 
     Push({
       to_time_t(Basic),
-      AGeoPoint({Basic.Latitude, Basic.Longitude}, Basic.Altitude),
+      AGeoPoint({Basic.Latitude, Basic.Longitude}, GetCurrentAltitude(Basic)),
       Basic.Speed, Basic.TrackBearing
     });
   }
