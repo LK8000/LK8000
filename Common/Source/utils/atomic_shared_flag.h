@@ -9,10 +9,11 @@
  * Created on 06 April 2025
  */
 
-#ifndef UTILS_ATOMIC_FLAGS_COUNTER_H
-#define UTILS_ATOMIC_FLAGS_COUNTER_H
+#ifndef UTILS_ATOMIC_SHARED_FLAG_H
+#define UTILS_ATOMIC_SHARED_FLAG_H
 
-#include "Thread/Mutex.hpp"
+#include <atomic>
+#include <cstdint>
 
 // This class is a simple atomic counter used to
 // implement a shared flag.
@@ -29,36 +30,26 @@ class atomic_shared_flag final {
 
   void operator=(bool value) {
     if (value) {
-      increment();
-    }
-    else {
-      decrement();
+      _count.fetch_add(1, std::memory_order_release);
+    } else {
+      // Guard against underflow: only decrement if count > 0
+      uint32_t current = _count.load(std::memory_order_acquire);
+      while (current > 0) {
+        if (_count.compare_exchange_weak(current, current - 1,
+                                         std::memory_order_acq_rel,
+                                         std::memory_order_acquire)) {
+          return;
+        }
+      }
     }
   }
 
   operator bool() const {
-    const std::lock_guard lock(_mtx);
-    return _count > 0;
+    return _count.load(std::memory_order_acquire) != 0;
   }
 
  private:
-  // Increment the counter
-  void increment() {
-    const std::lock_guard lock(_mtx);
-    ++_count;
-  }
-
-  // Decrement the counter
-  void decrement() {
-    const std::lock_guard lock(_mtx);
-    if (_count > 0) {
-      --_count;
-    }
-  }
-
- private:
-  unsigned _count = 0;
-  mutable Mutex _mtx;
+  std::atomic_uint32_t _count{0};
 };
 
-#endif  // UTILS_ATOMIC_FLAGS_COUNTER_H
+#endif  // UTILS_ATOMIC_SHARED_FLAG_H
