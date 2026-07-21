@@ -254,9 +254,9 @@ private:
   void FindFAITriangleClosingPoint();
   void FindFREETriangleClosingPoint();
 
- public:
-
   CContestMgr() = default;
+
+ public:
 
   TriangleLeg* GetFAIAssistantMaxLeg() {return _maxFAILeg;};
   TriangleLeg* GetFAIAssistantLeg(int i) {return &_faiAssistantTriangleLegs[i];};

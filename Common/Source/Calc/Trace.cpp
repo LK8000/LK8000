@@ -18,8 +18,7 @@
  * @param algorithm The compression algorithm of a trace
  */
 CTrace::CTrace(unsigned maxSize, unsigned timeLimit, unsigned algorithm):
-  _maxSize(maxSize), _timeLimit(timeLimit), _algorithm(algorithm),
-  _valid(true), _size(0), _analyzedPointCount(0), _front(0), _back(0)
+  _maxSize(maxSize), _timeLimit(timeLimit), _algorithm(algorithm)
 {
 }
 
@@ -70,14 +69,18 @@ void CTrace::Push(CPoint *point)
   }
   
   // add new point to a list
+  assert(_back == point->_prev);
+  assert(!_back || _back->_next == point);
+
   _back = point;
   _size++;
-  if(!_front)
+  if(!_front) {
     _front = _back;
+  }
   
   if(_timeLimit) {
     // limit the trace to required time period
-    while(_back && _front && (unsigned)_back->_gps->TimeDelta(*_front->_gps) > _timeLimit) {
+    while(_back && _front && _back->_gps->TimeDelta(*_front->_gps) > _timeLimit) {
       CPoint *next = _front->_next;
       delete _front;
       _size--;
@@ -112,9 +115,9 @@ void CTrace::Push(CPoint *point)
   }
   
   // first and last point are never a subject of optimization
-  if(_size < 3)
+  if(_size < 3) {
     return;
-  
+  }
   // add previous point to compression pool
   _compressionCostSet.insert(_back->_prev);
 }
@@ -163,9 +166,9 @@ void CTrace::Compress(unsigned maxSize /* = 0 */)
       CPointCostSet::iterator preWorstIt = _compressionCostSet.find(preWorst);
       if(preWorstIt == _compressionCostSet.end()) {
 #ifndef TEST_CONTEST
-	if (warnings>=0) {
+        if (warnings>=0) {
           StartupStore(_T("%s:%u - ERROR: preWorst not found!!\n"), _T(__FILE__), __LINE__);
-	  warnings--;
+          warnings--;
         }
 #endif
         return;
@@ -180,9 +183,9 @@ void CTrace::Compress(unsigned maxSize /* = 0 */)
       CPointCostSet::iterator postWorstIt = _compressionCostSet.find(postWorst);
       if(postWorstIt == _compressionCostSet.end()) {
 #ifndef TEST_CONTEST
-	if (warnings>=0) {
+        if (warnings>=0) {
           StartupStore(_T("%s:%u - ERROR: postWorst not found!!\n"), _T(__FILE__), __LINE__);
-	  warnings--;
+          warnings--;
         }
 #endif
         return;

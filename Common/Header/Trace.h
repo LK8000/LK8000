@@ -17,11 +17,12 @@ class CContestMgr;
 /** 
  * @brief Pointers compare object
  */
-template<class T>
+template <class T>
 struct CPtrCmp {
-  bool operator()(const T &left, const T &right) const { return *left < *right; }
+  bool operator()(const T& left, const T& right) const {
+    return *left < *right;
+  }
 };
-
 
 /** 
  * @brief GPS path trace
@@ -54,20 +55,20 @@ private:
    * @brief A map of GPS points sorted from the most importand to the least important ones.
    * 
    */
-  typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
-  
+  using CPointCostSet = std::set<CPoint*, CPtrCmp<CPoint*>>;
+
   unsigned _maxSize;                              /**< @brief Maximum number of GPS fixes to store inside a trace */
-  const unsigned _timeLimit;                      /**< @brief Maximum time period of a trace */
+  const int _timeLimit;                           /**< @brief Maximum time period of a trace */
   const unsigned _algorithm;                      /**< @brief The compression algorithm of a trace */
-  bool _valid;                                    /**< @brief Informs that a trace is invalid */
-  unsigned _size;                                 /**< @brief Current number of fixes stored in a trace */
-  unsigned _analyzedPointCount;                   /**< @brief The number of analysed GPS fixes */
+  bool _valid = true;                             /**< @brief Informs that a trace is invalid */
+  unsigned _size = 0;                             /**< @brief Current number of fixes stored in a trace */
+  unsigned _analyzedPointCount = 0;               /**< @brief The number of analysed GPS fixes */
   CPointCostSet _compressionCostSet;              /**< @brief The sorted set of GPS fixes */
-  CPoint *_front;                                 /**< @brief The first GPS fix in a trace */
-  CPoint *_back;                                  /**< @brief The last GPS fix in a trace */
+  CPoint *_front = nullptr;                       /**< @brief The first GPS fix in a trace */
+  CPoint *_back = nullptr;                        /**< @brief The last GPS fix in a trace */
   
-  CTrace(const CTrace &);                         /**< @brief Disallowed */
-  CTrace &operator=(const CTrace &);              /**< @brief Disallowed */
+  CTrace(const CTrace &) = delete;                /**< @brief Disallowed */
+  CTrace &operator=(const CTrace &) = delete;     /**< @brief Disallowed */
 
   void Push(CPoint *point);
   
@@ -97,37 +98,40 @@ public:
 class CTrace::CPoint {
   friend class CTrace;
   friend class CTestContest;
-  
+
   const CTrace &_trace;                           /**< @brief Parent trace */
   CPointGPSSmart _gps;                            /**< @brief Contained GPS fix */
-  
+
   // trace compression values
   unsigned _prevDistance;                         /**< @brief The distance from the previous GPS fix */
-  //  float _inheritedCost;                           /**< @brief The cost inherited from compressed (removed) GPS fixes */
-  unsigned _distanceCost;                         /**< @brief The distance related compression cost */
-  unsigned _timeCost;                             /**< @brief Time related compression cost */
-  
+  //  float _inheritedCost;                       /**< @brief The cost inherited from compressed (removed) GPS fixes */
+  unsigned _distanceCost = 0;                     /**< @brief The distance related compression cost */
+  unsigned _timeCost = 0;                         /**< @brief Time related compression cost */
+
   // list iterators
-  CPoint *_prev;                                  /**< @brief Previous point in time domain */
-  CPoint *_next;                                  /**< @brief Next point in time domain */
-  
-  CPoint(const CPoint &);                         /**< @brief Disallowed */
-  CPoint &operator=(const CPoint &);              /**< @brief Disallowed */
-  
+  CPoint *_prev = nullptr;                        /**< @brief Previous point in time domain */
+  CPoint *_next = nullptr;                        /**< @brief Next point in time domain */
+
+  CPoint(const CPoint &) = delete;                /**< @brief Disallowed */
+  CPoint &operator=(const CPoint &) = delete;     /**< @brief Disallowed */
+
   void Reduce();
   void AssesCost();
-  
+
 public:
   CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev);
   CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev);
   ~CPoint();
 
-  const CPointGPS &GPS() const { return *_gps; }
-  
-  CPoint *Next() const         { return _next; }
-  CPoint *Previous() const     { return _prev; }
-  
-  bool operator==(const CPoint &ref) const { return _gps->Time() == ref._gps->Time(); }
+  const CPointGPS &GPS() const   { return *_gps; }
+
+  const CPoint *Next() const     { return _next; }
+  const CPoint *Previous() const { return _prev; }
+
+  bool operator==(const CPoint &ref) const { 
+    return _gps->Time() == ref._gps->Time();
+  }
+
   bool operator<(const CPoint &ref) const;
 };
 
@@ -156,9 +160,7 @@ inline CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPSSmart &gps, CP
   _trace(trace), 
   _gps(gps),
   _prevDistance(prev ? prev->_gps->DistanceXYZ(*this->_gps) : 0),
-  //  _inheritedCost(0),
-  _distanceCost(0), _timeCost(0),
-  _prev(prev), _next(0)
+  _prev(prev)
 {
   if(_prev) {
     _prev->_next = this;
@@ -179,9 +181,8 @@ inline CTrace::CPoint::CPoint(const CTrace &trace, const CPoint &ref, CPoint *pr
   _trace(trace), 
   _gps(ref._gps),
   _prevDistance(ref._prevDistance),
-  // _inheritedCost(ref._inheritedCost),
   _distanceCost(ref._distanceCost), _timeCost(ref._timeCost),
-  _prev(prev), _next(0)
+  _prev(prev)
 {
   if(_prev) {
     _prev->_next = this;

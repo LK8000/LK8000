@@ -146,7 +146,7 @@ bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&st
   
   // try to find the biggest closed path possible
   const CTrace::CPoint *point = trace.Front();
-  CTrace::CPoint *next = point->Next();
+  const CTrace::CPoint *next = point->Next();
   while(next && next != back) {
     if((unsigned)back->GPS().TimeDelta(next->GPS()) < TRACE_TRIANGLE_MIN_TIME)
       // filter too small circles from i.e. thermalling
