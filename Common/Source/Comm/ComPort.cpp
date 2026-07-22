@@ -28,18 +28,14 @@ ComPort::ComPort(unsigned idx, const tstring& sName)
 }
 
 ComPort::~ComPort() {
-    assert(!rx_thread.IsDefined()); // Rx thread should have been stopped by now
-    assert(!status_thread.IsDefined()); // Status thread should have been stopped by now
 }
 
 bool ComPort::Close() {
-    if (status_thread.IsDefined()) {
-        WithLock(status_mutex, [&]() {
-            status_thread_stop = true;
-        });
-        status_cv.notify_one();
-        status_thread.Join();
-    }
+    WithLock(status_mutex, [&]() {
+        status_thread_stop = true;
+    });
+    status_cv.notify_one();
+    status_thread.Join();
     StopRxThread();
     return true;
 }
@@ -104,9 +100,7 @@ bool ComPort::StartRxThread() {
       });
 
       // Create a read thread for reading data from the communication port.
-      rx_thread.Start();
-
-      if (!rx_thread.IsDefined()) {
+      if (!rx_thread.Start()) {
           // Could not create the read thread.
           StartupStore(_T(". ComPort %u <%s> Failed to start Rx Thread"),
                        GetPortIndex() + 1, GetPortName());
@@ -266,9 +260,7 @@ void ComPort::NotifyDisconnected() {
     WithLock(status_mutex, [&]() {
         status_connected = false;
         status_disconnected_notify = true;
-        if (!status_thread.IsDefined()) {
-            status_thread.Start();
-        }
+        status_thread.Start();
     });
     status_cv.notify_one();
 }

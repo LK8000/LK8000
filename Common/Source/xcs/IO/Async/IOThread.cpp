@@ -27,7 +27,6 @@ Copyright_License {
 bool
 IOThread::Start()
 {
-  assert(!IsDefined());
   assert(io_loop.IsEmpty());
 
   quit = false;

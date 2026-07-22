@@ -245,8 +245,5 @@ void PureTrack::StopAndJoin() {
     thread_stop = true;
   });
   queue_cv.notify_all();
-
-  if (IsDefined()) {
-    Join();
-  }
+  Join();
 }

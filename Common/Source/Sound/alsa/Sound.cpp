@@ -304,7 +304,9 @@ public:
   ThreadSound() : Thread("Sound") {}
 
   bool Start() override {
-    thread_stop = false;
+    WithLock(queue_mtx, [&]() {
+      thread_stop = false;
+    });
     return Thread::Start();
   }
 
@@ -399,10 +401,8 @@ SoundGlobalInit::SoundGlobalInit() {
 }
 
 SoundGlobalInit::~SoundGlobalInit() {
-  if (thread_sound.IsDefined()) {
-    thread_sound.Stop();
-    thread_sound.Join();
-  }
+  thread_sound.Stop();
+  thread_sound.Join();
 
   if (pcm_handle) {
     snd_pcm_close(pcm_handle);

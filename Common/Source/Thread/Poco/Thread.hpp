@@ -44,10 +44,6 @@ class Thread : protected Poco::Runnable {
     }
   }
 
-  bool IsDefined() const {
-    return _thread.isRunning();
-  }
-
   bool IsInside() const {
     return Poco::Thread::current() == &_thread;
   }

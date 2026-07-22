@@ -11,7 +11,7 @@
 
 #include "Thread/Thread.hpp"
 #include "tchar.h"
-#include <cassert>
+#include <atomic>
 
 /**
  * Thread class used by "Oracle" for find Topology Item nearest to current position.
@@ -22,30 +22,30 @@ public:
         toracle[0] = _T('\0');
     }
 
-    ~WhereAmI() { }
+    ~WhereAmI() { Join(); }
 
 
     const TCHAR* getText() const {
-        // Caller must ensure thread is done before accessing result
-        if (IsDefined()) {
-            return nullptr;  // or consider throwing
-        }
         return toracle;
     }
 
     bool Start() override {
         toracle[0] = _T('\0');
+        _done.store(false, std::memory_order_relaxed);
         return Thread::Start();
     }
 
     bool IsDone() const {
-        return !IsDefined();
+        return _done.load(std::memory_order_acquire);
     }
 
 protected:
     void Run() override;
 
     TCHAR toracle[1000];
+
+private:
+    std::atomic<bool> _done{false};
 };
 
 #endif

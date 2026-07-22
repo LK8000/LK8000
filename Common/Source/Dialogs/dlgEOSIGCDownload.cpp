@@ -587,19 +587,13 @@ public:
   EOS_IGCReadThread() : Thread("EOS_IGCReadThread") { }
 
   bool Start() override {
-    if (!IsDefined()) {
-      bStop = false;      
-      return Thread::Start();
-    }
-    return false;
+    bStop = false;
+    return Thread::Start();
   }
 
   void Stop() {
-    if (IsDefined()) {
-      bStop = true;
-     
-      Join();
-    }
+    bStop = true;
+    Join();
   }
 
 protected:

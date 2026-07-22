@@ -54,13 +54,11 @@ LiveTrack24V1Handler::LiveTrack24V1Handler(const tracking::Profile& profile)
 }
 
 LiveTrack24V1Handler::~LiveTrack24V1Handler() {
-  if (IsDefined()) {
-    WithLock(m_mutex, [&]() {
-      m_run = false;
-    });
-    m_cond.notify_all();
-    Join();
-  }
+  WithLock(m_mutex, [&]() {
+    m_run = false;
+  });
+  m_cond.notify_all();
+  Join();
   StartupStore(_T(". LiveTracker V1 closed."));
 }
 

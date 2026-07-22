@@ -43,7 +43,7 @@ static inline void set_thread_name(const std::string& name) {
  *   class MyThread : public Thread {
  *    public:
  *     void Stop() { _stop = true; Join(); }
- *     ~MyThread() { assert(!IsDefined()); }
+ *     ~MyThread() { Stop(); }  // subclass must ensure thread is joined before base dtor
  *    protected:
  *     void Run() override { while (!_stop) { ... } }
  *    private:
@@ -83,7 +83,7 @@ class Thread {
    * BEHAVIOR:
    * - Returns false if thread is already running (prevents double-start)
    * - Blocks until the new thread has fully initialized its identity
-   * - After return, IsDefined() and IsInside() will work correctly
+   * - After return, IsInside() will work correctly
    * - Can be called again after Join() to restart the thread
    *
    * SYNCHRONIZATION:
@@ -159,7 +159,7 @@ class Thread {
     });
 
     // Block until the thread has set both _thread_id and _running.
-    // After this wait returns, IsInside() and IsDefined() will work correctly
+    // After this wait returns, IsInside() will work correctly
     // for any thread that calls them after Start() returns.
     _start_cv.wait(lock, [this]() {
       return _start_ready;
@@ -192,22 +192,6 @@ class Thread {
     if (_thread.joinable()) {
       _thread.join();
     }
-  }
-
-  /**
-   * Returns true if the thread is currently running.
-   *
-   * "Running" means between Start() returning and Run() completing.
-   * Safe to call from any thread at any time.
-   *
-   * IMPLEMENTATION NOTE:
-   * Uses acquire ordering to ensure visibility of all writes made by the
-   * thread before it set _running=true (in Start) or cleared it (in shutdown).
-   *
-   * @return true if thread is running, false otherwise
-   */
-  bool IsDefined() const {
-    return _running.load(std::memory_order_acquire);
   }
 
   /**

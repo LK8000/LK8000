@@ -424,4 +424,6 @@ _end:
   #ifdef TESTBENCH
   StartupStore(_T("Oracle : Result found in %d ms") NEWLINE, _time.Elapsed());
   #endif
+
+  _done.store(true, std::memory_order_release);
 }

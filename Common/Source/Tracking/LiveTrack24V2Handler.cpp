@@ -324,7 +324,7 @@ LiveTrack24V2Handler::LiveTrack24V2Handler(const tracking::Profile& profile)
 }
 
 LiveTrack24V2Handler::~LiveTrack24V2Handler() {
-  if (m_trackerThread && m_trackerThread->IsDefined()) {
+  if (m_trackerThread) {
     WithLock(m_tracker_mutex, [&]() {
       m_run_tracker = false;
     });
@@ -332,7 +332,7 @@ LiveTrack24V2Handler::~LiveTrack24V2Handler() {
     m_trackerThread->Join();
   }
 
-  if (m_radarThread && m_radarThread->IsDefined()) {
+  if (m_radarThread) {
     WithLock(m_radar_mutex, [&]() {
       m_run_radar = false;
     });

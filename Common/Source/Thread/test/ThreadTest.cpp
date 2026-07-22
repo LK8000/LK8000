@@ -60,30 +60,6 @@ TEST_SUITE("Thread") {
     CHECK(t.ran);
   }
 
-  TEST_CASE("IsDefined returns false before start") {
-    TestThread t("test2");
-    CHECK_FALSE(t.IsDefined());
-  }
-
-  TEST_CASE("IsDefined returns true while running") {
-    LongRunningThread t("test3");
-    CHECK(t.Start());
-    // Wait until thread starts
-    while (!t.started) {
-      Sleep(1);
-    }
-    CHECK(t.IsDefined());
-    t.shouldStop = true;
-    t.Join();
-  }
-
-  TEST_CASE("IsDefined returns false after join") {
-    TestThread t("test4");
-    t.Start();
-    t.Join();
-    CHECK_FALSE(t.IsDefined());
-  }
-
   TEST_CASE("Start returns false if already running") {
     LongRunningThread t("test5");
     CHECK(t.Start());
@@ -167,7 +143,6 @@ TEST_SUITE("Thread") {
     t.Join();
     CHECK(t.ran);
     CHECK(t.runCount == 1);
-    CHECK_FALSE(t.IsDefined());
 
     // Reset flag to distinguish second run
     t.ran = false;
@@ -177,7 +152,6 @@ TEST_SUITE("Thread") {
     t.Join();
     CHECK(t.ran);
     CHECK(t.runCount == 2);
-    CHECK_FALSE(t.IsDefined());
   }
 
   TEST_CASE("Thread restart accumulates run count correctly") {

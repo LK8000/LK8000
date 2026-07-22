@@ -85,6 +85,7 @@ void dlgOracleShowModal(void){
   // We must wait for data ready, so we shall do it  with timer notify.
   wf->SetTimerNotify(100, OnTimerNotify);
   wf->ShowModal();
+  _WhereAmI.Join(); // ensure thread is cleaned up and toracle writes are visible
   MapWindow::ResumeDrawingThread();
 
   delete wf;

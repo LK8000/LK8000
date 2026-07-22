@@ -28,7 +28,7 @@ class BaseTracking : public Thread, public ITrackingHandler {
 
   ~BaseTracking() override {
     // Derived class must call StopAndJoin() in its destructor
-    assert(!IsDefined());
+    // (base Thread destructor will assert if not joined)
   }
 
  protected:
@@ -37,9 +37,7 @@ class BaseTracking : public Thread, public ITrackingHandler {
       thread_stop = true;
     });
     queue_cv.notify_all();
-    if (IsDefined()) {
-      Join();
-    }
+    Join();
   }
 
   void Run() override {
