@@ -588,7 +588,7 @@ DeviceDescriptor_t* devGetDeviceOnPort(unsigned Port){
 }
 
 
-BOOL devParseStream(unsigned portNum, char* stream, int length, NMEA_INFO *pGPS) {
+BOOL devParseStream(unsigned portNum, std::span<const uint8_t> data, NMEA_INFO *pGPS) {
   DeviceDescriptor_t* din = devGetDeviceOnPort(portNum);
   if (!din) {
     return FALSE;
@@ -602,7 +602,7 @@ BOOL devParseStream(unsigned portNum, char* stream, int length, NMEA_INFO *pGPS)
     if (d.ParseStream) {
       if ((d.PortNumber == portNum) || (d.SharedPortNum.has_value() && d.SharedPortNum.value() == portNum)) {
         d.HB = LKHearthBeats;
-        if (d.ParseStream(din, stream, length, pGPS)) {
+        if (d.ParseStream(din, data, pGPS)) {
 
         }
         ret = TRUE;

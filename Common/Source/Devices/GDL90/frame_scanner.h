@@ -113,12 +113,6 @@ class frame_scanner {
     push(data, on_frame);
   }
 
-  template <typename Dispatcher, typename... DispatcherArgs>
-  void push(const uint8_t* data, size_t len, DispatcherArgs&&... args) {
-    push<Dispatcher>(detail::frame_data{data, len},
-                     std::forward<DispatcherArgs>(args)...);
-  }
-
   /**
    * Feed raw bytes and call `cb` for each complete, raw frame found.
    */

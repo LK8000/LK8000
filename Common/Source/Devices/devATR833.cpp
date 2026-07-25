@@ -10,24 +10,21 @@
 #include "externs.h"
 #include "Globals.h"
 #include "devATR833.h"
+#include <cstddef>
+#include <cstdint>
 #include "Comm/device.h"
 #include "Radio.h"
 
 namespace {
 
-#define FRAME_LEN      0x04
-#define HEADER_LEN     0x03
-#define COMMAND_IDX    0x02
-#define STX            0x02
-#define STX_BYTE       0x02
-#define SYNC_BYTE      0x72
-#define ACK_BYTE       0x06
-#define NACK_BYTE      0x15
-#define TIMEOUT        0x03
-#define CHECKSUM       0x04
-#define UKNWN_MSG      0x05
-#define ILLEGAL_PARAM  0x05
-#define ACK_NAK
+constexpr uint8_t FRAME_LEN      = 0x04;
+constexpr uint8_t COMMAND_IDX    = 0x02;
+constexpr uint8_t STX            = 0x02;
+constexpr uint8_t STX_BYTE       = 0x02;
+constexpr uint8_t SYNC_BYTE      = 0x72;
+constexpr uint8_t ACK_BYTE       = 0x06;
+constexpr uint8_t NACK_BYTE      = 0x15;
+constexpr uint8_t CHECKSUM       = 0x04;
 
 int MsgCnt=0;
 int DeviceTimeout = 2;
@@ -62,10 +59,10 @@ uint8_t uiCheckSum=0;
   uiCheckSum = SYNC_BYTE ^ Command;
   for(int i=0; i < Length; i++)
   {
-    szTmp[len]= (uint8_t) uiArg[i] ; uiCheckSum ^= szTmp[len++];
+    szTmp[len]= uiArg[i] ; uiCheckSum ^= szTmp[len++];
     if(uiArg[i] == STX_BYTE) // resend on STX occurance
     {
-      szTmp[len]= (uint8_t) uiArg[i] ; uiCheckSum ^= szTmp[len++];
+      szTmp[len]= uiArg[i] ; uiCheckSum ^= szTmp[len++];
     }
   }
   szTmp[len++]= uiCheckSum;
@@ -97,10 +94,8 @@ BOOL ATR833RequestAllData(DeviceDescriptor_t* d) {
 bool Send_ACK(DeviceDescriptor_t* d, uint8_t Command)
 {
   if(d == NULL) return false;
-#ifdef ACK_NAK    
   BYTE szTmp[4] = {STX_BYTE, SYNC_BYTE, ACK_BYTE, Command};
   d->Com->Write(szTmp,4);
-#endif    
 
   return true;
 }
@@ -109,10 +104,8 @@ bool Send_ACK(DeviceDescriptor_t* d, uint8_t Command)
 bool Send_NACK(DeviceDescriptor_t* d, uint8_t Command, uint8_t reason)
 {  
   if(d == NULL) return false;
-#ifdef ACK_NAK    
   BYTE szTmp[5] = {STX_BYTE, SYNC_BYTE, NACK_BYTE, Command, reason };
   d->Com->Write(szTmp,5);
-#endif    
    return true;
 }
 
@@ -229,34 +222,34 @@ BOOL ATR833_KeepAlive(DeviceDescriptor_t* d) {
   return(TRUE);
 }
 
-BOOL ATR833ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO)
+BOOL ATR833ParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO)
 {
-uint16_t cnt=0;
-static int Recbuflen =0;
-static uint8_t uiChecsum;
-static bool STXMode = false;
-static uint16_t CommanLength =0;
-if(d == NULL) return 0;
-if(String == NULL) return 0;
-if(len == 0) return 0;
+  static uint16_t Recbuflen = 0;
+  static uint8_t uiChecsum;
+  static bool STXMode = false;
+  static uint16_t CommanLength = 0;
+  if (!d) {
+    return 0;
+  }
+  if (data.empty()) {
+    return 0;
+  }
 
+  if (iATR833DebugLevel == 4) {
+    StartupStore(_T("ATR833 ====== receive ======%s"), NEWLINE);
+    for (auto byte : data) {
+      StartupStore(_T("0x%02X"), byte);
+    }
+  }
+  static uint8_t converted[128];
 
-if (iATR833DebugLevel==4)
-{
-StartupStore(_T("ATR833 ====== receive ======%s"), NEWLINE);
-for(int i=0; i < len; i++)
-  StartupStore(_T("0x%02X%s"),  (uint8_t)String[i]   , NEWLINE);
-}
-#define REC_BUFSIZE 128
-static uint8_t  converted[REC_BUFSIZE];
-
-  while (cnt < len )
-  {
-    switch ((uint8_t)String[cnt])
+  for (auto byte : data) {
+    switch (byte)
     {
       case STX_BYTE:
         if(STXMode)  {
-          Recbuflen--;   STXMode = false;
+          Recbuflen--;
+          STXMode = false;
         }
         else
           STXMode = true;
@@ -265,15 +258,20 @@ static uint8_t  converted[REC_BUFSIZE];
         if (STXMode)
         {
           STXMode = false;
-          Recbuflen =0;
-          converted[Recbuflen++] = STX;
-          uiChecsum = 0;
+          converted[0] = STX;
+          Recbuflen = 1U;
+          uiChecsum = 0U;
         }
       break;
     }
-    LKASSERT(Recbuflen < REC_BUFSIZE);
+
+    if (Recbuflen >= std::size(converted)) {
+      assert(false);  // buffer overflow, should not happen
+      Recbuflen = 0;
+      return false;
+    }
    
-    converted[Recbuflen++] =  (uint8_t)String[cnt];
+    converted[Recbuflen++] =  byte;
 
     if(Recbuflen == (COMMAND_IDX+1))
     {
@@ -342,9 +340,9 @@ static uint8_t  converted[REC_BUFSIZE];
       Recbuflen =0;
       if (iATR833DebugLevel==3) StartupStore(_T("ATR833 ==== end ===== %s"),   NEWLINE);
     }  
-    uiChecsum  ^= String[cnt++];
+    uiChecsum  ^= byte;
   }
-return RadioPara.Changed;
+  return RadioPara.Changed;
 }
 
 /*****************************************************************************
@@ -528,7 +526,7 @@ void ATR833Install(DeviceDescriptor_t* d) {
   d->PutFreqActive  = ATR833PutFreqActive;
   d->PutFreqStandby = ATR833PutFreqStandby;
   d->StationSwap    = ATR833StationSwap;
-  d->ParseStream    = ATR833ParseString;
+  d->ParseStream    = ATR833ParseStream;
   d->PutRadioMode   = ATR833RadioMode;
   d->HeartBeat      = ATR833_KeepAlive;  // called every 5s from UpdateMonitor to keep in contact with the ATR833
   RadioPara.Enabled8_33  = true;  

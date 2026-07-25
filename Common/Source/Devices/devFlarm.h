@@ -68,7 +68,7 @@ private:
 // Receive data
 private:
 
-  static BOOL ParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+  static BOOL ParseStream(DeviceDescriptor_t *d, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO);
   static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
   // Send Command
   static BOOL FlarmReboot(DeviceDescriptor_t* d);

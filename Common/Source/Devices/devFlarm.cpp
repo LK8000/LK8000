@@ -128,15 +128,15 @@ BOOL CDevFlarm::ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
   return FALSE;
 }
 
-BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
-  if ((!d) || (!String) || (!len)) {
+BOOL CDevFlarm::ParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO) {
+  if ((!d) || (data.empty())) {
     return FALSE;
   }
 
   bool in_binary_mode = WithLock(mutex, [&]() {
     if (bFLARM_BinMode) {
-      for (int i = 0; i < len; i++) {
-        buffered_data.push((uint8_t)String[i]);
+      for (auto byte : data) {
+        buffered_data.push(byte);
       }
     }
     return bFLARM_BinMode;

@@ -224,9 +224,9 @@ enum data_tag : unsigned {
 struct GDL90frame_scanner : public DriverData, public gdl90_parser::frame_scanner {
   using frame_scanner::frame_scanner;  // inherit constructors
 
-  void parse(const uint8_t* data, size_t len, DeviceDescriptor_t& d, NMEA_INFO& GPS_INFO) {
+  void parse(std::span<const uint8_t> data, DeviceDescriptor_t& d, NMEA_INFO& GPS_INFO) {
     try {
-      push<MessageDispatcher>(data, len, d, GPS_INFO);
+      push<MessageDispatcher>(std::move(data), d, GPS_INFO);
     }
     catch (const std::exception& e) {
       DebugLog(_T("[GDL90][ERR] %s"), to_tstring(e.what()).c_str());
@@ -234,16 +234,14 @@ struct GDL90frame_scanner : public DriverData, public gdl90_parser::frame_scanne
   }
 };
 
-BOOL ParseStream(DeviceDescriptor_t* d, char* data, int len,
+BOOL ParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data,
                  NMEA_INFO* GPS_INFO) {
-  if (len <= 0) {
+  if (data.empty()) {
     return TRUE;
   }
   auto scanner = d->get_data<GDL90frame_scanner>(data_tag::frame_scanner);
   if (scanner) {
-    auto data_ptr = reinterpret_cast<const uint8_t*>(data);
-    auto data_len = static_cast<size_t>(len);
-    scanner->parse(data_ptr, data_len, *d, *GPS_INFO);
+    scanner->parse(std::move(data), *d, *GPS_INFO);
   }
   return TRUE;
 }

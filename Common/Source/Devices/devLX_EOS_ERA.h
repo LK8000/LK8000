@@ -99,7 +99,7 @@ class DevLX_EOS_ERA : public DevLXNanoIII
     static BOOL DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
    static BOOL ParseNMEA(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO* info);
-   static BOOL EOSParseStream(DeviceDescriptor_t *d, char *String, int len, NMEA_INFO *GPS_INFO);
+   static BOOL EOSParseStream(DeviceDescriptor_t *d, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO);
    
    static BOOL Config(DeviceDescriptor_t* d);
    static void OnCloseClicked(WndButton* pWnd);

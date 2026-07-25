@@ -34,7 +34,9 @@
 #include "McReady.h"
 #include "Time/PeriodClock.hpp"
 #include "Calc/Vario.h"
+#include <cstdint>
 #include <queue>
+#include <span>
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
 #include "Radio.h"
@@ -183,11 +185,11 @@ bool SetEOSBinaryModeFlag(bool bBinMode) {
 
 
 
-BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
-  if ((!d) || (!String) || (!len)) {
+BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO) {
+  if ((!d) || (data.empty())) {
     return FALSE;
   }
-  
+
   static BOOL slowdown = false;
   if (!IsEOSInBinaryMode()) {    
     if(slowdown) {
@@ -209,8 +211,8 @@ BOOL DevLX_EOS_ERA::EOSParseStream(DeviceDescriptor_t* d, char *String, int len,
   }
 
   WithLock(EOSmutex, [&]() {
-    for (int i = 0; i < len; i++) {
-      EOSbuffered_data.push((uint8_t)String[i]);
+    for (auto byte : data) {
+      EOSbuffered_data.push(byte);
     }
   });
 

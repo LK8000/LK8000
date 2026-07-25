@@ -18,6 +18,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "ComCheck.h"
+#include <span>
 #include <sstream>
 #include <regex>
 
@@ -132,11 +133,6 @@ void ComPort::ProcessChar(char c) {
         ComCheck_AddChar(c);
     }
 
-    if (devParseStream(devIdx, &c, 1, &GPS_INFO)) {
-        // if this port is used for stream device, leave immediately.
-        // don't return mayby more devices on one Port (shared Port)
-    }
-
     // last char need to be reserved for '\0' for avoid buffer overflow
     // in theory this should never happen because NMEA sentence can't have more than 82 char and _NmeaString size is 160.
     if (pLastNmea >= std::begin(_NmeaString) && (pLastNmea+1) < std::end(_NmeaString)) {
@@ -145,7 +141,7 @@ void ComPort::ProcessChar(char c) {
             // abcd\n , now closing the line also with \r
             *(pLastNmea++) = '\n';
             *(pLastNmea) = '\0'; // terminate string.
-            // process only meaningful sentences, avoid processing a single \n \r etc.
+            // process only meaningfull sentences, avoid processing a single \n \r etc.
             if (std::distance(std::begin(_NmeaString), pLastNmea) > 5) {
                 devParseNMEA(devIdx, _NmeaString, &GPS_INFO);
             }
@@ -154,12 +150,25 @@ void ComPort::ProcessChar(char c) {
             return;
         }
     }
-    // overflow, so reset buffer
+    // overflow or consumed, so reset buffer
     pLastNmea = std::begin(_NmeaString);
 }
 
 void ComPort::ProcessData(const char* string, size_t size) {
   const std::lock_guard lock(CritSec_Comm);
+
+  auto to_bytes = [](const char* string, size_t size) {
+      auto sp = std::span(string, size);
+      auto data = reinterpret_cast<const uint8_t*>(sp.data());
+      auto size_bytes = sp.size_bytes();
+      return std::span(data, size_bytes);
+  };
+
+  if (devParseStream(devIdx, to_bytes(string, size), &GPS_INFO)) {
+    // if this port is used for stream device don't return,
+    // maybe more devices on one Port (shared Port)
+  }
+
   std::for_each_n(string, size, [this](auto c) {
     ProcessChar(c);
   });

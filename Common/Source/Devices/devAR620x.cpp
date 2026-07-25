@@ -409,8 +409,7 @@ int AR620x_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len, ui
   return processed;  /* return the number of converted characters */
 }
 
-BOOL AR620xParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
-  int cnt=0;
+BOOL AR620xParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO) {
   uint16_t CalCRC=0;
   static  uint16_t Recbuflen=0;
 
@@ -419,11 +418,11 @@ BOOL AR620xParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *
   static uint8_t  Command[REC_BUFSIZE];
 
   if(d == NULL) return 0;
-  if(String == NULL) return 0;
-  if(len == 0) return 0;
 
-  while (cnt < len) {
-    if((uint8_t)String[cnt] == HEADER_ID) {
+  if(data.empty()) return 0;
+
+  for (auto byte : data) {
+    if(byte == HEADER_ID) {
       Recbuflen =0;
     }
 
@@ -432,7 +431,7 @@ BOOL AR620xParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *
     }
 
     LKASSERT(Recbuflen < REC_BUFSIZE);
-    Command[Recbuflen++] =(uint8_t) String[cnt++];
+    Command[Recbuflen++] = byte;
 
     if(Recbuflen == 2) {
       if(Command[Recbuflen-1] != PROTOKOL_ID) {
@@ -475,7 +474,7 @@ void AR620xInstall(DeviceDescriptor_t* d) {
   d->PutFreqActive  = AR620xPutFreqActive;
   d->PutFreqStandby = AR620xPutFreqStandby;
   d->StationSwap    = AR620xStationSwap;
-  d->ParseStream    = AR620xParseString;
+  d->ParseStream    = AR620xParseStream;
   d->PutRadioMode   = AR620xRadioMode;
   RadioPara.Enabled8_33 = TRUE;
   sStatus.intVal16 = SQUELCH; // BIT7 for Squelch enabled

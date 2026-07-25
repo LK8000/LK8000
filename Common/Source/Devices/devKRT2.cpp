@@ -464,21 +464,19 @@ int KRT2_Convert_Answer(DeviceDescriptor_t* d, uint8_t *szCommand, int len) {
   return processed;  /* return the number of converted characters */
 }
 
-
-BOOL KRT2ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GPS_INFO) {
+BOOL KRT2ParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data, NMEA_INFO* GPS_INFO) {
   if(d == NULL) return 0;
-  if(String == NULL) return 0;
-  if(len == 0) return 0;
+  if(data.empty()) return 0;
 
   #define REC_BUFSIZE 128
-  int cnt=0;
+
   static uint16_t Recbuflen =0;
   static uint16_t CommandLength=REC_BUFSIZE;
   static uint8_t Command[REC_BUFSIZE];
 
-  while (cnt < len) {
+  for (auto byte : data) {
     if(CommandLength == REC_BUFSIZE) {
-      if(String[cnt] ==STX) {
+      if(byte == STX) {
         Recbuflen =0;
       }
     }
@@ -487,8 +485,12 @@ BOOL KRT2ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GP
     }
     LKASSERT(Recbuflen < REC_BUFSIZE);
 
-    DebugLog(_T(". KRT2   Raw Input: Recbuflen:%u 0x%02X %c"),Recbuflen, (uint8_t)String[cnt], String[cnt]);
-    Command[Recbuflen++] =(char) String[cnt++];
+    DebugLog(_T(". KRT2   Raw Input: Recbuflen:%u 0x%02X %c"),
+             static_cast<unsigned>(Recbuflen),
+             static_cast<unsigned>(byte),
+             static_cast<char>(byte));
+
+    Command[Recbuflen++] = byte;
     if (Recbuflen == 1) {
       switch (Command[0]) {
         case 'S': CommandLength = 1; break;
@@ -517,7 +519,7 @@ BOOL KRT2ParseString(DeviceDescriptor_t* d, char *String, int len, NMEA_INFO *GP
       Recbuflen = 0;
       CommandLength = REC_BUFSIZE;
     }
-  } //  (cnt < len)
+  }
   return  RadioPara.Changed;
 }
 
@@ -534,6 +536,6 @@ void KRT2Install(DeviceDescriptor_t* d) {
   d->PutFreqActive  = KRT2PutFreqActive;
   d->PutFreqStandby = KRT2PutFreqStandby;
   d->StationSwap    = KRT2StationSwap;
-  d->ParseStream    = KRT2ParseString;
+  d->ParseStream    = KRT2ParseStream;
   d->PutRadioMode   = KRT2RadioMode;
 }

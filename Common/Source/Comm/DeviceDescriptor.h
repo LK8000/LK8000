@@ -21,6 +21,7 @@
 #include "Util/tstring.hpp"
 #include "Time/PeriodClock.hpp"
 #include "Parser.h"
+#include <span>
 
 #define DEVNAMESIZE 32
 #define	NUMDEV		 6U
@@ -69,7 +70,7 @@ struct DeviceDescriptor_t {
   BOOL (*DirectLink)(DeviceDescriptor_t* d, BOOL bLinkEnable);
   BOOL (*ParseNMEA)(DeviceDescriptor_t* d, const char* String,
                     NMEA_INFO* GPS_INFO);
-  BOOL (*ParseStream)(DeviceDescriptor_t* d, char* String, int len,
+  BOOL (*ParseStream)(DeviceDescriptor_t* d, std::span<const uint8_t> data,
                       NMEA_INFO* GPS_INFO);
   BOOL (*PutMacCready)(DeviceDescriptor_t* d, double McReady);
   BOOL (*PutBugs)(DeviceDescriptor_t* d, double Bugs);

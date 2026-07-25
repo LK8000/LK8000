@@ -16,6 +16,7 @@
 #include "Util/tstring.hpp"
 #include "utils/stl_utils.h"
 #include "DeviceDescriptor.h"
+#include <span>
 
 class COMMPortItem_t {
 public:
@@ -67,7 +68,7 @@ BOOL devOpen(DeviceDescriptor_t* d);
 BOOL devDirectLink(DeviceDescriptor_t* d,	BOOL bLink);
 
 void devParseNMEA(unsigned portNum, const char *String,	NMEA_INFO	*GPS_INFO);
-BOOL devParseStream(unsigned portNum, char *String,int len,	NMEA_INFO	*GPS_INFO);
+BOOL devParseStream(unsigned portNum, std::span<const uint8_t> data, NMEA_INFO *GPS_INFO);
 
 BOOL devPutMacCready(double MacCready, DeviceDescriptor_t* Sender);
 BOOL devRequestFlarmVersion(DeviceDescriptor_t* d);
