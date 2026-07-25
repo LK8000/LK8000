@@ -34,6 +34,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Insets;
+import android.graphics.Rect;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -267,9 +268,6 @@ public class LK8000 extends Activity {
           return windowInsets;
         }
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
-        boolean landscape = (nativeView != null) ? nativeView.landscape :
-                v.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE;
 
         int left = insets.left;
         int top = insets.top;
@@ -277,6 +275,11 @@ public class LK8000 extends Activity {
         int bottom = insets.bottom;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+          WindowManager wm = v.getContext().getSystemService(WindowManager.class);
+          Rect windowBounds = wm.getCurrentWindowMetrics().getBounds();
+          boolean landscape = windowBounds.width() > windowBounds.height();
+
           RoundedCornerCompat tl = windowInsets.getRoundedCorner(RoundedCornerCompat.POSITION_TOP_LEFT);
           if (tl != null) {
             if (landscape) {
@@ -319,8 +322,10 @@ public class LK8000 extends Activity {
         mlp.setMargins(left, top, right, bottom);
         v.setLayoutParams(mlp);
       }
-      return windowInsets;
+      return WindowInsetsCompat.CONSUMED;
     });
+
+    ViewCompat.requestApplyInsets(root);
 
     boolean isNight =
             (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
@@ -460,6 +465,7 @@ public class LK8000 extends Activity {
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
     detectKeyboardModel();
+    nativeView.requestLayout();
   }
 
   private boolean hasKeyboard() {
