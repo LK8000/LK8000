@@ -169,6 +169,9 @@ BOOL DevLXNanoIII::Open(DeviceDescriptor_t* d) {
   Nano3_PutBallast(d, BALLAST);
   Nano3_PutBugs(d, BUGS);
 
+  // request polar data
+  d->Com->WriteString("$PLXV0,POLAR,R*30\r\n");
+
   ResetMultitargetSync();
   return TRUE;
 }
@@ -1809,8 +1812,10 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
   /****************************************************************
    * POLAR
    ****************************************************************/
-  if (strcmp(szTmp1, "POLAR") == 0)
-  {
+  if (strcmp(szTmp1, "POLAR") == 0) {
+    if (!IsDirInput(PortIO.POLARDir)) {
+      return true; // ignore if not configured to receive POLAR
+    }
     /**
      * Parse the POLAR value from a PLXV0 sentence.
      *
@@ -1828,16 +1833,31 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
         (ParToDouble(sentence, 6, &fWeight)) &&
         (ParToDouble(sentence, 7, &fMaxW)) &&
         (ParToDouble(sentence, 8, &fEmptyW)) &&
-        (ParToDouble(sentence, 9, &fPilotW))) 
+        (ParToDouble(sentence, 9, &fPilotW)))
     {
       StartupStore(
           _T("Nano3 POLAR: ")
           _T("a:%5.2f b:%5.2f c:%5.2f ")
-          _T("Load:%3.1f Weight:%3.1f ")
+          _T("Load:%3.1f ")
+          _T("Weight:%3.1f ")
           _T("Max:%3.1f ")
           _T("Empty:%3.1f ")
           _T("Pilot:%3.1f"),
           fa, fb, fc, fLoad, fWeight, fMaxW, fEmptyW, fPilotW);
+
+      double w[] = {
+          fWeight,         // Dry Gross weight
+          fMaxW - fWeight  // Ballast
+      };
+
+      double vz[3];
+      for (unsigned i = 0; i < 3; ++i) {
+        double v_mps = POLARV[i] / 100;
+        vz[i] = -(fa * v_mps * v_mps + fb * v_mps + fc);
+      }
+
+      PolarWinPilot2XCSoar(POLARV, vz, w);
+      GlidePolar::SetBallast();
     }
     return true;
   }
