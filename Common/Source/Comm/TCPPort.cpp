@@ -328,6 +328,7 @@ unsigned UDPServerPort::RxThread() {
 		socklen_t slen = sizeof(mSAddressClient);
 		if ((nRecv = recvfrom(mSocket, szString, sizeof(szString), 0, (struct sockaddr *) &mSAddressClient, &slen)) != -1)  {
 			if (nRecv > 0) {
+                AddStatRx(nRecv);
                 ProcessData(szString, nRecv);
 			}
 		}
