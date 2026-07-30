@@ -104,7 +104,7 @@ bool LoadGpxTask(std::istream& stream) {
             newPoint.Flags = TURNPOINT + WAYPOINTFLAG;
         }
 
-        int ix =FindOrAddWaypoint(&newPoint,ISGAAIRCRAFT && (idx==0 || !WPnode)); //if GA check widely if we have already depart and dest airports
+        int ix =FindOrAddWaypoint(&newPoint, ISGAAIRCRAFT); // for GA always search for matching airfield in waypoint database
         if (ix>=0) {
             Task[idx++].Index=ix;
         }

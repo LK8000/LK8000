@@ -445,6 +445,7 @@ void Globals_Init(void) {
   SNAILCHANGED= false;
 
   ActiveTaskPoint = -1;
+  DirectToWaypointIndex = -1;
   PanTaskEdit    = -1;
   RealActiveWaypoint = -1;
   // Assigned Area Task

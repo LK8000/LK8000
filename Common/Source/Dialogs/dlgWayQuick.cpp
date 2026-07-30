@@ -19,6 +19,7 @@
 #include "LKStyle.h"
 #include "Radio.h"
 #include "Util/TruncateString.hpp"
+#include "GADirectTo.h"
 
 #define WPLSEL WayPointList[SelectedWaypoint]
 
@@ -83,8 +84,14 @@ static void OnSetAlt2Clicked(WndButton* pWnd){
 }
 
 static void OnGotoClicked(WndButton* pWnd){
-  GotoWaypoint(SelectedWaypoint);
-  retStatus=2;
+  if (ISGAAIRCRAFT) {
+    if (ShowDirectToOffTaskDialog(SelectedWaypoint)) {
+      retStatus = 2;
+    }
+  } else {
+    GotoWaypoint(SelectedWaypoint);
+    retStatus = 2;
+  }
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -220,6 +227,12 @@ short dlgWayQuickShowModal(void){
     }
   }
   wf->SetCaption(sTmp);
+
+  // In GA mode rename GOTO to Direct To (task is preserved, leg is temporary)
+  if (ISGAAIRCRAFT) {
+    WindowControl* pGoto = wf->FindByName(TEXT("cmdGoto"));
+    if (pGoto) pGoto->SetCaption(MsgToken<2521>());  // "Direct To"
+  }
 
   const bool bRadioFreq = (_tcstol(WayPointList[SelectedWaypoint].Freq, nullptr, 10) > 0) && RadioPara.Enabled;
 

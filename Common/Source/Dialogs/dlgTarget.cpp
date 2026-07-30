@@ -15,8 +15,14 @@
 #include "resource.h"
 #include "NavFunctions.h"
 #include "CalcTask.h"
+#include "GADirectTo.h"
 
 #include <algorithm>
+#include "Library/TimeFunctions.h"
+
+static void UpdateNavButtons();
+static void RefreshTargetPoint();
+static void ApplyTargetPanIfNeeded();
 
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
@@ -251,6 +257,10 @@ static void CompactTargetPortraitLayout(void) {
   WndButton* const btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
   if (!btnApproach) return;
 
+  WndButton* const btnPrevP   = wf->FindByName<WndButton>(TEXT("btnPrev"));
+  WndButton* const btnNextP   = wf->FindByName<WndButton>(TEXT("btnNext"));
+  WndButton* const btnDirectP = wf->FindByName<WndButton>(TEXT("btnDirectTo"));
+
   WindowControl* const btnOK = wf->FindByName<WindowControl>(TEXT("btnOK"));
   WndProperty* const wTask = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   WndProperty* const pRange = wf->FindByName<WndProperty>(TEXT("prpRange"));
@@ -261,6 +271,9 @@ static void CompactTargetPortraitLayout(void) {
   WndProperty* const pAch = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
   WndButton* const btnMov = wf->FindByName<WndButton>(TEXT("btnMove"));
   WndProperty* const pLock = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
+  WndProperty* const pGADist = wf->FindByName<WndProperty>(TEXT("prpGADist"));
+  WndProperty* const pGAETE  = wf->FindByName<WndProperty>(TEXT("prpGAETE"));
+  WndProperty* const pGAETA  = wf->FindByName<WndProperty>(TEXT("prpGAETA"));
 
   const int gap = NIBLSCALE(2);
 
@@ -283,6 +296,21 @@ static void CompactTargetPortraitLayout(void) {
     if (b && b->IsVisible()) h = std::max(h, (int)b->GetHeight());
     return h;
   };
+
+  // Nav buttons row (Prev / Next / Direct To)
+  const bool any_nav_visible = (btnPrevP && btnPrevP->IsVisible()) ||
+                               (btnNextP && btnNextP->IsVisible()) ||
+                               (btnDirectP && btnDirectP->IsVisible());
+  if (any_nav_visible) {
+    if (btnPrevP  && btnPrevP->IsVisible())  btnPrevP->SetTop(y);
+    if (btnNextP  && btnNextP->IsVisible())  btnNextP->SetTop(y);
+    if (btnDirectP && btnDirectP->IsVisible()) btnDirectP->SetTop(y);
+    int nav_h = 0;
+    if (btnPrevP  && btnPrevP->IsVisible())  nav_h = std::max(nav_h, (int)btnPrevP->GetHeight());
+    if (btnNextP  && btnNextP->IsVisible())  nav_h = std::max(nav_h, (int)btnNextP->GetHeight());
+    if (btnDirectP && btnDirectP->IsVisible()) nav_h = std::max(nav_h, (int)btnDirectP->GetHeight());
+    y += nav_h + gap;
+  }
 
   if (pRange && pRange->IsVisible()) {
     pRange->SetTop(y);
@@ -309,6 +337,11 @@ static void CompactTargetPortraitLayout(void) {
     y += (int)pLock->GetHeight() + gap;
   }
 
+  // GA fields (each on its own row)
+  if (pGADist && pGADist->IsVisible()) { pGADist->SetTop(y); y += (int)pGADist->GetHeight() + gap; }
+  if (pGAETE  && pGAETE->IsVisible())  { pGAETE->SetTop(y);  y += (int)pGAETE->GetHeight()  + gap; }
+  if (pGAETA  && pGAETA->IsVisible())  { pGAETA->SetTop(y);  y += (int)pGAETA->GetHeight()  + gap; }
+
   int maxBottom = 0;
   const auto acc = [&maxBottom](const WindowControl* w) {
     if (w && w->IsVisible()) {
@@ -319,6 +352,9 @@ static void CompactTargetPortraitLayout(void) {
   acc(btnOK);
   acc(wTask);
   acc(btnApproach);
+  acc(btnPrevP);
+  acc(btnNextP);
+  acc(btnDirectP);
   acc(pRange);
   acc(pRadial);
   acc(pEst);
@@ -327,6 +363,9 @@ static void CompactTargetPortraitLayout(void) {
   acc(pAch);
   acc(btnMov);
   acc(pLock);
+  acc(pGADist);
+  acc(pGAETE);
+  acc(pGAETA);
 
   /* maxBottom is in client (content) coordinates; outer WndForm height must include title bar
      and borders. Growing only when newH < GetHeight() never expanded when scaled widgets
@@ -355,9 +394,22 @@ static bool CanOpenApproachForTargetPoint(int tp, int* wp_index_out) {
 
 /// After compact or field visibility changes, sync map pan strip size (width in landscape).
 static void ApplyTargetPanIfNeeded(void) {
-  if (!wf || !TargetDialogOpen || !ValidTaskPoint(target_point)) return;
+  if (!wf || !TargetDialogOpen) return;
   dlgSize = ScreenLandscape ? wf->GetWidth() : wf->GetHeight();
+
+  if (GA_ApplyTargetPanOverride(dlgSize)) return;
+
+  if (!ValidTaskPoint(target_point)) return;
   MapWindow::SetTargetPan(true, target_point, dlgSize);
+
+  // GA: tell the nav system which WP the pilot is looking at so the bearing line
+  // and leg-loop draw aircraft→browsed fix instead of aircraft→ActiveTaskPoint.
+  if (ISGAAIRCRAFT) {
+    const std::lock_guard lock(CritSec_TaskData);
+    const int browse_wp = ValidWayPointFast(Task[target_point].Index)
+                          ? Task[target_point].Index : -1;
+    GA_SetTargetBrowseWP(browse_wp, browse_wp >= 0 ? target_point : -1);
+  }
 }
 
 /// Refresh Target dialog fields and show/hide Approach button for landable waypoints.
@@ -366,9 +418,10 @@ static void RefreshCalculator(void) {
 
   RefreshTask();
   RefreshTaskStatistics();
-  target_point = max(target_point,ActiveTaskPoint);
+  if (!ISGAAIRCRAFT)
+    target_point = max(target_point, ActiveTaskPoint);
 
-  bool nodisplay = gTaskType != task_type_t::AAT 
+  bool nodisplay = gTaskType != task_type_t::AAT
     || (target_point==0)
     || !ValidTaskPoint(target_point+1);
 
@@ -383,12 +436,18 @@ static void RefreshCalculator(void) {
 
   nodisplay = nodisplay || TargetMoveMode;
 
+  const bool ga_offtask_active = ISGAAIRCRAFT && DirectToActive
+                                  && ValidWayPointFast(DirectToWaypointIndex)
+                                  && !GA_IsOfftaskBrowsing();
+
   wp = wf->FindByName<WndProperty>(TEXT("prpTaskPoint"));
   if (wp) {
-    if (TargetMoveMode) {
+    if (TargetMoveMode || ga_offtask_active) {
       wp->SetVisible(false);
     } else {
       wp->SetVisible(true);
+      wp->GetDataField()->Set(target_point - ActiveWayPointOnEntry);
+      wp->RefreshDisplay();
     }
   }
 
@@ -401,40 +460,29 @@ static void RefreshCalculator(void) {
     }
   }
 
+  const bool isGA = ISGAAIRCRAFT;
+
   wp = wf->FindByName<WndProperty>(TEXT("prpAATTargetLocked"));
   if (wp) {
     wp->GetDataField()->Set(Task[target_point].AATTargetLocked);
     wp->RefreshDisplay();
-    if (nodisplay) {
-      wp->SetVisible(false);
-    } else {
-      wp->SetVisible(true);
-    }
+    wp->SetVisible(!isGA && !nodisplay);
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRange"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Range*100.0);
     wp->RefreshDisplay();
-    if (nodisplay) {
-      wp->SetVisible(false);
-    } else {
-      wp->SetVisible(true);
-    }
+    wp->SetVisible(!isGA && !nodisplay);
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRadial"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Radial);
     wp->RefreshDisplay();
-    if (nodisplay) {
-      wp->SetVisible(false);
-    } else {
-      wp->SetVisible(true);
-    }
+    wp->SetVisible(!isGA && !nodisplay);
   }
 
-  // update outputs
   double dd = CALCULATED_INFO.TaskTimeToGo;
   if ((CALCULATED_INFO.TaskStartTime>0.0)&&(CALCULATED_INFO.Flying)) {
     dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
@@ -444,45 +492,48 @@ static void RefreshCalculator(void) {
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd);
     wp->RefreshDisplay();
+    wp->SetVisible(!isGA);
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpAATDelta"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(dd-AATTaskLength);
-    if (gTaskType == task_type_t::AAT) {
-      wp->SetVisible(true);
-    } else {
-      wp->SetVisible(false);
-    }
+    wp->SetVisible(!isGA && gTaskType == task_type_t::AAT);
     wp->RefreshDisplay();
   }
 
-  double v1;
+  double v1 = 0;
   if (CALCULATED_INFO.TaskTimeToGo>0) {
-    v1 = CALCULATED_INFO.TaskDistanceToGo/
-      CALCULATED_INFO.TaskTimeToGo;
-  } else {
-    v1 = 0;
+    v1 = CALCULATED_INFO.TaskDistanceToGo / CALCULATED_INFO.TaskTimeToGo;
   }
-
   wp = wf->FindByName<WndProperty>(TEXT("prpSpeedRemaining"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(v1));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
+    wp->SetVisible(!isGA);
   }
-
   wp = wf->FindByName<WndProperty>(TEXT("prpSpeedAchieved"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(Units::ToTaskSpeed(CALCULATED_INFO.TaskSpeed));
     wp->GetDataField()->SetUnits(Units::GetTaskSpeedName());
     wp->RefreshDisplay();
+    wp->SetVisible(!isGA);
   }
+
+  GA_RefreshTargetFields();
 
   WndButton* btnApproach = wf->FindByName<WndButton>(TEXT("btnApproach"));
   if (btnApproach) {
-    const bool landable = ValidTaskPoint(target_point) &&
-        ValidWayPointFast(Task[target_point].Index) &&
-        WayPointCalc[Task[target_point].Index].IsLandable;
+    const int ga_ap_wp = GA_GetApproachWPForTarget();
+    // When DirectTo is active and not browsing, GA_GetApproachWPForTarget returns the
+    // DirectTo WP directly (>= 0). When browsing, it returns -1 and we fall back to the
+    // current browse target (task point) so the Approach button can still appear for
+    // landable task waypoints — the pilot may choose to fly the approach from browse.
+    const int ap_wp = (ga_ap_wp >= 0)
+                      ? ga_ap_wp
+                      : (ValidTaskPoint(target_point) && ValidWayPointFast(Task[target_point].Index)
+                         ? Task[target_point].Index : -1);
+    const bool landable = ValidWayPointFast(ap_wp) && WayPointCalc[ap_wp].IsLandable;
     btnApproach->SetVisible(landable);
   }
 
@@ -492,6 +543,8 @@ static void RefreshCalculator(void) {
   } else if (ScreenLandscape && wf) {
     dlgSize = wf->GetWidth();
   }
+
+  UpdateNavButtons();
 }
 
 static bool OnTimerNotify(WndForm* pWnd) {
@@ -501,10 +554,10 @@ static bool OnTimerNotify(WndForm* pWnd) {
         MoveTarget(lon, lat);
     }
     if (TargetModified) {
-        RefreshCalculator();
         TargetModified = false;
         ApplyTargetPanIfNeeded();
     }
+    RefreshCalculator();
     return true;
 }
 
@@ -522,13 +575,35 @@ static void OnMoveClicked(WndButton* pWnd) {
 /// Open Approach dialog for current target waypoint if it is landable.
 /// Closes Target only if a task was created (Approve clicked); on Ignore the user returns to Target.
 static void OnTargetApproachClicked(WndButton* pWnd) {
-  int wp_index = -1;
-  if (!CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
+  int wp_index = GA_GetApproachWPForTarget();
+  if (wp_index < 0 && !CanOpenApproachForTargetPoint(target_point, &wp_index)) return;
   const bool task_created = dlgApproach(wp_index);
   if (task_created) {
     WndForm* targetForm = pWnd ? pWnd->GetParentWndForm() : nullptr;
     if (targetForm) targetForm->SetModalResult(mrOK);
   }
+}
+
+static void UpdateNavButtons() {
+  GA_UpdateNavButtons();
+}
+
+static void OnPrevClicked(WndButton* /*pWnd*/) {
+  if (!GA_OnTargetPrev()) return;
+  RefreshTargetPoint();
+  UpdateNavButtons();
+  ApplyTargetPanIfNeeded();
+}
+
+static void OnNextClicked(WndButton* /*pWnd*/) {
+  if (!GA_OnTargetNext()) return;
+  RefreshTargetPoint();
+  UpdateNavButtons();
+  ApplyTargetPanIfNeeded();
+}
+
+static void OnDirectToClicked(WndButton* pWnd) {
+  GA_OnTargetDirectTo(pWnd);
 }
 
 static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
@@ -616,7 +691,8 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
 
 static void RefreshTargetPoint(void) {
   LockTaskData();
-  target_point = max(target_point, ActiveTaskPoint);
+  if (!ISGAAIRCRAFT)
+    target_point = max(target_point, ActiveTaskPoint);
   if (ValidTaskPoint(target_point)) {
     Range = Task[target_point].AATTargetOffsetRadius;
     Radial = Task[target_point].AATTargetOffsetRadial;
@@ -663,9 +739,13 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
     case DataField::daPut:
     case DataField::daChange:
       target_point = Sender->GetAsInteger() + ActiveWayPointOnEntry;
-      target_point = max(target_point,ActiveTaskPoint);
+      if (!ISGAAIRCRAFT)
+        target_point = max(target_point, ActiveTaskPoint);
       if (target_point != old_target_point) {
+        GA_OnTargetPointSelected();
         RefreshTargetPoint();
+        UpdateNavButtons();
+        ApplyTargetPanIfNeeded();
       }
     break;
   case DataField::daInc:
@@ -684,15 +764,19 @@ static CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnOKClicked),
   CallbackEntry(OnMoveClicked),
   CallbackEntry(OnTargetApproachClicked),
+  CallbackEntry(OnPrevClicked),
+  CallbackEntry(OnNextClicked),
+  CallbackEntry(OnDirectToClicked),
   EndCallbackEntry()
 };
 
 
 void dlgTarget(int TaskPoint) {
 
-  if(TaskPoint == -1)
-	  TaskPoint =  ActiveTaskPoint;
-  if (!ValidTaskPoint(TaskPoint)) {
+  if (TaskPoint == -1)
+    TaskPoint = ActiveTaskPoint;
+
+  if (!ValidTaskPoint(TaskPoint) && !GA_CanOpenWithoutTask(TaskPoint)) {
     return;
   }
   target_point = TaskPoint;
@@ -703,6 +787,7 @@ void dlgTarget(int TaskPoint) {
 
   TargetDialogOpen = true;
   TargetMoveMode = false;
+  GA_InitTargetDialog(wf, &target_point);
 
   const PixelRect rc(main_window->GetClientRect());
   if (ScreenLandscape) {
@@ -769,6 +854,9 @@ void dlgTarget(int TaskPoint) {
   wf->ShowModal();
 
   MapWindow::SetTargetPan(false, 0);
+
+  GA_SetTargetBrowseWP(-1, -1);
+  GA_ResetTargetDialog();
 
   TargetDialogOpen = false;
 

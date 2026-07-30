@@ -124,6 +124,8 @@ IDR_XML_APPROACH_P      XMLDIALOG                "../Data/Dialogs/dlgApproach_P.
 IDR_XML_APPROACH_L      XMLDIALOG                "../Data/Dialogs/dlgApproach_L.xml"
 IDR_XML_APPROACH_APPROVE_P XMLDIALOG             "../Data/Dialogs/dlgApproachApprove_P.xml"
 IDR_XML_APPROACH_APPROVE_L XMLDIALOG             "../Data/Dialogs/dlgApproachApprove_L.xml"
+IDR_XML_DIRECTTO_COUNTDOWN_P XMLDIALOG           "../Data/Dialogs/dlgDirectToCountdown_P.xml"
+IDR_XML_DIRECTTO_COUNTDOWN_L XMLDIALOG           "../Data/Dialogs/dlgDirectToCountdown_L.xml"
 IDR_XML_COMBOPICKER_L   XMLDIALOG                "../Data/Dialogs/dlgComboPicker_L.xml"
 IDR_XML_COMBOPICKER_P   XMLDIALOG                "../Data/Dialogs/dlgComboPicker_P.xml"
 IDR_XML_PROFILES        XMLDIALOG                "../Data/Dialogs/dlgProfiles.xml"

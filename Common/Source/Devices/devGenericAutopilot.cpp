@@ -15,6 +15,7 @@
 #include <regex>
 #include "utils/printf.h"
 #include "LKInterface.h"
+#include "GADirectTo.h"
 
 namespace {
 
@@ -51,6 +52,8 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
         next_index = GetOvertargetIndex();
       }
 
+      GA_ApplyDirectToAutopilotOverride(prev_index, next_index);
+
       if (ValidWayPointFast(next_index)) {
         const WAYPOINT& next_tp = WayPointList[next_index];
         next_pos = GetWayPointPosition(next_tp);
@@ -60,7 +63,10 @@ std::string GenerateRMB(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated) 
         current.Reverse(next_pos, bearing, distance);
         distance =  Units::To(unNauticalMiles, distance);
 
-        if (ValidWayPointFast(prev_index)) {
+        if (DirectToActive) {
+          const GeoPoint origin = {DirectToOriginLat, DirectToOriginLon};
+          xtd = CrossTrackError(origin, next_pos, current);
+        } else if (ValidWayPointFast(prev_index)) {
           const WAYPOINT& prev_tp = WayPointList[prev_index];
           const GeoPoint prev_pos = GetWayPointPosition(prev_tp);
           prev_name = to_utf8(WayPointList[prev_index].Name);
