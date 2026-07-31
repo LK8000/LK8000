@@ -189,7 +189,7 @@ BOOL CDevFlarm::Open(DeviceDescriptor_t* d) {
 	m_pDevice = d;
 
   // request for installed licence
-  d->Com->WriteString("$PFLAC,R,LIC*4C");
+  d->Com->WriteString("$PFLAC,R,LIC*4C\r\n");
 
   return TRUE;
 }
