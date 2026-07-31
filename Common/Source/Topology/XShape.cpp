@@ -115,12 +115,10 @@ bool XShape::nearestItem(int category, double lon, double lat) const {
   DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude, &distance,
                   &bearing);
 
-#if DEBUG_NEARESTTOPO
-  StartupStore(
+  DebugLog(
       _T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f distance=%.2f\n"),
       category, label.c_str(), lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
       distance / 1000);
-#endif
 
   // If first time, use it
   if (!item->Valid || (item->Distance > distance)) {
@@ -131,10 +129,7 @@ bool XShape::nearestItem(int category, double lon, double lat) const {
     item->Bearing = bearing;
     item->Valid = true;
 
-#if DEBUG_NEARESTTOPO
-    StartupStore(_T(".... cat=%d, <%s> dist=%f nearer\n"), category, Temp,
-                 distance);
-#endif
+    DebugLog(_T(".... cat=%d, <%s> dist=%f nearer\n"), category, label.c_str(), distance);
     return true;
   }
 
