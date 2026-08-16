@@ -849,7 +849,7 @@ goto_bearing:
 			value=DerivedDrawInfo.PercentCircling;
 			valid=true;
 			lk::snprintf(BufferValue, TEXT("%d"),(int)value);
-			lk::strcpy(BufferUnit, TEXT("%%"));
+			lk::strcpy(BufferUnit, TEXT("%"));
 			lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
 			break;
 
@@ -1114,7 +1114,7 @@ goto_bearing:
                   if(DrawInfo.RelativeHumidity.available()) {
                     value = DrawInfo.RelativeHumidity.value();
                     lk::snprintf(BufferValue, TEXT("%.1lf"), value);
-                    lk::strcpy(BufferUnit, TEXT("%%"));
+                    lk::strcpy(BufferUnit, TEXT("%"));
                     valid = true;
                   }
                   else
@@ -2342,7 +2342,7 @@ olc_score:
 		    	} else {
 		    		lk::strcpy(BufferValue, TEXT(NULLLONG));
 		    	}
-		    	lk::strcpy(BufferUnit, TEXT("%%"));
+		    	lk::strcpy(BufferUnit, TEXT("%"));
 		    	if (lktitle)
 		    	{
 		    		if(bFAI)
