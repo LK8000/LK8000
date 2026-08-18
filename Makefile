@@ -597,6 +597,9 @@ endif
 
 CPPFLAGS += -DPOCO_STATIC
 
+CPPFLAGS += -finput-charset=UTF-8
+CPPFLAGS += -fexec-charset=UTF-8
+
 CXXFLAGS	:= -std=c++20 $(OPTIMIZE) $(PROFILE)
 CFLAGS		:= $(OPTIMIZE) $(PROFILE)
 

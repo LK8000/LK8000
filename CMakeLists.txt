@@ -61,6 +61,8 @@ add_compile_options(
     -Wparentheses
     -Wredundant-decls
     -Wno-unknown-warning-option
+    -finput-charset=UTF-8
+    -fexec-charset=UTF-8
 )
 
 add_subdirectory( Common/Source/Library/glutess lib_glutess )
