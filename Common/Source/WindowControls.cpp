@@ -496,7 +496,7 @@ void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
   std::replace(szTmp.begin(), szTmp.end(), _T('\n'), _T(' '));
 
   const unsigned int idx = mEntries.size();
-  mEntries.push_back({idx, std::move(szTmp), _T("")});
+  mEntries.push_back({idx, std::move(szTmp), {}});
 }
 
 int DataFieldEnum::Find(const TCHAR *Text) {
