@@ -19,28 +19,28 @@
 #include <span>
 
 class COMMPortItem_t {
-public:
-    inline COMMPortItem_t(const TCHAR* szName, const TCHAR* szLabel =_T("")) :
-			_sName(szName), _sLabel(szLabel)
-	{
-	}
+ public:
+  COMMPortItem_t(tstring szName, tstring szLabel = {})
+      : _sName(std::move(szName)), _sLabel(std::move(szLabel)) {}
 
-	inline COMMPortItem_t(tstring&& szName, tstring&& szLabel) :
-			_sName(std::move(szName)), _sLabel(std::move(szLabel))
-	{
-	}
+  bool IsSamePort(tstring_view szName) const {
+    return _sName == szName;
+  }
 
-    inline bool IsSamePort(const TCHAR* szName) const { return _sName == szName; }
+  const TCHAR* GetName() const {
+    return _sName.c_str();
+  }
 
-    inline const TCHAR* GetName() const { return _sName.c_str(); }
-    inline const TCHAR* GetLabel() const { return _sLabel.empty()?_sName.c_str():_sLabel.c_str(); }
+  const TCHAR* GetLabel() const {
+    return _sLabel.empty() ? _sName.c_str() : _sLabel.c_str();
+  }
 
-protected:
-    tstring _sName;
-    tstring _sLabel;
+ protected:
+  tstring _sName;
+  tstring _sLabel;
 };
 
-typedef std::vector<COMMPortItem_t> COMMPort_t;
+using COMMPort_t = std::vector<COMMPortItem_t>;
 
 COMMPort_t::iterator FindCOMMPort(const TCHAR* port);
 
