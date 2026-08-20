@@ -327,7 +327,7 @@ static void SetValues(int indexid) {
 
   wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
-	lk::snprintf(buffer, TEXT(" %d%s"), iround(LKTraffic[indexid].Bearing),MsgToken<2179>());
+	lk::snprintf(buffer, _T(" %d°"), iround(LKTraffic[indexid].Bearing));
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }

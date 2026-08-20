@@ -61,7 +61,7 @@ void dlgWeatherStDetails(int indexid) {
   DistanceBearing( GPS_INFO.Latitude,GPS_INFO.Longitude, Station.Latitude,  Station.Longitude, &Distance, &Bear);
   wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {
-    lk::snprintf(buffer, TEXT(" %d%s"), iround(Bear),MsgToken<2179>());
+    lk::snprintf(buffer, _T(" %d°"), iround(Bear));
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
@@ -83,13 +83,13 @@ void dlgWeatherStDetails(int indexid) {
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpWBearing"));
   if (wp) {
-    lk::snprintf(buffer,_T("%.1f %s"),Station.windDir, MsgToken<2179>());
+    lk::snprintf(buffer, _T("%.1f°"), Station.windDir);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpTemp"));
   if (wp) {
-    lk::snprintf(buffer,_T("%.1f %s"),Station.temp, MsgToken<2180>());
+    lk::snprintf(buffer, _T("%.1f °C"), Station.temp);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }

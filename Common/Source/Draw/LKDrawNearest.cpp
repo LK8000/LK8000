@@ -160,7 +160,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
         // BEARING
         //
-        lk::strcpy(Buffer, _T("<325"));
+        lk::strcpy(Buffer, _T("325°»"));
         Surface.GetTextSize(Buffer, &K2TextSize[MSM_LANDABLE]);
         Surface.GetTextSize(Buffer, &K2TextSize[MSM_AIRPORTS]);
         Surface.GetTextSize(Buffer, &K2TextSize[MSM_NEARTPS]);
@@ -576,7 +576,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
             headertoken[1] = MsgToken<752>(); // Type
             headertoken[2] = MsgToken<1300>(); // Dist
             headertoken[3] = MsgToken<1301>(); // Dir
-            headertoken[4] = MsgToken<2186>(); // *
+            headertoken[4] = _T("*");
             break;
         case MSM_THERMALS:
             pSortedIndex = LKSortedThermals.data();
@@ -854,18 +854,17 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
                   value = AngleLimit180(WayPointCalc[rli].Bearing - DrawInfo.TrackBearing);
 
                   if (value > 1) {
-                    lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                    lk::snprintf(Buffer3[i][curpage], _T("%2.0f°»"), value);
                   }
                   else if (value < -1) {
-                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                    lk::snprintf(Buffer3[i][curpage], _T("«%2.0f°"), -value);
                   }
                   else {
-                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                    lk::strcpy(Buffer3[i][curpage], _T("«»"));
                   }
                 }
                 else {
-                  lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s"), WayPointCalc[rli].Bearing,
-                               MsgToken<2179>());  // 101219
+                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f°"), WayPointCalc[rli].Bearing);  // 101219
                 }
 
                 value = WayPointCalc[rli].GR;
@@ -994,17 +993,17 @@ _KeepOldCommonsValues:
                     value = AngleLimit180(LKAirspaces[rli].Bearing - DrawInfo.TrackBearing);
 
                     if (value > 1) {
-                      lk::snprintf(Buffer4[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                      lk::snprintf(Buffer4[i][curpage], _T("%2.0f°»"), value);
                     }
                     else if (value < -1) {
-                      lk::snprintf(Buffer4[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                      lk::snprintf(Buffer4[i][curpage], _T("«%2.0f°"), -value);
                     }
                     else {
-                      lk::snprintf(Buffer4[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                      lk::strcpy(Buffer4[i][curpage], _T("«»"));
                     }
                 }
                 else {
-                  lk::snprintf(Buffer4[i][curpage], TEXT("%2.0f%s"), LKAirspaces[rli].Bearing, MsgToken<2179>());
+                  lk::snprintf(Buffer4[i][curpage], _T("%2.0f°"), LKAirspaces[rli].Bearing);
                 }
 
                 //
@@ -1080,17 +1079,17 @@ _KeepOldAirspacesValues:
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
                   value = AngleLimit180(thermal.Bearing - DrawInfo.TrackBearing);
                   if (value > 1) {
-                    lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                    lk::snprintf(Buffer3[i][curpage], _T("%2.0f°»"), value);
                   }
                   else if (value < -1) {
-                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                    lk::snprintf(Buffer3[i][curpage], _T("«%2.0f°"), -value);
                   }
                   else {
-                    lk::snprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                    lk::strcpy(Buffer3[i][curpage], _T("«»"));
                   }
                 }
                 else {
-                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f%s"), thermal.Bearing, MsgToken<2179>());
+                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f°"), thermal.Bearing);
                 }
 
                 // Average lift
@@ -1200,17 +1199,17 @@ _KeepOldAirspacesValues:
                     value = AngleLimit180(LKTraffic[rli].Bearing - DrawInfo.TrackBearing);
 
                     if (value > 1) {
-                      lk::snprintf(Buffer3[i][curpage], TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
+                      lk::snprintf(Buffer3[i][curpage], _T("%2.0f°»"), value);
                     }
                     else if (value < -1) {
-                      lk::snprintf(Buffer3[i][curpage], TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
+                      lk::snprintf(Buffer3[i][curpage], _T("«%2.0f°"), -value);
                     }
                     else {
-                      lk::snprintf(Buffer3[i][curpage], TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+                      lk::strcpy(Buffer3[i][curpage], _T("«»"));
                     }
                 }
                 else {
-                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f%s"), LKTraffic[rli].Bearing, MsgToken<2179>());
+                  lk::snprintf(Buffer3[i][curpage], _T("%2.0f°"), LKTraffic[rli].Bearing);
                 }
 
                 // Vario

@@ -648,7 +648,7 @@ class MapWindow {
 
   static bool LKFormatValue(const short lkindex, const bool lktitle, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT], TCHAR (&BufferTitle)[LKSIZEBUFFERTITLE], DrawBmp_t *BmpValue = nullptr, DrawBmp_t *BmpTitle = nullptr);
   static void LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *BmpValue,TCHAR *BufferValue = NULL);
-  static void LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]);
+  static void LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE]);
 
   static bool IsMapFullScreen();
   static bool ChangeDrawRect(const RECT rectarea);

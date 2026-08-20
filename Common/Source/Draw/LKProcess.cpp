@@ -11,6 +11,7 @@
 #include "InputEvents.h"
 #include "Logger.h"
 #include "LKProcess.h"
+#include <cstdlib>
 #include "DoInits.h"
 #include "OS/Memory.h"
 #include "Calc/Vario.h"
@@ -90,9 +91,19 @@ double GetAvgNextETE(const DERIVED_INFO &info) {
     return value;
 }
 
+static void FormatBearingDifferenceValue(TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], double value) {
+    const auto absValue = std::abs(value);
+    if (absValue <= 2) {
+        lk::strcpy(BufferValue, _T("«»"));
+        return;
+    }
 
-
-
+    const auto prefix =
+        (value < 0) ? (absValue > 30 ? _T("«") : _T("‹")) : _T("");
+    const auto suffix =
+        (value > 0) ? (absValue > 30 ? _T("»") : _T("›")) : _T("");
+    lk::snprintf(BufferValue, _T("%s%2.0f°%s"), prefix, absValue, suffix);
+}
 
 static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
 	bool valid = false;
@@ -246,20 +257,17 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				if (index>=0) {
 					// we could use only waypointbearing, but lets keep them separated anyway
 					if (UseAATTarget())
-						value=DerivedDrawInfo.WaypointBearing;
+						value = std::abs(DerivedDrawInfo.WaypointBearing);
 					else
-						value = WayPointCalc[index].Bearing;
+						value = std::abs(WayPointCalc[index].Bearing);
 
 					valid=true;
 					if (value > 1) {
-						lk::snprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken<2179>());
+						lk::snprintf(BufferValue, _T("%2.0f°"), value);
 					}
-					else if (value < -1) {
-						lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken<2179>());
-                    }
 					else {
-                        lk::snprintf(BufferValue, TEXT("0%s"), MsgToken<2179>());
-                    }
+						lk::strcpy(BufferValue, _T("0°"));
+					}
 				}
 			}
 			break;
@@ -690,7 +698,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
 			value = AngleLimit360(DrawInfo.TrackBearing);
 			valid=true;
-			lk::snprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken<2179>());
+			lk::snprintf(BufferValue, _T("%2.0f°"), value);
 			break;
 
 		// B24
@@ -733,7 +741,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
 				if (value==360) value=0;
-				lk::snprintf(BufferValue,TEXT("%1.0f%s"), value, MsgToken<2179>());
+				lk::snprintf(BufferValue,_T("%1.0f°"), value);
 			} else {
 				lk::strcpy(BufferValue,TEXT(NULLMEDIUM));
 			}
@@ -921,25 +929,17 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				lk::strcpy(BufferTitle, MsgToken<1699>());
 			}
 			else {
-				lk::snprintf(BufferTitle, TEXT("%s"),
-								DataOptionsTitle(lkindex));
+				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));
 			}
 			ivalue = GetOvertargetIndex();  // Current Multitarget
 			if (ivalue > 0) {
-				value = WayPointCalc[ivalue].Bearing;  // Bearing;
-
+				value = std::abs(WayPointCalc[ivalue].Bearing);  // Bearing;
 				valid = true;
-
 				if (value > 1) {
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), value,
-								MsgToken<2179>());
-				}
-				else if (value < -1) {
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value,
-								MsgToken<2179>());
+					lk::snprintf(BufferValue, _T("%2.0f°"), value);
 				}
 				else {
-					lk::snprintf(BufferValue, TEXT("0%s"), MsgToken<2179>());
+					lk::strcpy(BufferValue, _T("0°"));
 				}
 			}
 			else {
@@ -1090,38 +1090,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				else {
 					value = WayPointCalc[index].Bearing - DrawInfo.TrackBearing;
 				}
-				valid=true;
-				value = AngleLimit180(value);
-				if (value > 30) {
-					lk::snprintf(BufferValue,
-								TEXT("%2.0f%s%s"), value,
-								MsgToken<2179>(),
-								MsgToken<2183>());
-				}
-				else if (value > 2) {
-					lk::snprintf(BufferValue,
-								TEXT("%2.0f%s%s"), value,
-								MsgToken<2179>(),
-								MsgToken<2185>());
-				}
-				else if (value < -30) {
-					lk::snprintf(BufferValue,
-								TEXT("%s%2.0f%s"),
-								MsgToken<2182>(), -value,
-								MsgToken<2179>());
-				}
-				else if (value < -2) {
-					lk::snprintf(BufferValue,
-								TEXT("%s%2.0f%s"),
-								MsgToken<2184>(), -value,
-								MsgToken<2179>());
-				}
-				else {
-					lk::snprintf(BufferValue,
-								TEXT("%s%s"),
-								MsgToken<2182>(),
-								MsgToken<2183>());
-				}
+				valid = true;
+				FormatBearingDifferenceValue(BufferValue, AngleLimit180(value));
 			}
 			break;
 
@@ -1135,7 +1105,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
                   }
                   else {
                     lk::snprintf(BufferValue, TEXT("%.1lf"), value);
-                    lk::snprintf(BufferUnit,  TEXT("%s"), MsgToken<2179>());
+                    lk::strcpy(BufferUnit,  _T("°"));
                     valid = true;
                   }
                   break;
@@ -1270,14 +1240,14 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if(ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
-				value=DerivedDrawInfo.TeammateBearing;
-				valid=true;
-				if (value > 1)
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken<2179>());
-				else if (value < -1)
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken<2179>());
-				else
-					lk::snprintf(BufferValue, TEXT("0%s"), MsgToken<2179>());
+				value = std::abs(DerivedDrawInfo.TeammateBearing);
+				valid = true;
+				if (value > 1) {
+					lk::snprintf(BufferValue, _T("%2.0f°"), value);
+				}
+				else {
+					lk::strcpy(BufferValue, _T("0°"));
+				}
 			}
 			break;
 
@@ -1292,26 +1262,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
 
 			if (ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
-				value = DerivedDrawInfo.TeammateBearing -  DrawInfo.TrackBearing;
-				valid=true; // 091221
-				if (value < -180.0)
-					value += 360.0;
-				else
-					if (value > 180.0) value -= 360.0;
-
-	              if (value > 30)
-	                lk::snprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-	              else
-	                if (value > 2)
-	                  lk::snprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2185>());
-	                else
-	                  if (value < -30)
-	                    lk::snprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-	                  else
-	                    if (value < -2)
-	                      lk::snprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken<2184>(), - value, MsgToken<2179>());
-	                    else
-	                      lk::snprintf(BufferValue, TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+				valid = true; // 091221
+				value = AngleLimit180(DerivedDrawInfo.TeammateBearing -  DrawInfo.TrackBearing);
+				FormatBearingDifferenceValue(BufferValue, value);
 			}
 			break;
 
@@ -1829,16 +1782,13 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 			if ( ValidWayPoint(HomeWaypoint) != false ) {
 				if (DerivedDrawInfo.HomeDistance >10.0) {
 					// homeradial == 0, ok?
-					value = DerivedDrawInfo.HomeRadial;
-					valid=true;
+					value = std::abs(DerivedDrawInfo.HomeRadial);
+					valid = true;
 					if (value > 1) {
-						lk::snprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken<2179>());
-					}
-					else if (value < -1) {
-						lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value, MsgToken<2179>());
+						lk::snprintf(BufferValue, _T("%2.0f°"), value);
 					}
 					else {
-						lk::snprintf(BufferValue, TEXT("0%s"), MsgToken<2179>());
+						lk::strcpy(BufferValue, _T("0°"));
 					}
 				}
 			}
@@ -2228,17 +2178,12 @@ olc_score:
 			}
 
 			if (valid) {
+				value = std::abs(value);
 				if (value > 1) {
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), value,
-									MsgToken<2179>());
-				}
-				else if (value < -1) {
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value,
-									MsgToken<2179>());
+					lk::snprintf(BufferValue, _T("%2.0f°"), value);
 				}
 				else {
-					lk::snprintf(BufferValue, TEXT("0%s"),
-									MsgToken<2179>());
+					lk::strcpy(BufferValue, _T("0°"));
 				}
 			}
             break;
@@ -2412,8 +2357,7 @@ olc_score:
 				value = DerivedDrawInfo.BankAngle;
 				lk::snprintf(BufferTitle, TEXT("e%s"), MsgToken<1197>());
 			}
-			lk::snprintf(BufferValue, TEXT("%.0f%s"), value,
-					MsgToken<2179>());
+			lk::snprintf(BufferValue, _T("%.0f°"), value);
 			break;
 		// B128
 		case LK_ALTERN1_RAD:
@@ -2452,45 +2396,33 @@ olc_score:
 			}
 
 			if (valid) {
+				value = std::abs(value);
 				if (value > 1) {
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), value,
-									MsgToken<2179>());
-				}
-				else if (value < -1) {
-					lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value,
-									MsgToken<2179>());
+					lk::snprintf(BufferValue, _T("%2.0f°"), value);
 				}
 				else {
-					lk::snprintf(BufferValue, TEXT("0%s"),
-									MsgToken<2179>());
+					lk::strcpy(BufferValue, _T("0°"));
 				}
 			}
 			break;
 
 		// B130
 		case LK_HEADING:
-			lk::strcpy(BufferValue,_T(NULLLONG));
-			//lk::snprintf(BufferUnit,TEXT(""));
+			lk::strcpy(BufferUnit, _T(""));
 			if (DrawInfo.MagneticHeading.available()) {
 			    lk::strcpy(BufferTitle, _T("HDG"));
-			    value = DrawInfo.MagneticHeading.value();
+			    value = std::abs(DrawInfo.MagneticHeading.value());
 			}
 			else {
 			    lk::strcpy(BufferTitle, _T("eHDG"));
-			    value = DerivedDrawInfo.Heading;
+			    value = std::abs(DerivedDrawInfo.Heading);
 			}
 			valid = true;
 			if (value > 1) {
-				lk::snprintf(BufferValue, TEXT("%2.0f%s"), value,
-								MsgToken<2179>());
-			}
-			else if (value < -1) {
-				lk::snprintf(BufferValue, TEXT("%2.0f%s"), -value,
-								MsgToken<2179>());
+				lk::snprintf(BufferValue, _T("%2.0f°"), value);
 			}
 			else {
-				lk::snprintf(BufferValue, TEXT("0%s"),
-								MsgToken<2179>());
+				lk::strcpy(BufferValue, _T("0°"));
 			}
 			break;
 
@@ -2839,8 +2771,8 @@ olc_score:
 						lk::snprintf(BufferValue,TEXT("%03.0f/%1.0f"), 
 							value, Units::ToWindSpeed(DerivedDrawInfo.WindSpeed));
 					else
-						lk::snprintf(BufferValue,TEXT("%03.0f%s/%1.0f"), 
-							value, MsgToken<2179>(), Units::ToWindSpeed(DerivedDrawInfo.WindSpeed));
+						lk::snprintf(BufferValue, _T("%03.0f°/%1.0f"), 
+							value, Units::ToWindSpeed(DerivedDrawInfo.WindSpeed));
 				}
 			} else {
 				lk::strcpy(BufferValue,TEXT("--/--"));
@@ -2988,26 +2920,9 @@ lkfin_ete:
 	            if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					lk::strcpy(BufferValue, TEXT(NULLMEDIUM));
 				} else {
-						value = LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing;
-						valid=true;
-						if (value < -180.0)
-							value += 360.0;
-						else
-							if (value > 180.0)
-								value -= 360.0;
-			              if (value > 30)
-			                lk::snprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-			              else
-			                if (value > 2)
-			                  lk::snprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2185>());
-			                else
-			                  if (value < -30)
-			                    lk::snprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-			                  else
-			                    if (value < -2)
-			                      lk::snprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken<2184>(), - value, MsgToken<2179>());
-			                    else
-			                      lk::snprintf(BufferValue, TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+					valid = true;
+					value = AngleLimit180(LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing);
+					FormatBearingDifferenceValue(BufferValue, value);
 				}
 			}
 			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
@@ -3022,12 +2937,12 @@ lkfin_ete:
                 if (DrawInfo.FLARM_Traffic[LKTargetIndex].RadioId <= 0) {
 					lk::strcpy(BufferValue, TEXT(NULLMEDIUM));
 				} else {
-						value = LKTraffic[LKTargetIndex].Bearing;
-						valid=true;
-						if (value == 360)
-							lk::snprintf(BufferValue, TEXT("0%s"), MsgToken<2179>());
-						else 
-							lk::snprintf(BufferValue, TEXT("%2.0f%s"), value, MsgToken<2179>());
+					value = LKTraffic[LKTargetIndex].Bearing;
+					valid=true;
+					if (value == 360)
+						lk::strcpy(BufferValue, _T("0°"));
+					else 
+						lk::snprintf(BufferValue, _T("%2.0f°"), value);
 				}
 			}
 			// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
@@ -3590,34 +3505,18 @@ void MapWindow::LKFormatDist(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFE
 }
 
 // DO NOT use this for AAT values! 
-void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
+void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE]) {
   const std::lock_guard lock(CritSec_TaskData);
 
   int index = GetValidWayPointIndex(wpindex);
 
-  _tcscpy(BufferValue,_T(NULLMEDIUM));
-  _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
     // Warning, for AAT this should be WaypointBearing, so do not use it!
-    double value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
-    if (value < -180.0)
-        value += 360.0;
-    else
-        if (value > 180.0)
-            value -= 360.0;
-    if (value > 30)
-      lk::snprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2183>());
-    else
-      if (value > 2)
-        lk::snprintf(BufferValue, TEXT("%2.0f%s%s"), value, MsgToken<2179>(), MsgToken<2185>());
-      else
-        if (value < -30)
-          lk::snprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken<2182>(), -value, MsgToken<2179>());
-        else
-          if (value < -2)
-            lk::snprintf(BufferValue, TEXT("%s%2.0f%s"), MsgToken<2184>(), - value, MsgToken<2179>());
-          else
-            lk::snprintf(BufferValue, TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
+    const double value = AngleLimit180(WayPointCalc[index].Bearing -  DrawInfo.TrackBearing);
+    FormatBearingDifferenceValue(BufferValue, value);
+  }
+  else {
+	lk::strcpy(BufferValue, _T(NULLMEDIUM));
   }
 }
 

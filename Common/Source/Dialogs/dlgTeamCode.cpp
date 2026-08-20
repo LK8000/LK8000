@@ -26,26 +26,21 @@ static void Update()
   double teammateBearing = CALCULATED_INFO.TeammateBearing;
   double teammateRange = CALCULATED_INFO.TeammateRange;
 
-
-  if(ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid ) {
-	double Value = CALCULATED_INFO.TeammateBearing -  GPS_INFO.TrackBearing;
-
-	if (Value < -180.0)
-		Value += 360.0;
-	else
-		if (Value > 180.0)
-			Value -= 360.0;
-
-	if (Value > 1)
-		lk::snprintf(Text, TEXT("%2.0f%s>"), Value, MsgToken<2179>());
-	else
-		if (Value < -1)
-			lk::snprintf(Text, TEXT("<%2.0f%s"), -Value, MsgToken<2179>());
-		else
-			lk::strcpy(Text, TEXT("<>"));
-
-  } else {
-	lk::strcpy(Text, TEXT("---"));
+  if (ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
+    double Value =
+        AngleLimit180(CALCULATED_INFO.TeammateBearing - GPS_INFO.TrackBearing);
+    if (Value > 1) {
+      lk::snprintf(Text, _T("%2.0f°>"), Value);
+    }
+    else if (Value < -1) {
+      lk::snprintf(Text, _T("<%2.0f°"), -Value);
+    }
+    else {
+      lk::strcpy(Text, _T("<>"));
+    }
+  }
+  else {
+    lk::strcpy(Text, _T("---"));
   }
 
   wp = wf->FindByName<WndProperty>(TEXT("prpRelBearing"));

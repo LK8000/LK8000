@@ -1683,10 +1683,10 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 	return;
   }
 
-  lk::snprintf(mbuf,_T("%.0f%s from %.0f%s\n\nAccept and save?"),
+  lk::snprintf(mbuf,_T("%.0f%s from %.0f°\n\nAccept and save?"),
         Units::ToHorizontalSpeed(wspeed / 3.6), 
         Units::GetHorizontalSpeedName(), 
-        wfrom, MsgToken<2179>());
+        wfrom);
 
 #if 0
   if (reswp<80) lk::snprintf(ttmp,_T("TrueWind! Quality: low"));

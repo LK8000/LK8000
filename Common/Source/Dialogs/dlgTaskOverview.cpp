@@ -84,8 +84,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
   
   const int w0 = rcClient.GetSize().cx - DLGSCALE(1);
   const int w1 = Surface.GetTextWidth(TEXT(" 000km"));
-  lk::snprintf(sTmp, _T("  000%s"), MsgToken<2179>());
-  const int w2 = Surface.GetTextWidth(sTmp);
+  const int w2 = Surface.GetTextWidth(_T("  000°"));
 
   const int TextMargin = (rcClient.GetSize().cy - Surface.GetTextHeight(TEXT("A"))) / 2;
 
@@ -133,7 +132,7 @@ static void OnTaskPaintListItem(WndOwnerDrawFrame * Sender, LKSurface& Surface){
                 Units::GetDistanceName());
       Surface.DrawText(rc.right+p1+w1-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
-      lk::snprintf(sTmp, TEXT("%d%s"),  iround(Task[i].InBound),MsgToken<2179>());
+      lk::snprintf(sTmp, TEXT("%d°"),  iround(Task[i].InBound));
       Surface.DrawText(rc.right +p2+w2-Surface.GetTextWidth(sTmp), TextMargin, sTmp);
 
     }

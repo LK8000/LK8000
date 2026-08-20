@@ -364,7 +364,7 @@ void MapWindow::DrawLook8000(LKSurface& Surface, const RECT& rc) {
     if (OverTargetIndex < 0) goto _skip_TopMid;
 
     if (!ISGAAIRCRAFT) {
-        LKFormatBrgDiff(OverTargetIndex, BufferValue, BufferUnit);
+        LKFormatBrgDiff(OverTargetIndex, BufferValue);
         Surface.SelectObject(LK8OverlayMediumFont); // restore previously selected font
         LKWriteText(Surface, BufferValue, topbearing.cx,  topbearing.cy, WTMODE_OUTLINED, WTALIGN_CENTER, OverColorRef, true);
     }

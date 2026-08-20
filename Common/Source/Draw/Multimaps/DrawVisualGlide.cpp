@@ -89,7 +89,7 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
     lk::strcpy(tmpT, _T("MMMM"));
     Surface.GetTextSize(tmpT, &textSizeTop);
     Surface.SelectObject(line2Font);
-    lk::snprintf(tmpT, _T("55.5%s 79%s%s "), Units::GetDistanceName(), MsgToken<2179>(), MsgToken<2183>());
+    lk::snprintf(tmpT, _T("55.5%s 79°» "), Units::GetDistanceName());
     Surface.GetTextSize(tmpT, &textSizeBot);
 
     // we can cut the waypoint name, but not the value data, so we use the second row of data
@@ -414,8 +414,8 @@ void MapWindow::DrawVisualGlide(LKSurface& Surface, const DiagrammStruct& sDia) 
                 LKFormatDist(wp, value, unit);
                 lk::snprintf(line2, _T("%s%s"), value, unit);
 
-                LKFormatBrgDiff(wp, value, unit);
-                lk::snprintf(tmpT, _T(" %s%s"), value, unit);
+                LKFormatBrgDiff(wp, value);
+                lk::snprintf(tmpT, _T(" %s"), value);
                 _tcscat(line2, tmpT);
 
                 LKFormatAltDiff(wp, value, unit);

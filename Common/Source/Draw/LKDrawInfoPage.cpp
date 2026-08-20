@@ -1005,7 +1005,7 @@ label_HSI:
 				}
 			}
 			if(showQFU) {
-				lk::snprintf(Buffer, TEXT("QFU: %d%s"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir,MsgToken<2179>());
+				lk::snprintf(Buffer, _T("QFU: %d°"),WayPointList[Task[ActiveTaskPoint].Index].RunwayDir);
 				icolor = IsDithered() ? RGB_WHITE : RGB_GREEN;
 			}
 		} else { //show next waypoint name

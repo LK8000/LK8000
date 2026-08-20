@@ -102,10 +102,9 @@ void Statistics::RenderTemperature(LKSurface& Surface, const RECT& rc)
 
   Surface.SetBackgroundOpaque();
 
+  DrawXLabel(Surface, rc, _T(" T/°C "));
   TCHAR text[80];
-  lk::snprintf(text,TEXT(" T/%sC "), MsgToken<2179>());
-  DrawXLabel(Surface, rc, text);
-  lk::snprintf(text,TEXT(" h/%s "),Units::GetAltitudeName());
+  lk::snprintf(text, _T(" h/%s "), Units::GetAltitudeName());
   DrawYLabel(Surface, rc, text);
 
 

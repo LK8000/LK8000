@@ -640,11 +640,11 @@ void dlgWayPointDetailsShowModal(int page) {
   }
 
   if (ScreenLandscape) {
-    lk::snprintf(sTmp, _T("%d%s  (R:%d%s)"), iround(bearing), MsgToken<2179>(),
-                 iround(AngleLimit360(bearing + 180)), MsgToken<2179>());
+    lk::snprintf(sTmp, _T("%d°  (R:%d°)"), iround(bearing),
+                 iround(AngleLimit360(bearing + 180)));
   }
   else {
-    lk::snprintf(sTmp, TEXT("%d%s"), iround(bearing), MsgToken<2179>());
+    lk::snprintf(sTmp, _T("%d°"), iround(bearing));
   }
   wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
   if (wp) {

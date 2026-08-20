@@ -204,7 +204,7 @@ void dlgAirspaceDetails::SetValues() {
       // LKTOKEN _@M1258_ "to enter"
       return (hdist < 0) ? MsgToken<1257>() : MsgToken<1258>();
     };
-    lk::snprintf(buffer2, TEXT("%s %d%s %s"), buffer, iround(bearing), MsgToken<2179>(), Suffix());
+    lk::snprintf(buffer2, _T("%s %d° %s"), buffer, iround(bearing), Suffix());
 
     wp->SetText(buffer2);
     wp->RefreshDisplay();

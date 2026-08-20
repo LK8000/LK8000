@@ -263,13 +263,11 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   TCHAR tbear[10];
   if (disabled && !notraffic) {
 	if (tangle > 1) {
-		lk::snprintf(tbear, TEXT("%2.0f%s%s"), tangle, MsgToken<2179>(),MsgToken<2183>());
+		lk::snprintf(tbear, _T("%2.0f°»"), tangle);
+	} else if (tangle < -1) {
+		lk::snprintf(tbear, _T("«%2.0f°"), -tangle);	
 	} else {
-		if (tangle < -1) {
-			lk::snprintf(tbear, TEXT("%s%2.0f%s"), MsgToken<2182>(), -tangle, MsgToken<2179>());
-		} else {
-			lk::snprintf(tbear, TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
-		}
+		lk::strcpy(tbear, _T("«»"));
 	}
 	Surface.SelectObject(LK8PanelBigFont);
 	switch ( LKTraffic[LKTargetIndex].Status ) {
@@ -288,9 +286,9 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 	#if 0
 	double tbearing = LKTraffic[LKTargetIndex].Bearing;
 	if (tbearing != 360) {
-		lk::snprintf(tbear, TEXT("%2.0f%s"), tbearing, MsgToken<2179>());
+		lk::snprintf(tbear, _T("%2.0f°"), tbearing);
 	} else {
-		lk::snprintf(tbear, TEXT("0%s"), MsgToken<2179>());
+		lk::strcpy(tbear, _T("0°"));
 	}
 	LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITE, false);
 	#endif
@@ -401,13 +399,11 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
 	if (tangle > 1) {
-		lk::snprintf(tbear, TEXT("%2.0f%s%s"), tangle, MsgToken<2179>(), MsgToken<2183>());
+		lk::snprintf(tbear, _T("%2.0f°»"), tangle);
+	} else if (tangle < -1) {
+		lk::snprintf(tbear, _T("«%2.0f°"), -tangle);
 	} else {
-		if (tangle < -1) {
-			lk::snprintf(tbear, TEXT("%s%2.0f%s"), MsgToken<2182>(), -tangle, MsgToken<2179>());
-		} else {
-			lk::snprintf(tbear, TEXT("%s%s"), MsgToken<2182>(), MsgToken<2183>());
-		}
+		lk::strcpy(tbear, _T("«»"));
 	}
 	Surface.SelectObject(LK8PanelBigFont);
 	// if target is below middle line, paint on top

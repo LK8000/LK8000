@@ -220,19 +220,17 @@ void dlgSelectObject::SetDirectionData(DataField *Sender) {
       lk::snprintf(sTmp, TEXT("%c"), '*');
       break;
     case DirHDG:
-      lk::snprintf(sTmp, TEXT("%s(%d%s)"), 
+      lk::snprintf(sTmp, _T("%s(%d°)"), 
                   MsgToken<1229>(), // _@1229 HDG
-                  iround(AngleLimit360(CALCULATED_INFO.Heading)),
-                  MsgToken<2179>()); // _@M2179 °
+                  iround(AngleLimit360(CALCULATED_INFO.Heading)));
       break;
     case DirBRG:
-      lk::snprintf(sTmp, TEXT("%s(%d%s)"),
+      lk::snprintf(sTmp, _T("%s(%d°)"),
                   MsgToken<154>(), // _@M154 Brg
-                  iround(GetTaskBearing()),
-                  MsgToken<2179>()); // _@M2179 °
+                  iround(GetTaskBearing()));
       break;
     default:
-      lk::snprintf(sTmp, TEXT("%d%s"), direction, MsgToken<2179>()); // _@M2179 °
+      lk::snprintf(sTmp, _T("%d°"), direction);
       break;
   }
 
@@ -259,8 +257,7 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
   const int w0 = LineHeight; // Picto Width
 
   const int w2 = Surface.GetTextWidth(TEXT("0000km")); // distance Width
-  lk::snprintf(sTmp, _T(" 000%s"), MsgToken<2179>());
-  const int w3 = Surface.GetTextWidth(sTmp); // bearing width
+  const int w3 = Surface.GetTextWidth(_T(" 000°")); // bearing width
   
   const int w4 = GetTypeWidth(Surface);
 
@@ -314,7 +311,7 @@ void dlgSelectObject::OnPaintListItem(WindowControl * Sender, LKSurface& Surface
     Surface.DrawText(x2, TextPos, sTmp);
 
     // Draw Bearing right justified after distance
-    lk::snprintf(sTmp, TEXT("%d%s"), iround(info.Direction), MsgToken<2179>());
+    lk::snprintf(sTmp, _T("%d°"), iround(info.Direction));
     const int x3 = width - Surface.GetTextWidth(sTmp);
     Surface.DrawText(x3, TextPos, sTmp);
   } else {

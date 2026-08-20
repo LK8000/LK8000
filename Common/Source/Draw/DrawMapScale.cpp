@@ -124,19 +124,21 @@ void MapWindow::DrawMapScale(LKSurface& Surface, const RECT& rc, const ScreenPro
       if (ValidTaskPoint(PanTaskEdit)) {
         RefreshTask();
         double Dist = DerivedDrawInfo.TaskTotalDistance;
-    	if( DerivedDrawInfo.TaskFAI)
-    	{
-    	  Dist = DerivedDrawInfo.TaskFAIDistance;
-          lk::snprintf(Scale2, _T("FAI Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
-    	}
-        else
-    	  lk::snprintf(Scale2, _T("     Task %.1f%s %s %.0f%s"), Units::ToDistance(Dist), Units::GetDistanceName(), Scale1 ,panbearing,MsgToken<2179>() );
-    }
-    else
-    {
-
-	  lk::snprintf(Scale2, _T(" %.1f%s %s %.0f%s "), Units::ToDistance(pandistance), Units::GetDistanceName(),Scale1, panbearing, MsgToken<2179>() );
-    }
+    	  if (DerivedDrawInfo.TaskFAI) {
+    	    Dist = DerivedDrawInfo.TaskFAIDistance;
+          lk::snprintf(Scale2, _T("FAI Task %.1f%s %s %.0f°"),
+                       Units::ToDistance(Dist), Units::GetDistanceName(),
+                       Scale1, panbearing);
+        }
+        else {
+          lk::snprintf(Scale2, _T("     Task %.1f%s %s %.0f°"),
+                       Units::ToDistance(Dist), Units::GetDistanceName(),
+                       Scale1, panbearing);
+        }
+      }
+      else {
+	      lk::snprintf(Scale2, _T(" %.1f%s %s %.0f° "), Units::ToDistance(pandistance), Units::GetDistanceName(),Scale1, panbearing);
+      }
 
 	goto _skip1;
     }

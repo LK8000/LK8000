@@ -478,7 +478,7 @@ static void UpdateValuesFlight(void) {
 
     wp = wf->FindByName<WndProperty>(TEXT("prpBearing"));
     if (wp) {
-      lk::snprintf(Temp, TEXT("%d%s"), iround(bearing),MsgToken<2179>());
+      lk::snprintf(Temp, _T("%d°"), iround(bearing));
       wp->SetText(Temp);
     }
 

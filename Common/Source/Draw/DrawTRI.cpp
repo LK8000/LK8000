@@ -250,12 +250,13 @@ void MapWindow::DrawTRI(LKSurface& Surface, const RECT& rc) {
   Surface.SelectObject(LK8TitleFont);
   int bankindy=Start.y-radius/2;
 
-  if (beta > 1)
-	lk::snprintf(Buffer, TEXT("%2.0f%s"), beta, MsgToken<2179>());
-  else if (beta < -1)
-	lk::snprintf(Buffer, TEXT("%2.0f%s"), -beta, MsgToken<2179>());
-  else
-	lk::strcpy(Buffer, TEXT("--"));
+  double abs_beta = std::abs(beta);
+  if (abs_beta >= 1) {
+    lk::snprintf(Buffer, _T("%2.0f°"), abs_beta);
+  }
+  else {
+    lk::strcpy(Buffer, TEXT("--"));
+  }
 
   LKWriteText(Surface, Buffer, Start.x , bankindy, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
@@ -558,7 +559,7 @@ void MapWindow::DrawAHRS(LKSurface& Surface, const RECT& rc) {
   int bankindy = Start.y - radius / 2;
   double abs_beta = std::abs(beta);
   if (abs_beta >= 1) {
-    lk::snprintf(Buffer, TEXT("%2.0f%s"), beta, MsgToken<2179>());
+    lk::snprintf(Buffer, _T("%2.0f°"), abs_beta);
   }
   else {
     lk::strcpy(Buffer, TEXT("--"));

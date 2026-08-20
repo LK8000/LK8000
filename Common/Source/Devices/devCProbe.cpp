@@ -439,17 +439,17 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	WndProperty* wp;
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpPitch"));
 	if(wp){
-		lk::snprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Pitch, MsgToken<2179>());
+		lk::snprintf(Temp, _T("%.2f°"), _INFO.Gyroscope.value().Pitch);
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpHeading"));
 	if(wp){
-		lk::snprintf(Temp, TEXT("%.2f%s"), _INFO.MagneticHeading.value(), MsgToken<2179>());
+		lk::snprintf(Temp, _T("%.2f°"), _INFO.MagneticHeading.value());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpRoll"));
 	if(wp){
-		lk::snprintf(Temp, TEXT("%.2f%s"), _INFO.Gyroscope.value().Roll, MsgToken<2179>());
+		lk::snprintf(Temp, _T("%.2f°"), _INFO.Gyroscope.value().Roll);
 		wp->SetText(Temp);
 	}
 
@@ -472,7 +472,7 @@ void CDevCProbe::Update(WndForm* pWnd) {
 	
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpTemp"));
 	if(wp){
-		lk::snprintf(Temp, TEXT("%.2f %sC"), _INFO.OutsideAirTemperature.value(), MsgToken<2179>());
+		lk::snprintf(Temp, _T("%.2f °C"), _INFO.OutsideAirTemperature.value());
 		wp->SetText(Temp);
 	}
 	wp = pWnd->FindByName<WndProperty>(TEXT("prpRh"));
