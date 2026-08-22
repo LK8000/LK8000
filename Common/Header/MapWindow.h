@@ -650,6 +650,13 @@ class MapWindow {
   static void LKgetOLCBmp(CContestMgr::TType Type,DrawBmp_t *BmpValue,TCHAR *BufferValue = NULL);
   static void LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE]);
 
+  static void FormatBearingDifference(TCHAR* BufferValue, size_t size, double value);
+
+  template <size_t size>
+  static void FormatBearingDifference(TCHAR (&BufferValue)[size], double value) {
+    FormatBearingDifference(BufferValue, size, value);
+  }
+
   static bool IsMapFullScreen();
   static bool ChangeDrawRect(const RECT rectarea);
 

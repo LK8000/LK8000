@@ -91,20 +91,6 @@ double GetAvgNextETE(const DERIVED_INFO &info) {
     return value;
 }
 
-static void FormatBearingDifferenceValue(TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], double value) {
-    const auto absValue = std::abs(value);
-    if (absValue <= 2) {
-        lk::strcpy(BufferValue, _T("«»"));
-        return;
-    }
-
-    const auto prefix =
-        (value < 0) ? (absValue > 30 ? _T("«") : _T("‹")) : _T("");
-    const auto suffix =
-        (value > 0) ? (absValue > 30 ? _T("»") : _T("›")) : _T("");
-    lk::snprintf(BufferValue, _T("%s%2.0f°%s"), prefix, absValue, suffix);
-}
-
 static bool TurnpointQnhArrival(int TpIndex, double &value, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE], TCHAR (&BufferUnit)[LKSIZEBUFFERUNIT]) {
 	bool valid = false;
 
@@ -1091,7 +1077,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 					value = WayPointCalc[index].Bearing - DrawInfo.TrackBearing;
 				}
 				valid = true;
-				FormatBearingDifferenceValue(BufferValue, AngleLimit180(value));
+				FormatBearingDifference(BufferValue, AngleLimit180(value));
 			}
 			break;
 
@@ -1264,7 +1250,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 			if (ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
 				valid = true; // 091221
 				value = AngleLimit180(DerivedDrawInfo.TeammateBearing -  DrawInfo.TrackBearing);
-				FormatBearingDifferenceValue(BufferValue, value);
+				FormatBearingDifference(BufferValue, value);
 			}
 			break;
 
@@ -2922,7 +2908,7 @@ lkfin_ete:
 				} else {
 					valid = true;
 					value = AngleLimit180(LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing);
-					FormatBearingDifferenceValue(BufferValue, value);
+					FormatBearingDifference(BufferValue, value);
 				}
 			}
 			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
@@ -3504,6 +3490,20 @@ void MapWindow::LKFormatDist(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFE
   lk::snprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 }
 
+void MapWindow::FormatBearingDifference(TCHAR* BufferValue, size_t size, double value) {
+    const auto absValue = std::abs(value);
+    if (absValue <= 2) {
+        lk::strcpy(BufferValue, _T("«»"), size);
+        return;
+    }
+
+    const auto prefix =
+        (value < 0) ? (absValue > 30 ? _T("«") : _T("‹")) : _T("");
+    const auto suffix =
+        (value > 0) ? (absValue > 30 ? _T("»") : _T("›")) : _T("");
+    lk::snprintf(BufferValue, size, _T("%s%2.0f°%s"), prefix, absValue, suffix);
+}
+
 // DO NOT use this for AAT values! 
 void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBUFFERVALUE]) {
   const std::lock_guard lock(CritSec_TaskData);
@@ -3513,7 +3513,7 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, TCHAR (&BufferValue)[LKSIZEBU
   if (index>=0) {
     // Warning, for AAT this should be WaypointBearing, so do not use it!
     const double value = AngleLimit180(WayPointCalc[index].Bearing -  DrawInfo.TrackBearing);
-    FormatBearingDifferenceValue(BufferValue, value);
+    FormatBearingDifference(BufferValue, value);
   }
   else {
 	lk::strcpy(BufferValue, _T(NULLMEDIUM));

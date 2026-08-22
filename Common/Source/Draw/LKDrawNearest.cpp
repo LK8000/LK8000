@@ -852,16 +852,7 @@ void MapWindow::DrawNearest(LKSurface& Surface, const RECT& rc) {
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
                   value = AngleLimit180(WayPointCalc[rli].Bearing - DrawInfo.TrackBearing);
-
-                  if (value > 1) {
-                    lk::snprintf(Buffer3[i][curpage], _T("%2.0f°»"), value);
-                  }
-                  else if (value < -1) {
-                    lk::snprintf(Buffer3[i][curpage], _T("«%2.0f°"), -value);
-                  }
-                  else {
-                    lk::strcpy(Buffer3[i][curpage], _T("«»"));
-                  }
+                  FormatBearingDifference(Buffer3[i][curpage], value);
                 }
                 else {
                   lk::snprintf(Buffer3[i][curpage], _T("%2.0f°"), WayPointCalc[rli].Bearing);  // 101219
@@ -991,16 +982,7 @@ _KeepOldCommonsValues:
                 //
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
                     value = AngleLimit180(LKAirspaces[rli].Bearing - DrawInfo.TrackBearing);
-
-                    if (value > 1) {
-                      lk::snprintf(Buffer4[i][curpage], _T("%2.0f°»"), value);
-                    }
-                    else if (value < -1) {
-                      lk::snprintf(Buffer4[i][curpage], _T("«%2.0f°"), -value);
-                    }
-                    else {
-                      lk::strcpy(Buffer4[i][curpage], _T("«»"));
-                    }
+                    FormatBearingDifference(Buffer4[i][curpage], value);
                 }
                 else {
                   lk::snprintf(Buffer4[i][curpage], _T("%2.0f°"), LKAirspaces[rli].Bearing);
@@ -1078,15 +1060,7 @@ _KeepOldAirspacesValues:
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
                   value = AngleLimit180(thermal.Bearing - DrawInfo.TrackBearing);
-                  if (value > 1) {
-                    lk::snprintf(Buffer3[i][curpage], _T("%2.0f°»"), value);
-                  }
-                  else if (value < -1) {
-                    lk::snprintf(Buffer3[i][curpage], _T("«%2.0f°"), -value);
-                  }
-                  else {
-                    lk::strcpy(Buffer3[i][curpage], _T("«»"));
-                  }
+                  FormatBearingDifference(Buffer3[i][curpage], value);
                 }
                 else {
                   lk::snprintf(Buffer3[i][curpage], _T("%2.0f°"), thermal.Bearing);
@@ -1197,16 +1171,7 @@ _KeepOldAirspacesValues:
 
                 if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
                     value = AngleLimit180(LKTraffic[rli].Bearing - DrawInfo.TrackBearing);
-
-                    if (value > 1) {
-                      lk::snprintf(Buffer3[i][curpage], _T("%2.0f°»"), value);
-                    }
-                    else if (value < -1) {
-                      lk::snprintf(Buffer3[i][curpage], _T("«%2.0f°"), -value);
-                    }
-                    else {
-                      lk::strcpy(Buffer3[i][curpage], _T("«»"));
-                    }
+                    FormatBearingDifference(Buffer3[i][curpage], value);
                 }
                 else {
                   lk::snprintf(Buffer3[i][curpage], _T("%2.0f°"), LKTraffic[rli].Bearing);

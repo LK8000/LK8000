@@ -262,14 +262,8 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
   // If out of range, paint diff bearing
   TCHAR tbear[10];
   if (disabled && !notraffic) {
-	if (tangle > 1) {
-		lk::snprintf(tbear, _T("%2.0f°»"), tangle);
-	} else if (tangle < -1) {
-		lk::snprintf(tbear, _T("«%2.0f°"), -tangle);	
-	} else {
-		lk::strcpy(tbear, _T("«»"));
-	}
-	Surface.SelectObject(LK8PanelBigFont);
+    FormatBearingDifference(tbear, sizeof(tbear), tangle);
+    Surface.SelectObject(LK8PanelBigFont);
 	switch ( LKTraffic[LKTargetIndex].Status ) {
 		case LKT_GHOST:
 			LKWriteText(Surface,  tbear, ncenterx,ncentery, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
@@ -398,13 +392,7 @@ void MapWindow::DrawTarget(LKSurface& Surface, const RECT& rc, int ttop, int tbo
 
   // always paint the bearing difference, cleverly
   if (!disabled && !notraffic) {
-	if (tangle > 1) {
-		lk::snprintf(tbear, _T("%2.0f°»"), tangle);
-	} else if (tangle < -1) {
-		lk::snprintf(tbear, _T("«%2.0f°"), -tangle);
-	} else {
-		lk::strcpy(tbear, _T("«»"));
-	}
+    FormatBearingDifference(tbear, tangle);
 	Surface.SelectObject(LK8PanelBigFont);
 	// if target is below middle line, paint on top
 	int yposbear;
