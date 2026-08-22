@@ -14,6 +14,9 @@
 #define DEBUGNPM          // port monitor and hearthbeats in Parser
 #define DEBUG_BESTALTERNATE     // full bestalternate messages inside DEBUG.TXT in home directory
 */
+
+// #define DEBUG_GDL90_DRIVER // log GDL90 driver messages in RUNTIME.log
+
 #endif
 
 #endif

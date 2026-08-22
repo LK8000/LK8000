@@ -7,6 +7,7 @@
  * Author: Bruno de Lacheisserie
  */
 
+#include "options.h"
 #include "devGDL90.h"
 #include "Comm/DeviceDescriptor.h"
 #include "GDL90/frame_scanner.h"
@@ -21,7 +22,14 @@
 #include "lk8000.h"
 #include "Utils.h"
 
+#ifdef DEBUG_GDL90_DRIVER
+  #define Gdl90DebugLog(msg, ...) DebugLog(_T("[GDL90]") msg, __VA_ARGS__)
+#else
+  #define Gdl90DebugLog(msg, ...)  // Does nothing
+#endif
+
 namespace {
+
 /**
  * dispatch a decoded GDL90 message to appropriate handler.
  * each handler updates GPS_INFO and/or device state.
@@ -36,10 +44,9 @@ class MessageDispatcher {
       : d(d), NmeaInfo(Info) {}
 
   void operator()(const gdl90_parser::heartbeat& h) const {
-    DebugLog(_T("[GDL90][HB] t=%u gps_valid=%d"), h.utc_seconds(),
-             h.gps_pos_valid());
-
     const uint32_t utc_seconds = h.utc_seconds();
+
+    Gdl90DebugLog(_T("[HB] t=%u gps_valid=%d"), utc_seconds, h.gps_pos_valid());
 
     d.nmeaParser.connected = true;
     if (d.nmeaParser.activeGPS) {
@@ -60,7 +67,7 @@ class MessageDispatcher {
   }
 
   void operator()(const gdl90_parser::ownship_report& r) const {
-    DebugLog(_T("[GDL90][OWN] lat=%.5f lon=%.5f alt=%d ft callsign=%s"),
+    Gdl90DebugLog(_T("[OWN] lat=%.5f lon=%.5f alt=%d ft callsign=%s"),
              r.latitude, r.longitude, r.pressure_alt,
              r.has_callsign ? to_tstring(r.callsign).c_str() : _T("<none>"));
 
@@ -101,7 +108,7 @@ class MessageDispatcher {
   }
 
   void operator()(const gdl90_parser::traffic_report& r) const {
-    DebugLog(_T("[GDL90][TRF] lat=%.5f lon=%.5f alt=%d ft callsign=%s"),
+    Gdl90DebugLog(_T("[TRF] lat=%.5f lon=%.5f alt=%d ft callsign=%s"),
              r.latitude, r.longitude, r.pressure_alt,
              r.has_callsign ? to_tstring(r.callsign).c_str() : _T("<none>"));
 
@@ -155,7 +162,7 @@ class MessageDispatcher {
   }
 
   void operator()(const gdl90_parser::ownship_geo_alt& g) const {
-    DebugLog(_T("[GDL90][GEO] geo_alt=%d ft vfom=%u m"), g.geo_altitude,
+    Gdl90DebugLog(_T("[GEO] geo_alt=%d ft vfom=%u m"), g.geo_altitude,
              g.vfom);
     if (auto alt = g.get_geo_altitude()) {
       NmeaInfo.Altitude = Units::From(unFeet, *alt);
@@ -163,8 +170,8 @@ class MessageDispatcher {
   }
 
   void operator()(const gdl90_parser::stratux_status& s) const {
-    DebugLog(
-        _T("[GDL90][SX] v=%u.%u.%u.%u gps=%u/%u uat=%u es=%u temp=%.1fC towers=%u"),
+    Gdl90DebugLog(
+        _T("[SX] v=%u.%u.%u.%u gps=%u/%u uat=%u es=%u temp=%.1fC towers=%u"),
         s.version_major, s.version_minor, s.version_build_type, s.version_build,
         s.gps_satellites_locked, s.gps_satellites_tracked,
         s.uat_messages_per_minute, s.es_messages_per_minute, s.cpu_temp_c,
@@ -183,20 +190,20 @@ class MessageDispatcher {
       return;
     }
 
-    DebugLog(_T("[GDL90][FF]  device=%s serial=%llu"),
+    Gdl90DebugLog(_T("[FF]  device=%s serial=%llu"),
              to_tstring(f.device_name).c_str(),
              static_cast<unsigned long long>(f.device_serial));
   }
 
   void operator()(const gdl90_parser::stratux_heartbeat& a) const {
-    DebugLog(_T("[GDL90][SX-HB] proto=%u gps=%d ahrs=%d"),
+    Gdl90DebugLog(_T("[SX-HB] proto=%u gps=%d ahrs=%d"),
              static_cast<unsigned>(a.protocol_version()),
              static_cast<int>(a.gps_valid()),
              static_cast<int>(a.ahrs_valid()));
   }
 
   void operator()(const gdl90_parser::levil_ahrs& a) const {
-    DebugLog(_T("[GDL90][LEVIL] pitch=%.1f roll=%.1f hdg=%.1f ias=%.1f alt=%d vspd=%d"),
+    Gdl90DebugLog(_T("[LEVIL] pitch=%.1f roll=%.1f hdg=%.1f ias=%.1f alt=%d vspd=%d"),
          a.get_pitch(),
          a.get_roll(),
          a.get_heading()      .value_or(-1.0),
@@ -206,7 +213,7 @@ class MessageDispatcher {
   }
 
   void operator()(const gdl90_parser::unknown_msg& u) const {
-    DebugLog(_T("[GDL90][???]  id=0x%02X len=%zu"), u.id, u.payload.size());
+    Gdl90DebugLog(_T("[???]  id=0x%02X len=%zu"), u.id, u.payload.size());
   }
 #endif
 };
@@ -229,7 +236,7 @@ struct GDL90frame_scanner : public DriverData, public gdl90_parser::frame_scanne
       push<MessageDispatcher>(std::move(data), d, GPS_INFO);
     }
     catch (const std::exception& e) {
-      DebugLog(_T("[GDL90][ERR] %s"), to_tstring(e.what()).c_str());
+      Gdl90DebugLog(_T("[ERR] %s"), to_tstring(e.what()).c_str());
     }
   }
 };
