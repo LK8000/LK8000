@@ -46,7 +46,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
