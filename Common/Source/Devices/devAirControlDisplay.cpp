@@ -23,6 +23,13 @@
 
 using std::string_view_literals::operator""sv;
 
+#ifdef DEBUG_ACD_DRIVER
+  #define AcdDebugLog(msg, ...) DebugLog(_T("[ACD]") msg, __VA_ARGS__)
+#else
+  #define AcdDebugLog(msg, ...)  // Does nothing
+#endif
+
+
 namespace {
 
 struct Configuration {
@@ -120,13 +127,13 @@ BOOL ParseConfiguration(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GP
   }
 
   // TODO :
-  DebugLog(_T("ACD unknown: $PAAVC,A,%s"), to_tstring(String).c_str());
+  AcdDebugLog(_T("[CFG] unknown: $PAAVC,A,%s"), to_tstring(String).c_str());
 
   return TRUE;
 }
 
 BOOL ParseCommand(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
-  DebugLog(_T("ACD unknown : $PAAVX,%s"), to_tstring(String).c_str());
+  AcdDebugLog(_T("[CMD] unknown: $PAAVX,%s"), to_tstring(String).c_str());
   return TRUE;
 }
 
@@ -226,7 +233,7 @@ BOOL ParseALT(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
 }
 
 BOOL ParseXPDR(DeviceDescriptor_t* d, const char* String, NMEA_INFO* GPS_INFO) {
-  DebugLog(_T("ACD unknown : $PAAVS,XPDR,%s"), to_tstring(String).c_str());
+  AcdDebugLog(_T("[XPDR] ignored: $PAAVS,XPDR,%s"), to_tstring(String).c_str());
 
   // TODO :
   return TRUE;
