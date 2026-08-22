@@ -8,6 +8,7 @@
  *
  * Created on 28 juillet 2013, 16:15
  */
+#include "options.h"
 #include "externs.h"
 #include <stdarg.h>
 #include "ComPort.h"
@@ -21,6 +22,12 @@
 #include <span>
 #include <sstream>
 #include <regex>
+
+#ifdef DEBUG_COMPORT_WRITE
+  #define ComPortWriteDebugLog(msg, ...) DebugLog(msg, __VA_ARGS__)
+#else
+  #define ComPortWriteDebugLog(msg, ...)  // Does nothing
+#endif
 
 ComPort::ComPort(unsigned idx, const tstring& sName) 
         : devIdx(idx), sPortName(sName)
@@ -54,7 +61,7 @@ bool ComPort::Write(const void *data, size_t size) {
 
         bool success = Write_Impl(data, size);
 
-        DebugLog(_T(R"(<%s> ComPort::Write("%s"))"),
+        ComPortWriteDebugLog(_T(R"(<%s> ComPort::Write("%s"))"),
                     success ? _T("success"): _T("failed"),
                     data_string(data, size).c_str());
 

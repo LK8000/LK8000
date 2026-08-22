@@ -16,6 +16,7 @@
 */
 
 // #define DEBUG_GDL90_DRIVER // log GDL90 driver messages in RUNTIME.log
+// #define DEBUG_COMPORT_WRITE // log ComPort::Write() calls in RUNTIME.log
 
 #endif
 
