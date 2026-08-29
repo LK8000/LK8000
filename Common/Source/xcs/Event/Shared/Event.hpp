@@ -115,6 +115,8 @@ struct Event {
     :type(CALLBACK), ptr(_ptr), callback(_callback) {}
   Event(Type _type, PixelScalar _x, PixelScalar _y)
     :type(_type), point(_x, _y) {}
+  Event(Type _type, unsigned _param, PixelScalar _x, PixelScalar _y)
+    :type(_type), param(_param), point(_x, _y) {}
 
   bool IsKeyDown() const {
     return type == KEY_DOWN;

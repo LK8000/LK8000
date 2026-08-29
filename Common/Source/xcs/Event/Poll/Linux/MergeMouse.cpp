@@ -23,6 +23,7 @@ Copyright_License {
 
 #include "MergeMouse.hpp"
 #include "Event/Shared/Event.hpp"
+#include <utility>
 
 void
 MergeMouse::SetScreenSize(unsigned width, unsigned height)
@@ -127,10 +128,7 @@ MergeMouse::Generate()
   }
 
   if (wheel != 0) {
-    Event event(Event::MOUSE_WHEEL, x, y);
-    event.param = unsigned(wheel);
-    wheel = 0;
-    return event;
+    return Event(Event::MOUSE_WHEEL, std::exchange(wheel, 0), x, y);
   }
 
   return Event(Event::Type::NOP);
