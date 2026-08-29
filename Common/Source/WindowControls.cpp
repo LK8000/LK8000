@@ -1166,7 +1166,7 @@ WindowControl::WindowControl(WindowControl *Owner, const TCHAR *Name,
   }
   LKASSERT(X+Width>0);
   
-  Create(WndOnwer,(RECT){X, Y, X+Width, Y+Height});
+  Create(WndOnwer,{X, Y, X+Width, Y+Height});
   SetTopWnd();
   SetFont(MapWindowFont);
   if (mOwner != NULL)
@@ -2304,7 +2304,7 @@ bool WndProperty::OnKeyDown(unsigned KeyCode) {
             return true;
         case KEY_RETURN:
             if (this->mDialogStyle) {
-                if (OnLButtonDown((POINT) {0, 0})) {
+                if (OnLButtonDown({0, 0})) {
                     return true;
                 }
             } else {
