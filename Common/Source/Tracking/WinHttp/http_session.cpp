@@ -75,15 +75,16 @@ bool http_session::ssl_available_impl() {
 std::string http_session::request_impl(const std::string& url,
                                        const std::string* post_data,
                                        const char* content_type) const {
+  std::string response;
   try {
     if (!session) {
-      return {};
+      throw std::runtime_error("HTTP session not initialized");
     }
 
     // Parse URL
     url_parts parts;
     if (!parse_url(url, parts)) {
-      return {};
+      throw std::runtime_error("Failed to parse URL");
     }
 
     // Connect to server
@@ -91,7 +92,7 @@ std::string http_session::request_impl(const std::string& url,
         WinHttpConnect(session.get(), parts.host.c_str(), parts.port, 0));
 
     if (!hConnect) {
-      return {};
+      throw std::runtime_error("Failed to connect to server");
     }
 
     // Open request
@@ -103,7 +104,7 @@ std::string http_session::request_impl(const std::string& url,
         WINHTTP_DEFAULT_ACCEPT_TYPES, flags));
 
     if (!hRequest) {
-      return {};
+      throw std::runtime_error("Failed to open HTTP request");
     }
 
     // Set timeouts (in milliseconds):
@@ -148,12 +149,12 @@ std::string http_session::request_impl(const std::string& url,
     }
 
     if (!result) {
-      return {};
+      throw std::runtime_error("Failed to send HTTP request");
     }
 
     // Receive response
     if (!WinHttpReceiveResponse(hRequest.get(), NULL)) {
-      return {};
+      throw std::runtime_error("Failed to receive HTTP response");
     }
 
     // Check status code
@@ -165,7 +166,6 @@ std::string http_session::request_impl(const std::string& url,
                         &statusCodeSize, WINHTTP_NO_HEADER_INDEX);
 
     // Read response data
-    std::string response;
     DWORD bytesAvailable = 0;
     DWORD bytesRead = 0;
     std::vector<char> buffer(4096);
@@ -183,8 +183,7 @@ std::string http_session::request_impl(const std::string& url,
 
       // Check response size limit
       if (response.size() + bytesAvailable > maxResponseSize) {
-        DebugLog(_T("HTTP response too large, aborting\n"));
-        return {};
+        throw std::runtime_error("HTTP response too large");
       }
 
       // Resize buffer if needed
@@ -203,11 +202,10 @@ std::string http_session::request_impl(const std::string& url,
       }
 
     } while (bytesAvailable > 0);
-
-    return response;
   }
   catch (std::exception& e) {
     DebugLog(_T("http_session : %s\n"), to_tstring(e.what()).c_str());
+    response.clear();
   }
-  return {};
+  return response;
 }
