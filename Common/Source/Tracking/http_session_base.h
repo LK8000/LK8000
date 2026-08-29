@@ -12,6 +12,7 @@
 #define _TRACKING_HTTP_SESSION_BASE_H_
 
 #include <cctype>
+#include <cstdint>
 #include <initializer_list>
 #include <string>
 #include <string_view>
@@ -91,23 +92,24 @@ public:
 
 protected:
   static std::string encode_query_component(std::string_view value) {
-    constexpr char hex[] = "0123456789ABCDEF";
+    constexpr char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    static_assert(std::size(hex) == 16, "Hex array must have 16 elements");
 
     std::string out;
     out.reserve(value.size());
 
-    for (unsigned char ch : value) {
+    for (auto ch : value) {
       bool is_unreserved = (ch >= 'A' && ch <= 'Z') ||
                            (ch >= 'a' && ch <= 'z') ||
                            (ch >= '0' && ch <= '9') ||
                            ch == '-' || ch == '_' || ch == '.' || ch == '~';
       if (is_unreserved) {
-        out.push_back(static_cast<char>(ch));
+        out.push_back(ch);
       }
       else {
         out.push_back('%');
-        out.push_back(hex[(ch >> 4) & 0x0F]);
-        out.push_back(hex[ch & 0x0F]);
+        out.push_back(hex[(static_cast<uint8_t>(ch) >> 4) & 0x0F]);
+        out.push_back(hex[static_cast<uint8_t>(ch) & 0x0F]);
       }
     }
 
