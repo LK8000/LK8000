@@ -25,6 +25,7 @@ Copyright_License {
 #define XCSOAR_UNCOMPRESSED_IMAGE_HPP
 
 #include <stdint.h>
+#include <utility>
 
 class UncompressedImage {
 public:
@@ -76,6 +77,18 @@ public:
   }
 
   UncompressedImage &operator=(const UncompressedImage &other) = delete;
+
+  UncompressedImage& operator=(UncompressedImage&& other) {
+    if (this != &other) {
+      format = std::exchange(other.format, Format::INVALID);
+      pitch = std::exchange(other.pitch, 0);
+      width = std::exchange(other.width, 0);
+      height = std::exchange(other.height, 0);
+      delete[] data;
+      data = std::exchange(other.data, nullptr);
+    }
+    return *this;
+  }
 
   static UncompressedImage Invalid() {
     return UncompressedImage(Format::INVALID, 0, 0, 0, nullptr);
