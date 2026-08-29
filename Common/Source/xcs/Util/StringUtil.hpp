@@ -70,12 +70,6 @@ StringFind(const char *haystack, const char *needle)
   return strstr(haystack, needle);
 }
 
-static inline char *
-StringToken(char *str, const char *delim)
-{
-  return strtok(str, delim);
-}
-
 template<typename... Args>
 static inline void
 StringFormat(char *buffer, size_t size, const char *fmt, Args&&... args)

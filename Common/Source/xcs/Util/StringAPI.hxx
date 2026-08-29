@@ -94,12 +94,6 @@ StringFindLast(char *haystack, char needle)
   return strrchr(haystack, needle);
 }
 
-static inline char *
-StringToken(char *str, const char *delim)
-{
-  return strtok(str, delim);
-}
-
 gcc_nonnull_all
 static inline void
 UnsafeCopyString(char *dest, const char *src)
