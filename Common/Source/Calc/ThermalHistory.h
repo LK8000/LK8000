@@ -44,7 +44,7 @@ bool DoThermalHistory(NMEA_INFO* Basic, DERIVED_INFO* Calculated);
 
 bool IsThermalMultitarget(size_t idx);
 
-void SetThermalMultitarget(size_t idx, const TCHAR* Comment);
+void SetThermalMultitarget(size_t idx, tstring Comment);
 
 std::optional<THERMAL_HISTORY> GetThermalMultitarget();
 std::optional<THERMAL_HISTORY> GetThermalHistory(size_t idx);

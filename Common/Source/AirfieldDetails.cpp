@@ -18,31 +18,40 @@
 
 namespace {
 
+template <typename... Args>
+bool regex_match(tstring_view str, Args&&... args) {
+  return std::regex_match(str.cbegin(), str.cend(),
+                          std::forward<Args>(args)...);
+}
+
+using regex = std::basic_regex<TCHAR>;
+using match_results = std::match_results<tstring_view::const_iterator>;
+
 // get waypoint name without A/F suffix
-tstring get_wp_mane(const TCHAR* Name) {
-  const std::basic_regex<TCHAR> re(_T(R"(^(.*?)(?: A\/?F)?$)"));
-  std::match_results<const TCHAR*> match;
-  if (!std::regex_match(Name, match, re)) {
-    return Name;
+tstring get_wp_mane(tstring_view Name) {
+  static const regex re(_T(R"(^(.*?)(?: A\/?F)?$)"));
+  match_results match;
+  if (!regex_match(Name, match, re)) {
+    return tstring(Name);
   }
   return match[1].str();
 }
 
 // extract waypoint name and flag from the lookup string
-std::tuple<tstring, tstring> get_lookup(const TCHAR* Name) {
-  const std::basic_regex<TCHAR> re(_T(R"(^(.*?)(?:=((?:PREF)|(?:HOME)|(?:PREFERRED)))?$)"));
-  std::match_results<const TCHAR*> match;
-  if (!std::regex_match(Name, match, re)) {
-    return { Name, _T("") };
+std::tuple<tstring, tstring> get_lookup(tstring_view Name) {
+  static const regex re(_T(R"(^(.*?)(?:=((?:PREF)|(?:HOME)|(?:PREFERRED)))?$)"));
+  match_results match;
+  if (!regex_match(Name, match, re)) {
+    return { tstring(Name), {} };
   }
-  return { match[1], match[2] };
+  return { match[1].str(), match[2].str() };
 }
 
 bool compare_nocase(const tstring& a, const tstring& b) {
   return _tcsicmp(a.c_str(), b.c_str()) == 0;
 }
 
-void SetAirfieldDetail(const TCHAR* Name, const TCHAR* Details) {
+void SetAirfieldDetail(tstring_view Name, const tstring& Details) {
   const auto [lookup_name, lookup_flag] = get_lookup(Name);
 
   bool isHome = lookup_flag == _T("HOME");
@@ -67,9 +76,7 @@ void SetAirfieldDetail(const TCHAR* Name, const TCHAR* Details) {
       WayPointCalc[i].Preferred = true;
     }
 
-    if (Details) {
-      SetWaypointDetails(wp, Details);
-    }
+    SetWaypointDetails(wp, Details);
   }
 }
 
@@ -81,7 +88,7 @@ void SetAirfieldDetail(const std::string& Name, const std::string& Details) {
   trim_inplace(tdetails);
 
   if (!tname.empty()) {
-    SetAirfieldDetail(tname.c_str(), tdetails.empty() ? nullptr : tdetails.c_str());
+    SetAirfieldDetail(tstring_view(tname), std::move(tdetails));
   }
 }
 

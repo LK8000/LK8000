@@ -28,8 +28,8 @@ void UpdateTargetAltitude(TASK_POINT& TskPt);
 
 bool AddWaypoint(WAYPOINT& waypoint);
 
-void SetWaypointComment(WAYPOINT& waypoint, const TCHAR* string);
-void SetWaypointDetails(WAYPOINT& waypoint, const TCHAR* string);
+void SetWaypointComment(WAYPOINT& waypoint, tstring string);
+void SetWaypointDetails(WAYPOINT& waypoint, tstring string);
 
 int FindMatchingWaypoint(WAYPOINT *waypoint);
 int FindMatchingAirfield(WAYPOINT *waypoint);

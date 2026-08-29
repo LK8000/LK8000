@@ -237,7 +237,7 @@ void AddReservedWaypoints()
 	WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[i].Flags=TURNPOINT;
 	lk::strcpy(WayPointList[i].Name, _T("LKMARKER"));
-	SetWaypointComment(WayPointList[i], _T(""));
+	SetWaypointComment(WayPointList[i], {});
 	WayPointList[i].Reachable=FALSE;
 	WayPointList[i].AltArivalAGL=0.0;
 	WayPointList[i].Visible=FALSE;

@@ -41,20 +41,10 @@ bool AddWaypoint(WAYPOINT& Waypoint) {
     return true;
 }
 
-void SetWaypointComment(WAYPOINT& waypoint, const TCHAR* string) {
-    if(string) {
-        waypoint.Comment = string;
-    }
-    else {
-        waypoint.Comment.clear();
-    }
+void SetWaypointComment(WAYPOINT& waypoint, tstring string) {
+    waypoint.Comment = std::move(string);
 }
 
-void SetWaypointDetails(WAYPOINT& waypoint, const TCHAR* string) {
-    if(string) {
-        waypoint.Details = string;
-    }
-    else {
-        waypoint.Details.clear();
-    }
+void SetWaypointDetails(WAYPOINT& waypoint, tstring string) {
+    waypoint.Details = std::move(string);
 }

@@ -18,7 +18,7 @@ namespace {
 
 void OnSelectClicked(WndButton* pWnd, int thermal_idx) {
 
-  SetThermalMultitarget(thermal_idx, _T("")); // update selected multitarget
+  SetThermalMultitarget(thermal_idx, {}); // update selected multitarget
 
   // switch to L> multitarget, and force moving map mode
   OvertargetMode=OVT_THER;

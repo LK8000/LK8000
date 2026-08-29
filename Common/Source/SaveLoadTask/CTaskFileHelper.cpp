@@ -650,10 +650,10 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
     GetAttribute(node, "flags", newPoint.Flags);
 
     const char* comment = GetAttribute(node, "comment");
-    SetWaypointComment(newPoint, utf8_to_tstring(comment).c_str());
+    SetWaypointComment(newPoint, utf8_to_tstring(comment));
 
     const char* details = GetAttribute(node, "details");
-    SetWaypointDetails(newPoint, utf8_to_tstring(details).c_str());
+    SetWaypointDetails(newPoint, utf8_to_tstring(details));
 
     GetAttribute(node, "format", newPoint.Format);
     GetAttribute(node, "freq", newPoint.Freq);

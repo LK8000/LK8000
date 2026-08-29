@@ -13,6 +13,7 @@
 #include "utils/printf.h"
 #include "Library/TimeFunctions.h"
 #include "LocalPath.h"
+#include <format>
 
 
 extern int GetVirtualWaypointMarkerSlot(void);
@@ -82,10 +83,7 @@ void MarkLocation(const double lon, const double lat, const double altitude) {
     from_utf8(marktime, tstring);
 	lk::snprintf(WayPointList[j].Name,_T("MK%s%02d"),tstring,GPS_INFO.Second);
 	from_utf8(snear, tstring);
-	TCHAR comment[60];
-	lk::snprintf(comment, _T("Near: %s"), tstring);
-	SetWaypointComment(WayPointList[j], comment);
-
+	SetWaypointComment(WayPointList[j], std::format(_T("Near: {}"), tstring));
 
 	// Force updating DoRange otherwise it will pass up to 3 minutes
 	// before this marker appears in the 2.3 tps page

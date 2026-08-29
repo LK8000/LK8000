@@ -13,6 +13,7 @@
 #include "Library/TimeFunctions.h"
 #include "Time/GPSClock.hpp"
 #include "utils/printf.h"
+#include "utils/strcpy.h"
 
 //
 // Thermal History functions
@@ -206,7 +207,7 @@ bool IsThermalMultitarget(size_t idx) {
   return false;
 }
 
-void SetThermalMultitarget(size_t idx, const TCHAR* Comment) {
+void SetThermalMultitarget(size_t idx, tstring Comment) {
   try {
     auto thermal = WithLock(lst_mutex, [&] {
       if (idx >= ThermalHistory.size()) {
@@ -222,8 +223,8 @@ void SetThermalMultitarget(size_t idx, const TCHAR* Comment) {
       WayPointList[RESWP_LASTTHERMAL].Latitude  = thermal.position.latitude;
       WayPointList[RESWP_LASTTHERMAL].Longitude = thermal.position.longitude;
       WayPointList[RESWP_LASTTHERMAL].Altitude  = thermal.HBase;
-      lk::snprintf(WayPointList[RESWP_LASTTHERMAL].Name, _T("%s"), thermal.Name.c_str());
-      SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], Comment);
+      lk::strcpy(WayPointList[RESWP_LASTTHERMAL].Name, thermal.Name.c_str());
+      SetWaypointComment(WayPointList[RESWP_LASTTHERMAL], std::move(Comment));
     });
   }
   catch (std::exception& e) {
