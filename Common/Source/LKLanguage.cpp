@@ -127,36 +127,35 @@ namespace {
 // _@Hnnnn_
 // minimal: _@H1_  maximal: _@H999999_
 tstring LKgethelptext(const TCHAR *TextIn) {
-  const unsigned index = GetTextIndex(TextIn, 'H');
-  if (index > 999999) {
-    return TextIn;
-  }
-
-  char sToken[11];
-  sprintf(sToken, "_@H%06u_", index);
-
   tstring sHelpString;
-  try {
-    json lang_json = GetLanguageJson(szLanguageCode);
-    auto string = lang_json.find(sToken);
-    if(string == lang_json.end()) {
-      // token not found in user language, try system language
-      lang_json = GetLanguageJson(_T(LKD_DEFAULT_LANGUAGE));
-      string = lang_json.find(sToken);
-    }
-    if (string != lang_json.end()) {
-      const json& value = string.value();
-      if (value.is_string()) {
-        sHelpString = utf8_to_tstring(value);
+  const unsigned index = GetTextIndex(TextIn, 'H');
+  if (index <= 999999) {
+    char sToken[11];
+    sprintf(sToken, "_@H%06u_", index);
+    try {
+      json lang_json = GetLanguageJson(szLanguageCode);
+      auto string = lang_json.find(sToken);
+      if(string == lang_json.end()) {
+        // token not found in user language, try system language
+        lang_json = GetLanguageJson(_T(LKD_DEFAULT_LANGUAGE));
+        string = lang_json.find(sToken);
+      }
+      if (string != lang_json.end()) {
+        const json& value = string.value();
+        if (value.is_string()) {
+          sHelpString = utf8_to_tstring(value);
+        } else {
+          sHelpString = TextIn;
+        }
       } else {
+        StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
         sHelpString = TextIn;
       }
-    } else {
-      StartupStore(_T(".... Unknown Text token <%s>"), TextIn);
+    } catch (json::exception& error) {
+      StartupStore(_T("language : %s"), to_tstring(error.what()).c_str());
       sHelpString = TextIn;
     }
-  } catch (json::exception& error) {
-    StartupStore(_T("language : %s"), to_tstring(error.what()).c_str());
+  } else {
     sHelpString = TextIn;
   }
   return sHelpString;
