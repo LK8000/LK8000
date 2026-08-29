@@ -110,7 +110,7 @@ class GlobalRef {
 public:
 	GlobalRef() = delete;
 
-	GlobalRef(std::nullptr_t) noexcept : value() {};
+	GlobalRef(std::nullptr_t) noexcept : value() {}
 
 	GlobalRef(JNIEnv *env, T _value) noexcept {
 		assert(env != nullptr);
