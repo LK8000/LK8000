@@ -315,17 +315,20 @@ template <typename Func, typename R = std::invoke_result_t<Func&, Type>>
 inline R lookup(Type cls, Type type, Func&& func) noexcept(
     std::is_nothrow_invocable_v<Func&, Type>) {
 
+  R result = {};
   if (type == Airspace::Type::OTHER || type == Airspace::Type::NONE) {
     // OpenAir-V1 or OpenAip airspace source (OTHER)
     // OpenAir-V2 Airspace without type (NONE)
-    return std::invoke(func, cls);
+    result = std::invoke(func, cls);
+  } else {
+    // For non-sentinel types, try type first, then cls
+    result = std::invoke(func, type);
+    if (!result) {
+      // not defined for type, use cls
+      result = std::invoke(func, cls);
+    }
   }
-  R result = std::invoke(func, type);
-  if (result) {
-    return result;
-  }
-  // not defined for type, use cls
-  return std::invoke(func, cls);
+  return result;
 }
 
 #define CONCATE(name) Type::name
