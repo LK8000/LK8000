@@ -87,6 +87,6 @@ namespace ModelType {
     void ResetSettings();
     bool LoadSettings(const char *key, const char *value);
     void SaveSettings(settings::writer& writer_settings);
-};
+} // namespace ModelType
 
 #endif
