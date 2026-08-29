@@ -33,6 +33,7 @@
 #include "McReady.h"
 #include "Time/PeriodClock.hpp"
 #include "utils/printf.h"
+#include "utils/strcpy.h"
 #include "Comm/UpdateQNH.h"
 #include "Comm/ExternalWind.h"
 #include "LocalPath.h"
@@ -1456,13 +1457,9 @@ BOOL DevLXNanoIII::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
         {
           v=POLARV[i]/100;
           POLARLD[i] = -(fa*v*v + fb*v + fc);
-#ifdef TESTBENCH
-          TCHAR szTmp[MAX_NMEA_LEN];
-          lk::snprintf(szTmp, _T("V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
-          StartupStore(TEXT("Polar: %s"), szTmp);
-#endif
+          TestLog(_T("Polar: V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
         }
-        _sntprintf (szPolarName ,80, _T("%s"), d->Name );
+        lk::strcpy(szPolarName,  d->Name);
         PolarWinPilot2XCSoar(POLARV, POLARLD, WW);
         GlidePolar::SetBallast();
       }
