@@ -386,50 +386,47 @@ json LiveTrack24V2Handler::callLiveTrack24(http_session& http,
     url += "/di/" + m_deviceID + "/ut/" + m_ut;
   }
 
+  json res;
   std::string reply = downloadJSON(http, url);
-
-  if (reply.empty()) {
+  if (!reply.empty()) {
+    res = json::parse(reply);
+  } else {
     DebugLog(_T(".LiveRadar callLiveTrack24 : Empty response from server"));
-    return nullptr;
   }
 
-  json res = json::parse(reply);
-
-  if (!res.is_object()) {
-    return nullptr;
-  }
-
-  json::iterator it = res.find("qwe");
-  if (it != res.end() && it->is_string()) {
-    m_otpQuestion = *it;
-  }
-
-  it = res.find("ut");
-  if (it != res.end() && it->is_string()) {
-    m_ut = *it;
-  }
-
-  it = res.find("sync");
-  if (it != res.end() && it->is_number()) {
-    m_sync = static_cast<int>(*it);
-  }
-
-  if (!calledSelf) {
-    it = res.find("newqwe");
-    if (it != res.end() && it->is_number() && it->get<double>() == 1.) {
-      res = callLiveTrack24(http, subURL, true);
+  if (res.is_object()) {
+    json::iterator it = res.find("qwe");
+    if (it != res.end() && it->is_string()) {
+      m_otpQuestion = *it;
     }
 
-    it = res.find("reLogin");
-    if (it != res.end() && it->is_number() && it->get<double>() == 1.) {
-      res = callLiveTrack24(http,
-                            "login/username/" + m_profile.user +
-                                "/pass/" + m_profile.password,
-                            true);
+    it = res.find("ut");
+    if (it != res.end() && it->is_string()) {
+      m_ut = *it;
+    }
 
-      json::iterator ut = res.find("ut");
-      if (ut != res.end() && ut->is_string()) {
+    it = res.find("sync");
+    if (it != res.end() && it->is_number()) {
+      m_sync = static_cast<int>(*it);
+    }
+
+    if (!calledSelf) {
+      it = res.find("newqwe");
+      if (it != res.end() && it->is_number() && it->get<double>() == 1.) {
         res = callLiveTrack24(http, subURL, true);
+      }
+
+      it = res.find("reLogin");
+      if (it != res.end() && it->is_number() && it->get<double>() == 1.) {
+        res = callLiveTrack24(http,
+                              "login/username/" + m_profile.user +
+                                  "/pass/" + m_profile.password,
+                              true);
+
+        json::iterator ut = res.find("ut");
+        if (ut != res.end() && ut->is_string()) {
+          res = callLiveTrack24(http, subURL, true);
+        }
       }
     }
   }
