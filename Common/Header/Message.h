@@ -1,7 +1,11 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <cassert>
 #include <list>
+#include "Screen/Point.hpp"
+#include "Util/tstring.hpp"
+#include "tchar.h"
 
 #define MAXMESSAGES 20
 
@@ -27,7 +31,7 @@ class WndMessage;
 
 class Message {
  public:
-  static void Initialize(RECT rc);
+  static void Initialize(PixelRect rc);
   static void InitFont();
 
   static void Destroy();
@@ -69,7 +73,7 @@ class Message {
 
   static messages_t messages; // from older to newer
   static messages_t messagesHistory; // from newer to older
-  static RECT rcmsg; // maximum message size
+  static PixelRect rcmsg; // maximum message size
   static WndMessage WndMsg;
   static tstring msgText;
   static void Resize();

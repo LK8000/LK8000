@@ -56,7 +56,7 @@ protected:
 
 Mutex  CritSec_Messages; // Recusive Mutex Needed
 
-RECT Message::rcmsg;
+PixelRect Message::rcmsg;
 WndMessage Message::WndMsg;
 
 Message::messages_t Message::messages; // from older to newer
@@ -72,7 +72,7 @@ PeriodClock startTime;
 
 int Message::ScopeBlockRender::_Block = 0;
 
-void Message::Initialize(RECT rc) {
+void Message::Initialize(PixelRect rc) {
 
     startTime.Update();
 
@@ -111,10 +111,7 @@ void Message::Unlock() {
 
 
 void Message::Resize() {
-  SIZE tsize;
   const size_t size = msgText.size();
-  RECT rthis;
-  //  RECT mRc;
 
   if (size==0) {
     if (!hidden) {
@@ -122,6 +119,7 @@ void Message::Resize() {
     }
     hidden = true;
   } else {
+    PixelRect rthis;
 
     WndMsg.SetWndText(msgText.c_str());
 
@@ -130,6 +128,7 @@ void Message::Resize() {
                                               ? LK8InfoBigFont
                                               : MapWindowBoldFont);
 
+    PixelSize tsize;
     Surface.GetTextSize(msgText.c_str(), &tsize);
     assert(tsize.cx > 0);
     assert(tsize.cy > 0);
@@ -245,7 +244,7 @@ void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
       It->tshow = tshow;
       messages.splice(messages.end(), messages, It);
     } else {
-      messages.emplace_back((Message_t){Text, type, fpsTime, fpsTime, tshow});
+      messages.emplace_back(Text, type, fpsTime, fpsTime, tshow);
     }
 }
 
