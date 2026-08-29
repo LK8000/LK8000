@@ -640,7 +640,7 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifneq ($(DEBUG),y)
- LDFLAGS += -flto
+ LDFLAGS += -flto -Wno-psabi
  LDFLAGS += -Wl,--gc-sections
 # LDFLAGS += -fuse-ld=gold # unavailable on kobo toolchain ...
 # LDFLAGS += -Wl,--icf=all # unavailable without gold linker
