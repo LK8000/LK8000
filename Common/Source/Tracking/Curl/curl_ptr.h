@@ -22,7 +22,7 @@ public:
 
   curl_ptr(curl_ptr&& src) noexcept {
     curl = std::exchange(src.curl, nullptr);
-  };
+  }
 
   curl_ptr& operator=(curl_ptr&& src) {
     std::swap(curl, src.curl);
