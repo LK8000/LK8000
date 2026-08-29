@@ -21,7 +21,7 @@ class TestThread : public Thread {
  public:
   std::atomic<bool> ran{false};
   std::atomic<int> runCount{0};
-  int sleepMs = 0;
+  unsigned int sleepMs = 0;
 
   explicit TestThread(const char* name = "TestThread") : Thread(name) {}
 
