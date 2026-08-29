@@ -39,4 +39,8 @@ class InvokeThread : public Thread {
   std::tuple<std::decay_t<Args>...> args;
 };
 
+// deduction guide required to silence -Wctad-maybe-unsupported
+template <typename Callable, typename... Args>
+InvokeThread(const char*, Callable&&, Args&&...) -> InvokeThread<Callable, Args...>;
+
 #endif  //_THREAD_THREAD_HPP_
