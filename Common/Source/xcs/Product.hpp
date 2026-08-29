@@ -65,10 +65,6 @@ inline constexpr std::string_view GetDeviceIdAlphabet() {
 inline std::string EncodeDeviceId(uint64_t value) {
   constexpr auto alphabet = GetDeviceIdAlphabet();
   constexpr size_t alphabet_size = alphabet.size();
-  if (value == 0) {
-    // Invalid device ID, return empty string to indicate error
-    return "";
-  }
   std::string result;
   while (value > 0) {
     result.push_back(alphabet[value % alphabet_size]);
