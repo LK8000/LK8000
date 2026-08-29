@@ -718,13 +718,13 @@ class WndFrame:public WindowControl{
     void SetIsListItem(bool Value){mIsListItem = Value;};
 
 
-    virtual bool OnLButtonDown(const POINT& Pos);
+    bool OnLButtonDown(const POINT& Pos) override;
 
-    virtual void Paint(LKSurface& Surface);
+    void Paint(LKSurface& Surface) override;
 
   protected:
 
-    virtual bool OnKeyDown(unsigned KeyCode);
+    bool OnKeyDown(unsigned KeyCode) override;
 
     bool mIsListItem;
 
