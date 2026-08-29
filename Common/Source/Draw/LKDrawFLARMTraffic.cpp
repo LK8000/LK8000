@@ -115,7 +115,7 @@ static int	iRectangleSize = 4;
       }
       // Aircraft is on ground        
       Surface.SelectObject(LKBrush_Black);
-      Surface.DrawCircle(sc.x,  sc.y, iCircleSize, rc, true );
+      Surface.DrawCircle(sc.x,  sc.y, iCircleSize, PixelRect(rc), true );
     }
   }
 
@@ -247,7 +247,7 @@ static int	iRectangleSize = 4;
 				Surface.Rectangle(sc.x-iRectangleSize,  sc.y-iRectangleSize,sc.x+iRectangleSize, sc.y+iRectangleSize);
 				break;
 			case LKT_ZOMBIE:
-				Surface.DrawCircle(sc.x,  sc.x, iCircleSize, rc, true );
+				Surface.DrawCircle(sc.x,  sc.x, iCircleSize, PixelRect(rc), true );
 				break;
 			default:
 				PolygonRotateShift(Arrow, 5, sc.x, sc.y, DrawInfo.FLARM_Traffic[i].TrackBearing - DisplayAngle);

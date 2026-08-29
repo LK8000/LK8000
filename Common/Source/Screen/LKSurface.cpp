@@ -769,28 +769,27 @@ void LKSurface::buildCircle(const RasterPoint& center, int radius, std::vector<R
     int step = ((radius<20)?2:1);
     list.clear();
     list.reserve((64/step)+1);
-    list.emplace_back( (RasterPoint){ 
+    list.emplace_back( 
         center.x + static_cast<scalar_type>(radius * xcoords[0]), 
         center.y + static_cast<scalar_type>(radius * ycoords[0]) 
-    });
+    );
     for(int i=64-step; i>=0; i-=step) {
-        list.emplace_back( (RasterPoint){ 
+        list.emplace_back(
             center.x + static_cast<scalar_type>(radius * xcoords[i]), 
             center.y + static_cast<scalar_type>(radius * ycoords[i]) 
-        });
+        );
     }
 }
 
-void LKSurface::DrawCircle(long x, long y, int radius, const RECT& rc, bool fill) {
-
-    if ((x - radius) > rc.right) return;
-    if ((x + radius) < rc.left) return;
-    if ((y - radius) > rc.bottom) return;
-    if ((y + radius) < rc.top) return;
+void LKSurface::DrawCircle(PixelScalar x, PixelScalar y, PixelScalar radius, const PixelRect& rc, bool fill) {
+    if ((x - radius) > rc.right || (x + radius) < rc.left ||
+        (y - radius) > rc.bottom || (y + radius) < rc.top) {
+        return;
+    }
 
     // Only called by ThreadDraw, so static vector can be used.
     static std::vector<RasterPoint> CirclePt;
-    buildCircle(RasterPoint(x,y), radius, CirclePt);
+    buildCircle({x,y}, radius, CirclePt);
       
     if (fill) {
         Polygon(CirclePt.data(), CirclePt.size(), rc);
@@ -799,9 +798,9 @@ void LKSurface::DrawCircle(long x, long y, int radius, const RECT& rc, bool fill
     }
 }
 
-void LKSurface::DrawCircle(long x, long y, int radius, bool fill) {
+void LKSurface::DrawCircle(PixelScalar x, PixelScalar y, PixelScalar radius, bool fill) {
     std::vector<RasterPoint> CirclePt;
-    buildCircle((RasterPoint){x,y}, radius, CirclePt);
+    buildCircle({x,y}, radius, CirclePt);
       
     if (fill) {
         Polygon(CirclePt.data(), CirclePt.size());

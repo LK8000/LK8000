@@ -229,7 +229,7 @@ void MapWindow::DrawRunway(LKSurface& Surface, const WAYPOINT* wp, const RECT& r
 	if (picto)
 		Surface.DrawCircle(Center.x, Center.y, irw_radius, true);
 	else
-		Surface.DrawCircle(Center.x, Center.y, irw_radius,  rc, true);
+		Surface.DrawCircle(Center.x, Center.y, irw_radius,  PixelRect{rc}, true);
   }
 
   POINT Runway[5] = {

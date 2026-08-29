@@ -35,13 +35,14 @@ void MapWindow::DrawAcceleration(LKSurface& Surface, const RECT& rc) {
                static_cast<decltype(POINT::x)>(std::round(
                    (rc.bottom - rc.top) / 2 -
                    ((DerivedDrawInfo.Acceleration.z - 1) * ScaleY)))};
+
   const double radius =
-      NIBLSCALE(15) + (DerivedDrawInfo.Acceleration.x * ScaleZ);
+      NIBLSCALE(15.0) + (DerivedDrawInfo.Acceleration.x * ScaleZ);
 
   const auto oldPen = Surface.SelectObject(LK_BLACK_PEN);
   const auto oldBrush = Surface.SelectObject(LKBrush_Red);
 
-  Surface.DrawCircle(Pos.x, Pos.y - static_cast<PixelScalar>(radius/2), static_cast<PixelScalar>(radius), rc, true);
+  Surface.DrawCircle(Pos.x, Pos.y - static_cast<PixelScalar>(radius/2), static_cast<PixelScalar>(radius), PixelRect(rc), true);
 
   Surface.SelectObject(oldBrush);
   Surface.SelectObject(oldPen);

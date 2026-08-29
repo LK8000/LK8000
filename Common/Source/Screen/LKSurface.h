@@ -177,12 +177,12 @@ public:
     /**
      * this is used only by DrawThread, not thread safe
      */
-    void DrawCircle(long x, long y, int radius, const RECT& rc, bool fill);
+    void DrawCircle(PixelScalar x, PixelScalar y, PixelScalar radius, const PixelRect& rc, bool fill);
     /**
      * this is used by DrawThread and MainThread for waypoint Picto and Statistics::RenderTask
      *   !! need to be thread safe on platform other than OpenGL
      */
-    void DrawCircle(long x, long y, int radius, bool fill);
+    void DrawCircle(PixelScalar x, PixelScalar y, PixelScalar radius, bool fill);
 
     void DrawLine(int x1, int y1, int x2, int y2);
     void DrawLine(int x1, int y1, int x2, int y2, int x3, int y3);

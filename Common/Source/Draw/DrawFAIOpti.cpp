@@ -868,7 +868,7 @@ void MapWindow::DrawXC(LKSurface &Surface, const RECT &rc, const ScreenProjectio
       else {
         LKPen hpSectorPen(PEN_SOLID, IBLSCALE(1), nextXCRadiusColor);
         const auto hOldPen = Surface.SelectObject(hpSectorPen);
-        Surface.DrawCircle(Pos.x, Pos.y, iRadius, rc, false);
+        Surface.DrawCircle(Pos.x, Pos.y, iRadius, PixelRect{rc}, false);
         Surface.SelectObject(hOldPen);
       }
     }

@@ -698,7 +698,7 @@ class MapWindow {
   static void DrawTaskPicto(LKSurface& Surface, int TaskIdx, const RECT& rc);
   static void DrawWaypointPictoBg(LKSurface& Surface, const RECT& rc);
   static void DrawWaypointPicto(LKSurface& Surface, const RECT& rc, const WAYPOINT* wp);
-  static void DrawFlarmPicto(LKSurface& hDC, const RECT& rc, FLARM_TRAFFIC*);
+  static void DrawFlarmPicto(LKSurface& hDC, const PixelRect& rc, FLARM_TRAFFIC*);
   static void DrawWeatherStPicto(LKSurface& Surface, const RECT& rc, FANET_WEATHER* pWeather);
   static void DrawAircraft(LKSurface& Surface, const POINT& Orig);
  private:

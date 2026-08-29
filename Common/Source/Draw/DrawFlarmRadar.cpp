@@ -18,6 +18,7 @@
 #include "Multimap.h"
 #include "Bitmaps.h"
 #include "Dialogs.h"
+#include "Screen/Point.hpp"
 #include "Screen/PenReference.h"
 #include "Screen/BrushReference.h"
 #include "InputEvents.h"
@@ -501,13 +502,13 @@ void RenderFlarmPlaneSideview(LKSurface& Surface, const RECT& rc,double fDist, d
 
 void MapWindow::LKDrawFlarmRadar(LKSurface& Surface, const RECT& rci)
 {
-RECT rc  = rci; /* rectangle for sideview */
-RECT rct = rc;  /* rectangle for topview */
+PixelRect rc(rci); /* rectangle for sideview */
+PixelRect rct = rc;  /* rectangle for topview */
 rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
 rc.top     = rct.bottom;
 static double fScaleFact = 5.0;
-static int iCircleSize    = IBLSCALE(4);
-static int iRectangleSize = IBLSCALE(4);
+auto iCircleSize    = IBLSCALE<PixelScalar>(4);
+auto iRectangleSize = IBLSCALE<PixelScalar>(4);
 
 static short tscaler=0;
 static POINT Arrow[5];
@@ -1462,7 +1463,7 @@ void DrawFlarmPictoRectangle(LKSurface& Surface, const RECT& rc) {
   Surface.Rectangle(x - iRectangleSize, y - iRectangleSize, x + iRectangleSize, y + iRectangleSize);
 }
 
-void DrawFlarmPictoCircle(LKSurface& Surface, const RECT& rc) {
+void DrawFlarmPictoCircle(LKSurface& Surface, const PixelRect& rc) {
   int cx = rc.right - rc.left;
   int cy = rc.bottom - rc.top;
   int x = rc.left + cx / 2;
@@ -1494,7 +1495,7 @@ void DrawFlarmPictoTriangle(LKSurface& Surface, const RECT& rc, double Bearing) 
 
 } // namespace
 
-void MapWindow::DrawFlarmPicto(LKSurface& Surface, const RECT& rc, FLARM_TRAFFIC* pTraf) {
+void MapWindow::DrawFlarmPicto(LKSurface& Surface, const PixelRect& rc, FLARM_TRAFFIC* pTraf) {
 
   double fInteg30 = pTraf->Average30s;
   int iVarioIdx = (int)(2 * fInteg30 - 0.5) + NO_VARIO_COLORS / 2;
