@@ -17,6 +17,8 @@
 #include "McReady.h"
 #include "Comm/wait_ack.h"
 #include "utils/printf.h"
+#include <regex>
+#include <string_view>
 
 #define MAX_VAL_STR_LEN    60
 
@@ -257,14 +259,17 @@ BOOL DevRCFenix::DeclareTask(DeviceDescriptor_t* d,
   lk::strcpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
 
   TCHAR PilotName[12] = _T("");
-  TCHAR PilotSurName[12] = _T("");;
-  TCHAR* NamePtr= _tcstok(Pilot, _T(" ,.-:_"));
-  if (NamePtr) {
-    DeviceASCIIConvert(PilotName, NamePtr ,11);
-  }
-  TCHAR* SurNamePtr = _tcstok (nullptr, _T(" ,.-:_"));
-  if (SurNamePtr) {
-    DeviceASCIIConvert(PilotSurName, SurNamePtr ,11);
+  TCHAR PilotSurName[12] = _T("");
+
+  static const std::basic_regex<TCHAR> token(_T("[^ ,.:_-]+"));
+  const tstring_view pilot(Pilot);
+  using token_iterator = std::regex_token_iterator<tstring_view::const_iterator>;
+  token_iterator it(pilot.begin(), pilot.end(), token), end;
+  if (it != end) {
+    DeviceASCIIConvert(PilotName, it->str().c_str(), 11);
+    if (++it != end) {
+      DeviceASCIIConvert(PilotSurName, it->str().c_str(), 11);
+    }
   }
 
   TCHAR AircraftType[12];   DeviceASCIIConvert(AircraftType,  lkDecl->AircraftType    ,11);

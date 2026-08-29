@@ -36,6 +36,8 @@
 #include "Calc/Vario.h"
 #include <cstdint>
 #include <queue>
+#include <regex>
+#include <string_view>
 #include <span>
 #include "Thread/Mutex.hpp"
 #include "Thread/Cond.hpp"
@@ -653,13 +655,19 @@ BOOL DevLX_EOS_ERA::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDe
   TCHAR Pilot[64];
   lk::strcpy(Pilot , lkDecl->PilotName); //copy to local instance (Multi driver support)
 
-  TCHAR PilotName[12];
-  TCHAR PilotSurName[12];
-  TCHAR* NamePtr = _tcstok (Pilot, _T(" ,.-:_"));
-  DeviceASCIIConvert(PilotName, NamePtr, 11);
+  TCHAR PilotName[12] = _T("");
+  TCHAR PilotSurName[12] = _T("");
 
-  TCHAR* SurNamePtr = _tcstok (NULL,    _T(" ,.-:_"));
-  DeviceASCIIConvert(PilotSurName,  SurNamePtr ,11  );
+  static const std::basic_regex<TCHAR> token(_T("[^ ,.:_-]+"));
+  const tstring_view pilot(Pilot);
+  using token_iterator = std::regex_token_iterator<tstring_view::const_iterator>;
+  token_iterator it(pilot.begin(), pilot.end(), token), end;
+  if (it != end) {
+    DeviceASCIIConvert(PilotName, it->str().c_str(), 11);
+    if (++it != end) {
+      DeviceASCIIConvert(PilotSurName, it->str().c_str(), 11);
+    }
+  }
 
   TCHAR AircraftType[12];   DeviceASCIIConvert(AircraftType,  lkDecl->AircraftType    ,11);
   TCHAR AircraftReg[12];    DeviceASCIIConvert(AircraftReg,   lkDecl->AircraftRego    ,11);
