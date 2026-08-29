@@ -30,6 +30,10 @@
 #ifndef _2dpclip_h__
 #define _2dpclip_h__
 
+#include <type_traits>
+#include <iterator>
+#include <cassert>
+
 #ifndef LKASSERT
 #define LKASSERT(x) assert(x)
 #endif
@@ -38,9 +42,6 @@ namespace LKGeom {
 
     template<typename Upoint>
     class clipper {
-//        typedef typename polygon::value_type Upoint;
-//        typedef typename polygon::const_iterator const_iterator;
-
     public:
 
         inline clipper(const Upoint& TopLeft, const Upoint& BottomRight) {
@@ -344,8 +345,8 @@ namespace LKGeom {
     inline void ClipPolygon(const Urect& ClipRect, const polygon_in& inPoly, polygon_out& outPoly) {
         typedef typename std::remove_const<typename polygon_in::value_type>::type Upoint;
         
-        const Upoint TopLeft = (Upoint) {ClipRect.left, ClipRect.top};
-        const Upoint BottomRight =  (Upoint){ClipRect.right, ClipRect.bottom};
+        const Upoint TopLeft = {ClipRect.left, ClipRect.top};
+        const Upoint BottomRight =  {ClipRect.right, ClipRect.bottom};
 
         LKGeom::clipper<Upoint> (TopLeft, BottomRight).ClipPolygon(inPoly, outPoly);
         
@@ -357,8 +358,8 @@ namespace LKGeom {
     template<typename Upoint, typename Urect>
     inline bool ClipLine(const Urect& ClipRect, Upoint& From, Upoint& To) {
 
-        const Upoint TopLeft = (Upoint) {ClipRect.left, ClipRect.top};
-        const Upoint BottomRight =  (Upoint){ClipRect.right, ClipRect.bottom};
+        const Upoint TopLeft = {ClipRect.left, ClipRect.top};
+        const Upoint BottomRight =  {ClipRect.right, ClipRect.bottom};
 
         return LKGeom::clipper<Upoint> (TopLeft, BottomRight).ClipLine(From, To);
     }
