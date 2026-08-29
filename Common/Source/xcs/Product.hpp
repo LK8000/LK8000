@@ -82,7 +82,7 @@ inline bool IsValidDeviceId(const std::string& id) {
   if (id.empty()) {
     return false;
   }
-  for (unsigned char c : id) {
+  for (char c : id) {
     if (alphabet.find(c) == std::string_view::npos) {
       return false;
     }
