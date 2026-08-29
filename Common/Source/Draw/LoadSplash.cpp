@@ -42,23 +42,19 @@ LKBitmap TryLoadSplashCandidate(const TCHAR* path, TCHAR* pSuffixStart, TCHAR* p
 
 LKBitmap TryLoadSymbolicFallback(const TCHAR* path, TCHAR* pSuffixStart, TCHAR* pSuffixEnd) {
     const bool largeScreen = std::max(ScreenSizeX, ScreenSizeY) >= 800;
-    const TCHAR* first = ScreenLandscape
-        ? (largeScreen ? _T("_LB." IMG_EXT) : _T("_LS." IMG_EXT))
-        : (largeScreen ? _T("_PB." IMG_EXT) : _T("_PS." IMG_EXT));
+    const TCHAR orient = ScreenLandscape ? _T('L') : _T('P');
+    const TCHAR sizes[2] = { largeScreen ? _T('B') : _T('S'), largeScreen ? _T('S') : _T('B') };
 
-    size_t bufferSize = std::distance(pSuffixStart, pSuffixEnd);
-    lk::snprintf(pSuffixStart, bufferSize, _T("%s"), first);
-    LKBitmap bitmap = LoadSplashBitmap(path);
-    if (bitmap.IsDefined()) {
-        return bitmap;
+    const size_t bufferSize = std::distance(pSuffixStart, pSuffixEnd);
+    LKBitmap bitmap;
+    for (TCHAR sz : sizes) {
+        lk::snprintf(pSuffixStart, bufferSize, _T("_%c%c." IMG_EXT), orient, sz);
+        bitmap = LoadSplashBitmap(path);
+        if (bitmap.IsDefined()) {
+            break;
+        }
     }
-
-    const TCHAR* second = ScreenLandscape
-        ? (largeScreen ? _T("_LS." IMG_EXT) : _T("_LB." IMG_EXT))
-        : (largeScreen ? _T("_PS." IMG_EXT) : _T("_PB." IMG_EXT));
-
-    lk::snprintf(pSuffixStart, bufferSize, _T("%s"), second);
-    return LoadSplashBitmap(path);
+    return bitmap;
 }
 
 bool IsBetterCandidate(const ScoredSplashCandidate& lhs, const ScoredSplashCandidate& rhs) {
