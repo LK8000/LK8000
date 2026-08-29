@@ -231,6 +231,7 @@ EBROWSE         :=ebrowse
 GCCVERSION = $(shell $(CXX) -dumpversion)
 GCC_GTEQ_820 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 80200)
 GCC_GTEQ_910 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 90100)
+GCC_GTEQ_1400 := $(shell expr `$(CC) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \>= 140000)
 
 $(info GCC VERSION : $(GCCVERSION))
 
@@ -584,7 +585,7 @@ $(eval $(call pkg-config-library,ZZIPMMAPPED,zzipmmapped))
 $(eval $(call pkg-config-library,GEOGRAPHICLIB,geographiclib))
 
 CPPFLAGS += $(ZLIB_CPPFLAGS) \
-			$(ZZIPLIB_CPPFLAGS)\
+			$(ZZIPLIB_CPPFLAGS) \
 			$(ZZIPMMAPPED_CPPFLAGS) \
 			$(GEOGRAPHICLIB_CPPFLAGS)
 
@@ -601,7 +602,16 @@ CPPFLAGS += -finput-charset=UTF-8
 CPPFLAGS += -fexec-charset=UTF-8
 
 CXXFLAGS	:= -std=c++20 $(OPTIMIZE) $(PROFILE)
-CFLAGS		:= $(OPTIMIZE) $(PROFILE)
+ifeq ($(GCC_GTEQ_1400),1)
+ CXXFLAGS	+= -Wnrvo
+endif
+
+CFLAGS		:= -std=gnu17 $(OPTIMIZE) $(PROFILE)
+CFLAGS		+= $(INCLUDES)
+CFLAGS		+= $(CE_DEFS)
+CFLAGS		+= $(ZZIPLIB_CPPFLAGS)
+CFLAGS 		+= -finput-charset=UTF-8
+CFLAGS 		+= -fexec-charset=UTF-8
 
 ####### linker configuration
 LDLIBS :=

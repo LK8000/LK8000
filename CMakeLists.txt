@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+
 include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
 
@@ -61,11 +66,12 @@ add_compile_options(
     -Wparentheses
     -Wredundant-decls
     -Wno-unknown-warning-option
+    -Wnrvo
     -finput-charset=UTF-8
     -fexec-charset=UTF-8
 )
 
-add_subdirectory( Common/Source/Library/glutess lib_glutess )
+add_subdirectory(Common/Source/Library/glutess lib_glutess)
 add_subdirectory(Common/Source/Tracking/Curl tracking_http)
 
 add_library( LK8000 SHARED
