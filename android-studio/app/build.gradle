@@ -95,7 +95,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            optimization {
+                enable = true // Enables code and resource optimizations.
+            }
 
             // play store identify app using <applicationId, signing certificate> pair
             // we can't change this is because first distro on play Store has been made with this suffix
