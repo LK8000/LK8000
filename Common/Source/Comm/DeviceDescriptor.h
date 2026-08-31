@@ -124,6 +124,14 @@ struct DeviceDescriptor_t {
   BOOL (*SendData)(DeviceDescriptor_t* d, const NMEA_INFO& Basic,
                    const DERIVED_INFO& Calculated);
 
+  /**
+   * Called to check if data provded by the device has expired.
+   * @current_hearth_beats : current heartbeat count with 0.5s resolution.
+   * Return TRUE if the device is expired, FALSE otherwise.
+   */
+  BOOL (*ExpiredCallback)(DeviceDescriptor_t* d,
+                         unsigned current_hearth_beats) = nullptr;
+
   bool IsBaroSource;
   bool IsRadio;
 
@@ -165,6 +173,8 @@ struct DeviceDescriptor_t {
   BOOL _PutQNH(double NewQNH);
   BOOL _LinkTimeout();
   BOOL _HeartBeat();
+
+  BOOL Expired(unsigned current_hearth_beats);
 
   BOOL RecvMacCready(double McReady);
   PeriodClock IgnoreMacCready;

@@ -53,6 +53,8 @@ void DeviceDescriptor_t::Reset() {
   DoEnableGattCharacteristic = nullptr;
   OnGattCharacteristic = nullptr;
 
+  ExpiredCallback = nullptr;
+
   Disabled = true;
 
   SerialNumber = {};
@@ -163,6 +165,14 @@ BOOL DeviceDescriptor_t::_LinkTimeout() {
 BOOL DeviceDescriptor_t::_HeartBeat() {
   return HeartBeat && HeartBeat(this);
 }
+
+BOOL DeviceDescriptor_t::Expired(unsigned current_hearth_beats) {
+  if (ExpiredCallback) {
+    return ExpiredCallback(this, current_hearth_beats);
+  }
+  return (current_hearth_beats - HB) > 10; // Default 5 seconds
+}
+
 
 BOOL DeviceDescriptor_t::RecvMacCready(double McReady) {
   if (IgnoreMacCready.Check(5000)) {

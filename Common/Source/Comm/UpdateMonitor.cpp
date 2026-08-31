@@ -284,7 +284,7 @@ bool UpdateMonitor() {
     }
 
     LKASSERT(dev.PortNumber < std::size(wasSilent));
-    if ((LKHearthBeats - dev.HB) > 10) {
+    if (dev.Expired(LKHearthBeats)) {
       // if this is active and supposed to have a valid fix.., but no HB..
       if ((active.value() == dev.PortNumber) && dev.nmeaParser.gpsValid) {
         StartupStore(_T("... Port %c no hearthbeats, but still gpsValid: forced invalid  %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
