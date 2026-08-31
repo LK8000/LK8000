@@ -44,11 +44,11 @@ int main() {
 
 			std::cout << "ping : " << elapsed.count() << "ms" << std::endl;
 
-			std::this_thread::sleep_until(start + 1s);
+			std::this_thread::sleep_until(start + 1min);
 		}
 	}
 	catch (std::exception &e) {
-		printf("%s\n", e.what());
+		std::cout << e.what() << std::endl;
 	}
 	return 0;
 }

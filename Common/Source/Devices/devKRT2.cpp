@@ -523,12 +523,22 @@ BOOL KRT2ParseStream(DeviceDescriptor_t* d, std::span<const uint8_t> data, NMEA_
   return  RadioPara.Changed;
 }
 
+BOOL KRT2ExpiredCallback(DeviceDescriptor_t* d, unsigned current_hearth_beats) {
+  // `current_hearth_beats` is timer with 0.5s resolution
+  // KRT2 ping is send every minute
+  // so we set the expire threshold to 150 (1.25 minutes)
+  constexpr unsigned EXPIRE_THRESHOLD = 150;
+  return (current_hearth_beats - d->HB) > EXPIRE_THRESHOLD;
+}
+
 } // namespace
 
 void KRT2Install(DeviceDescriptor_t* d) {
 
   d->Open = OpenClose;
   d->Close = OpenClose;
+
+  d->ExpiredCallback = KRT2ExpiredCallback;
 
   d->IsRadio        = true;
   d->PutVolume      = KRT2PutVolume;
