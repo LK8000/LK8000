@@ -23,14 +23,6 @@ extern double MixedFormatToDegrees(double mixed);
 
 namespace {
 
-// Returns true if two NMEA time-of-day values belong to the same fix epoch.
-// GGA and RMC from the same GPS fix can carry slightly different subsecond
-// timestamps (e.g. S100 + Flarm). The epsilon is adaptive: derived from the
-// observed RMC cadence so it scales correctly from 0.5 Hz to 5 Hz GPS rates.
-inline bool SameNMEATime(double t1, double t2, double epsilon) {
-  return fabs(t1 - t2) < epsilon;
-}
-
 struct ParsedNMEATime {
   int hour = 0;
   int minute = 0;
@@ -182,55 +174,8 @@ void NMEAParser::Reset() {
   LastRMZHB = false;
   RMCAvailable = false;
   RMZDelayed = 3; // wait for this to be zero before using RMZ.
- 
-  GGAtime=0;
-  RMCtime=0;
-  GLLtime=0; 
+
   LastTime = 0;
-
-  nmeaTimeEpsilon.reset();
-}
-
-void NMEAParser::NMEATimeEpsilonEstimator::reset() {
-  samples.fill(0);
-  epsilon = kDefaultEpsilon;
-  lastAbsoluteTime = -1;
-  sampleCount = 0;
-}
-
-void NMEAParser::NMEATimeEpsilonEstimator::update(double absoluteTime) {
-  if (lastAbsoluteTime < 0) {
-    lastAbsoluteTime = absoluteTime;
-    return;
-  }
-
-  const double delta = absoluteTime - lastAbsoluteTime;
-  lastAbsoluteTime = absoluteTime;
-
-  if (delta <= 0 || delta > kMaxCadenceDelta) {
-    return;
-  }
-
-  // Keep only the latest kWindowSize cadence samples.
-  if (sampleCount < samples.size()) {
-    samples[sampleCount++] = delta;
-    return;  // Wait until buffer is full.
-  }
-
-  // Buffer is full: shift-left and add new sample.
-  std::move(samples.begin() + 1, samples.end(), samples.begin());
-  samples.back() = delta;
-
-  // Calculate median from full window; robust against jitter/outliers.
-  // Window of 16 samples spans 16–32 sec at 0.5 Hz, or 3–4 sec at 5 Hz.
-  std::array<double, kWindowSize> sorted = {};
-  std::copy_n(samples.begin(), kWindowSize, sorted.begin());
-  std::nth_element(sorted.begin(), sorted.begin() + kWindowSize / 2,
-                   sorted.end());
-  const double medianDelta = sorted[kWindowSize / 2];
-
-  epsilon = std::clamp(medianDelta * kCadenceToEpsilonFactor, kMinEpsilon,
-                       kMaxEpsilon);
 }
 
 BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* String, NMEA_INFO* pGPS) {
@@ -286,16 +231,10 @@ BOOL NMEAParser::ParseNMEAString_Internal(DeviceDescriptor_t& d, const char* Str
       return GSA(&String[7], params + 1, n_params - 1, pGPS);
     }
     if (token == "GLL"sv) {
-      /*
       return GLL(&String[7], params + 1, n_params-1, pGPS);
-      */
-      return FALSE;
     }
     if (token == "RMB"sv) {
-      /*
       return RMB(&String[7], params + 1, n_params-1, pGPS);
-      */
-      return FALSE;
     }
     if (token == "RMC"sv) {
       return RMC(&String[7], params + 1, n_params - 1, pGPS);
@@ -352,107 +291,113 @@ bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *pGPS) {
   }
 }
 
-BOOL NMEAParser::GSA(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
-{
+BOOL NMEAParser::GSA(const char* String, char** params, size_t nparams,
+                     NMEA_INFO* pGPS) {
+  /*
+   * GSA - GNSS DOP and Active Satellites
+   * Format:
+   *   $GPGSA,<mode>,<fix_type>,<satellite_id_1>,...,<satellite_id_12>,<pdop>,<hdop>,<vdop>*<checksum>
+   * Example:
+   *   $GPGSA,A,3,04,05,09,12,24,25,29,31,32,34,1.8,1.0,1.5*33
+   * Fields:
+   *   <mode> - M = manual, A = automatic
+   *   <fix_type> - 1 = no fix, 2 = 2D fix, 3 = 3D fix
+   *   <satellite_id_n> - ID of satellite used in fix (up to 12)
+   *   <pdop> - Position Dilution of Precision
+   *   <hdop> - Horizontal Dilution of Precision
+   *   <vdop> - Vertical Dilution of Precision
+   */
   return TRUE;
-}
+} // END GSA
 
-// we need to parse GLL as well because it can mark the start of a new quantum data
-// followed by values with no data, ex. altitude, vario, etc.
-BOOL NMEAParser::GLL(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
-{
-  if(nparams < 6) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid GLL sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
-    // max index used is 5...
-    return FALSE;
-  }
-  
-  gpsValid = !NAVWarn(params[5][0]);
-  connected = true;
-
-  if (gpsValid) {
-    lastGpsValid.Update();
-  }
-
-  if (!activeGPS) return TRUE;
-
-  const std::lock_guard lock(CritSec_FlightData);
-
-  pGPS->NAVWarning = !gpsValid;
-  
-  // use valid time with invalid fix
-  const ParsedNMEATime parsed_time = ParseNMEATime(params[4]);
-  GLLtime = parsed_time.time_of_day;
-  if (!RMCAvailable && !GGAAvailable && (GLLtime > 0)) {
-    const double ThisTime = ApplyDayRollover(parsed_time.time_of_day,
-                                             pGPS->Year, pGPS->Month,
-                                             pGPS->Day, StartDay);
-    if (!TimeHasAdvanced(ThisTime, pGPS)) return FALSE;
-  }
-  if (!gpsValid) return FALSE;
-
-  double tmplat = MixedFormatToDegrees(StrToDouble(params[0], NULL));
-  tmplat = NorthOrSouth(tmplat, params[1][0]);
-
-  double tmplon = MixedFormatToDegrees(StrToDouble(params[2], NULL));
-  tmplon = EastOrWest(tmplon, params[3][0]);
-
-  if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-    pGPS->Latitude = tmplat;
-    pGPS->Longitude = tmplon;
-  }
+BOOL NMEAParser::GLL(const char* String, char** params, size_t nparams,
+                     NMEA_INFO* pGPS) {
+  /*
+   * GLL - Geographic Position - Latitude/Longitude
+   * Format:
+   *   $GPGLL,<lat>,<N/S>,<lon>,<E/W>,<time>,<status>,<mode>*<checksum>
+   * Example:
+   *   $GPGLL,4916.45,N,12311.12,W,225444,A,*1D
+   * Fields:
+   *   <lat> - Latitude in ddmm.mmmm format
+   *   <N/S> - North or South
+   *   <lon> - Longitude in dddmm.mmmm format
+   *   <E/W> - East or West
+   *   <time> - UTC time in hhmmss.sss format
+   *   <status> - A = active, V = void
+   *   <mode> - Mode indicator (optional)
+   */
   return TRUE;
-
 } // END GLL
 
-
-
-BOOL NMEAParser::RMB(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
-{
+BOOL NMEAParser::RMB(const char* String, char** params, size_t nparams,
+                     NMEA_INFO* pGPS) {
+  /*
+   * RMB - Recommended Minimum Navigation Information (Waypoint)
+   * Format:
+   *   $GPRMB,<status>,<cross_track_error>,<direction_to_steer>,<origin_wp>,<destination_wp>,<range_to_destination>,<bearing_to_destination>,<destination_closure_velocity>,<arrival_status>*<checksum>
+   * Example:
+   *   $GPRMB,A,0.5,L,WP1,WP2,10.0,045.0,5.0,A*hh
+   * Fields:
+   *   <status> - A = active, V = void
+   *   <cross_track_error> - Cross track error in nautical miles
+   *   <direction_to_steer> - L = left, R = right
+   *   <origin_wp> - Origin waypoint ID
+   *   <destination_wp> - Destination waypoint ID
+   *   <range_to_destination> - Range to destination in nautical miles
+   *   <bearing_to_destination> - Bearing to destination in degrees
+   *   <destination_closure_velocity> - Destination closure velocity in knots
+   *   <arrival_status> - A = arrived, V = not arrived
+*/
   return TRUE;
 } // END RMB
 
+BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams,
+                     NMEA_INFO* pGPS) {
+  /* VTG - Track Made Good and Ground Speed
+   * Format:
+   *   $GPVTG,<track_true>,T,<track_magnetic>,M,<speed_knots>,N,<speed_kmh>,K*<checksum>
+   * Example:
+   *   $GPVTG,054.7,T,034.4,M,005.5,N,010.2,K*48
+   * Fields:
+   *   <track_true> - Track made good relative to true north
+   *   <T> - True
+   *   <track_magnetic> - Track made good relative to magnetic north
+   *   <M> - Magnetic
+   *   <speed_knots> - Speed over ground in knots
+   *   <N> - Knots
+   *   <speed_kmh> - Speed over ground in kilometers per hour
+   *   <K> - Kilometers per hour
+   */
 
-
-BOOL NMEAParser::VTG(const char* String, char** params, size_t nparams, NMEA_INFO *pGPS)
-{
-  if(nparams < 5) {
-    TESTBENCH_DO_ONLY(10,StartupStore(_T(". NMEAParser invalid VTG sentence, nparams=%u%s"),(unsigned)nparams,NEWLINE));
-    // max index used is 4...
-    return FALSE;
-  }
-  
-  // GPSCONNECT = TRUE; // 121127  NO! VTG gives no position fix
-  if (!activeGPS) return TRUE;
-
-  if (RMCAvailable) return FALSE;
-
-  // if no valid fix, we dont get speed either!
-  if (gpsValid) {
-    double speed = StrToDouble(params[4], NULL);
-
-    const std::lock_guard lock(CritSec_FlightData);
-
-    pGPS->Speed = Units::From(unKnots, speed);
-
-    if (ISCAR) {
-      if (pGPS->Speed > GetTrackBearingMinSpeed()) {
-        pGPS->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
-      }
-    }
-  }
-
-  // if we are here, no RMC is available but if no GGA also, we are in troubles: to check!
-  if (!GGAAvailable) {
-	TriggerGPSUpdate();
-  }
+  // VTG sentence provides track and speed information, already available from
+  // RMC, so we do not need to parse it separately
 
   return TRUE;
-
 } // END VTG
 
 BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
                      NMEA_INFO* pGPS) {
+  /*
+   * RMC - Recommended Minimum Navigation Information
+   * Format:
+   *   $GPRMC,<time>,<status>,<lat>,<N/S>,<lon>,<E/W>,<speed>,<track>,<date>,<magvar>,<E/W>*<checksum>
+   * Example:
+   *   $GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A
+   * Fields:
+   *   <time> - UTC time in hhmmss.sss format
+   *   <status> - A = active, V = void
+   *   <lat> - Latitude in ddmm.mmmm format
+   *   <N/S> - North or South
+   *   <lon> - Longitude in dddmm.mmmm format
+   *   <E/W> - East or West
+   *   <speed> - Speed over ground in knots
+   *   <track> - Track angle in degrees
+   *   <date> - Date in ddmmyy format
+   *   <magvar> - Magnetic variation in degrees
+   *   <E/W> - East or West for magnetic variation
+   */
+
   if (nparams < 9) {
     TESTBENCH_DO_ONLY(
         10, StartupStore(_T(". NMEAParser invalid RMC sentence, nparams=%u%s"),
@@ -460,8 +405,6 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
     // max index used is 8...
     return FALSE;
   }
-
-  double speed = 0;
 
   gpsValid = !NAVWarn(params[1][0]);
   if (gpsValid) {
@@ -475,34 +418,20 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
     return TRUE;
   }
 
-  // if no valid fix, we dont get speed either!
-  if (gpsValid) {
-    // speed is in knots, 2 = 3.7kmh
-    speed = StrToDouble(params[6], NULL);
-  }
-
   const std::lock_guard lock(CritSec_FlightData);
 
-  pGPS->NAVWarning = !gpsValid;
-
-  // say we are updated every time we get this,
-  // so infoboxes get refreshed if GPS connected
-  // the RMC sentence marks the start of a new fix, so we force the old data to
-  // be saved for calculations
+  // If no GGA is available, or if RMC indicates invalid fix, update NAV warning.
+  // If GGA is available and RMC has valid fix, respect GGA's stricter fix evaluation.
+  if (!GGAAvailable || !gpsValid) {
+    pGPS->NAVWarning = !gpsValid;
+  }
 
   if (!gpsValid && !dateValid) {
     // we have valid date with invalid fix only if we have already got valid fix
-    // ...
     return TRUE;
   }
 
-  // note that Condor sends no date..
   const size_t size_date = strlen(params[8]);
-  if (size_date < 6 && !DevIsCondor) {
-    TestLog(_T(".... RMC date field empty, skip sentence!"));
-    return TRUE;
-  }
-
   // Even with no valid position, we let RMC set the time and date if valid
   int year, month, day;
   if (parse_rmc_date(params[8], size_date, year, month, day)) {
@@ -528,13 +457,13 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
         DoStatusMessage(MsgToken<875>());
         logbaddate = false;
       }
+      return TRUE; // skip sentence if date is invalid and not Condor
     }
   }
 
   dateValid = true;
 
   const ParsedNMEATime parsed_time = ParseNMEATime(params[0]);
-  RMCtime = parsed_time.time_of_day;
   const double ThisTime = ApplyDayRollover(parsed_time.time_of_day, pGPS->Year,
                                            pGPS->Month, pGPS->Day, StartDay);
   // RMC time has priority on GGA and GLL etc. so if we have it we use it at
@@ -544,17 +473,15 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
     return FALSE;
   }
 
-  nmeaTimeEpsilon.update(ThisTime);
-
   pGPS->Hour = parsed_time.hour;
   pGPS->Minute = parsed_time.minute;
   pGPS->Second = parsed_time.second;
 
   if (gpsValid) {
-    double tmplat = MixedFormatToDegrees(StrToDouble(params[2], NULL));
+    double tmplat = MixedFormatToDegrees(StrToDouble(params[2], nullptr));
     tmplat = NorthOrSouth(tmplat, params[3][0]);
 
-    double tmplon = MixedFormatToDegrees(StrToDouble(params[4], NULL));
+    double tmplon = MixedFormatToDegrees(StrToDouble(params[4], nullptr));
     tmplon = EastOrWest(tmplon, params[5][0]);
 
     if (!((tmplat == 0.0) && (tmplon == 0.0))) {
@@ -562,13 +489,12 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
       pGPS->Longitude = tmplon;
     }
 
-    pGPS->Speed = Units::From(unKnots, speed);
+    pGPS->Speed = Units::From(unKnots, StrToDouble(params[6], nullptr));
 
     if (pGPS->Speed > GetTrackBearingMinSpeed()) {
-      pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
+      pGPS->TrackBearing = AngleLimit360(StrToDouble(params[7], nullptr));
     }
   }  // gpsvalid 091108
-
 
   if (!GGAAvailable) {
     // update SatInUse, some GPS receiver dont emmit GGA sentences
@@ -580,17 +506,38 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
     }
   }
 
-  if (!GGAAvailable ||
-      SameNMEATime(GGAtime, RMCtime, nmeaTimeEpsilon.value())) {
-    TriggerGPSUpdate();
-  }
+  TriggerGPSUpdate();
 
   return TRUE;
-
 }  // END RMC
 
 BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
                      NMEA_INFO* pGPS) {
+
+  /*
+   * GGA - Global Positioning System Fix Data
+   * Format:
+   *   $GPGGA,<time>,<lat>,<N/S>,<lon>,<E/W>,<fix>,<sat>,<HDOP>,<alt>,M,<geoid>,M,<DGPS age>,<DGPS ref>*<checksum>
+   * Example:
+   *   $GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47
+   * Fields:
+   *   <time> - UTC time in hhmmss.sss format
+   *   <lat> - Latitude in ddmm.mmmm format
+   *   <N/S> - North or South
+   *   <lon> - Longitude in dddmm.mmmm format
+   *   <E/W> - East or West
+   *   <fix> - Fix quality (0 = invalid, 1 = GPS fix, 2 = DGPS fix, etc.)
+   *   <sat> - Number of satellites being tracked
+   *   <HDOP> - Horizontal dilution of position
+   *   <alt> - Altitude above mean sea level
+   *   M - Units of altitude (meters)
+   *   <geoid> - Height of geoid above WGS84 ellipsoid
+   *   M - Units of geoid height (meters)
+   *   <DGPS age> - Time since last DGPS update
+   *   <DGPS ref> - DGPS reference station id
+   *   <checksum> - Checksum
+   */
+  
   if (nparams < 11) {
     TESTBENCH_DO_ONLY(
         10,
@@ -600,14 +547,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
     return FALSE;
   }
 
-  GGAAvailable = TRUE;
   connected = true;  // 091208
-
-  // this will force gps invalid but will NOT assume gps valid!
-  nSatellites = (int)(min(16.0, StrToDouble(params[6], NULL)));
-  if (nSatellites == 0) {
-    gpsValid = false;
-  }
 
   /*
    * Fix quality :
@@ -636,9 +576,11 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
     lastGpsValid.Update();
   }
 
-  if (!activeGPS) {
-    return TRUE;
-  }
+  // Only mark GGA as available if it provides a valid fix.
+  // If GGA has invalid fix, allow RMC to control NAVWarning.
+  GGAAvailable = gpsValid;
+
+  nSatellites = std::min<int>(16, strtol(params[6], nullptr, 10));
 
   // some device don't send sat in use count, set it to "-1" if fix is valid and
   // sat in use is 0
@@ -646,69 +588,17 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
     nSatellites = -1;  // unknown count but valid fix !
   }
 
+  if (!activeGPS) {
+    return TRUE;
+  }
+
+  // since RMC is always available, we rely on it for the primary GPS fix
+  // information, GGA only used for additional altitude and satellite info
+
   const std::lock_guard lock(CritSec_FlightData);
 
   pGPS->SatellitesUsed = nSatellites;  // 091208
   pGPS->NAVWarning = !gpsValid;        // 091208
-
-  const ParsedNMEATime parsed_time = ParseNMEATime(params[0]);
-  GGAtime = parsed_time.time_of_day;
-  // Even with invalid fix, we might still have valid time.
-  // We treat GGAtime==0 as invalid to guard against faulty GPS sending
-  // all-zero fields. This does miss the exact UTC midnight second, but that
-  // is acceptable — at 00:00:00.xx the subsecond fraction keeps GGAtime > 0.
-  //
-  // Do NOT advance time from GGA when RMC is available, because only RMC
-  // carries the date field needed for the day-rollover. If the sequence is
-  // GGA-then-RMC and we cross midnight:
-  //    2359UTC:  GGA (old date) → trigger; RMC (old date)
-  //    0000UTC:  GGA (still old date, new date arrives with RMC later)
-  //              → GGAtime > 0, time appears to jump backward → BANG!
-  //
-  // When RMC arrives first, the problem does not occur.
-  // We gate on SameNMEATime(GGAtime, RMCtime) to confirm RMC has already
-  // been processed for this epoch before letting GGA advance the clock.
-  if ((!RMCAvailable && (GGAtime > 0)) ||
-      ((GGAtime > 0) &&
-       SameNMEATime(
-           GGAtime, RMCtime,
-           nmeaTimeEpsilon.value()))) {  // RMC already came in same time slot
-
-    double ThisTime = ApplyDayRollover(parsed_time.time_of_day, pGPS->Year,
-                                       pGPS->Month, pGPS->Day, StartDay);
-    if (!TimeHasAdvanced(ThisTime, pGPS)) {
-      return FALSE;
-    }
-
-    pGPS->Hour = parsed_time.hour;
-    pGPS->Minute = parsed_time.minute;
-    pGPS->Second = parsed_time.second;
-  }
-  if (gpsValid) {
-    double tmplat = MixedFormatToDegrees(StrToDouble(params[1], NULL));
-    tmplat = NorthOrSouth(tmplat, params[2][0]);
-    double tmplon = MixedFormatToDegrees(StrToDouble(params[3], NULL));
-    tmplon = EastOrWest(tmplon, params[4][0]);
-    if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-      pGPS->Latitude = tmplat;
-      pGPS->Longitude = tmplon;
-    }
-    else {
-      DebugLog(_T("++++++ GGA gpsValid with invalid posfix!"));
-      gpsValid = false;
-    }
-  }
-
-  // any NMEA sentence with time can now trigger gps update: the first to detect
-  // new time will make trigger. we assume also that any sentence with no time
-  // belongs to current time. note that if no time from gps, no use of vario and
-  // baro data, but also no fix available.. so no problems
-
-  // If  no gps fix, at this point we trigger refresh and quit
-  if (!gpsValid) {
-    TriggerGPSUpdate();
-    return FALSE;
-  }
 
   // "Altitude" should always be GPS Altitude.
   pGPS->Altitude = ParseAltitude(params[8], params[9]);
@@ -723,18 +613,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
     pGPS->Altitude -= LookupGeoidSeparation(pGPS->Latitude, pGPS->Longitude);
   }
 
-  // if RMC would be Triggering update, we loose the relative altitude, which is
-  // coming AFTER rmc! This was causing old altitude recorded in new pos fix.
-  // 120428:
-  // GGA will trigger gps if there is no RMC,
-  // or if GGAtime is the same as RMCtime, which means that RMC already came and
-  // we are last in the sequence
-  if (!RMCAvailable ||
-      SameNMEATime(GGAtime, RMCtime, nmeaTimeEpsilon.value())) {
-    TriggerGPSUpdate();
-  }
   return TRUE;
-
 }  // END GGA
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
