@@ -11,6 +11,7 @@
 #include "Sound/Sound.h"
 #include "InputEvents.h"
 #include "Calc/Vario.h"
+#include <format>
 #include <optional>
 #include "Baro.h"
 #include "Comm/ExternalWind.h"
@@ -18,8 +19,10 @@
 
 extern bool GotFirstBaroAltitude; // used by UpdateBaroSource
 
-#ifndef NDEBUG
-  #define DEBUGNPM	1
+#ifdef DEBUGNPM
+  #define NpmDebugLog(msg, ...) DebugLog(_T("[NPM]") msg, __VA_ARGS__)
+#else
+  #define NpmDebugLog(msg, ...)  // Does nothing
 #endif
 
 namespace {
@@ -253,7 +256,7 @@ bool UpdateMonitor() {
     });
 
     if (reseted) {
-      DebugLog(_T("Active device don't have valid gps fix : Reset 'NAVWarning'"));
+      NpmDebugLog(_T("%s"), _T("Active device don't have valid gps fix : Reset 'NAVWarning'"));
     }
   }
 
@@ -262,13 +265,26 @@ bool UpdateMonitor() {
     static unsigned short MessageCnt =0;
     if(MessageCnt < 10) {
       MessageCnt++;
-      StartupStore(_T(". FLARM lost! Disable FLARM functions !%s"),NEWLINE);
+      StartupStore(_T(". FLARM lost! Disable FLARM functions !"));
       DoStatusMessage(MsgToken<947>()); // _@M947_ "FLARM SIGNAL LOST"
     }
     GPS_INFO.FLARM_Available = false;
     GPS_INFO.FLARM_HW_Version =0.0;
     GPS_INFO.FLARM_SW_Version =0.0;
   }
+
+  NpmDebugLog(_T("%s"), []() {
+        tstring hbStatus =
+            std::format(_T(" Hearthbeats: {:8d}"), LKHearthBeats);
+        for (auto& dev : DeviceList) {
+          if (dev.Disabled) {
+            continue;
+          }
+          hbStatus +=
+              std::format(_T(", {:c}:{:8d}"), devLetter(dev.PortNumber), dev.HB);
+        }
+        return hbStatus;
+      }().c_str());
 
   short validBaro = 0;
   // Check each Port with no serial activity in last seconds
@@ -293,7 +309,10 @@ bool UpdateMonitor() {
 
       // We reset some flags globally only once in case of device gone silent
       if (!wasSilent[dev.PortNumber]) {
-        StartupStore(_T("... Port %c gone silent, reset data availability %s"), devLetter(dev.PortNumber), WhatTimeIsIt());
+        StartupStore(_T("... Port %c gone silent for %.1f seconds, reset data availability %s"),
+                     devLetter(dev.PortNumber),
+                     0.5 * static_cast<double>(LKHearthBeats - dev.HB),
+                     WhatTimeIsIt());
         dev.IsBaroSource = false;
         dev.IsRadio = false;
         dev.nmeaParser.Reset();
@@ -400,7 +419,7 @@ bool UpdateMonitor() {
       if ( ((counterSameBaro > timethreshold) && (counterSameHGPS<2)) && (fabs(GPS_INFO.Altitude-GPS_INFO.BaroAltitude.value())>100.0) && !CALCULATED_INFO.OnGround ) {
         DoStatusMessage(MsgToken<122>()); // Baro not available, Using GPS ALTITUDE
         EnableNavBaroAltitude=false;
-        StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s%s"), GPS_INFO.BaroAltitude.value(), GPS_INFO.Altitude,WhatTimeIsIt(),NEWLINE);
+        StartupStore(_T("... WARNING, NavBaroAltitude DISABLED due to possible fault: baro steady at %f, HGPS=%f @%s"), GPS_INFO.BaroAltitude.value(), GPS_INFO.Altitude,WhatTimeIsIt());
         lastBaroAltitude=-1;
         lastGPSAltitude=-1;
         counterSameBaro=0;
@@ -452,7 +471,7 @@ bool UpdateMonitor() {
       } 
     } else {
       if (PortMonitorMessages==15) { 
-        StartupStore(_T("... GOING SILENT on too many Com reportings.  %s" NEWLINE),WhatTimeIsIt());
+        StartupStore(_T("... GOING SILENT on too many Com reportings.%s"),WhatTimeIsIt());
         DoStatusMessage(MsgToken<317>()); // GOING SILENT ON COM REPORTING
         PortMonitorMessages++;	// we go to 16, and never be back here
       }
@@ -469,7 +488,7 @@ int ConnectionProcessTimer(int itimeout) {
   // TODO: PRINT THIS INFORMATION IN THE IGC LOG FILE, ABSOLUTELY!
   static double oldoffset=0;
   if (GPSAltitudeOffset!=oldoffset) {
-    StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f%s"),oldoffset,GPSAltitudeOffset,NEWLINE);
+    StartupStore(_T(". GPS ALTITUDE OFFSET CHANGED FROM: %f TO: %f"),oldoffset,GPSAltitudeOffset);
     oldoffset=GPSAltitudeOffset;
   }
 
@@ -538,7 +557,7 @@ int ConnectionProcessTimer(int itimeout) {
         // This is needed only for virtual com ports..
         if (!devIsDisabled()) {
           extGPSCONNECT = FALSE;
-          StartupStore(_T(". ComPort RESET ordered" NEWLINE));
+          StartupStore(_T(". ComPort RESET ordered"));
           if (MapSpaceMode != MSM_WELCOME) {
             InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
           }
@@ -552,7 +571,7 @@ int ConnectionProcessTimer(int itimeout) {
 
   // Force RESET of comm ports on demand
   if (LKForceComPortReset) {
-    StartupStore(_T(". ComPort RESET ordered" NEWLINE));
+    StartupStore(_T(". ComPort RESET ordered"));
     LKForceComPortReset=false;
     LKDoNotResetComms=false;
     if (MapSpaceMode != MSM_WELCOME) {

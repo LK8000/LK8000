@@ -11,9 +11,10 @@
 /*
 #define DEBUG_ROTARY      // write in DEBUG.TXT located in the same place of .exe , append mode
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
-#define DEBUGNPM          // port monitor and hearthbeats in Parser
 #define DEBUG_BESTALTERNATE     // full bestalternate messages inside DEBUG.TXT in home directory
 */
+
+#define DEBUGNPM          // port monitor and hearthbeats in Parser
 
 // #define DEBUG_GDL90_DRIVER // log GDL90 driver messages in RUNTIME.log
 // #define DEBUG_ACD_DRIVER // log Air Control Display driver messages in RUNTIME.log
