@@ -1,20 +1,23 @@
 /*
-   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
-   Released under GNU/GPL License v.2 or later
-   See CREDITS.TXT file for authors and copyrights
-
-   $Id: Message.cpp,v 8.3 2010/12/12 15:48:25 root Exp root $
-*/
+ * LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+ * Released under GNU/GPL License v.2 or later
+ * See CREDITS.TXT file for authors and copyrights
+ *
+ * $Id: Message.cpp,v 8.3 2010/12/12 15:48:25 root Exp root $
+ */
 
 #include "externs.h"
 #include "Message.h"
+#include "Screen/Point.hpp"
 #include "Screen/LKSurface.h"
 #include "Window/WndTextEdit.h"
 #include "Event/Event.h"
+#include <chrono>
+#include <optional>
 
 class WndMessage : public WndTextEdit {
 public:
-    WndMessage() : WndTextEdit() { }
+    using WndTextEdit::WndTextEdit;
 
 protected:
     bool OnLButtonDown(const POINT& Pos) override {
@@ -62,22 +65,14 @@ WndMessage Message::WndMsg;
 Message::messages_t Message::messages; // from older to newer
 Message::messages_t Message::messagesHistory; // from newer to older
 
-bool Message::hidden=false;
-int Message::nvisible=0;
+bool Message::hidden = false;
 
 tstring Message::msgText;
-
-// Get start time to reduce overrun errors
-PeriodClock startTime;
 
 int Message::ScopeBlockRender::_Block = 0;
 
 void Message::Initialize(PixelRect rc) {
-
-    startTime.Update();
-
     hidden = true;
-    nvisible = 0;
     rcmsg = rc; // default; message window can be full size of screen
 
     WndMsg.Create(main_window.get(), rc);
@@ -95,7 +90,7 @@ void Message::InitFont() {
 
 
 void Message::Destroy() {
-  // destroy window
+    // destroy window
     WndMsg.Destroy();
 }
 
@@ -118,9 +113,8 @@ void Message::Resize() {
         WndMsg.SetVisible(false);
     }
     hidden = true;
-  } else {
-    PixelRect rthis;
-
+  }
+  else {
     WndMsg.SetWndText(msgText.c_str());
 
     LKWindowSurface Surface(WndMsg);
@@ -135,147 +129,146 @@ void Message::Resize() {
 
     Surface.SelectObject(oldfont); // 100215
 
-    const int linecount = max(nvisible, max(1, WndMsg.GetLineCount()));
+    const int linecount = std::max(1, WndMsg.GetLineCount());
 
-    int width =// min((rcmsg.right-rcmsg.left)*0.8,tsize.cx);
-      (int)((rcmsg.right-rcmsg.left)*0.9);
-    int height = (int)min((rcmsg.bottom-rcmsg.top)*0.8,(double)tsize.cy*(linecount+1));
-    int h1 = height/2;
-    int h2 = height-h1;
+    const auto center = rcmsg.GetCenter();
+    const auto size = rcmsg.GetSize();
 
-    int midx = (rcmsg.right+rcmsg.left)/2;
-    int midy = (rcmsg.bottom+rcmsg.top)/2;
+    const auto width = static_cast<PixelScalar>(size.cx * 0.9);
+    const auto height = std::min<PixelScalar>(size.cy * 0.8,
+                                              tsize.cy * (linecount + 1));
+    const auto h1 = static_cast<PixelScalar>(height / 2);
+    const auto h2 = static_cast<PixelScalar>(height - h1);
 
-    rthis.left = midx-width/2;
-    rthis.right = midx+width/2;
-    rthis.top = midy-h1;
-    rthis.bottom = midy+h2;
+
+    const PixelRect rthis = {
+      center.x - width / 2,
+      center.y - h1,
+      center.x + width / 2,
+      center.y + h2
+    };
 
     WndMsg.SetTopWnd();
     WndMsg.Move(rthis);
     WndMsg.SetVisible(true);
     hidden = false;
   }
-
+#ifndef USE_GDI
+  main_window->Refresh();
+#endif
 }
 
 
 void Message::Render() {
-    if (!GlobalRunning) return;
-    if (ScopeBlockRender::isBlocked()) return;
-
-    Lock();
-    unsigned fpsTime = startTime.Elapsed();
-
-    // this has to be done quickly, since it happens in GUI thread
-    // at subsecond interval
-    msgText.clear();
-    nvisible = 0;
-    bool changed = false;
-    messages_t::iterator msgIt = messages.begin();
-    while (msgIt != messages.end()) {
-        if (msgIt->type == 0) {
-            // ignore unknown messages, remove it.
-            messages.erase(msgIt++);
-            changed = true;
-            continue;
-        }
-
-        if (msgIt->texpiry < fpsTime && msgIt->texpiry > msgIt->tstart) {
-            // this message has expired, move to history list
-            messagesHistory.splice(messagesHistory.begin(), messages, msgIt++);
-            changed = true;
-            continue;
-        }
-
-        if (msgIt->texpiry == msgIt->tstart) {
-            // new message has been added, set new expiry time.
-            msgIt->texpiry = fpsTime + msgIt->tshow;
-            changed = true;
-        }
-
-        if (nvisible > 0) {
-            msgText += TEXT("\r\n"); // add a line separator
-        }
-        msgText += msgIt->text; // Append Text
-
-        ++nvisible;
-        ++msgIt; // advance to next
-    }
-    if(messagesHistory.size() > 20) {
-        // don't save more than 20 message into history.
-        messagesHistory.erase(--messagesHistory.end());
-    }
-    if (!hidden && messages.empty()) {
-        changed = true;
-    }
-
-    if (changed) {
-        Resize();
-    }
-    Unlock();
-
-#ifndef USE_GDI
-    if (changed) {
-        main_window->Refresh();
-    }
-#endif
-}
-
-void Message::AddMessage(unsigned tshow, int type, const TCHAR* Text) {
-    if (Text) {
-        TestLog(_T("Message::AddMessage: %s"), Text);
-    }
-    const std::lock_guard lock(CritSec_Messages);
-    if (!startTime.IsDefined()) {
-        // too early ...
+    if (!GlobalRunning || ScopeBlockRender::isBlocked()) {
         return;
     }
 
-    auto It = std::find_if(messages.begin(), messages.end(), [&](const Message_t& Item){
-      return (Item.type == type && Item.text.compare(Text)==0);
-    });
+    // this has to be done quickly, since it happens in GUI thread
+    // at subsecond interval
+    const tstring previousText = std::move(msgText);
+    msgText.clear();
 
-    unsigned fpsTime = startTime.Elapsed();
-    if(It != messages.end()) {
-      // this message is already visible, move it to end and update start and expiry
-      It->tstart = fpsTime;
-      It->texpiry = fpsTime;
-      It->tshow = tshow;
-      messages.splice(messages.end(), messages, It);
-    } else {
-      messages.emplace_back(Text, type, fpsTime, fpsTime, tshow);
+    {
+        const std::lock_guard lock(CritSec_Messages);
+        const auto now = steady_clock::now();
+
+        messages_t::iterator It = messages.begin();
+        while (It != messages.end()) {
+            if (It->type == 0) {
+                // ignore unknown messages, remove it.
+                messages.erase(It++);
+                continue;
+            }
+
+            // if message is pending (not yet rendered), start its timer now
+            if (It->pending()) {
+                It->tstart = now;
+            }
+
+            // check if message has expired: current time > start time + show duration
+            if (It->expire() < now) {
+                // this message has expired, move to history list
+                messagesHistory.splice(messagesHistory.begin(), messages, It++);
+                continue;
+            }
+
+            if (!msgText.empty()) {
+                msgText += _T("\r\n"); // add a line separator
+            }
+            msgText += It->text; // append text
+
+            ++It; // advance to next
+        }
+        while(messagesHistory.size() > 20) {
+            // don't save more than 20 message into history.
+            messagesHistory.pop_back();
+        }
+    } // lock_guard released here
+
+    if (msgText != previousText) {
+        Resize();
+    }
+}
+
+void Message::AddMessage(unsigned tshow, int type, const TCHAR* text) {
+    if (!GlobalRunning || !text) {
+        return;
+    }
+    TestLog(_T("Message::AddMessage: %s"), text);
+
+    const std::lock_guard lock(CritSec_Messages);
+
+    auto It = std::find_if(messages.begin(), messages.end(),
+                [&](const Message_t& Item) {
+                    return (Item.type == type && Item.text == text);
+                });
+
+    if (It != messages.end()) {
+        // this message is already visible, restart its timer now
+        It->tshow = duration_ms(tshow);
+        if (!It->pending()) {
+            It->tstart = steady_clock::now();
+        }
+        messages.splice(messages.end(), messages, It);
+    }
+    else {
+        // new message: timer starts on first render
+        messages.emplace_back(text, type, duration_ms(tshow));
     }
 }
 
 void Message::Repeat(int type) {
-    Lock();
-    if (!messagesHistory.empty()) {
+    const std::lock_guard lock(CritSec_Messages);
 
-        // copy most recent message from history to active message.
-        messages_t::iterator It = messagesHistory.begin();
-        (*It).texpiry = (*It).tstart = startTime.Elapsed();
+    // copy most recent message from history to active message.
+    auto It = std::find_if(messagesHistory.begin(), messagesHistory.end(),
+                [&](const Message_t& item) {
+                    return type == 0 || item.type == type;
+                });
 
+    if (It != messagesHistory.end()) {
+        // Reset message state: timer starts on first render (pending=true)
+        It->tstart = std::nullopt;  // timer hasn't started yet
         messages.splice(messages.end(), messagesHistory, It);
     }
-    Unlock();
 }
 
 bool Message::Acknowledge(int type) {
-    Lock();
-    bool ret = false; // Did we acknowledge?
+    const std::lock_guard lock(CritSec_Messages);
+    bool ret = false; // did we acknowledge?
 
-    messages_t::iterator msgIt = messages.begin();
-    while (msgIt != messages.end()) {
-        if (type == 0 || msgIt->type == type) {
-            messagesHistory.splice(messagesHistory.begin(), messages, msgIt++);
+    messages_t::iterator It = messages.begin();
+    while (It != messages.end()) {
+        if (type == 0 || It->type == type) {
+            messagesHistory.splice(messagesHistory.begin(), messages, It++);
             ret = true;
-        } else {
-            ++msgIt;
+        }
+        else {
+            ++It;
         }
     }
 
-    Unlock();
     //  Render(); NO! this can cause crashes
     return ret;
 }
