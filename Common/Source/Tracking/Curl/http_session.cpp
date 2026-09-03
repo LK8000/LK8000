@@ -90,6 +90,10 @@ std::string http_session::request_impl(const std::string& url, const std::string
     curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, data_write_to_string);
     curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response);
 
+    // Set timeout to prevent indefinite hangs during shutdown
+    curl_easy_setopt(curl.get(), CURLOPT_TIMEOUT, 30L);  // 30 seconds total timeout
+    curl_easy_setopt(curl.get(), CURLOPT_CONNECTTIMEOUT, 10L);  // 10 seconds connection timeout
+
     CURLcode res = curl_easy_perform(curl.get());
     if (headers) {
       curl_slist_free_all(headers);
