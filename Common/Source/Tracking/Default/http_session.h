@@ -11,22 +11,24 @@
 #ifndef _TRACKING_DEFAULT_HTTP_SESSION_H_
 #define _TRACKING_DEFAULT_HTTP_SESSION_H_
 
-#include <string>
 #include "../http_session_base.h"
 
 class http_session : public http_session_base<http_session> {
   friend class http_session_base<http_session>;
 
-public:
+ public:
+  using base = http_session_base<http_session>;
+  using optional_string = base::optional_string;
+
   http_session();
   ~http_session();
 
-private:
+ private:
   static bool ssl_available_impl();
 
   std::string request_impl(const std::string& url,
-                          const std::string* post_data,
-                          const char* content_type) const;
+                           const optional_string& post_data,
+                           const optional_string& content_type) const;
 };
 
-#endif // _TRACKING_DEFAULT_HTTP_SESSION_H_
+#endif  // _TRACKING_DEFAULT_HTTP_SESSION_H_

@@ -29,9 +29,13 @@ namespace {
 
 size_t data_write_to_string(void* buf, size_t size, size_t nmemb, void* userp) {
   if(userp) {
-    std::string& data = *static_cast<std::string*>(userp);
-    data.append(static_cast<char*>(buf), size * nmemb);
-    return size * nmemb;
+    auto& data = *static_cast<std::string*>(userp);
+
+    using char_type = std::string::traits_type::char_type;
+    size_t char_size = sizeof(char_type);
+    size_t string_size = (size * nmemb) / char_size;
+    data.append(static_cast<char_type*>(buf), string_size);
+    return string_size;
   }
   return 0;
 }
@@ -48,56 +52,57 @@ bool http_session::ssl_available_impl() {
   return ssl;
 }
 
-std::string http_session::request_impl(const std::string& url, const std::string* post_data, const char* content_type) const {
+std::string http_session::request_impl(const std::string& url, const optional_string& post_data, const optional_string& content_type) const {
   static constexpr char protocols[] = "http,https";
   try {
-    curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl.get(), CURLOPT_IPRESOLVE, CURL_IPRESOLVE_WHATEVER);
+    curl.setopt(CURLOPT_URL, url.c_str());
+    curl.setopt(CURLOPT_IPRESOLVE, CURL_IPRESOLVE_WHATEVER);
 
     struct curl_slist* headers = nullptr;
     if (post_data) {
-        curl_easy_setopt(curl.get(), CURLOPT_POST, 1L);
-        curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDS, post_data->c_str());
-        curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDSIZE, static_cast<long>(post_data->size()));
+        curl.setopt(CURLOPT_POST, 1L);
+        curl.setopt(CURLOPT_POSTFIELDS, post_data->c_str());
+        curl.setopt(CURLOPT_POSTFIELDSIZE, static_cast<long>(post_data->size()));
         if (content_type) {
             std::string ct = "Content-Type: ";
-            ct += content_type;
+            ct += *content_type;
             headers = curl_slist_append(headers, ct.c_str());
         }
     } else {
-        curl_easy_setopt(curl.get(), CURLOPT_HTTPGET, 1L);
+        curl.setopt(CURLOPT_HTTPGET, 1L);
     }
-    curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, headers);
+    curl.setopt(CURLOPT_HTTPHEADER, headers);
     
-    curl_easy_setopt(curl.get(), CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl.get(), CURLOPT_PROTOCOLS_STR, protocols);
-    curl_easy_setopt(curl.get(), CURLOPT_REDIR_PROTOCOLS_STR, protocols);
-    curl_easy_setopt(curl.get(), CURLOPT_USERAGENT, LKFORK "/" LKVERSION "." LKRELEASE);
-    curl_easy_setopt(curl.get(), CURLOPT_MAXREDIRS, 5L);
+    curl.setopt(CURLOPT_FOLLOWLOCATION, 1L);
+    curl.setopt(CURLOPT_PROTOCOLS_STR, protocols);
+    curl.setopt(CURLOPT_REDIR_PROTOCOLS_STR, protocols);
+    curl.setopt(CURLOPT_USERAGENT, LKFORK "/" LKVERSION "." LKRELEASE);
+    curl.setopt(CURLOPT_MAXREDIRS, 5L);
 
 #ifndef NDEBUG
-    curl_easy_setopt(curl.get(), CURLOPT_VERBOSE, 1L);
+    curl.setopt(CURLOPT_VERBOSE, 1L);
 #endif
 
 #ifdef KOBO
     /* no TLS certificate validation because Kobos usually don't
 	   have the correct date/time in the real-time clock, which
 	   causes the certificate validation to fail */
-    curl_easy_setopt(curl.get(), CURLOPT_SSL_VERIFYPEER, 0L);
+    curl.setopt(CURLOPT_SSL_VERIFYPEER, 0L);
 #endif
 
     std::string response;
-    curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, data_write_to_string);
-    curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, &response);
+    curl.setopt(CURLOPT_WRITEFUNCTION, data_write_to_string);
+    curl.setopt(CURLOPT_WRITEDATA, &response);
 
     // Set timeout to prevent indefinite hangs during shutdown
-    curl_easy_setopt(curl.get(), CURLOPT_TIMEOUT, 30L);  // 30 seconds total timeout
-    curl_easy_setopt(curl.get(), CURLOPT_CONNECTTIMEOUT, 10L);  // 10 seconds connection timeout
+    curl.setopt(CURLOPT_TIMEOUT, 30L);  // 30 seconds total timeout
+    curl.setopt(CURLOPT_CONNECTTIMEOUT, 10L);  // 10 seconds connection timeout
 
-    CURLcode res = curl_easy_perform(curl.get());
+    CURLcode res = curl.perform();
+
     if (headers) {
+      curl.setopt(CURLOPT_HTTPHEADER, nullptr);
       curl_slist_free_all(headers);
-      curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, nullptr);
     }
 
     if (res != CURLE_OK) {

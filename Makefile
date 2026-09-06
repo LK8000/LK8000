@@ -1308,22 +1308,20 @@ TRACKING := \
 	$(SRC)/xcs/Net/SocketDescriptor.cpp \
 	$(SRC)/xcs/Net/State.cpp \
 	$(SRC)/xcs/Net/StaticSocketAddress.cxx \
+	\
+	$(SRC_TRACKING)/FFVLTracking.cpp \
+	$(SRC_TRACKING)/Traccar.cpp \
+	$(SRC_TRACKING)/OsmAnd.cpp \
+	$(SRC_TRACKING)/PureTrack.cpp \
+
 
 ifeq ($(CONFIG_WIN32),y)
  TRACKING += \
    $(SRC_TRACKING)/WinHttp/http_session.cpp \
-   $(SRC_TRACKING)/FFVLTracking.cpp \
-   $(SRC_TRACKING)/Traccar.cpp \
-   $(SRC_TRACKING)/OsmAnd.cpp \
-   $(SRC_TRACKING)/PureTrack.cpp \
 
 else ifeq ($(USE_CURL),y)
  TRACKING += \
    $(SRC_TRACKING)/Curl/http_session.cpp\
-   $(SRC_TRACKING)/FFVLTracking.cpp \
-   $(SRC_TRACKING)/Traccar.cpp \
-   $(SRC_TRACKING)/OsmAnd.cpp \
-   $(SRC_TRACKING)/PureTrack.cpp \
 
 else
  TRACKING += \

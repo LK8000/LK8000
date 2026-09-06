@@ -226,15 +226,15 @@ namespace {
 
 std::string request_socket(const char* server_name, int server_port,
                            const char* request_target,
-                           const std::string* post_data,
-                           const char* content_type) {
+                           const http_session::optional_string& post_data,
+                           const http_session::optional_string& content_type) {
 
 	ScopeSocket s = EstablishConnection(server_name, server_port);
 	if (!s) {
 		return {};
     }
 
-	const bool is_post = post_data != nullptr;
+	const bool is_post = post_data.has_value();
 	const char* method = is_post ? "POST " : "GET ";
 	int tmpres = WriteData(s.get(), method);
 	if (tmpres < 0) {
@@ -257,12 +257,12 @@ std::string request_socket(const char* server_name, int server_port,
 		if (tmpres < 0) {
 			return {};
 		}
-		if (content_type && *content_type) {
+		if (content_type.has_value() && !content_type->empty()) {
 			tmpres = WriteData(s.get(), "Content-Type: ");
 			if (tmpres < 0) {
 				return {};
 			}
-			tmpres = WriteData(s.get(), content_type);
+			tmpres = WriteData(s.get(), *content_type);
 			if (tmpres < 0) {
 				return {};
 			}
@@ -344,7 +344,7 @@ std::string request_socket(const char* server_name, int server_port,
 
 } // namespace
 
-std::string http_session::request_impl(const std::string& url, const std::string* post_data, const char* content_type) const {
+std::string http_session::request_impl(const std::string& url, const optional_string& post_data, const optional_string& content_type) const {
 	const static std::regex re(R"(^(https?:)//([A-Za-z0-9\-\.]+)(?::([0-9]+))?(.*)$)");
 	std::smatch match;
 	if (std::regex_match(url, match, re)) {

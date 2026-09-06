@@ -18,22 +18,31 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <optional>
+
+
+// C++20 Concepts for string conversion
+template <typename T>
+concept StringConstructible = std::constructible_from<std::string, T&&>;
+
+template <typename T>
+concept ToStringConvertible = !StringConstructible<T> && requires(T v) {
+  std::to_string(v);
+};
 
 template <class Derived>
 class http_session_base {
-public:
-  struct url_param {
-    url_param() = delete;
+ public:
+  using optional_string = std::optional<std::string>;
 
-    template <typename ValueT>
-      requires std::constructible_from<std::string, ValueT&&>
+  struct url_param {
+
+    template <StringConstructible ValueT>
     url_param(std::string name, ValueT&& value)
         : name(std::move(name)), value(std::forward<ValueT>(value)) {}
 
-    template <typename ValueT>
-      requires(!std::constructible_from<std::string, ValueT&&> &&
-               requires(ValueT v) { std::to_string(v); })
-    url_param(std::string name, ValueT value)
+    template <ToStringConvertible ValueT>
+    url_param(std::string name, const ValueT& value)
         : name(std::move(name)), value(std::to_string(value)) {}
 
     const std::string name;
@@ -65,8 +74,8 @@ public:
   }
 
   std::string post(const std::string& url, const std::string& data,
-                   const char* content_type = nullptr) const {
-    return derived().request_impl(url, &data, content_type);
+                   const optional_string& content_type = {}) const {
+    return derived().request_impl(url, data, content_type);
   }
 
   std::string request(const char* server_name, int server_port,
@@ -87,7 +96,7 @@ public:
   }
 
   std::string request(const std::string& url) const {
-    return derived().request_impl(url, nullptr, nullptr);
+    return derived().request_impl(url, {}, {});
   }
 
 protected:
@@ -116,7 +125,7 @@ protected:
     return out;
   }
 
-private:
+ private:
   const Derived& derived() const {
     static_assert(std::is_base_of_v<http_session_base<Derived>, Derived>,
                   "Derived must inherit from http_session_base<Derived>");

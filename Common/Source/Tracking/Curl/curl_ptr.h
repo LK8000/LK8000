@@ -42,6 +42,15 @@ public:
     return curl;
   }
 
+  template<typename T>
+  void setopt(CURLoption option, T value) const {
+    curl_easy_setopt(curl, option, value);
+  }
+
+  CURLcode perform() const {
+    return curl_easy_perform(curl);
+  }
+
 private:
   CURL* curl = nullptr;
 };

@@ -73,8 +73,8 @@ bool http_session::ssl_available_impl() {
 }
 
 std::string http_session::request_impl(const std::string& url,
-                                       const std::string* post_data,
-                                       const char* content_type) const {
+                                       const optional_string& post_data,
+                                       const optional_string& content_type) const {
   std::string response;
   try {
     if (!session) {
@@ -96,7 +96,7 @@ std::string http_session::request_impl(const std::string& url,
     }
 
     // Open request
-    const wchar_t* method = post_data ? L"POST" : L"GET";
+    const wchar_t* method = post_data.has_value() ? L"POST" : L"GET";
     DWORD flags = parts.is_https ? WINHTTP_FLAG_SECURE : 0;
 
     winhttp_handle_ptr hRequest(WinHttpOpenRequest(
@@ -129,7 +129,7 @@ std::string http_session::request_impl(const std::string& url,
     std::wstring headers;
     if (post_data && content_type) {
       headers = std::format(L"Content-Type: {}\r\n",
-                            utf8_to_string<wchar_t>(content_type));
+                            utf8_to_string<wchar_t>(content_type->c_str()));
     }
 
     // Send request
