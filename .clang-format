@@ -2,7 +2,7 @@
 Language:        Cpp
 BasedOnStyle:  Chromium
 
-Standard: c++17
+Standard: c++20
 
 DerivePointerAlignment: false
 PointerAlignment: Left
