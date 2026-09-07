@@ -12,7 +12,7 @@
 #include "utils/printf.h"
 #include "utils/tokenizer.h"
 #include "Library/rapidxml/rapidxml.hpp"
-#include "md5.h"
+#include "utils/md5.h"
 
 using xml_attribute = rapidxml::xml_attribute<char>;
 

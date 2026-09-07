@@ -15,7 +15,7 @@
 #include "Compiler.h"
 #include "tchar.h"
 #include "Util/tstring.hpp"
-#include "md5.h"
+#include "utils/md5.h"
 
 class igc_file_writer final {
 

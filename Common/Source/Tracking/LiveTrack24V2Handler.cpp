@@ -16,7 +16,7 @@
 #include "MessageLog.h"
 #include "LiveTrack24APIKey.h"
 #include "FlarmCalculations.h"
-#include "md5.h"
+#include "utils/md5.h"
 #include <zlib.h>
 #include <random>
 #include <sstream>
