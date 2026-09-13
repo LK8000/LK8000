@@ -10,10 +10,11 @@
 #ifndef ANDROID_BLUETOOTHSENSOR_H
 #define ANDROID_BLUETOOTHSENSOR_H
 
-#include "Thread/Mutex.hpp"
 #include "ComPort.h"
 #include "Device/Port/Listener.hpp"
 #include "IO/DataHandler.hpp"
+#include "Comm/DeviceDescriptor.h"
+#include "Comm/device.h"
 
 class PortBridge;
 
@@ -56,14 +57,14 @@ class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
 
   PortBridge* bridge = nullptr;
 
-  Mutex mutex;
+  mutable Mutex mutex;
   Cond newdata;
 
   bool running = false;
 
   struct sensor_data {
     sensor_data(uuid_t&& s, uuid_t&& c, std::vector<uint8_t>&& _data)
-        : service(s), characteristic(c), data(std::move(_data)) {}
+        : service(std::move(s)), characteristic(std::move(c)), data(std::move(_data)) {}
 
     uuid_t service;
     uuid_t characteristic;

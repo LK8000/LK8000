@@ -99,6 +99,7 @@ const service_table_t& service_table() {
 }  // namespace
 
 bool BluetoothSensor::Initialize() {
+  const std::lock_guard lock(mutex);
   try {
     JNIEnv* env = Java::GetEnv();
     if (env && BluetoothHelper::isEnabled(env)) {
@@ -350,6 +351,7 @@ bool BluetoothSensor::Hm10DataEnable() const {
 }
 
 bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
+  const std::lock_guard lock(mutex);
   if(bridge) {
     const char *p = (const char *)data;
     const char *end = p + size;
@@ -369,6 +371,7 @@ bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
 }
 
 void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) const {
+  const std::lock_guard lock(mutex);
   if(bridge) {
     bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
     AddStatTx(size);
@@ -376,6 +379,7 @@ void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_
 }
 
 void BluetoothSensor::ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic) {
+  const std::lock_guard lock(mutex);
   if(bridge) {
     bridge->readGattCharacteristic(Java::GetEnv(), service, characteristic);
   }
