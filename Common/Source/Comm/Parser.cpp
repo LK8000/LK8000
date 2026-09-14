@@ -423,6 +423,11 @@ BOOL NMEAParser::RMC(const char* String, char** params, size_t nparams,
   // If no GGA is available, or if RMC indicates invalid fix, update NAV warning.
   // If GGA is available and RMC has valid fix, respect GGA's stricter fix evaluation.
   if (!GGAAvailable || !gpsValid) {
+
+    if (!pGPS->NAVWarning && !gpsValid) {
+      DebugLog(_T("..... RMC : GPS invalid, NAV warning is set\n"));
+    }
+
     pGPS->NAVWarning = !gpsValid;
   }
 
@@ -576,9 +581,7 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
     lastGpsValid.Update();
   }
 
-  // Only mark GGA as available if it provides a valid fix.
-  // If GGA has invalid fix, allow RMC to control NAVWarning.
-  GGAAvailable = gpsValid;
+  GGAAvailable = true;
 
   nSatellites = std::min<int>(16, strtol(params[6], nullptr, 10));
 
@@ -596,6 +599,10 @@ BOOL NMEAParser::GGA(const char* String, char** params, size_t nparams,
   // information, GGA only used for additional altitude and satellite info
 
   const std::lock_guard lock(CritSec_FlightData);
+
+  if (!pGPS->NAVWarning && !gpsValid) {
+    DebugLog(_T("..... GGA : GPS invalid (%u), NAV warning is set\n"), ggafix);
+  }
 
   pGPS->SatellitesUsed = nSatellites;  // 091208
   pGPS->NAVWarning = !gpsValid;        // 091208
