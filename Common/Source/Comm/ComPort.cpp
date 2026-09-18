@@ -114,7 +114,7 @@ bool ComPort::StartRxThread() {
                        GetPortIndex() + 1, GetPortName());
 
           // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
-          StatusMessage(_T("%s %s"), MsgToken<761>(), GetPortName());
+          StatusMessage(_T("{} {}"), MsgToken<761>(), GetPortName());
           //DWORD dwError = GetLastError();
           return false;
       }
@@ -205,18 +205,8 @@ void ComPort::AddStatErrTx(unsigned dwBytes) const {
     }
 }
 
-void ComPort::StatusMessage(const TCHAR *fmt, ...) {
-    TCHAR tmp[127];
-    va_list ap;
-    LKASSERT(fmt!=NULL);
-
-    va_start(ap, fmt);
-    gcc_unused int n = _vsntprintf(tmp, 127, fmt, ap);
-    va_end(ap);
-    LKASSERT(n>=0); // Message to long for "tmp" buffer
-
-    tmp[126] = _T('\0');
-    DoStatusMessage(tmp);
+void ComPort::StatusMessage(const tstring& message) {
+    DoStatusMessage(message.c_str());
 }
 
 tstring ComPort::GetDeviceName() {
@@ -236,9 +226,7 @@ void ComPort::NotifyConnected() {
         status_cv.notify_one();
     }
     // notify user
-    tstring name = GetDeviceName();
-    StatusMessage(_T("%s connected"), name.c_str());
-    StartupStore(_T(". Device %c [%s] :  connected"), devLetter(GetPortIndex()), name.c_str());
+    StatusMessage(_T("{} connected"), GetDeviceName());
 }
 
 void ComPort::status_thread_loop() {
@@ -247,17 +235,16 @@ void ComPort::status_thread_loop() {
         std::unique_lock lock(status_mutex);
         while (!status_thread_stop) { // until stop not request
             if (status_disconnected_notify) { // if disconnect notify requested
-                tstring name = GetDeviceName();
                 status_cv.wait_for(lock, 10s); // wait 10s for reconnecting
                 if(status_thread_stop) {
                   return; // must exit otherwise thread never end ...
                 }
                 if (!status_connected) { // if not reconnected notify user
-                    StatusMessage(_T("%s disconnected"), name.c_str());
-                    TestLog(_T("ble_notify: %s disconnected"), name.c_str());
+                    StatusMessage(_T("{} disconnected"), GetDeviceName());
+                    TestLog(_T("ble_notify: %s disconnected"), GetDeviceName().c_str());
                 }
                 else { // if reconnected don't notify user
-                    TestLog(_T("ble_notify: %s reconnected"), name.c_str());
+                    TestLog(_T("ble_notify: %s reconnected"), GetDeviceName().c_str());
                 }
                 status_disconnected_notify = false; // reset notify request
             }

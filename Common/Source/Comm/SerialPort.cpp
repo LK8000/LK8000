@@ -54,7 +54,7 @@ bool SerialPort::Initialize() {
     if (hPort == INVALID_HANDLE_VALUE) {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init failed, error=%lu%s"), GetPortIndex() + 1, dwError, NEWLINE); // 091117
-        StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
+        StatusMessage(_T("{} {}"), MsgToken<762>(), GetPortName());
 
         goto failed;
     }
@@ -66,7 +66,7 @@ bool SerialPort::Initialize() {
     if (GetCommState(hPort, &PortDCB)==0) {
         StartupStore(_T("... ComPort %u GetCommState failed, error=%lu%s"),GetPortIndex()+1,GetLastError(),NEWLINE);
         // @M759 = Unable to Change Settings on Port
-        StatusMessage(_T("%s %s"), MsgToken<759>(), GetPortName());
+        StatusMessage(_T("{} {}"), MsgToken<759>(), GetPortName());
         goto failed;
     }
     // Change the DCB structure settings.
@@ -105,7 +105,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change setting FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // @M759 = Unable to Change Settings on Port
-        StatusMessage(_T("%s %s"), MsgToken<759>(), GetPortName());
+        StatusMessage(_T("{} {}"), MsgToken<759>(), GetPortName());
 
         goto failed;
     }
@@ -114,7 +114,7 @@ bool SerialPort::Initialize() {
         DWORD dwError = GetLastError();
         StartupStore(_T("... ComPort %u Init <%s> change TimeOut FAILED, error=%lu%s"), GetPortIndex() + 1, GetPortName(), dwError, NEWLINE); // 091117
         // LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers"
-        StatusMessage(_T("%s %s"), MsgToken<760>(), GetPortName());
+        StatusMessage(_T("{} {}"), MsgToken<760>(), GetPortName());
 
         goto failed;
     }

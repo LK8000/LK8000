@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <string>
+#include <format>
 #include <string_view>
 #include <algorithm>
 #include <iterator>
@@ -24,6 +25,10 @@ std::string to_string(const std::string_view& sz) {
 #include <tchar.h>
 typedef std::wstring tstring;
 typedef std::wstring_view tstring_view;
+
+template <typename... _Args>
+using tformat_string = std::wformat_string<_Args...>;
+
 
 #ifdef _GLIBCXX_HAVE_BROKEN_VSWPRINTF
 // workarround for mingw32ce
@@ -83,6 +88,9 @@ std::string to_utf8(const wchar_t* sz);
 #else
 typedef std::string tstring;
 typedef std::string_view tstring_view;
+
+template <typename... _Args>
+using tformat_string = std::format_string<_Args...>;
 
 template<typename T>
 inline tstring to_tstring(T v) {

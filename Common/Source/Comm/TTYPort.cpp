@@ -78,8 +78,8 @@ bool TTYPort::Initialize() {
     // Open non-blocking first to avoid hangs on some serial drivers (e.g. rfcomm).
     _tty = open(szPath.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (_tty < 0 || !isatty(_tty)) {
-        StartupStore(_T("... ComPort %u Init failed, error=%u%s"), GetPortIndex() + 1, errno, NEWLINE); // 091117
-        StatusMessage(_T("%s %s"), MsgToken<762>(), GetPortName());
+        StartupStore(_T("... ComPort %u Init failed, error=%u"), GetPortIndex() + 1, errno); // 091117
+        StatusMessage(_T("{} {}"), MsgToken<762>(), GetPortName());
         if (_tty >= 0) {
             close(_tty);
             _tty = -1;

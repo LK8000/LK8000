@@ -12,6 +12,8 @@
 #ifndef COMPORT_H
 #define	COMPORT_H
 
+#include <format>
+#include <utility>
 #include "Sizes.h"
 #include "types.h"
 #include "Enums.h"
@@ -84,8 +86,14 @@ public:
 
 protected:
 
-    static
-    void StatusMessage(const TCHAR *fmt, ...) gcc_printf(1,2) gcc_nonnull(1);
+    static void StatusMessage(const tstring& message);
+
+    template <typename... Args>
+    static void StatusMessage(tformat_string<Args...>&& fmt,
+                              Args&&... args) {
+      StatusMessage(std::format(std::forward<tformat_string<Args...>>(fmt),
+                                std::forward<Args>(args)...));
+    }
 
     virtual tstring GetDeviceName();
 
