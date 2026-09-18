@@ -705,7 +705,7 @@ BOOL DevLXNanoIII::DeclareTask(DeviceDescriptor_t* d, const Declaration_t* lkDec
   lk::snprintf(DeclStrings[i++], TEXT("HFCCLCOMPETITIONCLASS:%s"), lkDecl->CompetitionClass);
 
   // "C" record, first line acording to IGC GNSS specification 3.6.1
-  if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 && GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 &&
+  if (!GPS_INFO.NAVWarning && GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 &&
       GPS_INFO.Month >= 1 && GPS_INFO.Month <= 12) {
     t_DD = GPS_INFO.Day;
     t_MM = GPS_INFO.Month;

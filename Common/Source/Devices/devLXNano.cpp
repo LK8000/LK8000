@@ -259,9 +259,8 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
 
   Decl::Task& task = decl.task;
 
-  if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 &&
-    GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 && GPS_INFO.Month >= 1 && GPS_INFO.Month <= 12)
-  {
+  if (!GPS_INFO.NAVWarning && GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 &&
+      GPS_INFO.Month >= 1 && GPS_INFO.Month <= 12) {
     task.di = GPS_INFO.Day;
     task.mi = GPS_INFO.Month;
     task.yi = GPS_INFO.Year % 100;

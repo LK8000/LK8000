@@ -1905,7 +1905,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle,
 				lk::strcpy(BufferTitle, MsgToken<1174>());
 			else
 				lk::strcpy(BufferTitle, DataOptionsTitle(lkindex));;
-			if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
+			if (DrawInfo.NAVWarning) {
 				lk::strcpy(BufferValue, TEXT(NULLLONG));
 				valid=false;
 			} else {

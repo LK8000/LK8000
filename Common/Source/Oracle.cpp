@@ -53,7 +53,7 @@ const TCHAR* WhatTimeIsIt() {
   TCHAR tlocal[20];
   Units::TimeToTextS(tlocal, LocalTime());
 
-  if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0)) {
+  if (GPS_INFO.NAVWarning) {
     lk::snprintf(time_temp, _T("h%s (NO FIX)"), tlocal);
   }
   else {

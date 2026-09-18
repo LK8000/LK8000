@@ -18,7 +18,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc) {
   if ((MapSpaceMode == MSM_WELCOME) || (mode.AnyPan())) {
     return;  // 100210
   }
-  if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) {
+  if (extGPSCONNECT && !(DrawInfo.NAVWarning)) {
     if (LockModeStatus) {
       goto goto_DrawLockModeStatus;
     }
@@ -33,7 +33,7 @@ void MapWindow::DrawGPSStatus(LKSurface& Surface, const RECT& rc) {
         message = nullptr;
       }
     }
-  } else if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
+  } else if (DrawInfo.NAVWarning) {
     message = MsgToken<970>(); // NO VALID FIX
   }
 
