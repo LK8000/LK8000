@@ -10,6 +10,18 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.6.7]
+* Fix:
+ - Airspace download URL
+ - Task: load rules from .lkt files [#1720]
+ - Live Tracking: always use barometric altitude when available
+ - LXNano3 Driver: sync glider polar with external device [#1714]
+ - FLARM Driver: fix installed license request
+ - KRT2 Driver: handle keepalive timeout
+ - Humidity and circling percentage typo [#1721]
+ - Notification message not being closed after screen rotation
+ - NMEA parser: use RMC sentence as the authoritative source
+
 [version 7.6.6]
  - Fix Config Pilot Landscape screen layout 
 
