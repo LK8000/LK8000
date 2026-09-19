@@ -26,7 +26,7 @@ make TARGET=KOBO
 echo "---------------------------------------------------"
 pushd android-studio
     ./gradlew assembleBeta
-    ./gradlew assembleRelase
+    ./gradlew assembleRelease
 
     ./gradlew bundleBeta
     ./gradlew bundleRelease
