@@ -76,7 +76,9 @@ void SetAirfieldDetail(tstring_view Name, const tstring& Details) {
       WayPointCalc[i].Preferred = true;
     }
 
-    SetWaypointDetails(wp, Details);
+    if (!Details.empty()) {
+      SetWaypointDetails(wp, Details);
+    }
   }
 }
 
