@@ -178,6 +178,11 @@ public:
      * this is used only by DrawThread, not thread safe
      */
     void DrawCircle(PixelScalar x, PixelScalar y, PixelScalar radius, const PixelRect& rc, bool fill);
+
+    void DrawCircle(RasterPoint center, PixelScalar radius, const PixelRect& rc, bool fill) {
+      DrawCircle(center.x, center.y, radius, rc, fill);
+    }
+
     /**
      * this is used by DrawThread and MainThread for waypoint Picto and Statistics::RenderTask
      *   !! need to be thread safe on platform other than OpenGL
