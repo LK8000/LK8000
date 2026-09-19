@@ -12,64 +12,74 @@
 #include "ScreenProjection.h"
 #include "Calc/ThermalHistory.h"
 
+namespace {
+
+void DrawThermalSource(LKSurface& Surface, const RasterPoint& screen, PixelScalar radius,
+                       const PixelRect& pixelRect) {
+
+  const PixelScalar nibl = NIBLSCALE<PixelScalar>(1);
+
+  const auto oldPen = Surface.SelectObject(LKPen_White_N2);
+
+  Surface.DrawCircle(screen, radius, pixelRect, false);
+  Surface.SelectObject(LKPen_Black_N1);
+  Surface.DrawCircle(screen, radius - nibl, pixelRect, false);
+  Surface.DrawCircle(screen, radius + nibl, pixelRect, false);
+
+  Surface.SelectObject(oldPen);
+}
+
+}  // namespace
+
 //
 // Draw circles and gadgets for thermals
 //
-void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
-  if (!EnableThermalLocator) return;
+void MapWindow::DrawThermalEstimate(LKSurface& Surface, const RECT& rc,
+                                    const ScreenProjection& _Proj) {
+  if (!EnableThermalLocator) {
+    return;
+  }
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
-    if (DerivedDrawInfo.ThermalEstimate_R>0) {
-      const POINT screen = _Proj.ToRasterPoint(DerivedDrawInfo.ThermalEstimate_Latitude, DerivedDrawInfo.ThermalEstimate_Longitude);
+    if (DerivedDrawInfo.ThermalEstimate_R > 0) {
+      const auto screen =
+          _Proj.ToScreen<RasterPoint>({DerivedDrawInfo.ThermalEstimate_Latitude,
+                              DerivedDrawInfo.ThermalEstimate_Longitude});
+
       DrawBitmapIn(Surface, screen, hBmpThermalSource);
 
-      const auto oldBrush = Surface.SelectObject(LKBrush_Hollow);
-      const auto oldPen = Surface.SelectObject(LKPen_White_N3);
+      const PixelScalar radius = ((ISPARAGLIDER) ? 50 : 100) * zoom.ResScaleOverDistanceModify();
 
-      PixelScalar tradius;
-      if (ISPARAGLIDER)
-        tradius=100;
-      else
-        tradius=200;
-
-      tradius *= zoom.ResScaleOverDistanceModify();
-
-      const PixelRect pixelRect{rc};
-
-
-      Surface.DrawCircle(screen.x, screen.y, tradius, pixelRect, false);
-      Surface.SelectObject(LKPen_White_N2);
-      Surface.DrawCircle(screen.x, screen.y, tradius + NIBLSCALE<PixelScalar>(2), pixelRect, false);
-      Surface.DrawCircle(screen.x, screen.y, tradius, pixelRect, false);
-
-      Surface.SelectObject(oldPen);
-      Surface.SelectObject(oldBrush);
+      DrawThermalSource(Surface, screen, radius, PixelRect(rc));
     }
-  } else {
+  }
+  else {
     if (zoom.RealScale() <= 4) {
-      for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
-        if (DerivedDrawInfo.ThermalSources[i].Visible) {
-          DrawBitmapIn(Surface, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource);
+      for (auto& source : DerivedDrawInfo.ThermalSources) {
+        if (source.Visible) {
+          DrawBitmapIn(Surface, source.Screen, hBmpThermalSource);
         }
       }
     }
   }
 }
 
-
-
 //
 // Paint a circle around thermal multitarget
 // Called only during map mode L>
 //
-void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj) {
-
+void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface,
+                                               const RECT& rc,
+                                               const ScreenProjection& _Proj) {
   // do not mix old and new thermals
-  if (mode.Is(Mode::MODE_CIRCLING))
+  if (mode.Is(Mode::MODE_CIRCLING)) {
     return;
+  }
 
   // draw only when visible , at high zoom level
-  if ( MapWindow::zoom.RealScale() >1 ) return;
+  if (MapWindow::zoom.RealScale() > 1) {
+    return;
+  }
 
   auto thermal = GetThermalMultitarget();
   // no L> target destination
@@ -77,24 +87,8 @@ void MapWindow::DrawThermalEstimateMultitarget(LKSurface& Surface, const RECT& r
     return;
   }
 
+  const PixelScalar radius = ((ISPARAGLIDER) ? 100 : 200) * zoom.ResScaleOverDistanceModify();
+
   auto screen = _Proj.ToScreen<RasterPoint>(thermal->position);
-
-  PixelScalar tradius;
-  if (ISPARAGLIDER)
-     tradius=100;
-  else
-     tradius=200;
-
-  tradius *= zoom.ResScaleOverDistanceModify();
-
-  const auto oldPen = Surface.SelectObject(LKPen_White_N3);
-  const PixelRect pixelRect{rc};
-
-
-  Surface.DrawCircle(screen.x, screen.y, tradius, pixelRect, false);
-  Surface.SelectObject(LKPen_White_N2);
-  Surface.DrawCircle(screen.x, screen.y, tradius + NIBLSCALE<PixelScalar>(2), pixelRect, false);
-  Surface.DrawCircle(screen.x, screen.y, tradius, pixelRect, false);
-
-  Surface.SelectObject(oldPen);
+  DrawThermalSource(Surface, screen, radius, PixelRect(rc));
 }
