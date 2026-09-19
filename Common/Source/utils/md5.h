@@ -11,6 +11,7 @@
 #include "md5internal.h"
 #include <type_traits>
 #include <ranges>
+#include <span>
 #include "OS/ByteOrder.hpp"
 
 namespace md5_internal {
