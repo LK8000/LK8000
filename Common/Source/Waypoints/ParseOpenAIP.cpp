@@ -12,6 +12,7 @@
 #include <streambuf>
 #include "Waypointparser.h"
 #include "utils/stringext.h"
+#include "utils/charset_helper.h"
 #include <sstream>
 #include "LKStyle.h"
 #include "Util/TruncateString.hpp"
@@ -116,26 +117,26 @@ bool ParseAirports(const xml_node* airportsNode)
 
         switch(dataStr[0]) {
         case 'A':
-            if (strcasecmp(dataStr, "AF_CIVIL")==0)            comments<<"Civil Airfield"<<std::endl;
-            else if(strcasecmp(dataStr, "AF_MIL_CIVIL")==0)    comments<<"Civil and Military Airport"<<std::endl;
-            else if(strcasecmp(dataStr, "APT")==0)             comments<<"Airport resp. Airfield IFR"<<std::endl;
-            else if(strcasecmp(dataStr, "AD_CLOSED")==0)       comments<<"CLOSED Airport"<<std::endl;
-            else if(strcasecmp(dataStr, "AD_MIL")==0)          comments<<"Military Airport"<<std::endl;
-            else if(strcasecmp(dataStr, "AF_WATER")==0)        { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Waterfield"<<std::endl; }
+            if (strcasecmp(dataStr, "AF_CIVIL")==0)            comments<<_T("Civil Airfield")<<std::endl;
+            else if(strcasecmp(dataStr, "AF_MIL_CIVIL")==0)    comments<<_T("Civil and Military Airport")<<std::endl;
+            else if(strcasecmp(dataStr, "APT")==0)             comments<<_T("Airport resp. Airfield IFR")<<std::endl;
+            else if(strcasecmp(dataStr, "AD_CLOSED")==0)       comments<<_T("CLOSED Airport")<<std::endl;
+            else if(strcasecmp(dataStr, "AD_MIL")==0)          comments<<_T("Military Airport")<<std::endl;
+            else if(strcasecmp(dataStr, "AF_WATER")==0)        { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<_T("Waterfield")<<std::endl; }
             break;
         case 'G':
-            if(strcasecmp(dataStr, "GLIDING")==0)              { new_waypoint.Style=STYLE_GLIDERSITE; comments<<"Glider site"<<std::endl; }
+            if(strcasecmp(dataStr, "GLIDING")==0)              { new_waypoint.Style=STYLE_GLIDERSITE; comments<<_T("Glider site")<<std::endl; }
             break;
         case 'H':
             if(!ISGAAIRCRAFT) continue; // Consider heliports only for GA aircraft
-            if (strcasecmp(dataStr, "HELI_CIVIL")==0)          { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Civil Heliport"<<std::endl; }
-            else if(strcasecmp(dataStr, "HELI_MIL")==0)        { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<"Military Heliport"<<std::endl; }
+            if (strcasecmp(dataStr, "HELI_CIVIL")==0)          { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<_T("Civil Heliport")<<std::endl; }
+            else if(strcasecmp(dataStr, "HELI_MIL")==0)        { new_waypoint.Style=STYLE_AIRFIELDSOLID; comments<<_T("Military Heliport")<<std::endl; }
             break;
         case 'I':
-            if(strcasecmp(dataStr, "INTL_APT")==0)             comments<<"International Airport"<<std::endl;
+            if(strcasecmp(dataStr, "INTL_APT")==0)             comments<<_T("International Airport")<<std::endl;
             break;
         case 'L':
-            if(strcasecmp(dataStr, "LIGHT_AIRCRAFT")==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<"Ultralight site"<<std::endl; }
+            if(strcasecmp(dataStr, "LIGHT_AIRCRAFT")==0)       { new_waypoint.Style=STYLE_AIRFIELDGRASS; comments<<_T("Ultralight site")<<std::endl; }
             break;
         default:
             continue;
@@ -172,18 +173,26 @@ bool ParseAirports(const xml_node* airportsNode)
                 if(!GetContent(node, "FREQUENCY", freq)) continue;
                 switch(dataStr[0]) {
                 case 'C': //COMMUNICATION Frequency used for communication
-                    comments<<"Comm "<<type<<": "<<freq<<" MHz "<<std::endl;
-                    if(!found) toWrite=false;
+                    comments << _T("Comm ") << from_utf8(type) << _T(": ")
+                            << from_utf8(freq) << _T(" MHz ") << std::endl;
+                    if (!found)
+                        toWrite = false;
                     break;
                 case 'I': //INFORMATION Frequency to automated information service
-                    comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
+                    comments << from_utf8(type) << _T(" ") << new_waypoint.Name
+                            << _T(" ") << from_utf8(freq) << _T(" MHz ")
+                            << std::endl;
                     break;
                 case 'N': //NAVIGATION Frequency used for navigation
-                    comments <<type<< " "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
-                    break;
+                    comments << from_utf8(type) << _T(" ") << new_waypoint.Name
+                            << _T(" ") << from_utf8(freq) << _T(" MHz ")
+                            << std::endl;
+                  break;
                 case 'O': //OHER Other frequency purpose
-                    comments <<type<<" "<<new_waypoint.Name <<" "<<freq<<" MHz "<<std::endl;
-                    break;
+                    comments << from_utf8(type) << _T(" ") << new_waypoint.Name
+                            << _T(" ") << from_utf8(freq) << _T(" MHz ")
+                            << std::endl;
+                  break;
                 default:
                     continue;
                 }
@@ -247,7 +256,9 @@ bool ParseAirports(const xml_node* airportsNode)
             double dir=strtod(dataStr,nullptr);
 
             // Add runway to comments
-            comments<<name<<" "<<surface<<" "<<length<<"m "<<dir<<"°"<<std::endl;
+            comments << from_utf8(name) << _T(" ") << from_utf8(surface)
+                    << _T(" ") << length << _T("m ") << dir << _T("°")
+                    << std::endl;
 
             // Check if we found the longest one
             if(length>maxlength) {
@@ -317,7 +328,7 @@ bool ParseNavAids(const xml_node* navAidsNode)
         if(new_waypoint.Style==STYLE_NORMAL) continue;
 
         // Write down in the comments what it is
-        comments<<dataStr<<std::endl;
+        comments << from_utf8(dataStr) << std::endl;
 
         // Country
         if(GetContent(NavAidNode, "COUNTRY", dataStr)) {
@@ -342,20 +353,28 @@ bool ParseNavAids(const xml_node* navAidsNode)
         //Radio frequency
         const xml_node* node=NavAidNode->first_node("RADIO");
         if(!GetContent(node, "FREQUENCY", dataStr)) continue;
-        comments<<"Frequency: "<<dataStr<<" MHz";
+        comments << _T("Frequency: ") << from_utf8(dataStr) << _T(" MHz");
         from_utf8(dataStr, new_waypoint.Freq);
         if (strlen(dataStr)>CUPSIZE_FREQ) new_waypoint.Freq[CUPSIZE_FREQ]= _T('\0');
-        if(GetContent(node, "CHANNEL", dataStr)) comments<<" Channel: "<<dataStr;
+        if (GetContent(node, "CHANNEL", dataStr)) {
+            comments << _T(" Channel: ") << from_utf8(dataStr);
+        }
         comments<<std::endl;
 
         // Parameters
         node = NavAidNode->first_node("PARAMS");
         double value=0;
-        if(GetValue(node,"RANGE",value)) comments<<"Range: "<<value<<" NM ";
-        if(GetValue(node,"DECLINATION",value)) comments<<"Declination: "<<value<<"°";
+        if (GetValue(node, "RANGE", value)) {
+            comments << _T("Range: ") << value << _T(" NM ");
+        }
+        if(GetValue(node,"DECLINATION",value)) comments<<_T("Declination: ")<<value<<_T("°");
         if(GetContent(node,"ALIGNEDTOTRUENORTH",dataStr)) {
-            if(strcasecmp(dataStr,"TRUE")==0) comments<<" True north";
-            else if(strcasecmp(dataStr,"TRUE")==0) comments<<" Magnetic north";
+            if (strcasecmp(dataStr, "TRUE") == 0) {
+                comments << _T(" True north");
+            }
+            else if (strcasecmp(dataStr, "MAGNETIC") == 0) {
+                comments << _T(" Magnetic north");
+            }
         }
 
         // Add the comments
@@ -395,7 +414,7 @@ bool ParseHotSpots(const xml_node* hotSpotsNode) {
 
         // Write type down in the comments
         std::basic_stringstream<TCHAR> comments;
-        comments<<dataStr;
+        comments << from_utf8(dataStr);
 
         // Aircraftcategories: if glider ignore small thermals for paragliders
         const xml_node* node=HotSpotNode->first_node("AIRCRAFTCATEGORIES");
@@ -437,14 +456,16 @@ bool ParseHotSpots(const xml_node* hotSpotsNode) {
         // Reliability
         double reliability=0;
         if(!GetValue(HotSpotNode,"RELIABILITY",reliability)) continue;
-        comments<<" "<<reliability*100<<"% ";
+        comments << _T(" ") << reliability * 100 << _T("% ");
 
         // Occourrence
         if(!GetContent(HotSpotNode,"OCCURRENCE",dataStr)) continue;
-        comments<<dataStr<<std::endl;
+        comments << from_utf8(dataStr) << std::endl;
 
         // Comment
-        if(GetContent(HotSpotNode,"COMMENT",dataStr)) comments<<dataStr;
+        if (GetContent(HotSpotNode, "COMMENT", dataStr)) {
+            comments << from_utf8(dataStr);
+        }
 
         // Add the comments
         SetWaypointComment(new_waypoint, comments.str().c_str());
