@@ -103,7 +103,6 @@ android {
             // we can't change this is because first distro on play Store has been made with this suffix
             applicationIdSuffix ".beta"
 
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.config
         }
         debug {

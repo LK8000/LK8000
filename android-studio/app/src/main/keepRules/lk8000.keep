@@ -1,0 +1,4 @@
+# Keep all org.LK8000 classes and their members (accessed from native code via JNI)
+-keep class org.LK8000.** {
+    *;
+}
