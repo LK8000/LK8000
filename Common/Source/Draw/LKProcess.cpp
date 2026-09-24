@@ -52,7 +52,9 @@ double GetGlNextETE(const DERIVED_INFO& info) {
         UnlockTaskData();
     } else  if (ISCAR || ISGAAIRCRAFT) {
         LockTaskData();
-        if (ValidTaskPointFast(ActiveTaskPoint)) {
+        if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)) {
+            value = WayPointCalc[DirectToWaypointIndex].NextETE;
+        } else if (ValidTaskPointFast(ActiveTaskPoint)) {
             value = WayPointCalc[TASKINDEX].NextETE;
         }
         UnlockTaskData();
@@ -77,7 +79,9 @@ double GetAvgNextETE(const DERIVED_INFO &info) {
         UnlockTaskData();
     } else  if (ISCAR || ISGAAIRCRAFT) {
         LockTaskData();
-        if (ValidTaskPointFast(ActiveTaskPoint)) {
+        if (ISGAAIRCRAFT && DirectToActive && ValidWayPointFast(DirectToWaypointIndex)) {
+            value = WayPointCalc[DirectToWaypointIndex].NextAvrETE;
+        } else if (ValidTaskPointFast(ActiveTaskPoint)) {
             value = WayPointCalc[TASKINDEX].NextAvrETE;
         }
         UnlockTaskData();

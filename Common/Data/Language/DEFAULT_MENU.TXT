@@ -324,6 +324,13 @@ location=11
 
 mode=pan
 type=key
+data=APP2
+event=DirectToFromPan
+label=$(AC42)
+location=12
+
+mode=pan
+type=key
 data=6
 event=Zoom in
 label=_@M2001_

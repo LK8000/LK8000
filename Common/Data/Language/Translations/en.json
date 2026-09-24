@@ -418,7 +418,6 @@
     "_@H001302_": "[Draw XC Triangle]\nShow on the map the best cross country triangle according to the contest rule set in system menu 22. To be able to see it make sure that at least one Contest rule is active in Contest setting on page 22",
     "_@H001303_": "[deprecated]",
     "_@H001304_": "[Contour Line]\nDraw terrain elevation contour line for zoom level between 2km to 100m",
-
     "_@M000001_": "Diff",
     "_@M000002_": "Dist",
     "_@M000003_": "GS",
@@ -1266,7 +1265,6 @@
     "_@M000845_": "Start Type",
     "_@M000846_": "Waiting Time",
     "_@M000847_": "Start Window",
-
     "_@M000850_": "FIRST GATE OPEN IN 1 HOUR",
     "_@M000851_": "FIRST GATE OPEN IN 30 MINUTES",
     "_@M000852_": "10 MINUTES TO GO",
@@ -2105,7 +2103,6 @@
     "_@M001900_": "Left Corner",
     "_@M001901_": "POWER OFF",
     "_@M001902_": "X>\nXC Close",
-
     "_@M001914_": "Grand Prix",
     "_@M001915_": "Race To Goal / Min Time",
     "_@M001916_": "Default",
@@ -2114,7 +2111,6 @@
     "_@M001919_": "Audio Vario",
     "_@M001920_": "XCREMOTE WILL RESET IN 2 SECONDS",
     "_@M001921_": "Class Color",
-
     "_@M002001_": "Zoom\nin",
     "_@M002002_": "Zoom\nout",
     "_@M002003_": "Whats\nhere?",
@@ -2580,85 +2576,66 @@
     "_@H001358_": "DIRECT \nEn-/Disable the direct Link to pass logger task declarations to the Logger\nOFF: If a logger is included in the LX device (e.g. LX S100) \nON: for external logger connected to the LX devce (e.g. LX V7 ",
     "_@H001359_": "VARIO  \nEn-/Disable variometer value reception from external LX device",
     "_@H001360_": "T-TRGT (Transmit Target)\nsend Navigation TARGET waypoint information to LX compatible devices. The navigation target can be send by $PLXVTARG or $GPRMB sentences of the protocol.\nOFF: no target data transmission \n$PLXVTARG: send to device using $PLXVTARG protocol sentences\n$GPRMB: send to device using $GPRMB protocol sentences. If possible at the remote device we recomend to use $PLXVTARG because it includes the target elevation.",
-    "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",    
-    "_@H001362_": "Raw Data:\n[ON] replay byte by byte\n\n[OFF] replay 1 NMEA sencence per line in file",    
-    "_@H001363_": "Sync on:\n[Timer] simple delay without time syncrhronisation\n[$GPRMC] synchronize replay time on $GPRMC sentence\n[$GPGGA] synchronize replay time on $GPGGA sentence",        
+    "_@H001361_": "[Task Type]\n[Default]\n[AAT]\nEnables AAT tasks. When enabled, the AAT observation parameters can be set for each turnpoint.\n[Grand Prix / Race To Goal]\nCommon Task Type for Paraglider or Grand Prix Task Type for Glider.",
+    "_@H001362_": "Raw Data:\n[ON] replay byte by byte\n\n[OFF] replay 1 NMEA sencence per line in file",
+    "_@H001363_": "Sync on:\n[Timer] simple delay without time syncrhronisation\n[$GPRMC] synchronize replay time on $GPRMC sentence\n[$GPGGA] synchronize replay time on $GPGGA sentence",
     "_@H001364_": "Audio Vario:\n only available on android device with baro pressure sensor",
-
     "_@M002474_": "No Device found",
     "_@M002475_": "Wrong Block answer",
     "_@M002476_": "Multitarget Bearing Diff ",
     "_@M002477_": "DiffMtg",
     "_@M002478_": "Alternate1 QNH arrival",
     "_@M002479_": "Atn1QNH",
-
     "_@M002480_": "Raw Data",
     "_@M002481_": "Sync on",
     "_@M002482_": "Timer",
     "_@M002483_": "NMEA Replay",
-
     "_@M002484_": "Home Req.Efficiency",
     "_@M002485_": "Home.E",
     "_@M002486_": "Home dist.nm",
     "_@M002487_": "Home nm",
     "_@M002488_": "Home bearing",
     "_@M002489_": "Home brg",
-
     "_@M002490_": "Invalid radio frequency/channel input!",
-    "_@M002491_": "Input Error",  
-
+    "_@M002491_": "Input Error",
     "_@M002492_": "Active/Standby Select",
     "_@M002493_": "Active Station",
     "_@M002494_": "Standby Station",
-
     "_@M002495_": "XC TYPE",
     "_@H000956_": "[XC TYPE]\nXC TYPE of the best scored contest ( FAI Triangle,FREE Triangle, FREE Flight).\nwill be displayed as icon\nThis data is available only if an additional XC Contest Engine is activate in System menu n 22",
     "_@M002496_": "FF",
     "_@M002497_": "FT",
     "_@M002498_": "FAI",
-
     "_@M002499_": "Download Manager…",
-
     "_@H001310_": "[FFVL Tracker Id]\n\"VLSafe\" FFVL tracking : how ?\nFFVL has published a tracking tool (API) that enables manufacturers and tracking apps developpers to send to FFVL their latest GPS position of its members in fly or in hike and fly. The target is clearly to shorter rescue delays and save lives. The latest position of a dedicated pilot is readable by him (its family if he shares its credentials) and by clubs managers or school instructors. In a close future, this functionality will enable communities (clubs, teams) to share their positions.\nEach FFVL member has now a \"tracking key\" (see tracker de la page intranet.ffvl.fr) to be entered in the tracking solution (device or application) compatible with FFVL tracking system.\n\nIn case of an accident and the disappearance of a pilot, FFVL and its supervisors will be able to access the last known GPS position posted by the licensee's tracker, for emergency services usages.",
-
     "_@M002500_": "Heart Rate",
-    "_@M002501_": "\u2764",
+    "_@M002501_": "❤",
     "_@H000957_": "[Heart Rate]\nPilot heartbeat frequency in beats per minute",
-
     "_@M002502_": "Average Ground Speed",
     "_@M002503_": "AvgGS",
-    "_@M002504_": "\u231BAvgGS",
+    "_@M002504_": "⌛AvgGS",
     "_@H000958_": "[Average Ground Speed]\nAverage Ground Speed is calculated in real time for the last seconds of the flight determined by Average Efficiency period.\nThe calculation is possible after a certain flight time - until then the Ground Speed (not average) and the hourglass are displayed.",
-
     "_@M002505_": "Next Time To Go for AVG GS",
     "_@M002506_": "NxAvETE",
     "_@H000959_": "[Next Time To Go for AVG GS]\nNext Time To Go calculated with Average Ground Speed.",
-
     "_@M002507_": "Next Arrival Time for AVG GS",
     "_@M002508_": "NxAvETA",
     "_@H000960_": "[Next Arrival Time for AVG GS]\nNext Arrival Time calculated with Average Ground Speed.",
-
     "_@M002509_": "NEXT GATE OPEN IN 1 HOUR",
     "_@M002510_": "NEXT GATE OPEN IN 30 MINUTES",
     "_@M002511_": "NEXT GATE OPEN IN 10 MINUTES",
     "_@M002512_": "NEXT GATE OPEN IN 5 MINUTES",
-
     "_@M002513_": "\"PEV\"\nStart",
     "_@M002514_": "Task Start Pilot Event",
-
     "_@H001365_": "[Gate type]\nAnytime: The gate is open for the entire task.\nFixed Time: The gate is open for a fixed time.\nPilot Event: The gate is open when the pilot presses the button.",
-
     "_@H001366_": "[Waiting Time]\nThe time you need to wait for your personal start gate to open after you press the PEV button",
     "_@H001367_": "[Start Window]\nHow long your personal start gate window is open",
-
     "_@M002515_": "Invalid Image",
-
     "_@M002516_": "Approach",
     "_@M002517_": "Approve",
     "_@M002518_": "IGNORE!",
     "_@M002519_": "Approach task",
     "_@M002520_": "LK8000 creates approach task ignoring traffic and terrain. Pilot situational awareness must be at maximum.",
-
     "_@M002282_": "Interval",
     "_@M002283_": "Server",
     "_@M002284_": "Port",
@@ -2668,7 +2645,8 @@
     "_@M002288_": "Server URL",
     "_@M002289_": "Device ID",
     "_@M002290_": "Tracking type",
-
     "_@M002281_": "Tracking Profile",
-    "_@M002379_": "Delete Profile?"
+    "_@M002379_": "Delete Profile?",
+    "_@M002521_": "Direct To",
+    "_@M002522_": "Direct\nTo"
 }

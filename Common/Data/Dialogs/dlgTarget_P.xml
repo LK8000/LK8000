@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PMML version="3.0" xmlns="http://www.dmg.org/PMML-3-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema_instance" xsi:noNamespaceSchemaLocation="Dialog.xsd">
   <WndForm Name="frmTarget" Type="Dialog" X="0" Y="0" Width="240" Height="168" Caption="_@M684_" Font="2"  Popup="1" Modal="0">
-    <!-- Row 1: OK + task point (Approach moved to row 2 — full-width tap target on Kobo portrait) -->
+    <!-- Row 1: OK + task point -->
     <WndButton  Name="btnOK" Caption="OK" X="2" Y="2" Width="50"  Height="22" Font="2" OnClickNotify="OnOKClicked" Tag="1"/>
     <WndProperty Name="prpTaskPoint" Caption="_@M689_" X="54" Y="2"   Width="184" Height="22" CaptionWidth="60" Font="2" Help="_@H460_">
       <DataField Name="" DataType="enum" Min="0" Max="50" Step="1" OnDataAccess="OnTaskPointData"/>
     </WndProperty>
     <WndButton  Name="btnApproach" Caption="_@M002516_" X="2" Y="25" Width="236" Height="22" Font="2" OnClickNotify="OnTargetApproachClicked" Tag="1"/>
+    <!-- Row 3: Prev / Next / Direct To -->
+    <WndButton Name="btnPrev"     Caption="&lt;" X="2"   Y="48" Width="78" Height="22" Font="2" OnClickNotify="OnPrevClicked"    Tag="1"/>
+    <WndButton Name="btnNext"     Caption="&gt;" X="81"  Y="48" Width="78" Height="22" Font="2" OnClickNotify="OnNextClicked"    Tag="1"/>
+    <WndButton Name="btnDirectTo" Caption="_@M002521_"  X="160" Y="48" Width="78" Height="22" Font="2" OnClickNotify="OnDirectToClicked" Tag="1"/>
 
     <WndProperty Name="prpRange" Caption="_@M543_" X="2" Y="48" Width="115" Height="22" CaptionWidth="50" Font="2" Help="_@H461_">
       <DataField Name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min="-100" Max="100" Step="5" OnDataAccess="OnRangeData"/>
@@ -29,6 +33,15 @@
 	<WndButton  Name="btnMove" Caption="_@M444_"    X="2" Y="123" Width="50"  Height="22" Font="2" OnClickNotify="OnMoveClicked" Tag="1"/>
     <WndProperty Name="prpAATTargetLocked" Caption="_@M683_" X="90" Y="123"  Width="145" Height="22" CaptionWidth="80" Font="2" ReadOnly="0" Help="_@H463_">
       <DataField Name="" DataType="boolean" ReadOnly="0" OnDataAccess="OnLockedData"/>
+    </WndProperty>
+    <WndProperty Name="prpGADist" Caption="_@M001024_" X="2" Y="-1" Width="236" Height="22" CaptionWidth="60" Font="2" ReadOnly="1">
+      <DataField Name="" DataType="string" ReadOnly="1"/>
+    </WndProperty>
+    <WndProperty Name="prpGAETE"  Caption="AvETE" X="2" Y="-1" Width="236" Height="22" CaptionWidth="60" Font="2" ReadOnly="1">
+      <DataField Name="" DataType="string" ReadOnly="1"/>
+    </WndProperty>
+    <WndProperty Name="prpGAETA"  Caption="AvETA" X="2" Y="-1" Width="236" Height="22" CaptionWidth="60" Font="2" ReadOnly="1">
+      <DataField Name="" DataType="string" ReadOnly="1"/>
     </WndProperty>
   </WndForm>
 </PMML>

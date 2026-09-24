@@ -136,7 +136,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	short i;
 	i= (*(a+4)-'0')*10;
 	i+= *(a+5)-'0';
-	LKASSERT(i>=0 && i<42);
+	LKASSERT(i>=0 && i<43);
 
 	switch(i) {
 		case 0:	// LOCKMODE
@@ -546,6 +546,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 				lk::snprintf(OutBuffer,Size, _T("%s"),MsgToken<2389>());  //	"NoDraw\nXC"
 		break;
 
+		case 42: // Pan mode Direct To button — visible only in GA aircraft mode
+			if (ISGAAIRCRAFT)
+				lk::snprintf(OutBuffer,Size, _T("%s"),MsgToken<2522>());  // "Direct\nTo"
+			else
+				lk::strcpy(OutBuffer, _T(""), Size);
+		break;
 
 		default:
 			lk::snprintf(OutBuffer,Size,  _T("INVALID\n%d"),i);

@@ -2013,5 +2013,6 @@
     "_@H001340_": "Marque para usar o pitot experimental MS4525DO ligado via I2C",
     "_@H001356_": "POLAR \nAct/Desativar coeficientes de glide da polar recebidos do aparelho externos LX (ainda não suportado)",
     "_@H001357_": "VELOCIDADE \nAct/Desativar valor de Velocidade (IAS) recebido do aparelho externo LX",
-    "_@H001359_": "VARIO\nAct/Desactivar Recepção de valor do variómetro do aparelho externo LX"
+    "_@H001359_": "VARIO\nAct/Desactivar Recepção de valor do variómetro do aparelho externo LX",
+    "_@M002521_": "Direct To"
 }

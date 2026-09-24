@@ -635,15 +635,7 @@ void CTaskFileHelper::LoadWayPoint(const xml_node* node, const TCHAR *firstWPnam
     GetAttribute(node, "code", newPoint.Code);
     GetAttribute(node, "name", newPoint.Name);
 
-    bool lookupAirfield=false;
-    if(ISGAAIRCRAFT) {
-        if(firstWPname) {
-            if(_tcscmp(newPoint.Name,firstWPname)==0) lookupAirfield=true;
-        }
-        if(lastWPname && !lookupAirfield) {
-            if(_tcscmp(newPoint.Name,lastWPname)==0) lookupAirfield=true;
-        }
-    }
+    bool lookupAirfield = ISGAAIRCRAFT; // for GA always search airfield database for all task waypoints
     GetAttribute(node, "latitude", newPoint.Latitude);
     GetAttribute(node, "longitude", newPoint.Longitude);
     GetAttribute(node, "altitude", newPoint.Altitude);

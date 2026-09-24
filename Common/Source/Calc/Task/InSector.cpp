@@ -10,12 +10,19 @@
 #include "AATDistance.h"
 #include "CalcTask.h"
 #include "Calc/Task/TimeGates.h"
+#include "NavFunctions.h"
+#include "GADirectTo.h"
 
 // This is called from main DoCalculations each time, only when running a real task
 void InSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   static int LastStartSector = -1;
 
   const std::lock_guard lock(CritSec_TaskData);
+
+  if (ISGAAIRCRAFT) {
+    GA_UpdateDirectToOriginForCourseCapture(Basic);
+    GA_CheckDirectToOffTaskArrival(Basic);
+  }
 
   if (ActiveTaskPoint < 0) {
     return;
@@ -33,8 +40,8 @@ void InSector(NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
   // Paragliders task system
   // Case A: start entering the sector/cylinder
   //    you must be outside sector when gate is open.
-  //    you are warned that you are already inside sector 
-  //    before the gate is open, when gate is opening 
+  //    you are warned that you are already inside sector
+  //    before the gate is open, when gate is opening
   //    in <10 minutes task restart is manual
   // Case B: start exiting the sector
 
