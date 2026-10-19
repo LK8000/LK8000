@@ -23,6 +23,11 @@
 #include <sys/prctl.h>
 #endif
 
+#ifdef ANDROID
+#include "Java/Global.hxx"
+#endif
+
+
 static inline void set_thread_name(const std::string& name) {
 #ifdef __linux__
   prctl(PR_SET_NAME, name.c_str());
@@ -148,6 +153,9 @@ class Thread {
       // Execute the subclass's thread function
       Run();
 
+#ifdef ANDROID
+	    Java::DetachCurrentThread();
+#endif
       // SHUTDOWN: Clear thread identity atomically
       // Both _running and _thread_id are cleared under the same lock for
       // consistency. Join() uses _thread.joinable() as its gate, not _running,
