@@ -85,10 +85,16 @@ void Hm10Data(DeviceDescriptor_t& d, NMEA_INFO&, const std::vector<uint8_t>& dat
 BOOL OnBatteryLevel(DeviceDescriptor_t& d, NMEA_INFO& info, double level) {
   switch (d.PortNumber) {
     case 0:
-      info.ExtBatt1_Voltage = level + 1000;
+      {
+        const std::lock_guard lock(CritSec_FlightData);
+        info.ExtBatt1_Voltage = level + 1000;
+      }
       break;
     case 1:
-      info.ExtBatt2_Voltage = level + 1000;
+      {
+        const std::lock_guard lock(CritSec_FlightData);
+        info.ExtBatt2_Voltage = level + 1000;
+      }
       break;
   }
   return TRUE;
