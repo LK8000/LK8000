@@ -25,6 +25,15 @@ struct DataHandlerT {
 
 using service_table_t = bluetooth::service_table_t<DataHandlerT>;
 
+// Nordic UART Service (NUS) -- a de-facto standard raw-serial-over-BLE
+// service used by many GPS/instrument modules (not Bluetooth SIG assigned,
+// hence the full 128-bit UUIDs rather than gatt_uuid()). TX is notify-only,
+// from the peripheral's perspective -- i.e. what this device (the central)
+// receives data on; RX (6e400002) is peripheral-write-only and unused here,
+// same as the reference gattlib NUS example this was matched against.
+constexpr uuid_t NUS_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+constexpr uuid_t NUS_TX_CHARACTERISTIC = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
 const service_table_t& service_table() {
   using bluetooth::gatt_uuid;
   static const service_table_t table = {{
@@ -62,6 +71,12 @@ const service_table_t& service_table() {
             &GattSensor::Hm10DataEnable
         }},
         { gatt_uuid(0xFFE4), { // SkyDrop2
+            &GattSensor::Hm10Data,
+            &GattSensor::Hm10DataEnable
+        }},
+    }}},
+    { NUS_SERVICE, {{ // Nordic UART Service and compatible modules
+        { NUS_TX_CHARACTERISTIC, {
             &GattSensor::Hm10Data,
             &GattSensor::Hm10DataEnable
         }},
