@@ -67,6 +67,7 @@ add_compile_options(
     -Wredundant-decls
     -Wno-unknown-warning-option
     -Wnrvo
+    -Wctad-maybe-unsupported
     -finput-charset=UTF-8
     -fexec-charset=UTF-8
 )
