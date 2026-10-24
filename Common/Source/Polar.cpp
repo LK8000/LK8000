@@ -7,12 +7,11 @@
 */
 
 #include "externs.h"
+#include "GliderPolar/Polar.h"
 #include "McReady.h"
-#include "LKProfiles.h"
 #include "Dialogs.h"
 #include "utils/zzip_file_stream.h"
 #include "utils/charset_helper.h"
-#include "Utils.h"
 #include "LocalPath.h"
 
 // This is calculating the weight difference for the chosen wingloading
@@ -52,80 +51,22 @@ void WeightOffset(double wload) {
   GlidePolar::SetBallast(); // BUGFIX 101002
 }
 
+static bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3],
+                                 double (&ww)[2], double WingArea) {
 
-bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3], double (&ww)[2]) {
+  auto kmh_to_ms = [](double v) { return Units::From(Units_t::unKiloMeterPerHour, v); };
 
-  POLARV[0] = dPOLARV[0];
-  POLARV[1] = dPOLARV[1];
-  POLARV[2] = dPOLARV[2];
-  POLARLD[0] = dPOLARW[0];
-  POLARLD[1] = dPOLARW[1];
-  POLARLD[2] = dPOLARW[2];
+  GliderPolar::Quadratic quadratic({kmh_to_ms(dPOLARV[0]), dPOLARW[0]},
+                                   {kmh_to_ms(dPOLARV[1]), dPOLARW[1]},
+                                   {kmh_to_ms(dPOLARV[2]), dPOLARW[2]});
 
-  WW[0] = ww[0]; // Glider Dry Gross weight ( Max takeoff weight minus ballast weight )
-  WW[1] = ww[1]; // Ballast Liters ( water ballast weight in kg, 1 liter = 1 kg )
-
-  const double v1 = dPOLARV[0]/3.6; 
-  const double v2 = dPOLARV[1]/3.6; 
-  const double v3 = dPOLARV[2]/3.6;
-  
-  const double w1 = dPOLARW[0]; 
-  const double w2 = dPOLARW[1]; 
-  const double w3 = dPOLARW[2];
-
-  double d = v1 * v1 * (v2 - v3) + v2 * v2 * (v3 - v1) + v3 * v3 * (v1 - v2);
-  if (d == 0.0) {
-    POLAR[0] = 0.;
-  } else {
-    POLAR[0] = ((v2 - v3)*(w1 - w3)+(v3 - v1)*(w2 - w3)) / d;
-  }
-  d = v2 - v3;
-  if (d == 0.0) {
-    POLAR[1] = 0.;
-  } else {
-    POLAR[1] = (w2 - w3 - POLAR[0]*(v2 * v2 - v3 * v3)) / d;
-  }
-  POLAR[2] = (w3 - POLAR[0] *v3*v3 - POLAR[1]*v3);
-  
-  // check polar validity : 
-  if(POLAR[0] > 0.) {
-    // "a"  must be negative
-    return false;
-  }
-  
-  const double x = -1. * (POLAR[1]/ (2 *  POLAR[0]));
-  if( x < 0 )  {
-    // minsink speed must be positive
-    return false;
-  }
-  
-  const double y = POLAR[0] *x*x + POLAR[1]*x + POLAR[2];
-  if(y > 0.) {
-    // minsink must be negative
-    return false;
-  }
-  
-  // these 0 and 1 are always used as a single weight: always 0+1 everywhere
-  // If WEIGHT 0 is used also WEIGHT 1 is used together, so it is unnecessary to keep both values.
-  // however it doesnt hurt .
-  // For this reason, the 70kg pilot weight is not important.
-  // If we want to adjust wingloading, we just need to change gross weight.
-  WEIGHTS[WEIGHT_PILOT] = 70;                      // Pilot weight
-  WEIGHTS[WEIGHT_PLANEDRY] = ww[0]-WEIGHTS[WEIGHT_PILOT];        // Glider empty weight
-  WEIGHTS[WEIGHT_WATER] = ww[1];                   // Ballast weight
-
-
-  // now scale off weight
-  BUGSTOP_LKASSERT((WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY])>=0);
-  if ((WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY]) >= 0) {
-    POLAR[0] = POLAR[0] * std::sqrt(WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY]);
-    POLAR[2] = POLAR[2] / std::sqrt(WEIGHTS[WEIGHT_PILOT] + WEIGHTS[WEIGHT_PLANEDRY]);
+  if (GliderPolar::Update(quadratic, ww[0], ww[1])) {
+    GlidePolar::WingArea = WingArea;
+    return true;
   }
 
-  return true;
+  return false;
 }
-
-
 
 bool ReadWinPilotPolar(void) {
 
@@ -135,6 +76,7 @@ bool ReadWinPilotPolar(void) {
   double dPOLARV[3];
   double dPOLARW[3];
   double ww[2];
+  double WingArea;
   bool foundline = false;
 
   // STD.CIRRUS values, overwritten by loaded values
@@ -234,17 +176,17 @@ bool ReadWinPilotPolar(void) {
         ctemp[0] = _T('\0');
         PExtractParameter(String.c_str(), ctemp, 8);
         if (_tcscmp(ctemp, _T("")) != 0) {
-          GlidePolar::WingArea = StrToDouble(ctemp, NULL);
+          WingArea = StrToDouble(ctemp, NULL);
         }
         else {
-          GlidePolar::WingArea = 0.0;
+          WingArea = 0.0;
         }
 
         TestLog(
             _T("... Polar ww0=%.2f ww1=%.2f v0=%.2f,%.2f v1=%.2f,%f ")
             _T("v2=%.2f,%.2f area=%.2f"),
             ww[0], ww[1], dPOLARV[0], dPOLARW[0], dPOLARV[1], dPOLARW[1],
-            dPOLARV[2], dPOLARW[2], GlidePolar::WingArea);
+            dPOLARV[2], dPOLARW[2], WingArea);
 
         if (ww[0] <= 0 || dPOLARV[0] == 0 || dPOLARW[0] == 0 ||
             dPOLARV[1] == 0 || dPOLARW[1] == 0 || dPOLARV[2] == 0 ||
@@ -252,10 +194,10 @@ bool ReadWinPilotPolar(void) {
           continue;  // read another line searching for polar
         }
         else {
-          if (GlidePolar::WingArea == 0) {
+          if (WingArea == 0) {
             StartupStore(_T("... WARNING Polar file has NO wing area"));
           }
-          foundline = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
+          foundline = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww, WingArea);
         }
       }
 
@@ -332,8 +274,8 @@ bool ReadWinPilotPolar(void) {
 		dPOLARW[1]= -1.71;
 		dPOLARV[2]= 205.1;
 		dPOLARW[2]= -4.2;
-		GlidePolar::WingArea = 10.04;
-		gcc_unused bool bok = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww);
+		WingArea = 10.04;
+		gcc_unused bool bok = PolarWinPilot2XCSoar(dPOLARV, dPOLARW, ww, WingArea);
 		assert(bok);
 		lk::strcpy(szPolarFile,_T(LKD_DEFAULT_POLAR));
 

@@ -178,15 +178,6 @@ void Globals_Init(void) {
   WEIGHTS[WEIGHT_PLANEDRY] = 250;
   WEIGHTS[WEIGHT_WATER] = 100;
 
-  POLARV[0] = 21;
-  POLARV[1] = 27;
-  POLARV[2] = 40;
-
-  POLARLD[0] = 33;
-  POLARLD[1] = 30;
-  POLARLD[2] = 20;
-
-
   Handicap = 85; // KA6CR
 
   // Team code info

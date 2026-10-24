@@ -1330,10 +1330,19 @@ endif
 TEST = \
 	$(SRC)/Thread/test/MutexCondTest.cpp \
 	$(SRC)/Thread/test/ThreadTest.cpp \
-	
+	$(SRC)/GliderPolar/Test.cpp \
+
+POLAR = \
+	$(SRC)/GliderPolar/Discret.cpp \
+	$(SRC)/GliderPolar/Quadratic.cpp \
+	$(SRC)/GliderPolar/VectorVario.cpp \
+	$(SRC)/GliderPolar/WinPilot.cpp \
+	$(SRC)/GliderPolar/Polar.cpp \
+
 
 SRC_FILES :=\
 	$(TEST) \
+	$(POLAR) \
 	$(WINDOW) \
 	$(SCREEN) \
 	$(SOUND) \

@@ -19,6 +19,7 @@
 #include "ChangeScreen.h"
 #include "Waypoints/SetHome.h"
 #include "Window/WndMain.h"
+#include "GliderPolar/Polar.h"
 
 void SettingsEnter() {
   MenuActive = true;

@@ -37,6 +37,9 @@
 #include "Comm/UpdateQNH.h"
 #include "Comm/ExternalWind.h"
 #include "LocalPath.h"
+#include "GliderPolar/Polar.h"
+#include "GliderPolar/LXNav.h"
+
 
 #define NANO_PROGRESS_DLG
 #define BLOCK_SIZE 32
@@ -1439,41 +1442,21 @@ BOOL DevLXNanoIII::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
     }
   }
 
- double fa,fb,fc;
-     if(ParToDouble(sentence, 3, &fa))
-       if(ParToDouble(sentence, 4, &fb))
-   if(ParToDouble(sentence, 5, &fc))
-   {
-      if(Values(d))
-      {
-          TCHAR szTmp[MAX_NMEA_LEN];
-          lk::snprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"),fa,fb,fc);
-          SetDataText( d,  _POLAR,  szTmp);
-      }
-      if(IsDirInput(PortIO.POLARDir ))
-      {
-        double v;
-        for (int i=0; i < 3; i++)
-        {
-          v=POLARV[i]/100;
-          POLARLD[i] = -(fa*v*v + fb*v + fc);
-          TestLog(_T("Polar: V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
-        }
-        lk::strcpy(szPolarName,  d->Name);
-        PolarWinPilot2XCSoar(POLARV, POLARLD, WW);
+  double fa, fb, fc;
+  if (ParToDouble(sentence, 3, &fa) && ParToDouble(sentence, 4, &fb) &&
+      ParToDouble(sentence, 5, &fc)) {
+    if (Values(d)) {
+      TCHAR szTmp[MAX_NMEA_LEN];
+      lk::snprintf(szTmp, _T("a:%5.3f b:%5.3f c:%5.3f ($LXWP2)"), fa, fb, fc);
+      SetDataText(d, _POLAR, szTmp);
+    }
+    if (IsDirInput(PortIO.POLARDir)) {
+      if (GliderPolar::Update(GliderPolar::From_LXNAV(fa, fb, fc))) {
+        lk::strcpy(szPolarName, d->Name);
         GlidePolar::SetBallast();
       }
     }
-
-
-
-     if(ParToDouble(sentence, 6, &fTmp))
-     {
-
-     }
-
-
-
+  }
 
   return(true);
 } // LXWP2()
@@ -1842,19 +1825,10 @@ BOOL DevLXNanoIII::PLXV0(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*
           _T("Pilot:%3.1f"),
           fa, fb, fc, fLoad, fWeight, fMaxW, fEmptyW, fPilotW);
 
-      double w[] = {
-          fWeight,         // Dry Gross weight
-          fMaxW - fWeight  // Ballast
-      };
-
-      double vz[3];
-      for (unsigned i = 0; i < 3; ++i) {
-        double v_mps = POLARV[i] / 100;
-        vz[i] = -(fa * v_mps * v_mps + fb * v_mps + fc);
+      if (GliderPolar::Update(GliderPolar::From_LXNAV(fa, fb, fc), fWeight, fMaxW - fWeight)) {
+        NMEAParser::ExtractParameter(sentence, szPolarName, 10);
+        GlidePolar::SetBallast();
       }
-
-      PolarWinPilot2XCSoar(POLARV, vz, w);
-      GlidePolar::SetBallast();
     }
     return true;
   }

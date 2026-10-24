@@ -47,6 +47,8 @@
 #include "Comm/UpdateQNH.h"
 #include "Comm/ExternalWind.h"
 #include "devGeneric.h"
+#include "GliderPolar/Polar.h"
+#include "GliderPolar/LXNav.h"
 
 unsigned int uiEOSDebugLevel = 1;
 
@@ -1173,20 +1175,25 @@ BOOL DevLX_EOS_ERA::EOSSetBUGS(DeviceDescriptor_t* d,float fTmp, const TCHAR *in
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX_EOS_ERA::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO*)
-{
-  // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
-  //   *CS<CR><LF>
-  //
-  // Mccready: float in m/s
-  // Ballast: float 1.0 ... 1.5
-  // Bugs: 0 - 100%
-  // polar_a: float polar_a=a/10000 w=a*v2+b*v+c
-  // polar_b: float polar_b=b/100 v=(km/h/100) w=(m/s)
-  // polar_c: float polar_c=c
-  // audio volume 0 - 100%
-  //float fBallast,fBugs, polar_a, polar_b, polar_c, fVolume;
-
+BOOL DevLX_EOS_ERA::LXWP2(DeviceDescriptor_t* d, const char* sentence,
+                          NMEA_INFO*) {
+  /*
+   * 1.4.5 LXWP2 (User <- LX)
+   * LX device outputs MacCready, load factor, bugs, volume and polar data.
+   *
+   * Response:
+   *    $LXWP2,<mc>,<load_factor>,<bugs>,<polar_a>,<polar_b>,<polar_c>,<volume>*<CRC><CR><LF>
+   * Parameter Data type Description
+   *    <mc> float MacCready factor
+   *    <load_factor> float Total glider mass divided by polar reference mass
+   *    <bugs> uint16_t Bugs factor in percent
+   *    <polar_a> float Polar -square coefficient, velocity in m/s
+   *    <polar_b> float Polar -linear coefficient, velocity in m/s
+   *    <polar_c> float Polar -constant coefficient, velocity in m/s
+   *    <volume> uint8_t Variometer volume in percent
+   * Example:
+   *    RX: $LXWP2,1.5,1.11,13,2.96,-3.03,1.35,45*02
+   */
 
   double fTmp;
   if(!LX_EOS_ERA_bValid)
@@ -1213,27 +1220,20 @@ BOOL DevLX_EOS_ERA::LXWP2(DeviceDescriptor_t* d, const char* sentence, NMEA_INFO
 
         const auto& PortIO = PortConfig[d->PortNumber].PortIO;
 
-        if(IsDirInput(PortIO.POLARDir ))
-        {
-          for (int i=0; i < 3; i++)
-          {
-            double v=POLARV[i]/100;
-            POLARLD[i] = -(fa*v*v + fb*v + fc);
-#ifdef POLAR_DEBUG
-            lk::snprintf(szTmp, _T("V[%i]:%5.0f    s[%i]:%6.2f  ($LXWP2)"),i,POLARV[i],i,POLARLD[i] );
-            StartupStore(TEXT("EOS/ERA Polar: %s"), szTmp);
-#endif
+        if (IsDirInput(PortIO.POLARDir)) {
+
+          // NOTE: LX documentation incorrectly states velocity is in m/s.
+          // Actual: velocity is in km/h/100 (LX coefficients Units),
+          // confirmed by old code: v = POLARV[i]/100 where POLARV is in km/h.
+          // Convert to internal format: v_ms = v_lx * 100/3.6
+
+          if (GliderPolar::Update(GliderPolar::From_LXNAV(fa, fb, fc))) {
+            lk::strcpy(szPolarName, d->Name);
+            GlidePolar::SetBallast();
           }
-          lk::snprintf(szPolarName, _T("%s"), d->Name );
-          PolarWinPilot2XCSoar(POLARV, POLARLD, WW);
-          GlidePolar::SetBallast();
         }
       }
     }
-  }
-  if(ParToDouble(sentence, 6, &fTmp))
-  {
-    // volume
   }
   return(true);
 } // LXWP2()

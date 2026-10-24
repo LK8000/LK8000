@@ -75,6 +75,13 @@ add_subdirectory(Common/Source/Library/glutess lib_glutess)
 add_subdirectory(Common/Source/Tracking/Curl tracking_http)
 
 add_library( LK8000 SHARED
+    Common/Source/GliderPolar/Discret.cpp
+    Common/Source/GliderPolar/Quadratic.cpp
+    Common/Source/GliderPolar/VectorVario.cpp
+    Common/Source/GliderPolar/WinPilot.cpp
+    Common/Source/GliderPolar/Polar.cpp
+    Common/Source/GliderPolar/Test.cpp
+
     Common/Source/Thread/test/MutexCondTest.cpp
     Common/Source/Thread/test/ThreadTest.cpp
 

@@ -54,11 +54,6 @@ bool LK8000GetOpts(const TCHAR *MyCommandLine);
 
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2);
 
-void WeightOffset(double wload);
-bool PolarWinPilot2XCSoar(double (&dPOLARV)[3], double (&dPOLARW)[3], double (&ww)[2]);
-bool ReadWinPilotPolar();
-
-
 void InitCustomHardware();
 void DeInitCustomHardware();
 

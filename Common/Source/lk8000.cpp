@@ -60,6 +60,8 @@
 #include "Thread/NamedMutex.hpp"
 #include "Library/TimeFunctions.h"
 #include "Window/WndMain.h"
+#include "GliderPolar/Polar.h"
+
 #ifdef __linux__
 #include <sys/utsname.h>
 #endif

@@ -15,6 +15,7 @@
 #include "resource.h"
 #include "Baro.h"
 #include "Comm/UpdateQNH.h"
+#include "GliderPolar/Polar.h"
 
 
 static WndForm *wf=NULL;
