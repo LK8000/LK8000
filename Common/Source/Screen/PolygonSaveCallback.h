@@ -57,4 +57,8 @@ private:
     TessPolygonsT<PointT>& TessPolygons;
 };
 
+// deduction guide required to silence -Wctad-maybe-unsupported
+template <typename PointT>
+PolygonSaveCallback(TessPolygonsT<PointT>&) -> PolygonSaveCallback<PointT>;
+
 #endif // SCREEN_POLYGONSAVECALLBACK_H
