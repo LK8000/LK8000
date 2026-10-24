@@ -25,7 +25,7 @@
 template <typename Callable, typename... Args>
 class InvokeThread : public Thread {
  public:
-  InvokeThread(const char* name, Callable&& func, Args&&... args)
+  InvokeThread(std::string name, Callable&& func, Args&&... args)
       : Thread(name),
         func(std::forward<Callable>(func)),
         args(std::forward<Args>(args)...) {}
@@ -41,6 +41,6 @@ class InvokeThread : public Thread {
 
 // deduction guide required to silence -Wctad-maybe-unsupported
 template <typename Callable, typename... Args>
-InvokeThread(const char*, Callable&&, Args&&...) -> InvokeThread<Callable, Args...>;
+InvokeThread(std::string, Callable&&, Args&&...) -> InvokeThread<Callable, Args...>;
 
 #endif  //_THREAD_THREAD_HPP_

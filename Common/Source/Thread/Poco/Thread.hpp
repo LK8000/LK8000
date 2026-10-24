@@ -23,7 +23,7 @@ class Thread : protected Poco::Runnable {
   Thread& operator=(const Thread&) = delete;
   Thread& operator=(Thread&&) = delete;
 
-  explicit Thread(const char* name) : _thread(name ? name : "") { }
+  explicit Thread(const std::string& name) : _thread(name) {}
 
   ~Thread() override {
     assert(!_thread.isRunning());

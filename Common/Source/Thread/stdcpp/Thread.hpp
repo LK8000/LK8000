@@ -70,7 +70,7 @@ class Thread {
    * Constructor: requires a thread name for debugging.
    * @param name Thread name visible in debuggers and system tools
    */
-  explicit Thread(const char* name) : _thread_name(name ? name : "") { }
+  explicit Thread(std::string name) : _thread_name(std::move(name)) { }
 
   /**
    * Destructor: asserts that thread has been joined before destruction.
