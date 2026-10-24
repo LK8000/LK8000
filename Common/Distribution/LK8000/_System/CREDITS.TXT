@@ -10,6 +10,16 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.6.8]
+* Fix
+ - ".cup" task file : accept file with any line encoding
+ - IOIO board port broken since 7.6.7
+ - LXNav driver : fix glider weight handling in polar synchro
+ - Android : fix segfault at shutdown
+* New 
+ - Generic driver : add BLE "Nordic UART" support
+ - VectorVario driver : synchronize glider polar.
+
 [version 7.6.7]
 * Fix:
  - Airspace download URL
