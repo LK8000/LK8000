@@ -16,6 +16,7 @@
 #include <random>
 #include "Comm/Bluetooth/gatt_utils.h"
 #include "Comm/Bluetooth/characteristic_value.h"
+#include "Comm/Bluetooth/gatt_service_table.h"
 
 #undef uuid_t
 
@@ -335,56 +336,22 @@ bool EnableFanet(DeviceDescriptor_t& d) {
   return true;
 }
 
-bool Enable(DeviceDescriptor_t&) {
-  return true;
-}
-
-using OnGattCharacteristicT = std::function<void(DeviceDescriptor_t&, NMEA_INFO&, const std::vector<uint8_t>&)>;
-using DoEnableNotificationT = std::function<bool(DeviceDescriptor_t&)>;
-
-struct DataHandlerT {
-  OnGattCharacteristicT OnGattCharacteristic;
-  DoEnableNotificationT DoEnableNotification;
-};
-
-using service_table_t = bluetooth::service_table_t<DataHandlerT>;
-
-const service_table_t& service_table() {
-  using bluetooth::gatt_uuid;
-  static const service_table_t table = {{
-    { gatt_uuid(0x1819), {{ // Location and Navigation service
-        { "FEC81438-CB89-4C37-93D0-BADFCED4376E", {
-            &Fanet,
-            &EnableFanet,
-        }},
-        { "234337BF-F931-4D2D-A13C-07E2F06A0249", {
-            &TAS,
-            &Enable
-        }}
-    }}}
-  }};
-  return table;
-}
-
-bool DoEnableGattCharacteristic(DeviceDescriptor_t& d, uuid_t service, uuid_t characteristic) {
-  auto handler = service_table().get(service, characteristic);
-  return handler && std::invoke(handler->DoEnableNotification, d);
-}
-
-void OnGattCharacteristic(DeviceDescriptor_t& d, NMEA_INFO& info,
-                          uuid_t service, uuid_t characteristic,
-                          const std::vector<uint8_t>& data) {
-  auto handler = service_table().get(service, characteristic);
-  if (handler) {
-    std::invoke(handler->OnGattCharacteristic, d, info, data);
-  }
-}
-
 } // namespace
 
 void FlyBeeper::Install(DeviceDescriptor_t* d) {
+  using namespace bluetooth;
+  
   genInstall(d); // install Generic driver callback first
-
-  d->DoEnableGattCharacteristic = DoEnableGattCharacteristic;
-  d->OnGattCharacteristic = OnGattCharacteristic;
+  
+  d->GattAppend({
+      { gatt_uuid(0x1819), {{ // Location and Navigation service
+          { "FEC81438-CB89-4C37-93D0-BADFCED4376E", {
+              &Fanet,
+              &EnableFanet,
+          }},
+          { "234337BF-F931-4D2D-A13C-07E2F06A0249", {
+              &TAS
+          }}
+      }}}
+    });
 }

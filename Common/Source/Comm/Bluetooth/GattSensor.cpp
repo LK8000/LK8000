@@ -10,100 +10,32 @@
 #include "GattSensor.h"
 #include "OS/Sleep.h"
 #include "gatt_utils.h"
-#include "characteristic_value.h"
 #include "utils/charset_helper.h"
 
 namespace {
 
-using ProcessSensorDataT = std::function<void(GattSensor*, const std::vector<uint8_t>&)>;
-using DoEnableNotificationT = std::function<bool(const GattSensor*)>;
+  using namespace bluetooth;
 
-struct DataHandlerT {
-  ProcessSensorDataT ProcessSensorData;
-  DoEnableNotificationT DoEnableNotification;
-};
+  /** Handles incoming BLE UART data for HM-10 and Nordic UART Service devices.
+   * this is the default handler set to Port when device driver don't provide a specific handler.
+   * required for backward compatibility to allow to use BLE/ serail adapter with any device drivers.
+   */
 
-using service_table_t = bluetooth::service_table_t<DataHandlerT>;
+  void BleUart(DeviceDescriptor_t& d, NMEA_INFO&, const std::vector<uint8_t>& data) {
+    d.Com->ProcessData(reinterpret_cast<const char*>(data.data()), data.size());
+  }
 
-// Nordic UART Service (NUS) -- a de-facto standard raw-serial-over-BLE
-// service used by many GPS/instrument modules (not Bluetooth SIG assigned,
-// hence the full 128-bit UUIDs rather than gatt_uuid()). TX is notify-only,
-// from the peripheral's perspective -- i.e. what this device (the central)
-// receives data on; RX (6e400002) is peripheral-write-only and unused here,
-// same as the reference gattlib NUS example this was matched against.
-constexpr uuid_t NUS_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-constexpr uuid_t NUS_TX_CHARACTERISTIC = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-
-const service_table_t& service_table() {
-  using bluetooth::gatt_uuid;
-  static const service_table_t table = {{
-    { gatt_uuid(0x180D), {{ // Heart Rate
-        { gatt_uuid(0x2A37), {
-            &GattSensor::HeartRateMeasurement,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnHeartRate>,
-        }}
-    }}},
-    { gatt_uuid(0x181A), {{ // Environmental Sensing Service
-        { gatt_uuid(0x2A6D), {
-            &GattSensor::BarometricPressure,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBarometricPressure>,
-        }},
-        { gatt_uuid(0x2A6E), {
-            &GattSensor::OutsideTemperature,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnOutsideTemperature>,
-        }},
-        { gatt_uuid(0x2A6F), {
-            &GattSensor::RelativeHumidity,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnRelativeHumidity>,
-        }},
-        { gatt_uuid(0x2A70), {
-            &GattSensor::WindSpeed,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnWindSpeed>,
-        }},
-        { gatt_uuid(0x2A71), {
-            &GattSensor::WindOriginDirection,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnWindOriginDirection>,
-        }},
-    }}},
+  const gatt_service_table default_gatt_service_table = {{
     { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
-        { gatt_uuid(0xFFE1), {
-            &GattSensor::Hm10Data,
-            &GattSensor::Hm10DataEnable
-        }},
-        { gatt_uuid(0xFFE4), { // SkyDrop2
-            &GattSensor::Hm10Data,
-            &GattSensor::Hm10DataEnable
-        }},
+        { gatt_uuid(0xFFE1), { &BleUart }}, // HM-10 RX
+        { gatt_uuid(0xFFE4), { &BleUart }}, // SkyDrop2 RX
     }}},
-    { NUS_SERVICE, {{ // Nordic UART Service and compatible modules
-        { NUS_TX_CHARACTERISTIC, {
-            &GattSensor::Hm10Data,
-            &GattSensor::Hm10DataEnable
-        }},
-    }}},
-    { gatt_uuid(0x1800), {{ // Generic Access
-        { gatt_uuid(0x2A00), {
-            &GattSensor::DeviceName,
-            &GattSensor::EnableCharacteristic<true>
-        }}
-    }}},
-    { gatt_uuid(0x180A), {{ // Device Information Service
-        { gatt_uuid(0x2A25), { // Serial Number String
-            &GattSensor::SerialNumber,
-            &GattSensor::EnableCharacteristic<true>
-        }}
-    }}},
-    { gatt_uuid(0x180F), {{ // Battery Service
-        { gatt_uuid(0x2A19), { // Battery Level
-            &GattSensor::BatteryLevel,
-            &GattSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBatteryLevel>
-        }}
-    }}},
+    { NUS_SERVICE, {{ // Nordic UART Service
+        { NUS_TX_CHARACTERISTIC, { &BleUart }} // RX
+    }}}
   }};
-  return table;
-}
 
-}  // namespace
+}
 
 bool GattSensor::Initialize() {
   try {
@@ -169,7 +101,7 @@ unsigned GattSensor::RxThread() {
   PortState state = PortState::LIMBO;
   bool connected = false;
 
-  std::vector<sensor_data> rxthread_queue;
+  std::vector<gatt_sensor_data> rxthread_queue;
 
   while (true) {
     const bool stop = WithLock(mutex, [&]() {
@@ -231,37 +163,59 @@ void GattSensor::OnCharacteristicChanged(uuid_t service,
 
 bool GattSensor::DoEnableNotification(const uuid_t& service,
                                       const uuid_t& characteristic) const {
-  auto handler = service_table().get(service, characteristic);
-  if (handler) {
-    return std::invoke(handler->DoEnableNotification, this);
+  using bluetooth::gatt_uuid;
+
+  if (service == gatt_uuid(0x1800) && characteristic == gatt_uuid(0x2A00)) {
+    // Generic Access / Device Name
+    // must return true to read the device name characteristic and notify user
+    // about connecting
+    return true;
+  }
+
+  if (service == gatt_uuid(0x180A) && characteristic == gatt_uuid(0x2A25)) {
+    // Device Information Service / Serial Number String
+    return true;
   }
 
   const std::lock_guard lock(CritSec_Comm);
-  auto port = devGetDeviceOnPort(GetPortIndex());
-  if (port && port->DoEnableGattCharacteristic) {
-    return port->DoEnableGattCharacteristic(*port, service, characteristic);
+  auto dev = devGetDeviceOnPort(GetPortIndex());
+  if (dev) {
+    if (dev->GattTableEmpty()) {
+      // Append the default GATT service table to the device if it is empty.
+      // this is required to allow to use BLE/serial adapter with any device drivers.
+      dev->GattAppend(default_gatt_service_table);
+    }
+    return dev->GattEnable(service, characteristic, *dev);
   }
+
   return false;
 }
 
-void GattSensor::ProcessSensorData(const sensor_data& data) {
-  WithLock(CritSec_Comm, [&]() {
-    auto port = devGetDeviceOnPort(GetPortIndex());
-    if (port) {
-      port->HB = LKHearthBeats;
-      AddStatRx(data.data.size());
-    }
-  });
-
+void GattSensor::ProcessSensorData(const gatt_sensor_data& data) {
+  using bluetooth::gatt_uuid;
+  
   try {
-    auto handler = service_table().get(data.service, data.characteristic);
-    if (handler) {
-      return std::invoke(handler->ProcessSensorData, this, data.data);
+
+    if (data.service == gatt_uuid(0x1800) && data.characteristic == gatt_uuid(0x2A00)) {
+      // Generic Access / Device Name
+      DeviceName(data.data);
     }
-    OnSensorData<&DeviceDescriptor_t::OnGattCharacteristic>(data.service, data.characteristic, data.data);
+
+    if (data.service == gatt_uuid(0x180A) && data.characteristic == gatt_uuid(0x2A25)) {
+      // Device Information Service / Serial Number String
+      SerialNumber(data.data);
+    }
+
+    const std::lock_guard lock(CritSec_Comm);
+    auto dev = devGetDeviceOnPort(GetPortIndex());
+    if (dev) {
+      dev->HB = LKHearthBeats;
+      dev->GattNotify(data, GPS_INFO);
+    }
   }
-  catch(std::exception&) {
+  catch (std::exception& e) {
     // ignore invalid data ...
+    DebugLog(_T("GattSensor::ProcessSensorData: exception caught: %s"), to_tstring(e.what()).c_str());
   }
 }
 
@@ -288,67 +242,8 @@ void GattSensor::SerialNumber(const std::vector<uint8_t>& data) {
   }
 }
 
-void GattSensor::BatteryLevel(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint8_t>(data).get(0);
-  OnSensorData<&DeviceDescriptor_t::OnBatteryLevel, double>(value);
-}
-
-void GattSensor::HeartRateMeasurement(const std::vector<uint8_t>& data) {
-  if (data.empty()) {
-    return;
-  }
-  auto bpm = [&]() -> uint32_t {
-    if (data[0] & 0x01) {
-      return characteristic_value<uint16_t>(data).get(1);
-    }
-    else {
-      return characteristic_value<uint8_t>(data).get(1);
-    }
-  };
-
-  OnSensorData<&DeviceDescriptor_t::OnHeartRate>(bpm());
-}
-
-void GattSensor::BarometricPressure(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint32_t>(data).get();
-  OnSensorData<&DeviceDescriptor_t::OnBarometricPressure>(value / 10.);
-}
-
-void GattSensor::OutsideTemperature(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint16_t>(data).get();
-  if (value != 0x8000) {
-    OnSensorData<&DeviceDescriptor_t::OnOutsideTemperature>(
-        static_cast<int16_t>(value) / 100.);
-  }
-}
-
-void GattSensor::RelativeHumidity(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<int16_t>(data).get();
-  if (value < 10000) {
-    OnSensorData<&DeviceDescriptor_t::OnRelativeHumidity>(value / 100.);
-  }
-}
-
-void GattSensor::WindOriginDirection(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint16_t>(data).get();
-  if (value < 35999) {
-    OnSensorData<&DeviceDescriptor_t::OnWindOriginDirection>(value / 100.);
-  }
-}
-
-void GattSensor::WindSpeed(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<int16_t>(data).get();
-  OnSensorData<&DeviceDescriptor_t::OnWindSpeed>(
-      Units::From(Units_t::unCentimeterPersecond, value));
-}
-
 void GattSensor::DataReceived(const void *data, size_t length) {
   ComPort::ProcessData(static_cast<const char*>(data), length);
-}
-
-bool GattSensor::Hm10DataEnable() const {
-  // TODO: allow to disable this ?
-  return true;
 }
 
 bool GattSensor::Write_Impl(const void *data, size_t size) {

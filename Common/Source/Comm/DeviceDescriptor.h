@@ -21,6 +21,9 @@
 #include "Util/tstring.hpp"
 #include "Time/PeriodClock.hpp"
 #include "Parser.h"
+#include "Bluetooth/gatt_utils.h"
+#include "Bluetooth/gatt_service_table.h"
+#include <initializer_list>
 #include <span>
 
 #define DEVNAMESIZE 32
@@ -96,15 +99,6 @@ struct DeviceDescriptor_t {
   BOOL (*NMEAOut)(DeviceDescriptor_t* d, const char* String);
   BOOL (*PutTarget)(DeviceDescriptor_t* d, const WAYPOINT& wpt);
 
-  BOOL (*OnHeartRate)(DeviceDescriptor_t& d, NMEA_INFO& info, unsigned bpm);
-  BOOL (*OnBarometricPressure)(DeviceDescriptor_t& d, NMEA_INFO& info,
-                               double Pa);
-  BOOL (*OnOutsideTemperature)(DeviceDescriptor_t& d, NMEA_INFO& info,
-                               double temp);
-  BOOL (*OnRelativeHumidity)(DeviceDescriptor_t& d, NMEA_INFO& info, double hr);
-  BOOL (*OnWindOriginDirection)(DeviceDescriptor_t& d, NMEA_INFO& info,
-                                double direction);
-  BOOL (*OnWindSpeed)(DeviceDescriptor_t& d, NMEA_INFO& info, double speed);
   BOOL (*OnBatteryLevel)(DeviceDescriptor_t& d, NMEA_INFO& info, double level);
 
   /**
@@ -113,10 +107,6 @@ struct DeviceDescriptor_t {
    */
   BOOL (*OnAcceleration)(DeviceDescriptor_t& d, NMEA_INFO& info, uint64_t timestamp,
                          double gx, double gy, double gz);
-
-  bool (*DoEnableGattCharacteristic)(DeviceDescriptor_t&, uuid_t, uuid_t);
-  void (*OnGattCharacteristic)(DeviceDescriptor_t&, NMEA_INFO&, uuid_t, uuid_t,
-                               const std::vector<uint8_t>&);
 
   /**
    * called at the the end of calculation thread loop for each GPS FIX
@@ -170,6 +160,27 @@ struct DeviceDescriptor_t {
 
   BOOL _SendData(const NMEA_INFO& Basic, const DERIVED_INFO& Calculated);
 
+  void GattNotify(const bluetooth::gatt_sensor_data& data, NMEA_INFO& info);
+
+  void GattAppend(std::initializer_list<bluetooth::gatt_service_table::value_type> list) {
+    gatt_service_table.append(list);
+  }
+
+  template <typename... Args>
+  void GattAppend(Args&&... args) {
+    return gatt_service_table.append(std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  bool GattEnable(Args&&... args) const {
+    return gatt_service_table.enable(std::forward<Args>(args)...);
+  }
+
+  bool GattTableEmpty() const {
+    return gatt_service_table.empty();
+  }
+
+
   BOOL _PutQNH(double NewQNH);
   BOOL _LinkTimeout();
   BOOL _HeartBeat();
@@ -207,6 +218,8 @@ struct DeviceDescriptor_t {
 
  private:
   wait_ack_weak_ptr wait_ack_weak;
+
+  bluetooth::gatt_service_table gatt_service_table;
 
   using DriverDataPtr = std::shared_ptr<DriverData>;
   std::unordered_map<unsigned, DriverDataPtr> driver_data;

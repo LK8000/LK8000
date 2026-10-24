@@ -21,6 +21,7 @@
 #include "ComPort.h"
 #include "Device/Port/Listener.hpp"
 #include "IO/DataHandler.hpp"
+#include "gatt_utils.h"
 
 #include <vector>
 #include <string>
@@ -100,56 +101,17 @@ class GattSensor : public ComPort, protected PortListener, protected DataHandler
 
   bool running = false;
 
-  struct sensor_data {
-    sensor_data(uuid_t&& s, uuid_t&& c, std::vector<uint8_t>&& _data)
-        : service(s), characteristic(c), data(std::move(_data)) {}
+  using gatt_sensor_data = bluetooth::gatt_sensor_data;
 
-    uuid_t service;
-    uuid_t characteristic;
-    std::vector<uint8_t> data;
-  };
-
-  std::vector<sensor_data> data_queue;
+  std::vector<gatt_sensor_data> data_queue;
   unsigned state_generation = 0;
   tstring device_name;
 
-  void ProcessSensorData(const sensor_data& data);
+  void ProcessSensorData(const gatt_sensor_data& data);
 
  public:
-
-  template <auto callback>
-  bool EnableCharacteristic() const {
-    const std::lock_guard lock(CritSec_Comm);
-    auto port = devGetDeviceOnPort(GetPortIndex());
-    return port && port->*callback;
-  }
-
-  template <auto callback, typename... Args>
-  void OnSensorData(Args&& ...args) {
-    const std::lock_guard lock(CritSec_Comm);
-    auto port = devGetDeviceOnPort(GetPortIndex());
-    if (port && port->*callback) {
-      std::invoke(port->*callback, *port, GPS_INFO, std::forward<Args>(args)...);
-    }
-  }
-
   void DeviceName(const std::vector<uint8_t>& data);
   void SerialNumber(const std::vector<uint8_t>& data);
-
-  void BatteryLevel(const std::vector<uint8_t>& data);
-
-  void HeartRateMeasurement(const std::vector<uint8_t>& data);
-
-  void BarometricPressure(const std::vector<uint8_t>& data);
-  void OutsideTemperature(const std::vector<uint8_t>& data);
-  void RelativeHumidity(const std::vector<uint8_t>& data);
-  void WindOriginDirection(const std::vector<uint8_t>& data);
-  void WindSpeed(const std::vector<uint8_t>& data);
-
-  void Hm10Data(const std::vector<uint8_t>& data) {
-    DataReceived(data.data(), data.size());
-  }
-  bool Hm10DataEnable() const;
 
   /* override PortListener */
  protected:
@@ -162,13 +124,5 @@ class GattSensor : public ComPort, protected PortListener, protected DataHandler
   void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) override;
   bool DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const override;
 };
-
-// Explicit specialization of a member template must be at namespace scope,
-// not inside the class body (some compilers accept the latter as a
-// non-standard extension, but not all -- keep this one portable).
-template <>
-inline bool GattSensor::EnableCharacteristic<true>() const {
-  return true;
-}
 
 #endif  // COMM_BLUETOOTH_GATTSENSOR_H

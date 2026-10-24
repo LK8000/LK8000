@@ -84,6 +84,8 @@ public:
 
     int GetChar();
 
+    void ProcessData(const char* data, size_t size);
+
 protected:
 
     static void StatusMessage(const tstring& message);
@@ -105,8 +107,6 @@ protected:
     virtual unsigned RxThread() = 0;
 
     void ProcessChar(char c);
-
-    void ProcessData(const char* data, size_t size);
 
     bool WaitForStop(int time);
 

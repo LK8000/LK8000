@@ -42,16 +42,7 @@ void DeviceDescriptor_t::Reset() {
   NMEAOut = nullptr;
   PutTarget = nullptr;
 
-  OnHeartRate = nullptr;
-  OnBarometricPressure = nullptr;
-  OnOutsideTemperature = nullptr;
-  OnRelativeHumidity = nullptr;
-  OnWindOriginDirection = nullptr;
-  OnWindSpeed = nullptr;
   OnBatteryLevel = nullptr;
-
-  DoEnableGattCharacteristic = nullptr;
-  OnGattCharacteristic = nullptr;
 
   ExpiredCallback = nullptr;
 
@@ -78,6 +69,7 @@ void DeviceDescriptor_t::Reset() {
   IgnoreBugs.Reset();
   IgnoreBallast.Reset();
 
+  gatt_service_table.clear();
   driver_data = {};
 }
 
@@ -153,6 +145,13 @@ BOOL DeviceDescriptor_t::_SendData(const NMEA_INFO& Basic,
                                    const DERIVED_INFO& Calculated) {
   return SendData && SendData(this, Basic, Calculated);
 }
+
+void DeviceDescriptor_t::GattNotify(const bluetooth::gatt_sensor_data& data,
+                                    NMEA_INFO& info) {
+  Rx += data.data.size();
+  gatt_service_table.notify(data, *this, info);
+}
+
 
 BOOL DeviceDescriptor_t::_PutQNH(double NewQNH) {
   return PutQNH && PutQNH(this, NewQNH);
