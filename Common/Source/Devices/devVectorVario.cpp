@@ -96,6 +96,10 @@ void Pitch(DeviceDescriptor_t& d, NMEA_INFO& info,
   info.Gyroscope.update(d, std::move(GyroData));
 }
 
+void GPS(DeviceDescriptor_t& d, NMEA_INFO& info, const std::vector<uint8_t>& data) {
+  d.Com->ProcessData(reinterpret_cast<const char*>(data.data()), data.size());
+}
+
 #ifndef NDEBUG
 void VarioMode(DeviceDescriptor_t& d, NMEA_INFO& info,
            const std::vector<uint8_t>& data) {
@@ -212,9 +216,15 @@ void VectorVario::Install(DeviceDescriptor_t* d) {
             { "2fce4902-0197-47e0-a825-d4777b9a5d67", { &VarioNetto }},
             { "2fce4897-0197-47e0-a825-d4777b9a5d67", { &Roll }},
             { "2fce4898-0197-47e0-a825-d4777b9a5d67", { &Pitch }},
+            { "2fce4899-0197-47e0-a825-d4777b9a5d67", { &GPS }},
 #ifndef NDEBUG
             { "2fce4903-0197-47e0-a825-d4777b9a5d67", { &VarioMode }},
 #endif
         }}
-      }});
+      },
+      { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
+            { gatt_uuid(0xFFE1), { }}, // Removed HM-10 RX, replaced by `GPS`
+        }}
+      }
+    });
 }
