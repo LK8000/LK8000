@@ -59,8 +59,6 @@ bool BluetoothSensor::WriteData(const void* data, size_t size) {
     if (nbytes <= 0) {
       return false;
     }
-    AddStatTx(nbytes);
-
     p += nbytes;
   }
   return true;
