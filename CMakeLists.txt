@@ -641,6 +641,7 @@ add_library( LK8000 SHARED
     Common/Source/Comm/FilePort.cpp
 
     Common/Source/Comm/Bluetooth/characteristic_value.cpp
+    Common/Source/Comm/Bluetooth/GattSensor.cpp
 
     Common/Source/Comm/GpsWeekNumberFix.h
     Common/Source/Comm/GpsWeekNumberFix.cpp

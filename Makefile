@@ -1123,6 +1123,7 @@ COMMS	:=\
 	$(CMM)/DeviceDescriptor.cpp \
 	$(CMM)/GpsWeekNumberFix.cpp \
 	$(CMM)/Bluetooth/characteristic_value.cpp \
+	$(CMM)/Bluetooth/GattSensor.cpp \
 	$(CMM)/FilePort.cpp\
 	$(CMM)/wait_ack.cpp\
 

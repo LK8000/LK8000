@@ -10,124 +10,27 @@
 #ifndef ANDROID_BLUETOOTHSENSOR_H
 #define ANDROID_BLUETOOTHSENSOR_H
 
-#include "ComPort.h"
-#include "Device/Port/Listener.hpp"
-#include "IO/DataHandler.hpp"
-#include "Comm/DeviceDescriptor.h"
-#include "Comm/device.h"
+#include "Thread/Mutex.hpp"
+#include "Comm/Bluetooth/GattSensor.h"
 
 class PortBridge;
 
-class BluetoothSensor : public ComPort, protected PortListener, DataHandler {
+class BluetoothSensor : public GattSensor {
  public:
-  using ComPort::ComPort;
+  using GattSensor::GattSensor;
 
-  /* override ComPort */
- public:
-  bool Initialize() override;
-  bool Close() override;
-
-  bool StopRxThread() override;
-  bool StartRxThread() override;
-
-  void Purge() override{};
-  void Flush() override{};
-  void CancelWaitEvent() override;
-
-  bool IsReady() override;
-
-  int SetRxTimeout(int TimeOut) override { return 0; }
-
-  unsigned long SetBaudrate(unsigned long) override { return 0; };
-
-  unsigned long GetBaudrate() const override { return 0; }
-
-  size_t Read(void* data, size_t size) override { return 0; };
-
-  void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) const override;
+  /* override GattSensor transport */
+ protected:
+  bool Connect() override;
+  void Disconnect() override;
+  PortState GetPortState() const override;
+  bool WriteData(const void* data, size_t size) override;
+  void WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void* data, size_t size) const override;
   void ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic) override;
 
- protected:
-  unsigned RxThread() override;
-
-  tstring GetDeviceName() override;
-
  private:
-  bool Write_Impl(const void* data, size_t size) override;
-
-  PortBridge* bridge = nullptr;
-
   mutable Mutex mutex;
-  Cond newdata;
-
-  bool running = false;
-
-  struct sensor_data {
-    sensor_data(uuid_t&& s, uuid_t&& c, std::vector<uint8_t>&& _data)
-        : service(std::move(s)), characteristic(std::move(c)), data(std::move(_data)) {}
-
-    uuid_t service;
-    uuid_t characteristic;
-    std::vector<uint8_t> data;
-  };
-
-  std::vector<sensor_data> data_queue;
-  unsigned state_generation = 0;
-  std::string device_name;
-
-  void ProcessSensorData(const sensor_data& data);
-
- public:
-
-  template <auto callback>
-  bool EnableCharacteristic() const {
-    const std::lock_guard lock(CritSec_Comm);
-    auto port = devGetDeviceOnPort(GetPortIndex());
-    return port && port->*callback;
-  }
-
-  template<>
-  bool EnableCharacteristic<true>() const {
-    return true;
-  };
-
-  template <auto callback, typename... Args>
-  void OnSensorData(Args&& ...args) {
-    const std::lock_guard lock(CritSec_Comm);
-    auto port = devGetDeviceOnPort(GetPortIndex());
-    if (port && port->*callback) {
-      std::invoke(port->*callback, *port, GPS_INFO, std::forward<Args>(args)...);
-    }
-  }
-
-  void DeviceName(const std::vector<uint8_t>& data);
-  void SerialNumber(const std::vector<uint8_t>& data);
-
-  void BatteryLevel(const std::vector<uint8_t>& data);
-
-  void HeartRateMeasurement(const std::vector<uint8_t>& data);
-
-  void BarometricPressure(const std::vector<uint8_t>& data);
-  void OutsideTemperature(const std::vector<uint8_t>& data);
-  void RelativeHumidity(const std::vector<uint8_t>& data);
-  void WindOriginDirection(const std::vector<uint8_t>& data);
-  void WindSpeed(const std::vector<uint8_t>& data);
-
-  void Hm10Data(const std::vector<uint8_t>& data) {
-    DataReceived(data.data(), data.size());
-  }
-  bool Hm10DataEnable() const;
-
-  /* override PortListener */
- protected:
-  void PortStateChanged() override;
-  void PortError(const char* msg) override;
-
-  /* override DataHandler */
- public:
-  void DataReceived(const void* data, size_t size) override;
-  void OnCharacteristicChanged(uuid_t service, uuid_t characteristic, std::vector<uint8_t>&& data) override;
-  bool DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const override;
+  PortBridge* bridge = nullptr;
 };
 
 #endif  // ANDROID_BLUETOOTHSENSOR_H

@@ -89,8 +89,8 @@ protected:
     static void StatusMessage(const tstring& message);
 
     template <typename... Args>
-    static void StatusMessage(tformat_string<Args...>&& fmt,
-                              Args&&... args) {
+      requires(sizeof...(Args) > 0)
+    static void StatusMessage(tformat_string<Args...>&& fmt, Args&&... args) {
       StatusMessage(std::format(std::forward<tformat_string<Args...>>(fmt),
                                 std::forward<Args>(args)...));
     }

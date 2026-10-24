@@ -9,378 +9,73 @@
 
 #include "externs.h"
 #include "BluetoothSensor.h"
-#include "OS/Sleep.h"
 #include "Android/BluetoothHelper.hpp"
 #include "Android/PortBridge.hpp"
-#include "Comm/Bluetooth/gatt_utils.h"
-#include "Comm/Bluetooth/characteristic_value.h"
 
-namespace {
+#include <utility>
 
-enum PortState : int {
-  STATE_READY = 0,
-  STATE_FAILED = 1,
-  STATE_LIMBO = 2,
-};
-
-using ProcessSensorDataT = std::function<void(BluetoothSensor*, const std::vector<uint8_t>&)>;
-using DoEnableNotificationT = std::function<bool(const BluetoothSensor*)>;
-
-struct DataHandlerT {
-  ProcessSensorDataT ProcessSensorData;
-  DoEnableNotificationT DoEnableNotification;
-};
-
-using service_table_t = bluetooth::service_table_t<DataHandlerT>;
-
-const service_table_t& service_table() {
-  using bluetooth::gatt_uuid;
-  static const service_table_t table = {{
-    { gatt_uuid(0x180D), {{ // Heart Rate
-        { gatt_uuid(0x2A37), {
-            &BluetoothSensor::HeartRateMeasurement,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnHeartRate>,
-        }}
-    }}},
-    { gatt_uuid(0x181A), {{ // Environmental Sensing Service
-        { gatt_uuid(0x2A6D), {
-            &BluetoothSensor::BarometricPressure,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBarometricPressure>,
-        }},
-        { gatt_uuid(0x2A6E), {
-            &BluetoothSensor::OutsideTemperature,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnOutsideTemperature>,
-        }},
-        { gatt_uuid(0x2A6F), {
-            &BluetoothSensor::RelativeHumidity,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnRelativeHumidity>,
-        }},
-        { gatt_uuid(0x2A70), {
-            &BluetoothSensor::WindSpeed,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnWindSpeed>,
-        }},
-        { gatt_uuid(0x2A71), {
-            &BluetoothSensor::WindOriginDirection,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnWindOriginDirection>,
-        }},
-    }}},
-    { gatt_uuid(0xFFE0), {{ // HM-10 and compatible bluetooth modules
-        { gatt_uuid(0xFFE1), {
-            &BluetoothSensor::Hm10Data,
-            &BluetoothSensor::Hm10DataEnable
-        }},
-        { gatt_uuid(0xFFE4), { // SkyDrop2
-            &BluetoothSensor::Hm10Data,
-            &BluetoothSensor::Hm10DataEnable
-        }},
-    }}},
-    { gatt_uuid(0x1800), {{ // Generic Access
-        { gatt_uuid(0x2A00), {
-            &BluetoothSensor::DeviceName,
-            &BluetoothSensor::EnableCharacteristic<true>
-        }}
-    }}},
-    { gatt_uuid(0x180A), {{ // Device Information Service
-        { gatt_uuid(0x2A25), { // Serial Number String
-            &BluetoothSensor::SerialNumber, 
-            &BluetoothSensor::EnableCharacteristic<true>
-        }}
-    }}},
-    { gatt_uuid(0x180F), {{ // Battery Service
-        { gatt_uuid(0x2A19), { // Battery Level
-            &BluetoothSensor::BatteryLevel,
-            &BluetoothSensor::EnableCharacteristic<&DeviceDescriptor_t::OnBatteryLevel>
-        }}
-    }}},
-  }};
-  return table;
-}
-
-}  // namespace
-
-bool BluetoothSensor::Initialize() {
-  const std::lock_guard lock(mutex);
-  try {
-    JNIEnv* env = Java::GetEnv();
-    if (env && BluetoothHelper::isEnabled(env)) {
-      bridge = BluetoothHelper::connectSensor(env, GetPortName());
-      if (bridge) {
-        bridge->setListener(env, this);
-        bridge->setInputListener(env, this);
-        return true;
-      }
+bool BluetoothSensor::Connect() {
+  JNIEnv* env = Java::GetEnv();
+  if (env && BluetoothHelper::isEnabled(env)) {
+    PortBridge* new_bridge = BluetoothHelper::connectSensor(env, GetPortName());
+    if (new_bridge) {
+      // Assign before setListener()/setInputListener(), which may throw: on
+      // exception, GattSensor::Initialize() calls Disconnect(), which must
+      // find `bridge` already set in order to free it.
+      WithLock(mutex, [&]() { bridge = new_bridge; });
+      new_bridge->setListener(env, this);
+      new_bridge->setInputListener(env, this);
+      return true;
     }
-  } catch (const std::exception& e) {
-    delete std::exchange(bridge, nullptr);  // required if `setInputListener` or `setListener` throw exception
-    const tstring what = to_tstring(e.what());
-    StartupStore(_T("FAILED! <%s>"), what.c_str());
   }
-  StatusMessage(_T("{} {}"), MsgToken<762>(), GetPortName());
   return false;
 }
 
-bool BluetoothSensor::Close() {
-  PortBridge* delete_bridge = WithLock(mutex, [&]() {
-    running = false;
+void BluetoothSensor::Disconnect() {
+  PortBridge* old_bridge = WithLock(mutex, [&]() {
     return std::exchange(bridge, nullptr);
   });
-
-  while (!ComPort::Close()) {
-    Sleep(10);
-  }
-
-  delete delete_bridge;
-
-  return true;
+  delete old_bridge;
 }
 
-bool BluetoothSensor::StopRxThread() {
-  WithLock(mutex, [&]() { running = false; });
-
-  if (ComPort::StopRxThread()) {
-    return true;
-  }
-  return false;
-}
-
-bool BluetoothSensor::StartRxThread() {
-  const std::lock_guard lock(mutex);
-  running = true;
-
-  return ComPort::StartRxThread();
-}
-
-void BluetoothSensor::CancelWaitEvent() {
-  newdata.notify_all();
-}
-
-bool BluetoothSensor::IsReady() {
+GattSensor::PortState BluetoothSensor::GetPortState() const {
   const std::lock_guard lock(mutex);
   if (bridge) {
-    return bridge->getState(Java::GetEnv()) == STATE_READY;
+    return static_cast<PortState>(bridge->getState(Java::GetEnv()));
   }
-  return false;
+  return PortState::LIMBO;
 }
 
-unsigned BluetoothSensor::RxThread() {
-  unsigned observed_state_generation = WithLock(mutex, [&]() {
-    // Intentional unsigned wraparound when state_generation==0:
-    // this guarantees one initial state poll before the regular wait loop.
-    return state_generation - 1;
-  });
+bool BluetoothSensor::WriteData(const void* data, size_t size) {
+  const std::lock_guard lock(mutex);
+  if (!bridge) {
+    return false;
+  }
+  const char *p = (const char *)data;
+  const char *end = p + size;
 
-  int state = STATE_LIMBO;
-  bool connected = false;
-
-  std::vector<sensor_data> rxthread_queue;
-
-  while (true) {
-    const bool stop = WithLock(mutex, [&]() {
-      while (running && bridge && data_queue.empty() &&
-             observed_state_generation == state_generation) {
-        // Wait until data is queued, state changes, or thread is stopped.
-        newdata.wait(mutex);
-      }
-      if (!running || !bridge) {
-        return true;
-      }
-
-      observed_state_generation = state_generation;
-      state = bridge->getState(Java::GetEnv());
-      std::swap(rxthread_queue, data_queue);
+  while (p < end) {
+    int nbytes = bridge->write(Java::GetEnv(), p, end - p);
+    if (nbytes <= 0) {
       return false;
-    });
-    if (stop) {
-      return 0;
     }
+    AddStatTx(nbytes);
 
-    if (!connected && state == STATE_READY) {
-      connected = true;
-      devOpen(devGetDeviceOnPort(GetPortIndex()));
-    }
-    else if (connected && state != STATE_READY) {
-      connected = false;
-      NotifyDisconnected();
-    }
-
-    for (const auto& data : rxthread_queue) {
-      ProcessSensorData(data);
-    }
-    rxthread_queue.clear();
+    p += nbytes;
   }
-}
-
-void BluetoothSensor::PortStateChanged() {
-  WithLock(mutex, [&]() {
-    ++state_generation;
-  });
-  newdata.notify_one();
-}
-
-void BluetoothSensor::PortError(const char* msg) {
-  StartupStore("BluetoothSensor Error : %s", msg);
-}
-
-void BluetoothSensor::OnCharacteristicChanged(uuid_t service,
-                                              uuid_t characteristic,
-                                              std::vector<uint8_t>&& data) {
-  WithLock(mutex, [&]() {
-    data_queue.emplace_back(std::move(service), std::move(characteristic),
-                            std::move(data));
-  });
-  newdata.notify_one();
-}
-
-bool BluetoothSensor::DoEnableNotification(const uuid_t& service, const uuid_t& characteristic) const {
-  auto handler = service_table().get(service, characteristic);
-  if (handler) {
-    return std::invoke(handler->DoEnableNotification, this);
-  }
-
-  const std::lock_guard lock(CritSec_Comm);
-  auto port = devGetDeviceOnPort(GetPortIndex());
-  if (port && port->DoEnableGattCharacteristic) {
-    return port->DoEnableGattCharacteristic(*port, service, characteristic);
-  }
-  return false;
-}
-
-void BluetoothSensor::ProcessSensorData(const sensor_data& data) {
-  WithLock(CritSec_Comm, [&]() {
-    auto port = devGetDeviceOnPort(GetPortIndex());
-    if (port) {
-      port->HB = LKHearthBeats;
-      AddStatRx(data.data.size());
-    }
-  });
-
-  try {
-    auto handler = service_table().get(data.service, data.characteristic);
-    if (handler) {
-      return std::invoke(handler->ProcessSensorData, this, data.data);
-    }
-    OnSensorData<&DeviceDescriptor_t::OnGattCharacteristic>(data.service, data.characteristic, data.data);
-  }
-  catch(std::exception&) {
-    // ignore invalid data ...
-  }
-}
-
-void BluetoothSensor::DeviceName(const std::vector<uint8_t>& data) {
-  std::string name(data.begin(), data.end());
-  WithLock(mutex, [&]() {
-    device_name = name;
-  });
-  NotifyConnected();
-}
-
-tstring BluetoothSensor::GetDeviceName() {
-  const std::lock_guard lock(mutex);
-  return device_name;
-}
-
-void BluetoothSensor::SerialNumber(const std::vector<uint8_t>& data) {
-  const std::lock_guard lock(CritSec_Comm);
-  auto port = devGetDeviceOnPort(GetPortIndex());
-  if (port) {
-    port->SerialNumber = { data.begin(), data.end() };
-  }
-}
-
-void BluetoothSensor::BatteryLevel(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint8_t>(data).get(0);
-  OnSensorData<&DeviceDescriptor_t::OnBatteryLevel, double>(value);
-}
-
-void BluetoothSensor::HeartRateMeasurement(const std::vector<uint8_t>& data) {
-  if (data.empty()) {
-    return;
-  }
-  auto bpm = [&]() -> uint32_t {
-    if (data[0] & 0x01) {
-      return characteristic_value<uint16_t>(data).get(1);
-    }
-    else {
-      return characteristic_value<uint8_t>(data).get(1);
-    }
-  };
-
-  OnSensorData<&DeviceDescriptor_t::OnHeartRate>(bpm());
-}
-
-void BluetoothSensor::BarometricPressure(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint32_t>(data).get();
-  OnSensorData<&DeviceDescriptor_t::OnBarometricPressure>(value / 10.);
-}
-
-void BluetoothSensor::OutsideTemperature(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint16_t>(data).get();
-  if (value != 0x8000) {
-    OnSensorData<&DeviceDescriptor_t::OnOutsideTemperature>(
-        static_cast<int16_t>(value) / 100.);
-  }
-}
-
-void BluetoothSensor::RelativeHumidity(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<int16_t>(data).get();
-  if (value < 10000) {
-    OnSensorData<&DeviceDescriptor_t::OnRelativeHumidity>(value / 100.);
-  }
-}
-
-void BluetoothSensor::WindOriginDirection(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<uint16_t>(data).get();
-  if (value < 35999) {
-    OnSensorData<&DeviceDescriptor_t::OnWindOriginDirection>(value / 100.);
-  }
-}
-
-void BluetoothSensor::WindSpeed(const std::vector<uint8_t>& data) {
-  auto value = characteristic_value<int16_t>(data).get();
-  OnSensorData<&DeviceDescriptor_t::OnWindSpeed>(
-      Units::From(Units_t::unCentimeterPersecond, value));
-}
-
-void BluetoothSensor::DataReceived(const void *data, size_t length) {
-  ComPort::ProcessData(static_cast<const char*>(data), length);
-}
-
-bool BluetoothSensor::Hm10DataEnable() const {
-  // TODO: allow to disable this ?
   return true;
-}
-
-bool BluetoothSensor::Write_Impl(const void *data, size_t size) {
-  const std::lock_guard lock(mutex);
-  if(bridge) {
-    const char *p = (const char *)data;
-    const char *end = p + size;
-
-    while (p < end) {
-      int nbytes = bridge->write(Java::GetEnv(), p, end - p);
-      if (nbytes <= 0) {
-        return false;
-      }
-      AddStatTx(nbytes);
-
-      p += nbytes;
-    }
-    return true;
-  }
-  return false;
 }
 
 void BluetoothSensor::WriteGattCharacteristic(const uuid_t& service, const uuid_t& characteristic, const void *data, size_t size) const {
   const std::lock_guard lock(mutex);
-  if(bridge) {
+  if (bridge) {
     bridge->writeGattCharacteristic(Java::GetEnv(), service, characteristic, data, size);
-    AddStatTx(size);
   }
 }
 
 void BluetoothSensor::ReadGattCharacteristic(const uuid_t& service, const uuid_t& characteristic) {
   const std::lock_guard lock(mutex);
-  if(bridge) {
+  if (bridge) {
     bridge->readGattCharacteristic(Java::GetEnv(), service, characteristic);
   }
 }
