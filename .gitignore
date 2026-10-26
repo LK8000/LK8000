@@ -75,6 +75,7 @@ output.map
 /Common/Utils/test_tools/.vs/
 /Common/Utils/test_tools/out/
 /Common/Utils/test_tools/CMakeSettings.json
+/Common/Utils/test_comport/build/
 /cov-int/
 /Scripts/kobo-build-rootfs/build-config-user.sh
 /Common/Utils/wind-estimate/build/
@@ -87,3 +88,4 @@ output.map
 /compile_commands.json
 /AGENTS.md
 .github/prompts/
+/buildroot/buildroot
