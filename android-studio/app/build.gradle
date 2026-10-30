@@ -155,7 +155,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.6.2"
     implementation "androidx.camera:camera-view:1.6.2"
 
-    implementation "androidx.core:core:1.19.0"
+    implementation "androidx.core:core:1.19.1"
     implementation "androidx.constraintlayout:constraintlayout:2.2.2"
     implementation "androidx.activity:activity:1.13.0"
     implementation "androidx.appcompat:appcompat:1.8.0"
@@ -176,7 +176,7 @@ dependencies {
     implementation "com.github.brunotl:boost_container_hash:1.90.0"
     implementation "com.github.brunotl:boost_predef:1.90.0"
 
-    implementation "com.google.oboe:oboe:1.10.0"
+    implementation "com.google.oboe:oboe:1.11.0"
     implementation "com.google.android.material:material:1.14.0"
 
     implementation "com.github.brunotl:openssl:3.2.1-beta-5"
