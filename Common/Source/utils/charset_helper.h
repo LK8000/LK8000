@@ -123,6 +123,11 @@ tstring from_utf8(const char *utf8) {
   return utf8_to_string<tstring::value_type>(utf8);
 }
 
+inline
+tstring from_utf8(const std::string& utf8) {
+  return utf8_to_string<tstring::value_type>(utf8.c_str());
+}
+
 /**
  * To convert ANSI string to tstring (aka std::string<TCHAR>)
  */
