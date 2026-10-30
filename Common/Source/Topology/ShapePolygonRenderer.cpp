@@ -78,6 +78,9 @@ void ShapePolygonRenderer::Draw(LKSurface& Surface,
     blend.emplace();
   }
 #else
+#ifdef ENABLE_OPENGL
+  _brush.Bind();
+#endif
   TessPolygonsT<FloatPoint> _tess_polygon_screen;
   TransformPolygon(_tess_polygon_screen, _tess_polygon, GeoToScreen<FloatPoint>(_Proj));
 #endif
