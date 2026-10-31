@@ -11,6 +11,7 @@
 
 #include <tuple>
 #include "Util/tstring.hpp"
+#include "tchar.h"
 
 
 namespace settings {
