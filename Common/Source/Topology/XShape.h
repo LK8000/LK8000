@@ -13,6 +13,9 @@
 #include "types.h"
 #include "Util/tstring.hpp"
 #include <memory>
+#include <concepts>
+#include <type_traits>
+#include <functional>
 #include "Screen/Point.hpp"
 
 class ShapeSpecialRenderer;
@@ -24,24 +27,36 @@ class ScreenProjection;
 struct PixelRect;
 
 struct ShapeRenderer {
-  struct callback_ref_t {
+  class callback_ref_t {
+   public:
+    template <typename F>
+      requires(!std::same_as<std::remove_cvref_t<F>, callback_ref_t> &&
+               std::is_invocable_r_v<bool, const F&, RasterPoint>)
+    callback_ref_t(F& callable) noexcept
+        : ctx(std::addressof(callable)), fn(&invoke_fn<F>) {}
+
+    // reject temporaries (and non-callable lvalues),
+    // but not callback_ref_t itself
+    template <typename F>
+      requires(!std::same_as<std::remove_cvref_t<F>, callback_ref_t>)
+    callback_ref_t(F&&) = delete;
+
+    callback_ref_t(const callback_ref_t&) = default;
+    callback_ref_t& operator=(const callback_ref_t&) = default;
+
+    bool operator()(RasterPoint position) const {
+      return fn(ctx, position);
+    }
+
+   private:
     using fn_t = bool (*)(const void*, RasterPoint);
 
     const void* ctx;
     fn_t fn;
 
     template <typename F>
-    callback_ref_t(F&&) = delete;
-
-    template <typename F>
-    callback_ref_t(F& callable)
-        : ctx(std::addressof(callable)),
-          fn([](const void* opaque_ctx, RasterPoint position) {
-            return (*static_cast<const F*>(opaque_ctx))(position);
-          }) {}
-
-    bool operator()(RasterPoint position) const {
-      return fn(ctx, position);
+    static bool invoke_fn(const void* opaque_ctx, RasterPoint position) {
+      return std::invoke(*static_cast<const F*>(opaque_ctx), position);
     }
   };
 
