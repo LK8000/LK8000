@@ -139,6 +139,7 @@ int msPolygonDirection(lineObj *c)
   else
     return(0); /* shouldn't happen unless the polygon is self intersecting */
 }
+#endif
 
 /*
 ** Copyright (c) 1970-2003, Wm. Randolph Franklin
@@ -172,6 +173,8 @@ int msPointInPolygon(pointObj *p, lineObj *c)
   }
   return status;
 }
+
+#if 0
 
 /*
 ** Note: the following functions are brute force implementations. Some fancy

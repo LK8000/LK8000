@@ -14,6 +14,7 @@
 #include "Util/tstring.hpp"
 #include <memory>
 #include <concepts>
+#include <optional>
 #include <type_traits>
 #include <functional>
 #include "Screen/Point.hpp"
@@ -103,6 +104,8 @@ class XShape final {
 
   bool hide = false;
   shapeObj shape;
+
+  std::optional<double> area;
 
  private:
   tstring label;

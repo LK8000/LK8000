@@ -56,6 +56,20 @@ XShape::XShape(shapefileObj* shpfile, int i, int field) {
     src = msDBFReadStringAttribute(shpfile->hDBF, i, field);
   }
 
+  if (shape.type == MS_SHAPE_POLYGON) {
+    // Compute and store the area of the polygon, used to determine if polygon is
+    // significant enough to display depending of zoom level.
+    // Use optimized path with pre-computed outer ring list to avoid quadratic
+    // ring classification overhead in multipart topologies with many rings.
+    int* outerlist = msGetOuterList(&shape);
+    if (outerlist) {
+      area = msGetPolygonAreaWithOuterList(&shape, outerlist);
+      free(outerlist);
+    } else {
+      area = msGetPolygonArea(&shape);
+    }
+  }
+
   // Case1 : NULL or not informative label, we show the shape without label
   if (!ValidLabel(src)) {
     return;

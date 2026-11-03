@@ -224,6 +224,7 @@ void msComputeBounds(shapeObj *shape)
     }
   }
 }
+#endif
 
 /* checks to see if ring r is an outer ring of shape */
 int msIsOuterRing(shapeObj *shape, int r)
@@ -255,6 +256,8 @@ int msIsOuterRing(shapeObj *shape, int r)
   return(status);
 }
 
+
+
 /*
 ** Returns a list of outer rings for shape (the list has one entry for each ring,
 ** MS_TRUE for outer rings).
@@ -273,6 +276,7 @@ int *msGetOuterList(shapeObj *shape)
   return(list);
 }
 
+#if 0
 /*
 ** Returns a list of inner rings for ring r in shape (given a list of outer rings).
 */
@@ -1214,6 +1218,7 @@ void bufferPolyline(shapeObj *p, shapeObj *op, int w)
 
   return;
 }
+#endif
 
 static double getRingArea(lineObj *ring)
 {
@@ -1241,6 +1246,31 @@ double msGetPolygonArea(shapeObj *p)
   return area;
 }
 
+/*
+** Computes polygon area using a pre-computed outer ring list to avoid
+** repeated ring classification (which is quadratic in the number of rings).
+** This is more efficient for multipart topologies with many rings.
+*/
+double msGetPolygonAreaWithOuterList(shapeObj *p, int *outerlist)
+{
+  int i;
+  double area=0;
+
+  if(!outerlist) {
+    return msGetPolygonArea(p);
+  }
+
+  for(i=0; i<p->numlines; i++) {
+    if(outerlist[i])
+      area += getRingArea(&(p->line[i]));
+    else
+      area -= getRingArea(&(p->line[i])); /* hole */
+  }
+
+  return area;
+}
+
+#if 0
 /*
 ** Computes the center of gravity for a polygon based on it's largest outer ring only.
 */

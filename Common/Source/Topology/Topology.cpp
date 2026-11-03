@@ -434,9 +434,19 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
 
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
 
-  // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
+  // use the already existing screenbounds_latlon, calculated by
+  // CalculateScreenPositions in MapWindow2
   const rectObj screenBounds = MapWindow::screenbounds_latlon;
   const PixelRect screenRect(rc);
+
+  const double screen_area = (screenBounds.maxx - screenBounds.minx) *
+                             (screenBounds.maxy - screenBounds.miny);
+
+  const double pixel_surface = static_cast<double>(screenRect.right - screenRect.left) *
+                               static_cast<double>(screenRect.bottom - screenRect.top);
+
+  // only polygon with area > 4 pixels on screen will be considered visible
+  const double visible_screen_area_threshold = screen_area / pixel_surface * 5.;
 
   for (const auto& cshape : visibleShapes) {
     if (!cshape || cshape->hide) {
@@ -444,6 +454,18 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
     }
     if (!cshape->Overlap(screenBounds)) {
       continue;
+    }
+
+    if (cshape->area.has_value()) {
+      double poly_area = cshape->area.value();
+      if (poly_area == 0) {
+        // skip polygons with zero area
+        continue;
+      }
+      if (poly_area < visible_screen_area_threshold) {
+        // skip polygons smaller than the visible screen area threshold
+        continue;
+      }
     }
 
     cshape->Draw(renderer, Surface, screenRect, _Proj, hbBrush, hPen, hBitmap, !nolabels);

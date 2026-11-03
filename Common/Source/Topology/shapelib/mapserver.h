@@ -2182,7 +2182,13 @@ void msPopulateTextSymbolForLabelAndString(textSymbolObj *ts, labelObj *l, char 
   MS_DLL_EXPORT double msDistanceSegmentToSegment(pointObj *pa, pointObj *pb, pointObj *pc, pointObj *pd);
   MS_DLL_EXPORT double msDistanceShapeToShape(shapeObj *shape1, shapeObj *shape2);
   MS_DLL_EXPORT int msIntersectSegments(const pointObj *a, const pointObj *b, const pointObj *c, const pointObj *d);
+
+#endif
+
   MS_DLL_EXPORT int msPointInPolygon(pointObj *p, lineObj *c);
+
+#if 0
+
   MS_DLL_EXPORT int msIntersectMultipointPolygon(shapeObj *multipoint, shapeObj *polygon);
   MS_DLL_EXPORT int msIntersectPointPolygon(pointObj *p, shapeObj *polygon);
   MS_DLL_EXPORT int msIntersectPolylinePolygon(shapeObj *line, shapeObj *poly);
@@ -2355,8 +2361,12 @@ void msPopulateTextSymbolForLabelAndString(textSymbolObj *ts, labelObj *l, char 
 #if 0
   MS_DLL_EXPORT void msShapeDeleteLine( shapeObj *shape, int line );
   MS_DLL_EXPORT int msCopyShape(shapeObj *from, shapeObj *to);
-  MS_DLL_EXPORT int msIsOuterRing(shapeObj *shape, int r);
+#endif
+  
+  MS_DLL_EXPORT int msIsOuterRing(shapeObj* shape, int r);
   MS_DLL_EXPORT int *msGetOuterList(shapeObj *shape);
+
+#if 0
   MS_DLL_EXPORT int *msGetInnerList(shapeObj *shape, int r, int *outerlist);
   MS_DLL_EXPORT void msComputeBounds(shapeObj *shape);
   MS_DLL_EXPORT void msRectToPolygon(rectObj rect, shapeObj *poly);
@@ -2411,7 +2421,13 @@ void msPopulateTextSymbolForLabelAndString(textSymbolObj *ts, labelObj *l, char 
   MS_DLL_EXPORT int msAddLine(shapeObj *p, lineObj *new_line);
   MS_DLL_EXPORT int msAddLineDirectly(shapeObj *p, lineObj *new_line);
   MS_DLL_EXPORT int msAddPointToLine(lineObj *line, pointObj *point );
-  MS_DLL_EXPORT double msGetPolygonArea(shapeObj *p);
+
+#endif
+
+  MS_DLL_EXPORT double msGetPolygonArea(shapeObj* p);
+  MS_DLL_EXPORT double msGetPolygonAreaWithOuterList(shapeObj* p, int* outerlist);
+
+#if 0
   MS_DLL_EXPORT int msGetPolygonCentroid(shapeObj *p, pointObj *lp, double *miny, double *maxy);
 
   MS_DLL_EXPORT int msDrawRasterLayer(mapObj *map, layerObj *layer, imageObj *image); /* in mapraster.c */
