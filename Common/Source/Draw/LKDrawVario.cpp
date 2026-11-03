@@ -260,18 +260,22 @@ void MapWindow::LKDrawVario(LKSurface& Surface, const RECT& rc) {
                 // simple hack for avoid to used polar curve : glider_sink_rate = Vario - NettoVario;
                 mc_value = MACCREADY + (DerivedDrawInfo.Vario - DerivedDrawInfo.NettoVario);
                 break;
-            case vValVarioSoll:
+            case vValVarioSoll: {
                 double ias;
                 if (DrawInfo.IndicatedAirSpeed.available() && VarioAvailable(DrawInfo))
                     ias = DrawInfo.IndicatedAirSpeed.value();
                 else
                     ias = DerivedDrawInfo.IndicatedAirspeedEstimated;
 
+                double IASOpt = IndicatedAirSpeed(DerivedDrawInfo.VOpt, QNHAltitudeToQNEAltitude(DrawInfo.Altitude));
+
+
                 // m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
-                vario_value = std::clamp(DerivedDrawInfo.VOpt - ias, -20., 20.);
+                vario_value = std::clamp(IASOpt - ias, -20., 20.);
                 vario_value /= 3.3333; // 0-20  -> 0-6
                 vario_value *= -1; // if up, push down
                 break;
+            }
         }
     }
 

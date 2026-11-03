@@ -79,14 +79,14 @@ class stf_filter final {
 // Sollfahrt / Dolphin Speed calculator
 //
 void SpeedToFly(const NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
-  double Netto = GetNettoVario(Basic, Calculated);
-  double HeadWind = GetHeadWind(Basic, Calculated);
+  double Netto = GetNettoVario(Basic, Calculated); // Netto vario (Corrected for air density ?)
+  double HeadWind = GetHeadWind(Basic, Calculated); //  HeadWind = TAS - GroundSpeed
 
   // calculate maximum efficiency speed to fly
   double Vme_raw = GlidePolar::STF(0, Netto, HeadWind);
 
   static stf_filter vme_filter;
-  Calculated->Vme = vme_filter.update(Vme_raw);
+  Calculated->Vme = vme_filter.update(Vme_raw); // TAS for best efficiency
 
   double VOptHeadWind = 0;
   if (Calculated->FinalGlide && ValidTaskPoint(ActiveTaskPoint)) {
@@ -95,7 +95,7 @@ void SpeedToFly(const NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
     VOptHeadWind = HeadWind;
   }
 
-  // this is IAS for best Ground Glide ratio accounting current air mass
+  // this is TAS for best Ground Glide ratio accounting current air mass
   // ( wind / Netto vario )
   double VOptnew = GlidePolar::STF(MACCREADY, Netto, VOptHeadWind);
   // apply cruises efficiency factor.
@@ -112,5 +112,5 @@ void SpeedToFly(const NMEA_INFO* Basic, DERIVED_INFO* Calculated) {
 
   // use low pass filter to avoid big jump of value.
   static stf_filter vopt_filter;
-  Calculated->VOpt = vopt_filter.update(VOptnew);
+  Calculated->VOpt = vopt_filter.update(VOptnew); // TAS Optimal at current MacCready setting
 }
