@@ -1459,9 +1459,10 @@ COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
 	$(COMPATSRC)/errno.cpp
 	
+ifeq ($(THREADS),Poco)
 
-POCOSRC:=$(LIB)/poco
-POCO :=\
+ POCOSRC:=$(LIB)/poco
+ POCO :=\
      $(POCOSRC)/Debugger.cpp \
      $(POCOSRC)/Bugcheck.cpp \
      $(POCOSRC)/ErrorHandler.cpp \
@@ -1491,6 +1492,8 @@ POCO :=\
      $(POCOSRC)/Ascii.cpp \
      $(POCOSRC)/AtomicCounter.cpp \
      $(POCOSRC)/RefCountedObject.cpp \
+
+endif
 
 GLUSRC:=$(LIB)/glutess
 GLU :=\
@@ -1533,8 +1536,11 @@ src_to_obj = $(patsubst $(SRC)%.c,$(BIN)%.o,\
              $(patsubst $(SRC)%.cxx,$(BIN)%.o,$(1))))
 
 OBJS 	:=\
-	$(call src_to_obj,$(SRC_FILES)) \
-	$(BIN)/poco.a
+	$(call src_to_obj,$(SRC_FILES))
+
+ifeq ($(THREADS),Poco)
+ OBJS 	+=	$(BIN)/poco.a
+endif
 
 ifneq ($(WIN32_RESOURCE), y)	
 OBJS	+= $(BIN)/resource.a
