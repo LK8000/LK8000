@@ -8,9 +8,7 @@ void SetTopologyBounds(const RECT& rcin, const ScreenProjection& _Proj,  const b
 
 void OpenTopology();
 void CloseTopology();
-void ChangeZoomTopology(int iCategory, double newScale, short cztmode);
-double ReadZoomTopology(int iCategory);
-bool HaveZoomTopology(int iCategory);
+
 void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, const bool wateronly=false);
 bool DrawTerrain(LKSurface& Surface, const RECT& rc, const ScreenProjection& _Proj, double sunazimuth, double sunelevation);
 

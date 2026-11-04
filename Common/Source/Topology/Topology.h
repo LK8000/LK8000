@@ -9,6 +9,7 @@
 #ifndef TOPOLOGY_H
 #define TOPOLOGY_H
 
+#include "options.h"
 #include "shapelib/mapserver.h"
 #include "Screen/LKBrush.h"
 #include "Screen/LKPen.h"
@@ -21,6 +22,50 @@ class ShapeSpecialRenderer;
 class ScreenProjection;
 class LKSurface;
 class XShape;
+
+#define TopoLog(...) StartupStore(_T("[Topology]") __VA_ARGS__)
+#define TopoLogT(...) TestLog(_T("[Topology]") __VA_ARGS__)
+#ifdef DEBUG_TOPOLOGY
+  #define TopoLogD(...) DebugLog(_T("[Topology]") __VA_ARGS__)
+#else
+  #define TopoLogD(...)  // Does nothing
+#endif
+
+enum class topology_category : int {
+  reserved = 0, 
+  marked_locations = 1,
+  coast_areas = 5,
+  water_area = 10,
+  water_line = 20,
+  big_road = 30,
+  medium_road = 40,
+  small_road = 50,
+  railroad = 60,
+  big_city = 70,
+  medium_city = 80,
+  small_city = 90,
+  very_small_city = 100,
+  city_area = 110 // city area polyline with no name
+};
+
+inline bool IsWaterCategory(topology_category category) {
+  return category == topology_category::coast_areas ||
+         category == topology_category::water_area ||
+         category == topology_category::water_line;
+}
+
+inline bool IsWaterArea(topology_category category) {
+  return category == topology_category::coast_areas ||
+         category == topology_category::water_area;
+}
+
+inline bool IsCity(topology_category category) {
+  return category == topology_category::big_city ||
+         category == topology_category::medium_city ||
+         category == topology_category::small_city ||
+         category == topology_category::very_small_city ||
+         category == topology_category::city_area;
+}
 
 class Topology final {
   Topology() = delete;
@@ -43,9 +88,10 @@ class Topology final {
 
   void SearchNearest(const rectObj& bounds);
 
-  double scaleThreshold = 0;
-  double scaleDefaultThreshold = 0;
-  int scaleCategory = 0;
+  double scaleThreshold; // only used for unknown category
+  topology_category Category = topology_category::reserved;
+
+  double GetScaleThreshold() const;
 
   bool CheckScale();
   void TriggerIfScaleNowVisible();
@@ -85,7 +131,7 @@ class Topology final {
   bool in_scale_last = false;
 
   // utf8 filename, converted from platform encoding in ctor
-  char filename[MAX_PATH];
+  std::string filename;
   int field;
 };
 

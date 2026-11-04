@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "Terrain.h"
 #include "Topology/ShapeSpecialRenderer.h"
+#include "Topology/Topology.h"
 
 
 Topology* TopoStore[MAXTOPOLOGY] = {};
@@ -22,7 +23,7 @@ void DrawTopology(LKSurface& Surface, const RECT& rc, const ScreenProjection& _P
     if(!topo) {
       continue;
     }
-    if(!wateronly || topo->scaleCategory == 5 || topo->scaleCategory == 10 || topo->scaleCategory == 20) {
+    if(!wateronly || IsWaterCategory(topo->Category)) {
       topo->Paint(renderer, Surface,rc, _Proj);
     }
   }

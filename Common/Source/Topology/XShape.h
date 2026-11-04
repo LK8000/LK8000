@@ -18,13 +18,11 @@
 #include <type_traits>
 #include <functional>
 #include "Screen/Point.hpp"
+#include "Topology.h"
 
-class ShapeSpecialRenderer;
-class LKSurface;
 class LKBrush;
 class LKPen;
 class LKIcon;
-class ScreenProjection;
 struct PixelRect;
 
 struct ShapeRenderer {
@@ -95,7 +93,7 @@ class XShape final {
   bool renderSpecial(ShapeSpecialRenderer& renderer, LKSurface& Surface,
                      RasterPoint position, const PixelRect& ClipRect) const;
 
-  bool nearestItem(int category, double lon, double lat) const;
+  bool nearestItem(topology_category category, double lon, double lat) const;
 
   void Draw(ShapeSpecialRenderer& special_renderer, LKSurface& Surface,
             const PixelRect& ClipRect, const ScreenProjection& _Proj,

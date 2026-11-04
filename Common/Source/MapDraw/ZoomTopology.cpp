@@ -6,145 +6,74 @@
    $Id$
 */
 
-#include "externs.h"
+#include "ZoomTopology.h"
 #include "Terrain.h"
 #include "RGB.h"
 
-
 extern Topology* TopoStore[MAXTOPOLOGY];
 
+namespace {
 
+// clang-format off
 
-double ReadZoomTopology(int iCategory) {
+// coast_areas and water_area zoom are special cases :
+//  - Polygon are always drawn, regardless of zoom level.
+//  - Zoom level (shared with "water_line") is used for determining when to
+//    display labels.
+constexpr const TopologyZoomLevel topology_props[] = {
+    { topology_category::coast_areas,     LKTopoZoomCat20,  10, _T("")          },
+    { topology_category::water_area,      LKTopoZoomCat20,  10, _T("")          },
+    { topology_category::water_line,      LKTopoZoomCat20,  10, _T("prpCat20")  },
+    { topology_category::big_road,        LKTopoZoomCat30,  25, _T("prpCat30")  },
+    { topology_category::medium_road,     LKTopoZoomCat40,   6, _T("prpCat40")  },
+    { topology_category::small_road,      LKTopoZoomCat50,   3, _T("prpCat50")  },
+    { topology_category::railroad,        LKTopoZoomCat60,   8, _T("prpCat60")  },
+    { topology_category::big_city,        LKTopoZoomCat70,  15, _T("prpCat70")  },
+    { topology_category::medium_city,     LKTopoZoomCat80,  10, _T("prpCat80")  },
+    { topology_category::small_city,      LKTopoZoomCat90,   6, _T("prpCat90")  },
+    { topology_category::very_small_city, LKTopoZoomCat100,  3, _T("prpCat100") },
+    { topology_category::city_area,       LKTopoZoomCat110, 15, _T("prpCat110") },
+};
+// clang-format on
 
-  for (int z=0; z<MAXTOPOLOGY; z++) {
-	if (TopoStore[z]) {
-		if ( TopoStore[z]->scaleCategory == iCategory ) {
-			return (TopoStore[z]->scaleThreshold);
-		}
-	}
-  }
-  return 0.0;
+}  // namespace
+
+const TopologyZoomLevel* TopologyZoomLevel::list::begin() {
+  return std::begin(topology_props);
 }
 
-bool HaveZoomTopology(int iCategory) {
-
-  for (int z=0; z<MAXTOPOLOGY; z++) {
-	if (TopoStore[z]) {
-		if ( TopoStore[z]->scaleCategory == iCategory ) {
-			return true;
-		}
-	}
-  }
-  return false;
+const TopologyZoomLevel* TopologyZoomLevel::list::end() {
+  return std::end(topology_props);
 }
 
-// mode: 0 normal Change the topology scale of Category with newScale.
-// mode: 1 zoom more or less for the category with newScale (newScale is the zoom increment).
-// mode: 2 zoom more or less for all categories (tCategory is ignored, newScale is the zoom increment for all items)
-// mode: 3 reset default zoom for Category (newScale is ignored)
-// mode: 4 reset default zoom for all Categories (Category is ignored, newScale is ignored)
-void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
-{
-  if (LKTopo<1) return;
-
-  LockTerrainDataGraphics();
-
-  if (cztmode==0) {
-	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) {
-			if ( TopoStore[z]->scaleCategory == iCategory ) {
-				#if DEBUG_LKTOPO
-				StartupStore(_T("... ChangeZoomTopology zindex=%d, categ=%d oldscale=%f newscale=%f%s"),z,iCategory,
-				TopoStore[z]->scaleThreshold, newScale,NEWLINE);
-				#endif
-				TopoStore[z]->scaleThreshold = newScale;
-			}
-		}
-	}
-	UnlockTerrainDataGraphics();
-	return;
+const TopologyZoomLevel* TopologyZoomLevel::get(topology_category category) {
+  auto it = std::ranges::find(topology_props, category, &TopologyZoomLevel::category_);
+  if (it != std::end(topology_props)) {
+    return it;
   }
+  return nullptr;
+}
 
-  if (cztmode==1) {
-	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) {
-			if ( TopoStore[z]->scaleCategory == iCategory ) {
-				#if DEBUG_LKTOPO
-				StartupStore(_T("... ChangeZoomTopology: zindex=%d, categ=%d oldscale=%f increment=%f%s"),z,iCategory,
-				TopoStore[z]->scaleThreshold, newScale,NEWLINE);
-				#endif
-				TopoStore[z]->scaleThreshold += newScale;
-			}
-		}
-	}
-	UnlockTerrainDataGraphics();
-	return;
+void TopologyZoomLevel::set(topology_category category, double value) {
+  using std::ranges::find;
+  auto it = find(topology_props, category, &TopologyZoomLevel::category_);
+  if (it != std::end(topology_props)) {
+    if (it->ref_zoom_ != value) {
+      it->ref_zoom_ = value;
+    }
   }
+}
 
-  if (cztmode==2) {
-	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) {
-			#if DEBUG_LKTOPO
-			StartupStore(_T("... ChangeZoomTopology for all: zindex=%d, categ=%d oldscale=%f increment=%f%s"),z,iCategory,
-			TopoStore[z]->scaleThreshold, newScale,NEWLINE);
-			#endif
-			TopoStore[z]->scaleThreshold += newScale;
-		}
-	}
-	UnlockTerrainDataGraphics();
-	return;
+double TopologyZoomLevel::DefaultZoom(topology_category category) {
+  auto prop = TopologyZoomLevel::get(category);
+  if (prop) {
+    return prop->default_zoom_;
   }
+  return 100;  // fallback default value
+}
 
-  if (cztmode==3) {
-	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) {
-			if ( TopoStore[z]->scaleCategory == iCategory ) {
-				#if DEBUG_LKTOPO
-				StartupStore(_T("... ChangeZoomTopology default zindex=%d, categ=%d oldscale=%f default=%f%s"),
-				z,iCategory, TopoStore[z]->scaleThreshold, TopoStore[z]->scaleDefaultThreshold,NEWLINE);
-				#endif
-				TopoStore[z]->scaleThreshold = TopoStore[z]->scaleDefaultThreshold;
-			}
-		}
-	}
-	UnlockTerrainDataGraphics();
-	return;
+void TopologyZoomLevel::list::reset() {
+  for (auto& prop : topology_props) {
+    prop.ref_zoom_ = prop.default_zoom_;
   }
-
-  if (cztmode==4) {
-	for (int z=0; z<MAXTOPOLOGY; z++) {
-		if (TopoStore[z]) {
-			#if DEBUG_LKTOPO
-			StartupStore(_T("... ChangeZoomTopology all default zindex=%d, categ=%d oldscale=%f default=%f%s"),
-			z,iCategory, TopoStore[z]->scaleThreshold, TopoStore[z]->scaleDefaultThreshold,NEWLINE);
-			#endif
-			// 130207 categories 5 and 10 are using DefaultThreshold for polygon paint,
-			// and scaleThreshold for labels only. Upon reset, we should use the original
-			// LKTopoZoom settings, because the Default is always fixed to 100!
-			// Otherwise on reset we get 99.. even if we set LKTopoZoom to something else.
-			// This is needed if we want to have a startup setting different from default
-			// for these 05 and 10 categories only.
-			// Sorry but water areas and labels are not easy to manage because we want to paint
-			// blue all the way, but not also their labels.
-			// Notice that since LKTopoZoom is saved to configuration, we cannot use it for reset!
-			// This is why we have a special define DEFAULT_WATER_LABELS_THRESHOLD
-			switch(TopoStore[z]->scaleCategory) {
-				case 5:
-					TopoStore[z]->scaleThreshold = DEFAULT_WATER_LABELS_THRESHOLD;
-					break;
-				case 10:
-					TopoStore[z]->scaleThreshold = DEFAULT_WATER_LABELS_THRESHOLD;
-					break;
-				default:
-					TopoStore[z]->scaleThreshold = TopoStore[z]->scaleDefaultThreshold;
-					break;
-			}
-		}
-	}
-	UnlockTerrainDataGraphics();
-	return;
-  }
-
-  UnlockTerrainDataGraphics();
 }

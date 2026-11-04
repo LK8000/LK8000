@@ -182,9 +182,7 @@ void LKProfileSave(const TCHAR *szFile) {
   write_settings(szRegistryInputFile, szInputFile);
   write_settings(szRegistryIphoneGestures, IphoneGestures);
   write_settings(szRegistryLKMaxLabels, LKMaxLabels);
-  write_settings(szRegistryLKTopoZoomCat05, LKTopoZoomCat05 * 1000);
   write_settings(szRegistryLKTopoZoomCat100, LKTopoZoomCat100 * 1000);
-  write_settings(szRegistryLKTopoZoomCat10, LKTopoZoomCat10 * 1000);
   write_settings(szRegistryLKTopoZoomCat110, LKTopoZoomCat110 * 1000);
   write_settings(szRegistryLKTopoZoomCat20, LKTopoZoomCat20 * 1000);
   write_settings(szRegistryLKTopoZoomCat30, LKTopoZoomCat30 * 1000);

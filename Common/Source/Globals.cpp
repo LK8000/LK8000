@@ -15,6 +15,7 @@
 #include "Multimap.h"
 #include "Tracking/Tracking.h"
 #include "Calc/Task/TimeGates.h"
+#include "MapDraw/ZoomTopology.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -354,18 +355,7 @@ void Globals_Init(void) {
   // This used in Terrain.cpp to draw water if "Coast Area" not available in topology file
   LKWaterTopology = false;
 
-  LKTopoZoomCat05=0;
-  LKTopoZoomCat10=0;
-  LKTopoZoomCat20=0;
-  LKTopoZoomCat30=0;
-  LKTopoZoomCat40=0;
-  LKTopoZoomCat50=0;
-  LKTopoZoomCat60=0;
-  LKTopoZoomCat70=0;
-  LKTopoZoomCat80=0;
-  LKTopoZoomCat90=0;
-  LKTopoZoomCat100=0;
-  LKTopoZoomCat110=0;
+  TopologyZoomLevel::list::reset();
 
   // max number of topo and wp labels painted on map, defined by default in Utils
   LKMaxLabels=0;

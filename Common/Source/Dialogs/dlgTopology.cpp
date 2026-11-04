@@ -10,35 +10,17 @@
 #include "Dialogs.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
-#include "LKProcess.h"
-#include "Terrain.h"
-#include "LKProfiles.h"
 #include "resource.h"
+#include <memory>
+#include "MapDraw/ZoomTopology.h"
 
-static bool changed = false;
-static WndForm *wf=NULL;
+namespace {
 
-// Correction factor for topology zoom levels, which are in Km.
-// Using non-metric distances, these values should be changed accordingly.
-// new=old*DISTANCEMODIFY*1000
-#define RZC	Units::ToDistance(1000)
-
-
-static void OnTopoActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  switch(Mode){
-  case DataField::daGet:
-    break;
-  case DataField::daPut:
-  case DataField::daChange:
-    break;
-  case DataField::daInc:
-  case DataField::daDec:
-  case DataField::daSpecial:
-    break;
-  }
+void OnTopoActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
+  // No Op...
 }
 
-static void OnCloseClicked(WndButton* pWnd) {
+void OnCloseClicked(WndButton* pWnd) {
   if(pWnd) {
     WndForm * pForm = pWnd->GetParentWndForm();
     if(pForm) {
@@ -47,277 +29,89 @@ static void OnCloseClicked(WndButton* pWnd) {
   }
 }
 
-static void setVariables(void) {
-  WndProperty *wp;
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat10"));
-  if (wp) {
-	if (HaveZoomTopology(10)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(10)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat20"));
-  if (wp) {
-	if (HaveZoomTopology(20)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(20)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat30"));
-  if (wp) {
-	if (HaveZoomTopology(30)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(30)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat40"));
-  if (wp) {
-	if (HaveZoomTopology(40)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(40)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat50"));
-  if (wp) {
-	if (HaveZoomTopology(50)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(50)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat60"));
-  if (wp) {
-	if (HaveZoomTopology(60)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(60)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat70"));
-  if (wp) {
-	if (HaveZoomTopology(70)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(70)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat80"));
-  if (wp) {
-	if (HaveZoomTopology(80)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(80)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat90"));
-  if (wp) {
-	if (HaveZoomTopology(90)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(90)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat100"));
-  if (wp) {
-	if (HaveZoomTopology(100)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(100)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat110"));
-  if (wp) {
-	if (HaveZoomTopology(110)) {
-		wp->GetDataField()->SetAsFloat( ReadZoomTopology(110)*RZC);
-	} else {
-		wp->GetDataField()->SetAsFloat( 0 );
-		wp->SetReadOnly(true);
-	}
-	wp->RefreshDisplay();
+void setTopologyPropertyValue(WndForm* wf, const TCHAR* propertyName,
+                              topology_category category, double storedValue) {
+  if (!wf || !propertyName || propertyName[0] == '\0') {
+    return;
   }
 
+  auto wp = wf->FindByName<WndProperty>(propertyName);
+  if (!wp) {
+    return;
+  }
+
+  auto prop = TopologyZoomLevel::get(category);
+  if (!prop) {
+    wp->SetVisible(false);
+    return;
+  }
+
+  auto df = wp->GetDataField();
+  if (df) {
+    auto value = Units::From(Units_t::unKiloMeter, prop->Zoom());
+    value = Units::ToDistance(value);
+    df->SetAsFloat(value);
+  }
+  wp->RefreshDisplay();
 }
 
+void setVariables(WndForm* wf) {
+  for (auto& prop : TopologyZoomLevel::list()) {
+    setTopologyPropertyValue(wf, prop.name_, prop.category_, prop.ref_zoom_);
+  }
+}
 
-static void OnResetTopologyClicked(WndButton* pWnd){
+void updateTopologyPropertyValue(WndForm* wf, const TCHAR* propertyName,
+                                 topology_category category) {
+  if (!wf || !propertyName || propertyName[0] == '\0') {
+    return;
+  }
 
-  ChangeZoomTopology(1,1,4);
-  setVariables();
+  auto wp = wf->FindByName<WndProperty>(propertyName);
+  if (wp) {
+    auto df = wp->GetDataField();
+    if (df) {
+      auto value = Units::FromDistance(df->GetAsFloat());
+      value = Units::To(Units_t::unKiloMeter, value);
+      TopologyZoomLevel::set(category, std::clamp(value, 0.0, 100.0));
+    }
+  }
+}
+
+void OnResetTopologyClicked(WndButton* pWnd) {
+  TopologyZoomLevel::list::reset();
+  setVariables(pWnd->GetParentWndForm());
 
   //LKTOKEN _@M1223_ "Topology reset to default values"
-  MessageBoxX (
-		 MsgToken<1223>(),
-		 TEXT(""), mbOk);
+  MessageBoxX(MsgToken<1223>(), TEXT(""), mbOk);
 }
 
-
-
-
-static CallBackTableEntry_t CallBackTable[]={
+CallBackTableEntry_t CallBackTable[]={
   CallbackEntry(OnTopoActiveData),
   CallbackEntry(OnResetTopologyClicked),
   CallbackEntry(OnCloseClicked),
   EndCallbackEntry()
 };
 
+}  // namespace
 
-void dlgTopologyShowModal(void){
-
-  if (LKTopo<1) {
-	MessageBoxX (
-	// LKTOKEN  _@M502_ = "Only LKMaps can be configured, sorry!"
-		MsgToken<502>(),
-		TEXT(""), mbOk);
-	return;
+void dlgTopologyShowModal() {
+  if (LKTopo < 1) {
+    // LKTOKEN  _@M502_ = "Only LKMaps can be configured, sorry!"
+    MessageBoxX(MsgToken<502>(), TEXT(""), mbOk);
+    return;
   }
 
-  WndProperty *wp;
-  wf = dlgLoadFromXML(CallBackTable, IDR_XML_TOPOLOGY);
+  std::unique_ptr<WndForm> wf(dlgLoadFromXML(CallBackTable, IDR_XML_TOPOLOGY));
+  if (!wf) {
+    return;
+  }
 
-  if (!wf) return;
-
-  setVariables();
-
-  changed = false;
+  setVariables(wf.get());
 
   wf->ShowModal();
 
-
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat10"));
-  if (wp) {
-	if (HaveZoomTopology(5))
-	if ( LKTopoZoomCat05 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat05 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(5,LKTopoZoomCat05,0);
-		changed = true;
-	}
+  for (auto& prop : TopologyZoomLevel::list()) {
+    updateTopologyPropertyValue(wf.get(), prop.name_, prop.category_);
   }
-  if (wp) {
-	if (HaveZoomTopology(10))
-	if ( LKTopoZoomCat10 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat10 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(10,LKTopoZoomCat10,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat20"));
-  if (wp) {
-	if (HaveZoomTopology(20))
-	if ( LKTopoZoomCat20 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat20 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(20,LKTopoZoomCat20,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat30"));
-  if (wp) {
-	if (HaveZoomTopology(30))
-	if ( LKTopoZoomCat30 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat30 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(30,LKTopoZoomCat30,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat40"));
-  if (wp) {
-	if (HaveZoomTopology(40))
-	if ( LKTopoZoomCat40 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat40 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(40,LKTopoZoomCat40,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat50"));
-  if (wp) {
-	if (HaveZoomTopology(50))
-	if ( LKTopoZoomCat50 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat50 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(50,LKTopoZoomCat50,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat60"));
-  if (wp) {
-	if (HaveZoomTopology(60))
-	if ( LKTopoZoomCat60 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat60 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(60,LKTopoZoomCat60,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat70"));
-  if (wp) {
-	if (HaveZoomTopology(70))
-	if ( LKTopoZoomCat70 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat70 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(70,LKTopoZoomCat70,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat80"));
-  if (wp) {
-	if (HaveZoomTopology(80))
-	if ( LKTopoZoomCat80 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat80 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(80,LKTopoZoomCat80,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat90"));
-  if (wp) {
-	if (HaveZoomTopology(90))
-	if ( LKTopoZoomCat90 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat90 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(90,LKTopoZoomCat90,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat100"));
-  if (wp) {
-	if (HaveZoomTopology(100))
-	if ( LKTopoZoomCat100 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat100 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(100,LKTopoZoomCat100,0);
-		changed = true;
-	}
-  }
-  wp = wf->FindByName<WndProperty>(TEXT("prpCat110"));
-  if (wp) {
-	if (HaveZoomTopology(110))
-	if ( LKTopoZoomCat110 != wp->GetDataField()->GetAsFloat()) {
-		LKTopoZoomCat110 = wp->GetDataField()->GetAsFloat()/RZC;
-		ChangeZoomTopology(110,LKTopoZoomCat110,0);
-		changed = true;
-	}
-  }
-
-
-  delete wf;
-  wf = NULL;
-
 }

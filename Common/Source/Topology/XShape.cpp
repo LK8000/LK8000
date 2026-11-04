@@ -19,6 +19,10 @@
 
 using std::string_view_literals::operator""sv;
 
+#define Log(msg, ...) TopoLog(_T("[XShape]") msg, __VA_ARGS__)
+#define LogT(msg, ...) TopoLogT(_T("[XShape]") msg, __VA_ARGS__)
+#define LogD(msg, ...) TopoLogD(_T("[XShape]") msg, __VA_ARGS__)
+
 namespace {
 
 bool ValidLabel(const char* src) {
@@ -34,7 +38,7 @@ bool ValidLabel(const char* src) {
   return true;
 }
 
-static bool HiddenLabel(const char* src) {
+bool HiddenLabel(const char* src) {
   if (src) {
     if (src == "RAILWAY STATION"sv) {
       return true;
@@ -99,29 +103,30 @@ void XShape::clear() {
   label.clear();
 }
 
-bool XShape::nearestItem(int category, double lon, double lat) const {
+bool XShape::nearestItem(topology_category category, double lon, double lat) const {
   if (label.empty()) {
     return false;
   }
 
   NearestTopoItem* item;
   switch (category) {
-    case 10:
+    case topology_category::water_area:
       item = &NearestWaterArea;
       break;
-    case 70:
-    case 80:
-    case 110:
+    case topology_category::big_city:
+    case topology_category::medium_city:
+    case topology_category::city_area:
       item = &NearestBigCity;
       break;
-    case 90:
+    case topology_category::small_city:
       item = &NearestCity;
       break;
-    case 100:
+    case topology_category::very_small_city:
       item = &NearestSmallCity;
       break;
     default:
-      TestLog(_T("...... Cannot use nearestItem cat=%d <%s>"), category, label.c_str());
+      LogT(_T("...... Cannot use nearestItem cat=%d <%s>"),
+           static_cast<int>(category), label.c_str());
       return false;
   }
 
@@ -129,10 +134,9 @@ bool XShape::nearestItem(int category, double lon, double lat) const {
   DistanceBearing(lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude, &distance,
                   &bearing);
 
-  DebugLog(
-      _T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f distance=%.2f\n"),
-      category, label.c_str(), lat, lon, GPS_INFO.Latitude, GPS_INFO.Longitude,
-      distance / 1000);
+  LogD(_T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f distance=%.2f\n"),
+       static_cast<int>(category), label.c_str(), lat, lon, GPS_INFO.Latitude,
+       GPS_INFO.Longitude, distance / 1000);
 
   // If first time, use it
   if (!item->Valid || (item->Distance > distance)) {
@@ -143,7 +147,8 @@ bool XShape::nearestItem(int category, double lon, double lat) const {
     item->Bearing = bearing;
     item->Valid = true;
 
-    DebugLog(_T(".... cat=%d, <%s> dist=%f nearer\n"), category, label.c_str(), distance);
+    LogD(_T(".... cat=%d, <%s> dist=%f nearer\n"), static_cast<int>(category),
+         label.c_str(), distance);
     return true;
   }
 

@@ -316,16 +316,8 @@ void LKParseProfileString(const char *sname, const char *svalue) {
 
   if (settings::read(sname, svalue, szRegistryIphoneGestures, IphoneGestures)) return;
   if (settings::read(sname, svalue, szRegistryLKMaxLabels, LKMaxLabels)) return;
-  if (settings::read(sname, svalue, szRegistryLKTopoZoomCat05, LKTopoZoomCat05)) {
-    LKTopoZoomCat05 /= 1000;
-    return;
-  }
   if (settings::read(sname, svalue, szRegistryLKTopoZoomCat100, LKTopoZoomCat100)) {
     LKTopoZoomCat100 /= 1000;
-    return;
-  }
-  if (settings::read(sname, svalue, szRegistryLKTopoZoomCat10, LKTopoZoomCat10)) {
-    LKTopoZoomCat10 /= 1000;
     return;
   }
   if (settings::read(sname, svalue, szRegistryLKTopoZoomCat110, LKTopoZoomCat110)) {

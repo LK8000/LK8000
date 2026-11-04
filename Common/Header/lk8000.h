@@ -24,6 +24,7 @@ extern Mutex  CritSec_TaskData;
 extern void UnlockTaskData();
 extern void LockTaskData();
 
+extern Mutex  CritSec_TerrainDataGraphics;
 extern void UnlockTerrainDataGraphics();
 extern void LockTerrainDataGraphics();
 

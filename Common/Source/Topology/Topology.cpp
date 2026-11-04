@@ -24,6 +24,7 @@
 
 #include "shapelib/mapshape.h"
 #include "XShape.h"
+#include "MapDraw/ZoomTopology.h"
 
 namespace {
 
@@ -46,78 +47,77 @@ void Topology::loadBitmap(const int xx) {
 // and assign them here dynamically. Easy and fast to do.
 void Topology::loadPenBrush(const LKColor thecolor) {
   int psize;
-  switch(scaleCategory) {
-	case 20: // water lines
-		switch(ScreenSize) {
-			case ss800x480:
-			case ss640x480:
-				psize=3;
-				break;
-			case ss480x272:
-			case ss320x240:
-			case ss400x240:
-			case ss480x640:
-			case ss480x800:
-				psize=2;
-				break;
-			default:
-        psize=IBLSCALE(2);
-				break;
-		}
-		break;
-	case 30: // big roads
-		switch(ScreenSize) {
-			case ss800x480:
-			case ss640x480:
-				psize=3;
-				break;
-			case ss480x272:
-			case ss320x240:
-			case ss400x240:
-			case ss480x640:
-			case ss480x800:
-				psize=2;
-				break;
-			default:
-				psize=IBLSCALE(2);
-				break;
-		}
-		break;
-	case 40: // medium roads
-		switch(ScreenSize) {
-			case ss800x480:
-				psize=2;
-				break;
-			case ss480x272:
-			case ss640x480:
-			case ss480x640:
-			case ss480x800:
-				psize=NIBLSCALE(1);
-				break;
-			default:
-                                psize=IBLSCALE(1);
-				break;
-		}
-		break;
-	case 60: // railroads
-		switch(ScreenSize) {
-			default:
-				psize=IBLSCALE(1);
-		}
-		break;
+  switch (Category) {
+    case topology_category::water_line:
+      switch (ScreenSize) {
+        case ss800x480:
+        case ss640x480:
+          psize = 3;
+          break;
+        case ss480x272:
+        case ss320x240:
+        case ss400x240:
+        case ss480x640:
+        case ss480x800:
+          psize = 2;
+          break;
+        default:
+          psize = IBLSCALE(2);
+          break;
+      }
+      break;
+    case topology_category::big_road:
+      switch (ScreenSize) {
+        case ss800x480:
+        case ss640x480:
+          psize = 3;
+          break;
+        case ss480x272:
+        case ss320x240:
+        case ss400x240:
+        case ss480x640:
+        case ss480x800:
+          psize = 2;
+          break;
+        default:
+          psize = IBLSCALE(2);
+          break;
+      }
+      break;
+    case topology_category::medium_road:
+      switch (ScreenSize) {
+        case ss800x480:
+          psize = 2;
+          break;
+        case ss480x272:
+        case ss640x480:
+        case ss480x640:
+        case ss480x800:
+          psize = NIBLSCALE(1);
+          break;
+        default:
+          psize = IBLSCALE(1);
+          break;
+      }
+      break;
+    case topology_category::railroad:
+      switch (ScreenSize) {
+        default:
+          psize = IBLSCALE(1);
+      }
+      break;
 
-	default:
-		psize=NIBLSCALE(1);
-		break;
+    default:
+      psize = NIBLSCALE(1);
+      break;
   }
   hPen.Create(PEN_SOLID, psize, thecolor);
   hbBrush.Create(thecolor);
-
 }
 
 Topology::Topology(const TCHAR* shpname, int field1) : field(field1) {
   // filename already points to _MAPS subdirectory!
-  to_utf8(shpname, filename);
+  filename = to_utf8(shpname);
   Open();
 }
 
@@ -238,7 +238,7 @@ void Topology::initCache() {
 void Topology::Open() {
   shapefileopen = false;
 
-  if (msShapefileOpen(&shpfile, "rb", filename, true) == -1) {
+  if (msShapefileOpen(&shpfile, "rb", filename.c_str(), true) == -1) {
     StartupStore(_T("------ Topology: Open FAILED for <%s>"), from_utf8(filename).c_str());
     return;
   }
@@ -269,12 +269,23 @@ Topology::~Topology() {
   Close();
 }
 
+double Topology::GetScaleThreshold() const {
+  // apply zoom level from TopologyZoomLevel if available
+  auto prop_opt = TopologyZoomLevel::get(Category);
+  if (prop_opt) {
+    return prop_opt->Zoom();
+  }
+  return scaleThreshold;
+}
+
 bool Topology::CheckScale() {
-  if (scaleCategory == 10 || scaleCategory == 5) {
-    return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
+  if (IsWaterArea(Category)) {
+    // "coast_areas" and "water_area" are always drawn
+    // to small polygon was filtered out on Drawing
+    return true;
   }
   else {
-    return (MapWindow::zoom.RealScale() <= scaleThreshold);
+    return (MapWindow::zoom.RealScale() <= GetScaleThreshold());
   }
 }
 
@@ -417,19 +428,13 @@ void Topology::Paint(ShapeSpecialRenderer& renderer, LKSurface& Surface, const R
     return;
   }
   bool nolabels = false;
-  // 130217 scaleCat 5 and 10 are the same! So careful..
-  if (scaleCategory == 10 || scaleCategory == 5) {
-    // for water areas, use scaleDefault
-    if (MapWindow::zoom.RealScale() > scaleDefaultThreshold) {
+  if (MapWindow::zoom.RealScale() > GetScaleThreshold()) {
+    // "coast_areas" and "water_area" polygon are always drawn, but labels are
+    // suppressed at high zoom levels
+    if (!IsWaterArea(Category)) {
       return;
     }
-    // since we just checked category 10, if we are over scale we set nolabels
-    if (MapWindow::zoom.RealScale() > scaleThreshold) {
-      nolabels = true;
-    }
-  }
-  else if (MapWindow::zoom.RealScale() > scaleThreshold) {
-    return;
+    nolabels = true;
   }
 
   const auto hfOld = Surface.SelectObject(MapTopologyFont);
@@ -507,7 +512,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
       case (MS_SHAPE_POINT):
         for (int tt = 0; tt < shape.numlines; tt++) {
           for (int jj = 0; jj < shape.line[tt].numpoints; jj++) {
-            cshape->nearestItem(scaleCategory, shape.line[tt].point[jj].x,
+            cshape->nearestItem(Category, shape.line[tt].point[jj].x,
                                 shape.line[tt].point[jj].y);
           }
         }
@@ -519,7 +524,7 @@ void Topology::SearchNearest(const rectObj& bounds) {
           //  it's surprising distance to Polygon are not distance to first
           //  point but distance to nearest vertex. right implementation is in
           //  #msDistancePointToShape, but this don't use great circle ditance.
-          cshape->nearestItem(scaleCategory, shape.line[tt].point[0].x,
+          cshape->nearestItem(Category, shape.line[tt].point[0].x,
                               shape.line[tt].point[0].y);
         }
         break;

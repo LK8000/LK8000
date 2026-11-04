@@ -3,7 +3,7 @@
   <WndForm Name="frmSetTopology" Type="Dialog" X="0" Y="0" Width="240" Height="240" Caption="_@M731_" Font="2" >
     <WndButton   Caption="_@M186_" X="2" Y="2" Width="60"  Height="22" Font="2" OnClickNotify="OnCloseClicked" Tag="1"/>
     <WndButton Name="cmdResetTopology" Caption="_@M556_" X="118" Y="2" Width="120"  Height="22" Font="2" OnClickNotify="OnResetTopologyClicked" />
-    <WndProperty Name="prpCat10" Caption="_@M793_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H600_">
+    <WndProperty Name="prpCat20" Caption="_@M793_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H600_">
       <DataField Name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min="0" Max="99" Step="0.1" />
     </WndProperty>
     <WndProperty Name="prpCat30" Caption="_@M143_" X="2" Y="-1"  Width="236" Height="22" CaptionWidth="150" Font="2" Help="_@H601_">

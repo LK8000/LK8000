@@ -17,6 +17,7 @@
 #include "Devices/devFanet.h"
 #include "Util/StringAPI.hxx"
 #include "Calc/Task/TimeGates.h"
+#include "MapDraw/ZoomTopology.h"
 #ifdef ANDROID
   #include "Android/Main.hpp"
   #include "Android/NativeView.hpp"
@@ -155,19 +156,7 @@ void LKProfileResetDefault() {
 
   TimeGates::ResetSettings();
 
-// These values are used on startup, but on reset change also OpenCloseTopology
-  LKTopoZoomCat05=DEFAULT_WATER_LABELS_THRESHOLD;	// coast area share the same label management of cat10
-  LKTopoZoomCat10=DEFAULT_WATER_LABELS_THRESHOLD;	// water labels threshold, over this realscale, no water labels are printed)
-  LKTopoZoomCat20=9999;		// water lines
-  LKTopoZoomCat30=25;		// Big Roads
-  LKTopoZoomCat40=6;		// Medium road
-  LKTopoZoomCat50=3;		// Small road
-  LKTopoZoomCat60=8;		// Railroad
-  LKTopoZoomCat70=15;		// Big cities
-  LKTopoZoomCat80=9999;		// Med city
-  LKTopoZoomCat90=9999;		// Small city
-  LKTopoZoomCat100=3;		// Very small cities
-  LKTopoZoomCat110=9999;	// city polyline area
+  TopologyZoomLevel::list::reset();
 
   LKMaxLabels=70;
 

@@ -139,9 +139,8 @@ void WhereAmI::Run() {
 
   for (int z=0; z<MAXTOPOLOGY; z++) {
     if (TopoStore[z]) {
-      // See also CheckScale for category checks! We should use a function in fact.
-      if ( TopoStore[z]->scaleCategory == 10 ||
-        (TopoStore[z]->scaleCategory >= 70 && TopoStore[z]->scaleCategory <=110)) {
+      if (TopoStore[z]->Category == topology_category::water_area ||
+          IsCity(TopoStore[z]->Category)) {
         TopoStore[z]->SearchNearest(bounds);
       }
     }

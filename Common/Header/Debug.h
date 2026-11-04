@@ -21,6 +21,8 @@
 
 // #define DEBUG_COMPORT_WRITE // log ComPort::Write() calls in RUNTIME.log
 
+#define DEBUG_TOPOLOGY 
+    
 #endif
 
 #endif
