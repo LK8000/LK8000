@@ -14,8 +14,8 @@
 
 #include "LKBitmap.h"
 #include "Screen/Brush.hpp"
+#include "LKColor.h"
 
-class LKColor;
 class LKBitmap;
 
 
