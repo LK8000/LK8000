@@ -10,6 +10,13 @@ Menu - Info 2/2 - INFO button
 There are several pages that you can scroll using Next and Prev buttons.
 Please ADVANCE TO THE NEXT PAGE to start reading about changes and enhancements.
 
+[version 7.6.9]
+* Fix
+ - Android: Topology Label missing since 7.6.8
+ - don't draw too small Topology polygon (depending of zoom level)
+ - STF Vario Bar: mixing IAS / TAS Speed used to draw vario bar
+
+
 [version 7.6.8]
 * Fix
  - ".cup" task file : accept file with any line encoding
