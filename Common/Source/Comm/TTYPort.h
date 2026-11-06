@@ -13,7 +13,7 @@
 #define	TTYPORT_H
 #ifdef __linux__
 #include "ComPort.h"
-#include <atomic>
+#include "Comm/PortConfig.h"
 #include <termios.h>
 
 class TTYPort : public ComPort {
