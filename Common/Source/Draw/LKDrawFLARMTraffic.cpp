@@ -165,8 +165,10 @@ static int	iRectangleSize = 4;
 		sc_av = sc_name;
 
 		lk::strcpy(lbuffer,_T(""));
-		if (DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
+		if (DrawInfo.FLARM_Traffic[i].Cn[0] != 0 && DrawInfo.FLARM_Traffic[i].Cn[0] != _T('?')) { // 100322
 			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
+		} else if (DrawInfo.FLARM_Traffic[i].Name[0] != 0 && DrawInfo.FLARM_Traffic[i].Name[0] != _T('?') && DrawInfo.FLARM_Traffic[i].Name[0] != _T(' ')) {
+			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Name);
 		}
 		if (DrawInfo.FLARM_Traffic[i].Average30s>=0.1) {
                   size_t len = _tcslen(lbuffer);
